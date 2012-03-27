@@ -379,12 +379,12 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 //		}
 	}
 
-	protected static void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
+	public static void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
 		divorceIndividu(individu, dateDivorce);
 		divorceIndividu(conjoint, dateDivorce);
 	}
 
-	protected static void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
+	public static void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE);
 		etatsCivilIndividu.add(etatCivilIndividu);

@@ -36,25 +36,27 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	/**
 	 * L'ancien conjoint de l'individu concerné par la séparation.
 	 */
-	private Individu ancienConjoint;
+	private PersonnePhysique ancienConjoint;
 
 	protected SeparationOuDivorce(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
-		// Récupération des informations sur le conjoint de l'individu depuis le service-civil.
-		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
-		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
-		
+		final PersonnePhysique ppPrincipale = getPrincipalPP();
+		EnsembleTiersCouple etc = context.getTiersService().getEnsembleTiersCouple(ppPrincipale, getDate().getOneDayBefore());
+		if (etc != null) {
+			ancienConjoint = etc.getConjoint(ppPrincipale);
+		}
+
 	}
 
 	protected SeparationOuDivorce(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
 
-		// Récupération des informations sur le conjoint de l'individu depuis le service-civil.
-		final long noIndividu = getNoIndividu();
-		Individu individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, getDate());
-		this.ancienConjoint = context.getServiceCivil().getConjoint(individuPrincipal.getNoTechnique(), getDate().getOneDayBefore());
+		final PersonnePhysique ppPrincipale = getPrincipalPP();
+		EnsembleTiersCouple etc = context.getTiersService().getEnsembleTiersCouple(ppPrincipale, getDate().getOneDayBefore());
+		if (etc != null) {
+			ancienConjoint = etc.getConjoint(ppPrincipale);
+		}
 	}
 
 	/**
@@ -64,10 +66,12 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 	public SeparationOuDivorce(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce,
 	                           Individu ancienConjoint, EvenementCivilContext context) {
 		super(individu, conjoint, dateEvenement, numeroOfsCommuneAnnonce, context);
-		this.ancienConjoint = ancienConjoint;
+		if (ancienConjoint != null) {
+			this.ancienConjoint = context.getTiersDAO().getPPByNumeroIndividu(ancienConjoint.getNoTechnique());
+		}
 	}
 
-	public Individu getAncienConjoint() {
+	public PersonnePhysique getAncienConjoint() {
 		return ancienConjoint;
 	}
 
@@ -89,22 +93,6 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		}
 
 		/*
-		 * Le conjoint de l'individu est inconnu a ce moment, car un seul
-		 * événement de séparation/divorce est envoyé.
-		 * Pour récuperer l'ex conjoint la méthode getAncienConjoint a été créé.
-		 */
-
-		// récupération du conjoint
-		PersonnePhysique conjoint = null;
-		if (getAncienConjoint() != null) {
-			// obtention du tiers correspondant au conjoint.
-			conjoint = getPersonnePhysiqueOrFillErrors(getAncienConjoint().getNoTechnique(), erreurs);
-			if (conjoint == null) {
-				return;
-			}
-		}
-
-		/*
 		 * Vérifie que les tiers sont séparés ou divorcés dans le civil.
 		 */
 		long noIndividuPrincipal = individu.getNoTechnique();
@@ -118,8 +106,8 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			erreurs.addErreur("L'individu " + noIndividuPrincipal + " n'est ni séparé ni divorcé dans le civil");
 		}
 
-		if (conjoint != null) {
-			long noIndividuConjoint = (conjoint).getNumeroIndividu();
+		if (ancienConjoint != null) {
+			long noIndividuConjoint = ancienConjoint.getNumeroIndividu();
 			EtatCivil etatCivilTiersConjoint = serviceCivil.getEtatCivilActif(noIndividuConjoint, date);
 			if (etatCivilTiersConjoint == null) {
 				erreurs.addErreur("L'individu " + noIndividuConjoint + " ne possède pas d'état civil à la date de l'événement");
@@ -132,7 +120,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		/*
 		 * Vérifie que l'individu ne soit pas déjà séparé
 		 */
-		if (isSeparesFiscalement(date, habitant, conjoint)) {
+		if (isSeparesFiscalement(date, habitant, ancienConjoint)) {
 			// si les tiers sont séparés ne pas continuer les vérifications
 			return;
 		}
@@ -142,12 +130,12 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			erreurs.addErreur("Aucun ensemble tiers-couple a été trouvé pour l'habitant n°" + habitant.getNumero());
 			return;
 		}
-		if (!menageComplet.estComposeDe(habitant, conjoint)) {
+		if (!menageComplet.estComposeDe(habitant, ancienConjoint)) {
 			/*
 			 * Vérifie que les deux habitants appartiennent au même ménage
 			 */
-			if (conjoint != null) {
-				erreurs.addErreur(String.format("Les deux habitant (%d et %d) ne font pas partie du même ménage.", habitant.getNumero(), conjoint.getNumero()));
+			if (ancienConjoint != null) {
+				erreurs.addErreur(String.format("Les deux habitant (%d et %d) ne font pas partie du même ménage.", habitant.getNumero(), ancienConjoint.getNumero()));
 			}
 			else {
 				erreurs.addErreur(String.format("L'habitant (%d) ne fait pas partie du ménage.", habitant.getNumero()));

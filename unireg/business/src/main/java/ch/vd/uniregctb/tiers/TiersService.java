@@ -1154,16 +1154,6 @@ public interface TiersService {
 	List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(Tiers tiers);
 
     /**
-     * Recherche le menage commun actif auquel est rattaché une personne
-     *
-     * @param personne la personne potentiellement rattachée à un ménage commun
-     * @param periode
-     * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
-     * @throws TiersException si plus d'un ménage commun est trouvé
-     */
-    MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException;
-
-    /**
      * Permet de savoir si un tiers est un veuf(ve) marié seul
      *
      * @param tiers

@@ -758,7 +758,6 @@ public class TiersServiceImpl implements TiersService {
      * Détermine si un non habitant est étranger sans permis C.
      *
      * @param nonHabitant le non habitant
-     * @param date        la date à laquelle on désire se placer
      * @return true si le non habitant est étranger sans permis C
      * @throws TiersException si l'habitant ne possède ni nationalité ni permis.
      */
@@ -957,9 +956,9 @@ public class TiersServiceImpl implements TiersService {
     }
 
     /**
-     * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers ménage-commun.
+     * Contruit l'ensemble des tiers individuels et tiers menage à partir du tiers personne physique.
      *
-     * @param menageCommun le tiers ménage-commun du menage
+     * @param personne  le tiers personne physique du menage
      * @param date         la date de référence, ou null pour obtenir tous les composants connus dans l'histoire du ménage.
      * @return un objet EnsembleTiersCouple regroupant l'ensemble des tiers individuels et tiers menage.
      */
@@ -1243,7 +1242,7 @@ public class TiersServiceImpl implements TiersService {
      * Retourne les nom et prénoms de la personne physique spécifiée
      *
      * @param pp personne physique dont on veut le nom
-     * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom.VIDE} si la donnée est inconnue)
+     * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom#VIDE} si la donnée est inconnue)
      */
     @Override
     public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
@@ -1794,7 +1793,6 @@ public class TiersServiceImpl implements TiersService {
         }
 
         final RegDate date = RegDate.get();
-        final int year = date.year();
 
         final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
         final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), date, enumValues);
@@ -2692,7 +2690,7 @@ public class TiersServiceImpl implements TiersService {
             adaptPremierePeriodicite(debiteur, dateDebut);
         }
 
-        ForDebiteurPrestationImposable forRtr = null;
+        ForDebiteurPrestationImposable forRtr;
         if (dateFin == null) {
             forRtr = openForDebiteurPrestationImposable(debiteur, dateDebut, autoriteFiscale, typeAutoriteFiscale);
         } else {
@@ -3988,54 +3986,6 @@ public class TiersServiceImpl implements TiersService {
         }
 
         return personnes;
-    }
-
-    /**
-     * Recherche le menage commun actif auquel est rattaché une personne
-     *
-     * @param personne la personne potentiellement rattachée à un ménage commun
-     * @param periode
-     * @return le ménage commun trouvé, ou null si cette personne n'est pas rattaché au ménage.
-     * @throws Exception
-     * @throws ch.vd.registre.common.service.RegistreException
-     *                   si plus d'un ménage commun est trouvé.
-     */
-    @Override
-    public MenageCommun getMenageCommunActifAt(final Contribuable personne, final DateRangeHelper.Range periode) throws TiersException {
-
-        if (personne == null) {
-            return null;
-        }
-
-        if (personne instanceof MenageCommun) {
-            return (MenageCommun) personne;
-        }
-
-        MenageCommun menageCommun = null;
-
-        final Set<RapportEntreTiers> rapportsSujet = personne.getRapportsSujet();
-        if (rapportsSujet != null) {
-            for (RapportEntreTiers rapportSujet : rapportsSujet) {
-                if (!rapportSujet.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType()
-                        && RegDateHelper.isBeforeOrEqual(periode.getDateDebut(), rapportSujet.getDateFin(), NullDateBehavior.LATEST)) {
-                    /*
-					 * le rapport de l'apartenance a été trouvé, on en déduit donc le tiers ménage
-					 */
-                    if (menageCommun != null) {
-                        throw new TiersException("Plus d'un ménage commun trouvé pour la personne = [" + personne.toString() + ']');
-                    }
-
-                    menageCommun = (MenageCommun) tiersDAO.get(rapportSujet.getObjetId());
-                    // on verifie la presence d'un for principal ou secondaire sur la période
-
-                    if (!isForActifSurPeriode(menageCommun, periode)) {
-                        menageCommun = null;
-                    }
-                }
-            }
-        }
-
-        return menageCommun;
     }
 
 	@Override
