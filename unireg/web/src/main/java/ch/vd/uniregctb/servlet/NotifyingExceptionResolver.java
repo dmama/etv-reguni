@@ -1,20 +1,23 @@
-package ch.vd.uniregctb.common;
-
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+package ch.vd.uniregctb.servlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.springframework.core.Ordered;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.handler.SimpleMappingExceptionResolver;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.common.NotificationService;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 
 /**
@@ -22,26 +25,39 @@ import ch.vd.uniregctb.security.AccessDeniedException;
  *
  * @see http://developingdeveloper.wordpress.com/2008/03/09/handling-exceptions-in-spring-mvc-part-2/
  */
-public class NotifyingExceptionResolver extends SimpleMappingExceptionResolver {
+public class NotifyingExceptionResolver implements HandlerExceptionResolver, Ordered {
 
 	private NotificationService notificationService;
 	private String applicationName;
+	private int order = Ordered.LOWEST_PRECEDENCE;
 
 	/** map des exceptions (indexées par leur sha1) déjà envoyées + le nombre d'envois */
 	private final Map<String, Integer> exceptions = new HashMap<String, Integer>();
 
 	protected final Logger LOGGER = Logger.getLogger(NotifyingExceptionResolver.class);
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationService(NotificationService notificationService) {
 		this.notificationService = notificationService;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
 	public void setApplicationName(String applicationName) {
 		this.applicationName = applicationName;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
 	@Override
-	protected ModelAndView doResolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+	public int getOrder() {
+		return order;
+	}
+
+	@Override
+	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
 
 		boolean ignoreException = (ex instanceof ObjectNotFoundException // exception levée lorsque l'utilisateur entre des données erronées
 								|| ex instanceof AccessDeniedException   // exception levée lorsque l'utilisateur ne possède par de profil IfoSec
@@ -68,7 +84,7 @@ public class NotifyingExceptionResolver extends SimpleMappingExceptionResolver {
 			}
 		}
 
-		return super.doResolveException(request, response, handler, ex);
+		return null;
 	}
 
 	/**

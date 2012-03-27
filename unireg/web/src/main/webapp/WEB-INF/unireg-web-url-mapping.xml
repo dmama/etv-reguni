@@ -208,4 +208,43 @@
 		</property>
 	</bean>
 
+	<!-- ======== Exceptions resolvers (communs à Spring 2.x et Spring 3.x) ======== -->
+
+	<!-- Exception resolver qui ne résoud rien mais notifie par email les exceptions levées -->
+	<bean id="notifyingExceptionResolver" class="ch.vd.uniregctb.servlet.NotifyingExceptionResolver">
+		<property name="order" value="-1"/> <!-- pour prendre la précédence sur tous les autres exceptions resolvers -->
+		<property name="notificationService" ref="emailNotificationService" />
+		<property name="applicationName" value="Unireg ${pom.version}" />
+	</bean>
+
+	<!-- Exception resolver par défaut -->
+	<bean id="urlMappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+		<property name="order" value="20"/>
+		<property name="defaultStatusCode" value="500"/>
+		<property name="exceptionMappings">
+			<map>
+				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
+				<entry key="weblogic.common.resourcepool.ResourceLimitException" value="errors/jdbcConnection" />
+				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
+				<entry key="ch.vd.uniregctb.interfaces.service.ServiceCivilException" value="errors/errorServiceCivil" />
+				<entry key="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
+				<entry key="ch.vd.uniregctb.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />
+				<entry key="ch.vd.uniregctb.interfaces.service.PersonneMoraleException" value="errors/errorPersonneMorale" />
+				<entry key="ch.vd.uniregctb.interfaces.InterfaceDataException" value="errors/errorDataInterface" />
+				<!-- En cas d'exception inattendue, on renvoie vers la JSP error.jsp -->
+				<entry key="java.lang.Exception" value="errors/error" />
+				<entry key="ch.vd.uniregctb.security.AccessDeniedException" value="errors/accessDeniedIHM" />
+				<entry key="ch.vd.uniregctb.common.NotImplementedException" value="errors/notImplemented" />
+				<entry key="ch.vd.uniregctb.common.EditiqueCommunicationException" value="errors/editique" />
+				<entry key="ch.vd.uniregctb.common.ObjectNotFoundException" value="errors/objectNotFound" />
+				<entry key="ch.vd.uniregctb.adresse.AdressesResolutionException" value="errors/adressesResolution" />
+				<entry key="ch.vd.uniregctb.common.DonneesCivilesException" value="errors/donneesCiviles" />
+				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
+				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
+				<entry key="org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
+			</map>
+		</property>
+	</bean>
+
+
 </beans>

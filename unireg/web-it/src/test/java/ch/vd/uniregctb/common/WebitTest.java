@@ -100,6 +100,7 @@ public abstract class WebitTest {
 		webClient = new WebClient();
 		webClient.setJavaScriptEnabled(false);
 		webClient.setRefreshHandler(new ThreadedRefreshHandler());
+		webClient.setThrowExceptionOnFailingStatusCode(false);
 	}
 
 	@After
