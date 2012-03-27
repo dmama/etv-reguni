@@ -142,7 +142,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             long timeWaitCivil = endTimeCivil - startTimeCivil;
             long timeWaitPM = endTimePM - startTimePM;
             long timeWaitIndex = endTimeIndex - startTimeIndex;
-            long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitIndex;
+            long timeWaitAutres = timeWait - timeWaitInfra - timeWaitCivil - timeWaitPM - timeWaitIndex;
 
             if (indexerExecTime == 0 || timeWait == 0) {
                 LOGGER.debug("Statistiques d'indexation indisponibles !");
