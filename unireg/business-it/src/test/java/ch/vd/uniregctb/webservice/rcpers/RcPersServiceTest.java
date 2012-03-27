@@ -1,13 +1,18 @@
 package ch.vd.uniregctb.webservice.rcpers;
 
-import ch.vd.evd0001.v3.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.Test;
+
+import ch.vd.evd0001.v3.ListOfPersons;
+import ch.vd.evd0001.v3.ListOfRelations;
+import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.Relations;
+import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0006.v1.Event;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
-import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -86,7 +91,7 @@ public class RcPersServiceTest {
 		client.setEventPath("event");
 		client.setRelationsPath("relations/ct.vd.rcpers");
 		client.setUsername("gvd0unireg");
-		client.setPassword("welc0me_");
+		client.setPassword("Welc0me_");
 		client.afterPropertiesSet();
 		return client;
 	}

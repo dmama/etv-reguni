@@ -97,12 +97,12 @@ testprop.webservice.sipf.bvrplus.password=
 # Fidor WebService
 testprop.webservice.fidor.url=http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v2
 testprop.webservice.fidor.username=gvd0unireg
-testprop.webservice.fidor.password=welc0me_
+testprop.webservice.fidor.password=Welc0me_
 
 # RCPers WebService
 testprop.webservice.rcpers.url=http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3
 testprop.webservice.rcpers.username=gvd0unireg
-testprop.webservice.rcpers.password=welc0me_
+testprop.webservice.rcpers.password=Welc0me_
 testprop.webservice.rcpers.peoplePath=persons/ct.vd.rcpers
 testprop.webservice.rcpers.relationsPath=relations/ct.vd.rcpers
 testprop.webservice.rcpers.eventPath=event
