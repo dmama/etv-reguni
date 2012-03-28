@@ -295,7 +295,7 @@ public class ProduireRolesProcessor {
 	 * @param anneePeriode l'année de la période fiscale considérée.
 	 * @return un rapport (technique) sur les rôles par commune et contribuables.
 	 */
-	public ProduireRolesCommunesResults runPourToutesCommunes(final int anneePeriode, final int nbThreads, final StatusManager s) throws ServiceException {
+	public ProduireRolesCommunesResults runPourToutesCommunes(final int anneePeriode, final int nbThreads, @Nullable final StatusManager s) throws ServiceException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final GroupementCommunes communeParCommune = new CommuneParCommune();

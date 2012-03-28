@@ -3649,6 +3649,36 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertSourcierMixteArt137Al2(date(2007, 1, 1), null, MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
+	/**
+	 * [SIFISC-4682] Vérifie que le calcul de l'assujettissement pour une commune ne provoque par de chevauchement dans le cas de l'arrivée d'un hors-canton avec immeuble.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePourCommuneArriveHCAvecImmeuble() throws Exception {
+
+		final RegDate achat = date(2001, 3, 12);
+		final RegDate arrivee = date(2007, 7, 1);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		{
+			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFSEtendu()));
+			assertEquals(1, liste.size());
+			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+		}
+
+		{
+			// du point de vue de Moudon, le contribuable est à l'ordinaire à partir du 1er janvier 2007, année de son arrivée dans la commune
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFSEtendu()));
+			assertEquals(1, liste.size());
+			assertOrdinaire(date(2007, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(0));
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveForPrincipal() throws Exception {

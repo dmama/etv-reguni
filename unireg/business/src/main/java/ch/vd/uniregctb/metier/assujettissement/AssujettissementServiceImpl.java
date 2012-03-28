@@ -397,6 +397,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 	}
 
+	/**
+	 * Détermine les cas où des règles particulières s'appliquent (par exemple, avec les mariages où malgré la présence d'un for principal vaudois durant l'année, l'assujettissement se termine le 31
+	 * décembre de l'année précédente).
+	 *
+	 * @param ctb        un contribuable
+	 * @param principaux les fors fiscaux principaux du contribuable
+	 * @return les cas particulières détectés.
+	 */
 	private static CasParticuliers determineCasParticuliers(Contribuable ctb, List<ForFiscalPrincipal> principaux) {
 		final boolean menageCommun = ctb instanceof MenageCommun;
 		CasParticuliers cas = new CasParticuliers(menageCommun);
@@ -1977,9 +1985,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			return DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
 				@Override
 				public Data merge(Data left, Data right) {
-					if (left.typeAut != right.typeAut) {
-						throw new IllegalArgumentException("Détecté deux non-assujettissements de type différents qui s'intersectent [" + left + "] et [" + right + "] (erreur dans l'algorithme ?)");
-					}
+// [SIFISC-4682] Supprimé l'assertion ci-dessous, car dans le cas du calcul de l'assujettissement du point de vue d'une commune vaudoise,
+// il peut y avoir un for fiscal principal hors-canton associé à un for secondaire dans le canton qui provoquent chacun un non-assujettissement
+// de type différent (hors-canton et commune_vd) et qui se chevauchent. Et il s'agit d'une situation est correcte dans ce cas-là.
+//					if (left.typeAut != right.typeAut) {
+//						throw new IllegalArgumentException("Détecté deux non-assujettissements de type différents qui s'intersectent [" + left + "] et [" + right + "] (erreur dans l'algorithme ?)");
+//					}
 					final RegDate debut = RegDateHelper.minimum(left.getDateDebut(), right.getDateDebut(), NullDateBehavior.EARLIEST);
 					final RegDate fin = RegDateHelper.maximum(left.getDateFin(), right.getDateFin(), NullDateBehavior.LATEST);
 					return new Data(debut, fin, left.motifDebut, right.motifFin, Type.NonAssujetti, left.typeAut);

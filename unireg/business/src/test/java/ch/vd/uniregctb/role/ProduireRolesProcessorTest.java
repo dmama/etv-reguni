@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Ignore;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
@@ -679,9 +679,9 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 	}
 
-	private static void assertInfo(long id, TypeContribuable type, int ofsCommune, RegDate ouvertureFor, RegDate fermetureFor,
-	                               MotifFor motifOuverture, MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
-	                               TypeContribuable ancienTypeContribuable, InfoContribuable info) {
+	private static void assertInfo(long id, TypeContribuable type, int ofsCommune, RegDate ouvertureFor, @Nullable RegDate fermetureFor,
+	                               MotifFor motifOuverture, @Nullable MotifFor motifFermeture, InfoContribuable.TypeAssujettissement typeAssujettissement,
+	                               @Nullable TypeContribuable ancienTypeContribuable, InfoContribuable info) {
 		assertNotNull(info);
 		assertEquals(id, info.noCtb);
 		assertEquals(type, info.getTypeCtb());
@@ -1189,10 +1189,10 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		}
 	}
 
+	// [SIFISC-4682] Vérifie que le calcul de l'assujettissement pour une commune se passe bien dans le cas d'un hors-canton avec immeuble qui arrive dans une commune vaudoise.
 	@Test
-	@Ignore("SIFISC-4682")
 	public void testArriveeHcAvecImmeublePresent() throws Exception {
-		
+
 		final long noIndividu = 3256783435623456L;
 		final RegDate achat = date(2001, 3, 12);
 		final RegDate arrivee = date(2007, 7, 1);
@@ -1204,7 +1204,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, arrivee, null);
 			}
 		});
-		
+
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -1239,7 +1239,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), achat, null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 }
