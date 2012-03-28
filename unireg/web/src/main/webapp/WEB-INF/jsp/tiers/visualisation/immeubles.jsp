@@ -20,7 +20,8 @@
 			html += buildPageTable(immeublesPage.immeubles) + '\n';
 			html += '</fieldset>\n'
 			$('#immeublesDiv').html(html);
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 		return false;
 	}
 

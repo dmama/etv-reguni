@@ -154,7 +154,8 @@
 						$('#actions_list').html(Fors.buildActionTableHtml(results));
 						$('#actions_column').show();
 					}
-				});
+				}, 'json')
+				.error(App.ajaxErrorHandler);
 			}
 
 			function dateChangement_onChange() {

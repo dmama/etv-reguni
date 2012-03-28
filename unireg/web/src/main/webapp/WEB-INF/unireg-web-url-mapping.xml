@@ -217,6 +217,25 @@
 		<property name="applicationName" value="Unireg ${pom.version}" />
 	</bean>
 
+	<!-- Exception resolver pour activer les annotations @ExceptionHandler sur les controllers -->
+	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerExceptionResolver">
+		<property name="order" value="10"/> <!-- pour prendre la précédence sur les JSONExceptionResolver et urlMappingExceptionResolver -->
+		<property name="messageConverters">
+			<list>
+				<bean class="org.springframework.http.converter.ByteArrayHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.StringHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.SourceHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter"/>
+				<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Exception resolver pour exposer les exceptions sous format JSON aux clients qui attendent du JSON -->
+	<bean class="ch.vd.uniregctb.servlet.JSONExceptionResolver">
+		<property name="order" value="11"/> <!-- pour prendre la précédence sur le urlMappingExceptionResolver -->
+	</bean>
+
 	<!-- Exception resolver par défaut -->
 	<bean id="urlMappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="order" value="20"/>
@@ -245,6 +264,5 @@
 			</map>
 		</property>
 	</bean>
-
 
 </beans>

@@ -195,7 +195,8 @@
 						$('#actions_list').html(Fors.buildActionTableHtml(results));
 						$('#actions_column').show();
 					}
-				});
+				}, 'json')
+				.error(App.ajaxErrorHandler);
 			}
 
 			function dateOuverture_onChange(element) {

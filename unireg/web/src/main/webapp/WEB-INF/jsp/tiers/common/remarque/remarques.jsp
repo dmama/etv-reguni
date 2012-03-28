@@ -45,7 +45,8 @@
 			$('#addRemarque').show();
 			$('#newRemarque').hide();
 			$('#newRemarque textarea').val('');
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 	}
 
 	function escapeHTML(text) {

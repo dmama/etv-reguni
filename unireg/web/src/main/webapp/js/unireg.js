@@ -185,7 +185,8 @@ var Dialog = {
 						$.get(getContextPath() + queryString, function(results) {
 							$('#tiers-picker-filter-description').text(results.filterDescription);
 							$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
-						});
+						}, 'json')
+						.error(App.ajaxErrorHandler);
 
 					}, 200); // 200 ms
 					$.data(this, "tiers-picker-timer", timer);
@@ -214,7 +215,8 @@ var Dialog = {
 				$.get(getContextPath() + queryString, function(results) {
 					$('#tiers-picker-filter-description').text(results.filterDescription);
 					$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
-				});
+				}, 'json')
+				.error(App.ajaxErrorHandler);
 			});
 
 			// la fonction pour tout effacer, y compris les résultat de la recherche
@@ -459,7 +461,8 @@ var Fors = {
 				list += '<option value="' + motif.type + '"' + (motif.type == motifOuverture ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(motif.label) + '</option>';
 			}
 			motifsOuvertureSelect.html(list);
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 	},
 
 	/**
@@ -490,7 +493,8 @@ var Fors = {
 				list += '<option value="' + motif.type + '"' + (motif.type == motifFermeture ? ' selected=true' : '') + '>' + StringUtils.escapeHTML(motif.label) + '</option>';
 			}
 			motifsFermetureSelect.html(list);
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 	},
 
 	/*
@@ -824,7 +828,7 @@ var Tiers = {
 	 * Récupère des informations générales sur un tiers (voir la classe java TiersInfoController pour le détails des données retournées)
 	 */
 	queryInfo : function(numero, callback) {
-		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback);
+		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback, 'json').error(App.ajaxErrorHandler);
 	},
 
 	/**
@@ -862,7 +866,7 @@ var Tiers = {
 	 * Effectue la validation (appel asynchrone) sur le tiers dont le numéro est spécifié, et retourne la liste des erreurs et des warnings à travers le callback spécifié.
 	 */
 	validate: function(numero, callback) {
-		$.getJSON(getContextPath() + 'validation/tiers.do?id=' + numero + '&' + new Date().getTime(), callback);
+		$.getJSON(getContextPath() + 'validation/tiers.do?id=' + numero + '&' + new Date().getTime(), callback, 'json').error(App.ajaxErrorHandler);
 	},
 
 	/**
@@ -1473,6 +1477,16 @@ var App = {
     	if ( value && value !== '') {
     		window.location.href = value;
     	}
+    },
+
+    /**
+     * Ajax error handler qui affiche un message d'erreur aussi complet que possible à l'utilisateur.
+     */
+    ajaxErrorHandler: function(xhr, ajaxOptions, thrownError) {
+		alert("Désolé ! Une erreur est survenue et l'action demandée n'a pas pu être effectuée.\n\n" +
+			"Veuillez réessayer plus tard, s'il-vous-plaît.\n\n" +
+			"Si le problème persiste, merci de communiquer à votre administrateur le message suivant :\n\n" +
+			"\t" + thrownError + ' (' +  xhr.status +') : '+ xhr.responseText);
     }
 
 }
@@ -1756,7 +1770,8 @@ var Postit = {
 			else {
 				$('#postit').hide();
 			}
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 	}
 }
 
@@ -1775,7 +1790,8 @@ var Batch = {
 				var h = Batch.__buildHtmlTableRunningBatches(jobs, readonly);
 				$("#jobsActif").html(h);
 				requestDone = true;
-			});
+			}, 'json')
+			.error(App.ajaxErrorHandler);
 		});
 	},
 
@@ -2001,6 +2017,7 @@ var Inbox = {
 				$(span).attr('style', '');
 			}
 			this.requestInboxSizeDone = true;
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 	}
 }

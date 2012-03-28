@@ -225,7 +225,8 @@
 					refresh_vignette_pp1(pp1Id);
 					refresh_vignette_pp2(pp2Id);
 					refresh_vignette_mc(mcId);
-				});
+				}, 'json')
+				.error(App.ajaxErrorHandler);
 			}
 
 			function refresh_vignette_pp1(id) {

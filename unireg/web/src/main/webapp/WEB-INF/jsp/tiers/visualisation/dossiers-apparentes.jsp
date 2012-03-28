@@ -49,7 +49,8 @@
 				html += '</fieldset>\n'
 				$('#rapportsDiv').html(html);
 				Tooltips.activate_static_tooltips($('#rapportsDiv'));
-			});
+			}, 'json')
+			.error(App.ajaxErrorHandler);
 		return false;
 	}
 
@@ -199,7 +200,8 @@
 			}
 			$('#filiationsDiv').html(html);
 			Tooltips.activate_static_tooltips($('#filiationsDiv'));
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 		return false;
 	}
 
@@ -254,7 +256,8 @@
 			}
 			$('#debiteursDiv').html(html);
 			Tooltips.activate_static_tooltips($('#debiteursDiv'));
-		});
+		}, 'json')
+		.error(App.ajaxErrorHandler);
 		return false;
 	}
 
