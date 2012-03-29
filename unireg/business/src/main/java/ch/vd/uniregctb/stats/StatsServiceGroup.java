@@ -88,18 +88,15 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public long getTotalPing() {
-		long total = 0;
-		long count = 0;
+		long time = 0;
+		long calls = 0;
 		synchronized (subServices) {
 			for (ServiceTracingInterface s : subServices.values()) {
-				final long p = s.getTotalPing();
-				if (p > 0) {
-					total += p;
-					count++;
-				}
+				time += s.getTotalTime();
+				calls += s.getTotalCount();
 			}
 		}
-		return count > 0 ? (total / count) : 0;
+		return calls > 0 ? (time / calls) : 0;
 	}
 
 	@Override
@@ -111,6 +108,30 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 			}
 		}
 		return count;
+	}
+
+	@Override
+	public long getTotalItemsCount() {
+		long count = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				count += s.getTotalItemsCount();
+			}
+		}
+		return count;
+	}
+
+	@Override
+	public long getTotalItemsPing() {
+		long time = 0;
+		long items = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				time += s.getTotalTime();
+				items += s.getTotalItemsCount();
+			}
+		}
+		return items > 0 ? (time / items) : 0;
 	}
 
 	@Override
@@ -126,18 +147,15 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public long getRecentPing() {
-		long total = 0;
-		long count = 0;
+		long time = 0;
+		long calls = 0;
 		synchronized (subServices) {
 			for (ServiceTracingInterface s : subServices.values()) {
-				final long p = s.getRecentPing();
-				if (p > 0) {
-					total += p;
-					count++;
-				}
+				time += s.getRecentTime();
+				calls += s.getRecentCount();
 			}
 		}
-		return count > 0 ? (total / count) : 0;
+		return calls > 0 ? (time / calls) : 0;
 	}
 
 	@Override
@@ -149,6 +167,30 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 			}
 		}
 		return count;
+	}
+
+	@Override
+	public long getRecentItemsCount() {
+		long count = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				count += s.getRecentItemsCount();
+			}
+		}
+		return count;
+	}
+
+	@Override
+	public long getRecentItemsPing() {
+		long time = 0;
+		long items = 0;
+		synchronized (subServices) {
+			for (ServiceTracingInterface s : subServices.values()) {
+				time += s.getRecentTime();
+				items += s.getRecentItemsCount();
+			}
+		}
+		return items > 0 ? (time / items) : 0;
 	}
 
 	@Override

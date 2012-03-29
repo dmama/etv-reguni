@@ -95,7 +95,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonnesMorales", new Object() {
+			tracing.end(time, t, "getPersonnesMorales", ids.size(), new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, parts=%s", ServiceTracing.toString(ids), ServiceTracing.toString(parts));
@@ -137,7 +137,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getEtablissements", new Object() {
+			tracing.end(time, t, "getEtablissements", ids.size(), new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s", ServiceTracing.toString(ids));
@@ -191,16 +191,19 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public List<EvenementPM> findEvenements(final long numeroEntreprise, final String code, final RegDate minDate, final RegDate maxDate) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.findEvenements(numeroEntreprise, code, minDate, maxDate);
+			final List<EvenementPM> list = target.findEvenements(numeroEntreprise, code, minDate, maxDate);
+			items = list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findEvenements", new Object() {
+			tracing.end(time, t, "findEvenements", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("numeroEntreprise=%d, code=%s, minDate=%s, maxDate=%s", numeroEntreprise, code, ServiceTracing.toString(minDate), ServiceTracing.toString(maxDate));

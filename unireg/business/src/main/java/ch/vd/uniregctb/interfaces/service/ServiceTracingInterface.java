@@ -25,6 +25,16 @@ public interface ServiceTracingInterface {
 	long getTotalPing();
 
 	/**
+	 * @return le nombre total d'éléments pris en compte depuis le démarrage de l'application
+	 */
+	long getTotalItemsCount();
+
+	/**
+	 * @return le ping moyen des éléments pris en compte depuis le démarrage de l'application
+	 */
+	long getTotalItemsPing();
+
+	/**
 	 * @return le temps récent (les 5 dernières minutes d'activité) passé dans le service
 	 */
 	long getRecentTime();
@@ -39,6 +49,16 @@ public interface ServiceTracingInterface {
 	 */
 	long getRecentCount();
 
+	/**
+	 * @return le nombre d'éléments récemment pris en compte
+	 */
+	long getRecentItemsCount();
+
+	/**
+	 * @return le ping moyen des éléments récemment pris en compte
+	 */
+	long getRecentItemsPing();
+	
 	/**
 	 * Appelé toutes les minutes pour tenir compte de l'avancement du temps dans les données relatives aux appels "récents"
 	 * (c'est le bon moment pour "faire glisser" les données)

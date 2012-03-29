@@ -13,12 +13,16 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 public class ServiceStats {
 
 	private final long lastCallTime;
-	private final Long totalPing;
-	private final Long totalTime;
-	private final Long totalCount;
-	private final Long recentPing;
-	private final Long recentTime;
-	private final Long recentCount;
+	private final long totalPing;
+	private final long totalTime;
+	private final long totalCount;
+	private final Long totalItemsCount;
+	private final Long totalItemsPing;
+	private final long recentPing;
+	private final long recentTime;
+	private final long recentCount;
+	private final Long recentItemsCount;
+	private final Long recentItemsPing;
 	private final Map<String, ServiceStats> detailedData = new HashMap<String, ServiceStats>();
 
 	public ServiceStats(ServiceTracingInterface rawService) {
@@ -26,9 +30,28 @@ public class ServiceStats {
 		this.totalPing = rawService.getTotalPing();
 		this.totalTime = rawService.getTotalTime();
 		this.totalCount = rawService.getTotalCount();
+
+		if (rawService.getTotalItemsCount() > rawService.getTotalCount()) {
+			this.totalItemsCount = rawService.getTotalItemsCount();
+			this.totalItemsPing = rawService.getTotalItemsPing();
+		}
+		else {
+			this.totalItemsCount = null;
+			this.totalItemsPing = null;
+		}
+
 		this.recentPing = rawService.getRecentPing();
 		this.recentTime = rawService.getRecentTime();
 		this.recentCount = rawService.getRecentCount();
+
+		if (rawService.getRecentItemsCount() > rawService.getRecentCount()) {
+			this.recentItemsCount = rawService.getRecentItemsCount();
+			this.recentItemsPing = rawService.getRecentItemsPing();
+		}
+		else {
+			this.recentItemsCount = null;
+			this.recentItemsPing = null;
+		}
 
 		final Map<String, ? extends ServiceTracingInterface> map = rawService.getDetailedData();
 		if (map != null) {
@@ -49,37 +72,65 @@ public class ServiceStats {
 	/**
 	 * @return le ping moyen du service depuis le démarrage de l'application
 	 */
-	public Long getTotalPing() {
+	public long getTotalPing() {
 		return totalPing;
 	}
 
 	/**
 	 * @return le temps total passé dans le service depuis le démarrage de l'application
 	 */
-	public Long getTotalTime() {
+	public long getTotalTime() {
 		return totalTime;
 	}
 
-	public Long getTotalCount() {
+	public long getTotalCount() {
 		return totalCount;
+	}
+
+	/**
+	 * @return le nombre totale d'éléments demandés ou retournés (selon la définition du service)
+	 */
+	public Long getTotalItemsCount() {
+		return totalItemsCount;
+	}
+
+	/**
+	 * @return le ping moyen par élément demandé ou retourné.
+	 */
+	public Long getTotalItemsPing() {
+		return totalItemsPing;
 	}
 
 	/**
 	 * @return le ping moyen récent (les 5 dernières minutes d'activité) passé dans le service
 	 */
-	public Long getRecentPing() {
+	public long getRecentPing() {
 		return recentPing;
 	}
 
 	/**
 	 * @return le temps récent (les 5 dernières minutes d'activité) passé dans le service
 	 */
-	public Long getRecentTime() {
+	public long getRecentTime() {
 		return recentTime;
 	}
 
-	public Long getRecentCount() {
+	public long getRecentCount() {
 		return recentCount;
+	}
+
+	/**
+	 * @return le nombre d'éléments récemment demandés ou retournés.
+	 */
+	public Long getRecentItemsCount() {
+		return recentItemsCount;
+	}
+
+	/**
+	 * @return le ping moyen par élément récemment demandé ou retourné.
+	 */
+	public Long getRecentItemsPing() {
+		return recentItemsPing;
 	}
 
 	/**

@@ -125,6 +125,16 @@ public class PartyWebServiceTracing implements ServiceTracingInterface, Initiali
 	}
 
 	@Override
+	public long getRecentItemsCount() {
+		return getRecentCount();
+	}
+
+	@Override
+	public long getRecentItemsPing() {
+		return getRecentPing();
+	}
+
+	@Override
 	public void onTick() {
 		if (globalCounter != null) {
 			globalCounter.onTick();
@@ -159,6 +169,16 @@ public class PartyWebServiceTracing implements ServiceTracingInterface, Initiali
 			return 0;
 		}
 		return globalCounter.getTotalCount();
+	}
+
+	@Override
+	public long getTotalItemsCount() {
+		return getTotalCount();
+	}
+
+	@Override
+	public long getTotalItemsPing() {
+		return getTotalPing();
 	}
 
 	@Override

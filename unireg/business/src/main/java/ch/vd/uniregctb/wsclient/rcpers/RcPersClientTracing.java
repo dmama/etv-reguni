@@ -43,7 +43,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersons", new Object() {
+			tracing.end(time, t, "getPersons", ids.size(), new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);
@@ -64,7 +64,7 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRelations", new Object() {
+			tracing.end(time, t, "getRelations", ids.size(), new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);

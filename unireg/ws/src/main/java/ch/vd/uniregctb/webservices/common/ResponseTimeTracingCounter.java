@@ -128,6 +128,16 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 	}
 
 	@Override
+	public long getRecentItemsCount() {
+		return data.getRecentCount();
+	}
+
+	@Override
+	public long getRecentItemsPing() {
+		return data.getRecentPing();
+	}
+
+	@Override
 	public void onTick() {
 		data.onTick();
 	}
@@ -163,5 +173,15 @@ public class ResponseTimeTracingCounter implements ServiceTracingInterface {
 		}
 
 		return counter.getNumInvocations().longValue();
+	}
+
+	@Override
+	public long getTotalItemsCount() {
+		return getTotalCount();
+	}
+
+	@Override
+	public long getTotalItemsPing() {
+		return getTotalPing();
 	}
 }

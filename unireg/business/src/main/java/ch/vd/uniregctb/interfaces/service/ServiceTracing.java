@@ -23,10 +23,23 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	private static final long NANO_TO_MILLI = 1000000;
 	private static final int RECENTS_SIZE = 5; // 5 minutes d'activité récente
 
+	/**
+	 * Statistiques d'appel pour un service ou une méthode
+	 */
 	private class Data implements ServiceTracingInterface {
 
+		/**
+		 * Le temps (en millisecondes) passé dans le service ou la méthode
+		 */
 		public long time = 0;
+		/**
+		 * Le nombre d'appels du service ou de la méthode.
+		 */
 		public int calls = 0;
+		/**
+		 * Le nombre d'éléments considérés pour les appels faits au service ou à la méthode.
+		 */
+		public long items = 0;
 
 		/**
 		 * Les données récentes (5 dernières minutes d'activité)
@@ -48,6 +61,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		private Data(Data right) {
 			this.time = right.time;
 			this.calls = right.calls;
+			this.items = right.items;
 
 			if (right.recents != null) {
 				this.recents = new Data[right.recents.length];
@@ -81,6 +95,22 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			synchronized (this) {
 				if (calls > 0) {
 					ping = (time / calls) / NANO_TO_MILLI;
+				}
+			}
+			return ping;
+		}
+
+		@Override
+		public long getTotalItemsCount() {
+			return items;
+		}
+
+		@Override
+		public long getTotalItemsPing() {
+			long ping = 0;
+			synchronized (this) {
+				if (items > 0) {
+					ping = (time / items) / NANO_TO_MILLI;
 				}
 			}
 			return ping;
@@ -127,6 +157,38 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			}
 			
 			return calls;
+		}
+
+		@Override
+		public long getRecentItemsCount() {
+			long items = 0;
+
+			synchronized (this) {
+				for (Data recent : recents) {
+					items += recent.items;
+				}
+			}
+
+			return items;
+		}
+
+		@Override
+		public long getRecentItemsPing() {
+			long items = 0;
+			long time = 0;
+
+			synchronized (this) {
+				for (Data recent : recents) {
+					time += recent.time;
+					items += recent.items;
+				}
+			}
+
+			long ping = 0;
+			if (items > 0) {
+				ping = (time / items) / NANO_TO_MILLI;
+			}
+			return ping;
 		}
 
 		@Override
@@ -188,6 +250,16 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	@Override
+	public long getTotalItemsCount() {
+		return total.getTotalItemsCount();
+	}
+
+	@Override
+	public long getTotalItemsPing() {
+		return total.getTotalItemsPing();
+	}
+
+	@Override
 	public long getRecentTime() {
 		return total.getRecentTime();
 	}
@@ -203,6 +275,16 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	}
 
 	@Override
+	public long getRecentItemsCount() {
+		return total.getRecentItemsCount();
+	}
+
+	@Override
+	public long getRecentItemsPing() {
+		return total.getRecentItemsPing();
+	}
+
+	@Override
 	public void onTick() {
 		synchronized (total) {
 			shiftRecent();
@@ -213,16 +295,23 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		synchronized (total) {
 			total.time += time;
 			total.calls++;
+			total.items++;
 
 			total.recents[index].time += time;
 			total.recents[index].calls++;
+			total.recents[index].items++;
 		}
 	}
 
 	protected void addTime(long time, String name) {
+		addTime(time, 1, name);
+	}
+
+	protected void addTime(long time, int items, String name) {
 		synchronized (total) {
 			total.time += time;
 			total.calls++;
+			total.items += items;
 
 			Data d = details.get(name);
 			if (d == null) {
@@ -232,12 +321,15 @@ public final class ServiceTracing implements ServiceTracingInterface {
 
 			d.time += time;
 			d.calls++;
+			d.items += items;
 
 			total.recents[index].time += time;
 			total.recents[index].calls++;
+			total.recents[index].items += items;
 
 			d.recents[index].time += time;
 			d.recents[index].calls++;
+			d.recents[index].items += items;
 		}
 	}
 
@@ -250,10 +342,12 @@ public final class ServiceTracing implements ServiceTracingInterface {
 		// on remet à zéro les compteurs
 		total.recents[index].time = 0;
 		total.recents[index].calls = 0;
+		total.recents[index].items = 0;
 
 		for (Data d : details.values()) {
 			d.recents[index].time = 0;
 			d.recents[index].calls = 0;
+			d.recents[index].items = 0;
 		}
 	}
 
@@ -321,6 +415,44 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			}
 			else {
 				detailLogger.info(String.format("(%d ms) %s{%s}%s", (nanoTime - start) / 1000000, name, paramString, throwableString));
+			}
+		}
+	}
+
+	/**
+	 * Signale la fin d'un appel d'une méthode nommée (le temps de réponse est loggué en niveau {@link org.apache.log4j.Level#INFO INFO}),
+	 * en ajoutant, le cas échéant, la classe de l'exception levée par l'appel
+	 *
+	 * @param start la valeur retournée par la méthode {@link #start()}.
+	 * @param thrown l'exception éventuellement reçue dans l'appel
+	 * @param name  le nom de la méthode
+	 * @param items le nombre d'éléments à prendre en compte dans l'appel de la méthode (sera utilisé pour calculer une moyenne du temps de réponse par élément).
+	 * @param params un objet dont l'appel à la méthode {@link Object#toString() toString()} sera utilisé pour décrire les paramètres de la méthode
+	 */
+	public void end(long start, @Nullable Throwable thrown, String name, int items, @Nullable Object params) {
+		final long nanoTime = System.nanoTime();
+		lastCallTime = nanoTime;
+		addTime(nanoTime - start, items, name);
+		if (detailLogger.isInfoEnabled()) {
+			final String paramString;
+			if (params != null) {
+				paramString = params.toString();
+			}
+			else {
+				paramString = null;
+			}
+			final String throwableString;
+			if (thrown != null) {
+				throwableString = String.format(", %s thrown", thrown.getClass().getName());
+			}
+			else {
+				throwableString = StringUtils.EMPTY;
+			}
+			if (StringUtils.isBlank(paramString)) {
+				detailLogger.info(String.format("(%d ms) %s => %d items%s", (nanoTime - start) / 1000000, name, items, throwableString));
+			}
+			else {
+				detailLogger.info(String.format("(%d ms) %s{%s} => %d items%s", (nanoTime - start) / 1000000, name, paramString, items, throwableString));
 			}
 		}
 	}

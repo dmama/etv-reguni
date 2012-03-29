@@ -228,7 +228,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividus", new Object() {
+			tracing.end(time, t, "getIndividus", nosIndividus.size(), new Object() {
 				@Override
 				public String toString() {
 					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));

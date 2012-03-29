@@ -275,11 +275,11 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 		StringBuilder b = new StringBuilder();
 		b.append(StringUtils.repeat(" ", maxLen + 1));
-		b.append(" |     (last 5 minutes)    |      (since start)\n");
+		b.append(" |                      (last 5 minutes)                        |                       (since start)\n");
 		b.append(" Services").append(StringUtils.repeat(" ", maxLen - 8));
-		b.append(" |    ping    | hits count |    ping    | hits count\n");
+		b.append(" |             ping             |          hits count           |             ping             |          hits count\n");
 		b.append(StringUtils.repeat("-", maxLen + 1));
-		b.append("-+------------+------------+------------+------------\n");
+		b.append("-+------------------------------+-------------------------------+------------------------------+-------------------------------\n");
 
 		final int count = stats.size();
 		for (int i = 0; i < count; ++i) {
@@ -378,16 +378,24 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 
 		final StringBuilder b = new StringBuilder();
 
-		final String recentPing = (data.getRecentPing() == null ? "-   " : String.format("%d ms", data.getRecentPing()));
-		final String recentCount = (data.getRecentCount() == null ? "-" : String.format("%9d", data.getRecentCount()));
-		final String totalPing = (data.getTotalPing() == null ? "-   " : String.format("%d ms", data.getTotalPing()));
-		final String totalCount = (data.getTotalCount() == null ? "-" : String.format("%9d", data.getTotalCount()));
+		final String recentPing = String.format("%d ms", data.getRecentPing());
+		final String recentItemsPing = data.getRecentItemsPing() == null ? "" : String.format("(%d ms/item)", data.getRecentItemsPing());
+		final String recentCount = String.format("%d", data.getRecentCount());
+		final String recentItemsCount = data.getRecentItemsCount() == null ? "" : String.format("(%d items)", data.getRecentItemsCount());
+		final String totalPing = String.format("%d ms", data.getTotalPing());
+		final String totalItemsPing = data.getTotalItemsPing() == null ? "" : String.format("(%d ms/item)", data.getTotalItemsPing());
+		final String totalCount = String.format("%d", data.getTotalCount());
+		final String totalItemsCount = data.getTotalItemsCount() == null ? "" : String.format("(%d items)", data.getTotalItemsCount());
 
 		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
-		b.append(StringHelper.lpad(recentPing, 10)).append(" | ");
-		b.append(StringHelper.lpad(recentCount, 10)).append(" | ");
-		b.append(StringHelper.lpad(totalPing, 10)).append(" | ");
-		b.append(StringHelper.lpad(totalCount, 10));
+		b.append(StringHelper.lpad(recentPing, 10)).append(" ");
+		b.append(StringHelper.lpad(recentItemsPing, 17)).append(" | ");
+		b.append(StringHelper.lpad(recentCount, 10)).append(" ");
+		b.append(StringHelper.lpad(recentItemsCount, 18)).append(" | ");
+		b.append(StringHelper.lpad(totalPing, 10)).append(" ");
+		b.append(StringHelper.lpad(totalItemsPing, 17)).append(" | ");
+		b.append(StringHelper.lpad(totalCount, 10)).append(" ");
+		b.append(StringHelper.lpad(totalItemsCount, 18));
 		b.append('\n');
 
 		return b.toString();
