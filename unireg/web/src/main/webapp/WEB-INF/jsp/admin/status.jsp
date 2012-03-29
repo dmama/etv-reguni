@@ -81,7 +81,7 @@
 				for (d in divs) {
 					var fieldset = $('#' + divs[d] + '_fieldset');
 					var output = $('#' + divs[d] + '_output');
-					output.css('width', fieldset.attr('offsetWidth') - 20);
+					output.css('width', fieldset.prop('offsetWidth') - 20);
 				}
 			});
 		</script>
