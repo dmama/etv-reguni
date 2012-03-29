@@ -3679,6 +3679,36 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-4682] Vérifie que le calcul de l'assujettissement pour une commune ne provoque par de chevauchement dans le cas d'un départ hors-canton avec immeuble.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePourCommuneDepartHCAvecImmeuble() throws Exception {
+
+		final RegDate achat = date(2001, 3, 12);
+		final RegDate depart = date(2007, 7, 1);
+
+		final Contribuable ctb = createContribuableSansFor();
+		addForPrincipal(ctb, date(1980, 1, 1), MotifFor.MAJORITE, depart, MotifFor.DEPART_HC, MockCommune.Moudon);
+		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+		{
+			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFSEtendu()));
+			assertEquals(1, liste.size());
+			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
+		}
+
+		{
+			// du point de vue de Moudon, le contribuable est à l'ordinaire jusqu'au 31 décembre 2006, année précédent son départ de la commune
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFSEtendu()));
+			assertEquals(1, liste.size());
+			assertOrdinaire(date(1980, 1, 1), date(2006, 12, 31), MotifFor.MAJORITE, MotifFor.DEPART_HC, liste.get(0));
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCommuneActiveForPrincipal() throws Exception {

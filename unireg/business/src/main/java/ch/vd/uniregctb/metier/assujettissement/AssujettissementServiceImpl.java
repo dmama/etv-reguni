@@ -96,7 +96,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
 
 			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
-			domicile.compacterNonAssujettissements(); // SIFISC-2939
+			domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
 			assertCoherenceRanges(domicile);
 
 			final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
@@ -1922,8 +1922,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * Dans certains cas particuliers (mais légaux), des non-assujettissements qui couvrent toute une année (du 1er janvier au 31 décembre) coexistent avec des assujettissements normaux (par exemple,
 		 * dans le cas d'un contribuable hors-canton qui possède temporairement un for secondaire dans le canton, attend quelques semaines, puis vient s'installer dans le canton la même année). Dans ces
 		 * cas, cette méthode s'assure que les non-assujettissements laissent gracieusement leurs places aux assujettissements.
+		 *
+		 * @param forRolesCommunes <b>vrai</b> si cette méthode est appelée dans le contexte du rôle des communes; <b>faux</b> autrement.
 		 */
-		public void compacterNonAssujettissements() {
+		public void compacterNonAssujettissements(boolean forRolesCommunes) {
 			if (nonAssujettissementCount > 0) {
 
 				// on sépare le bon grain de l'ivraie
@@ -1939,7 +1941,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				}
 
 				// on fusionne les non-assujettissements qui peuvent l'être
-				nonA = fusionnerNonAssujettissements(nonA);
+				nonA = fusionnerNonAssujettissements(nonA, forRolesCommunes);
 
 				// on réduit la durée des non-assujettissement si nécessaire
 				final List<Data> list = DateRangeHelper.override(nonA, vraiA, new DateRangeHelper.AdapterCallbackExtended<Data>() {
@@ -1978,22 +1980,18 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * Fusionne les non-assujettissement qui s'intersectent. Des non-assujettissements peuvent s'intersecter lorsque - par exemple - un contribuable possède plusieurs fors fiscaux principaux hors-canton
 		 * dans une même année.
 		 *
-		 * @param list une liste de données qui doivent être des non-assujettisssments
+		 * @param list             une liste de données qui doivent être des non-assujettisssments
+		 * @param forRolesCommunes <b>vrai</b> si cette méthode est appelée dans le contexte du rôle des communes; <b>faux</b> autrement.
 		 * @return la liste fusionnée des non-assujettissments
 		 */
-		private List<Data> fusionnerNonAssujettissements(List<Data> list) {
+		private List<Data> fusionnerNonAssujettissements(List<Data> list, final boolean forRolesCommunes) {
 			return DateRangeHelper.merge(list, DateRangeHelper.MergeMode.INTERSECTING, new DateRangeHelper.MergeCallback<Data>() {
 				@Override
 				public Data merge(Data left, Data right) {
-// [SIFISC-4682] Supprimé l'assertion ci-dessous, car dans le cas du calcul de l'assujettissement du point de vue d'une commune vaudoise,
-// il peut y avoir un for fiscal principal hors-canton associé à un for secondaire dans le canton qui provoquent chacun un non-assujettissement
-// de type différent (hors-canton et commune_vd) et qui se chevauchent. Et il s'agit d'une situation est correcte dans ce cas-là.
-//					if (left.typeAut != right.typeAut) {
-//						throw new IllegalArgumentException("Détecté deux non-assujettissements de type différents qui s'intersectent [" + left + "] et [" + right + "] (erreur dans l'algorithme ?)");
-//					}
 					final RegDate debut = RegDateHelper.minimum(left.getDateDebut(), right.getDateDebut(), NullDateBehavior.EARLIEST);
 					final RegDate fin = RegDateHelper.maximum(left.getDateFin(), right.getDateFin(), NullDateBehavior.LATEST);
-					return new Data(debut, fin, left.motifDebut, right.motifFin, Type.NonAssujetti, left.typeAut);
+					final TypeAutoriteFiscale typeAut = fusionnerTypeAutPourNonAssujettissements(left, right, forRolesCommunes);
+					return new Data(debut, fin, left.motifDebut, right.motifFin, Type.NonAssujetti, typeAut);
 				}
 
 				@Override
@@ -2001,6 +1999,26 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					return new Data(range);
 				}
 			});
+		}
+
+		private static TypeAutoriteFiscale fusionnerTypeAutPourNonAssujettissements(Data left, Data right, boolean forRolesCommunes) {
+			if (forRolesCommunes) {
+				// [SIFISC-4682] Dans le cas du calcul de l'assujettissement du point de vue d'une commune vaudoise, il peut y avoir
+				// un for fiscal principal hors-canton associé à un for secondaire dans le canton qui provoquent chacun un non-assujettissement
+				// de type différent (hors-canton et commune_vd) et qui se chevauchent.
+				// Il s'agit d'une situation est correcte dans ce cas-là, et le type d'autorité fiscale qui nous intéresse est celle qui n'est PAS vaudoise
+				// (puisque si un for fiscal vaudois a généré un non-assujettissement, c'est justement parce qu'on ne veut pas en tenir compte).
+				return left.typeAut != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD ? left.typeAut : right.typeAut;
+			}
+			else {
+				// Dans le cas du calcul de l'assujettissement normal, seuls les fors fiscaux principaux hors-canton et hors-Suisse peuvent
+				// générer des non-assujettissement. Comme il y a forcément un fractionnement entre un for hors-Suisse et un for d'un autre type,
+				// on ne devrait jamais avoir des fors avec des types différents qui se chevauchent, sauf en cas d'erreur dans l'algorithme.
+				if (left.typeAut != right.typeAut) {
+					throw new IllegalArgumentException("Détecté deux non-assujettissements de type différents qui s'intersectent [" + left + "] et [" + right + "] (erreur dans l'algorithme ?)");
+				}
+				return left.typeAut;
+			}
 		}
 	}
 }
