@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -8,6 +10,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
@@ -26,6 +29,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -390,7 +394,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	}
 
 	@Test(timeout = 10000L)
-	public void testArriveeProvenanceInconnue() throws Exception {
+	public void testArriveeProvenanceAbsente() throws Exception {
 
 		final long noIndividu = 126673246L;
 		final RegDate dateArrivee = date(2011, 10, 31);
@@ -401,9 +405,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			protected void init() {
 				final RegDate dateNaissance = date(1956, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Zorro", "Alessandro", true);
-
-				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
-
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -432,9 +434,15 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
 
-
+				final Set<EvenementCivilEchErreur> warnings = evt.getErreurs();
+				Assert.assertNotNull(warnings);
+				Assert.assertEquals(1, warnings.size());
+				final EvenementCivilEchErreur warning = warnings.iterator().next();
+				Assert.assertNotNull(warning);
+				Assert.assertEquals(TypeEvenementErreur.WARNING, warning.getType());
+				Assert.assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", warning.getMessage());
 				return null;
 			}
 		});

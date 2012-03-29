@@ -80,15 +80,13 @@ public class ArriveePrincipale extends Arrivee {
 		nouvelleAdresse = nouvellesAdresses.principale;
 		nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresse, dateArrivee);
 
-		previousLocation = computePreviousLocation(nouvelleAdresse);
-		if(nouvelleAdresse.getLocalisationPrecedente()== null){
-			throw new EvenementCivilException("L'indication de provenance est inconnue");
+		final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
+		previousLocation = computePreviousLocation(localisationPrecedente);
 
-		}
+		// dans le cas de l'arrivée liée à une naissance, il n'y a pas de localisation précédente
 
-		if(nouvelleAdresse.getLocalisationPrecedente().getNoOfs()== null){
+		if (localisationPrecedente != null && localisationPrecedente.getNoOfs() == null) {
 			throw new EvenementCivilException("Le numéro ofs de la provenance est inconnu");
-
 		}
 	}
 
@@ -106,9 +104,8 @@ public class ArriveePrincipale extends Arrivee {
 		this.previousLocation = computePreviousLocation(type);
 	}
 
-	private LocalisationType computePreviousLocation(Adresse nouvelleAdresse) {
+	private LocalisationType computePreviousLocation(Localisation avant) {
 		final LocalisationType loc;
-		final Localisation avant = nouvelleAdresse.getLocalisationPrecedente();
 		if (avant != null && avant.getType() != null) {
 			loc = avant.getType();
 		}
