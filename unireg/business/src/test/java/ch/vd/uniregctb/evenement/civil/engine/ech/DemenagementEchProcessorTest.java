@@ -102,4 +102,127 @@ public class DemenagementEchProcessorTest extends AbstractEvenementCivilEchProce
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testDemenagementSecondaire() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate dateDemenagement = date(2011, 10, 31);
+		final RegDate veilleDemenagement = dateDemenagement.getOneDayBefore();
+		final RegDate dateMajorite = date(1974, 4, 23);
+		final RegDate dateNaissance = date(1956, 4, 23);
+
+		// le p'tit nouveau
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+
+				final MockIndividu osvalde = addIndividu(noIndividu, dateNaissance, "Zorro", "Alessandro", true);
+				final MockAdresse adressePrincipal  = addAdresse(osvalde, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMajorite, null);
+				final MockAdresse adresseAvant = addAdresse(osvalde, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, veilleDemenagement);
+				final MockAdresse adresseApres = addAdresse(osvalde, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateDemenagement, null);
+
+				addNationalite(osvalde, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique osvalde = addHabitant(noIndividu);
+				addForPrincipal(osvalde, dateMajorite,MotifFor.MAJORITE, MockPays.Espagne);
+				return null;
+			}
+		});
+
+		// événement demenagement
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDemenagement);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testDemenagementSecondaireSansChangementAdresse() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate dateDemenagement = date(2011, 10, 31);
+		final RegDate veilleDemenagement = dateDemenagement.getOneDayBefore();
+		final RegDate dateMajorite = date(1974, 4, 23);
+		final RegDate dateNaissance = date(1956, 4, 23);
+
+		// le p'tit nouveau
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+
+				final MockIndividu osvalde = addIndividu(noIndividu, dateNaissance, "Zorro", "Alessandro", true);
+				final MockAdresse adressePrincipal  = addAdresse(osvalde, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateMajorite, null);
+				final MockAdresse adresseAvant = addAdresse(osvalde, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissance, null);
+
+				addNationalite(osvalde, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique osvalde = addHabitant(noIndividu);
+				addForPrincipal(osvalde, dateMajorite,MotifFor.MAJORITE, MockPays.Espagne);
+				return null;
+			}
+		});
+
+		// événement demenagement
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDemenagement);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				return null;
+			}
+		});
+	}
 }

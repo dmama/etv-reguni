@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.demenagement;
 
+import java.util.List;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
@@ -14,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
@@ -23,55 +26,81 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
  * <p/>
  * [UNIREG-3379] ajouté un mécanisme de translation d'événements dans le cas des fusions de communes
  */
-public class DemenagementTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy{
+public class DemenagementTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilRegPP event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
-		final Communes communes = determineCommunesAvantEtApres(event, context);
+		if (isDemenagementPrincipal(event, context)) {
+			final Communes communes = determineCommunesAvantEtApres(event, context);
 
-		if (communes.avant == null || communes.apres == null) {
-			final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
-			Audit.warn(event.getId(), message);
-			event.setCommentaireTraitement(message);
-			return new Demenagement(event, context, options);
+			if (communes.avant == null || communes.apres == null) {
+				final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
+				Audit.warn(event.getId(), message);
+				event.setCommentaireTraitement(message);
+				return new Demenagement(event, context, options);
+			}
+			else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
+				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
+				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
+						communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
+				Audit.info(event.getId(), message);
+				event.setCommentaireTraitement(message);
+				return new ArriveePrincipale(event, context, options);
+			}
+			else {
+				// ok, il s'agit d'un déménagement conventionnel
+				return new Demenagement(event, context, options);
+			}
+
 		}
-		else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
-			// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
-			final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
-			                                     communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
-			Audit.info(event.getId(), message);
-			event.setCommentaireTraitement(message);
-			return new ArriveePrincipale(event, context, options);
+		else if (isDemenagementSecondaire(event, context)) {
+			// Démemnagement secondaire
+			return new DemenagementSecondaire(event, context, options);
 		}
 		else {
-			// ok, il s'agit d'un déménagement conventionnel
-			return new Demenagement(event, context, options);
+			throw new EvenementCivilException(
+					"L'individu n°" + event.getNumeroIndividuPrincipal() + " ne possède pas d'adresse principale ou secondaire qui commence le jour [" +
+							RegDateHelper.dateToDisplayString(event.getDateEvenement()) + "] de son déménagement.");
 		}
 	}
 
 	@Override
 	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
-		final Communes communes = determineCommunesAvantEtApres(event, context);
+		if (isDemenagementPrincipal(event, context)) {
+			final Communes communes = determineCommunesAvantEtApres(event, context);
 
-		if (communes.avant == null || communes.apres == null) {
-			final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
-			Audit.warn(event.getId(), message);
-			event.setCommentaireTraitement(message);
-			return new Demenagement(event, context, options);
+			if (communes.avant == null || communes.apres == null) {
+				final String message = "Le numéro de bâtiment (egid) n'est pas disponible avant et/ou après le déménagement de l'individu.";
+				Audit.warn(event.getId(), message);
+				event.setCommentaireTraitement(message);
+				return new Demenagement(event, context, options);
+			}
+			else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
+				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
+				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
+						communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
+				Audit.info(event.getId(), message);
+				event.setCommentaireTraitement(message);
+				return new ArriveePrincipale(event, context, options);
+			}
+			else {
+
+				// ok, il s'agit d'un déménagement conventionnel
+				return new Demenagement(event, context, options);
+
+			}
+
 		}
-		else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
-			// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
-			final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
-					communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
-			Audit.info(event.getId(), message);
-			event.setCommentaireTraitement(message);
-			return new ArriveePrincipale(event, context, options);
+		else if (isDemenagementSecondaire(event, context)) {
+			// Démemnagement secondaire
+			return new DemenagementSecondaire(event, context, options);
 		}
 		else {
-			// ok, il s'agit d'un déménagement conventionnel
-			return new Demenagement(event, context, options);
+			throw new EvenementCivilException(
+					"L'individu n°" + event.getNumeroIndividu() + " ne possède pas d'adresse principale ou secondaire qui commence le jour [" +
+							RegDateHelper.dateToDisplayString(event.getDateEvenement()) + "] de son déménagement.");
 		}
 	}
 
@@ -122,9 +151,10 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 
 	/**
 	 * Détermine les communes de domicile d'un individu juste avant et juste après son déménagement.
-	 * @param context le context d'execution
-	 * @param principal l'individu concerné par l'évenement
-	 * @param jourDemenagement jour de l'évenement
+	 *
+	 * @param context            le context d'execution
+	 * @param principal          l'individu concerné par l'évenement
+	 * @param jourDemenagement   jour de l'évenement
 	 * @param veilleDemenagement la veille de l'évènement
 	 * @return les communes trouvées (qui peuvent être nulles)
 	 * @throws EvenementCivilException
@@ -163,6 +193,128 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
 		}
+	}
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement PRINCIPAL.
+	 *
+	 * @param context le context d'execution
+	 * @param principal le numéro de l'individu principal
+	 * @return true si l'adresse principale a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementPrincipal(EvenementCivilContext context, Long principal, RegDate jourDemenagement) throws
+			EvenementCivilException {
+		try {
+			final AdressesCivilesActives nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
+
+			if (nouvelleAdresse.principale.getDateDebut().equals(jourDemenagement)) {
+				return true;
+			}
+			return false;
+		}
+		catch (DonneesCivilesException e) {
+			throw new EvenementCivilException(e);
+		}
+		catch (ServiceInfrastructureException e) {
+			throw new EvenementCivilException(e);
+		}
+	}
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement PRINCIPAL.
+	 * @param event evenement civil eCH
+	 * @param context le context d'execution
+	 * @return true si l'adresse principale a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementPrincipal(EvenementCivilEch event, EvenementCivilContext context) throws
+			EvenementCivilException {
+		final RegDate jourDemenagement = event.getDateEvenement();
+		final long principal = event.getNumeroIndividu();
+		return isDemenagementPrincipal(context, principal, jourDemenagement);
+	}
+
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement PRINCIPAL.
+	 * @param event evenement civil regPP
+	 * @param context le context d'execution
+	 * @return true si l'adresse principale a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementPrincipal(EvenementCivilRegPP event, EvenementCivilContext context) throws
+			EvenementCivilException {
+		final RegDate jourDemenagement = event.getDateEvenement();
+		final long principal = event.getNumeroIndividuPrincipal();
+		return isDemenagementPrincipal(context, principal, jourDemenagement);
+	}
+
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement secondaire.
+	 * @param event evenement civil eCH
+	 * @param context le context d'execution
+	 * @return true si au moins une adresse secondaire a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementSecondaire(EvenementCivilEch event, EvenementCivilContext context) throws
+			EvenementCivilException {
+		final RegDate jourDemenagement = event.getDateEvenement();
+		final long principal = event.getNumeroIndividu();
+		return isDemenagementSecondaire(context, principal, jourDemenagement);
+	}
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement secondaire.
+	 * @param event evenement civil regPP
+	 * @param context le context d'execution
+	 * @return true si au moins une adresse secondaire a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementSecondaire(EvenementCivilRegPP event, EvenementCivilContext context) throws
+			EvenementCivilException {
+		final RegDate jourDemenagement = event.getDateEvenement();
+		final long principal = event.getNumeroIndividuPrincipal();
+		return isDemenagementSecondaire(context, principal, jourDemenagement);
+	}
+
+
+	/**
+	 * Permet de determiner si l'évènement reçu est un déménagement secondaire.
+	 *
+	 * @param context le context d'execution
+	 * @return true si au moins une adresse secondaire a une date de début qui correspond au jour du déménagement
+	 * @throws EvenementCivilException
+	 */
+	private boolean isDemenagementSecondaire(EvenementCivilContext context, Long principal, RegDate jourDemenagement) throws
+			EvenementCivilException {
+		try {
+			final AdressesCivilesActives nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
+
+			List<Adresse> adressesSecondaires = nouvelleAdresse.secondaires;
+			if (estVide(adressesSecondaires)) {
+				return false;
+			}
+
+			for (Adresse adressesSecondaire : adressesSecondaires) {
+				if (adressesSecondaire.getDateDebut().equals(jourDemenagement)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		catch (DonneesCivilesException e) {
+			throw new EvenementCivilException(e);
+		}
+		catch (ServiceInfrastructureException e) {
+			throw new EvenementCivilException(e);
+		}
+	}
+
+
+	private boolean estVide(List<Adresse> list) {
+		return list == null || list.isEmpty();
 	}
 
 }
