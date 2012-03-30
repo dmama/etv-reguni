@@ -17,6 +17,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
  */
 public class StatsServiceGroup implements StatsService, ServiceTracingInterface, InitializingBean, DisposableBean {
 
+	private static final long NANO_TO_MILLI = 1000000;
+
 	private StatsService statsService;
 	private String groupName;
 	private final Map<String, ServiceTracingInterface> subServices = new HashMap<String, ServiceTracingInterface>();
@@ -96,7 +98,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 				calls += s.getTotalCount();
 			}
 		}
-		return calls > 0 ? (time / calls) : 0;
+		return calls > 0 ? (time / calls) / NANO_TO_MILLI : 0;
 	}
 
 	@Override
@@ -131,7 +133,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 				items += s.getTotalItemsCount();
 			}
 		}
-		return items > 0 ? (time / items) : 0;
+		return items > 0 ? (time / items) / NANO_TO_MILLI : 0;
 	}
 
 	@Override
@@ -155,7 +157,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 				calls += s.getRecentCount();
 			}
 		}
-		return calls > 0 ? (time / calls) : 0;
+		return calls > 0 ? (time / calls) / NANO_TO_MILLI : 0;
 	}
 
 	@Override
@@ -190,7 +192,7 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 				items += s.getRecentItemsCount();
 			}
 		}
-		return items > 0 ? (time / items) : 0;
+		return items > 0 ? (time / items) / NANO_TO_MILLI : 0;
 	}
 
 	@Override
