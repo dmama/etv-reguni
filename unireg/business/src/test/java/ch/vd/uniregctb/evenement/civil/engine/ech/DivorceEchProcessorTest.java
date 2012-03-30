@@ -305,6 +305,97 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+
+	/**
+	 * 	SIFISC-4719
+	 *
+	 *  Test du divorce d'un ménage commun dont l'un des 2 membres et un ancien habitant (donc existant dans RCPERS)
+	 *  Mais dont l'état civil est célibataire ! (le mariage ayant eu lieu alors qu'il était hors canton,
+	 *  RCPERS ne mets pas à jour son état civil)
+	 *
+	 * @throws Exception ..
+	 */
+	@Test
+	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil () throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateDivorce = date(2008, 11, 23);
+		final RegDate dateDepartMadameHC = date(2003, 11, 23);
+
+		// création de 2 individus mariés dans le civil, madame "sait" qu'elle est marié avec monsieur.
+		// Monsieur ne sait pas avec qui il est marié (c'est un cas normal d'apres l'équipe Rcpers)
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu monsieur = addIndividu(noMonsieur, date(1923, 2, 12), "Crispus", "Santacorpus", true);
+				addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1923,2,12), null);
+				addNationalite(monsieur, MockPays.Suisse, date(1923, 2, 12), null);
+				MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, date(1974, 8, 1), null);
+				addNationalite(madame, MockPays.Suisse, date(1974, 8, 1), null);
+
+				// Mariage: Seule monsieur "sait" qu'il est mariée avec Madame (elle étant hors canton)
+				// Pour le civil madame est célibataire...
+				marieIndividu(monsieur, dateMariage);
+				addRelationConjoint(monsieur, madame, dateMariage);
+			}
+		});
+
+		// Création de 2 contribuables et d'un ménage ou monsieur est marié seul
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateDepartMadameHC, MotifFor.DEPART_HC, MockCommune.Chamblon);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(monsieur, null, dateMariage, null);
+				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+
+				return null;
+			}
+		});
+
+		// Divorce de monsieur dans le civil
+		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
+			public void modifyIndividu(MockIndividu individu) {
+				MockServiceCivil.divorceIndividu(individu, dateDivorce);
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long divorceMonsieurId = genereEvenementDivorce(454563456L, noMonsieur, dateDivorce);
+
+		// traitement synchrone de l'événement de monsieur
+		traiterEvenements(noMonsieur);
+
+		// Verification que l'evenement est en erreur car madame n'est pas encore divorcée dans le civil.
+		// Ce comportement est succeptible et sans doute devrait changer dans le futur...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
+				assertNotNull(evtDivorceMonsieur);
+				assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
+				return null;
+			}
+		});
+
+		// on vérifie que le menage commun ait bien été divorcé dans le fiscal
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				assertDivorce(noMonsieur, dateMariage, dateDivorce);
+				return null;
+			}
+		});
+	}
+
 	private long genereEvenementDivorce(final long noEvt, final long noIndiv, final RegDate dateDivorce) throws Exception {
 		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
