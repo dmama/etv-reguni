@@ -12,6 +12,8 @@ import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 /**
  * Version spéciale du service des statistiques qui permet de regrouper plusieurs sous-interfaces dans un groupe.
+ *
+ * TODO (msi) uniquement utilisé pour les services JMS, à voir s'il n'y a pas moyen de supprimer cette classe et de gérer les diverses queues comme des méthodes différentes plutôt que des groupes différents.
  * 
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */

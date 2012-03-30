@@ -5,12 +5,12 @@ import java.util.Map;
 public interface ServiceTracingInterface {
 
 	/**
-	 * @return le timestamp (nanoseconces) du dernier appel effectué sur le service.
+	 * @return le timestamp (nanosecondes) du dernier appel effectué sur le service.
 	 */
 	long getLastCallTime();
 
 	/**
-	 * @return le temps total passé dans le service depuis le démarrage de l'application
+	 * @return le temps total (nanosecondes) passé dans le service depuis le démarrage de l'application
 	 */
 	long getTotalTime();
 
@@ -20,7 +20,7 @@ public interface ServiceTracingInterface {
 	long getTotalCount();
 
 	/**
-	 * @return le ping moyen du service depuis le démarrage de l'application
+	 * @return le ping moyen (millisecondes) du service depuis le démarrage de l'application
 	 */
 	long getTotalPing();
 
@@ -30,17 +30,17 @@ public interface ServiceTracingInterface {
 	long getTotalItemsCount();
 
 	/**
-	 * @return le ping moyen des éléments pris en compte depuis le démarrage de l'application
+	 * @return le ping moyen (millisecondes) des éléments pris en compte depuis le démarrage de l'application
 	 */
 	long getTotalItemsPing();
 
 	/**
-	 * @return le temps récent (les 5 dernières minutes d'activité) passé dans le service
+	 * @return le temps récent (nanosecondes) (les 5 dernières minutes d'activité) passé dans le service
 	 */
 	long getRecentTime();
 
 	/**
-	 * @return le ping moyen récent (les 5 dernières minutes d'activité) passé dans le service
+	 * @return le ping moyen récent (millisecondes) (les 5 dernières minutes d'activité) passé dans le service
 	 */
 	long getRecentPing();
 
@@ -55,7 +55,7 @@ public interface ServiceTracingInterface {
 	long getRecentItemsCount();
 
 	/**
-	 * @return le ping moyen des éléments récemment pris en compte
+	 * @return le ping moyen (millisecondes) des éléments récemment pris en compte
 	 */
 	long getRecentItemsPing();
 	

@@ -29,7 +29,7 @@ public final class ServiceTracing implements ServiceTracingInterface {
 	private class Data implements ServiceTracingInterface {
 
 		/**
-		 * Le temps (en millisecondes) passé dans le service ou la méthode
+		 * Le temps (en nanosecondes) passé dans le service ou la méthode
 		 */
 		public long time = 0;
 		/**
