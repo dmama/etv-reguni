@@ -26,8 +26,6 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
-
-@SuppressWarnings("unchecked")
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchManagerImpl.class);
@@ -69,11 +67,13 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 		fill(evt, evtView);
 		final Long numeroIndividu = evt.getNumeroIndividu();
-		evtView.setIndividu(retrieveIndividu(numeroIndividu));
-		evtView.setAdresse(retrieveAdresse(numeroIndividu));
-		retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
-		retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
-		retrieveEvenementAssocie(numeroIndividu, evtView);
+		if (numeroIndividu != null) {
+			evtView.setIndividu(retrieveIndividu(numeroIndividu));
+			evtView.setAdresse(retrieveAdresse(numeroIndividu));
+			retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
+			retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
+			retrieveEvenementAssocie(numeroIndividu, evtView);
+		}
 		return evtView;
 	}
 
@@ -87,7 +87,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 		List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(evt.getNumeroIndividu());
 		if (list == null || list.isEmpty()) {
-			throw new IllegalStateException("la liste devrait toujours avoir au moins un element");
+			throw new IllegalStateException("La liste devrait toujours avoir au moins un élément");
 		}
 		if (list.get(0).getId() == id) {
 			// L'evenement est recyclable
@@ -100,7 +100,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				evenementProcessor.unregisterListener(listnerHandle);
 			}
 		} else {
-			LOGGER.warn(String.format("Tentative incoherente de recyclage de l'evenement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", id));
+			LOGGER.warn(String.format("Tentative incohérente de recyclage de l'événement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", id));
 		}
 		return individuRecycle;
 	}
@@ -156,25 +156,27 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {
 		final EvenementCivilEchElementListeRechercheView eltListe = new EvenementCivilEchElementListeRechercheView(evt);
-		final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(evt.getNumeroIndividu());
-		try {
-			if (personnePhysique != null) {
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
-				if (couple != null && couple.getMenage() != null) {
-					eltListe.setNumeroCTB(couple.getMenage().getNumero());
+		if (evt.getNumeroIndividu() != null) {
+			final long numeroIndividu = evt.getNumeroIndividu();
+			final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
+			try {
+				if (personnePhysique != null) {
+					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
+					if (couple != null && couple.getMenage() != null) {
+						eltListe.setNumeroCTB(couple.getMenage().getNumero());
+					}
+					else {
+						eltListe.setNumeroCTB(personnePhysique.getNumero());
+					}
 				}
-				else {
-					eltListe.setNumeroCTB(personnePhysique.getNumero());
-				}
-			}
-			if (evt.getNumeroIndividu() != null) {
-				String nom = adresseService.getNomCourrier(evt.getNumeroIndividu());
+
+				final String nom = adresseService.getNomCourrier(numeroIndividu);
 				eltListe.setNom(nom);
 			}
-		}
-		catch (IndividuNotFoundException e) {
-			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
-			eltListe.setNom("<erreur: individu introuvable>");
+			catch (IndividuNotFoundException e) {
+				LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
+				eltListe.setNom("<erreur: individu introuvable>");
+			}
 		}
 		return eltListe;
 	}

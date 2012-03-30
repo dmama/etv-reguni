@@ -4,7 +4,7 @@ import ch.vd.uniregctb.evenement.common.view.EvenementCivilCriteriaView;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView {
+public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<TypeEvenementCivilEch> {
 
 	private static final long serialVersionUID = 1L;
 
