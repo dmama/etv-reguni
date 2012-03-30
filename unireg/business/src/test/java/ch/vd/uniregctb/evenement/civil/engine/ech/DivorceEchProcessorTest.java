@@ -309,14 +309,25 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	/**
 	 * 	SIFISC-4719
 	 *
-	 *  Test du divorce d'un ménage commun dont l'un des 2 membres et un ancien habitant (donc existant dans RCPERS)
+	 *  Test du divorce d'un couple dont l'un des 2 membres et un ancien habitant (donc existant dans RCPERS)
 	 *  Mais dont l'état civil est célibataire ! (le mariage ayant eu lieu alors qu'il était hors canton,
 	 *  RCPERS ne mets pas à jour son état civil)
 	 *
 	 * @throws Exception ..
 	 */
 	@Test
-	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil () throws Exception {
+	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivilMarieSeul() throws Exception {
+		// On fait le test avec un marié seul: evt -> OK
+		testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil(false);
+	}
+
+	@Test
+	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivilMenageNormal() throws Exception {
+		// On fait le test avec un menage "normal" : evt -> KO
+		testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil(true);
+	}
+
+	private void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil (final boolean menageNormal) throws Exception {
 
 		final long noMadame = 46215611L;
 		final long noMonsieur = 78215611L;
@@ -343,7 +354,8 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 
-		// Création de 2 contribuables et d'un ménage ou monsieur est marié seul
+		// Création de 2 contribuables et d'un ménage
+		// Dans le cas du ménage commun, les 2 sont dans le menage sinon Monsieur est marié seul
 		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -351,9 +363,13 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
 
 				final PersonnePhysique madame = addHabitant(noMadame);
-				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, dateDepartMadameHC, MotifFor.DEPART_HC, MockCommune.Chamblon);
+				addForPrincipal(
+						madame, date(1992, 8, 1),
+						MotifFor.MAJORITE, dateDepartMadameHC,
+						menageNormal ? MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION : MotifFor.DEPART_HC,
+						MockCommune.Chamblon);
 
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(monsieur, null, dateMariage, null);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(monsieur, menageNormal ? madame : null, dateMariage, null);
 				addForPrincipal(couple.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
 
 				return null;
@@ -374,26 +390,29 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		// traitement synchrone de l'événement de monsieur
 		traiterEvenements(noMonsieur);
 
-		// Verification que l'evenement est en erreur car madame n'est pas encore divorcée dans le civil.
-		// Ce comportement est succeptible et sans doute devrait changer dans le futur...
+		// Verification du traitement de l'evt:
+		//    - si en ménage commun alors EN_ERREUR car Madame est célibataire dans le civil
+		//    - si Monsieur est marié seul c'est ok (on ne cherche plus a savoir qui est l'eventuelle conjoint dans le civil voir SIFISC-4641)
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evtDivorceMonsieur = evtCivilDAO.get(divorceMonsieurId);
 				assertNotNull(evtDivorceMonsieur);
-				assertEquals(EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
+				assertEquals(menageNormal ? EtatEvenementCivil.EN_ERREUR : EtatEvenementCivil.TRAITE, evtDivorceMonsieur.getEtat());
 				return null;
 			}
 		});
 
-		// on vérifie que le menage commun ait bien été divorcé dans le fiscal
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				assertDivorce(noMonsieur, dateMariage, dateDivorce);
-				return null;
-			}
-		});
+		if (!menageNormal) {
+			// on vérifie que le menage commun ait bien été divorcé dans le fiscal
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					assertDivorce(noMonsieur, dateMariage, dateDivorce);
+					return null;
+				}
+			});
+		}
 	}
 
 	private long genereEvenementDivorce(final long noEvt, final long noIndiv, final RegDate dateDivorce) throws Exception {
