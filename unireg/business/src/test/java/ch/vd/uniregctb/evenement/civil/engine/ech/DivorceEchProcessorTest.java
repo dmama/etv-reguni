@@ -167,6 +167,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Divorce de monsieur dans le civil
 		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				MockServiceCivil.divorceIndividu(individu, dateDivorce);
 			}
@@ -193,6 +194,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Divorce de madame dans le civil
 		doModificationIndividu(noMadame, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				MockServiceCivil.divorceIndividu(individu, dateDivorce);
 			}
@@ -304,6 +306,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Divorce de monsieur dans le civil
 		doModificationIndividu(noMonsieur, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				MockServiceCivil.divorceIndividu(individu, dateDivorce);
 			}
@@ -330,6 +333,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// Divorce de madame dans le civil
 		doModificationIndividu(noMadame, new IndividuModification() {
+			@Override
 			public void modifyIndividu(MockIndividu individu) {
 				MockServiceCivil.divorceIndividu(individu, dateDivorce);
 			}
