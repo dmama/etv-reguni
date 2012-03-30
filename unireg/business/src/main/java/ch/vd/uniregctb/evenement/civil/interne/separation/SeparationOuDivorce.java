@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EtatCivilHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -100,20 +101,20 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		final ServiceCivilService serviceCivil = context.getTiersService().getServiceCivilService();
 		EtatCivil etatCivilTiersPrincipal =  serviceCivil.getEtatCivilActif(noIndividuPrincipal, date);
 		if (etatCivilTiersPrincipal == null) {
-			erreurs.addErreur("L'individu " + noIndividuPrincipal + " ne possède pas d'état civil à la date de l'événement");
+			erreurs.addErreur(String.format("L'individu %d ne possède pas d'état civil à la date de l'événement", noIndividuPrincipal));
 		}
 		else if (!(EtatCivilHelper.estSepare(etatCivilTiersPrincipal) || EtatCivilHelper.estDivorce(etatCivilTiersPrincipal))) {
-			erreurs.addErreur("L'individu " + noIndividuPrincipal + " n'est ni séparé ni divorcé dans le civil");
+			erreurs.addErreur(String.format("L'individu %d n'est ni séparé ni divorcé dans le civil", noIndividuPrincipal));
 		}
 
 		if (ancienConjoint != null) {
 			long noIndividuConjoint = ancienConjoint.getNumeroIndividu();
 			EtatCivil etatCivilTiersConjoint = serviceCivil.getEtatCivilActif(noIndividuConjoint, date);
 			if (etatCivilTiersConjoint == null) {
-				erreurs.addErreur("L'individu " + noIndividuConjoint + " ne possède pas d'état civil à la date de l'événement");
+				erreurs.addErreur(String.format("L'individu %d ne possède pas d'état civil à la date de l'événement", noIndividuConjoint));
 			}
 			else if (!(EtatCivilHelper.estSepare(etatCivilTiersConjoint) || EtatCivilHelper.estDivorce(etatCivilTiersConjoint))) {
-				erreurs.addErreur("L'individu " + noIndividuConjoint + " n'est ni séparé ni divorcé dans le civil");
+				erreurs.addErreur(String.format("L'individu %d n'est ni séparé ni divorcé dans le civil", noIndividuConjoint));
 			}
 		}
 
@@ -127,7 +128,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(habitant, date);
 		if (menageComplet == null) {
-			erreurs.addErreur("Aucun ensemble tiers-couple a été trouvé pour l'habitant n°" + habitant.getNumero());
+			erreurs.addErreur(String.format("Aucun ménage n'a été trouvé pour l'habitant n°%s", FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero())));
 			return;
 		}
 		if (!menageComplet.estComposeDe(habitant, ancienConjoint)) {
@@ -135,10 +136,11 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			 * Vérifie que les deux habitants appartiennent au même ménage
 			 */
 			if (ancienConjoint != null) {
-				erreurs.addErreur(String.format("Les deux habitant (%d et %d) ne font pas partie du même ménage.", habitant.getNumero(), ancienConjoint.getNumero()));
+				erreurs.addErreur(String.format("Les deux habitants (%s et %s) ne font pas partie du même ménage.",
+				                                FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(ancienConjoint.getNumero())));
 			}
 			else {
-				erreurs.addErreur(String.format("L'habitant (%d) ne fait pas partie du ménage.", habitant.getNumero()));
+				erreurs.addErreur(String.format("L'habitant (%s) ne fait pas partie du ménage.", FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero())));
 			}
 		}
 		else {
@@ -150,7 +152,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 				addValidationResults(erreurs, warnings, validationResults);
 			}
 			catch (NullPointerException npe) {
-				erreurs.addErreur(String.format("Le ménage commun de l'habitant n°%d n'existe pas", habitant.getNumero()));
+				erreurs.addErreur(String.format("Le ménage commun de l'habitant n°%s n'existe pas", FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero())));
 			}
 		}
 	}
