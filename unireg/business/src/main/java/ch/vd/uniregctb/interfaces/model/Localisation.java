@@ -2,6 +2,8 @@ package ch.vd.uniregctb.interfaces.model;
 
 import java.io.Serializable;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays).
  */
@@ -34,11 +36,12 @@ public class Localisation implements Serializable {
 	/**
 	 * @return le numéro Ofs du lieu civil concerné (numéro Ofs de commune ou de pays en fonction du type).
 	 */
+	@Nullable
 	public Integer getNoOfs() {
 		return noOfs;
 	}
 
-	public void setNoOfs(int noOfs) {
+	public void setNoOfs(Integer noOfs) {
 		this.noOfs = noOfs;
 	}
 }

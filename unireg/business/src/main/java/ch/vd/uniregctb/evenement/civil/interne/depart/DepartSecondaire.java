@@ -123,7 +123,8 @@ public class DepartSecondaire extends Depart {
 				}
 				else if (ffp != null) {
 					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
-					final int numeroOfsLocalisation = getNouvelleLocalisation().getNoOfs() == null ? 0 : getNouvelleLocalisation().getNoOfs().intValue();
+					final Integer nullableNoOfs = getNouvelleLocalisation().getNoOfs();
+					final int numeroOfsLocalisation = nullableNoOfs == null ? 0 : nullableNoOfs;
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
 				}
 			}

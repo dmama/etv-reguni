@@ -178,7 +178,8 @@ public class DepartPrincipal extends Depart {
 			}
 			else {
 				//Dans ce cas, le pays est connu est on a un numéro ofs non null
-				numeroOfsAutoriteFiscale =getNouvelleLocalisation().getNoOfs();
+				//noinspection ConstantConditions
+				numeroOfsAutoriteFiscale = getNouvelleLocalisation().getNoOfs();
 			}
 		}
 

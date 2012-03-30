@@ -256,7 +256,7 @@ public abstract class Depart extends Mouvement {
 	 */
 
 	protected boolean estEnSuisse() {
-		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getType() != LocalisationType.HORS_SUISSE);
+		return (getNouvelleLocalisation() != null && getNouvelleLocalisation().getType() != LocalisationType.HORS_SUISSE);
 	}
 
 	/** determine si le le numéro ofs du pays est renseigné
@@ -264,7 +264,7 @@ public abstract class Depart extends Mouvement {
 	 * @return true si on a numéro ofs, false sinon
 	 */
 	protected boolean isPaysEstConnu() {
-		return (getNouvelleLocalisation()!=null && getNouvelleLocalisation().getNoOfs()!=null);
+		return (getNouvelleLocalisation() != null && getNouvelleLocalisation().getNoOfs() != null);
 	}
 
 	@Override
@@ -396,10 +396,10 @@ public abstract class Depart extends Mouvement {
 	}
 
 	private  static Commune findNouvelleCommuneByLocalisation(Localisation localisation, EvenementCivilContext context,RegDate dateDepart) throws EvenementCivilException {
-		Commune nouvelleCommune = null;
+		final Commune nouvelleCommune;
 		final RegDate lendemain = dateDepart.getOneDayAfter();
 
-			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs()!=null) {
+			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs() != null) {
 				try {
 					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
 				}
