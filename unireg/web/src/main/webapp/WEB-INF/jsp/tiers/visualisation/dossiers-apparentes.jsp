@@ -134,7 +134,7 @@
 
 		for (var i in rapports) {
 			var rapport = rapports[i];
-			html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') +'">';
+			html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') + (rapport.annule ? ' strike' : '') +'">';
 
 			html += '<td>' + escape(rapport.type);
 			if (rapport.toolTipMessage) {
@@ -275,7 +275,7 @@
 
 		for (var i in debiteurs) {
 			var debiteur = debiteurs[i];
-			html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') +'">';
+			html += '<tr class="' + (i % 2 == 0 ? 'odd' : 'even') + (debiteur.annule ? ' strike' : '') + '">';
 			html += '<td>' + Tiers.linkTo(debiteur.numero) + '</td>';
 			html += '<td>' + escape(debiteur.nomCourrier1);
 			if (debiteur.nomCourrier2) {
