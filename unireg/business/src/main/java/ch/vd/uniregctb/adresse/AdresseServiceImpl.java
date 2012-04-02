@@ -1608,7 +1608,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return adresses;
 	}
 
-	public AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
+	private AdressesPMHisto getAdressesPMHisto(Entreprise entreprise) {
 		final Long numeroEntreprise = entreprise.getNumero();
 		Assert.notNull(numeroEntreprise);
 		return servicePM.getAdressesHisto(numeroEntreprise);

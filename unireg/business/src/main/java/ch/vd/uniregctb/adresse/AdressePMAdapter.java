@@ -3,6 +3,8 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -23,6 +25,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 	private final AdresseEntreprise adresse;
 	private final Source source;
 	private final boolean isDefault;
+	private final String rue;
 
 	public AdressePMAdapter(AdresseEntreprise adresse, Entreprise entreprise, boolean isDefault) {
 		this.adresse = adresse;
@@ -30,6 +33,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 		this.finValiditeSurcharge = null;
 		this.source = new Source(SourceType.PM, entreprise);
 		this.isDefault = isDefault;
+		this.rue = StringUtils.trimToNull(adresse.getRue());
 		DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 	}
 
@@ -39,6 +43,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 		this.finValiditeSurcharge = finValiditeSurcharge;
 		this.source = source;
 		this.isDefault = isDefault;
+		this.rue = StringUtils.trimToNull(adresse.getRue());
 		DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 	}
 
@@ -79,7 +84,8 @@ public class AdressePMAdapter implements AdresseGenerique {
 
 	@Override
 	public String getNumero() {
-		return adresse.getNumeroMaison();
+		// [SIFISC-4623] On ne tient compte du numéro de maison que si la rue est renseignée
+		return rue == null ? null : adresse.getNumeroMaison();
 	}
 
 	@Override
@@ -114,7 +120,7 @@ public class AdressePMAdapter implements AdresseGenerique {
 
 	@Override
 	public String getRue() {
-		return adresse.getRue();
+		return rue;
 	}
 
 	@Override

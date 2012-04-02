@@ -31,6 +31,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	private final Source source;
 	private final boolean isDefault;
 	private final String complement; // le complément de l'adresse, préfixée par un "p.a."
+	private final String rue;
 
 	/**
 	 * @param adresse   l'adresse civile à adapter
@@ -49,6 +50,8 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.source = new Source(SourceType.CIVILE, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
+
+		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
@@ -75,6 +78,8 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
 
+		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
+
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
 			throw new DonneesCivilesException(buildContext(adresse), validationResult.getErrors());
@@ -100,6 +105,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.source = new Source(SourceType.CIVILE, tiers);
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
+		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
@@ -127,6 +133,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
+		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
@@ -216,7 +223,8 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	@Override
 	public String getNumero() {
-		return adresse.getNumero();
+		// [SIFISC-4623] On ne tient compte du numéro de maison que si la rue est renseignée
+		return rue == null ? null : adresse.getNumero();
 	}
 
 	@Override
@@ -263,14 +271,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 
 	@Override
 	public String getRue() {
-		String nomRue = super.getRue();
-		if (nomRue != null) {
-			return nomRue;
-		}
-		else {
-			return adresse.getRue();
-		}
-
+		return rue;
 	}
 
 	@Override

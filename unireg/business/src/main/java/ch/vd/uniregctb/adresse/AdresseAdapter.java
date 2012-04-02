@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.adresse;
 
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
@@ -52,16 +55,23 @@ public abstract class AdresseAdapter implements AdresseGenerique {
 		return nomLocalite;
 	}
 
-	@Override
-	public String getRue() {
-		String rue = null;
+	/**
+	 * Cette méthode résoud le nom de la rue qui va bien à partir du numéro technique de la rue ou du libellé <i>texte libre</i> de la rue.
+	 *
+	 * @param numeroRue   le numéro technique de la rue
+	 * @param nomRueLibre le libellé <i>texte libre</i> de la rue
+	 * @return le nom de la rue; ou <b>null</b> si aucun nom n'a été trouvé.
+	 */
+	@Nullable
+	protected String resolveNomRue(@Nullable Integer numeroRue, @Nullable String nomRueLibre) {
+		String rue = nomRueLibre;
 
-		final Integer numeroRue = getNumeroRue();
-		if (numeroRue != null && numeroRue!=0) {
+		if (numeroRue != null && numeroRue > 0) {
 			final Rue r = getRue(numeroRue);
 			rue = r.getDesignationCourrier();
 		}
-		return rue;
+
+		return StringUtils.trimToNull(rue);
 	}
 
 	/**

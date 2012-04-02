@@ -26,13 +26,17 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -42,6 +46,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -58,6 +63,7 @@ import ch.vd.uniregctb.webservices.tiers2.data.DemandeQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.ForFiscal;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommun;
 import ch.vd.uniregctb.webservices.tiers2.data.MenageCommunHisto;
+import ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysiqueHisto;
 import ch.vd.uniregctb.webservices.tiers2.data.ReponseQuittancementDeclaration;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
@@ -77,7 +83,7 @@ import static org.junit.Assert.assertTrue;
 @SuppressWarnings({"JavaDoc"})
 public class TiersWebServiceTest extends WebserviceTest {
 
-    private TiersWebService service;
+	private TiersWebService service;
 	private UserLogin login;
 
 	@Override
@@ -863,10 +869,16 @@ public class TiersWebServiceTest extends WebserviceTest {
 	}
 
 	private static void assertAdresse(@Nullable Date dateDebut, @Nullable Date dateFin, String rue, String localite, Adresse adresse) {
+		assertAdresse(dateDebut, dateFin, rue, null, localite, adresse);
+	}
+
+	private static void assertAdresse(@Nullable Date dateDebut, @Nullable Date dateFin, @Nullable String rue, @Nullable String numeroMaison, String localite,
+	                                  Adresse adresse) {
 		assertNotNull(adresse);
 		assertEquals(dateDebut, adresse.dateDebut);
 		assertEquals(dateFin, adresse.dateFin);
 		assertEquals(rue, adresse.rue);
+		assertEquals(numeroMaison, adresse.numeroRue);
 		assertEquals(localite, adresse.localite);
 	}
 
@@ -1129,6 +1141,61 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertNotNull(pp);
 			assertNull(pp.dateDebutActivite); // pas de for fiscal
 			assertEquals(newDate(1967, 12, 31), pp.dateArrivee);
+		}
+	}
+
+	/**
+	 * [SIFISC-4623] Vérifie que le numéro de maison n'est retourné que si la rue est renseignée.
+	 */
+	@Test
+	public void testAdresseNumeroMaisonSansRue() throws Exception {
+
+		final long noPM = 20151L;
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				final MockPersonneMorale pm = addPM(noPM, "Fiduciaire Galper S.A.", "", date(1993, 7, 23), null);
+				addAdresse(pm, TypeAdressePM.COURRIER, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
+				addAdresse(pm, TypeAdressePM.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
+			}
+		});
+
+		final long idPM = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise pm = addEntreprise(noPM);
+				return pm.getNumero();
+			}
+		});
+
+		// getTiers - 1995
+		{
+			final GetTiers params = new GetTiers();
+			params.tiersNumber = idPM;
+			params.login = login;
+			params.date = newDate(1995, 1, 1);
+			params.parts = new HashSet<TiersPart>();
+			params.parts.add(TiersPart.ADRESSES);
+
+			final ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+			assertNotNull(pm);
+			// pas de rue, pas de numéro
+			assertAdresse(newDate(1993, 7, 23), newDate(1999, 12, 31), null, null, "Cossonay-Ville", pm.adresseCourrier);
+		}
+
+		// getTiers - 2005
+		{
+			final GetTiers params = new GetTiers();
+			params.tiersNumber = idPM;
+			params.login = login;
+			params.date = newDate(2005, 1, 1);
+			params.parts = new HashSet<TiersPart>();
+			params.parts.add(TiersPart.ADRESSES);
+
+			final ch.vd.uniregctb.webservices.tiers2.data.PersonneMorale pm = (PersonneMorale) service.getTiers(params);
+			assertNotNull(pm);
+			assertAdresse(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", pm.adresseCourrier);
 		}
 	}
 }

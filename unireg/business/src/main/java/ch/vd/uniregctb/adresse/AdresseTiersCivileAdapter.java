@@ -29,6 +29,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 	private final Source source;
 	private final boolean isDefault;
 	private final String complement; // le complément de l'adresse, préfixée par un "p.a."e
+	private final String rue;
 
 	/**
 	 * @param adresse                 l'adresse civile à adapter
@@ -47,6 +48,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		this.source = source;
 		this.isDefault = isDefault;
 		this.complement = extractComplement(adresse);
+		this.rue = resolveNomRue(adresse.getNumeroRue(), adresse.getRue());
 
 		final ValidationResults validationResult = ValidationHelper.validate(this, true, true);
 		if (validationResult != null && validationResult.hasErrors()) {
@@ -130,7 +132,8 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 
 	@Override
 	public String getNumero() {
-		return adresse.getNumero();
+		// [SIFISC-4623] On ne tient compte du numéro de maison que si la rue est renseignée
+		return rue == null ? null : adresse.getNumero();
 	}
 
 	@Override
@@ -178,14 +181,7 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 
 	@Override
 	public String getRue() {
-		String nomRue = super.getRue();
-		if (nomRue != null) {
-			return nomRue;
-		}
-		else {
-			return adresse.getRue();
-		}
-
+		return rue;
 	}
 
 	@Override

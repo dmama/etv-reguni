@@ -31,6 +31,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 
 	private final boolean isDefault;
 	private final Source source;
+	private final String rue;
 
 	public AdresseSupplementaireAdapter(AdresseSupplementaire adresse, Tiers tiers, boolean isDefault, ServiceInfrastructureService service) {
 
@@ -47,6 +48,9 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 			this.adresseSuisse = null;
 			this.adresseEtrangere = (AdresseEtrangere) adresse;
 		}
+
+		this.rue = resolveNomRue(getNumeroRue(), adresse.getRue());
+
 		if (!adresse.isAnnule()) {
 			DateRangeHelper.assertValidRange(getDateDebut(), getDateFin());
 		}
@@ -138,7 +142,8 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 
 	@Override
 	public String getNumero() {
-		return adresse.getNumeroMaison();
+		// [SIFISC-4623] On ne tient compte du numéro de maison que si la rue est renseignée
+		return rue == null ? null : adresse.getNumeroMaison();
 	}
 
 	@Override
@@ -198,12 +203,6 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 
 	@Override
 	public String getRue() {
-
-		String rue = super.getRue();
-		if (rue == null) {
-			rue = adresse.getRue();
-		}
-
 		return rue;
 	}
 

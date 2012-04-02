@@ -74,19 +74,28 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 	}
 
 	/**
-	 * Ajoute une adresse pour l'individu spécifié.
-	 *
-	 * @param rue
-	 * @param casePostale
+	 * Ajoute une adresse pour la PM spécifiée.
 	 */
 	@SuppressWarnings("unchecked")
-	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, Rue rue, @Nullable String complement,
-			Localite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
+	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, @Nullable Rue rue, @Nullable String complement,
+	                                       Localite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
+		return addAdresse(pm, type, rue, null, complement, localite, debutValidite, finValidite);
+	}
+
+	/**
+	 * Ajoute une adresse pour la PM spécifiée.
+	 */
+	@SuppressWarnings("unchecked")
+	protected AdresseEntreprise addAdresse(MockPersonneMorale pm, TypeAdressePM type, @Nullable Rue rue, @Nullable String numeroMaison, @Nullable String complement,
+	                                       Localite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
 
 		MockAdresseEntreprise adresse = new MockAdresseEntreprise();
 		adresse.setType(type);
 		adresse.setComplement(complement);
-		adresse.setRue(rue.getDesignationCourrier());
+		if (rue != null) {
+			adresse.setRue(rue.getDesignationCourrier());
+		}
+		adresse.setNumeroMaison(numeroMaison);
 		adresse.setLocalite(localite.getNomAbregeMinuscule());
 		adresse.setDateDebutValidite(debutValidite);
 		adresse.setDateFinValidite(finValidite);

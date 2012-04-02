@@ -43,6 +43,7 @@ import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
+import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
@@ -70,13 +71,17 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockOfficeImpot;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -85,6 +90,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -788,11 +794,17 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(virtuel, forFiscal.isVirtual());
 	}
 
-	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, String street, String town, Address address) {
+	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, String town, Address address) {
+		assertAddress(dateFrom, dateTo, street, null, town, address);
+	}
+
+	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, @Nullable String houseNumber, String town,
+	                                  Address address) {
 		assertNotNull(address);
 		assertEquals(dateFrom, address.getDateFrom());
 		assertEquals(dateTo, address.getDateTo());
 		assertEquals(street, address.getAddressInformation().getStreet());
+		assertEquals(houseNumber, address.getAddressInformation().getHouseNumber());
 		assertEquals(town, address.getAddressInformation().getTown());
 	}
 
@@ -1356,5 +1368,43 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final AddressInformation info = address.getAddressInformation();
 		assertEquals("Rue du Bourg", info.getStreet());
 		assertEquals("Moudon", info.getTown());
+	}
+
+	/**
+	 * [SIFISC-4623] Vérifie que le numéro de maison n'est retourné que si la rue est renseignée.
+	 */
+	@Test
+	public void testGetAddressesWithHouseNumberButWihoutStreet() throws Exception {
+
+		final long noPM = 20151L;
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				final MockPersonneMorale pm = addPM(noPM, "Fiduciaire Galper S.A.", "", date(1993, 7, 23), null);
+				addAdresse(pm, TypeAdressePM.COURRIER, null, "3bis", null, MockLocalite.CossonayVille, date(1993, 7, 23), date(1999, 12, 31));
+				addAdresse(pm, TypeAdressePM.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, "3bis", null, MockLocalite.CossonayVille, date(2000, 1, 1), null);
+			}
+		});
+
+		final long idPM = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final Entreprise pm = addEntreprise(noPM);
+				return pm.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, (int) idPM, Arrays.asList(PartyPart.ADDRESSES));
+		final Corporation pm = (Corporation) service.getParty(params);
+		assertNotNull(pm);
+
+		final List<Address> mailAddresses = pm.getMailAddresses();
+		assertNotNull(mailAddresses);
+		assertEquals(2, mailAddresses.size());
+
+		// pas de rue, pas de numéro
+		assertAddress(newDate(1993, 7, 23), newDate(1999, 12, 31), null, null, "Cossonay-Ville", mailAddresses.get(0));
+		assertAddress(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", mailAddresses.get(1));
 	}
 }
