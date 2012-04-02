@@ -16,6 +16,8 @@ import ch.vd.uniregctb.tiers.TiersFilter;
  */
 public interface GlobalTiersSearcher {
 
+	public static final String SERVICE_NAME = "GlobalTiersSearcher";
+
 	/**
 	 * Methode principale de recherche des tiers
 	 *
