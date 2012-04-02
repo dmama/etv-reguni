@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
@@ -25,16 +28,29 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	private final String rue;
 	private final TypeAdressePM type;
 
+	/**
+	 * Crée une adresse d'entreprise Unireg à partir de l'adresse d'entreprise Host-interfaces.
+	 *
+	 * @param target l'adresse d'entreprise Host-interfaces
+	 * @return l'adresse d'entreprise Unireg correspondante; ou <b>null</b> si l'adresse fournie est elle-même nulle ou si elle est située entièrement dans le futur (SIFISC-4625).
+	 */
+	@Nullable
 	public static AdresseEntrepriseImpl get(ch.vd.registre.pm.model.AdresseEntreprise target) {
 		if (target == null) {
 			return null;
 		}
-		return new AdresseEntrepriseImpl(target);
+		final RegDate today = RegDate.get();
+		final AdresseEntrepriseImpl a = new AdresseEntrepriseImpl(target, today);
+		if (a.getDateDebutValidite() != null && a.getDateDebutValidite().isAfter(today)) {
+			// [SIFISC-4625] les adresses dans le futur sont ignorées
+			return null;
+		}
+		return a;
 	}
 
-	private AdresseEntrepriseImpl(ch.vd.registre.pm.model.AdresseEntreprise target) {
+	private AdresseEntrepriseImpl(ch.vd.registre.pm.model.AdresseEntreprise target, RegDate today) {
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateFin = initDateFin(target.getDateFinValidite(), today);
 		this.pays = PaysImpl.get(target.getPays());
 		this.complement = target.getComplement();
 		this.numeroTechniqueRue = target.getNumeroTechniqueRue();
@@ -46,6 +62,12 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
 		this.rue = target.getRue();
 		this.type = TypeAdressePM.get(target.getType());
+	}
+
+	private static RegDate initDateFin(Date dateFinValidite, RegDate today) {
+		final RegDate df = RegDate.get(dateFinValidite);
+		// [SIFISC-4625] les dates dans le futur sont ignorées
+		return df == null || df.isAfter(today) ? null : df;
 	}
 
 	@Override

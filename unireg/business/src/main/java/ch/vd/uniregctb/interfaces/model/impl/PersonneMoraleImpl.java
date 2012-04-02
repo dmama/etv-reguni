@@ -151,7 +151,10 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 		if (targetAdresses != null) {
 			for (Object o : targetAdresses) {
 				ch.vd.registre.pm.model.AdresseEntreprise a = (ch.vd.registre.pm.model.AdresseEntreprise) o;
-				adresses.add(AdresseEntrepriseImpl.get(a));
+				AdresseEntrepriseImpl ae = AdresseEntrepriseImpl.get(a);
+				if (ae != null) {
+					adresses.add(ae);
+				}
 			}
 		}
 		return adresses;
