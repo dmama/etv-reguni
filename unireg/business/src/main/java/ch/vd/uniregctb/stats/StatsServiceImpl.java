@@ -15,9 +15,15 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.asciiart.table.AlignMode;
+import ch.vd.registre.asciiart.table.Cell;
+import ch.vd.registre.asciiart.table.Column;
+import ch.vd.registre.asciiart.table.Header;
+import ch.vd.registre.asciiart.table.Options;
+import ch.vd.registre.asciiart.table.Row;
+import ch.vd.registre.asciiart.table.Table;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
-import ch.vd.uniregctb.common.StringHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService {
@@ -217,33 +223,49 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			keys.addAll(cachedServices.keySet());
 		}
 
+		// construit la table ascii-art qui contiendra les statistiques à afficher
+		final List<Header> headers = new ArrayList<Header>();
+		headers.add(new Header(new Column("Caches", AlignMode.LEFT), new Column("hits percent"), new Column("hits count"), new Column("total count"), new Column("time-to-idle"),
+				new Column("time-to-live"), new Column("max elements")));
+		final Table table = new Table(new Options(false), headers);
+
 		// on trie les clés avant de les afficher
 		final List<String> sortedKeys = new ArrayList<String>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
-		int maxLen = 0; // longueur maximale des clés
-		final List<CacheStats> stats = new ArrayList<CacheStats>(sortedKeys.size());
 		for (String k : sortedKeys) {
 			final CacheStats data = getCacheStats(k);
-			stats.add(data);
-			maxLen = Math.max(maxLen, k.length());
+			table.addRow(buildRow(k, data));
 		}
 
-		final StringBuilder b = new StringBuilder();
-		b.append(" Caches").append(StringUtils.repeat(" ", maxLen - 6));
-		b.append(" | hits percent | hits count | total count | time-to-idle | time-to-live | max elements\n");
-		b.append(StringUtils.repeat("-", maxLen + 1));
-		b.append("-+--------------+------------+-------------+--------------+--------------+--------------\n");
+		return table.toString() + "\n";
+	}
 
-		final int count = stats.size();
-		for (int i = 0; i < count; ++i) {
-			final String k = sortedKeys.get(i);
-			final CacheStats data = stats.get(i);
-			b.append(printLine(maxLen, k, data));
-		}
+	private static Row buildRow(String key, CacheStats data) {
+		Row row = new Row();
 
-		return b.toString();
+		row.addCell(new Cell(key));
+
+		final String hitPercent = (data.getHitsPercent() == null ? "-" : String.format("%d%%", data.getHitsPercent()));
+		row.addCell(new Cell(hitPercent, AlignMode.RIGHT));
+
+		final String hitCount = String.format("%9d", data.getHitsCount());
+		row.addCell(new Cell(hitCount, AlignMode.RIGHT));
+
+		final String totalCount = String.format("%9d", data.getTotalCount());
+		row.addCell(new Cell(totalCount, AlignMode.RIGHT));
+
+		final String timeToIdle = (data.getTimeToIdle() == null ? "-" : String.valueOf(data.getTimeToIdle()));
+		row.addCell(new Cell(timeToIdle, AlignMode.RIGHT));
+
+		final String timeToLive = (data.getTimeToLive() == null ? "-" : String.valueOf(data.getTimeToLive()));
+		row.addCell(new Cell(timeToLive, AlignMode.RIGHT));
+
+		final String maxElements = (data.getMaxElements() == null ? "-" : String.valueOf(data.getMaxElements()));
+		row.addCell(new Cell(maxElements, AlignMode.RIGHT));
+
+		return row;
 	}
 
 	public String buildServiceStats() {
@@ -254,46 +276,61 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			keys.addAll(rawServices.keySet());
 		}
 
+		// construit la table ascii-art qui contiendra les statistiques à afficher
+		final List<Header> headers = new ArrayList<Header>();
+		headers.add(new Header(new Column(""), new Column("(last 5 minutes)", AlignMode.CENTER, 4), new Column("(since start)", AlignMode.CENTER, 4)));
+		headers.add(new Header(new Column("Services", AlignMode.LEFT), new Column("ping"), new Column("ping/item"), new Column("hits count"), new Column("items count"),
+				new Column("ping"), new Column("ping/item"), new Column("hits count"), new Column("items count")));
+		final Table table = new Table(new Options(false), headers);
 
 		// on trie les clés avant de les afficher
 		List<String> sortedKeys = new ArrayList<String>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
-		int maxLen = 0; // longueur maximale des clés
-		final List<ServiceStats> stats = new ArrayList<ServiceStats>(sortedKeys.size());
 		for (String k : sortedKeys) {
 			final ServiceStats data = getServiceStats(k);
-			stats.add(data);
-			maxLen = Math.max(maxLen, k.length());
+			table.addRow(buildRow(k, data));
 
 			final Map<String, ServiceStats> subData = data.getDetailedData();
 			for (Map.Entry<String, ServiceStats> e : subData.entrySet()) {
-				maxLen = Math.max(maxLen, subKey(e.getKey()).length());
+				table.addRow(buildRow(subKey(e.getKey()), e.getValue()));
 			}
 		}
 
-		StringBuilder b = new StringBuilder();
-		b.append(StringUtils.repeat(" ", maxLen + 1));
-		b.append(" |                      (last 5 minutes)                        |                       (since start)\n");
-		b.append(" Services").append(StringUtils.repeat(" ", maxLen - 8));
-		b.append(" |             ping             |          hits count           |             ping             |          hits count\n");
-		b.append(StringUtils.repeat("-", maxLen + 1));
-		b.append("-+------------------------------+-------------------------------+------------------------------+-------------------------------\n");
+		return table.toString() + "\n";
+	}
 
-		final int count = stats.size();
-		for (int i = 0; i < count; ++i) {
-			final String k = sortedKeys.get(i);
-			final ServiceStats data = stats.get(i);
-			b.append(printLine(maxLen, k, data));
+	private static Row buildRow(String key, ServiceStats data) {
+		Row row = new Row();
 
-			final Map<String, ServiceStats> subData = data.getDetailedData();
-			for (Map.Entry<String, ServiceStats> e : subData.entrySet()) {
-				b.append(printLine(maxLen, subKey(e.getKey()), e.getValue()));
-			}
-		}
+		row.addCell(new Cell(key));
 
-		return b.toString();
+		final String recentPing = String.format("%d ms", data.getRecentPing());
+		row.addCell(new Cell(recentPing, AlignMode.RIGHT));
+
+		final String recentItemsPing = data.getRecentItemsPing() == null ? "" : String.format("(%d ms/item)", data.getRecentItemsPing());
+		row.addCell(new Cell(recentItemsPing, AlignMode.RIGHT));
+
+		final String recentCount = String.format("%d", data.getRecentCount());
+		row.addCell(new Cell(recentCount, AlignMode.RIGHT));
+
+		final String recentItemsCount = data.getRecentItemsCount() == null ? "" : String.format("(%d items)", data.getRecentItemsCount());
+		row.addCell(new Cell(recentItemsCount, AlignMode.RIGHT));
+
+		final String totalPing = String.format("%d ms", data.getTotalPing());
+		row.addCell(new Cell(totalPing, AlignMode.RIGHT));
+
+		final String totalItemsPing = data.getTotalItemsPing() == null ? "" : String.format("(%d ms/item)", data.getTotalItemsPing());
+		row.addCell(new Cell(totalItemsPing, AlignMode.RIGHT));
+
+		final String totalCount = String.format("%d", data.getTotalCount());
+		row.addCell(new Cell(totalCount, AlignMode.RIGHT));
+
+		final String totalItemsCount = data.getTotalItemsCount() == null ? "" : String.format("(%d items)", data.getTotalItemsCount());
+		row.addCell(new Cell(totalItemsCount, AlignMode.RIGHT));
+
+		return row;
 	}
 
 	private String buildLoadMonitorStats() {
@@ -308,99 +345,38 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 			return StringUtils.EMPTY;
 		}
 
+		// construit la table ascii-art qui contiendra les statistiques à afficher
+		final List<Header> headers = new ArrayList<Header>();
+		headers.add(new Header(new Column("Load", AlignMode.LEFT), new Column("current"), new Column("5-min average")));
+		final Table table = new Table(new Options(false), headers);
+
 		// on trie les clés avant de les afficher
 		final List<String> sortedKeys = new ArrayList<String>(keys);
 		Collections.sort(sortedKeys);
 
 		// extrait et analyse les stats des services
-		int maxLen = 0; // longueur maximale des clés
-		final List<LoadMonitorStats> stats = new ArrayList<LoadMonitorStats>(sortedKeys.size());
 		for (String k : sortedKeys) {
 			final LoadMonitorStats data = getLoadMonitorStats(k);
-			stats.add(data);
-			maxLen = Math.max(maxLen, k.length());
+			table.addRow(buildRow(k, data));
 		}
 
-		final StringBuilder b = new StringBuilder();
-		b.append(" Load").append(StringUtils.repeat(" ", maxLen - 4));
-		b.append(" | current | 5-min average\n");
-		b.append(StringUtils.repeat("-", maxLen + 1));
-		b.append("-+---------+---------------\n");
-
-		final int count = stats.size();
-		for (int i = 0; i < count; ++i) {
-			final String k = sortedKeys.get(i);
-			final LoadMonitorStats data = stats.get(i);
-			b.append(printLine(maxLen, k, data));
-		}
-
-		return b.toString();
+		return table.toString() + "\n";
 	}
 
-	private String printLine(int maxLen, String key, LoadMonitorStats data) {
+	private static Row buildRow(String key, LoadMonitorStats data) {
+
+		Row row = new Row();
+
+		row.addCell(new Cell(key));
 
 		final String chargeInstantanee = String.format("%d", data.getChargeInstantanee());
-		final String moyenneCharge = String.format("%#13.3f", data.getMoyenneCharge());
+		row.addCell(new Cell(chargeInstantanee, AlignMode.RIGHT));
 
-		final StringBuilder b = new StringBuilder();
-		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
-		b.append(StringHelper.lpad(chargeInstantanee, 7)).append(" | ");
-		b.append(moyenneCharge);
-		b.append('\n');
+		final String chargeMoyenne = String.format("%#13.3f", data.getMoyenneCharge());
+		row.addCell(new Cell(chargeMoyenne, AlignMode.RIGHT));
 
-		return b.toString();
+		return row;
 	}
-
-	private String printLine(int maxLen, final String key, final CacheStats data) {
-
-		final StringBuilder b = new StringBuilder();
-
-		final String hitPercent = (data.getHitsPercent() == null ? "-" : String.format("%d%%", data.getHitsPercent()));
-		final String hitCount = String.format("%9d", data.getHitsCount());
-		final String totalCount = String.format("%9d", data.getTotalCount());
-		final String timeToIdle = (data.getTimeToIdle() == null ? "-" : String.valueOf(data.getTimeToIdle()));
-		final String timeToLive = (data.getTimeToLive() == null ? "-" : String.valueOf(data.getTimeToLive()));
-		final String maxElements = (data.getMaxElements() == null ? "-" : String.valueOf(data.getMaxElements()));
-
-		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
-		b.append(StringHelper.lpad(hitPercent, 12)).append(" | ");
-		b.append(StringHelper.lpad(hitCount, 10)).append(" | ");
-		b.append(StringHelper.lpad(totalCount, 11)).append(" | ");
-		b.append(StringHelper.lpad(timeToIdle, 12)).append(" | ");
-		b.append(StringHelper.lpad(timeToLive, 12)).append(" | ");
-		b.append(StringHelper.lpad(maxElements, 11));
-		b.append('\n');
-
-		return b.toString();
-	}
-
-	private String printLine(int maxLen, final String key, final ServiceStats data) {
-
-		final StringBuilder b = new StringBuilder();
-
-		final String recentPing = String.format("%d ms", data.getRecentPing());
-		final String recentItemsPing = data.getRecentItemsPing() == null ? "" : String.format("(%d ms/item)", data.getRecentItemsPing());
-		final String recentCount = String.format("%d", data.getRecentCount());
-		final String recentItemsCount = data.getRecentItemsCount() == null ? "" : String.format("(%d items)", data.getRecentItemsCount());
-		final String totalPing = String.format("%d ms", data.getTotalPing());
-		final String totalItemsPing = data.getTotalItemsPing() == null ? "" : String.format("(%d ms/item)", data.getTotalItemsPing());
-		final String totalCount = String.format("%d", data.getTotalCount());
-		final String totalItemsCount = data.getTotalItemsCount() == null ? "" : String.format("(%d items)", data.getTotalItemsCount());
-
-		b.append(' ').append(StringHelper.rpad(key, maxLen)).append(" | ");
-		b.append(StringHelper.lpad(recentPing, 10)).append(" ");
-		b.append(StringHelper.lpad(recentItemsPing, 17)).append(" | ");
-		b.append(StringHelper.lpad(recentCount, 10)).append(" ");
-		b.append(StringHelper.lpad(recentItemsCount, 18)).append(" | ");
-		b.append(StringHelper.lpad(totalPing, 10)).append(" ");
-		b.append(StringHelper.lpad(totalItemsPing, 17)).append(" | ");
-		b.append(StringHelper.lpad(totalCount, 10)).append(" ");
-		b.append(StringHelper.lpad(totalItemsCount, 18));
-		b.append('\n');
-
-		return b.toString();
-	}
-
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
