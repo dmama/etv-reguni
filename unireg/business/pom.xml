@@ -114,7 +114,7 @@
 		<dependency>
 			<groupId>com.sleepycat</groupId>
 			<artifactId>je</artifactId>
-			<version>4.1.6</version>
+			<version>4.1.17</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.ejb</groupId>
