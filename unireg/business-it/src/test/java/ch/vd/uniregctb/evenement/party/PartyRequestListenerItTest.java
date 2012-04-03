@@ -92,6 +92,7 @@ public class PartyRequestListenerItTest extends BusinessItTest {
 	@Override
 	public void onTearDown() throws Exception {
 		popSecurityProvider();
+		super.onTearDown();
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
