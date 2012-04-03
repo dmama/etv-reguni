@@ -5,15 +5,15 @@
 	<tiles:put name="menu" type="String">
 	</tiles:put>
 
-	<tiles:put name="title" type="String">Problème de connexion au registre civil</tiles:put>
+	<tiles:put name="title" type="String">Problème de connexion au registre des personnes morales</tiles:put>
 	<tiles:put name="connected" type="String"></tiles:put>
 
 	<tiles:put name="body" type="String">
 
-		<p>Une erreur est survenue lors de la connexion au registre Personne morale.</p>
-		<p>Le registre Personne morale peut être temporairement indisponible, ou un
-		autre problème prévient le registre de fonctionner correctement.</p>
-		<h3>Veuillez patientez un instant et réessayer.</h3>
+		<p>Une erreur est survenue lors de la connexion au registre des personnes morales.</p>
+		<p>Le registre des personnes morales semble être temporairement indisponible, ou un
+		autre problème empêche le registre de fonctionner correctement.</p>
+		<h3>Veuillez patienter un instant et réessayer.</h3>
 
 		<br><hr><br>
 		<unireg:callstack exception="${exception}"

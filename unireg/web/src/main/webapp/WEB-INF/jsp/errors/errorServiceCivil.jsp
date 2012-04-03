@@ -11,9 +11,9 @@
 	<tiles:put name="body" type="String">
 
 		<p>Une erreur est survenue lors de la connexion au registre civil.</p>
-		<p>Le registre civil peut être temporairement indisponible, ou un
-		autre problème prévient le registre de fonctionner correctement.</p>
-		<h3>Veuillez patientez un instant et réessayer.</h3>
+		<p>Le registre civil semble être temporairement indisponible, ou un
+		autre problème empêche le registre de fonctionner correctement.</p>
+		<h3>Veuillez patienter un instant et réessayer.</h3>
 
 		<br><hr><br>
 		<unireg:callstack exception="${exception}"

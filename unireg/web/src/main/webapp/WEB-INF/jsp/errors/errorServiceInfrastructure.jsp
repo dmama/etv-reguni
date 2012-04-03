@@ -5,15 +5,15 @@
 	<tiles:put name="menu" type="String">
 	</tiles:put>
 
-	<tiles:put name="title" type="String">Problème de connexion au registre civil</tiles:put>
+	<tiles:put name="title" type="String">Problème de connexion au référentiel d'infrastructure</tiles:put>
 	<tiles:put name="connected" type="String"></tiles:put>
 
 	<tiles:put name="body" type="String">
 
-		<p>Une erreur est survenue lors de la connexion au référentiel infrastructure.</p>
-		<p>Le référentiel infrastructure peut être temporairement indisponible, ou un
-		autre problème prévient le référentiel de fonctionner correctement.</p>
-		<h3>Veuillez patientez un instant et réessayer.</h3>
+		<p>Une erreur est survenue lors de la connexion au référentiel d'infrastructure.</p>
+		<p>Le référentiel d'infrastructure semble être temporairement indisponible, ou un
+		autre problème empêche le référentiel de fonctionner correctement.</p>
+		<h3>Veuillez patienter un instant et réessayer.</h3>
 
 		<br><hr><br>
 		<unireg:callstack exception="${exception}"

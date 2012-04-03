@@ -5,15 +5,15 @@
 	<tiles:put name="menu" type="String">
 	</tiles:put>
 
-	<tiles:put name="title" type="String">Problème de connexion au Service Sécurité</tiles:put>
+	<tiles:put name="title" type="String">Problème de connexion au service Sécurité</tiles:put>
 	<tiles:put name="connected" type="String"></tiles:put>
 
 	<tiles:put name="body" type="String">
 
 		<p>Une erreur est survenue lors de la connexion au service Sécurité.</p>
-		<p>Le service Sécurité peut être temporairement indisponible, ou un
-		autre problème prévient le service de fonctionner correctement.</p>
-		<h3>Veuillez patientez un instant et réessayer.</h3>
+		<p>Le service Sécurité semble être temporairement indisponible, ou un
+		autre problème empêche le service de fonctionner correctement.</p>
+		<h3>Veuillez patienter un instant et réessayer.</h3>
 
 		<br><hr><br>
 		<unireg:callstack exception="${exception}"
