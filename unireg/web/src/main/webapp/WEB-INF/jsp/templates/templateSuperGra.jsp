@@ -23,8 +23,8 @@
 
 		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
+		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
@@ -32,7 +32,12 @@
 	<body>
 
 			<div id="sommaire">
-				<div style="position: absolute;top: 5px;left: 5px;"><div id="loadingImage" style="visibility: hidden;"><img id="loadingImageSign" src="<c:url value="/images/loading.gif"/>" /></div></div>
+				<div style="position:absolute; top:5px; left:5px;">
+					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>" /></div>
+				</div>
+				<script>
+					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
+				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">
 						<span class="label"><fmt:message key="label.canton.vaud" /></span>

@@ -1484,6 +1484,15 @@ var App = {
 
 var Ajax = {
 
+	init: function() {
+		// Ecoute les événements globaux ajax pour afficher et masquer l'image de chargement
+		$("#loadingImage").bind("ajaxStart", function() {
+			$(this).show();
+		}).bind("ajaxStop", function(){
+			$(this).hide();
+		});
+	},
+
     /**
      * Error handler qui affiche le message d'erreur ajax dans une boîte de dialogue modale.
      */

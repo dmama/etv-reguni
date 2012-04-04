@@ -22,7 +22,12 @@
 	<body>
 
 			<div id="sommaire">
-				<div style="position: absolute;top: 5px;left: 5px;"><div id="loadingImage" style="visibility: hidden;"><img id="loadingImageSign" src="<c:url value="/images/loading.gif"/>" /></div></div>
+				<div style="position:absolute; top:5px; left:5px;">
+					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>" /></div>
+				</div>
+				<script>
+					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
+				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">
 						<span class="label"><fmt:message key="label.canton.vaud" /></span>
