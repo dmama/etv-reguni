@@ -1810,7 +1810,12 @@ var Batch = {
 				$("#jobsActif").html(h);
 				requestDone = true;
 			}, 'json')
-			.error(Ajax.notifyErrorHandler("affichage des batches en cours"));
+			.error(function(xhr, ajaxOptions, thrownError) {
+				var message = '<span class="error">Oups ! Le chargement de la liste des batches en cours a provoqué l\'erreur suivante :' +
+					'&nbsp;<i>' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) + ') : ' + StringUtils.escapeHTML(xhr.responseText) + '</i></span>';
+				$("#jobsActif").html(message);
+				requestDone = true;
+			});
 		});
 	},
 
