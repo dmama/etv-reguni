@@ -53,6 +53,9 @@ public class QueryConstructor {
 
 			BooleanQuery query = new BooleanQuery();
 			for (TypeTiers typeTiers : set) {
+				if (typeTiers == null) { // SIFISC-4752
+					continue;
+				}
 				switch (typeTiers) {
 				case DEBITEUR_PRESTATION_IMPOSABLE:
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, DebiteurPrestationImposableIndexable.SUB_TYPE)), should);
