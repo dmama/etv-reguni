@@ -21,7 +21,7 @@
 			html += '</fieldset>\n'
 			$('#immeublesDiv').html(html);
 		}, 'json')
-		.error(App.ajaxErrorHandler);
+		.error(Ajax.popupErrorHandler);
 		return false;
 	}
 

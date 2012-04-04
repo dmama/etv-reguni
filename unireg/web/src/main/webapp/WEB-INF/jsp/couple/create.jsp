@@ -226,7 +226,7 @@
 					refresh_vignette_pp2(pp2Id);
 					refresh_vignette_mc(mcId);
 				}, 'json')
-				.error(App.ajaxErrorHandler);
+				.error(Ajax.popupErrorHandler);
 			}
 
 			function refresh_vignette_pp1(id) {

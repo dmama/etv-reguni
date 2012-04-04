@@ -46,7 +46,7 @@
 			$('#newRemarque').hide();
 			$('#newRemarque textarea').val('');
 		}, 'json')
-		.error(App.ajaxErrorHandler);
+		.error(Ajax.popupErrorHandler);
 	}
 
 	function escapeHTML(text) {

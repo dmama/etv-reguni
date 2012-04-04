@@ -196,7 +196,7 @@
 						$('#actions_column').show();
 					}
 				}, 'json')
-				.error(App.ajaxErrorHandler);
+				.error(Ajax.notifyErrorHandler("simulation des changements"));
 			}
 
 			function dateOuverture_onChange(element) {
