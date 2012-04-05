@@ -103,7 +103,6 @@
 				<entry key="/403.do" value-ref="page403Controller" />
 				<entry key="/error.do" value-ref="errorController" />
 				<!-- Admin -->
-				<entry key="/admin/status.do" value-ref="infoController" />
 				<entry key="/admin/batch.do" value-ref="gestionBatchController" />
 				<entry key="/admin/audit.do" value-ref="auditLogController" />
 				<entry key="/admin/performance.do" value-ref="servicePerformanceController" />

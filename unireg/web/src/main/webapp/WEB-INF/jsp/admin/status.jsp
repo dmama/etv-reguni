@@ -37,23 +37,23 @@
 					<unireg:nextRowClass reset="1"/>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.civil"/></td>
-						<td id="serviceCivilStatus"><c:out value="${serviceCivilStatus}" escapeXml="false"/></td>
+						<td id="serviceCivilStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.host.infra"/></td>
-						<td id="serviceInfraStatus"><c:out value="${serviceInfraStatus}" escapeXml="false"/></td>
+						<td id="serviceInfraStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.fifor"/></td>
-						<td id="serviceFidorStatus"><c:out value="${serviceFidorStatus}" escapeXml="false"/></td>
+						<td id="serviceFidorStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.securite"/></td>
-						<td id="serviceSecuriteStatus"><c:out value="${serviceSecuriteStatus}" escapeXml="false"/></td>
+						<td id="serviceSecuriteStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
 						<td><fmt:message key="label.info.service.brvplus"/></td>
-						<td id="bvrPlusStatus"><c:out value="${bvrPlusStatus}" escapeXml="false"/></td>
+						<td id="bvrPlusStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 				</tbody>
 			</table>
@@ -61,7 +61,7 @@
 
         <fieldset id="stats_fieldset" class="info">
             <legend><span><fmt:message key="title.info.stats" /></span></legend>
-            <div id="stats_output" class="asciiart"><c:out value="${stats}" escapeXml="false"/></div>
+            <div id="stats_output" class="asciiart"><c:out value="${serviceStats}" escapeXml="false"/></div>
         </fieldset>
         
 		<fieldset class="info">
@@ -71,6 +71,34 @@
 		
 		<script>
 			$(function() {
+
+				// Chargement asynchrone des statuts des services
+				$.get('<c:url value="/admin/status/civil.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceCivilStatus', status);
+				});
+				$.get('<c:url value="/admin/status/hostInfra.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceInfraStatus', status);
+				});
+				$.get('<c:url value="/admin/status/fidor.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceFidorStatus', status);
+				});
+				$.get('<c:url value="/admin/status/securite.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#serviceSecuriteStatus', status);
+				});
+				$.get('<c:url value="/admin/status/bvr.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#bvrPlusStatus', status);
+				});
+
+				function updateServiceStatus(element, status) {
+					if (status.code == 'OK') {
+						$(element).html('<img title="' + status.code + '" src="<c:url value="/css/x/checkmark.png"/>"/>');
+					}
+					else {
+						$(element).html('<span style="background: url(<c:url value="/css/x/error.gif"/>) no-repeat; vertical-align: middle; text-align: left";">' +
+							'<a style="padding-left:2em" href="#" onclick="$(this).children(\'div\').dialog({title:\'Description du problème\', width:1024, modal:true}); return false;">(détails)' +
+							'<div style="display:none"><p>' + status.description + '</p></div></a></span>');
+					}
+				}
 
 				// Chargement des batches en cours d'exécution
 				Batch.loadRunning($('#jobsActif'), "3s", true);

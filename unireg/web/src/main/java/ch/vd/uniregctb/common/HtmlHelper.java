@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.common;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Classe utilitaire pour le rendu Html dans Unireg.
@@ -10,18 +11,20 @@ import org.apache.commons.lang.StringEscapeUtils;
 public class HtmlHelper {
 
 	/**
-	 * Escape la chaîne de caractères spécifiée pour qu'elle puissent être rendue en Html sans effet secondaire. Les espaces, tabs et
-	 * retours de lignes sont aussi convertis pour garder leurs effets.
+	 * Escape la chaîne de caractères spécifiée pour qu'elle puissent être rendue en Html sans effet secondaire. Les espaces, tabs et retours de lignes sont aussi convertis pour garder leurs effets.
 	 *
-	 * @param string
-	 * @return
+	 * @param string une chaîne de caractères
+	 * @return une autre chaîne de caractères; ou <b>null</b> si la chaînes passée en entrée est nulle elle-même.
 	 */
-	public static String renderMultilines(String string) {
+	@Nullable
+	public static String renderMultilines(@Nullable String string) {
+		if (string == null) {
+			return null;
+		}
 		string = StringEscapeUtils.escapeXml(string);
 		string = string.replaceAll("\n", "<br/>");
 		string = string.replaceAll(" ", "&nbsp;");
 		string = string.replaceAll("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
 		return string;
 	}
-
 }
