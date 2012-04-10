@@ -114,6 +114,21 @@
 		<!-- permet de redéployer unireg dans Tomcat sans obtenir une erreur de lecture sur ehcache.xml -->
 		<!-- voir http://ehcache.sourceforge.net/documentation/shutdown.html -->
 		<listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
-	</listener>	
+	</listener>
+
+	<filter>
+		<filter-name>springSecurityFilter</filter-name>
+		<!-- Ce bean va déléguer les appels au bean 'remoteHostSpringFilter' -->
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+		<init-param>
+			<param-name>targetBeanName</param-name>
+			<param-value>remoteHostSpringFilter</param-value>
+		</init-param>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>springSecurityFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
 
 </web-app>

@@ -27,6 +27,12 @@
 
 	<bean id="accessLoggerFilter" class="ch.vd.uniregctb.security.AccessLogProcessingFilter" />
 
+	<!-- Filtre sur les adresses IP -->
+	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
+		<property name="allowed" value="${extprop.remoteHostFilter.allow}" />
+		<property name="denied" value="${extprop.remoteHostFilter.deny}" />
+	</bean>
+
 	<!-- Filtre de choix de l'OId -->
 	<bean id="chooseOIDFilter" class="ch.vd.uniregctb.security.ChooseOIDProcessingFilter">
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
@@ -43,17 +49,17 @@
 	<bean id="filterChainProxy" class="org.springframework.security.web.FilterChainProxy">
 		<security:filter-chain-map path-type="ant">
 			<security:filter-chain pattern="/403.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/404.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/error.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/logout.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/logoutiam.do" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter" />
-			<security:filter-chain pattern="/ws/**" filters="none" />
-			<security:filter-chain pattern="/remoting/**" filters="none" />
-			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
-			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter" />
+			<security:filter-chain pattern="/404.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/error.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/logout.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/logoutiam.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/errors/**" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
+			<security:filter-chain pattern="/ws/**" filters="remoteHostSpringFilter" />
+			<security:filter-chain pattern="/remoting/**" filters="remoteHostSpringFilter" />
+			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
+			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
+			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
 			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>

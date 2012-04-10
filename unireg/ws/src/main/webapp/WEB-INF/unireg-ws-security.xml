@@ -16,7 +16,7 @@
 	<bean id="ifoSecService" class="ch.vd.uniregctb.security.IfoSecServiceImpl">
 		<property name="securiteService" ref="serviceSecuriteService" />
 	</bean>
-	
+
 	<bean id="securityProviderImpl" class="ch.vd.uniregctb.security.SecurityProviderImpl" depends-on="securityDebugConfig,auditManager">
 		<property name="securiteDossierService" ref="securiteDossierService" />
 		<property name="ifoSecService" ref="ifoSecService" />
@@ -36,6 +36,12 @@
 
 	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
 		<property name="provider" ref="securityProviderCache" />
+	</bean>
+
+	<!-- Filtre sur les adresses IP -->
+	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
+		<property name="allowed" value="${extprop.remoteHostFilter.allow}" />
+		<property name="denied" value="${extprop.remoteHostFilter.deny}" />
 	</bean>
 
 </beans>
