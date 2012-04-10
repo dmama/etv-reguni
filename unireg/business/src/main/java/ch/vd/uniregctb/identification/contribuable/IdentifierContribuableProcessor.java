@@ -71,6 +71,13 @@ public class IdentifierContribuableProcessor {
 				traiterBatch(batch);
 				return true;
 			}
+
+			@Override
+			public void afterTransactionRollback(Exception e, boolean willRetry) {
+				if (!willRetry) {
+					LOGGER.error(e.getMessage(), e);
+				}
+			}
 		});
 
 		final int count = rapportFinal.identifies.size();
