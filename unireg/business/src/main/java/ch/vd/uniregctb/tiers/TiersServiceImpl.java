@@ -1238,23 +1238,27 @@ public class TiersServiceImpl implements TiersService {
         return new EnsembleTiersCouple(menage, principal, conjoint);
     }
 
-    /**
-     * Retourne les nom et prénoms de la personne physique spécifiée
-     *
-     * @param pp personne physique dont on veut le nom
-     * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom#VIDE} si la donnée est inconnue)
-     */
-    @Override
-    public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
-        if (pp.isHabitantVD()) {
-            final Individu individu = getIndividu(pp);
-            return serviceCivilService.getDecompositionNomPrenom(individu);
-        } else {
-            return new NomPrenom(pp.getNom(), pp.getPrenom());
-        }
-    }
+	/**
+	 * Retourne les nom et prénoms de la personne physique spécifiée
+	 *
+	 * @param pp personne physique dont on veut le nom
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de la personne physique ( ou {@link NomPrenom#VIDE} si la donnée est inconnue)
+	 */
+	@Override
+	public NomPrenom getDecompositionNomPrenom(PersonnePhysique pp) {
+		if (pp.isHabitantVD()) {
+			final Individu individu = getIndividu(pp);
+			if (individu == null) {
+				throw new IndividuNotFoundException(pp.getNumeroIndividu());
+			}
+			return serviceCivilService.getDecompositionNomPrenom(individu);
+		}
+		else {
+			return new NomPrenom(pp.getNom(), pp.getPrenom());
+		}
+	}
 
-    /**
+	/**
      * Récupère l'individu correspondant au tiers spécifié.
      */
     @Override
