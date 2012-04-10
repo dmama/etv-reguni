@@ -218,6 +218,9 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 			final List<TiersCriteria> criteria = DataHelper.webToCore(params);
 			for (TiersCriteria criterion : criteria) {
+				if (criterion.isEmpty()) { // on évite de faire un appel distant pour rien
+					throw new EmptySearchCriteriaException("Les critères de recherche sont vides");
+				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
 					final TiersInfo info = DataHelper.coreToWeb(value);
