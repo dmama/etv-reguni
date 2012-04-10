@@ -220,20 +220,20 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 	private void loggerNonIdentification(List<PersonnePhysique> listResultat, CriteresPersonne criteres) {
-		if (listResultat != null) {
+		if (listResultat != null && LOGGER.isDebugEnabled()) {
 			final int nombrePersonnes = listResultat.size();
 			if (nombrePersonnes == 0) {
-				LOGGER.info("Aucun contribuable ne correspond aux critères suivants: " + criteres.toString());
+				LOGGER.debug("Aucun contribuable ne correspond aux critères suivants: " + criteres.toString());
 
 			}
 			else if (nombrePersonnes > 1) {
-				LOGGER.info("Plusieurs contribuables correspondent aux critères suivants: " + criteres.toString());
+				LOGGER.debug("Plusieurs contribuables correspondent aux critères suivants: " + criteres.toString());
 				final List<Long> ids = new ArrayList<Long>(listResultat.size());
 				for (PersonnePhysique pp : listResultat) {
 					ids.add(pp.getNumero());
 				}
 				final String message = "Nombre de contribuable(s) trouvé(s) = " + listResultat.size() + " (" + ArrayUtils.toString(ids.toArray()) + ')';
-				LOGGER.info(message);
+				LOGGER.debug(message);
 			}
 		}
 	}
