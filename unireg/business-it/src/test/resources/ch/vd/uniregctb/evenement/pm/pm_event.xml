@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<EvtEntreprise xmlns="http://www.vd.ch/schema/registrePM/20101208/EvtEntreprise">
+	<NoTechnique>835560</NoTechnique>
+	<NoEntreprise>53220</NoEntreprise>
+	<Code>3</Code>
+	<DateEvenement>2010-11-19</DateEvenement>
+	<DateTraitement>2010-11-19</DateTraitement>
+</EvtEntreprise>

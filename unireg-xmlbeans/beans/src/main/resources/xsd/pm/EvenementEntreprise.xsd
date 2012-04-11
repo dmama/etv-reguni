@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://www.vd.ch/schema/registrePM/20101208/EvtEntreprise" elementFormDefault="qualified" xmlns="http://www.w3.org/2001/XMLSchema"
+		xmlns:tns="http://www.vd.ch/schema/registrePM/20101208/EvtEntreprise">
+	<element name="EvtEntreprise">
+		<!-- voir table EVT_ENTREPRISE du host -->
+		<complexType>
+			<sequence>
+				<!-- NO_TECHNIQUE -->
+				<element name="NoTechnique" type="int" />
+				<!-- FK_ENTPRNO -->
+				<element name="NoEntreprise" type="int" />
+				<!-- FK_EVNMNTNO -->
+				<element name="Code" type="int" />
+				<!-- DA_EVENEMENT -->
+				<element name="DateEvenement" type="date" />
+				<!-- DA_MUT -->
+				<element name="DateTraitement" type="date" />
+			</sequence>
+		</complexType>
+	</element>
+</schema>

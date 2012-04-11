@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Read management interface from annotations -->
+	<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	<bean id="jmxAssembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+
+	<!--
+		   Object name is built from annotations (@ManagedResource), then
+		   fallbacked to bean key
+	   -->
+	<bean id="jmxNamingStrategy" class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+
+	<!-- Liste des beans exportés en JMX au travers de leurs annotations -->
+	<bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="autodetect" value="false" />
+		<property name="assembler" ref="jmxAssembler" />
+		<property name="beans">
+			<map>
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsRegPP" value-ref="evenementsCivilsRegPPJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsEch" value-ref="evenementsCivilsEchJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Liste des beans containers de message listeners exportés par JMX -->
+	<bean id="jmxEndpointManagerExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="autodetect" value="false"/>
+		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
+		<property name="beans">
+			<map>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsRegPP" value-ref="evtCivilEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchMasse" value-ref="evtCivilEchMasseEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCedi" value-ref="evenementCediEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=Identification" value-ref="jmsIdentCtbEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsIAM" value-ref="evenementIAMEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=PartyRequests" value-ref="partyRequestEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsDeclaration" value-ref="evenementDeclarationEndpointManager"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="jmxMessageEndpointManagerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+		<property name="managedInterfaces">
+			<list>
+				<value>org.springframework.context.Lifecycle</value>
+				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- bean qui exporte les contenus des inboxes par JMX -->
+	<bean id="inboxContentJmxBeanContainer" class="ch.vd.uniregctb.jmx.InboxContentJmxBeanContainer">
+		<property name="inboxService" ref="inboxService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-web:type=Monitoring,resourceName=Inboxes,name="/>
+	</bean>
+
+	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
+		<property name="checker" ref="applicationChecker" />
+	</bean>
+
+	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
+		<constructor-arg ref="uniregExternalProperties" />
+		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
+	</bean>
+
+	<bean name="evenementsCivilsRegPPJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsRegPPJmxBeanImpl">
+		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor"/>
+		<property name="endpointManager" ref="evtCivilEndpointManager"/>
+	</bean>
+
+	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
+		<property name="endpointManagerMasse" ref="evtCivilEchMasseEndpointManager"/>
+		<property name="endpointManagerIndividuel" ref="evtCivilEchIndividuelEndpointManager"/>
+		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
+	</bean>
+
+	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">
+		<property name="storageService" ref="retourImpressionStorageService"/>
+		<property name="callerTimeout" value="${editique.locale.sync.attente.timeout}"/>
+	</bean>
+
+	<bean name="extractionServiceJmxBean" class="ch.vd.uniregctb.jmx.ExtractionServiceJmxBeanImpl">
+		<property name="extractionService" ref="extractionService"/>
+	</bean>
+
+	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
+		<constructor-arg>
+			<map>
+				<entry key="applicationVersion" value="${pom.version}" />
+				<entry key="encoding" value="${file.encoding}" />
+				<entry key="java_vm_vendor" value="${java.vm.vendor}" />
+				<entry key="java_vm_name" value="${java.vm.name}" />
+				<entry key="java_specification_version" value="${java.specification.version}" />
+				<entry key="os_arch" value="${os.arch}" />
+				<entry key="os_name" value="${os.name}" />
+				<entry key="os_version" value="${os.version}" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+	<bean name="webAccessLoadJmxBean" class="ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl">
+		<constructor-arg name="serviceName" value="web-access"/>
+		<constructor-arg name="service" ref="accessLoggerFilter"/>
+		<constructor-arg name="statsService" ref="statsService"/>
+	</bean>
+
+</beans>

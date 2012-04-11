@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="TIERS">
+    <column>LOG_MDATE</column>
+    <column>NUMERO</column>
+    <column>TIERS_TYPE</column>
+    <column>DEBITEUR_INACTIF</column>
+    <column>NH_NOM</column>
+    <column>NH_PRENOM</column>
+    <column>NH_NUMERO_ASSURE_SOCIAL</column>
+    <column>NH_DATE_NAISSANCE</column>
+    <column>NH_SEXE</column>
+    <column>NH_NO_OFS_NATIONALITE</column>
+    <column>BLOC_REMB_AUTO</column>
+    <column>DATE_DECES</column>
+    <column>PP_HABITANT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>12300003</value>
+      <value>PersonnePhysique</value>
+      <value>0</value>
+      <value>Gomez</value>
+      <value>Mario</value>
+      <null/>
+      <value>19531218</value>
+      <value>MASCULIN</value>
+      <value>8231</value>
+      <value>0</value>
+      <null/>
+      <value>0</value>
+    </row>
+  </table>
+  <table name="MOUVEMENT_DOSSIER">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>CTB_ID</column>
+    <column>MVT_TYPE</column>
+    <column>NUMERO_INDIVIDU</column>
+    <column>ETAT</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>12300003</value>
+      <value>EnvoiVersCollaborateur</value>
+      <value>333908</value>
+      <value>TRAITE</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>2</value>
+      <value>12300003</value>
+      <value>ReceptionClassementGeneral</value>
+      <null/>
+      <value>TRAITE</value>
+	</row>
+  </table>
+</dataset>

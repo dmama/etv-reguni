@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="bvrPlusClientRaw" class="ch.vd.uniregctb.webservice.sipf.BVRPlusClientImpl">
+	    <property name="serviceUrl" value="${extprop.webservice.sipf.bvrplus.url}" />
+	    <property name="username" value="${extprop.webservice.sipf.bvrplus.username}" />
+	    <property name="password" value="${extprop.webservice.sipf.bvrplus.password}" />
+	</bean>
+
+	<bean id="bvrPlusClientTracing" class="ch.vd.uniregctb.wsclient.bvrplus.BVRPlusClientTracing">
+		<property name="target" ref="bvrPlusClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="bvrPlusClient" name="bvrPlusClientTracing"/>
+
+	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+	    <property name="username" value="${extprop.webservice.fidor.username}" />
+	    <property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
+
+	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
+		<property name="username" value="${extprop.webservice.rcpers.username}" />
+		<property name="password" value="${extprop.webservice.rcpers.password}" />
+		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
+		<property name="relationsPath" value="${extprop.webservice.rcpers.relationsPath}" />
+		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
+	</bean>
+
+	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
+		<property name="target" ref="rcPersClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="rcPersClient" name="rcPersClientTracing"/>
+
+</beans>
