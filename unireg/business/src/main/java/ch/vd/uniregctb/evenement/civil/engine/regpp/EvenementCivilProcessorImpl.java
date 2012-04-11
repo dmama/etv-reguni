@@ -266,7 +266,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// 2.2 - lancement de la validation
 		event.validate(erreurs, warnings);
 		if (erreurs.hasErreurs()) {
-			Audit.error(event.getNumeroEvenement(), "l'événement n'est pas valide");
+			Audit.error(event.getNumeroEvenement(), "L'événement n'est pas valide");
 			return EtatEvenementCivil.EN_ERREUR;
 		}
 
