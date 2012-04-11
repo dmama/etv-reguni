@@ -180,7 +180,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		
 		final List<EvenementPM> events = array.getItem();
 		assertNotNull(events);
-		assertEquals(17, events.size());
+		assertEquals(16, events.size());
 
 		final EvenementPM ev0 = events.get(0);
 		assertNotNull(ev0);
@@ -277,12 +277,6 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertSameDay(newDate(2003, 11, 6), ev15.getDateEvenement());
 		assertEquals(Long.valueOf(222), ev15.getTiersNumber());
 		assertEquals("002", ev15.getCodeEvenement());
-
-		final EvenementPM ev16 = events.get(16);
-		assertNotNull(ev16);
-		assertSameDay(newDate(2012, 1, 1), ev16.getDateEvenement());
-		assertEquals(Long.valueOf(222), ev16.getTiersNumber());
-		assertEquals("031", ev16.getCodeEvenement());
 	}
 
 	@Test
@@ -751,10 +745,7 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 
 		// Dates de début et de fin de l'assujettissement LIC
 		final Assujettissement assujettissementLIC = pm.getAssujettissementLIC();
-		assertNotNull(assujettissementLIC);
-		assertSameDay(newDate(2012, 1, 1), assujettissementLIC.getDateDebut());
-		assertNull(assujettissementLIC.getDateFin());
-		assertEquals(TypeAssujettissement.ILLIMITE, assujettissementLIC.getType());
+		assertNull(assujettissementLIC);
 
 		// Dates de début et de fin de l'assujettissement LIFD
 		final Assujettissement assujettissementLIFD = pm.getAssujettissementLIFD();
@@ -800,19 +791,13 @@ public class TiersServiceWebSIPFTest extends AbstractTiersServiceWebTest {
 		assertEquals("en liquidation", trimValiPattern(pm.getRaisonSociale3()));
 
 		final List<Assujettissement> lic = pm.getAssujettissementsLIC();
-		assertEquals(2, lic.size());
+		assertEquals(1, lic.size());
 
 		final Assujettissement lic0 = lic.get(0);
 		assertNotNull(lic0);
 		assertSameDay(newDate(1992, 12, 31), lic0.getDateDebut());
 		assertSameDay(newDate(2003, 12, 31), lic0.getDateFin());
 		assertEquals(TypeAssujettissement.ILLIMITE, lic0.getType());
-
-		final Assujettissement lic1 = lic.get(1);
-		assertNotNull(lic1);
-		assertSameDay(newDate(2012, 1, 1), lic1.getDateDebut());
-		assertNull(lic1.getDateFin());
-		assertEquals(TypeAssujettissement.ILLIMITE, lic1.getType());
 
 		final List<Assujettissement> lifd = pm.getAssujettissementsLIFD();
 		assertEquals(1, lifd.size());
