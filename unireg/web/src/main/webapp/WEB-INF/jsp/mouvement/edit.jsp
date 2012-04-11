@@ -6,7 +6,7 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-mouvement.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditMvt" name="theForm">
+	<form:form method="post" id="formEditMvt" name="theForm" className="nouveauMouvement">
 		<input type="hidden"  name="__TARGET__" value="">
 		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 		<unireg:nextRowClass reset="1"/>
@@ -20,7 +20,7 @@
 		<jsp:include page="mouvement.jsp"/>
 		<!-- Fin Mouvement dossier -->
 		<!-- Debut Boutons -->
-		<input type="button" name="retourMvt" value="<fmt:message key="label.bouton.retour" />" onclick="javascript:Page_RetourEdition(${command.contribuable.numero});" />
+		<input type="button" name="retourMvt" value="<fmt:message key="label.bouton.retour" />" onclick="javascript:Page_RetourEdition(${nouveauMouvement.contribuable.numero});" />
 		<input type="submit" name="sauverMvt" value="<fmt:message key="label.bouton.sauver" />" />
 		<!-- Fin Boutons -->
 	</form:form>

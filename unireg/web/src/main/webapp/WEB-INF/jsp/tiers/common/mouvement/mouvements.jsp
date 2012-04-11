@@ -59,10 +59,13 @@
 
 	<script type="text/javascript">
 		function Page_AnnulerMvt(idMvt) {
-				if(confirm('Voulez-vous vraiment annuler ce mouvement de dossier ?')) {
-					Form.doPostBack("theForm", "annulerMvt", idMvt);
-			 	}
-	 	} 	
+				var formAnnulation =
+					"<form id='formAnnulation' action='annuler.do' method='post'>" +
+						"<input type='hidden' name='idMvt' value='"+ idMvt +"'/>" +
+					"</form>";
+				$('body').append(formAnnulation);
+				$('#formAnnulation').submit();
+	 	}
 	</script>
 
 </c:if>

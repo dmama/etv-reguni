@@ -58,4 +58,12 @@ public interface MouvementEditManager extends AbstractMouvementManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerMvt(long idMvt);
 
+	/**
+	 * Retouve le numero du contribuable associé à un mouvement
+	 *
+	 * @param idMvt l'id du mouvement
+	 * @return le numéro du contribuable associé au mouvement
+	 */
+	long getNumeroContribuable(Long idMvt);
+
 }

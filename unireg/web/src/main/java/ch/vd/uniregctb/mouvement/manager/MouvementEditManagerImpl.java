@@ -175,8 +175,6 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 			mvt.setDateMouvement(RegDate.get());
 			mvt.setEtat(EtatMouvementDossier.TRAITE);
 			ctb.addMouvementDossier(mvt);
-
-			detruireMouvementsTropVieux(ctb);
 		}
 	}
 
@@ -195,15 +193,17 @@ public class MouvementEditManagerImpl extends AbstractMouvementManagerImpl imple
 		}
 	}
 
-	/**
-	 * Annule un mouvement
-	 *
-	 * @param idMvt
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void annulerMvt(long idMvt) {
 		final MouvementDossier mvt = getMouvementDossierDAO().get(idMvt);
 		mvt.setAnnule(true);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public long getNumeroContribuable(Long idMvt) {
+		final MouvementDossier mvt = getMouvementDossierDAO().get(idMvt);
+		return mvt.getContribuable().getNumero();
 	}
 }

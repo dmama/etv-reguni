@@ -1,11 +1,21 @@
 package ch.vd.uniregctb.mouvement;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
-import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
-public class AbstractMouvementController extends AbstractSimpleFormEditiqueAwareController {
+import ch.vd.uniregctb.mouvement.manager.MouvementEditManager;
+import ch.vd.uniregctb.type.Localisation;
+import ch.vd.uniregctb.type.TypeMouvement;
+
+public class AbstractMouvementController {
+
+	protected MouvementEditManager mouvementEditManager;
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setMouvementEditManager(MouvementEditManager mouvementEditManager) {
+		this.mouvementEditManager = mouvementEditManager;
+	}
 
 	private MouvementMapHelper mouvementMapHelper;
 
@@ -14,11 +24,18 @@ public class AbstractMouvementController extends AbstractSimpleFormEditiqueAware
 		this.mouvementMapHelper = mouvementMapHelper;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		return mouvementMapHelper.getMaps();
+	@ModelAttribute("typesMouvement")
+	private Map<TypeMouvement, String> typesMouvement() throws Exception {
+		return mouvementMapHelper.getMapTypesMouvement();
+	}
+
+	@ModelAttribute("etatsMouvement")
+	private  Map<EtatMouvementDossier, String> etatsMouvement() throws Exception {
+		return mouvementMapHelper.getMapEtatsMouvement();
+	}
+
+	@ModelAttribute("localisations")
+	private Map<Localisation, String> localisations() throws Exception {
+		return mouvementMapHelper.getMapLocalisations();
 	}
 }

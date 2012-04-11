@@ -7,7 +7,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<unireg:raccourciAjouter onClick="javascript:SubmitFormEditMvt();" tooltip="label.bouton.ajouter" display="label.bouton.ajouter"/>
+					<unireg:raccourciAjouter link="edit.do?numero=${command.contribuable.numero}" tooltip="label.bouton.ajouter" display="label.bouton.ajouter"/>
 					<form:errors cssClass="error"/>
 				</td>
 			</tr>

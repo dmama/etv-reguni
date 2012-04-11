@@ -12,15 +12,6 @@
 						id="type_mouvement" onchange="selectTypeMouvement(this.options[this.selectedIndex].value);" /> 			
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
-			<%-- 
-			<td width="25%"><fmt:message key="label.date.mouvement" />&nbsp;:</td>
-			<td width="25%">
-				<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-					<jsp:param name="path" value="dateMouvement" />
-					<jsp:param name="id" value="dateMouvement" />
-				</jsp:include>
-			</td>
-			--%>
 		</tr>
 	</table>
 	
