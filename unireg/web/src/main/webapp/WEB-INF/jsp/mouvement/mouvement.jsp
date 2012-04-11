@@ -55,7 +55,7 @@
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
 					<script>
 						$(function() {
-							Autocomplet.infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', true, function(item) {
+							Autocomplete.infra('collectiviteAdministrative', '#collAdmDestinataireEnvoi', true, function(item) {
 								$('#noCollAdmDestinataireEnvoi').val(item ? item.id1 : null); // le numéro de collectivité
 							});
 						});
@@ -85,7 +85,7 @@
 									$('#numeroUtilisateurReception').val(item.id2); // le numéro technique
 								}
 								else {
-									$('#numeroUtilisateurEnvoi').val(null);
+									$('#utilisateurReception').val(null);
 									$('#numeroUtilisateurReception').val(null);
 								}
 							});
