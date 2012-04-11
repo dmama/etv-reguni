@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/address-response/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/address-response/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:response="http://www.vd.ch/fiscalite/unireg/event/party/response/1"
+		   xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/response/1" schemaLocation="response-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd" />
+
+	<xs:complexType name="addressResponseType">
+		<xs:annotation>
+			<xs:documentation>Réponse de la requête sur les adresses d'un tiers.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="response:responseType">
+				<xs:sequence>
+					<xs:element name="addresses" type="address:addressType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>La ou les adresses demandées et disponibles sur le tiers.</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

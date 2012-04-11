@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<profilesXml>
+	<activeProfiles>
+		<activeProfile>eclipse-developer</activeProfile>
+
+		<!-- Le propriétés de connexion se configurent maintenant dans le fichier unireg-ut.properties -->
+
+		<!-- A choix, La DB -->
+		<!--
+		<activeProfile>postgresql</activeProfile>
+		<activeProfile>hsql</activeProfile>
+		-->
+		<activeProfile>oracle</activeProfile>
+
+		<!-- Facultatifs -->
+		<!--
+		<activeProfile>weblight</activeProfile>
+		<activeProfile>env.standalone</activeProfile>
+		-->
+
+		<!-- Facultatifs -->
+		<!--
+		<activeProfile>all</activeProfile>
+		<activeProfile>ext</activeProfile>
+		-->
+
+	</activeProfiles>
+</profilesXml>

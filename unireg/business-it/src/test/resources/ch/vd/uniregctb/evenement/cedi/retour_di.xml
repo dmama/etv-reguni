@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<DossierElectronique noContribuable="12500001" noSequenceDI="01" periode="2009"
+					 retourPiece="false" versionSchema="2.1.1"
+					 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.vd.ch/fiscalite/taxation/dossier-electronique/1">
+	<Operation>
+		<DateReception>2010-05-26</DateReception>
+		<OperateurScan>zaisyd</OperateurScan>
+		<DateScanOuGenerationXmlDi>2010-05-26</DateScanOuGenerationXmlDi>
+		<LieuScan>CEDI</LieuScan>
+		<TypeSaisie>M</TypeSaisie>
+		<OrigineAcquisition>DI-PAPIER</OrigineAcquisition>
+	</Operation>
+	<DeclarationImpot identifiant="2009_21010_01_20100526160731564"
+					  noContribuable="12500001" noSequenceDI="01" periode="2009"
+					  typeDocument="100" versionDocument="2.1.1">
+		<Identification>
+			<CoordonneesContribuable>
+				<TelephoneContact>0211234567</TelephoneContact>
+				<NoTelPortable>0797654321</NoTelPortable>
+				<CodeIBAN>CH3708401016ZZ0535380</CodeIBAN>
+				<TitulaireCompte>Toto le rigolo</TitulaireCompte>
+			</CoordonneesContribuable>
+			<Contribuable>
+				<TauxActivite>100</TauxActivite>
+				<SituationProfessionnelle>
+					<Salarie>true</Salarie>
+				</SituationProfessionnelle>
+				<Profession>Clown</Profession>
+				<LieuActivite>Le monde ne suffit pas</LieuActivite>
+			</Contribuable>
+		</Identification>
+		<ActiviteSalariee>
+			<Revenu>
+				<Principal>
+					<Contribuable>5432</Contribuable>
+				</Principal>
+			</Revenu>
+			<Frais>
+				<Transport>
+					<Contribuable>123</Contribuable>
+				</Transport>
+				<Repas>
+					<Contribuable>123</Contribuable>
+				</Repas>
+				<Autres>
+					<Contribuable>123</Contribuable>
+				</Autres>
+			</Frais>
+		</ActiviteSalariee>
+		<IndemnitePG>
+			<TotalRevenusActivite>
+				<Contribuable>4321</Contribuable>
+			</TotalRevenusActivite>
+		</IndemnitePG>
+		<Assurances>
+			<Maladie_Accident_Vie>
+				<Contribuable>321</Contribuable>
+			</Maladie_Accident_Vie>
+		</Assurances>
+		<TotalRevenus>
+			<ContribuableConjoint>
+				<Contribuable>3333</Contribuable>
+			</ContribuableConjoint>
+			<Cumul>
+				<Contribuable>3333</Contribuable>
+			</Cumul>
+		</TotalRevenus>
+		<DeductionSpeciales>
+			<Net>
+				<Revenu>4444</Revenu>
+			</Net>
+			<Difference>
+				<Revenu>4444</Revenu>
+			</Difference>
+			<ContribuableModeste>
+				<Revenu>12345</Revenu>
+			</ContribuableModeste>
+		</DeductionSpeciales>
+		<TotalNet>
+			<RevenuFortune>
+				<Revenu>00000</Revenu>
+			</RevenuFortune>
+			<SousTotal>
+				<Revenu>00000</Revenu>
+			</SousTotal>
+		</TotalNet>
+		<TotalImposable>
+			<RevenuFortune>
+				<Revenu>00000</Revenu>
+			</RevenuFortune>
+		</TotalImposable>
+		<Signature>true</Signature>
+		<ExcluTaxationAutomatique>false</ExcluTaxationAutomatique>
+	</DeclarationImpot>
+	<FraisAcquisitionRevenu identifiant="2009_21024_01_20100526160731564"
+							noContribuable="12500001" noSequenceDI="01" periode="2009"
+							typeDocument="104" versionDocument="2.1.1">
+		<Principal>
+			<DeductionsTransportRepas>
+				<Deduction>
+					<Du jour="08" mois="04" />
+					<Au jour="24" mois="06" />
+					<NombreJours>22</NombreJours>
+					<Domicile>LAUSANNE</Domicile>
+					<LieuTravail>MORGES</LieuTravail>
+					<KmTransport>8</KmTransport>
+					<MoyenTransport>
+						<TP>true</TP>
+					</MoyenTransport>
+					<DeductionTransport>222</DeductionTransport>
+				</Deduction>
+				<Deduction>
+					<Du jour="19" mois="11" />
+					<Au jour="31" mois="12" />
+					<NombreJours>44</NombreJours>
+					<Domicile>LAUSANNE</Domicile>
+					<LieuTravail>BEX</LieuTravail>
+					<KmTransport>40</KmTransport>
+					<MoyenTransport>
+						<TP>true</TP>
+					</MoyenTransport>
+					<DeductionTransport>333</DeductionTransport>
+					<DeductionRepas>444</DeductionRepas>
+				</Deduction>
+			</DeductionsTransportRepas>
+			<AutresFrais>
+				<DeductionForfaitaire>222</DeductionForfaitaire>
+			</AutresFrais>
+		</Principal>
+	</FraisAcquisitionRevenu>
+</DossierElectronique>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- Read management interface from annotations -->
+	<bean id="jmxAttributeSource" class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource" />
+	<bean id="jmxAssembler" class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+
+	<!--
+		   Object name is built from annotations (@ManagedResource), then
+		   fallbacked to bean key
+	   -->
+	<bean id="jmxNamingStrategy" class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="jmxAttributeSource" />
+	</bean>
+
+	<!-- Liste des beans exportés en JMX au travers de leurs annotations -->
+	<bean id="jmxExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="autodetect" value="false" />
+		<property name="assembler" ref="jmxAssembler" />
+		<property name="namingStrategy" ref="jmxNamingStrategy" />
+		<property name="beans">
+			<map>
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
+				<entry key="ch.vd.uniregctb-ws:type=Connections,name=Oracle" value-ref="oracleConnectionJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Preferences" value-ref="preferencesPropertiesJmxBean" />
+				<entry key="ch.vd.uniregctb-ws:type=Properties,name=Others" value-ref="othersPropertiesJmxBean" />
+			</map>
+		</property>
+	</bean>
+
+	<!-- Liste des beans containers de message listeners exportés par JMX -->
+	<bean id="jmxEndpointManagerExporter" class="org.springframework.jmx.export.MBeanExporter">
+		<property name="autodetect" value="false"/>
+		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
+		<property name="beans">
+			<map>
+				<entry key="ch.vd.uniregctb-ws:type=JmsListeners,name=DataEvents" value-ref="dataEventJmsEndpointManager"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="jmxMessageEndpointManagerAssembler" class="org.springframework.jmx.export.assembler.InterfaceBasedMBeanInfoAssembler">
+		<property name="managedInterfaces">
+			<list>
+				<value>org.springframework.context.Lifecycle</value>
+				<value>ch.vd.uniregctb.jms.MessageEndpointManagerJmxInterface</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean name="applicationMonitoringJmxBean" class="ch.vd.uniregctb.jmx.ApplicationMonitoringJMXBeanImpl">
+		<property name="checker" ref="applicationChecker" />
+	</bean>
+
+	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.WebServiceLoadJmxBeanContainer">
+		<property name="statsService" ref="statsService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=WebserviceLoad,name="/>
+		<property name="services">
+			<map>
+				<entry key="TiersWebService2" value-ref="tiersService2EndPoint"/>
+				<entry key="PartyWebService3" value-ref="partyService3EndPoint"/>
+				<entry key="ServiceSecurite" value-ref="securiteServiceBean"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="oracleConnectionJmxBean" class="ch.vd.registre.jmx.ConnectionJmxBeanImpl">
+		<constructor-arg ref="dataSource" />
+	</bean>
+
+	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
+		<constructor-arg ref="uniregExternalProperties" />
+		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
+	</bean>
+
+	<bean name="othersPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
+		<constructor-arg>
+			<map>
+				<entry key="applicationVersion" value="${pom.version}" />
+				<entry key="encoding" value="${file.encoding}" />
+				<entry key="java_vm_vendor" value="${java.vm.vendor}" />
+				<entry key="java_vm_name" value="${java.vm.name}" />
+				<entry key="java_specification_version" value="${java.specification.version}" />
+				<entry key="os_arch" value="${os.arch}" />
+				<entry key="os_name" value="${os.name}" />
+				<entry key="os_version" value="${os.version}" />
+			</map>
+		</constructor-arg>
+	</bean>
+
+</beans>
