@@ -1043,8 +1043,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// fractionnement systématique à la date d'ouverture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(previous, current) && isDepartDepuisOuArriveeVersVaud(current, previous) &&
-				(!isDepartHCApresArriveHSMemeAnnee(current, next) || modeImposition == ModeImposition.SOURCE)) {
+		else if (isDepartOuArriveeHorsSuisse(previous, current) &&
+				(modeImposition == ModeImposition.SOURCE || (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current, next)))) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
@@ -1089,8 +1089,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// fractionnement systématique à la date de fermeture pour ce motif
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsSuisse(current, next) && isDepartDepuisOuArriveeVersVaud(current, next) &&
-				(!isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext) || nextModeImposition == ModeImposition.SOURCE)) {
+		else if (isDepartOuArriveeHorsSuisse(current, next) &&
+				(nextModeImposition == ModeImposition.SOURCE || (isDepartDepuisOuArriveeVersVaud(current, next) &&
+				!isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)))) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur

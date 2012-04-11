@@ -223,15 +223,15 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         validationInterceptor.setEnabled(false);
         try {
             return doInNewTransaction(new TransactionCallback<T>() {
-                @Override
-                public T doInTransaction(final TransactionStatus status) {
-                    return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
-                        @Override
-                        public T doInHibernate(Session session) throws HibernateException, SQLException {
-                            return action.doInTransaction(status);
-                        }
-                    });
-                }
+	            @Override
+	            public T doInTransaction(final TransactionStatus status) {
+		            return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
+			            @Override
+			            public T doInHibernate(Session session) throws HibernateException, SQLException {
+				            return action.doInTransaction(status);
+			            }
+		            });
+	            }
             });
         } finally {
             validationInterceptor.setEnabled(true);
@@ -327,6 +327,13 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     /**
      * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
      */
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune, ModeImposition modeImposition) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, MotifRattachement.DOMICILE, modeImposition);
+    }
+
+    /**
+     * Ajoute un for principal ouvert sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
     protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, MockCommune commune, MotifRattachement motifRattachement) {
         return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune, motifRattachement);
     }
@@ -340,9 +347,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     /**
+     * Ajoute un for principal fermé sur une commune Suisse (rattachement = DOMICILE) sur le contribuable spécifié.
+     */
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, RegDate fermeture, @Nullable MotifFor motifFermeture,
+                                                 MockCommune commune, ModeImposition modeImposition) {
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune, MotifRattachement.DOMICILE, modeImposition);
+    }
+
+    /**
      * Ajoute un for principal fermé sur une commune Suisse sur le contribuable spécifié.
      */
-    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockCommune commune,
+    protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune,
                                                  MotifRattachement motifRattachement) {
         final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
         return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFSEtendu(), type, motifRattachement);
@@ -381,7 +396,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, pays.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, MotifRattachement.DOMICILE);
     }
 
-    /**
+	/**
      * Ajoute un for principal fermé à l'étranger sur le contribuable spécifié avec le mode d'imposition spécifié
      */
     protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, RegDate fermeture, MotifFor motifFermeture, MockPays pays,

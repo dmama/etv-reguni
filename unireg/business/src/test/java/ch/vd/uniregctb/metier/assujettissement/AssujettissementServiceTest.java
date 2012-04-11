@@ -3497,6 +3497,26 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertOrdinaire(date(1997, 12, 28), null, MotifFor.ARRIVEE_HS, null, liste.get(2));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10556134&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(
+			description = "Cas du contribuable n°10556134 (vérifie que l'algorithme calcul ne génère pas deux assujettissements 'source' qui se chevauchent pour les périodes hors-Suisse et hors-canton)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsSuisseDansHorsCantonSourcier() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10556134L);
+		addForPrincipal(ctb, date(2008, 2, 1), MotifFor.INDETERMINE, date(2008, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD, date(2010, 5, 31), MotifFor.DEPART_HS, MockCommune.Epesses, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2010, 6, 1), MotifFor.DEPART_HS, date(2011, 3, 31), MotifFor.DEMENAGEMENT_VD, MockPays.France, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2011, 4, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Geneve, ModeImposition.SOURCE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(3, liste.size());
+		assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 5, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2010, 6, 1), date(2011, 3, 31), MotifFor.DEPART_HS, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
+		assertSourcierPur(date(2011, 4, 1), null, MotifFor.DEMENAGEMENT_VD, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(2));
+	}
+
 	private static Set<Integer> buildSetFromArray(Integer... ints) {
 		return new HashSet<Integer>(Arrays.asList(ints));
 	}
