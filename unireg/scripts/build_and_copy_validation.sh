@@ -32,7 +32,6 @@ wsFileOrig=uniregws-release.zip
 wsFileDest=uniregws-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
-release_dir=/mnt/adacv/Unireg/Releases/
 MVN_OPTS="-Pnot,build.source,oracle,all"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
@@ -73,18 +72,12 @@ cp unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
 cp unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
 cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
 
-# Copie de la release sur Calimero
-sudo cp -v unireg/web/target/$relFileDest $release_dir
-sudo cp -v unireg/ws/target/$wsFileDest $release_dir
-sudo cp -v unireg/ubr/target/$ubrFileDest $release_dir
-
 # Deploiement sur ssv0309v
 REM_DIR="~/release"
 ssh $user "mkdir $REM_DIR"
 scp unireg/web/target/$relFileDest $user:$REM_DIR
 scp unireg/ws/target/$wsFileDest $user:$REM_DIR
 scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
-echo "Les fichiers sont sur: $user:/var/tmp/uniregctb/*-${env}-${version}-${DATE}.zip"
-echo "Et aussi sur: $release_dir"
+echo "Les fichiers sont sur: $user:$REM_DIR/*-${env}-${version}-${DATE}.zip"
 
 echo "Fin du déploiement at: $(date)"
