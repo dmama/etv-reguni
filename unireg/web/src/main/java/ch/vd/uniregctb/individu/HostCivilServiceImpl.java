@@ -1,8 +1,9 @@
 package ch.vd.uniregctb.individu;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
@@ -119,9 +120,14 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * @param view           la vue à compléter
 	 */
 	private void traitePermis(Long numeroIndividu, IndividuView view) {
-		final Permis permis = getServiceCivilService().getPermis(numeroIndividu, null);
-		if (permis != null) {
-			view.setPermisView(Arrays.asList(new PermisView(permis)));
+		final Collection<Permis> permis = getServiceCivilService().getPermis(numeroIndividu, null);
+		if (permis != null && !permis.isEmpty()) {
+			final List<PermisView> list = new ArrayList<PermisView>();
+			for (Permis p : permis) {
+				list.add(new PermisView(p));
+			}
+			Collections.sort(list, new PermisViewComparator());
+			view.setPermisView(list);
 		}
 		else {
 			view.setPermisView(Collections.<PermisView>emptyList());

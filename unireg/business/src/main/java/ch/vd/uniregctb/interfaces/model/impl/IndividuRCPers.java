@@ -21,6 +21,7 @@ import ch.vd.evd0001.v3.PersonIdentification;
 import ch.vd.evd0001.v3.Relations;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
+import ch.vd.evd0001.v3.ResidencePermit;
 import ch.vd.evd0001.v3.UpiPerson;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -44,7 +45,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -2609344381248103504L;
+	private static final long serialVersionUID = -2444268873580091585L;
 
 	private static final String EST_CONJOINT = "1";
 	private static final String EST_PARTENAIRE_ENREGISTRE = "2";
@@ -73,7 +74,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private EtatCivilList etatsCivils;
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
-	private Permis permis;
+	private List<Permis> permis;
 	private List<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
@@ -154,7 +155,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.etatsCivils = right.etatsCivils;
-		this.permis = right.permis;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			this.adresses = right.adresses;
@@ -176,6 +176,9 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = right.parents;
+		}
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
+			permis = right.permis;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = right.tutelle;
@@ -242,8 +245,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static Permis initPermis(Person person) {
-		return PermisRCPers.get(person.getResidencePermit());
+	private static List<Permis> initPermis(Person person) {
+		final ResidencePermit permit = person.getResidencePermit();
+		if (permit == null) {
+			return null;
+		}
+		final List<Permis> list = new ArrayList<Permis>(1);
+		list.add(PermisRCPers.get(permit));
+		return list;
 	}
 
 	protected static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
@@ -506,7 +515,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public Permis getPermis() {
+	public List<Permis> getPermis() {
 		return permis;
 	}
 
@@ -542,6 +551,9 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individu.getParents();
+		}
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
+			permis = individu.getPermis();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();

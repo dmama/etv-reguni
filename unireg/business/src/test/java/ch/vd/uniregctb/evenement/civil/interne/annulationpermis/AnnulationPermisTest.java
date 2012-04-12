@@ -74,15 +74,15 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			addDefaultAdressesTo(roberto);
 			addOrigine(roberto, MockPays.Espagne.getNomMinuscule());
 			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
-			setPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), false);
-			permisRoberto = (MockPermis) setPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
+			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), RegDate.get(2007, 5, 31), false);
+			permisRoberto = (MockPermis) addPermis(roberto, TypePermis.ETABLISSEMENT, DATE_OBTENTION_PERMIS, null, false);
 
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
 			addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
-			permisRosa = (MockPermis) setPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
+			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
 		}
 	};
 

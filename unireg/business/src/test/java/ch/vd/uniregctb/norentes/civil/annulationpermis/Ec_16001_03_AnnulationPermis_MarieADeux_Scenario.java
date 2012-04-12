@@ -73,7 +73,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
-				setPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
+				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 
 				addOrigine(indBea, MockCommune.Lausanne);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);

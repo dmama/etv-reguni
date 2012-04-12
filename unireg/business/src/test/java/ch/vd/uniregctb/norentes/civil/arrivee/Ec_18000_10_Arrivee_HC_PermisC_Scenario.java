@@ -126,7 +126,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 				permis.setTypePermis(TypePermis.ETABLISSEMENT);
 				permis.setDateDebutValidite(dateArriveeBex);
 				permis.setDateFinValidite(null);
-				individu.setPermis(permis);
+				individu.getPermis().add(permis);
 			}
 		});
 	}
@@ -135,7 +135,7 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 	public void check3() throws Exception {
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(TypePermis.ETABLISSEMENT, serviceCivilService.getPermis(noIndAntoine, dateArriveeBex).getTypePermis(),
+		assertEquals(TypePermis.ETABLISSEMENT, serviceCivilService.getPermisActif(noIndAntoine, dateArriveeBex).getTypePermis(),
 			"pas de permis C");
 	}
 

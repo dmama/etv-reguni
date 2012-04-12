@@ -13,7 +13,7 @@ public abstract class AnnulationPermisNorentesScenario extends EvenementCivilSce
 	}
 
 	protected MockPermis searchPermis(long numeroIndividu, TypePermis typePermis, RegDate date) {
-		final Permis permis = serviceCivilService.getPermis(numeroIndividu, date);
+		final Permis permis = serviceCivilService.getPermisActif(numeroIndividu, date);
 		if (permis == null || permis.getTypePermis() != typePermis) {
 			return null;
 		}

@@ -66,7 +66,7 @@ public class Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario extends Evenemen
 				addOrigine(indJulie, MockPays.France.getNomMinuscule());
 				addNationalite(indJulie, MockPays.France, dateNaissance, null);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null);
-				setPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, dateObtentionNationalite, false);
+				addPermis(indJulie, TypePermis.ETABLISSEMENT, dateObtentionPermis, dateObtentionNationalite, false);
 			}
 		});
 	}

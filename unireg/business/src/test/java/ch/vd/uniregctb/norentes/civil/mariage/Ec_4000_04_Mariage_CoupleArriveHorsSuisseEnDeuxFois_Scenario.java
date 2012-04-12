@@ -67,12 +67,12 @@ public class Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario extend
 
 			addOrigine(indRafa, MockPays.Espagne.getNomMinuscule());
 			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null);
-			setPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2005, 10, 1), null, false);
+			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2005, 10, 1), null, false);
 			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeRafa, null);
 
 			addOrigine(indMaria, MockPays.Espagne.getNomMinuscule());
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
-			setPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2005, 12, 1), null, false);
+			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2005, 12, 1), null, false);
 			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeMaria, null);
 		}
 

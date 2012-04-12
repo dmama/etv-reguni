@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -43,7 +44,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private String nouveauNoAVS;
 	private String numeroRCE;
 	private Collection<Origine> origines;
-	private Permis permis;
+	private List<Permis> permis;
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
 	private RegDate dateArriveeVD;
@@ -70,9 +71,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
 		this.sexeMasculin = right.sexeMasculin;
-		if (right.permis == null || right.permis.isValidAt(upTo)) {
-			this.permis = right.permis;
-		}
 
 		copyPartsFrom(right, parts);
 		limitPartsToBeforeDate(upTo, parts);
@@ -292,12 +290,20 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Permis getPermis() {
+	public List<Permis> getPermis() {
 		return permis;
 	}
 
-	public void setPermis(Permis permis) {
+	public void setPermis(List<Permis> permis) {
 		this.permis = permis;
+		if (this.permis != null) {
+			Collections.sort(this.permis, new Comparator<Permis>() {
+				@Override
+				public int compare(Permis o1, Permis o2) {
+					return o1.getDateDebut().compareTo(o2.getDateDebut());
+				}
+			});
+		}
 	}
 
 	@Override
@@ -340,6 +346,9 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		if (parts != null && parts.contains(AttributeIndividu.PARENTS)) {
 			parents = individu.getParents();
 		}
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
+			permis = individu.getPermis();
+		}
 		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
 			tutelle = individu.getTutelle();
 		}
@@ -380,6 +389,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		@Override
 		public boolean keep(Nationalite element, RegDate date) {
 			return element.getDateDebutValidite() == null || element.getDateDebutValidite().isBeforeOrEqual(date);
+		}
+	};
+	private static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {
+		@Override
+		public boolean keep(Permis element, RegDate date) {
+			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
 		}
 	};
 	private static final Limitator<Adresse> ADRESSE_LIMITATOR = new Limitator<Adresse>() {
@@ -598,6 +613,9 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
 			nationalites = buildLimitedCollectionBeforeDate(nationalites, date, NATIONALITE_LIMITATOR);
+		}
+		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
+			permis = buildLimitedCollectionBeforeDate(permis, date, PERMIS_LIMITATOR);
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			setAdresses(buildLimitedCollectionBeforeDate(getAdresses(), date, ADRESSE_LIMITATOR));

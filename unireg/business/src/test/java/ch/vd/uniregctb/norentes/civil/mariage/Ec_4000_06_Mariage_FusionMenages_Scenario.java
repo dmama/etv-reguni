@@ -88,13 +88,13 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 
 				addOrigine(indAlfredo, MockPays.Albanie.getNomMinuscule());
 				addNationalite(indAlfredo, MockPays.Albanie, dateNaissanceAlfredo, null);
-				setPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, false);
+				addPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indAlfredo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
 				addAdresse(indAlfredo, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
 
 				addOrigine(indArmando, MockPays.Danemark.getNomMinuscule());
 				addNationalite(indArmando, MockPays.Danemark, dateNaissanceArmando, null);
-				setPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, false);
+				addPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indArmando, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
 				addAdresse(indArmando, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDemenagementArmando, null);
 			}

@@ -45,7 +45,6 @@ public enum AttributeIndividu {
 		public EnumAttributeIndividu toEAI() {
 			return EnumAttributeIndividu.PARENTS;
 		}},
-	// FIXME (msi) supprimer cette part
 	PERMIS {
 		@Override
 		public EnumAttributeIndividu toEAI() {

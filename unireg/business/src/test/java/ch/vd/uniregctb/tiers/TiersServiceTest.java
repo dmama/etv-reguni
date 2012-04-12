@@ -211,7 +211,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
 			}
 		});
 
@@ -228,7 +228,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, true);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, true);
 			}
 		});
 
@@ -245,7 +245,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addNationalite(pierre, MockPays.France, RegDate.get(1953, 11, 2), null);
-				setPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
 			}
 		});
 
@@ -261,7 +261,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
 				addOrigine(pierre, MockCommune.Cossonay);
 			}
 		});
@@ -278,7 +278,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
 				addOrigine(pierre, MockPays.France.getNomMinuscule());
 			}
 		});
@@ -295,7 +295,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
 				addOrigine(pierre, MockPays.France.getNomMinuscule());
 			}
 		});
@@ -313,7 +313,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
 			}
 		});
 
@@ -330,7 +330,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
 			}
 		});
 
@@ -368,8 +368,8 @@ public class TiersServiceTest extends BusinessTest {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(1953, 11, 2), date(1979, 12, 31));
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeLaGare, null, date(1980, 1, 1), null);
-				setPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1953, 11, 2), RegDate.get(1979, 12, 31), false);
-				setPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1980, 1, 1), null, false);
+				addPermis(pierre, TypePermis.FRONTALIER, RegDate.get(1953, 11, 2), RegDate.get(1979, 12, 31), false);
+				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1980, 1, 1), null, false);
 			}
 		});
 
@@ -411,7 +411,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-				setPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
+				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
 			}
 		});
 
