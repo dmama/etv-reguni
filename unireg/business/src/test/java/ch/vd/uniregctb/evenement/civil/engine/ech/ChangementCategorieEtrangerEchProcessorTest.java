@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Arrays;
+
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -7,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -39,7 +42,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Suzuki", "Tsetsuko", false);
-				setPermis(ind, TypePermis.ANNUEL, dateArrivee, null, false);
+				addPermis(ind, TypePermis.ANNUEL, dateArrivee, null, false);
 				setNationalite(ind, dateNaissance, null, MockPays.Japon);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
@@ -62,7 +65,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final MockPermis permis = new MockPermis();
 				permis.setDateDebutValidite(dateObtentionPermis);
 				permis.setTypePermis(TypePermis.ETABLISSEMENT);
-				individu.setPermis(permis);
+				individu.setPermis(Arrays.<Permis>asList(permis));
 			}
 		});
 		
@@ -118,7 +121,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Suzuki", "Tsetsuko", false);
-				setPermis(ind, TypePermis.COURTE_DUREE, dateArrivee, null, false);
+				addPermis(ind, TypePermis.COURTE_DUREE, dateArrivee, null, false);
 				setNationalite(ind, dateNaissance, null, MockPays.Japon);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
@@ -141,7 +144,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final MockPermis permis = new MockPermis();
 				permis.setDateDebutValidite(dateObtentionPermis);
 				permis.setTypePermis(TypePermis.ANNUEL);
-				individu.setPermis(permis);
+				individu.setPermis(Arrays.<Permis>asList(permis));
 			}
 		});
 

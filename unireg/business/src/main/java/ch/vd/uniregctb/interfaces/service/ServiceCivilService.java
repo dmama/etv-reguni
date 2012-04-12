@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -160,13 +161,17 @@ public interface ServiceCivilService {
 	Collection<Origine> getOrigines(long noIndividu, @Nullable RegDate date);
 
 	/**
-	 * Retourne le permis valable à la date spécifiée pour un individu.
+	 * Retourne la liste des permis, valides <b>jusqu'à</b> la date en paramètre, de l'individu identifié par le numéro en paramètre.
+	 * <p/>
+	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
+	 * <p/>
+	 * La liste retournée par ce service peut être vide, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
 	 *
-	 * @param noIndividu le numéro de l'individu concerné
+	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date à laquelle on va connaître le permis
-	 * @return le permis valable à la date demandée; ou <b>null</b> si l'individu est citoyen suisse.
+	 * @return la liste des permis de l'individu, valides jusqu'à la date spécifiée.
 	 */
-	Permis getPermis(long noIndividu, @Nullable RegDate date);
+	Collection<Permis> getPermis(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Retourne la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis, l'individu attendu étant identifié par le numéro en paramètre.
@@ -187,6 +192,18 @@ public interface ServiceCivilService {
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
 	EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
+
+	/**
+	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
+	 * @return le permis actif d'un individu à une date donnée.
+	 */
+	Permis getPermisActif(long noIndividu, RegDate date);
+
+	/**
+	 * @param date la date d'obtention du permis annulé.
+	 * @return le permis annulé d'un individu qui a été obtenu à une date donnée.
+	 */
+	Permis getPermisAnnule(long noIndividu, @NotNull RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.

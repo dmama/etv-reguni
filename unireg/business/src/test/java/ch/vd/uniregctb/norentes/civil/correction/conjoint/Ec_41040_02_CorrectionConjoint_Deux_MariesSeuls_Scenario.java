@@ -75,7 +75,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 
 			addOrigine(indRafa, MockPays.Espagne.getNomMinuscule());
 			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null);
-			setPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
+			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
 			RegDate dateNaissanceMaria = RegDate.get(1975, 7, 31);
@@ -85,7 +85,7 @@ public class Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario extends Ev
 
 			addOrigine(indMaria, MockPays.Espagne.getNomMinuscule());
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
-			setPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
+			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
 		}

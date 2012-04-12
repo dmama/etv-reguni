@@ -54,7 +54,7 @@ public class Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario extends Evenemen
 				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
-				setPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);
+				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Avenue de Marcelin", "39", 1000,
 						MockLocalite.Lausanne, null, RegDate.get(2008, 4, 1), dateCorrection.getOneDayBefore());

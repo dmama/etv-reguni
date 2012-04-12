@@ -59,7 +59,7 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 				indAntonio = addIndividu(noIndAntonio, date(1976, 4, 25) , "Lauria", "Antonio", true);
 				indAnneLaure = addIndividu(noIndAnneLaure, date(1976, 8, 6), "Lauria", "Anne-Laure", false);
 
-				setPermis(indAntonio, TypePermis.ETABLISSEMENT, date(2005, 1, 11), null, false);
+				addPermis(indAntonio, TypePermis.ETABLISSEMENT, date(2005, 1, 11), null, false);
 
 				marieIndividus(indAntonio, indAnneLaure, dateMariage);
 				addAdresse(indAntonio, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArriveeLausanne, null);

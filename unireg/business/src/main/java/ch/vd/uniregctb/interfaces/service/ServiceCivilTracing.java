@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -280,7 +281,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 	}
 
 	@Override
-	public Permis getPermis(final long noIndividu, @Nullable final RegDate date) {
+	public Collection<Permis> getPermis(final long noIndividu, @Nullable final RegDate date) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -292,6 +293,48 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		}
 		finally {
 			tracing.end(time, t, "getPermis", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
+				}
+			});
+		}
+	}
+
+	@Override
+	public Permis getPermisActif(final long noIndividu, final RegDate date) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getPermisActif(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getPermisActif", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
+				}
+			});
+		}
+	}
+
+	@Override
+	public Permis getPermisAnnule(final long noIndividu, @NotNull final RegDate date) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getPermisAnnule(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getPermisAnnule", new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
@@ -195,10 +196,10 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final Permis permis1 = service.getPermis(noIndividu, null);
+		final Permis permis1 = service.getPermisActif(noIndividu, null);
 		assertNull(permis1);
 
-		final Permis permis2 = service.getPermis(noIndividu, RegDate.get(2000, 1, 13));
+		final Permis permis2 = service.getPermisActif(noIndividu, RegDate.get(2000, 1, 13));
 		assertNull(permis2);
 	}
 
@@ -216,18 +217,21 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				momo.setPermis(permis1);
+
+				final ArrayList<Permis> permis = new ArrayList<Permis>();
+				permis.add(permis1);
+				momo.setPermis(permis);
 			}
 		});
 
-		final Permis p1 = service.getPermis(noIndividu, null);
+		final Permis p1 = service.getPermisActif(noIndividu, null);
 		assertNotNull(p1);
 		assertSame(permis1, p1);
 
-		final Permis p2 = service.getPermis(noIndividu, RegDate.get(1903, 1, 13));
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(p2);
 
-		final Permis p3 = service.getPermis(noIndividu, RegDate.get(1989, 11, 20));
+		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1989, 11, 20));
 		assertNotNull(p3);
 		assertSame(permis1, p3);
 	}
@@ -247,19 +251,72 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				momo.setPermis(permis1);
+
+				final ArrayList<Permis> permis = new ArrayList<Permis>();
+				permis.add(permis1);
+				momo.setPermis(permis);
 			}
 		});
 
-		final Permis p1 = service.getPermis(noIndividu, null);
+		final Permis p1 = service.getPermisActif(noIndividu, null);
 		assertNull(p1);
 
-		final Permis p2 = service.getPermis(noIndividu, RegDate.get(1903, 1, 13));
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(p2);
 
-		final Permis p3 = service.getPermis(noIndividu, RegDate.get(1989, 11, 20));
+		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1989, 11, 20));
 		assertNotNull(p3);
 		assertSame(permis1, p3);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetPermisActifListDesordonnees() {
+
+		final long noIndividu = 1;
+
+		// Une liste de permis (désordonnés) :
+		// 1. -> [ 1.3.1930..fin-des-temps]
+		// 2. -> [21.4.1985..fin-des-temps]
+		// 3. -> [ 8.1.1973..fin-des-temps]
+		final MockPermis permis1 = new MockPermis();
+		final MockPermis permis2 = new MockPermis();
+		final MockPermis permis3 = new MockPermis();
+		permis1.setDateDebutValidite(RegDate.get(1930, 3, 1));
+		permis2.setDateDebutValidite(RegDate.get(1985, 4, 21));
+		permis3.setDateDebutValidite(RegDate.get(1973, 1, 8));
+
+		service.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
+
+				final ArrayList<Permis> permis = new ArrayList<Permis>();
+				permis.add(permis1);
+				permis.add(permis2);
+				permis.add(permis3);
+				momo.setPermis(permis);
+			}
+		});
+
+		final Permis p1 = service.getPermisActif(noIndividu, null);
+		assertNotNull(p1);
+		assertSame(permis2, p1);
+
+		final Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
+		assertNull(p2);
+
+		final Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1940, 11, 20));
+		assertNotNull(p3);
+		assertSame(permis1, p3);
+
+		final Permis p4 = service.getPermisActif(noIndividu, RegDate.get(1975, 12, 25));
+		assertNotNull(p4);
+		assertSame(permis3, p4);
+
+		final Permis p5 = service.getPermisActif(noIndividu, RegDate.get(1988, 1, 2));
+		assertNotNull(p5);
+		assertSame(permis2, p5);
 	}
 
 	@Test
@@ -277,19 +334,22 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				momo.setPermis(permis1);
+
+				final ArrayList<Permis> permis = new ArrayList<Permis>();
+				permis.add(permis1);
+				momo.setPermis(permis);
 			}
 		});
 
-		Permis p1 = service.getPermis(noIndividu, null);
+		Permis p1 = service.getPermisActif(noIndividu, null);
 		assertNotNull(p1);
 		assertSame(permis1, p1);
 
-		Permis p2 = service.getPermis(noIndividu, RegDate.get(1903, 1, 13));
+		Permis p2 = service.getPermisActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNotNull(p2);
 		assertSame(permis1, p2);
 
-		Permis p3 = service.getPermis(noIndividu, RegDate.get(1989, 11, 20));
+		Permis p3 = service.getPermisActif(noIndividu, RegDate.get(1989, 11, 20));
 		assertNotNull(p3);
 		assertSame(permis1, p3);
 	}

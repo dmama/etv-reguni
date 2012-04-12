@@ -55,7 +55,7 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
-				setPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);
+				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);
 
 				addAdresse(indConceicao, TypeAdresseCivil.COURRIER, "Rue de la poste", "39", 1020,
 						MockLocalite.Renens, null, naissance, dateCorrection.getOneDayBefore());

@@ -7,16 +7,12 @@ import ch.vd.uniregctb.type.TypePermis;
 public interface Permis extends DateRange {
 
     /**
-     * Retourne la date de début de validité du permis.
-     *
      * @return la date de début de validité du permis.
      */
     @Override
     RegDate getDateDebut();
 
     /**
-     * Retourne la date de fin de validité du permis.
-     *
      * @return la date de fin de validité du permis.
      */
     @Override

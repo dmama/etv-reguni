@@ -149,6 +149,28 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
+	private static String dumpPermis(Collection<Permis> coll, int depth) {
+		if (coll == null) {
+			return "null";
+		}
+
+		StringBuilder s = new StringBuilder();
+		s.append("[");
+		boolean first = true;
+		for (Permis p : coll) {
+			if (first) {
+				first = false;
+			}
+			else {
+				s.append(", ");
+			}
+			s.append(dumpPermis(p, depth + 1));
+		}
+		s.append("]");
+
+		return s.toString();
+	}
+
 	private static String dumpPermis(Permis permis, int depth) {
 		if (permis == null) {
 			return "null";

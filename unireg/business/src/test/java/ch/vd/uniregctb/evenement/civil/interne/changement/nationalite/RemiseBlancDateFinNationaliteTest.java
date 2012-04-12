@@ -39,7 +39,7 @@ public class RemiseBlancDateFinNationaliteTest extends AbstractEvenementCivilInt
 				addDefaultAdressesTo(marine);
 				addOrigine(marine, MockPays.France.getNomMinuscule());
 				addNationalite(marine, MockPays.Suisse, RegDate.get(1973, 8, 20), DATE_FIN_NATIONALITE);
-				setPermis(marine, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
+				addPermis(marine, TypePermis.ETABLISSEMENT, RegDate.get(1973, 8, 20), null, false);
 				
 				addIndividu(NUMERO_INDIVIDU, RegDate.get(1965, 8, 12), "Mariano", "Luis", true);
 			}

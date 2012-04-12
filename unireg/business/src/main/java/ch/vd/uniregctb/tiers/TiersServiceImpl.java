@@ -328,7 +328,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         //permis
-        final Permis dernierPermis = serviceCivilService.getPermis(habitant.getNumeroIndividu(), RegDate.get());
+        final Permis dernierPermis = serviceCivilService.getPermisActif(habitant.getNumeroIndividu(), RegDate.get());
         if (dernierPermis != null) {
             habitant.setCategorieEtranger(CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()));
             habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebut());
@@ -644,7 +644,7 @@ public class TiersServiceImpl implements TiersService {
      */
     private boolean isSansPermisC(Individu individu, boolean permisMustExist, RegDate date) throws TiersException {
 
-        final Permis permis = serviceCivilService.getPermis(individu.getNoTechnique(), date);
+        final Permis permis = serviceCivilService.getPermisActif(individu.getNoTechnique(), date);
         if (permis == null && permisMustExist) {
             throw new TiersException("Impossible de déterminer la nationalité de l'individu " + individu.getNoTechnique());
         }
@@ -668,7 +668,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public boolean isAvecPermisC(Individu individu, RegDate date) {
-        final Permis permis = serviceCivilService.getPermis(individu.getNoTechnique(), date);
+        final Permis permis = serviceCivilService.getPermisActif(individu.getNoTechnique(), date);
         if (permis == null) {
             return false;
         }

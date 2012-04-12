@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
@@ -217,7 +218,7 @@ public class PersonnePhysique extends Contribuable {
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
 			this.dateArrivee = DataHelper.coreToWeb(individu.getDateArriveeVD());
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis();
+			final ch.vd.uniregctb.interfaces.model.Permis permis = ServiceCivilServiceBase.getPermisActif(individu, date);
 			if (permis == null) {
 				this.categorie = Categorie.SUISSE;
 			}

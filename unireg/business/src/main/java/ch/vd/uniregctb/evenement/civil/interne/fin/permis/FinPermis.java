@@ -35,7 +35,7 @@ public class FinPermis extends EvenementCivilInterne {
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
-			final Permis permis = context.getServiceCivil().getPermis(super.getNoIndividu(), evenement.getDateEvenement());
+			final Permis permis = context.getServiceCivil().getPermisActif(super.getNoIndividu(), evenement.getDateEvenement());
 			if (permis == null || permis.getDateFin() != evenement.getDateEvenement()) {
 				throw new EvenementCivilException("Le permis n'a pas été trouvé dans le registre civil");
 			}

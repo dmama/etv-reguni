@@ -99,10 +99,11 @@ public interface Individu extends EntiteCivile {
 	 */
 	String getNumeroRCE();
 
-	/**
-	 * @return le permis actif à la date demandée lors de l'appel à getIndividu(); ou <b>null</b> si l'individu ne possède pas de permis (= qu'il est suisse).
-	 */
-	Permis getPermis();
+    /**
+     * TODO (msi) retourner une liste custom
+     * @return la liste des permis de l'individu, triée par ordre croissant d'obtention.
+     */
+    List<Permis> getPermis();
 
 	/**
 	 * @return la liste des nationalites de l'individu.

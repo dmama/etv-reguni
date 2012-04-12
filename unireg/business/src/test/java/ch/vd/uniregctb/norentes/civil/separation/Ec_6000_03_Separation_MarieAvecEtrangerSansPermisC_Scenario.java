@@ -82,7 +82,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 
 				addOrigine(indMomo, MockPays.France.getNomMinuscule());
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null);
-				setPermis(indMomo, TypePermis.COURTE_DUREE, dateNaissanceMomo, null, false);
+				addPermis(indMomo, TypePermis.COURTE_DUREE, dateNaissanceMomo, null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, dateSeparation, null);
 

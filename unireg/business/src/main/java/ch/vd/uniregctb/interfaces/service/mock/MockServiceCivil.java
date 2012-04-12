@@ -151,6 +151,10 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
 
+		// Permis
+		final List<Permis> permis = new ArrayList<Permis>();
+		individu.setPermis(permis);
+
 		add(individu);
 		return individu;
 	}
@@ -455,7 +459,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		}
 	}
 
-	protected Permis setPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
+	protected Permis addPermis(MockIndividu individu, TypePermis type, RegDate debut, @Nullable RegDate fin, boolean permisAnnule) {
 		final MockPermis permis = new MockPermis();
 		permis.setTypePermis(type);
 		permis.setDateDebutValidite(debut);
@@ -463,7 +467,10 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		if (permisAnnule) {
 			permis.setDateAnnulation(RegDate.get());
 		}
-		individu.setPermis(permis);
+		if (individu.getPermis() == null) {
+			individu.setPermis(new ArrayList<Permis>());
+		}
+		individu.getPermis().add(permis);
 		return permis;
 	}
 
