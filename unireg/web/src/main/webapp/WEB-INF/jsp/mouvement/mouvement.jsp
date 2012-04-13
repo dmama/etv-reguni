@@ -22,7 +22,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" /><label for="utilisateur"><fmt:message key="label.utilisateur" /></label>
+				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" id="radioUtil" /><label for="utilisateur"><fmt:message key="label.utilisateur" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="utilisateursEnvoi" <c:if test="${param.depuisTache == 'true'}">style="display:none;"</c:if> >
@@ -47,11 +47,12 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" /><label for="collectivite"><fmt:message key="label.collectivite.administrative" /></label>
+				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" id="radioColl"/><label for="collectivite"><fmt:message key="label.collectivite.administrative" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="collectivites" <c:if test="${param.depuisTache != 'true'}">style="display:none;"</c:if> >
 					<form:input path="collAdmDestinataireEnvoi" id="collAdmDestinataireEnvoi" />
+					<form:errors path="utilisateurEnvoi" cssClass="error"/>
 					<form:hidden path="noCollAdmDestinataireEnvoi" id="noCollAdmDestinataireEnvoi"  />
 					<script>
 						$(function() {
@@ -64,7 +65,12 @@
 			</td>
 		</tr>
 	</table>
-	</div>	
+	<script>
+		$(function() { <%-- [SIFISC-4823]fix l'état du formulaire incoherent en cas d'erreur --%>
+			selectEnvoi($('input[@name=destinationEnvoi]:checked').attr('id') == 'radioColl' ? 'collectivite': 'utilisateurEnvoi');
+		});
+    </script>
+	</div>
 		
 	<div id="reception" style="display:none;">
 	<table>
