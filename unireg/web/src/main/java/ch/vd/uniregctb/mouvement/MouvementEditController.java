@@ -54,16 +54,6 @@ public class MouvementEditController extends AbstractMouvementController {
 		else {
 			mvtDetailView = mouvementEditManager.creerMvt(idCtb);
 		}
-		// xsifnr: Explication du "pourquoi" mvtDetailView est referencé 2 fois dans le Modele
-		//
-		//  - J'ai besoin de stocké le nouveau mouvement en session pour garder le meme fonctionnement que le SimpleFormController Spring 2 et eviter de devoir
-		//     récrire les managers et les objets View ...
-		//  - J'ai besoin que le backing objet soit present dans le modele avec la clé 'command' pour ne pas casser l'intégration dans les autres pages qui factorisent
-		//     les données concernant le contribuable.
-		//  - Je ne crois pas que mettre 'command' en session soit une bonne idée à cause des eventuelles effets de bord avec les autres controlleurs d'unireg
-		//
-		// SOLUTION ==> Je reference le backing object dans la request sous 'command' et dans la session sous 'nouveauMouvement'
-		model.put("command", mvtDetailView);
 		model.put("nouveauMouvement", mvtDetailView);
 		return new ModelAndView("mouvement/edit", model);
 	}
@@ -72,8 +62,6 @@ public class MouvementEditController extends AbstractMouvementController {
 	protected ModelAndView post(@ModelAttribute("nouveauMouvement") @Valid MouvementDetailView nouveauMouvementInSession, BindingResult result, ModelMap model) throws Exception {
 
 		if (result.hasErrors()) {
-			model.put("org.springframework.validation.BindingResult.command", result); // TODO xsifnr: petit hack le temps de refactorer la jsp, à supprimer
-			model.put("command", nouveauMouvementInSession);
 			model.put("nouveauMouvement", nouveauMouvementInSession);
 			return new ModelAndView("mouvement/edit", model);
 		}

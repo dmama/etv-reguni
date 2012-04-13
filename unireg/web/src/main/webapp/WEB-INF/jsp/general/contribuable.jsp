@@ -2,8 +2,11 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <c:set var="page" value="${param.page}" />
 <c:set var="path" value="${param.path}" />
-
-<c:set var="bind" value="command.${path}" scope="request"/>
+<c:set var="commandName" value="${param.commandName}" />
+<c:if test="${empty commandName}">
+	<c:set var="commandName" value="command" />
+</c:if>
+<c:set var="bind" value="${commandName}.${path}" scope="request"/>
 <spring:bind path="${bind}" >
 	<c:set var="tiersGeneral" value="${status.value}"  scope="request"/>
 </spring:bind>
