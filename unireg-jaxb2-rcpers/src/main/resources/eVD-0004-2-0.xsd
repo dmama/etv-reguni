@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-		   xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/2"
-		   targetNamespace="http://evd.vd.ch/xmlns/eVD-0004/2"
-		   elementFormDefault="qualified"
-		   attributeFormDefault="unqualified"
-		   version="1.0">
+			xmlns:eVD-0004="http://evd.vd.ch/xmlns/eVD-0004/2"
+			targetNamespace="http://evd.vd.ch/xmlns/eVD-0004/2"
+			elementFormDefault="qualified"
+			attributeFormDefault="unqualified"
+			version="1.0">
 
 	<xs:annotation>
 		<xs:documentation xml:lang="fr">
@@ -16,11 +16,11 @@
 
 	<xs:annotation>
 		<xs:documentation xml:lang="fr">
-			******************************************************************************************
-			***
-			*** Types pour les erreurs
-			***
-			******************************************************************************************
+		******************************************************************************************
+		***
+		*** Types pour les erreurs
+		***
+		******************************************************************************************
 		</xs:documentation>
 	</xs:annotation>
 	<xs:element name="errors">

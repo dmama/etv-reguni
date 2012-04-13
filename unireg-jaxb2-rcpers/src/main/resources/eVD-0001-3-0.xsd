@@ -377,11 +377,18 @@
 					<xs:documentation>Caractère 5.1 du catalogue officiel des caractères vaudois </xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="residencePermit" type="eVD-0001:residencePermitType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>Caractère 5.2 du catalogue officiel des caractères vaudois. </xs:documentation>
-				</xs:annotation>
-			</xs:element>
+			<xs:choice minOccurs="0">
+				<xs:element name="currentResidencePermit" type="eVD-0001:residencePermitType">
+					<xs:annotation>
+						<xs:documentation>Caractère 5.2 du catalogue officiel des caractères vaudois. Élément contenant le permis courant de la personne. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="residencePermitHistory" type="eVD-0001:residencePermitType" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Caractère 5.2 du catalogue officiel des caractères vaudois. Élément retourné via l'utilisation du paramètre "history" du service persons : il contient tous les permis connus dans RCPers pour la personne. </xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
 			<xs:element name="dateOfDeath" type="xs:date" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>Caractère 4.5 du catalogue officiel des caractères vaudois </xs:documentation>
@@ -415,12 +422,12 @@
 			<xs:element name="typeOfRelationship" type="eVD-0001:typeOfRelationshipType">
 				<xs:annotation>
 					<xs:documentation>Caractère 10.1 du catalogue officiel des caractères vaudois :
-						• 1 = Est conjoint(e),
-						• 2 = Est partenaire
-						• 3 = Est mère,
-						• 4 = Est père,
-						• 101 =  Est fille,
-						• 102 = Est fils.</xs:documentation>
+• 1 = Est conjoint(e),
+• 2 = Est partenaire
+• 3 = Est mère,
+• 4 = Est père,
+• 101 =  Est fille,
+• 102 = Est fils.</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="personLink" type="xs:string">
