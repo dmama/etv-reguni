@@ -37,7 +37,7 @@ public class AnnulationPermis extends AnnulationPermisCOuNationaliteSuisse {
 		super(evenement, context, options);
 
 		try {
-			final Permis permis = context.getServiceCivil().getPermisAnnule(super.getNoIndividu(), evenement.getDateEvenement());
+			final Permis permis = getIndividuOrThrowException().getPermis().getPermisAnnule(evenement.getDateEvenement());
 			if (permis == null || permis.getDateAnnulation() == null) {
 				throw new EvenementCivilException("Aucun permis annulé n'a été trouvé dans le registre civil");
 			}

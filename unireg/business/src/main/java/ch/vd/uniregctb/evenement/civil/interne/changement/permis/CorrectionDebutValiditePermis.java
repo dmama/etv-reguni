@@ -53,7 +53,7 @@ public class CorrectionDebutValiditePermis extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		final Individu individu = getIndividu();
-		final Permis permis = context.getServiceCivil().getPermisActif(getNoIndividu(), getDate());
+		final Permis permis = individu.getPermis().getPermisActif(getDate());
 		if (permis == null || permis.getTypePermis() != TypePermis.ETABLISSEMENT) {
 			Audit.info(getNumeroEvenement(), "Permis autre que permis C à la date de l'événement : ignoré");
 		}

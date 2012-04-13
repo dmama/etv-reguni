@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique.Categorie;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
@@ -167,7 +166,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
 			this.dateArrivee = DataHelper.coreToWeb(individu.getDateArriveeVD());
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = ServiceCivilServiceBase.getPermisActif(individu, null);
+			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis().getPermisActif(null);
 			if (permis == null) {
 				this.categorie = ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique.Categorie.SUISSE;
 			}

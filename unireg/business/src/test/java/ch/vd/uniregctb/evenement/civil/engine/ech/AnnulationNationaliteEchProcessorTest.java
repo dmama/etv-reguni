@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -9,7 +7,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -42,7 +39,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
-				ind.setPermis(Arrays.<Permis>asList(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL)));
+				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
 			}
 		});
 		
@@ -111,7 +108,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
-				ind.setPermis(Arrays.<Permis>asList(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL)));
+				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
 			}
 		});
 

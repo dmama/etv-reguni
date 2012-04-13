@@ -38,6 +38,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PermisList;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -74,7 +75,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private EtatCivilList etatsCivils;
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
-	private List<Permis> permis;
+	private PermisList permis;
 	private List<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
@@ -129,7 +130,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.parents = initParents(this.naissance, relationships);
 			this.conjoints = initConjoints(relationships);
 		}
-		this.permis = initPermis(person);
+		this.permis = initPermis(this.noTechnique, person);
 		this.nationalites = initNationalites(person, infraService);
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
@@ -245,14 +246,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static List<Permis> initPermis(Person person) {
+	private static PermisList initPermis(long numeroIndividu, Person person) {
 		final ResidencePermit permit = person.getResidencePermit();
 		if (permit == null) {
 			return null;
 		}
 		final List<Permis> list = new ArrayList<Permis>(1);
 		list.add(PermisRCPers.get(permit));
-		return list;
+		return new PermisListRcPers(numeroIndividu, list);
 	}
 
 	protected static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
@@ -515,7 +516,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public List<Permis> getPermis() {
+	public PermisList getPermis() {
 		return permis;
 	}
 

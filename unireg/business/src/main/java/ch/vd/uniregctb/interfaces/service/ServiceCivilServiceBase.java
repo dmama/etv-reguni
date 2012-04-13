@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -171,55 +170,6 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 				if (conjoint.isValidAt(date)) {
 					return conjoint.getNumeroAutreIndividu();
 				}
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * @param noIndividu le numéro d'individu
-	 * @param date       la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
-	 * @return le permis actif d'un individu à une date donnée.
-	 */
-	@Override
-	public final Permis getPermisActif(long noIndividu, RegDate date) {
-		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.PERMIS);
-		return (individu == null ? null : getPermisActif(individu, date));
-	}
-
-	public static Permis getPermisActif(Individu individu, @Nullable RegDate date) {
-
-		Permis permis = null;
-
-		final List<Permis> liste = individu.getPermis();
-		if (liste != null) {
-
-			// itération sur la liste des permis, dans l'ordre inverse de l'obtention
-			// (on s'arrête sur le premier pour lequel les dates sont bonnes - et on ne prends pas en compte les permis annulés)
-			for (int i = liste.size() - 1; i >= 0; --i) {
-				final Permis e = liste.get(i);
-				if (e.getDateAnnulation() != null) {
-					continue;
-				}
-				if (RegDateHelper.isBetween(date, e.getDateDebut(), e.getDateFin(), NullDateBehavior.LATEST)) {
-					permis = e;
-					break;
-				}
-			}
-		}
-
-		return permis;
-	}
-
-	@Override
-	public Permis getPermisAnnule(long noIndividu, @NotNull RegDate date) {
-		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.PERMIS);
-		if (individu == null) {
-			return null;
-		}
-		for (Permis permis : individu.getPermis()) {
-			if (permis.getDateAnnulation() != null && permis.getDateDebut() == date) {
-				return permis;
 			}
 		}
 		return null;

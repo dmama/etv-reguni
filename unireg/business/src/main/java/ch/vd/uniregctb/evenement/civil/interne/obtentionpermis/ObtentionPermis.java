@@ -56,7 +56,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 	private void init(RegDate date, EvenementCivilContext context) throws EvenementCivilException {
 		try {
 			// on récupère le permis (= à la date d'événement)
-			final Permis permis = context.getServiceCivil().getPermisActif(super.getNoIndividu(), date);
+			final Permis permis = getIndividuOrThrowException().getPermis().getPermisActif(date);
 			if (permis == null) {
 				throw new EvenementCivilException("Aucun permis trouvé dans le registre civil");
 			}

@@ -27,6 +27,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PermisList;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 
@@ -53,7 +54,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final EtatCivilListHost etatsCivils;
 	private List<Nationalite> nationalites;
 	private Collection<Origine> origines;
-	private List<Permis> permis;
+	private PermisList permis;
 	private Tutelle tutelle;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
@@ -96,7 +97,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.conjoints = initConjoint(this.etatsCivils, upTo);
 		this.nationalites = initNationalites(target.getNationalites(), upTo);
 		this.origines = initOrigines(target.getOrigines());
-		this.permis = initPermis(target.getPermis(), upTo);
+		this.permis = initPermis(this.noTechnique, target.getPermis(), upTo);
 		this.tutelle = TutelleImpl.get(target.getTutelle(), upTo);
 
 		if (parts != null) {
@@ -405,11 +406,11 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public List<Permis> getPermis() {
+	public PermisList getPermis() {
 		return permis;
 	}
 
-	private List<Permis> initPermis(Collection<?> targetPermis, RegDate upTo) {
+	private PermisList initPermis(long numeroIndividu, Collection<?> targetPermis, RegDate upTo) {
 		if (targetPermis == null || targetPermis.isEmpty()) {
 			return null;
 		}
@@ -423,10 +424,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 			}
 		}
 
-		// on trie immédiatement la liste par ordre croissant d'obtention des permis
-		Collections.sort(permis, new PermisComparator());
-
-		return permis;
+		return new PermisListHost(numeroIndividu, permis);
 	}
 
 	private static class PermisComparator implements Comparator<Permis> {

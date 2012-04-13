@@ -4,6 +4,8 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -69,7 +71,9 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 		}
 
 		public void setupForTest() {
-			((MockPermis) getPermisActif(noIndRosa, dateFinPermisC)).setDateFinValidite(dateFinPermisC);
+			final Individu ind = serviceCivilService.getIndividu(noIndRosa, dateFinPermisC, AttributeIndividu.PERMIS);
+			final MockPermis permisActif = (MockPermis) ind.getPermis().getPermisActif(dateFinPermisC);
+			permisActif.setDateFinValidite(dateFinPermisC);
 		}
 	}
 

@@ -22,6 +22,7 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -74,14 +75,6 @@ public abstract class EvenementCivilInterne {
 		this.noIndividuConjoint = evenement.getNumeroIndividuConjoint();
 		this.conjointPP = this.noIndividuConjoint == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividuConjoint, true);
 
-		/*
-		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
-		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
-		 */
-		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
-		fillRequiredParts(requiredParts);
-		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
-
 		if (noIndividu != null && options.isRefreshCache()) {
 
 			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
@@ -112,11 +105,6 @@ public abstract class EvenementCivilInterne {
 		this.principalPP = this.noIndividu == null ? null : getPersonnePhysiqueOrNull(this.noIndividu, true);
 		this.noIndividuConjoint = null;
 		this.conjointPP = null;
-
-		/*
-		 * Récupération des informations sur l'individu depuis RCPers.
-		 */
-		parts = null;
 
 		if (noIndividu != null && options.isRefreshCache()) {
 
@@ -299,9 +287,41 @@ public abstract class EvenementCivilInterne {
 		return noIndividu;
 	}
 
+	private AttributeIndividu[] getParts() {
+		if (parts == null) {
+			initParts(); //lazy init
+		}
+		return parts;
+	}
+
+	private void initParts() {
+		/*
+		 * Récupération des informations sur l'individu depuis le host. En plus des états civils, on peut vouloir les adresses, le conjoint,
+		 * les enfants... (enfin, chaque adapteur d'événement sait ce dont il a besoin en plus...)
+		 */
+		final Set<AttributeIndividu> requiredParts = new HashSet<AttributeIndividu>();
+		fillRequiredParts(requiredParts);
+		parts = requiredParts.toArray(new AttributeIndividu[requiredParts.size()]);
+	}
+
+	@Nullable
 	public Individu getIndividu() {
 		if (individuPrincipal == null && noIndividu != null) { // lazy init
-			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, parts);
+			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
+		}
+		return individuPrincipal;
+	}
+
+	@NotNull
+	public Individu getIndividuOrThrowException() throws IndividuNotFoundException {
+		if (individuPrincipal == null) { // lazy init
+			if (noIndividu == null) {
+				throw new IllegalArgumentException("Le numéro d'invidu principal est nul");
+			}
+			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
+			if (individuPrincipal == null) {
+				throw new IndividuNotFoundException(noIndividu);
+			}
 		}
 		return individuPrincipal;
 	}
