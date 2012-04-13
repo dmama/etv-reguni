@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -192,18 +191,6 @@ public interface ServiceCivilService {
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
 	EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
-
-	/**
-	 * @param date la date de validité du permis, ou <b>null</b> pour obtenir le dernis permis valide.
-	 * @return le permis actif d'un individu à une date donnée.
-	 */
-	Permis getPermisActif(long noIndividu, RegDate date);
-
-	/**
-	 * @param date la date d'obtention du permis annulé.
-	 * @return le permis annulé d'un individu qui a été obtenu à une date donnée.
-	 */
-	Permis getPermisAnnule(long noIndividu, @NotNull RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.

@@ -99,11 +99,10 @@ public interface Individu extends EntiteCivile {
 	 */
 	String getNumeroRCE();
 
-    /**
-     * TODO (msi) retourner une liste custom
-     * @return la liste des permis de l'individu, triée par ordre croissant d'obtention.
-     */
-    List<Permis> getPermis();
+	/**
+	 * @return la liste des permis de l'individu, triée par ordre croissant d'obtention.
+	 */
+	PermisList getPermis();
 
 	/**
 	 * @return la liste des nationalites de l'individu.

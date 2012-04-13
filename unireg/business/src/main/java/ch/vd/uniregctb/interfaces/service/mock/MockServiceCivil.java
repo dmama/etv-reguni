@@ -44,6 +44,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockNationalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockOrigine;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
+import ch.vd.uniregctb.interfaces.model.mock.MockPermisList;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.model.mock.MockTutelle;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
@@ -152,8 +153,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
 
 		// Permis
-		final List<Permis> permis = new ArrayList<Permis>();
-		individu.setPermis(permis);
+		individu.setPermis(new MockPermisList(numero));
 
 		add(individu);
 		return individu;
@@ -468,7 +468,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 			permis.setDateAnnulation(RegDate.get());
 		}
 		if (individu.getPermis() == null) {
-			individu.setPermis(new ArrayList<Permis>());
+			individu.setPermis(new MockPermisList(individu.getNoTechnique()));
 		}
 		individu.getPermis().add(permis);
 		return permis;

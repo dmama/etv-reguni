@@ -4,6 +4,8 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -135,8 +137,9 @@ public class Ec_18000_10_Arrivee_HC_PermisC_Scenario extends EvenementCivilScena
 	public void check3() throws Exception {
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(TypePermis.ETABLISSEMENT, serviceCivilService.getPermisActif(noIndAntoine, dateArriveeBex).getTypePermis(),
-			"pas de permis C");
+		final Individu ind = serviceCivilService.getIndividu(noIndAntoine, dateArriveeBex, AttributeIndividu.PERMIS);
+		assertEquals(TypePermis.ETABLISSEMENT, ind.getPermis().getPermisActif(dateArriveeBex).getTypePermis(),
+				"pas de permis C");
 	}
 
 	@Etape(id = 4, descr = "Envoi de l'événement d'obtention de permis d'Antoine")

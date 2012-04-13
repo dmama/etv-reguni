@@ -3,7 +3,6 @@ package ch.vd.uniregctb.interfaces.model.mock;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PermisList;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.impl.RelationVersIndividuImpl;
@@ -44,7 +44,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private String nouveauNoAVS;
 	private String numeroRCE;
 	private Collection<Origine> origines;
-	private List<Permis> permis;
+	private PermisList permis;
 	private Tutelle tutelle;
 	private boolean sexeMasculin;
 	private RegDate dateArriveeVD;
@@ -290,19 +290,18 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public List<Permis> getPermis() {
+	public PermisList getPermis() {
 		return permis;
 	}
 
-	public void setPermis(List<Permis> permis) {
+	public void setPermis(PermisList permis) {
 		this.permis = permis;
-		if (this.permis != null) {
-			Collections.sort(this.permis, new Comparator<Permis>() {
-				@Override
-				public int compare(Permis o1, Permis o2) {
-					return o1.getDateDebut().compareTo(o2.getDateDebut());
-				}
-			});
+	}
+
+	public void setPermis(Permis... permis) {
+		this.permis = new MockPermisList(getNoTechnique());
+		for (Permis p : permis) {
+			this.permis.add(p);
 		}
 	}
 
@@ -615,7 +614,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			nationalites = buildLimitedCollectionBeforeDate(nationalites, date, NATIONALITE_LIMITATOR);
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
-			permis = buildLimitedCollectionBeforeDate(permis, date, PERMIS_LIMITATOR);
+			List<Permis> limited = buildLimitedCollectionBeforeDate(permis, date, PERMIS_LIMITATOR);
+			permis = (limited == null ? null : new MockPermisList(permis.getNumeroIndividu(), limited));
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			setAdresses(buildLimitedCollectionBeforeDate(getAdresses(), date, ADRESSE_LIMITATOR));

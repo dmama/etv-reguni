@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
-
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -9,7 +7,6 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -65,7 +62,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final MockPermis permis = new MockPermis();
 				permis.setDateDebutValidite(dateObtentionPermis);
 				permis.setTypePermis(TypePermis.ETABLISSEMENT);
-				individu.setPermis(Arrays.<Permis>asList(permis));
+				individu.setPermis(permis);
 			}
 		});
 		
@@ -144,7 +141,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final MockPermis permis = new MockPermis();
 				permis.setDateDebutValidite(dateObtentionPermis);
 				permis.setTypePermis(TypePermis.ANNUEL);
-				individu.setPermis(Arrays.<Permis>asList(permis));
+				individu.setPermis(permis);
 			}
 		});
 

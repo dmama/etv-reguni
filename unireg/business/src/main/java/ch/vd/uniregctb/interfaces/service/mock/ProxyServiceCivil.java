@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -132,18 +131,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 		assertTargetNotNull();
 		return target.getEtatCivilActif(noIndividu, date);
-	}
-
-	@Override
-	public Permis getPermisActif(long noIndividu, RegDate date) {
-		assertTargetNotNull();
-		return target.getPermisActif(noIndividu, date);
-	}
-
-	@Override
-	public Permis getPermisAnnule(long noIndividu, @NotNull RegDate date) {
-		assertTargetNotNull();
-		return target.getPermisAnnule(noIndividu, date);
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.uniregctb.ech.EchHelper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.webservices.party3.impl.Context;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
@@ -70,7 +69,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = ServiceCivilServiceBase.getPermisActif(individu, null);
+			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis().getPermisActif(null);
 			if (permis == null) {
 				to.setCategory(NaturalPersonCategory.SWISS);
 			}

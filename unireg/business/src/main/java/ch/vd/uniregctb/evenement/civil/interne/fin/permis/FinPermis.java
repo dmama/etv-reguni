@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.fin.permis;
 
+import java.util.Set;
+
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,6 +15,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -35,7 +38,7 @@ public class FinPermis extends EvenementCivilInterne {
 
 		try {
 			// on récupère le permis à partir de sa date de fin (= à la date d'événement)
-			final Permis permis = context.getServiceCivil().getPermisActif(super.getNoIndividu(), evenement.getDateEvenement());
+			final Permis permis = getIndividuOrThrowException().getPermis().getPermisActif(evenement.getDateEvenement());
 			if (permis == null || permis.getDateFin() != evenement.getDateEvenement()) {
 				throw new EvenementCivilException("Le permis n'a pas été trouvé dans le registre civil");
 			}
@@ -98,5 +101,10 @@ public class FinPermis extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		// rien à faire tout ce passe dans le validateSpecific
 		return HandleStatus.TRAITE;
+	}
+
+	@Override
+	protected void fillRequiredParts(Set<AttributeIndividu> parts) {
+		parts.add(AttributeIndividu.PERMIS);
 	}
 }

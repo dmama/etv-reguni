@@ -305,8 +305,13 @@ public class TiersServiceImpl implements TiersService {
             habitant.setSexe(Sexe.FEMININ);
         }
 
+	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS);
+	    if (individu == null) {
+		    throw new IndividuNotFoundException(habitant.getNumeroIndividu());
+	    }
+
         // nationalité (on ne garde qu'une nationalité au hasard, sachant que si l'une est Suisse, elle a priorité)
-        final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(habitant.getNumeroIndividu(), null);
+        final Collection<Nationalite> nationalites = individu.getNationalites();
         if (nationalites != null) {
             Pays pays = null;
             for (Nationalite nationalite : nationalites) {
@@ -328,7 +333,7 @@ public class TiersServiceImpl implements TiersService {
         }
 
         //permis
-        final Permis dernierPermis = serviceCivilService.getPermisActif(habitant.getNumeroIndividu(), RegDate.get());
+        final Permis dernierPermis = individu.getPermis().getPermisActif(null);
         if (dernierPermis != null) {
             habitant.setCategorieEtranger(CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()));
             habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebut());
@@ -644,7 +649,7 @@ public class TiersServiceImpl implements TiersService {
      */
     private boolean isSansPermisC(Individu individu, boolean permisMustExist, RegDate date) throws TiersException {
 
-        final Permis permis = serviceCivilService.getPermisActif(individu.getNoTechnique(), date);
+        final Permis permis = individu.getPermis().getPermisActif(date);
         if (permis == null && permisMustExist) {
             throw new TiersException("Impossible de déterminer la nationalité de l'individu " + individu.getNoTechnique());
         }
@@ -668,7 +673,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public boolean isAvecPermisC(Individu individu, RegDate date) {
-        final Permis permis = serviceCivilService.getPermisActif(individu.getNoTechnique(), date);
+        final Permis permis = individu.getPermis().getPermisActif(date);
         if (permis == null) {
             return false;
         }

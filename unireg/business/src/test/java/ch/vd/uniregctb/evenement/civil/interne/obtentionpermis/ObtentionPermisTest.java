@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
-import java.util.Arrays;
-
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -13,7 +11,6 @@ import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -573,7 +570,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL)));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
 			}
 		});
 		
@@ -591,7 +588,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
 			}
 		});
 		
@@ -653,7 +650,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL)));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
 			}
 		});
 
@@ -670,7 +667,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
 			}
 		});
 
@@ -728,7 +725,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL)));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
 			}
 		});
 
@@ -746,7 +743,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				individu.setPermis(Arrays.<Permis>asList(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT)));
+				individu.setPermis(new MockPermis(datePermisC, null, null, TypePermis.ETABLISSEMENT));
 			}
 		});
 

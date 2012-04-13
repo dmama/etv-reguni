@@ -10,7 +10,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -42,7 +41,7 @@ public class AnnulationPermisTranslationStrategy extends AnnulationPermisOuNatio
 
 	private static TypePermis getTypePermisAnnule(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
 		final Individu individu = getIndividuAvant(event, context);
-		final Permis permis = ServiceCivilServiceBase.getPermisActif(individu, event.getDateEvenement());
+		final Permis permis = individu.getPermis().getPermisActif(event.getDateEvenement());
 		if (permis == null) {
 			throw new EvenementCivilException(
 					String.format("Aucun permis connu pour l'individu %d avant annulation en date du %s", event.getNumeroIndividu(), RegDateHelper.dateToDisplayString(event.getDateEvenement())));
