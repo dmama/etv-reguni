@@ -6,12 +6,13 @@
 		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-mouvement.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditMvt" name="theForm" className="nouveauMouvement">
+	<form:form method="post" id="formEditMvt" name="theForm" commandName="nouveauMouvement">
 		<unireg:nextRowClass reset="1"/>
 		<!-- Debut Caracteristiques generales -->
 		<jsp:include page="../general/contribuable.jsp">
 			<jsp:param name="page" value="mouvement" />
 			<jsp:param name="path" value="contribuable" />
+			<jsp:param name="commandName" value="nouveauMouvement" />
 		</jsp:include>
 		<!-- Fin Caracteristiques generales -->
 		<!-- Debut Mouvement dossier -->
