@@ -99,8 +99,8 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 	public void addNonIdentifies(IdentificationContribuable message) {
 
 		final String businessId = message.getHeader().getBusinessId();
-		final String nom = message.getDemande().getPersonne().getNom();
-		final String prenoms = message.getDemande().getPersonne().getPrenoms();
+		final String nom = message.getDemande().getPersonne()== null? null:message.getDemande().getPersonne().getNom();
+		final String prenoms = message.getDemande().getPersonne()== null? null:message.getDemande().getPersonne().getPrenoms();
 		nonIdentifies.add(new NonIdentifie(businessId, nom, prenoms));
 	}
 

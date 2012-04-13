@@ -1284,25 +1284,35 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		Assert.notNull(demande, "Le message ne contient aucune demande.");
 
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
-		Assert.notNull(demande, "Le message ne contient aucune critère sur la personne à identifier.");
+		Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
+		if(criteresPersonne!=null){
+			final List<PersonnePhysique> list = identifie(criteresPersonne);
+			if (list.size() == 1) {
+				// on a trouvé un et un seul contribuable:
+				PersonnePhysique personne = list.get(0);
 
-		final List<PersonnePhysique> list = identifie(criteresPersonne);
-		if (list.size() == 1) {
-			// on a trouvé un et un seul contribuable:
-			PersonnePhysique personne = list.get(0);
+				// on peut répondre immédiatement
+				identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
+				return true;
 
-			// on peut répondre immédiatement
-			identifie(message, personne, Etat.TRAITE_AUTOMATIQUEMENT);
-			return true;
-
+			}
+			else {
+				//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement
+				if (Etat.EXCEPTION == message.getEtat()) {
+					message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
+				}
+				return false;
+			}
 		}
-		else {
+		else{
+			LOGGER.info(String.format("Le message %s ne contient aucune critère sur la personne à identifier, il est passé en traitement manuel.",message.getId()));
 			//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement
 			if (Etat.EXCEPTION == message.getEtat()) {
 				message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 			}
 			return false;
 		}
+
 
 	}
 
