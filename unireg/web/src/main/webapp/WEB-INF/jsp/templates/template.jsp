@@ -3,12 +3,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<script type="text/javascript" language="Javascript1.3">
-function ouvrirAide(url) {
- 	window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
-}
-</script>
-
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -27,7 +21,10 @@ function ouvrirAide(url) {
 			function getContextPath() {
 			  return '<c:url value="/"/>';
 			}
-		</script>
+            function ouvrirAide(url) {
+                window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
+            }
+        </script>
 
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
 		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
@@ -39,7 +36,7 @@ function ouvrirAide(url) {
 
 			<div id="sommaire">
 				<div style="position:absolute; top:5px; left:5px;">
-					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>" /></div>
+					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>"  alt="loading..."/></div>
 				</div>
 				<script>
 					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
@@ -49,7 +46,7 @@ function ouvrirAide(url) {
 						<span class="label"><fmt:message key="label.canton.vaud" /></span>
 					</a>
 				</div>
-				<h3>Sommaire&nbsp;<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/sommaire-glossaire.pdf'/>');" title="AccessKey: a" accesskey="e">?</a>
+				<h3>Sommaire&nbsp;<a href="#" onClick="ouvrirAide('<c:url value="/docs/sommaire-glossaire.pdf"/>');" title="AccessKey: a" accesskey="e">?</a>
 				</h3>
 				<tiles:getAsString name='links' ignore='true'/>
 				<ul>
@@ -65,7 +62,7 @@ function ouvrirAide(url) {
 						<script>
 							function refreshInboxSize() { // attention, cette méthode est appelée depuis la page inbox.jsp !
 								Inbox.refreshSize($('#inboxSize'), '<fmt:message key="title.inbox"/>');
-							};
+							}
 							// dès l'affichage de la page, on rafraîchit le nombre d'éléments non lus de l'inbox
 							$(refreshInboxSize);
 						</script>
@@ -210,16 +207,16 @@ function ouvrirAide(url) {
 					<authz:authorize ifAnyGranted="ROLE_MODIF_VD_ORD, ROLE_MODIF_VD_SOURC, ROLE_MODIF_HC_HS, ROLE_MODIF_HAB_DEBPUR, ROLE_MODIF_NONHAB_DEBPUR, ROLE_FORM_OUV_DOSS">
 
 						<div id="postit" class="postit" style="display:none;">
-							<table cellpadding="0" class="postit" classname="postit" border="0" cellspacing="0">
+							<table cellpadding="0" class="postit" border="0" cellspacing="0">
 								<tbody>
-									<tr class="top" classname="top">
-										<td class="iepngfix" classname="iepngfix"></td>
+									<tr class="top">
+										<td class="iepngfix"></td>
 									</tr>
-									<tr class="middle" classname="middle">
+									<tr class="middle">
 										<td><span id="postitText"></span></td>
 									</tr>
-									<tr class="bottom" classname="bottom">
-										<td class="iepngfix" classname="iepngfix"></td>
+									<tr class="bottom">
+										<td class="iepngfix"></td>
 									</tr>
 								</tbody>
 							</table>
@@ -244,8 +241,8 @@ function ouvrirAide(url) {
 				<div class="application iepngfix"></div>
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<div class="quicksearch">
-					<fmt:message key="label.acces.rapide"/>&nbsp;
-					<input class="quicksearch" size="15" type="text" 
+					<label for="quicksearch"><fmt:message key="label.acces.rapide"/></label>&nbsp;
+					<input id="quicksearch" class="quicksearch" size="15" type="text"
 						onKeyPress="return Quicksearch.onKeyPress(this, event);"
 						onfocus="Quicksearch.onFocus(this, '<fmt:message key="label.acces.rapide.invite"/>')"
 						onblur="Quicksearch.onBlur(this, '<fmt:message key="label.acces.rapide.invite"/>')"
@@ -260,7 +257,7 @@ function ouvrirAide(url) {
 					<tiles:getAsString name='tools' ignore='true'/>
 					<ul>
 						<li>
-						<unireg:user></unireg:user>
+						    <unireg:user/>
 						</li>
 						<tiles:getAsString name='vue' ignore='true'/>
 						<li>
@@ -270,10 +267,12 @@ function ouvrirAide(url) {
 							<tiles:getAsString name='fichierAide' ignore='true'/>
 						</li>
 						<li>
-							<a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>
+                            <%--suppress JspAbsolutePathInspection, HtmlUnknownTarget --%>
+                            <a href="/fiscalite/kbaci/advancedSearch.htm" title="Base ACI" accesskey="b"><fmt:message key="label.kbaci" /></a>
 						</li>
 						<li>
-							<a href="/iam/accueil/" target="_blank" title="Portail IAM" accesskey="x"><fmt:message key="label.portail.iam" /></a>
+                            <%--suppress JspAbsolutePathInspection, HtmlUnknownTarget --%>
+                            <a href="/iam/accueil/" target="_blank" title="Portail IAM" accesskey="x"><fmt:message key="label.portail.iam" /></a>
 						</li>
 						<li>
 							<a href="<c:url value='/logoutIAM.do'/>" title="Quitter Unireg" accesskey="l"><fmt:message key="label.deconnexion" /></a>
@@ -288,6 +287,7 @@ function ouvrirAide(url) {
 					<unireg:dateOffset/>
 
 					<%-- Message flash --%>
+					<%--@elvariable id="flash" type="ch.vd.uniregctb.supergra.FlashMessage"--%>
 					<c:if test="${flash != null && flash.active}">
 						<div id="flashdisplay" class="<c:out value='${flash.displayClass}'/>"><c:out value="${flash.messageForDisplay}"/></div>
 						<c:if test="${flash.timeout > 0}">
@@ -329,8 +329,8 @@ function ouvrirAide(url) {
 			</div>
 
 			<div id="footer">
-				<b><fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
-				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
+				<strong><fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 			</div>
 			
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>
