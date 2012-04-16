@@ -2,12 +2,8 @@ package ch.vd.watchdog;
 
 import java.net.URL;
 
-import org.apache.log4j.Logger;
-
-import com.gargoylesoftware.htmlunit.html.DomText;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
-import org.junit.Ignore;
+import org.apache.log4j.Logger;
 
 /**
  * Teste que les différents déploiements de l'application Unireg dans les différents environnements (intégration, validation, formation,
@@ -27,12 +23,10 @@ public class WatchDogUniregIntegarationTest extends WatchDogTest {
 
 	public void testIntegrationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration...");
-		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
-				"https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status.do"));
-		assertNotNull(page);
-		assertStatus("OK", page, "serviceCivilStatus");
-		assertStatus("OK", page, "serviceInfraStatus");
-		assertStatus("OK", page, "serviceSecuriteStatus");
-		// marre de se faire spammer par les alertes SIPF : assertStatus("OK", page, "bvrPlusStatus");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/civil.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/hostInfra.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/fidor.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/securite.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/bvr.do");
 	}
 }
