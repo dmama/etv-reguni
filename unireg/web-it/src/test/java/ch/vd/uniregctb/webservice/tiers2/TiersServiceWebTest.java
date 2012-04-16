@@ -1,15 +1,25 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.webservices.tiers2.*;
-import ch.vd.uniregctb.webservices.tiers2.Date;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.*;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.webservices.tiers2.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test unitaire pour le web service de la recherche.
@@ -1598,7 +1608,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertSameDay(newDate(2009, 12, 1), domicile.getDateDebut());
 		assertNull(domicile.getDateFin());
 		assertEquals("Chemin du Riau", domicile.getRue());
-		assertEquals("2A", domicile.getNumeroRue());
+		assertEquals("2a", domicile.getNumeroRue());
 		assertEquals("1162", domicile.getNumeroPostal());
 		assertEquals("St-Prex", domicile.getLocalite());
 		assertEquals(294, domicile.getNoOrdrePostal());

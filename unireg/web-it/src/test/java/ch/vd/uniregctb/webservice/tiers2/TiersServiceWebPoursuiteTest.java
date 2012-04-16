@@ -1,9 +1,21 @@
 package ch.vd.uniregctb.webservice.tiers2;
 
-import ch.vd.uniregctb.webservices.tiers2.*;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoi;
+import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoiAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.GetTiers;
+import ch.vd.uniregctb.webservices.tiers2.MenageCommun;
+import ch.vd.uniregctb.webservices.tiers2.Tiers;
+import ch.vd.uniregctb.webservices.tiers2.TiersPart;
+import ch.vd.uniregctb.webservices.tiers2.TypeAdressePoursuiteAutreTiers;
+import ch.vd.uniregctb.webservices.tiers2.TypeAffranchissement;
+import ch.vd.uniregctb.webservices.tiers2.UserLogin;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Voir la spécification "BesoinsContentieux.doc"
@@ -120,7 +132,7 @@ public class TiersServiceWebPoursuiteTest extends AbstractTiersServiceWebTest {
 			assertAdresseEnvoi(domicile, "Madame", "Fabienne Girardet Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
 			assertEquals(TypeAffranchissement.SUISSE, domicile.getTypeAffranchissement());
 			final AdresseEnvoi courrier = tiers.getAdresseEnvoi();
-			assertAdresseEnvoi(courrier, "Madame", "Fabienne Girardet Ralet", "Chemin des Fleurettes 6", "1860 Aigle");
+			assertAdresseEnvoi(courrier, "Madame", "Fabienne Girardet Ralet", "Ch. des Fleurettes 6", "1860 Aigle");
 			assertAdresseEquals(domicile, tiers.getAdressePoursuiteFormattee());
 			assertNull(tiers.getAdressePoursuiteAutreTiersFormattee());
 
