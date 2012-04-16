@@ -11,7 +11,7 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 
 public class PermisListHost extends PermisListBase implements Serializable {
 
-	private static final long serialVersionUID = 867490870706584409L;
+	private static final long serialVersionUID = -6499453915396649854L;
 
 	public PermisListHost(long noIndividu) {
 		super(noIndividu);

@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -15,7 +16,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PermisList;
 
-public abstract class PermisListBase implements PermisList {
+public abstract class PermisListBase implements PermisList, Serializable {
+
+	private static final long serialVersionUID = -4653791288913518054L;
 
 	final private long numeroIndividu; // pour le logging
 	final private List<Permis> list;

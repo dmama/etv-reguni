@@ -10,7 +10,7 @@ import ch.vd.uniregctb.interfaces.model.Permis;
 
 public class PermisListRcPers extends PermisListBase implements Serializable {
 
-	private static final long serialVersionUID = -8707553226907735643L;
+	private static final long serialVersionUID = 8395595738140001951L;
 
 	public PermisListRcPers(long noIndividu) {
 		super(noIndividu);
