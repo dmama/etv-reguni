@@ -1080,19 +1080,17 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 
 		// l'adresse d'envoi n'a pas de salutations
 		assertNull(adresseEnvoi.getSalutations());
-		assertEquals("Banque Cantonale Vaudo", trimValiPattern(adresseEnvoi.getLigne1()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne2()));
-		assertEquals("", trimValiPattern(adresseEnvoi.getLigne3()));
-		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne4()));
-		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne5()));
-		assertEquals("1001 Lausanne", adresseEnvoi.getLigne6());
+		assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(adresseEnvoi.getLigne1()));
+		assertEquals("pa Comptabilité financière", trimValiPattern(adresseEnvoi.getLigne2()));
+		assertEquals("M. Daniel Küffer / CP 300", trimValiPattern(adresseEnvoi.getLigne3()));
+		assertEquals("1001 Lausanne", adresseEnvoi.getLigne4());
+		assertNull(adresseEnvoi.getLigne5());
+		assertNull(adresseEnvoi.getLigne6());
 		assertEquals(TypeAffranchissement.SUISSE, adresseEnvoi.getTypeAffranchissement());
 		{
 			final List<String> nomsPrenoms = adresseEnvoi.getNomsPrenoms();
-			assertEquals(3, nomsPrenoms.size());
-			assertEquals("Banque Cantonale Vaudo", trimValiPattern(nomsPrenoms.get(0)));
-			assertEquals("", trimValiPattern(nomsPrenoms.get(1)));
-			assertEquals("", trimValiPattern(nomsPrenoms.get(2)));
+			assertEquals(1, nomsPrenoms.size());
+			assertEquals("Banque Cantonale Vaudoise.", trimValiPattern(nomsPrenoms.get(0)));
 		}
 		assertEquals("pa Comptabilité financière", adresseEnvoi.getComplement());
 		assertNull(adresseEnvoi.getPourAdresse());
