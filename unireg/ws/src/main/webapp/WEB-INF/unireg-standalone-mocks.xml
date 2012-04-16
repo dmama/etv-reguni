@@ -23,8 +23,8 @@
 	</bean>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
-	<alias alias="serviceCivilService" name="serviceCivilRcPers"/>
+	<bean id="serviceCivilServiceMarshaller" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceMarshaller"/>
 
 	<!-- Bean client ServicePM MOCK -->
 	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />

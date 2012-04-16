@@ -50,8 +50,14 @@
 		<property name="client" ref="rcPersClient" />
 	</bean>
 
+	<bean id="serviceCivilServiceMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceCivilMarshaller">
+		<property name="modeHelper" ref="uniregModeHelper"/>
+		<property name="regpp" ref="serviceCivilServiceHost" />
+		<property name="rcpers" ref="serviceCivilRcPers" />
+	</bean>
+
 	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilRcPers" />
+		<property name="target" ref="serviceCivilServiceMarshaller" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
