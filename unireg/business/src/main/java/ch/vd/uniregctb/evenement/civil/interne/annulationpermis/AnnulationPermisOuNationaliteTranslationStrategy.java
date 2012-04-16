@@ -21,7 +21,11 @@ import ch.vd.uniregctb.interfaces.service.rcpers.IndividuApresEvenement;
 public abstract class AnnulationPermisOuNationaliteTranslationStrategy implements EvenementCivilTranslationStrategy, EvenementCivilEchTranslationStrategy {
 
 	/**
-	 * @param event événement civil d'annulation/correction
+	 * Récupère l'état de l'individu <b>juste avant</b> le traitement de l'événement eCh spécifié.
+	 * <p/>
+	 * <b>Attention !</b> Cette méthode ne fonctionne qu'avec le service civil RcPers.
+	 *
+	 * @param event   événement civil d'annulation/correction
 	 * @param context contexte de traitement de l'événement
 	 * @return L'individu construit d'après les informations retournées par l'événement référencé par l'événement donné
 	 * @throws EvenementCivilException en cas de souci grave (pas d'événement reférence trouvé, pas d'individu...)

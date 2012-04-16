@@ -7,6 +7,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="statsService" ref="statsService" />
+		<property name="modeHelper" ref="uniregModeHelper" />
 		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
 		<property name="serviceHostInfraChecker" ref="serviceHostInfraChecker" />
 		<property name="serviceFidorChecker" ref="serviceFidorChecker" />

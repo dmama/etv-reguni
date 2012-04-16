@@ -36,23 +36,23 @@
 				<tbody>
 					<unireg:nextRowClass reset="1"/>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.civil"/></td>
+						<td><fmt:message key="label.info.service.civil"/> (<c:out value="${serviceCivilName}"/>) :</td>
 						<td id="serviceCivilStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.host.infra"/></td>
+						<td><fmt:message key="label.info.service.host.infra"/> :</td>
 						<td id="serviceInfraStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.fifor"/></td>
+						<td><fmt:message key="label.info.service.fifor"/> :</td>
 						<td id="serviceFidorStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.securite"/></td>
+						<td><fmt:message key="label.info.service.securite"/> :</td>
 						<td id="serviceSecuriteStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.brvplus"/></td>
+						<td><fmt:message key="label.info.service.brvplus"/> :</td>
 						<td id="bvrPlusStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 				</tbody>
