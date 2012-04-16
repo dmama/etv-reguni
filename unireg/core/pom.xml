@@ -30,7 +30,7 @@
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
 			<artifactId>unireg-jaxb2-rcpers</artifactId>
-			<version>1.0</version>
+			<version>1.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.host-interfaces</groupId>

@@ -17,10 +17,13 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
+import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.uniregctb.interfaces.model.PermisList;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -59,7 +62,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("7563110255669", individu.getNouveauNoAVS());
 		assertEquals(692185, individu.getNoTechnique());
 		assertNull(individu.getNumeroRCE());
-		assertNull(individu.getPermis());
+		assertEmpty(individu.getPermis());
 		assertNull(individu.getTutelle());
 
 		// On vérifie les états-civils
@@ -248,5 +251,22 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 				assertEquals(Integer.valueOf(3), adresse.getEwid());
 			}
 		}
+	}
+
+	@Test
+	public void testGetIndividuAvecPermis() {
+
+		final Individu ind = service.getIndividu(986204, null, AttributeIndividu.PERMIS);
+		assertNotNull(ind);
+
+		final PermisList permis = ind.getPermis();
+		assertNotNull(permis);
+		assertEquals(1, permis.size());
+
+		final Permis permis0 = permis.get(0);
+		assertNotNull(permis0);
+		assertNull(permis0.getDateDebut());
+		assertNull(permis0.getDateFin());
+		assertEquals(TypePermis.ANNUEL, permis0.getTypePermis());
 	}
 }

@@ -130,7 +130,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.parents = initParents(this.naissance, relationships);
 			this.conjoints = initConjoints(relationships);
 		}
-		this.permis = initPermis(this.noTechnique, person);
+		this.permis = initPermis(this.noTechnique, person.getResidencePermitHistory());
 		this.nationalites = initNationalites(person, infraService);
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
@@ -246,13 +246,14 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
-	private static PermisList initPermis(long numeroIndividu, Person person) {
-		final ResidencePermit permit = person.getResidencePermit();
-		if (permit == null) {
+	private static PermisListRcPers initPermis(long numeroIndividu, List<ResidencePermit> permis) {
+		if (permis == null) {
 			return null;
 		}
-		final List<Permis> list = new ArrayList<Permis>(1);
-		list.add(PermisRCPers.get(permit));
+		final List<Permis> list = new ArrayList<Permis>(permis.size());
+		for (ResidencePermit p : permis) {
+			list.add(PermisRCPers.get(p));
+		}
 		return new PermisListRcPers(numeroIndividu, list);
 	}
 
