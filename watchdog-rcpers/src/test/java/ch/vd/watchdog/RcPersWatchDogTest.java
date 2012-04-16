@@ -105,11 +105,11 @@ public abstract class RcPersWatchDogTest {
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Event event = client.getEvent(1331281905209000L);
+		final Event event = client.getEvent(1333632851841144L);
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
-		assertEquals(811625L, getNoIndividu(p));
+		assertEquals(1074286L, getNoIndividu(p));
 	}
 
 	private static long getNoIndividu(Person person) {
