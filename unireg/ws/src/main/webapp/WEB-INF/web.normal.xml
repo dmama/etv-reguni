@@ -14,7 +14,6 @@
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
 			classpath*:/unireg-business-essentials.xml;
-			classpath*:/unireg-business-jms.xml,
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			/WEB-INF/unireg-ws-*.xml

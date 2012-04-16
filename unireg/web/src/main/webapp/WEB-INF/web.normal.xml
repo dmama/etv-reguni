@@ -16,7 +16,6 @@
 			classpath*:/unireg-business-essentials.xml;
 			classpath*:/unireg-business-services.xml,
 			classpath*:/unireg-business-jobs.xml,
-			classpath*:/unireg-business-jms.xml,
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtcivil.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
