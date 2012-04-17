@@ -169,7 +169,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 		final List<Long> idsPM = tiersDAO.getNumerosPMs(batch);
 
-		if (idsPM != null && !idsPM.isEmpty()) {
+		if (idsPM != null && idsPM.size() > 1) { // on peut tomber sur une plage de tiers ne contenant pas de PM (et inutile de préchauffer une seule PM)
 			try {
 				servicePM.getPersonnesMorales(idsPM, PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS); // chauffe le cache
 
@@ -189,7 +189,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		final TiersDAOImpl.GetNumerosIndividusCallback callback = new TiersDAOImpl.GetNumerosIndividusCallback(batch, true);
 		final Set<Long> numerosIndividus = callback.doInHibernate(session);
 
-		if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
+		if (numerosIndividus.size() > 1) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant (et inutile de préchauffer un seul individu)
 			try {
 				serviceCivilService.getIndividus(numerosIndividus, null, AttributeIndividu.ADRESSES); // chauffe le cache
 
