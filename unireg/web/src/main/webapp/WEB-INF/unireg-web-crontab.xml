@@ -27,10 +27,6 @@
 								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.MODE"/></key>
 								<value type="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer$Mode">DIRTY_ONLY</value>
 							</entry>
-							<entry>
-								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.PREFETCH"/></key>
-								<value type="java.lang.Boolean">true</value>
-							</entry>
 						</map>
 					</property>
 				</bean>
