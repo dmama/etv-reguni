@@ -30,6 +30,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherImpl;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
@@ -39,6 +41,7 @@ import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
@@ -1255,6 +1258,81 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	@Test
+	public void testHandleDemandeEnErreur_MANUEL_AVEC_ACK() throws Exception {
+
+		final long noIndividu = 1234;
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indClaude = addIndividu(noIndividu, date(1953, 1, 1), "Zora", "Larousse", true);
+			}
+		});
+		searcher = new GlobalTiersSearcherImpl() {
+
+			@Override
+			public List<TiersIndexedData> search(TiersCriteria criteria) {
+				throw new RuntimeException("Exception de test");
+			}
+
+		};
+		service.setSearcher(searcher);
+
+		// création d'un contribuable
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addHabitant(noIndividu);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+
+
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemandeMeldewesen("Zouzou", "LaVerte", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora n'est pas trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
+
 
 	@Test
 	public void testHandleDemande_NCS_MANUEL_AVEC_ACK() throws Exception {
@@ -1354,7 +1432,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 				final Reponse reponse = ic.getReponse();
 				assertNotNull(reponse);
-				assertEquals(numeroZora,reponse.getNoContribuable());
+				assertEquals(numeroZora, reponse.getNoContribuable());
 
 
 				// La demande doit avoir reçu une réponse automatiquement
@@ -1367,7 +1445,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		});
 
 	}
-
 
 
 	@Test

@@ -561,8 +561,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Envoie une réponse <b>lorsqu'un contribuable n'a définitivement pas été identifié</b>.
 	 *
-	 * @param message       la requête d'identification initiale
-	 * @param messageRetour TODO
+	 * @param message la requête d'identification initiale
 	 * @throws Exception si ça a pas marché
 	 */
 	private void nonIdentifie(IdentificationContribuable message, Erreur erreur) throws Exception {
@@ -769,14 +768,29 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void traiterException(IdentificationContribuable message, Exception e) {
 		LOGGER.warn("Exception lors du traitement du message n°" + message.getId() + ". Le message sera traité manuellement.", e);
 
-		// toute exception aura pour conséquence de provoquer un traitement manuel: on n'envoie donc pas de réponse immédiatement, et
-		// on stocke le message d'erreur dans le champs reponse.erreur.message pas commodité.
-		Reponse reponse = new Reponse();
-		reponse.setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
 
-		message.setNbContribuablesTrouves(null);
-		message.setReponse(reponse);
-		message.setEtat(Etat.EXCEPTION);
+		final Demande demande = message.getDemande();
+		// toute exception aura pour conséquence de provoquer un traitement manuel: on n'envoie donc pas de réponse immédiatement,sauf en cas de demande d'accusé de reception
+		if (demande != null && Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
+			try {
+				notifieAttenteIdentifManuel(message);
+			}
+			catch (Exception ex) {
+				LOGGER.warn("Exception lors de l'envoi de l'accusée de reception du message n°" + message.getId() + ". Le message sera traité manuellement.", ex);
+			}
+
+		}
+		else {
+
+			// on stocke le message d'erreur dans le champs reponse.erreur.message par commodité dans le cas ou aucun accusé de reception est demandé
+
+			Reponse reponse = new Reponse();
+			reponse.setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
+
+			message.setNbContribuablesTrouves(null);
+			message.setReponse(reponse);
+			message.setEtat(Etat.EXCEPTION);
+		}
 	}
 
 
