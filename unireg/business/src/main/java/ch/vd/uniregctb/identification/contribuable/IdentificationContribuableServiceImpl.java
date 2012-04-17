@@ -774,6 +774,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		if (demande != null && Demande.ModeIdentificationType.MANUEL_AVEC_ACK == demande.getModeIdentification()) {
 			try {
 				notifieAttenteIdentifManuel(message);
+				//Le message contient la réponse de notification, on lui rajoute l'erreur
+				message.getReponse().setErreur(new Erreur(TypeErreur.TECHNIQUE, null, e.getMessage()));
 			}
 			catch (Exception ex) {
 				LOGGER.warn("Exception lors de l'envoi de l'accusée de reception du message n°" + message.getId() + ". Le message sera traité manuellement.", ex);
@@ -789,8 +791,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			message.setNbContribuablesTrouves(null);
 			message.setReponse(reponse);
-			message.setEtat(Etat.EXCEPTION);
+
 		}
+		message.setEtat(Etat.EXCEPTION);
 	}
 
 
