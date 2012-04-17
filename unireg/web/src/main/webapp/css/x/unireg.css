@@ -4,8 +4,6 @@ a.filename {
 }
 
 
-
-
 legend span.delete {
 	display: none;
 	color: #00FF00;
@@ -16,13 +14,13 @@ legend a.delete {
 	float: left;
 }
 
-.complements, .civil, .adresses, .fiscal, .tiers, .menage, entreprises,
+.complements, .civil, .adresses, .fiscal, .tiers, .menage, .entreprises,
 .adresse, .for_fiscal, .prestations_imposables, .information, .autres_roles,
 .categorie, .situation_fiscale, .rechercheTiers, .rechercheEvenement, .visuTiers, .visuEvenement, .editTiers {
 	border: 1px solid #bcbcbc;
-	margin-right: 0px;
+	margin-right: 0;
 	margin-bottom: 10px;
-	margin-left: 0px;
+	margin-left: 0;
 	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 }
@@ -205,7 +203,7 @@ div.newMc {
 #actions_list td.rowheader {
 	border-left: 1px black dotted;
 	border-bottom: 1px black dotted;
-	padding-right: 0px;
+	padding-right: 0;
 	vertical-align: top;
 }
 

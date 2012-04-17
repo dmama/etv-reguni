@@ -85,7 +85,7 @@
 #content .outils {
 	width: auto;
 	height: 25px;
-	right: 0px;
+	right: 0;
 	float: right;
 }
 
@@ -97,8 +97,8 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	left: 0px;
-	top: 0px;
+	left: 0;
+	top: 0;
 }
 
 #content .outils li {
@@ -107,15 +107,15 @@
 	border-left: 1px solid #ccccff;
 	border-right: 1px solid #ccccff;
 	border-bottom: 1px solid #ccccff;
-	padding-top: 0px;
+	padding-top: 0;
 	padding-right: 5px;
-	padding-bottom: 0px;
+	padding-bottom: 0;
 	padding-left: 5px;
-	margin: 0px;
+	margin: 0;
 }
 
 #content .outils li+li {
-	border-left: 0px;
+	border-left: 0;
 }
 
 #footer {
@@ -245,7 +245,7 @@ table {
 }
 
 img {
-	border-width: 0px;
+	border-width: 0;
 }
 
 tr {
@@ -388,11 +388,11 @@ INPUT.readonly {
 	background: transparent url(iconli.jpg) no-repeat 2px 5px;
 	margin: 0;
 	border-bottom: 1px solid #ECEFD7;
-	padding: 3px 0px 3px 20px;
+	padding: 3px 0 3px 20px;
 }
 
 #sommaire li li {
-	background: transparent url(iconlili.jpg) no-repeat 0% 5px;
+	background: transparent url(iconlili.jpg) no-repeat 0 5px;
 	margin: 0;
 	border-bottom: none;
 	padding: 3px 0 3px 15px;
@@ -608,7 +608,7 @@ table.postit tr.bottom td {
 }
 
 .timeline td.filler {
-	border: 0px;
+	border: 0;
 }
 
 #legend {
@@ -621,7 +621,7 @@ table.postit tr.bottom td {
 }
 
 #legend th {
-	border: 0px;
+	border: 0;
 	padding: 0.3em;
 	text-align: center;
 	background-color: #FFFFCC;
@@ -819,7 +819,7 @@ div.progress-bar-text {
 
 #tiers-picker-filter-description {
 	margin-left: 1em;
-	margin-bottom: 2py;
+	margin-bottom: 2px;
 	font-style: italic;
 	font-size: 8pt;
 }
@@ -840,7 +840,7 @@ div.ui-tabs {
 }
 
 .ui-tabs {
-	border: 0px;
+	border: 0;
 }
 
 .ui-tabs .ui-tabs-hide {
@@ -848,14 +848,14 @@ div.ui-tabs {
 }
 
 .ui-tabs-nav {
-	border: 0px;
+	border: 0;
 	background: none;
 	display: inline-block; /* autrement les tabs prennent toute la hauteur du menu de gauche dans Chrome ... */
 }
 
 .ui-tabs .ui-tabs-nav li {
 	font-weight: bold;
-	border: 0px;
+	border: 0;
 	margin-left: -1px;
 	padding-left: 4px;
 	background: url("tableftF.gif") no-repeat left top;
@@ -872,7 +872,7 @@ div.ui-tabs {
 }
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected {
-	margin-top: 0px;
+	margin-top: 0;
 	background-position: 0 -42px;
 }
 
@@ -903,7 +903,7 @@ div.ui-tabs {
 }
 
 #tabs ul {
-	margin-top: 0px;
+	margin-top: 0;
 	list-style: none;
 	padding-left: 3px;
 	padding-top: 5px;
@@ -975,7 +975,7 @@ div.ui-tabs {
 }
 
 #tabs li:hover,#tabs li:hover a {
-	background-position: 0% -42px;
+	background-position: 0 -42px;
 	color: #333;
 }
 
@@ -1008,7 +1008,7 @@ div.ui-tabs {
 }
 
 .toolbar-control .ToolbarButton {
-	border: solid 0px Transparent;
+	border: solid 0 Transparent;
 	background-color: Transparent;
 }
 
@@ -1028,7 +1028,7 @@ div.ui-tabs {
 .toolbar-control a img {
 	border-style: none;
 	TEXT-DECORATION: none;
-	border-width: 0px;
+	border-width: 0;
 }
 
 .toolbar-control .ToolbarButton a:link {
@@ -1113,7 +1113,7 @@ a.copy:hover,
 a.detail:hover,
 a.extlink:hover,
 a.consult:hover,
-a.alert:over
+a.alert:hover,
 a.historique:hover,
 a.download:hover,
 a.edit:hover,
@@ -1460,13 +1460,13 @@ legend a.delete {
 	float: left;
 }
 
-.complements, .civil, .adresses, .fiscal, .tiers, .menage, entreprises,
+.complements, .civil, .adresses, .fiscal, .tiers, .menage, .entreprises,
 .adresse, .for_fiscal, .prestations_imposables, .information, .autres_roles,
 .categorie, .situation_fiscale, .rechercheTiers, .rechercheEvenement, .visuTiers, .visuEvenement, .editTiers {
 	border: 1px solid #bcbcbc;
-	margin-right: 0px;
+	margin-right: 0;
 	margin-bottom: 10px;
-	margin-left: 0px;
+	margin-left: 0;
 	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 }
@@ -1649,7 +1649,7 @@ div.newMc {
 #actions_list td.rowheader {
 	border-left: 1px black dotted;
 	border-bottom: 1px black dotted;
-	padding-right: 0px;
+	padding-right: 0;
 	vertical-align: top;
 }
 
@@ -1892,27 +1892,27 @@ body > div.jGrowl {
 }
 
 div.jGrowl.top-left {
-	left: 				0px;
-	top: 				0px;
+	left: 				0;
+	top: 				0;
 }
 
 div.jGrowl.top-right {
-	right: 				0px;
-	top: 				0px;
+	right: 				0;
+	top: 				0;
 }
 
 div.jGrowl.bottom-left {
-	left: 				0px;
-	bottom:				0px;
+	left: 				0;
+	bottom:				0;
 }
 
 div.jGrowl.bottom-right {
-	right: 				0px;
-	bottom: 			0px;
+	right: 				0;
+	bottom: 			0;
 }
 
 div.jGrowl.center {
-	top: 				0px;
+	top: 				0;
 	width: 				50%;
 	left: 				25%;
 }
