@@ -6,7 +6,6 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
-import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 
@@ -20,8 +19,6 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String MODE = "mode";
-	public static final String PREFETCH = "prefetch";
-	public static final String PREFETCH_PMS = "prefetch_pms";
 
 	private GlobalTiersIndexer globalTiersIndexer;
 
@@ -33,7 +30,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 		param0.setName(I_NB_THREADS);
 		param0.setMandatory(true);
 		param0.setType(new JobParamInteger());
-		addParameterDefinition(param0, 4);
+		addParameterDefinition(param0, 8);
 
 		final JobParam param1 = new JobParam();
 		param1.setDescription("Mode d'indexation");
@@ -41,20 +38,6 @@ public class DatabaseIndexerJob extends JobDefinition {
 		param1.setMandatory(true);
 		param1.setType(new JobParamEnum(Mode.class));
 		addParameterDefinition(param1, Mode.INCREMENTAL);
-
-		final JobParam param2 = new JobParam();
-		param2.setDescription("Précharge les individus");
-		param2.setName(PREFETCH);
-		param2.setMandatory(true);
-		param2.setType(new JobParamBoolean());
-		addParameterDefinition(param2, true);
-
-		final JobParam param3 = new JobParam();
-		param3.setDescription("Précharge les PMs");
-		param3.setName(PREFETCH_PMS);
-		param3.setMandatory(true);
-		param3.setType(new JobParamBoolean());
-		addParameterDefinition(param3, true);
 	}
 
 	@Override
@@ -62,10 +45,8 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
-		final boolean prefetchIndividus = getBooleanValue(params, PREFETCH);
-		final boolean prefetchPMs = getBooleanValue(params, PREFETCH_PMS);
 
-		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, prefetchIndividus, prefetchPMs);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, true, true);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
