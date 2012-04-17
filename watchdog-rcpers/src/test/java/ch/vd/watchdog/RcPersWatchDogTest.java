@@ -109,6 +109,7 @@ public abstract class RcPersWatchDogTest {
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
+		assertNotNull("La personne associée à l'événement n°1333632851841144 est nulle !", p);
 		assertEquals(1074286L, getNoIndividu(p));
 	}
 
