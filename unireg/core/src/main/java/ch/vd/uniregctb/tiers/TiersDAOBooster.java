@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
@@ -167,6 +168,12 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
 		return target.getNumerosIndividu(tiersIds, includesComposantsMenage);
+	}
+
+	@Nullable
+	@Override
+	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
+		return target.getNumerosPMs(tiersIds);
 	}
 
 	@Override

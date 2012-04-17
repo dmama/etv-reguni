@@ -28,6 +28,7 @@ import org.hibernate.criterion.Subqueries;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.EntityKey;
 import org.hibernate.impl.SessionImpl;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
@@ -635,6 +636,24 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			numeros.addAll(nos);
 			return numeros;
 		}
+	}
+
+	@Nullable
+	@Override
+	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
+
+		List<Long> list = null;
+
+		for (Long id : tiersIds) {
+			if (Entreprise.FIRST_ID <= id && id <= Entreprise.LAST_ID) {
+				if (list == null) {
+					list = new ArrayList<Long>();
+				}
+				list.add(id);
+			}
+		}
+
+		return list;
 	}
 
 	@Override

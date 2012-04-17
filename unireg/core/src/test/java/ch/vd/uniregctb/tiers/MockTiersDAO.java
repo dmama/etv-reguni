@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.hibernate.FlushMode;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
@@ -73,6 +74,12 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage) {
+		throw new NotImplementedException();
+	}
+
+	@Nullable
+	@Override
+	public List<Long> getNumerosPMs(Collection<Long> tiersIds) {
 		throw new NotImplementedException();
 	}
 

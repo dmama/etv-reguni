@@ -10,6 +10,8 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.worker.BatchWorker;
 import ch.vd.uniregctb.worker.DeadThreadException;
 import ch.vd.uniregctb.worker.WorkingQueue;
@@ -29,9 +31,10 @@ public class MassTiersIndexer {
 	private long totalExecTime;
 
 	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode,
-	                        Dialect dialect, boolean prefetchIndividus, ServiceCivilService serviceCivilService) {
+	                        Dialect dialect, boolean prefetchIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO, ServicePersonneMoraleService servicePM) {
 
-		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass", prefetchIndividus, serviceCivilService));
+		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass", prefetchIndividus, serviceCivilService, prefetchPMs, tiersDAO,
+				servicePM));
 	}
 
 	// pour le testing uniquement

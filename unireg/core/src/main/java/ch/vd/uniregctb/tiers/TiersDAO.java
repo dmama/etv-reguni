@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -118,6 +120,15 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @return la liste des numéros d'individu correspondants aux numéros de tiers spécifiés.
 	 */
 	Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage);
+
+	/**
+	 * Détermine et retourne la liste des numéros des PMs contenues dans le liste de tiers spécifiée.
+	 *
+	 * @param tiersIds une liste d'ids de tiers
+	 * @return les numéros des PMs trouvées; ou <b>null</b> si aucune PM n'est trouvée.
+	 */
+	@Nullable
+	List<Long> getNumerosPMs(Collection<Long> tiersIds);
 
 	/**
 	 * Retourne la liste de tous les Numéros d'habitant des tiers en base
