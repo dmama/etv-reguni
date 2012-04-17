@@ -155,7 +155,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {
-		final EvenementCivilEchElementListeRechercheView eltListe = new EvenementCivilEchElementListeRechercheView(evt);
+		final EvenementCivilEchElementListeRechercheView view = new EvenementCivilEchElementListeRechercheView(evt);
 		if (evt.getNumeroIndividu() != null) {
 			final long numeroIndividu = evt.getNumeroIndividu();
 			final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
@@ -163,22 +163,26 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				if (personnePhysique != null) {
 					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
 					if (couple != null && couple.getMenage() != null) {
-						eltListe.setNumeroCTB(couple.getMenage().getNumero());
+						view.setNumeroCTB(couple.getMenage().getNumero());
 					}
 					else {
-						eltListe.setNumeroCTB(personnePhysique.getNumero());
+						view.setNumeroCTB(personnePhysique.getNumero());
 					}
 				}
 
 				final String nom = adresseService.getNomCourrier(numeroIndividu);
-				eltListe.setNom(nom);
+				view.setNom(nom);
 			}
 			catch (IndividuNotFoundException e) {
 				LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
-				eltListe.setNom("<erreur: individu introuvable>");
+				view.setNom("<erreur: individu introuvable>");
+			}
+			catch (Exception e) {
+				LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
+				view.setNom("<erreur: " + e.getMessage() + ">");
 			}
 		}
-		return eltListe;
+		return view;
 	}
 
 	private void retrieveEvenementAssocie(Long numeroIndividu, EvenementCivilEchDetailView evtView) {
