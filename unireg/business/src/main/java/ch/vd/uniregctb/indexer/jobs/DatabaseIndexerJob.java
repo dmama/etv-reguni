@@ -21,6 +21,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String MODE = "mode";
 	public static final String PREFETCH = "prefetch";
+	public static final String PREFETCH_PMS = "prefetch_pms";
 
 	private GlobalTiersIndexer globalTiersIndexer;
 
@@ -47,6 +48,13 @@ public class DatabaseIndexerJob extends JobDefinition {
 		param2.setMandatory(true);
 		param2.setType(new JobParamBoolean());
 		addParameterDefinition(param2, true);
+
+		final JobParam param3 = new JobParam();
+		param3.setDescription("Précharge les PMs");
+		param3.setName(PREFETCH_PMS);
+		param3.setMandatory(true);
+		param3.setType(new JobParamBoolean());
+		addParameterDefinition(param3, true);
 	}
 
 	@Override
@@ -54,9 +62,10 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
-		final boolean prefetch = getBooleanValue(params, PREFETCH);
+		final boolean prefetchIndividus = getBooleanValue(params, PREFETCH);
+		final boolean prefetchPMs = getBooleanValue(params, PREFETCH_PMS);
 
-		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, prefetch);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, prefetchIndividus, prefetchPMs);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

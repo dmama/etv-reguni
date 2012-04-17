@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.interfaces.service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
@@ -214,8 +217,57 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 	 */
 	@Override
 	public List<PersonneMorale> getPersonnesMorales(List<Long> ids, PartPM... parts) {
-		// pas caché : cela en vaut-il vraiment la peine ?
-		return target.getPersonnesMorales(ids, parts);
+
+		final Set<PartPM> partiesSet = arrayToSet(parts);
+
+		final Map<Long, PersonneMorale> map = new HashMap<Long, PersonneMorale>(ids.size());
+		final Set<Long> uncached = new HashSet<Long>(ids.size());
+
+		// Récupère les PMs dans le cache
+		for (Long no : ids) {
+			final GetPersonneMoraleByIdKey key = new GetPersonneMoraleByIdKey(no);
+			final Element element = cache.get(key);
+			if (element == null) {
+				// l'élément n'est pas dans le cache -> on doit le demander au service PM
+				uncached.add(no);
+			}
+			else {
+				final PersonneMoraleCacheValueWithParts value = (PersonneMoraleCacheValueWithParts) element.getObjectValue();
+				if (value.getMissingParts(partiesSet) == null) {
+					// l'élément dans le cache possède toutes les parties demandées -> on le stocke dans le map de résultats
+					PersonneMorale individu = value.getValueForParts(partiesSet);
+					map.put(no, individu);
+				}
+				else {
+					// l'élément dans le cache ne possède *pas* toutes les parties demandées -> on doit le demander au service PM
+					uncached.add(no);
+				}
+			}
+		}
+
+		// Effectue l'appel au service pour les PMs non-cachées
+		if (!uncached.isEmpty()) {
+			final List<PersonneMorale> list = target.getPersonnesMorales(new ArrayList<Long>(uncached), parts);
+			for (PersonneMorale pm : list) {
+				final long no = pm.getNumeroEntreprise();
+				map.put(no, pm);
+				// Met-à-jour le cache
+				final GetPersonneMoraleByIdKey key = new GetPersonneMoraleByIdKey(no);
+				final PersonneMoraleCacheValueWithParts value = new PersonneMoraleCacheValueWithParts(partiesSet, pm);
+				cache.put(new Element(key, value));
+			}
+		}
+
+		// Retourne les PMs ordonnés en utilisant l'ordre des ids
+		final List<PersonneMorale> pms = new ArrayList<PersonneMorale>(ids.size());
+		for (Long no : ids) {
+			PersonneMorale pm = map.get(no);
+			if (pm != null) {
+				pms.add(pm);
+			}
+		}
+
+		return pms;
 	}
 
 	private static class GetEtablissementByIdKey {

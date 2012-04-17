@@ -27,8 +27,11 @@ import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAOImpl;
 import ch.vd.uniregctb.worker.BatchWorker;
 
@@ -49,6 +52,10 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	private boolean prefetchIndividus;
 	private ServiceCivilService serviceCivilService;
 
+	private boolean prefetchPMs;
+	private TiersDAO tiersDAO;
+	private ServicePersonneMoraleService servicePM;
+
 	private String name;
 
 	/**
@@ -62,9 +69,12 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	 * @param name                le nom du thread
 	 * @param prefetchIndividus   <b>vrai</b> si le cache des individus doit être préchauffé par lot; <b>faux</b> autrement.
 	 * @param serviceCivilService le service civil qui permet de préchauffer le cache des individus
+	 * @param prefetchPMs         <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
+	 * @param tiersDAO            le tiers DAO
+	 * @param servicePM           le service des personnes morales
 	 */
 	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
-	                          String name, boolean prefetchIndividus, ServiceCivilService serviceCivilService) {
+	                          String name, boolean prefetchIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO, ServicePersonneMoraleService servicePM) {
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
@@ -73,6 +83,9 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		this.name = name;
 		this.prefetchIndividus = prefetchIndividus;
 		this.serviceCivilService = serviceCivilService;
+		this.prefetchPMs = prefetchPMs;
+		this.tiersDAO = tiersDAO;
+		this.servicePM = servicePM;
 		Assert.notNull(this.indexer);
 		Assert.notNull(this.transactionManager);
 		Assert.notNull(this.sessionFactory);
@@ -126,6 +139,9 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 							// une requête par individu); et avec le préchargement on peut charger 100 individus d'un coup.
 							warmIndividuCache(session, batch);
 						}
+						if (prefetchPMs) {
+							warmPMCache(batch);
+						}
 
 						final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
 						query.setParameterList("ids", batch);
@@ -145,6 +161,25 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 				return null;
 			}
 		});
+	}
+
+	private void warmPMCache(List<Long> batch) {
+
+		long start = System.nanoTime();
+
+		final List<Long> idsPM = tiersDAO.getNumerosPMs(batch);
+
+		if (idsPM != null && !idsPM.isEmpty()) {
+			try {
+				servicePM.getPersonnesMorales(idsPM, PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS); // chauffe le cache
+
+				long nanosecondes = System.nanoTime() - start;
+				LOGGER.info("=> Récupéré " + idsPM.size() + " PMs en " + (nanosecondes / 1000000000L) + "s.");
+			}
+			catch (Exception e) {
+				LOGGER.error("Impossible de précharger le lot de PMs [" + idsPM + "]. On continue un par un pour ce lot.", e);
+			}
+		}
 	}
 
 	private void warmIndividuCache(Session session, List<Long> batch) {

@@ -37,7 +37,7 @@ public class MockTiersIndexer implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus) throws IndexerException {
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs) throws IndexerException {
 		throw new NotImplementedException();
 	}
 

@@ -109,7 +109,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	 */
 	protected void indexData() throws Exception {
 		LOGGER.debug("Indexation de la base de données...");
-		globalIndexer.indexAllDatabase(null, 1, Mode.FULL, false);
+		globalIndexer.indexAllDatabase(null, 1, Mode.FULL, false, false);
 		LOGGER.debug("Indexation de la base de données terminée. Nombre de docs: "+globalSearcher.getApproxDocCount());
 	}
 
