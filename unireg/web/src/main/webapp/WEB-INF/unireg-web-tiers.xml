@@ -151,10 +151,7 @@
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 	</bean>
 	
-	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController" parent="abstractSimpleFormController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.common.ConsultLogView" />
-		<property name="commandName" value="command" />
+	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="situationFamilleDAO" ref="situationFamilleDAO" />
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
@@ -167,9 +164,6 @@
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO" />
-		<property name="formView" value="common/consult-log" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="transactionManager" ref="transactionManager" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 		<property name="periodiciteDAO" ref="periodiciteDAO" />
 		<property name="etatDeclarationDAO" ref="etatDeclarationDAO" />
