@@ -1314,7 +1314,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 				final IdentificationContribuable ic = list.get(0);
 				assertNotNull(ic);
-				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Etat.EXCEPTION, ic.getEtat());
 				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
 
 				final Reponse reponse = ic.getReponse();
