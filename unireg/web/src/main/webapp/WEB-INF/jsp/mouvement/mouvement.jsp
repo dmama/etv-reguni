@@ -22,7 +22,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" id="radioUtil" /><label for="utilisateur"><fmt:message key="label.utilisateur" /></label>
+				<form:radiobutton path="destinationEnvoi" value="utilisateurEnvoi" onclick="selectEnvoi('utilisateurEnvoi');" id="radioUtil" /><label for="radioUtil"><fmt:message key="label.utilisateur" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="utilisateursEnvoi" <c:if test="${param.depuisTache == 'true'}">style="display:none;"</c:if> >
@@ -44,10 +44,11 @@
 					</script>
 				</div>
 			</td>
+        </tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" id="radioColl"/><label for="collectivite"><fmt:message key="label.collectivite.administrative" /></label>
+				<form:radiobutton path="destinationEnvoi" value="collectivite" onclick="selectEnvoi('collectivite');" id="radioColl"/><label for="radioColl"><fmt:message key="label.collectivite.administrative" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="collectivites" <c:if test="${param.depuisTache != 'true'}">style="display:none;"</c:if> >
@@ -77,7 +78,7 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%"><fmt:message key="label.destination" />&nbsp;:</td>
 			<td width="25%">
-				<form:radiobutton path="localisation"  value="PERSONNE" onclick="selectReception('PERSONNE');" /><label for="PERSONNE"><fmt:message key="label.utilisateur" /></label>
+				<form:radiobutton path="localisation"  value="PERSONNE" onclick="selectReception('PERSONNE');" id="radioPersonne"/><label for="radioPersonne"><fmt:message key="label.utilisateur" /></label>
 			</td>
 			<td width="50%" colspan="2">
 				<div id="utilisateursReception">
@@ -102,21 +103,21 @@
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="localisation" value="CLASSEMENT_GENERAL" onclick="selectReception('CLASSEMENT_GENERAL');" /><label for="CLASSEMENT_GENERAL"><fmt:message key="option.localisation.CLASSEMENT_GENERAL" /></label>
+				<form:radiobutton path="localisation" value="CLASSEMENT_GENERAL" onclick="selectReception('CLASSEMENT_GENERAL');" id="radioClassementGeneral"/><label for="radioClassementGeneral"><fmt:message key="option.localisation.CLASSEMENT_GENERAL" /></label>
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="localisation" value="CLASSEMENT_INDEPENDANTS" onclick="selectReception('CLASSEMENT_INDEPENDANTS');" /><label for="CLASSEMENT_INDEPENDANTS"><fmt:message key="option.localisation.CLASSEMENT_INDEPENDANTS" /></label>
+				<form:radiobutton path="localisation" value="CLASSEMENT_INDEPENDANTS" onclick="selectReception('CLASSEMENT_INDEPENDANTS');" id="radioClassementIndependant"/><label for="radioClassementIndependant"><fmt:message key="option.localisation.CLASSEMENT_INDEPENDANTS" /></label>
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<form:radiobutton path="localisation" value="ARCHIVES" onclick="selectReception('ARCHIVES');" /><label for="ARCHIVES"><fmt:message key="option.localisation.ARCHIVES" /></label>
+				<form:radiobutton path="localisation" value="ARCHIVES" onclick="selectReception('ARCHIVES');" id="radioArchives"/><label for="radioArchives"><fmt:message key="option.localisation.ARCHIVES" /></label>
 			</td>
 			<td width="50%" colspan="2">&nbsp;</td>
 		</tr>
