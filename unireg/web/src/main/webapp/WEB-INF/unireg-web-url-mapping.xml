@@ -186,8 +186,6 @@
 				<entry key="/acces/recap-pp-utilisateur.do" value-ref="recapPersonneUtilisateurController" />
 				<entry key="/acces/select-utilisateurs.do" value-ref="selectUtilisateursController" />
 				<entry key="/acces/confirm-copie.do" value-ref="confirmCopieController" />
-				<!-- Consult log -->
-				<entry key="/common/consult-log.do" value-ref="consultLogController" />
 				<!-- Documents -->
 				<entry key="/common/docs.do" value-ref="documentController" />
 				<!-- Annulation / Réactivation -->

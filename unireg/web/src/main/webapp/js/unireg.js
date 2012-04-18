@@ -280,21 +280,39 @@ var Dialog = {
 	 */
 	open_consulter_log: function(nature, id) {
 
-		var dialog = Dialog.create_dialog_div('consulter-log-dialog');
-
 		// charge le contenu de la boîte de dialogue
-		dialog.load(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id + '&' + new Date().getTime());
+		$.getJSON(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id + '&' + new Date().getTime(), function(view) {
 
-		dialog.dialog({
-			title: 'Consultation des logs',
-			height: 200,
-			width: 800,
-			modal: true,
-			buttons: {
-				Ok: function() {
-					dialog.dialog("close");
+			var dialog = Dialog.create_dialog_div('consulter-log-dialog');
+
+			var utilisateurCreation = view.utilisateurCreation ? StringUtils.escapeHTML(view.utilisateurCreation) : '';
+			var utilisateurDerniereModif = view.utilisateurDerniereModif ? StringUtils.escapeHTML(view.utilisateurDerniereModif) : '';
+			var utilisateurAnnulation = view.utilisateurAnnulation ? StringUtils.escapeHTML(view.utilisateurAnnulation) : '';
+
+			var dateHeureCreation = view.dateHeureCreation ? new Date(view.dateHeureCreation) : null;
+			var dateHeureDerniereModif = view.dateHeureDerniereModif ? new Date(view.dateHeureDerniereModif) : null;
+			var dateHeureAnnulation = view.dateHeureAnnulation ? new Date(view.dateHeureAnnulation) : null;
+
+			dialog.html('<table>' +
+				'<tr class="odd"><td width="25%">Utilisateur création&nbsp;:</td><td width="25%">' + utilisateurCreation + '</td>' +
+				'<td width="25%">Date et heure création&nbsp;:</td><td width="25%">' +  DateUtils.toNormalString(dateHeureCreation) + '</td></tr>' +
+				'<tr class="even"><td width="25%">Utilisateur dernière modification&nbsp;:</td><td width="25%">' + utilisateurDerniereModif + '</td>' +
+				'<td width="25%">Date et heure dernière modification&nbsp;:</td><td width="25%">' + DateUtils.toNormalString(dateHeureDerniereModif) + '</td></tr>' +
+				'<tr class="odd"><td width="25%">Utilisateur annulation&nbsp;:</td><td width="25%">' + utilisateurAnnulation + '</td>' +
+				'<td width="25%">Date et heure annulation&nbsp;:</td><td width="25%">' + DateUtils.toNormalString(dateHeureAnnulation) + '</td></tr>' +
+				'</table>');
+
+			dialog.dialog({
+				title: 'Consultation des logs',
+				height: 200,
+				width: 800,
+				modal: true,
+				buttons: {
+					Ok: function() {
+						dialog.dialog("close");
+					}
 				}
-			}
+			});
 		});
 
 		//prevent the browser to follow the link
@@ -1234,6 +1252,14 @@ var DateUtils = {
 		}
 	},
 
+	toNormalString: function(date) {
+		if (!date) {
+			return '';
+		}
+
+		return date.format('dd.mm.yyyy HH:MM:ss');
+	},
+
 	isToday: function(date) {
 		return this.isSameDay(date, new Date());
 	},
@@ -1370,7 +1396,7 @@ var dateFormat = function () {
 
 // Some common format strings
 dateFormat.masks = {
-	"default":      "ddd mmm dd yyyy HH:MM:ss",
+	"default":      "dd.mm.yyyy HH:MM:ss",
 	shortDate:      "m/d/yy",
 	mediumDate:     "mmm d, yyyy",
 	longDate:       "mmmm d, yyyy",
