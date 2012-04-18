@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.veuvage;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -10,7 +11,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -26,7 +26,7 @@ public class VeuvageFromEch extends Veuvage {
 
 		// [UNIREG-2241] au traitement d'un événement civil de veuvage, on doit contrôler l'état civil de l'individu
 		final EtatCivil etatCivil = individu.getEtatCivil(getDate());
-		if (etatCivil == null || etatCivil.getTypeEtatCivil() != TypeEtatCivil.VEUF) {
+		if (etatCivil == null || !EtatCivilHelper.estVeuf(etatCivil)) {
 			erreurs.addErreur(String.format("L'individu %d n'est pas veuf dans le civil au %s", individu.getNoTechnique(), RegDateHelper.dateToDisplayString(getDate())));
 		}
 		else {
@@ -37,8 +37,8 @@ public class VeuvageFromEch extends Veuvage {
 			 */
 
 			final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(veuf, getDate());
-			final ValidationResults validationResults = new ValidationResults(); 
-			context.getMetierService().validateForOfVeuvage(veuf,getDate(), couple, validationResults);
+			final ValidationResults validationResults = new ValidationResults();
+			context.getMetierService().validateForOfVeuvage(veuf, getDate(), couple, validationResults);
 			addValidationResults(erreurs, warnings, validationResults);
 		}
 	}

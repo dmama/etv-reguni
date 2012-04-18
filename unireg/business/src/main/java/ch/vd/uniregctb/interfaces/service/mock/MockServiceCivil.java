@@ -400,9 +400,14 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		}
 	}
 
-	public static void veuvifieIndividu(MockIndividu individu, RegDate dateVeuvage) {
+	/**
+	 * @param individu individu auquel on doit rajouté l'état civil correspondant à son veuvage
+	 * @param dateVeuvage date de l'obtention du nouvel état civil
+	 * @param partenariat <code>true</code> s'il s'agit d'un partenariat enregistré, <code>false</code> s'il s'agit d'un mariage
+	 */
+	public static void veuvifieIndividu(MockIndividu individu, RegDate dateVeuvage, boolean partenariat) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateVeuvage, TypeEtatCivil.VEUF);
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateVeuvage, partenariat ? TypeEtatCivil.PACS_VEUF : TypeEtatCivil.VEUF);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
 		final List<RelationVersIndividu> conjoints = individu.getConjoints();
