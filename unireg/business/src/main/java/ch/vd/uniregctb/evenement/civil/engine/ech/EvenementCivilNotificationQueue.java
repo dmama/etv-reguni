@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -37,7 +39,7 @@ public interface EvenementCivilNotificationQueue {
 		 */
 		public final List<EvenementCivilEchBasicInfo> contenu;
 
-		protected Batch(long noIndividu, List<EvenementCivilEchBasicInfo> contenu) {
+		protected Batch(long noIndividu, @Nullable List<EvenementCivilEchBasicInfo> contenu) {
 			this.noIndividu = noIndividu;
 			this.contenu = contenu != null ? contenu : Collections.<EvenementCivilEchBasicInfo>emptyList();
 		}
@@ -46,12 +48,13 @@ public interface EvenementCivilNotificationQueue {
 	/**
 	 * Méthode utilisée pour ajouter des éléments à la queue
 	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
+	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
 	 * @throws NullPointerException en cas de paramètre <code>null</code>
 	 */
-	void post(Long noIndividu);
+	void post(Long noIndividu, boolean immediate);
 
 	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue en bloc
+	 * Méthode utilisée pour ajouter des éléments à la queue en bloc (le décalage sera forcément appliqué)
 	 * @param nosIndividus collections de numéros d'individus à poster
 	 */
 	void postAll(Collection<Long> nosIndividus);

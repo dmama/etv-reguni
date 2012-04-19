@@ -91,10 +91,10 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 		if (list.get(0).getId() == id) {
 			// L'evenement est recyclable
-			EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
-			EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
+			final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
+			final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
 			try {
-				evenementNotificationQueue.post(evt.getNumeroIndividu());
+				evenementNotificationQueue.post(evt.getNumeroIndividu(), true);
 				individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
 			} finally {
 				evenementProcessor.unregisterListener(listnerHandle);

@@ -54,8 +54,8 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public void demanderTraitementQueue(long noIndividu) {
-		notificationQueue.post(noIndividu);
+	public void demanderTraitementQueue(long noIndividu, boolean immediate) {
+		notificationQueue.post(noIndividu, immediate);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		event = assignNumeroIndividu(event, noIndividu);
 
 		// 6. notification du moteur de traitement
-		demanderTraitementQueue(noIndividu);
+		demanderTraitementQueue(noIndividu, false);
 		return event;
 	}
 

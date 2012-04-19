@@ -25,7 +25,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
-		queue = new EvenementCivilNotificationQueueImpl();
+		queue = new EvenementCivilNotificationQueueImpl(0);
 		queue.setEvtCivilService(evtCivilService);
 		buildProcessor(translator, false);
 		processor.start();
@@ -81,7 +81,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		try {
 			// notification d'arrivée d'événement sur l'individu
-			queue.post(noIndividu);
+			queue.post(noIndividu, false);
 
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (jobDone) {

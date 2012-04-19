@@ -1,10 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -51,21 +56,78 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
  */
 public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue {
 
-	private final BlockingQueue<Long> queue = new LinkedBlockingQueue<Long>();
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilNotificationQueueImpl.class);
+
+	private final BlockingQueue<DelayedIndividu> queue = new DelayQueue<DelayedIndividu>();
 	private final ReentrantLock lock = new ReentrantLock();
 
 	private EvenementCivilEchService evtCivilService;
+	private final long delayNs;
+
+	public EvenementCivilNotificationQueueImpl(int delayInSeconds) {
+		if (delayInSeconds < 0) {
+			throw new IllegalArgumentException("delay should not be negative!");
+		}
+		LOGGER.info(String.format("Traitement des événements civils e-CH artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
+		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
+	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvtCivilService(EvenementCivilEchService evtCivilService) {
 		this.evtCivilService = evtCivilService;
 	}
 
+	private static long getTimestamp() {
+		return System.nanoTime();
+	}
+
+	private class DelayedIndividu implements Delayed {
+
+		private final long noIndividu;
+		private final long startTimestamp;
+
+		public DelayedIndividu(long noIndividu, long delayOffset) {
+			this.noIndividu = noIndividu;
+			this.startTimestamp = getTimestamp() + delayOffset;
+		}
+
+		private long getDelay(TimeUnit unit, long nowNanos) {
+			return unit.convert(startTimestamp + delayNs - nowNanos, TimeUnit.NANOSECONDS);
+		}
+
+		@Override
+		public long getDelay(TimeUnit unit) {
+			return getDelay(unit, getTimestamp());
+		}
+
+		@Override
+		public int compareTo(Delayed o) {
+			final long now = getTimestamp();
+			final long myDelay = getDelay(TimeUnit.NANOSECONDS, now);
+			final long yourDelay = ((DelayedIndividu) o).getDelay(TimeUnit.NANOSECONDS, now);
+			return myDelay < yourDelay ? -1 : (myDelay > yourDelay ? 1 : 0);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final DelayedIndividu that = (DelayedIndividu) o;
+			return noIndividu == that.noIndividu;
+		}
+
+		@Override
+		public int hashCode() {
+			return (int) (noIndividu ^ (noIndividu >>> 32));
+		}
+	}
+
 	@Override
-	public void post(Long noIndividu) {
+	public void post(Long noIndividu, boolean immediate) {
 		lock.lock();
 		try {
-			internalPost(noIndividu);
+			internalPost(noIndividu, immediate);
 		}
 		finally {
 			lock.unlock();
@@ -78,7 +140,7 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 			lock.lock();
 			try {
 				for (Long noIndividu : nosIndividus) {
-					internalPost(noIndividu);
+					internalPost(noIndividu, false);
 				}
 			}
 			finally {
@@ -91,29 +153,45 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	 * Doit impérativement être appelé avec le verrou {@link #lock} possédé
 	 * @param noIndividu numéro d'individu à poster dans la queue interne
 	 */
-	private void internalPost(Long noIndividu) {
+	private void internalPost(Long noIndividu, boolean immediate) {
 		Assert.isTrue(lock.isHeldByCurrentThread());
 
 		if (noIndividu == null) {
 			throw new NullPointerException("noIndividu");
 		}
 
-		if (!queue.contains(noIndividu)) {
-			queue.add(noIndividu);
+		// on replace l'élément en fin de queue s'il était déjà présent (de telle sorte qu'on attende toujours au minimum le délai prévu
+		// compté depuis le dernier événements reçu pour un individu)
+		final DelayedIndividu elt = new DelayedIndividu(noIndividu, immediate ? -delayNs : 0L);
+		if (immediate) {
+			// on ne veut pas accélérer le traitement d'un individu déjà en attente (pour s'assurer que, le cas échéant, le service civil
+			// vu au travers de son web-service est bien à jour, voir SIREF-2016)
+			if (!queue.contains(elt)) {
+				queue.add(elt);
+			}
+		}
+		else {
+			queue.remove(elt);
+			queue.add(elt);
 		}
 	}
-	
+
 	@Override
 	public Batch poll(long timeout, TimeUnit unit) throws InterruptedException {
-		final Long noIndividu = queue.poll(timeout, unit);
-		if (noIndividu != null) {
+		final DelayedIndividu elt = queue.poll(timeout, unit);
+		if (elt != null) {
 			// 1. trouve tous les événements civils de cet individu qui sont dans un état A_TRAITER, EN_ATTENTE, EN_ERREUR
 			// 2. tri de ces événements par date, puis type d'événement
-			return new Batch(noIndividu, evtCivilService.buildLotEvenementsCivils(noIndividu));
+			return new Batch(elt.noIndividu, buildLotsEvenementsCivils(elt.noIndividu));
 		}
 
 		// rien à faire... à la prochaine !
 		return null;
+	}
+
+	@Nullable
+	protected List<EvenementCivilEchBasicInfo> buildLotsEvenementsCivils(long noIndividu) {
+		return evtCivilService.buildLotEvenementsCivils(noIndividu);
 	}
 
 	@Override
