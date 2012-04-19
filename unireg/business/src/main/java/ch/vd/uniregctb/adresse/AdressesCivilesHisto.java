@@ -99,20 +99,20 @@ public class AdressesCivilesHisto {
 		Collections.sort(tutelles, comparator);
 	}
 
-	/**Constructeur permettant de construire une AdresseCivileHisto à partir d'une adresseCivilesHistoriques
-	 * et d'y appliquer les traitements propres à  AdresseCivileHisto
+	/**
+	 * Constructeur permettant de construire une AdresseCivileHisto à partir d'une adresseCivilesHistoriques et d'y appliquer les traitements propres à  AdresseCivileHisto
 	 *
-	 * @param adressesHistoriques
-	 * @param strict
+	 * @param adressesHistoriques les adresses historiques
+	 * @param strict              si <i>vrai</i>, la cohérence des données est vérifiée de manière stricte et en cas d'incohérence, une exception est levée. Si <i>faux</i>, la méthode essaie de corriger
+	 *                            les données (dans la mesure du possible) pour ne pas lever d'exception.
 	 * @throws DonneesCivilesException
 	 */
-	public AdressesCivilesHisto(AdressesCivilesHistoriques adressesHistoriques,boolean strict) throws DonneesCivilesException {
+	public AdressesCivilesHisto(AdressesCivilesHistoriques adressesHistoriques, boolean strict) throws DonneesCivilesException {
 		this.principales = adressesHistoriques.principales;
 		this.courriers = adressesHistoriques.courriers;
 		this.secondaires = adressesHistoriques.secondaires;
 		this.tutelles = adressesHistoriques.tutelles;
 		finish(strict);
-
 	}
 
 	public AdressesCivilesHisto() {
