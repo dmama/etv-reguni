@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import ch.ech.ech0011.v5.PlaceOfOrigin;
@@ -23,6 +25,7 @@ import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.evd0001.v3.ResidencePermit;
 import ch.vd.evd0001.v3.UpiPerson;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -268,7 +271,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	private static Collection<Adresse> initAdresses(List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureService infraService) {
+	protected static Collection<Adresse> initAdresses(List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureService infraService) {
 		final List<Adresse> adresses = new ArrayList<Adresse>();
 		if (contact != null) {
 			for (HistoryContact hc : contact) {
@@ -277,33 +280,59 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (residence != null) {
 
-			// [SIREF-1794] les résidences doivent être triées par date d'arrivée croissant, puis par date de déménagement croissant
-			Collections.sort(residence, new Comparator<Residence>() {
-				@Override
-				public int compare(Residence o1, Residence o2) {
-					// FIXME (rcpers) il faut distinguer les résidences principales des résidences secondaires ET les groupes (par commune) de résidences secondaires entre-elles
-					final RegDate arrivalDate1 = XmlUtils.xmlcal2regdate(o1.getArrivalDate());
-					final RegDate arrivalDate2 = XmlUtils.xmlcal2regdate(o2.getArrivalDate());
-					int c = NullDateBehavior.EARLIEST.compare(arrivalDate1, arrivalDate2);
-					if (c == 0) {
-						final RegDate movingDate1 = XmlUtils.xmlcal2regdate(o1.getDwellingAddress().getMovingDate());
-						final RegDate movingDate2 = XmlUtils.xmlcal2regdate(o2.getDwellingAddress().getMovingDate());
-						c = NullDateBehavior.EARLIEST.compare(movingDate1, movingDate2);
+			final Map<Integer, List<Residence>> adressesParCommune = splitParCommune(residence);
+
+			for (List<Residence> list : adressesParCommune.values()) {
+
+				// [SIREF-1794] les résidences doivent être triées par date d'arrivée croissant, puis par date de déménagement croissant
+				Collections.sort(list, new Comparator<Residence>() {
+					@Override
+					public int compare(Residence o1, Residence o2) {
+						// on trie par date d'arrivée dans la commune
+						final RegDate arrivalDate1 = XmlUtils.xmlcal2regdate(o1.getArrivalDate());
+						final RegDate arrivalDate2 = XmlUtils.xmlcal2regdate(o2.getArrivalDate());
+						int c = NullDateBehavior.EARLIEST.compare(arrivalDate1, arrivalDate2);
+						if (c == 0) {
+							// puis par date de déménagement dans la commune
+							final RegDate movingDate1 = XmlUtils.xmlcal2regdate(o1.getDwellingAddress().getMovingDate());
+							final RegDate movingDate2 = XmlUtils.xmlcal2regdate(o2.getDwellingAddress().getMovingDate());
+							c = NullDateBehavior.EARLIEST.compare(movingDate1, movingDate2);
+						}
+						return c;
 					}
-					return c;
+				});
+
+				// on crée les adresses au format Unireg
+				final List<AdresseRCPers> res = new ArrayList<AdresseRCPers>();
+				for (int i = 0, residenceSize = list.size(); i < residenceSize; i++) {
+					final Residence r = list.get(i);
+					final Residence next = i + 1 < residenceSize ? list.get(i + 1) : null;
+					res.add(AdresseRCPers.get(r, next, infraService)); // va calculer une date de fin si nécessaire
 				}
-			});
 
-			final List<AdresseRCPers> residences = new ArrayList<AdresseRCPers>();
-			for (int i = 0, residenceSize = residence.size(); i < residenceSize; i++) {
-				final Residence r = residence.get(i);
-				final Residence next = i + 1 < residenceSize ? residence.get(i + 1) : null;
-				residences.add(AdresseRCPers.get(r, next, infraService));
+				adresses.addAll(res);
 			}
-
-			adresses.addAll(residences);
 		}
+
+		Collections.sort(adresses, new DateRangeComparator<Adresse>());
 		return adresses;
+	}
+
+	private static Map<Integer, List<Residence>> splitParCommune(List<Residence> residence) {
+
+		final Map<Integer, List<Residence>> map = new HashMap<Integer, List<Residence>>(residence.size());
+
+		for (Residence r : residence) {
+			final Integer key = r.getResidenceMunicipality().getMunicipalityId();
+			List<Residence> list = map.get(key);
+			if (list == null) {
+				list = new ArrayList<Residence>();
+				map.put(key, list);
+			}
+			list.add(r);
+		}
+
+		return map;
 	}
 
 	private static Collection<RelationVersIndividu> initEnfants(List<Relationship> relationship) {
@@ -579,12 +608,5 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public Collection<Adresse> getAdresses() {
 		return adresses;
-	}
-
-	private static class AdresseRCPersComparator implements Comparator<AdresseRCPers> {
-		@Override
-		public int compare(AdresseRCPers o1, AdresseRCPers o2) {
-			return NullDateBehavior.EARLIEST.compare(o1.getDateDebut(), o2.getDateDebut());
-		}
 	}
 }

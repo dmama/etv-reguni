@@ -2,6 +2,7 @@ package ch.vd.uniregctb.ech;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0044.v2.DatePartiallyKnown;
 import org.apache.commons.lang.StringUtils;
 
@@ -175,5 +176,14 @@ public abstract class EchHelper {
 		else {
 			throw new IllegalArgumentException("Type de marital status inconnu = [" + maritalStatus + ']');
 		}
+	}
+
+	public static CantonAbbreviation sigleCantonToAbbreviation(String sigleCanton) {
+		for (CantonAbbreviation abbreviation : CantonAbbreviation.values()) {
+			if (abbreviation.name().equalsIgnoreCase(sigleCanton)) {
+				return abbreviation;
+			}
+		}
+		return null;
 	}
 }
