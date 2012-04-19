@@ -48,7 +48,9 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class Depart extends Mouvement {
 
-	/** LOGGER log4J */
+	/**
+	 * LOGGER log4J
+	 */
 	protected static Logger LOGGER = Logger.getLogger(Depart.class);
 
 	private final Commune nouvelleCommunePrincipale;
@@ -59,7 +61,7 @@ public abstract class Depart extends Mouvement {
 	protected Depart(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 
-		if (evenement.getNumeroIndividuConjoint()!=null) {
+		if (evenement.getNumeroIndividuConjoint() != null) {
 			isAncienTypeDepart = true;
 		}
 
@@ -111,17 +113,16 @@ public abstract class Depart extends Mouvement {
 		final RegDate dateDepart = getDate();
 		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
 		final Adresse ancienneAdresse = anciennesAdresses.principale;
-		if(ancienneAdresse != null)
-		{
+		if (ancienneAdresse != null) {
 			this.nouvelleLocalisation = ancienneAdresse.getLocalisationSuivante();
 		}
 
-		else{
+		else {
 			this.nouvelleLocalisation = null;
 		}
 
 		//Recherche de la nouvelle commune
-		nouvelleCommunePrincipale  = findNouvelleCommuneByLocalisation(nouvelleLocalisation,context,getDate());
+		nouvelleCommunePrincipale = findNouvelleCommuneByLocalisation(nouvelleLocalisation, context, getDate());
 
 		try {
 			this.paysInconnu = context.getServiceInfra().getPaysInconnu();
@@ -140,13 +141,12 @@ public abstract class Depart extends Mouvement {
 	}
 
 
-
 	/**
 	 * Traitement spécifique du départ dans les fors
 	 *
-	 * @param pp personne physique désignée par l'événement civil
-	 * @param ctb contribuable concerné par le départ
-	 * @param dateFermeture date de fermeture des fors
+	 * @param pp             personne physique désignée par l'événement civil
+	 * @param ctb            contribuable concerné par le départ
+	 * @param dateFermeture  date de fermeture des fors
 	 * @param motifFermeture motif de fermeture des fors à fermer
 	 * @throws EvenementCivilException en cas de problème
 	 */
@@ -156,7 +156,7 @@ public abstract class Depart extends Mouvement {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		if(!isDepartVaudois()){
+		if (!isDepartVaudois()) {
 			final PersonnePhysique pp = getPrincipalPP();
 			if (pp == null) {
 				// si on ne connaissait pas le gaillard, c'est un problème
@@ -250,7 +250,8 @@ public abstract class Depart extends Mouvement {
 		return motifFermeture;
 	}
 
-	/**Determine si la nouvelle adresse est en suisse
+	/**
+	 * Determine si la nouvelle adresse est en suisse
 	 *
 	 * @return true si la nouvelle adresse se situe en suisse, false sinon
 	 */
@@ -259,7 +260,8 @@ public abstract class Depart extends Mouvement {
 		return (getNouvelleLocalisation() != null && getNouvelleLocalisation().getType() != LocalisationType.HORS_SUISSE);
 	}
 
-	/** determine si le le numéro ofs du pays est renseigné
+	/**
+	 * determine si le le numéro ofs du pays est renseigné
 	 *
 	 * @return true si on a numéro ofs, false sinon
 	 */
@@ -270,24 +272,28 @@ public abstract class Depart extends Mouvement {
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		// [SIFISC-1918] Pour un départ, si la date est à la date du jour, on doit partir en erreur (l'événement sera re-traité plus tard)
-		// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)
-		if (getDate().equals(RegDate.get())) {
-			erreurs.addErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet");
-		}
+		if (!isDepartVaudois()) {
 
-		/*
-		 * Le Depart du mort-vivant
-		 */
-		if (getIndividu().getDateDeces() != null) {
-			erreurs.addErreur("L'individu est décédé");
-		}
+			// [SIFISC-1918] Pour un départ, si la date est à la date du jour, on doit partir en erreur (l'événement sera re-traité plus tard)
+			// car la nouvelle adresse ne commence que demain, et les adresses qui commencent dans le futur sont ignorées (voir SIFISC-35)
 
-		/**
-		 * La commune d'annonce est nécessaire
-		 */
-		if (getNumeroOfsEntiteForAnnonce() == null) {
-			erreurs.addErreur("La commune d'annonce n'est pas renseignée");
+			if (getDate().equals(RegDate.get())) {
+				erreurs.addErreur("Un départ ne peut être traité qu'à partir du lendemain de sa date d'effet");
+			}
+
+			/*
+					 * Le Depart du mort-vivant
+					 */
+			if (getIndividu().getDateDeces() != null) {
+				erreurs.addErreur("L'individu est décédé");
+			}
+
+			/**
+			 * La commune d'annonce est nécessaire
+			 */
+			if (getNumeroOfsEntiteForAnnonce() == null) {
+				erreurs.addErreur("La commune d'annonce n'est pas renseignée");
+			}
 		}
 	}
 
@@ -296,29 +302,31 @@ public abstract class Depart extends Mouvement {
 	 *
 	 * @param adresse
 	 * @param commune
-	 * @param depart         un événement de départ
+	 * @param depart  un événement de départ
 	 * @param erreurs
 	 */
 	protected void validateCoherenceAdresse(Adresse adresse, Commune commune, EvenementCivilErreurCollector erreurs) {
+		if (!isDepartVaudois()) {
 
-		if (adresse == null) {
-			erreurs.addErreur("Adresse de résidence avant départ inconnue");
-		}
-		else if (adresse.getDateFin() == null) {
-			erreurs.addErreur("La date de fin de validité de la résidence est inconnue");
-		}
-		// la date de départ est differente de la date de fin de validité de l'adresse
-		else if (!getDate().equals(adresse.getDateFin())) {
-			erreurs.addErreur("La date de départ est différente de la date de fin de validité de l'adresse dans le canton");
-		}
+			if (adresse == null) {
+				erreurs.addErreur("Adresse de résidence avant départ inconnue");
+			}
+			else if (adresse.getDateFin() == null) {
+				erreurs.addErreur("La date de fin de validité de la résidence est inconnue");
+			}
+			// la date de départ est differente de la date de fin de validité de l'adresse
+			else if (!getDate().equals(adresse.getDateFin())) {
+				erreurs.addErreur("La date de départ est différente de la date de fin de validité de l'adresse dans le canton");
+			}
 
-		// La commune d'annonce est differente de la commune de résidence avant l'évenement
-		// de départ
-		//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
-		if (commune != null) {
-			if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsEntiteForAnnonce()) ||
-					(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsEntiteForAnnonce())) {
-				erreurs.addErreur("La commune d'annonce est differente de la dernière commune de résidence");
+			// La commune d'annonce est differente de la commune de résidence avant l'évenement
+			// de départ
+			//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
+			if (commune != null) {
+				if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsEntiteForAnnonce()) ||
+						(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsEntiteForAnnonce())) {
+					erreurs.addErreur("La commune d'annonce est differente de la dernière commune de résidence");
+				}
 			}
 		}
 	}
@@ -335,7 +343,8 @@ public abstract class Depart extends Mouvement {
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipalHC(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
 	                                                      MotifFor motifOuverture) {
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture, false);
+		return getService()
+				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.COMMUNE_HC, modeImposition, motifOuverture, false);
 	}
 
 	/**
@@ -350,7 +359,8 @@ public abstract class Depart extends Mouvement {
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipalHS(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale, ModeImposition modeImposition,
 	                                                      MotifFor motifOuverture) {
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture, false);
+		return getService()
+				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture, false);
 	}
 
 	protected static ModeImposition determineModeImpositionDepartHCHS(Contribuable contribuable, RegDate dateFermeture, ForFiscalPrincipal ffp) {
@@ -395,21 +405,21 @@ public abstract class Depart extends Mouvement {
 		return ModeImposition.MIXTE_137_1 == modeImposition || ModeImposition.MIXTE_137_2 == modeImposition;
 	}
 
-	private  static Commune findNouvelleCommuneByLocalisation(Localisation localisation, EvenementCivilContext context,RegDate dateDepart) throws EvenementCivilException {
+	private static Commune findNouvelleCommuneByLocalisation(Localisation localisation, EvenementCivilContext context, RegDate dateDepart) throws EvenementCivilException {
 		final Commune nouvelleCommune;
 		final RegDate lendemain = dateDepart.getOneDayAfter();
 
-			if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs() != null) {
-				try {
-					nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
-				}
-				catch (ServiceInfrastructureException e) {
-					throw new EvenementCivilException(e);
-				}
+		if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs() != null) {
+			try {
+				nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
 			}
-			else {
-				nouvelleCommune = null;
+			catch (ServiceInfrastructureException e) {
+				throw new EvenementCivilException(e);
 			}
+		}
+		else {
+			nouvelleCommune = null;
+		}
 
 		return nouvelleCommune;
 	}
@@ -426,7 +436,6 @@ public abstract class Depart extends Mouvement {
 	public boolean isAncienTypeDepart() {
 		return isAncienTypeDepart;
 	}
-
 
 
 	private Localisation computeNouvelleLocalisation(Adresse nouvelleAdresse) {
