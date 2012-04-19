@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrower;
 
 public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRetryProcessor {
 	
@@ -24,6 +25,7 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 	private EvenementCivilEchDAO evtCivilDAO;
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchProcessor processor;
+	private EvenementCivilEchRethrower rethrower;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setNotificationQueue(EvenementCivilNotificationQueue notificationQueue) {
@@ -45,14 +47,22 @@ public class EvenementCivilEchRetryProcessorImpl implements EvenementCivilEchRet
 		this.processor = processor;
 	}
 
+	@SuppressWarnings("UnusedDeclaration")
+	public void setRethrower(EvenementCivilEchRethrower rethrower) {
+		this.rethrower = rethrower;
+	}
+
 	@Override
 	public void retraiteEvenements(@Nullable StatusManager status) {
 
 		if (status == null) {
 			status = new LoggingStatusManager(LOGGER);
 		}
+
+		// dans un premier temps, on essaie de relancer les événements civils "à traiter"
+		rethrower.fetchAndRethrowEvents();
 		
-		// allons tout d'abord rechercher les numéros d'individus qui sont concernés (ce sont ces numéros qu'il faudra poster dans la queue)
+		// ensuite, allons rechercher les numéros d'individus qui sont concernés (ce sont ces numéros qu'il faudra poster dans la queue)
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		template.setReadOnly(true);

@@ -64,8 +64,7 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 		};
 
 		listener = new EvenementCivilEchListener();
-		listener.setFetchEventsOnStartup(false);
-		listener.setEvtCivilDAO(null);      // pas nécessaire tant qu'on ne va pas chercher les événement à relancer
+		listener.setRethrower(null);
 		listener.setIgnoredEventTypes(null);
 		listener.setReceptionHandler(receptionHandler);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
