@@ -162,7 +162,7 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	protected ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                         @ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
-	                                         ModelMap model ) throws AdresseException 	{
+	                                         ModelMap model) throws AdresseException 	{
 		if (bindingResult.hasErrors() ) {
 			// L'utilisateur a soumis un formulaire incorrect
 			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);

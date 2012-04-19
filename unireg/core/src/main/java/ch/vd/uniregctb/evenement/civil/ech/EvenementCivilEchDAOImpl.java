@@ -16,6 +16,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.AbstractEvenementCivilDAOImpl;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -102,6 +103,12 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 	@Override
 	protected String buildCriterion(List<Object> criteria, EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
 		String queryWhere = super.buildCriterion(criteria, criterion);
+
+		ActionEvenementCivilEch action = criterion.getAction();
+		if (action != null) {
+			queryWhere += " and evenement.action = ? ";
+			criteria.add(action.name());
+		}
 
 		Long numero = criterion.getNumeroIndividu();
 		if (numero != null) {
