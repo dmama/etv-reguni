@@ -97,7 +97,7 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@Override
 	@ManagedOperation
 	public void treatPersonsEvents(long noIndividu) {
-		monitor.demanderTraitementQueue(noIndividu);
+		monitor.demanderTraitementQueue(noIndividu, true);
 	}
 
 	@Override

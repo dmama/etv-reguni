@@ -4,8 +4,9 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 public class MockEvenementCivilNotificationQueue implements EvenementCivilNotificationQueue {
+
 	@Override
-	public void post(Long noIndividu) {
+	public void post(Long noIndividu, boolean immediate) {
 		// nothing
 	}
 

@@ -19,6 +19,7 @@ public interface EvenementCivilEchReceptionMonitor {
 	/**
 	 * Méthode utilisée dans les tests "live" pour re-demander le traitement de la queue d'événements de l'individu donné
 	 * @param noIndividu identifiant de l'individu dont on veut relancer le traitement
+	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
 	 */
-	void demanderTraitementQueue(long noIndividu);
+	void demanderTraitementQueue(long noIndividu, boolean immediate);
 }
