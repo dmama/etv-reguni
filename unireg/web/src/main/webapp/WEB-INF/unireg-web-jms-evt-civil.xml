@@ -41,7 +41,6 @@
 	<!-- Evénements civil e-CH -->
 
 	<bean id="evtCivilEchListener" abstract="true" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="esbMessageListener">
-		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
 		<property name="ignoredEventTypes">
 			<set>
@@ -51,12 +50,17 @@
 			</set>
 		</property>
 	</bean>
-	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener">
-		<property name="fetchEventsOnStartup" value="false"/>
-	</bean>
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener"/>
 	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener">
-		<property name="fetchEventsOnStartup" value="true"/>
+		<property name="rethrower" ref="evtCivilEchRethrower"/>
 	</bean>
+
+	<bean id="evtCivilEchRethrower" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrowerImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
 
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
 		<constructor-arg name="delayInSeconds" value="${extprop.evtCivil.acknowledgementDelay}"/>
@@ -114,6 +118,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
 		<property name="processor" ref="evtCivilEchProcessor"/>
+		<property name="rethrower" ref="evtCivilEchRethrower"/>
 	</bean>
 
 </beans>

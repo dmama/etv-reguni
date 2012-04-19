@@ -8,7 +8,6 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,10 +17,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0006.v1.EventIdentification;
@@ -53,16 +48,10 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 	private Schema schemaCache;
 
-	private EvenementCivilEchDAO evtCivilDAO;
 	private EvenementCivilEchReceptionHandler receptionHandler;
+	private EvenementCivilEchRethrower rethrower;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
-	private boolean fetchEventsOnStartup;
 	private boolean running;
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvtCivilDAO(EvenementCivilEchDAO evtCivilDAO) {
-		this.evtCivilDAO = evtCivilDAO;
-	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setReceptionHandler(EvenementCivilEchReceptionHandler receptionHandler) {
@@ -75,8 +64,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFetchEventsOnStartup(boolean fetchEventsOnStartup) {
-		this.fetchEventsOnStartup = fetchEventsOnStartup;
+	public void setRethrower(EvenementCivilEchRethrower rethrower) {
+		this.rethrower = rethrower;
 	}
 
 	@Override
@@ -261,8 +250,14 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	@Override
 	public void start() {
 		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
-		if (fetchEventsOnStartup) {
-			fetchAndRethrowEvents();
+		if (rethrower != null) {
+			AuthenticationHelper.pushPrincipal("Relance-démarrage");
+			try {
+				rethrower.fetchAndRethrowEvents();
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
 		}
 		running = true;
 	}
@@ -299,46 +294,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 					first = false;
 				}
 				LOGGER.info(b.toString());
-			}
-		}
-	}
-
-	private void fetchAndRethrowEvents() {
-		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info("Récupération des événements civils e-CH à relancer");
-		}
-
-		final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
-		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-		final List<EvenementCivilEch> relanceables = template.execute(new TransactionCallback<List<EvenementCivilEch>>() {
-			@Override
-			public List<EvenementCivilEch> doInTransaction(TransactionStatus status) {
-				return evtCivilDAO.getEvenementsCivilsARelancer();
-			}
-		});
-
-		if (LOGGER.isInfoEnabled()) {
-			LOGGER.info(String.format("Trouvé %d événement(s) à relancer", relanceables == null ? 0 : relanceables.size()));
-		}
-
-		if (relanceables != null && relanceables.size() > 0) {
-			AuthenticationHelper.pushPrincipal("Relance-démarrage");
-			try {
-				for (EvenementCivilEch evt : relanceables) {
-					try {
-						receptionHandler.handleEvent(evt);
-					}
-					catch (Exception e) {
-						LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);
-					}
-				}
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-			}
-
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info("Relance des événements civils terminée");
 			}
 		}
 	}
