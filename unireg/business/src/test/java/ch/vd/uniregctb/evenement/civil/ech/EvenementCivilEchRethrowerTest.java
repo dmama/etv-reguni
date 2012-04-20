@@ -53,46 +53,38 @@ public class EvenementCivilEchRethrowerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		final List<EvenementCivilEch> found = new ArrayList<EvenementCivilEch>();
+		final EvenementCivilEchReceptionHandler handler = new EvenementCivilEchReceptionHandler() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				final List<EvenementCivilEch> found = new ArrayList<EvenementCivilEch>();
-				final EvenementCivilEchReceptionHandler handler = new EvenementCivilEchReceptionHandler() {
-					@Override
-					public EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {
-						throw new RuntimeException("Should not be called!");
-					}
-
-					@Override
-					public EvenementCivilEch handleEvent(EvenementCivilEch event) throws EvenementCivilException {
-						found.add(event);
-						return event;
-					}
-				};
-
-				final EvenementCivilEchRethrower rethrower = buildRethrower(handler);
-				rethrower.fetchAndRethrowEvents();
-
-				Assert.assertEquals(2, found.size());
-
-				boolean foundOne = false;
-				boolean foundTwo = false;
-				for (EvenementCivilEch e : found) {
-					if (e.getId() == 1L) {
-						Assert.assertFalse(foundOne);
-						foundOne = true;
-					}
-					else if (e.getId() == 2L) {
-						Assert.assertFalse(foundTwo);
-						foundTwo = true;
-					}
-				}
-				Assert.assertTrue(foundOne);
-				Assert.assertTrue(foundTwo);
-
-				return null;
+			public EvenementCivilEch saveIncomingEvent(EvenementCivilEch event) {
+				throw new RuntimeException("Should not be called!");
 			}
-		});
+
+			@Override
+			public EvenementCivilEch handleEvent(EvenementCivilEch event) throws EvenementCivilException {
+				found.add(event);
+				return event;
+			}
+		};
+
+		final EvenementCivilEchRethrower rethrower = buildRethrower(handler);
+		rethrower.fetchAndRethrowEvents();
+
+		Assert.assertEquals(2, found.size());
+
+		boolean foundOne = false;
+		boolean foundTwo = false;
+		for (EvenementCivilEch e : found) {
+			if (e.getId() == 1L) {
+				Assert.assertFalse(foundOne);
+				foundOne = true;
+			}
+			else if (e.getId() == 2L) {
+				Assert.assertFalse(foundTwo);
+				foundTwo = true;
+			}
+		}
+		Assert.assertTrue(foundOne);
+		Assert.assertTrue(foundTwo);
 	}
 }
