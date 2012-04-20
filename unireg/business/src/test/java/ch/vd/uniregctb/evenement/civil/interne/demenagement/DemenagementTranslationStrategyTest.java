@@ -14,6 +14,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.GenreImpot;
@@ -128,5 +129,60 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 
 		final Demenagement demenagement = (Demenagement) interne;
 		assertEquals(MockCommune.Villette, demenagement.getNouvelleCommunePrincipale());
+	}
+
+
+	/**
+	 * Vérifie qu'un événement de déménagement secondaire est bien detecté par la strategy.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDemenagementSecondaire() throws Exception {
+
+		final Long noInd = 1234L;
+		final RegDate dateDemenagement = date(2010, 9, 1);
+
+		// Crée un individu qui déménage à l'intérieur d'une commune fusionnée pendant la période où elle est fusionnée au civil, mais pas encore au fiscal
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1970, 1, 1), "Hutter", "Marcel", true);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentChDesColombaires, null, date(1990, 1, 1), dateDemenagement.getOneDayBefore());
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockBatiment.Cully.BatimentPlaceDuTemple, null, dateDemenagement, null);
+			}
+		});
+
+		final PersonnePhysique pp = addHabitant(noInd);
+		final ForFiscalPrincipal f = new ForFiscalPrincipal();
+		f.setDateDebut(date(1990, 1, 1));
+		f.setMotifOuverture(MotifFor.MAJORITE);
+		f.setDateFin(null);
+		f.setMotifFermeture(null);
+		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
+		f.setNumeroOfsAutoriteFiscale(MockCommune.Zurich.getNoOFSEtendu());
+		f.setMotifRattachement(MotifRattachement.DOMICILE);
+		f.setModeImposition(ModeImposition.ORDINAIRE);
+
+		final ForFiscalSecondaire fs = new ForFiscalSecondaire();
+		fs.setDateDebut(date(1990, 1, 1));
+		fs.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
+		fs.setDateFin(null);
+		fs.setMotifFermeture(null);
+		fs.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+		fs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		fs.setNumeroOfsAutoriteFiscale(MockCommune.Cully.getNoOFSEtendu());
+		fs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
+
+		// Simule l'arrivée du déménagement de la part de la commune fusionnée
+		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
+				MockCommune.Cully.getNoOFSEtendu(), null);
+
+		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, parce que
+		// même si - du point de vue fiscal - les communes n'ont pas encore fusionné, la commune de départ et celle d'arrivée est la même.
+		final EvenementCivilInterne interne = strategy.create(externe, context, options);
+		assertNotNull(interne);
+		assertInstanceOf(DemenagementSecondaire.class, interne);
+
 	}
 }
