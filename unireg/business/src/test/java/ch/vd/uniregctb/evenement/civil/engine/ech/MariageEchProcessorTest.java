@@ -149,13 +149,13 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		// traitement synchrone de l'événement
 		traiterEvenements(noMonsieur);
 
-		// vérification de la création d'un marié seul
+		// vérification que l'évenement est en erreur et que monsieur n'est pas dans un couple
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(mariageMonsieurId);
 				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
@@ -164,9 +164,7 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(madame);
 
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(monsieur, dateMariage);
-				assertNotNull(ensemble);
-				assertSame(monsieur, ensemble.getPrincipal());
-				assertNull(ensemble.getConjoint());
+				assertNull(ensemble);
 				return null;
 			}
 		});
@@ -198,14 +196,20 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMadame);
+		// simul recyclage de l'évenement de Monsieur
+		traiterEvenements(noMonsieur);
 
-		// vérification de la reconstitution du ménage complet
+		// vérification de la constitution du ménage complet
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(mariageMadameId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final EvenementCivilEch evtMme = evtCivilDAO.get(mariageMadameId);
+				assertNotNull(evtMme);
+				assertEquals(EtatEvenementCivil.TRAITE, evtMme.getEtat());
+
+				final EvenementCivilEch evtMr = evtCivilDAO.get(mariageMonsieurId);
+				assertNotNull(evtMr);
+				assertEquals(EtatEvenementCivil.REDONDANT, evtMr.getEtat());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
@@ -277,13 +281,13 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		// traitement synchrone de l'événement
 		traiterEvenements(noMonsieur);
 
-		// vérification de la création d'un marié seul
+		// vérification que l'évenement est en erreur et que monsieur n'est pas dans un couple
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(mariageMonsieurId);
 				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
@@ -292,12 +296,11 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(madame);
 
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(monsieur, dateMariageMonsieur);
-				assertNotNull(ensemble);
-				assertSame(monsieur, ensemble.getPrincipal());
-				assertNull(ensemble.getConjoint());
+				assertNull(ensemble);
 				return null;
 			}
 		});
+
 
 		// maintenant, il faut marier Madame...
 		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
@@ -326,22 +329,25 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 		// traitement synchrone de l'événement
 		traiterEvenements(noMadame);
+		// simul recyclage de l'évenement de Monsieur
+		traiterEvenements(noMonsieur);
 
-		// vérification de la reconstitution du ménage complet
+		// vérification de la constitution du ménage complet à la date de mariage de madame
+		// l'evenement de monsieur devrait rester en erreur pour cause de date de mariage incohérente
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final EvenementCivilEch evt = evtCivilDAO.get(mariageMadameId);
-				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final EvenementCivilEch evtMme = evtCivilDAO.get(mariageMadameId);
+				assertNotNull(evtMme);
+				assertEquals(EtatEvenementCivil.TRAITE, evtMme.getEtat());
 
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				final EvenementCivilEch evtMr = evtCivilDAO.get(mariageMonsieurId);
+				assertNotNull(evtMr);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evtMr.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evtMr.getErreurs();
 				assertNotNull(erreurs);
-				assertEquals(1, erreurs.size());
-
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				assertNotNull(erreur);
-				assertEquals("La date ne correspond pas à celle du mariage.", erreur.getMessage());
+				assertEquals(2, erreurs.size());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
@@ -350,9 +356,12 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(madame);
 
 				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(madame, dateMariageMadame);
-				assertNull(ensemble);
+				assertNotNull(ensemble);
+
 				return null;
 			}
 		});
 	}
+
+
 }
