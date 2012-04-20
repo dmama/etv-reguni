@@ -246,6 +246,74 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(naissanceId);
 				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Le contribuable correspondant au nouveau-né existe déjà, seuls les événements à destination des applications fiscales ont été envoyés.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * En fait, une naissance "civile" nous envoie une naissance et une arrivée, mais les deux peuvent arriver dans l'ordre inverse
+	 */
+	@Test(timeout = 10000L)
+	public void testNaissanceAvecPlusieursTiersCorrespondantExistants() throws Exception {
+
+		final long noIndividu = 54678215611L;
+		final RegDate dateNaissance = RegDate.get().addMonths(-1);
+
+		// le nouveau né apparaît au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
+			}
+		});
+
+		final class Ids {
+			public long id1;
+			public long id2;
+
+		}
+
+		// création des tiers pré-existants
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp1 = addHabitant(noIndividu);
+				final PersonnePhysique pp2 = addHabitant(noIndividu);
+				final Ids ids = new Ids();
+				ids.id1 = pp1.getNumero();
+				ids.id2 = pp2.getNumero();
+				return ids;
+			}
+		});
+
+		// événement civil de naissance (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long naissanceId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateNaissance);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.NAISSANCE);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noIndividu);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(naissanceId);
+				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
@@ -253,10 +321,9 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
-				Assert.assertEquals(String.format("Le tiers existe déjà avec cet individu %d alors que c'est une naissance", noIndividu), erreur.getMessage());
+				Assert.assertEquals(String.format("Plusieurs tiers non-annulés partagent le même numéro d'individu %d ([%d, %d])", noIndividu, ids.id1, ids.id2), erreur.getMessage());
 				return null;
 			}
 		});
-
 	}
 }

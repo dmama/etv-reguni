@@ -27,20 +27,28 @@ public class Naissance extends EvenementCivilInterne {
 
 	private static final Logger LOGGER = Logger.getLogger(Naissance.class);
 
+	private final boolean okSiContribuableExiste;
+
 	protected Naissance(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+		this.okSiContribuableExiste = false;
 	}
 
 	protected Naissance(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+		if (getPrincipalPP() != null) {
+			evenement.setCommentaireTraitement("Le contribuable correspondant au nouveau-né existe déjà, seuls les événements à destination des applications fiscales ont été envoyés.");
+		}
+		this.okSiContribuableExiste = true;
 	}
 
 	/**
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Naissance(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, List<Individu> parents, EvenementCivilContext context) {
+	protected Naissance(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, List<Individu> parents, EvenementCivilContext context, boolean regpp) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
+		this.okSiContribuableExiste = !regpp;
 	}
 
 	/* (non-Javadoc)
@@ -80,21 +88,27 @@ public class Naissance extends EvenementCivilInterne {
 		/*
 		 * Vérifie qu'aucun tiers n'existe encore rattaché à cet individu
 		 */
+		final PersonnePhysique bebe;
 		if (getPrincipalPP() != null) {
-			throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
+			if (!okSiContribuableExiste) {
+				throw new EvenementCivilException("Le tiers existe déjà avec cet individu " + individu.getNoTechnique() + " alors que c'est une naissance");
+			}
+			bebe = getPrincipalPP();
 		}
+		else {
 
-		/*
-		 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
-		 */
-		PersonnePhysique bebe = new PersonnePhysique(true);
-		bebe.setNumeroIndividu(individu.getNoTechnique());
-		bebe = (PersonnePhysique) context.getTiersDAO().save(bebe);
-		Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
+			/*
+			 *  Création d'un nouveau Tiers et sauvegarde de celui-ci
+			 */
+			final PersonnePhysique nouveauNe = new PersonnePhysique(true);
+			nouveauNe.setNumeroIndividu(individu.getNoTechnique());
+			bebe = (PersonnePhysique) context.getTiersDAO().save(nouveauNe);
+			Audit.info(getNumeroEvenement(), "Création d'un nouveau tiers habitant (numéro: " + bebe.getNumero() + ')');
+		}
 
 		context.getEvenementFiscalService().publierEvenementFiscalChangementSituation(bebe, dateEvenement, bebe.getId());
 
-		// [UNIREG-3244] on envoie les fairs-parts de naissance
+		// [UNIREG-3244] on envoie les faire-parts de naissance
 		final Contribuable parent = context.getTiersService().getAutoriteParentaleDe(bebe, dateEvenement);
 		if (parent != null) {
 			context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
