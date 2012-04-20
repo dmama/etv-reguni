@@ -487,7 +487,7 @@ public abstract class IndividuDumper {
 		s.append("District{\n");
 		s.append(tab(depth + 1)).append("code=").append(district.getCode()).append(", \n");
 		s.append(tab(depth + 1)).append("designation=").append(dumpString(district.getDesignation())).append(", \n");
-		s.append(tab(depth + 1)).append("region=").append(dumpString(dumpRegion(district.getRegion(), depth + 1))).append(", \n");
+		s.append(tab(depth + 1)).append("region=").append(dumpRegion(district.getRegion(), depth + 1)).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();
