@@ -107,7 +107,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 			erreurs.addErreur(String.format("L'individu %d n'est ni séparé ni divorcé dans le civil", noIndividuPrincipal));
 		}
 
-		if (ancienConjoint != null) {
+		if (ancienConjoint != null && ancienConjoint.isConnuAuCivil()) {
 			long noIndividuConjoint = ancienConjoint.getNumeroIndividu();
 			EtatCivil etatCivilTiersConjoint = serviceCivil.getEtatCivilActif(noIndividuConjoint, date);
 			if (etatCivilTiersConjoint == null) {
