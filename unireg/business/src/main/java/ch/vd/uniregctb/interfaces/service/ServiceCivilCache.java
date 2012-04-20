@@ -91,7 +91,9 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		if (statsService != null) {
 			statsService.registerCache(SERVICE_NAME, this);
 		}
-		uniregCacheManager.register(this);
+		if (uniregCacheManager != null) {
+			uniregCacheManager.register(this);
+		}
 		dataEventService.register(this);
 	}
 
@@ -100,7 +102,9 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		if (statsService != null) {
 			statsService.unregisterCache(SERVICE_NAME);
 		}
-		uniregCacheManager.unregister(this);
+		if (uniregCacheManager != null) {
+			uniregCacheManager.unregister(this);
+		}
 	}
 
 	/**
