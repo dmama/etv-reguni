@@ -42,18 +42,36 @@ public class Mariage extends EvenementCivilInterne {
 	private final PersonnePhysique nouveauConjointPP;
 	private final MenageCommun menageAReconstituer;
 	private boolean isRedondant;
+	private EtatCivilConjointInvalideException etatCivilConjointInvalideException; // Utiliser dans le validSpecific pour differencier les cas ou le conjoint n'est pas là des cas ou il est invalide
 
 	public Mariage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
-		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), evenement.getId());
+		Individu nouveauConjoint;
+		try {
+			nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), evenement.getId());
+		}
+		catch (EtatCivilConjointInvalideException e) {
+			nouveauConjoint = null;
+			this.etatCivilConjointInvalideException = null;  // TODO FRED :  à valider.
+													// pour ne pas changer le traitement des evt RegPP on ne tient pas compte de l'exception qui a un effet de bord dans le validSpecific
+		}
+		this.nouveauConjoint = nouveauConjoint;
 		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
 		this.menageAReconstituer = null;        // n'était pas géré à l'époque Reg-PP
 	}
 
 	public Mariage(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
-		this.nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), event.getId());
-		this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
+		Individu nouveauConjoint;
+		try {
+			nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), event.getId());
+		}
+		catch (EtatCivilConjointInvalideException e) {
+			nouveauConjoint = null;
+			this.etatCivilConjointInvalideException = e;
+		}
+		this.nouveauConjoint = nouveauConjoint;
+       	this.nouveauConjointPP = nouveauConjoint == null ? null : getPersonnePhysiqueOrNull(nouveauConjoint.getNoTechnique(), true);
 		this.menageAReconstituer = computeReconstitution(nouveauConjointPP, getDate(), context.getTiersService());
 	}
 
@@ -93,7 +111,7 @@ public class Mariage extends EvenementCivilInterne {
 	 * @param idEvent      identifiant de l'événement civil en cours de traitement   
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
 	 */
-	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil, long idEvent) {
+	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil, long idEvent) throws EtatCivilConjointInvalideException {
 
 		final Individu conjoint = serviceCivil.getConjoint(noPrincipal, date.getOneDayAfter());
 		if (conjoint == null) {
@@ -101,25 +119,28 @@ public class Mariage extends EvenementCivilInterne {
 			return null;
 		}
 
-		final Individu principal = serviceCivil.getIndividu(noPrincipal, date);
-		if (!isBonConjoint(principal, conjoint, date, serviceCivil)) {
-			Audit.info(idEvent, String.format("Le lien de conjoint n'existe pas depuis l'individu %d vers l'individu %d dans le registre civil au %s",
-			                                  conjoint.getNoTechnique(), noPrincipal, RegDateHelper.dateToDisplayString(date)));
-			return null;
-		}
-
-		// si le conjoint n'a pas d'état civil, on renvoie null
+		// si le conjoint n'a pas d'état civil, on lève une EtatCivilConjointInvalideException
 		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), date);
 		if (etatCivil == null) {
-			Audit.info(idEvent, String.format("L'individu conjoint %d n'a pas d'état civil actif dans le registre civil au %s",
-			                                  conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(date)));
-			return null;
+			String msg = String.format("L'individu conjoint %d n'a pas d'état civil actif dans le registre civil au %s",
+					conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(date));
+			Audit.info(idEvent, msg);
+			throw new EtatCivilConjointInvalideException(msg);
 		}
 
-		// si le conjoint n'est pas marié/pacsé, on renvoie null
+		// si le conjoint n'est pas marié/pacsé, on lève une EtatCivilConjointInvalideException
 		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
-			Audit.info(idEvent, String.format("L'état civil de l'individu conjoint %d est '%s' dans le registre civil au %s",
-			                                  conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(date)));
+			String msg = String.format("L'état civil de l'individu conjoint %d est '%s' dans le registre civil au %s",
+					conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(date));
+			Audit.info(idEvent, msg);
+			throw new EtatCivilConjointInvalideException(msg);
+		}
+
+		final Individu principal = serviceCivil.getIndividu(noPrincipal, date);
+		if (!isBonConjoint(principal, conjoint, date, serviceCivil)) {
+			String msg = String.format("Le lien de conjoint n'existe pas depuis l'individu %d vers l'individu %d dans le registre civil au %s",
+					conjoint.getNoTechnique(), noPrincipal, RegDateHelper.dateToDisplayString(date));
+			Audit.info(idEvent, msg);
 			return null;
 		}
 
@@ -162,6 +183,13 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		/*
+		 * Dans le cas où l'état civil du conjoint est invalide
+		 */
+		if (isEtatCivilConjointInvalide() ) {
+			erreurs.addErreur(etatCivilConjointInvalideException);
+		}
+
+		/*
 		 * Dans le cas où le conjoint réside dans le canton, il faut que le tiers contribuable existe.
 		 */
 		final Individu conjoint = nouveauConjoint;
@@ -176,7 +204,10 @@ public class Mariage extends EvenementCivilInterne {
 			}
 
 			// [UNIREG-1595] On ne teste l'état civil que si le tiers est habitant (pas ancien habitant...)
+
 			if (nouveauConjointPP.isHabitantVD()) {
+				// TODO a verifier mais selon moi ce code est superflu et ne peut jamais etre atteint
+				// ( nouveauConjoint est tjs à null si il y des pb d'état civil voir methode getConjointValide() appelée dans le constructeur )
 
 				final EtatCivil etatCivilConjoint = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), dateMariage);
 				if (etatCivilConjoint == null) {
@@ -189,7 +220,7 @@ public class Mariage extends EvenementCivilInterne {
 			}
 		}
 
-		// détection d'un événement redondant
+			// détection d'un événement redondant
 		isRedondant = context.getMetierService().isEnMenageDepuis(habitant, nouveauConjointPP, dateMariage);
 
 		if (!isRedondant) {
@@ -215,6 +246,7 @@ public class Mariage extends EvenementCivilInterne {
 		final PersonnePhysique contribuable = getPrincipalPP();
 		final PersonnePhysique conjointContribuable = nouveauConjointPP;
 		if (nouveauConjointPP == null && nouveauConjoint != null) {
+			// TODO FRED doublon avec le controle de validSpecific ?
 			throw new EvenementCivilException(String.format("Le contribuable du conjoint (individu %d) n'existe pas dans le registre fiscal", nouveauConjoint.getNoTechnique()));
 		}
 
@@ -255,5 +287,17 @@ public class Mariage extends EvenementCivilInterne {
 		}
 
 		return HandleStatus.TRAITE;
+	}
+
+	private boolean isEtatCivilConjointInvalide() {
+		return etatCivilConjointInvalideException != null;
+	}
+
+	private static class EtatCivilConjointInvalideException extends Exception {
+		private static final long serialVersionUID = 8334382141567038871L;
+
+		private EtatCivilConjointInvalideException(String message) {
+			super(message);
+		}
 	}
 }
