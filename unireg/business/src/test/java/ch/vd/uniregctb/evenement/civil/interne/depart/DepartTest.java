@@ -707,7 +707,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepart(depart, collector, collector);
 
 		final PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire",
+		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire(Arrangement fiscal?)",
 				tiers.getNumero());
 		assertTrue("L'évènement devrait partir en erreur car c'est un départ vaudois sur une résidence secondaire", collector.hasErreurs());
 		assertEquals(message, collector.getErreurs().get(0).getMessage());
@@ -862,7 +862,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 		Assert.assertNotNull(pp);
 
-		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire",
+		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire(Arrangement fiscal?)",
 				pp.getNumero());
 		assertTrue("L'évènement devrait partir en erreur car c'est un départ vaudois sur une résidence secondaire", collector.hasErreurs());
 		assertEquals(message,collector.getErreurs().get(0).getMessage());

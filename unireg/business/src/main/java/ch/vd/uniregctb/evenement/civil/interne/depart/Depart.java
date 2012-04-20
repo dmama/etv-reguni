@@ -438,7 +438,7 @@ public abstract class Depart extends Mouvement {
 	}
 
 
-	private Localisation computeNouvelleLocalisation(Adresse nouvelleAdresse) {
+	protected Localisation computeNouvelleLocalisation(Adresse nouvelleAdresse) {
 		final Localisation nextLocalisation;
 		if (getNouvelleCommunePrincipale() == null) {
 			if (nouvelleAdresse != null && nouvelleAdresse.getNoOfsPays() != null && nouvelleAdresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
