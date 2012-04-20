@@ -318,12 +318,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 	}
 
-	@Test(timeout = 10000L)
+	@Test(timeout = 20000L)
 	public void testPerfInsertionWithZeroDelay() throws Exception {
 		doPerfTest(0);
 	}
 
-	@Test(timeout = 20000L)
+	@Test(timeout = 30000L)
 	public void testPerfInsertionWithThreeSecondsDelay() throws Exception {
 		doPerfTest(3);
 	}
