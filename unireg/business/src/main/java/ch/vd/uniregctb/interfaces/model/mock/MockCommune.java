@@ -242,7 +242,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 
 	@Override
 	public int getNumTechMere() {
-		throw new RuntimeException("Not implemented!");
+		return -1;
 	}
 
 	@Override

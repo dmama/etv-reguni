@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
@@ -18,6 +19,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.interfaces.IndividuDumper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -35,6 +37,8 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  * Implémentation des événement civils en provenance du host.
  */
 public abstract class EvenementCivilInterne {
+
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilInterne.class);
 
 	public static final long NO_OFS_FRACTION_SENTIER = 8000;
 
@@ -76,21 +80,7 @@ public abstract class EvenementCivilInterne {
 		this.conjointPP = this.noIndividuConjoint == null ? null : context.getTiersDAO().getPPByNumeroIndividu(this.noIndividuConjoint, true);
 
 		if (noIndividu != null && options.isRefreshCache()) {
-
-			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
-			context.getDataEventService().onIndividuChange(noIndividu);
-
-			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
-			if (forceRefreshCacheConjoint()) {
-
-				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
-				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
-
-				// nettoyage du cache pour tous ces individus
-				for (Long noInd : conjoints) {
-					context.getDataEventService().onIndividuChange(noInd);
-				}
-			}
+			refreshIndividuCache(noIndividu, context);
 		}
 	}
 
@@ -107,26 +97,10 @@ public abstract class EvenementCivilInterne {
 		this.conjointPP = null;
 
 		if (noIndividu != null && options.isRefreshCache()) {
-
-			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
-			context.getDataEventService().onIndividuChange(noIndividu);
-
-			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
-			if (forceRefreshCacheConjoint()) {
-
-				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
-				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
-
-				// nettoyage du cache pour tous ces individus
-				if (conjoints != null && conjoints.size() > 0) {
-					for (Long noInd : conjoints) {
-						context.getDataEventService().onIndividuChange(noInd);
-					}
-				}
-			}
+			refreshIndividuCache(noIndividu, context);
 		}
 	}
-	
+
 	/**
 	 * Pour le testing uniquement.
 	 */
@@ -147,21 +121,25 @@ public abstract class EvenementCivilInterne {
 		this.numeroOfsCommuneAnnonce = numeroOfsCommuneAnnonce;
 
 		if (noIndividu != null && context.getDataEventService() != null) {
+			refreshIndividuCache(noIndividu, context);
+		}
+	}
 
-			// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
-			context.getDataEventService().onIndividuChange(noIndividu);
+	private void refreshIndividuCache(Long noIndividu, EvenementCivilContext context) {
 
-			// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
-			if (forceRefreshCacheConjoint()) {
+		// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
+		context.getDataEventService().onIndividuChange(noIndividu);
 
-				// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
-				final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
+		// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
+		if (forceRefreshCacheConjoint()) {
 
-				// nettoyage du cache pour tous ces individus
-				if (conjoints != null && conjoints.size() > 0) {
-					for (Long noInd : conjoints) {
-						context.getDataEventService().onIndividuChange(noInd);
-					}
+			// récupération du numéro de l'individu conjoint (en fait, on va prendre tous les conjoints connus)
+			final Set<Long> conjoints = context.getServiceCivil().getNumerosIndividusConjoint(noIndividu);
+
+			// nettoyage du cache pour tous ces individus
+			if (conjoints != null && conjoints.size() > 0) {
+				for (Long noInd : conjoints) {
+					context.getDataEventService().onIndividuChange(noInd);
 				}
 			}
 		}
@@ -307,7 +285,7 @@ public abstract class EvenementCivilInterne {
 	@Nullable
 	public Individu getIndividu() {
 		if (individuPrincipal == null && noIndividu != null) { // lazy init
-			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
+			initIndividu();
 		}
 		return individuPrincipal;
 	}
@@ -318,12 +296,19 @@ public abstract class EvenementCivilInterne {
 			if (noIndividu == null) {
 				throw new IllegalArgumentException("Le numéro d'invidu principal est nul");
 			}
-			individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
+			initIndividu();
 			if (individuPrincipal == null) {
 				throw new IndividuNotFoundException(noIndividu);
 			}
 		}
 		return individuPrincipal;
+	}
+
+	private void initIndividu() {
+		individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
+		if (individuPrincipal != null && LOGGER.isTraceEnabled()) {
+			LOGGER.trace(String.format("Individu trouvé pour l'événement n°%d : %s", this.numeroEvenement, IndividuDumper.dump(individuPrincipal, false, false, false)));
+		}
 	}
 
 	public PersonnePhysique getPrincipalPP() {
