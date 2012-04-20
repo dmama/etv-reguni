@@ -155,7 +155,6 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	 * @param context            le context d'execution
 	 * @param principal          l'individu concerné par l'évenement
 	 * @param jourDemenagement   jour de l'évenement
-	 * @param veilleDemenagement la veille de l'évènement
 	 * @return les communes trouvées (qui peuvent être nulles)
 	 * @throws EvenementCivilException
 	 */
@@ -208,7 +207,8 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 		try {
 			final AdressesCivilesActives nouvelleAdresse = context.getServiceCivil().getAdresses(principal, jourDemenagement, false);
 
-			if (nouvelleAdresse.principale.getDateDebut().equals(jourDemenagement)) {
+			final Adresse principale = nouvelleAdresse.principale;
+			if (principale != null && principale.getDateDebut().equals(jourDemenagement)) {
 				return true;
 			}
 			return false;
