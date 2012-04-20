@@ -67,6 +67,9 @@ public class OnTheFlyTiersIndexer {
 	 */
 	public void schedule(Long id) {
 		try {
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Ajout de l'id [" + id + "] dans la queue...");
+			}
 			queue.put(id);
 		}
 		catch (InterruptedException e) {
