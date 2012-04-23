@@ -40,6 +40,15 @@ public class DepartPrincipal extends Depart {
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
 
+		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
+		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
+		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
+		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdressePrincipale, lendemainDepart);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
+		//SIFISC-4230 Pour les evenements regPP, les départs vaudois doivent partir en erreur
+		if (isDepartVaudois()) {
+			throw new EvenementCivilException("La nouvelle commune est toujours dans le canton de Vaud");
+		}
 
 	}
 
@@ -58,12 +67,30 @@ public class DepartPrincipal extends Depart {
 
 	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(event, context, options);
+
 		final RegDate dateDepart = getDate();
 		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
+
 		this.ancienneAdresse = anciennesAdresses.principale;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 
+		if (this.ancienneAdresse != null) {
+			this.nouvelleLocalisation = this.ancienneAdresse.getLocalisationSuivante();
+		}
+		else {
+			this.nouvelleLocalisation = null;
+		}
+
+		//Recherche de la nouvelle commune
+		this.nouvelleCommune = findNouvelleCommuneByLocalisation(nouvelleLocalisation, context, getDate());
+
+		//SIFISC-4230 Pour les evenements ech,les départs vaudois sont ignorés
+		if (isDepartVaudois()) {
+			final String message = String.format("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence %s est toujours dans le canton.",
+					nouvelleCommune.getNomMinuscule());
+			event.setCommentaireTraitement(message);
+		}
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
@@ -87,7 +114,7 @@ public class DepartPrincipal extends Depart {
 			}
 
 		} // Verification de la nouvelle commune principale en hors canton
-		else if (getNouvelleCommunePrincipale() == null) {
+		else if (getNouvelleCommune() == null) {
 			warnings.addWarning("La nouvelle commune principale n'a pas été trouvée : veuillez vérifier le motif de fermeture du for principal");
 		}
 	}
@@ -162,7 +189,7 @@ public class DepartPrincipal extends Depart {
 
 		int numeroOfsAutoriteFiscale;
 		if (motifFermeture == MotifFor.DEPART_HC) {
-			final Commune nouvelleCommune = getNouvelleCommunePrincipale();
+			final Commune nouvelleCommune = getNouvelleCommune();
 			if (nouvelleCommune != null) {
 				numeroOfsAutoriteFiscale = nouvelleCommune.getNoOFS();
 			}
