@@ -1462,7 +1462,7 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertNull(address.getDateTo());
 		AddressInformation info = address.getAddressInformation();
 		assertEquals("Chemin du Riau", info.getStreet());
-		assertEquals("2A", info.getHouseNumber());
+		assertEquals("2a", info.getHouseNumber());
 		assertEquals(Long.valueOf(1162), info.getSwissZipCode());
 		assertEquals("St-Prex", info.getTown());
 		assertEquals(Integer.valueOf(294), info.getSwissZipCodeId());

@@ -1608,7 +1608,7 @@ public class TiersServiceWebTest extends AbstractTiersServiceWebTest {
 		assertSameDay(newDate(2009, 12, 1), domicile.getDateDebut());
 		assertNull(domicile.getDateFin());
 		assertEquals("Chemin du Riau", domicile.getRue());
-		assertEquals("2A", domicile.getNumeroRue());
+		assertEquals("2a", domicile.getNumeroRue());
 		assertEquals("1162", domicile.getNumeroPostal());
 		assertEquals("St-Prex", domicile.getLocalite());
 		assertEquals(294, domicile.getNoOrdrePostal());
