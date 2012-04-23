@@ -41,7 +41,8 @@ echo -e "machine $MACHINE\n\tlogin $USR\n\tpassword $PWD" >> "$NETRC_FILE"
 
 # modification du fichier /etc/cntlm.conf
 CNTLM_CONF_FILE=/etc/cntlm.conf
-NEW_LINES=$(echo "$PWD" | cntlm -H -u $USR -d ADACV | sed -e '/^Password:/ D' | tac | sed -e '2,$ s/$/\\/' | tac)
+#NEW_LINES=$(echo "$PWD" | cntlm -H -u $USR -d ADACV -a NTLMv2 | sed -e '/^Password:/ D' | tac | sed -e '2,$ s/$/\\/' | tac)
+NEW_LINES=$(echo "$PWD" | cntlm -H -u $USR -d ADACV -a NTLMv2 | grep "NTLMv2" | sed -e '/^Password:/ D' | tac | sed -e '2,$ s/$/\\/' | tac)
 BEGIN_LINE="### PWD-BEGIN"
 END_LINE="### PWD-END"
 sudo sed -i "$CNTLM_CONF_FILE" -e "/^$BEGIN_LINE/,/^$END_LINE/ c\
