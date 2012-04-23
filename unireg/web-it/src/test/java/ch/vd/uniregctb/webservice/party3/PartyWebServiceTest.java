@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -1474,7 +1473,6 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 	/**
 	 * [SIFISC-2588] vérifie que le cache gère correctement les parts rapports-entre-tiers enfants, et parents (dont les données correspondantes se retrouvent dans la même collection)
 	 */
-	@Ignore(value = "En attente de la résolution de SIREF-1631") // TODO (rcpers)
 	@Test
 	public void testGetRelationsBetweenPartiesWithChildrenAndParents() throws Exception {
 
