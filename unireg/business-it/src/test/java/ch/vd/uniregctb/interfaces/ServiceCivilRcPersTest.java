@@ -9,9 +9,4 @@ public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 		super.onSetUp();
 		service = getBean(ServiceCivilService.class, "serviceCivilRcPers");
 	}
-
-	@Override
-	public void testGetIndividuConjoint() {
-		// TODO (rcpers) on ne teste rien en attendant la résolution du cas SIREF-1631
-	}
 }

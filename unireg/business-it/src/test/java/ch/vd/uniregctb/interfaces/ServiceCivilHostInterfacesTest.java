@@ -7,7 +7,6 @@ public class ServiceCivilHostInterfacesTest extends AbstractServiceCivilTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-
 		service = getBean(ServiceCivilService.class, "serviceCivilServiceHost");
 	}
 }

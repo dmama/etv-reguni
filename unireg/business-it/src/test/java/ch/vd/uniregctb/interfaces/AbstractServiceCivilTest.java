@@ -120,8 +120,9 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		// On vérifie les adresses courrier
 		assertEquals(2, courriers.size());
-		// TODO (rcpers) en attente de correction du SIREF-1487 : assertAdresseCivile(null, date(2011, 1, 31), "La Tuilière", "1168", "Villars-sous-Yens", null, null, courriers.get(0));
-		// TODO (rcpers) en attente du déploiement de la nouvelle version du XSD en intégration : assertAdresseCivile(date(2011, 2, 1), null, "Le Pré des Buis 1", "1315", "La Sarraz", null, null, courriers.get(1));
+		assertAdresseCivile(null, date(2010, 1, 14), "Av. d'Ouchy 24C", "1006", "Lausanne", null, null, courriers.get(0));
+		assertAdresseCivile(date(2010, 1, 15), null, null, null, null, null, null, courriers.get(1));
+		assertEquals(Integer.valueOf(30553), courriers.get(1).getNumeroRue());
 
 		// On vérifie les parents
 		final List<RelationVersIndividu> parents = individu.getParents();
