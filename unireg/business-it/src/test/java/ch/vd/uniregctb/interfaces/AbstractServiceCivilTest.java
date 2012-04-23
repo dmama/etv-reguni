@@ -121,8 +121,14 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		// On vérifie les adresses courrier
 		assertEquals(2, courriers.size());
 		assertAdresseCivile(null, date(2010, 1, 14), "Av. d'Ouchy 24C", "1006", "Lausanne", null, null, courriers.get(0));
-		assertAdresseCivile(date(2010, 1, 15), null, null, null, null, null, null, courriers.get(1));
-		assertEquals(Integer.valueOf(30553), courriers.get(1).getNumeroRue());
+		if (courriers.get(1).getNumeroRue() != null) {
+			// host-interface retourne simplement le numéro technique de la rue
+			assertEquals(Integer.valueOf(30553), courriers.get(1).getNumeroRue());
+		}
+		else {
+			// rcpers retourne toutes les infos résolues, mais pas le numéro technique
+			assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de- Bons", "1006", "Lausanne", null, null, courriers.get(1));
+		}
 
 		// On vérifie les parents
 		final List<RelationVersIndividu> parents = individu.getParents();
