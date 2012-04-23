@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -7,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
@@ -16,6 +19,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -24,9 +28,10 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorTest  {
+public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
 	private ServiceInfrastructureService infraService;
 	private TiersService tiersService;
@@ -63,7 +68,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				return null;
 			}
 		});
@@ -97,11 +102,11 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				Assert.assertNotNull(pp);
 
-				final ForFiscalPrincipal ffp1 = pp.getForFiscalPrincipalAt(date(2011,9,1));
+				final ForFiscalPrincipal ffp1 = pp.getForFiscalPrincipalAt(date(2011, 9, 1));
 				Assert.assertNotNull(ffp1);
 				Assert.assertEquals(depart, ffp1.getDateFin());
 				Assert.assertEquals(MotifFor.DEPART_HS, ffp1.getMotifFermeture());
-				
+
 				final ForFiscalPrincipal ffp2 = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(ffp2);
 				Assert.assertEquals(null, ffp2.getDateFin());
@@ -136,7 +141,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				return null;
 			}
 		});
@@ -204,7 +209,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				return null;
 			}
 		});
@@ -272,8 +277,8 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis,arrivee,MotifFor.ARRIVEE_HS,MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
+				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -333,8 +338,8 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.INDETERMINE, MockPays.Espagne);
-				addForSecondaire(luis,arrivee,MotifFor.ARRIVEE_HS,MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForPrincipal(luis, arrivee, MotifFor.INDETERMINE, MockPays.Espagne);
+				addForSecondaire(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return null;
 			}
 		});
@@ -394,7 +399,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				return null;
 			}
 		});
@@ -424,7 +429,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.",evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -456,7 +461,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
 				return null;
 			}
 		});
@@ -486,13 +491,13 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.",evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
 	}
 
-
+	//Test le cas d'un depart vaudois en secondaire avec une destination inconnue
 	@Test
 	public void testDepartResidenceSecondaireAvecForPrincipal() throws Exception {
 
@@ -517,7 +522,7 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS,MockCommune.Pully);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
 				return null;
 			}
 		});
@@ -550,13 +555,36 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 				return null;
 			}
 		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+
+				final Set<ForFiscal> ff = pp.getForsFiscaux();
+				Assert.assertNotNull(ff);
+				Assert.assertEquals(2, ff.size());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals(MockPays.PaysInconnu.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				Assert.assertEquals(depart.getOneDayAfter(), ffp.getDateDebut());
+				return null;
+			}
+		});
 	}
+	//Vérifie que les démenagements vaudois secondaires avec présence d'un for principal vont bien en erreur avec le message approprié
+
 	@Test
 	public void testDepartResidenceSecondaireVaudoisForPrincipal() throws Exception {
 
 		final long noIndividu = 126673246L;
 		final RegDate depart = date(2011, 10, 31);
 		final RegDate arrivee = date(2003, 1, 1);
+
 
 		// le p'tit nouveau
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -567,17 +595,18 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Lausanne.getNoOFS()));
 				final MockAdresse nouvelleAdresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, depart.getOneDayAfter(), null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
 
-		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+		final Long numeroCtb = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Long>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public Long execute(TransactionStatus status) throws Exception {
 				PersonnePhysique luis = addHabitant(noIndividu);
-				addForPrincipal(luis,arrivee,MotifFor.ARRIVEE_HS,MockCommune.Pully);
-				return null;
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Pully);
+				return luis.getNumero();
 			}
 		});
 
@@ -606,6 +635,13 @@ public class DepartEchProcessorTest  extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire(Arrangement fiscal?)",
+						numeroCtb);
+				Assert.assertEquals(message,erreur.getMessage());
 				return null;
 			}
 		});

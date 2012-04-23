@@ -13,7 +13,6 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -28,8 +27,6 @@ public class DepartSecondaire extends Depart {
 	private final Adresse ancienneAdresse;
 	private final Commune ancienneCommune;
 	private final Integer numeroOfsEntiteForAnnonce;
-	private final Localisation nouvelleLocalisationSecondaire;
-	private final Commune nouvelleCommuneSecondaire;
 
 	protected DepartSecondaire(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -39,22 +36,21 @@ public class DepartSecondaire extends Depart {
 		this.ancienneAdresse = anciennesAdresses.secondaire;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = getNumeroOfsCommuneAnnonce();
+
 		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
 		final Adresse nouvelleAdresseSecondaire = nouvellesAdresses.secondaire;
-		nouvelleCommuneSecondaire = getCommuneByAdresse(context, nouvelleAdresseSecondaire, lendemainDepart);
-		this.nouvelleLocalisationSecondaire = computeNouvelleLocalisation(nouvelleAdresseSecondaire);
+		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresseSecondaire, lendemainDepart);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdresseSecondaire);
 	}
 
-	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adressePrincipale, Commune communePrincipale,
+	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adresseSecondaire, Commune communePrincipale,
 	                           Adresse ancienneAdresseSecondaire, Commune ancienneCommuneSecondaire, EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adressePrincipale, communePrincipale, context, isRegPP);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adresseSecondaire, communePrincipale, context, isRegPP);
 		this.ancienneAdresse = ancienneAdresseSecondaire;
 		this.ancienneCommune = ancienneCommuneSecondaire;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
-		this.nouvelleLocalisationSecondaire =  computeNouvelleLocalisation(adressePrincipale);
-		this.nouvelleCommuneSecondaire = communePrincipale;
-
+		this.nouvelleLocalisation =  computeNouvelleLocalisation(adresseSecondaire);
 	}
 
 	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -66,11 +62,14 @@ public class DepartSecondaire extends Depart {
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 
-		final RegDate lendemainDepart = dateDepart.getOneDayAfter();
-		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
-		final Adresse nouvelleAdresseSecondaire = nouvellesAdresses.secondaire;
-		nouvelleCommuneSecondaire = getCommuneByAdresse(context, nouvelleAdresseSecondaire, lendemainDepart);
-		this.nouvelleLocalisationSecondaire = computeNouvelleLocalisation(nouvelleAdresseSecondaire);
+		if (this.ancienneAdresse != null) {
+			this.nouvelleLocalisation = this.ancienneAdresse.getLocalisationSuivante();
+		}
+		else {
+			this.nouvelleLocalisation = null;
+		}
+
+		this.nouvelleCommune = findNouvelleCommuneByLocalisation(this.nouvelleLocalisation, context, dateDepart);
 	}
 
 	@Override
@@ -116,7 +115,7 @@ public class DepartSecondaire extends Depart {
 			final ServiceInfrastructureService serviceInfra = context.getServiceInfra();
 			Commune commune = null;
 			if (estEnSuisse()) {
-				commune = getNouvelleCommunePrincipale();
+				commune = getNouvelleCommune();
 			}
 
 			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
@@ -149,16 +148,12 @@ public class DepartSecondaire extends Depart {
 		}
 	}
 
-	private boolean isDepartSecondaireVaudois() {
-		return getNouvelleCommuneSecondaire() != null && getNouvelleCommuneSecondaire().isVaudoise();
-	}
 
-	private Commune getNouvelleCommuneSecondaire() {
-		return nouvelleCommuneSecondaire;
-	}
+
+
 
 	private void validateAbsenceForPrincipalPourDepartVaudois(EvenementCivilErreurCollector erreurs) {
-		if (isDepartSecondaireVaudois()) {
+		if (isDepartVaudois()) {
 			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
 				ForFiscalPrincipal forFP = null;
