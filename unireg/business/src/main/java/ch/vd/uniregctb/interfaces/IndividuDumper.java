@@ -19,20 +19,30 @@ import ch.vd.uniregctb.interfaces.model.District;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localisation;
+import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
+import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
-@SuppressWarnings("UnusedDeclaration")
 public abstract class IndividuDumper {
 
+	private static ServiceInfrastructureService infraService;
+
 	private static final TIntObjectHashMap tabs = new TIntObjectHashMap();
+	private static Integer NO_OFS_PAYS_INCONNU = 8999;
+
+	public static void setInfraService(ServiceInfrastructureService infraService) {
+		IndividuDumper.infraService = infraService;
+	}
 
 	public static String dump(Collection<Individu> individus, boolean ignoreSpecific, boolean ignoreBugs) {
 		final StringBuilder s = new StringBuilder();
@@ -49,7 +59,7 @@ public abstract class IndividuDumper {
 				else {
 					s.append(", ");
 				}
-				s.append(dump(individu, false, false, false));
+				s.append(dump(individu, ignoreSpecific, ignoreBugs, false));
 			}
 		}
 		return s.toString();
@@ -78,15 +88,15 @@ public abstract class IndividuDumper {
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("adoptionsReconnaissances=").append(dumpAdoptions(individu.getAdoptionsReconnaissances(), depth + 1)).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, ignoreBugs, depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("adresses=").append(dumpAdresses(individu.getAdresses(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("autresPrenoms=").append(dumpString(individu.getAutresPrenoms())).append(", \n");
-		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsversIndividus(individu.getConjoints(), depth + 1, false)).append(", \n");
+		s.append(tab(depth + 1)).append("conjoints=").append(dumpRelationsVersIndividus(individu.getConjoints(), false, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("dateDeces=").append(individu.getDateDeces()).append(", \n");
 		s.append(tab(depth + 1)).append("dateNaissance=").append(individu.getDateNaissance()).append(", \n");
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("dateArriveeVD=").append(individu.getDateArriveeVD()).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsversIndividus(individu.getEnfants(), depth + 1, ignoreBugs)).append(", \n");
+		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsVersIndividus(individu.getEnfants(), ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
@@ -98,10 +108,8 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("noAvs13=").append(dumpAVS13(individu.getNouveauNoAVS(), validateAVS)).append(", \n");
 		s.append(tab(depth + 1)).append("numeroRCE=").append(dumpString(individu.getNumeroRCE())).append(", \n");
 		s.append(tab(depth + 1)).append("origines=").append(dumpOrigines(individu.getOrigines(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsversIndividus(individu.getParents(), depth + 1, ignoreBugs)).append(", \n");
-		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), depth + 1)).append(", \n");
-		}
+		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsVersIndividus(individu.getParents(), false, depth + 1)).append(", \n");
+		s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
 		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.isSexeMasculin())).append(", \n");
 		if (!ignoreSpecific) {
@@ -149,8 +157,8 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpPermis(Collection<Permis> coll, int depth) {
-		if (coll == null) {
+	private static String dumpPermis(Collection<Permis> coll, boolean ignoreSpecific, int depth) {
+		if (coll == null || coll.isEmpty()) {
 			return "null";
 		}
 
@@ -158,7 +166,15 @@ public abstract class IndividuDumper {
 		s.append("[");
 		boolean first = true;
 		for (Permis p : coll) {
+			if (ignoreSpecific && p.getDateAnnulation() != null) {
+				// RcPers n'expose pas les permis annulés
+				continue;
+			}
 			if (first) {
+				if (ignoreSpecific && p.getTypePermis() == TypePermis.PROVISOIRE && coll.size() > 1) {
+					// les permis provisoires sont ignorés par RcPers, sauf si c'est le seul présent dans la liste
+					continue;
+				}
 				first = false;
 			}
 			else {
@@ -192,10 +208,18 @@ public abstract class IndividuDumper {
 			return "null";
 		}
 
+		final List<Origine> list = new ArrayList<Origine>(coll);
+		Collections.sort(list, new Comparator<Origine>() {
+			@Override
+			public int compare(Origine o1, Origine o2) {
+				return o1.getNomLieu().compareTo(o2.getNomLieu());
+			}
+		});
+
 		StringBuilder s = new StringBuilder();
 		s.append("[");
 		boolean first = true;
-		for (Origine origine : coll) {
+		for (Origine origine : list) {
 			if (first) {
 				first = false;
 			}
@@ -318,7 +342,7 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpRelationsversIndividus(Collection<RelationVersIndividu> conjoints, int depth, boolean ignoreBugs) {
+	private static String dumpRelationsVersIndividus(Collection<RelationVersIndividu> conjoints, boolean ignoreBugs, int depth) {
 		if (conjoints == null) {
 			return "null";
 		}
@@ -333,21 +357,24 @@ public abstract class IndividuDumper {
 			else {
 				s.append(", ");
 			}
-			s.append(dumpRelationVersIndividu(conjoint, depth + 1, ignoreBugs));
+			s.append(dumpRelationVersIndividu(conjoint, ignoreBugs, depth + 1));
 		}
 		s.append("]");
 
 		return s.toString();
 	}
 
-	private static String dumpRelationVersIndividu(RelationVersIndividu rel, int depth, boolean ignoreBugs) {
+	private static String dumpRelationVersIndividu(RelationVersIndividu rel, boolean ignoreBugs, int depth) {
 		if (rel == null) {
 			return "null";
 		}
 
 		StringBuilder s = new StringBuilder();
 		s.append("RelationVersIndividu{\n");
-		s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
+		if (!ignoreBugs) {
+			// TODO (rcpers) les dates de débuts vers les enfants ne sont plus renseignées (voir SIREF-2004)
+			s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
+		}
 		s.append(tab(depth + 1)).append("dateFin=").append(rel.getDateFin()).append(", \n");
 		s.append(tab(depth + 1)).append("numeroAutreIndividu=").append(rel.getNumeroAutreIndividu()).append(", \n");
 		s.append(tab(depth)).append("}");
@@ -355,7 +382,7 @@ public abstract class IndividuDumper {
 		return s.toString();
 	}
 
-	private static String dumpAdresses(Collection<Adresse> list, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
+	private static String dumpAdresses(Collection<Adresse> list, boolean ignoreSpecific, int depth) {
 
 		if (list == null) {
 			return "null";
@@ -379,20 +406,69 @@ public abstract class IndividuDumper {
 		s.append("[");
 		boolean first = true;
 		for (Adresse adresse : adresses) {
+			if (ignoreSpecific) {
+				if (NO_OFS_PAYS_INCONNU.equals(adresse.getNoOfsPays())) {
+					// le pays inconnu n'existe pas dans RcPers et les adresses avec ce pays ne sont pas migrées
+					continue;
+				}
+				if (adresse.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE && isHorsCantonOuHorsSuisse(adresse)) {
+					// les adresses principales hors-canton et hors-Suisse ne sont pas stockées dans RcPers
+					continue;
+				}
+			}
 			if (first) {
 				first = false;
 			}
 			else {
 				s.append(", ");
 			}
-			s.append(dumpAdresse(adresse, ignoreSpecific, ignoreBugs, depth + 1));
+			s.append(dumpAdresse(adresse, ignoreSpecific, depth + 1));
 		}
 		s.append("]");
 
 		return s.toString();
 	}
 
-	private static String dumpAdresse(Adresse a, boolean ignoreSpecific, boolean ignoreBugs, int depth) {
+	private static boolean isHorsCantonOuHorsSuisse(Adresse adresse) {
+		if (adresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
+			return true;
+		}
+		final Commune commune = adresse.getCommuneAdresse();
+		if (commune != null && !"VD".equals(commune.getSigleCanton())) {
+			return true;
+		}
+		final int ordrePoste = adresse.getNumeroOrdrePostal();
+		if (infraService != null && ordrePoste > 0) {
+			if (isLocaliteHorsCanton(ordrePoste)) {
+				return true;
+			}
+		}
+		final Integer noRue = adresse.getNumeroRue();
+		if (noRue != null) {
+			final Rue rue = infraService.getRueByNumero(noRue);
+			if (rue != null) {
+				final Integer noLocalite = rue.getNoLocalite();
+				if (noLocalite != null && isLocaliteHorsCanton(noLocalite)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private static boolean isLocaliteHorsCanton(int ordrePoste) {
+		boolean horscanton = false;
+		final Localite localite = infraService.getLocaliteByONRP(ordrePoste);
+		if (localite != null) {
+			final Commune c = localite.getCommuneLocalite();
+			if (c != null && !"VD".equals(c.getSigleCanton())) {
+				horscanton = true;
+			}
+		}
+		return horscanton;
+	}
+
+	private static String dumpAdresse(Adresse a, boolean ignoreSpecific, int depth) {
 		if (a == null) {
 			return "null";
 		}
@@ -403,9 +479,7 @@ public abstract class IndividuDumper {
 			s.append(tab(depth + 1)).append("casePostale=").append(dumpCasePostale(a.getCasePostale(), depth + 1)).append(", \n");
 			s.append(tab(depth + 1)).append("communeAdresse=").append(dumpCommune(a.getCommuneAdresse(), ignoreSpecific, depth + 1)).append(", \n");
 		}
-		if (!ignoreBugs || a.getTypeAdresse() != TypeAdresseCivil.COURRIER) { // SIREF-1816
-			s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
-		}
+		s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
 		s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
 		if (!ignoreSpecific) {
 			// Host-interfaces contient très peu d'egid/ewid, inutile de comparer avec RcPers
