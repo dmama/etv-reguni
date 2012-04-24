@@ -241,7 +241,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	private static List<Nationalite> initNationalites(Person person, ServiceInfrastructureService infraService) {
-		if (person == null) { // TODO (rcpers) demander que RCPers expose l'historique des nationalités
+		if (person == null) {
 			return null;
 		}
 		final List<Nationalite> list = new ArrayList<Nationalite>();

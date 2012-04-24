@@ -19,8 +19,8 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	private final Pays pays;
 
 	public NationaliteRCPers(Nationality nat, ServiceInfrastructureService infraService) {
-		this.dateDebut = null; // TODO (rcpers)
-		this.dateFin = null; // TODO (rcpers)
+		this.dateDebut = null;
+		this.dateFin = null;
 		this.pays = initPays(nat, infraService);
 	}
 
