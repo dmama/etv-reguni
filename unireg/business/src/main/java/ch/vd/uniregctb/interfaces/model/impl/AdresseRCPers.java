@@ -199,7 +199,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		if (swissZipCode != null) {
 			return String.valueOf(swissZipCode);
 		}
-		return addressInfo.getForeignZipCode();
+		String foreignZipCode = addressInfo.getForeignZipCode();
+		if ("inconnu".equals(foreignZipCode)) {
+			foreignZipCode = null; // FIXME (rcpers) en attente de la résolution de SIREF-1798
+		}
+		return foreignZipCode;
 	}
 
 	private static int initNoOfsPays(String countryCode, ServiceInfrastructureService infraService) {
