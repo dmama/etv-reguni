@@ -21,7 +21,7 @@ public class EvenementCivilEchCriteriaView extends EvenementCivilCriteriaView<Ty
 
 	public void setActionEvenement(String actionEvenement) {
 		if (TOUS.equals(actionEvenement)) {
-			setType(null);
+			setAction(null);
 		}
 		else {
 			ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf(actionEvenement);
