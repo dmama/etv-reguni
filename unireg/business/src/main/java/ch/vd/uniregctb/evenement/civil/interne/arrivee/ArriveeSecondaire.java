@@ -108,4 +108,17 @@ public class ArriveeSecondaire extends Arrivee {
 		// comme on ne fait rien, il est impossible de dire si l'événement est effectivement redondant
 		return false;
 	}
+
+	@Override
+	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage() {
+		// comme on ne fait rien, il est impossible de dire si l'événement est antérieur
+		return false;
+	}
+
+	@Override
+	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
+		// comme on ne fait rien, il est impossible de dire si l'événement est postérieur
+		return false;
+	}
+
 }

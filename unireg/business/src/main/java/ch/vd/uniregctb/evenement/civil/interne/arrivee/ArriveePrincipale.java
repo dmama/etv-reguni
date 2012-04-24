@@ -392,7 +392,6 @@ public class ArriveePrincipale extends Arrivee {
 	 * <li>s'il y en a deux vaudoises, et qu'elles sont dans deux communes différentes, on ne touche à rien s'il y a déjà un for vaudois ouvert sur le couple, et on prend la commune du principal du couple sinon</li>
 	 * <li>si on a pu déterminer une commune avec les conditions ci-dessus, on ouvre un for dessus à la date d'arrivée</li>
 	 * </ul>
-	 * @param arrivee l'événement d'arrivée
 	 * @param arrivant personne physique concernée par l'arrivée
 	 * @param menageCommun le ménage commun
 	 * @param warnings liste des erreurs à peupler en cas de problème
@@ -677,7 +676,56 @@ public class ArriveePrincipale extends Arrivee {
 		return ffp != null && (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) && motifAttendu == ffp.getMotifOuverture()
 				&& ofsCommuneArrivee == ffp.getNumeroOfsAutoriteFiscale() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
+	@Override
+	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage(){
+		boolean isAnterieur = getPrincipalPP() != null;
+		if (isAnterieur) {
+			final RegDate dateArrivee = getDateArriveeEffective(getDate());
+			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
+			if (coupleExistant != null) {
+				final ForFiscalPrincipal ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
+				final List<ForFiscalPrincipal> listFfp = coupleExistant.getMenage().getForsFiscauxPrincipauxOuvertsApres(dateArrivee);
+				isAnterieur = existForArriveeOuvertApres(listFfp, dateArrivee);
+			}
+			else {
+				isAnterieur = false;
+			}
 
+		}
+		return isAnterieur;
+	}
+
+	@Override
+	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
+		boolean isPosterieur = getPrincipalPP() != null;
+		if (isPosterieur) {
+			final MotifFor motifOuverture = getMotifOuvertureFor();
+			final RegDate dateArrivee = getDateArriveeEffective(getDate());
+			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
+			if (coupleExistant != null) {
+				final ForFiscalPrincipal ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
+				isPosterieur = ffp != null && dateArrivee.isAfter(ffp.getDateDebut()) &&
+						(MotifFor.ARRIVEE_HC== ffp.getMotifOuverture()|| MotifFor.ARRIVEE_HS == ffp.getMotifOuverture()) &&
+						(MotifFor.ARRIVEE_HC== motifOuverture|| MotifFor.ARRIVEE_HS == motifOuverture);
+			}
+		}
+		return isPosterieur;
+	}
+
+
+	private boolean existForArriveeOuvertApres(List<ForFiscalPrincipal> listeFor,RegDate dateArrivee){
+		for (ForFiscalPrincipal forFiscalPrincipal : listeFor) {
+			if(MotifFor.ARRIVEE_HC == forFiscalPrincipal.getMotifOuverture() || MotifFor.ARRIVEE_HS == forFiscalPrincipal.getMotifOuverture()){
+				if (dateArrivee.isBefore(forFiscalPrincipal.getDateDebut())) {
+					return true;
+				}
+
+
+			}
+
+		}
+		return false;
+	}
 	@Override
 	protected boolean isArriveeRedondantePourIndividuEnMenage() {
 		// l'événement sera considéré comme redondant si

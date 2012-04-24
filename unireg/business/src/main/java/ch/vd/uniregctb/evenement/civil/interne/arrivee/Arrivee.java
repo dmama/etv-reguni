@@ -179,6 +179,16 @@ public abstract class Arrivee extends Mouvement {
 	protected abstract boolean isArriveeRedondantePourIndividuEnMenage();
 
 	/**
+	 * @return <code>true</code> si l'arrivée de cet individu en ménage est antérieur à une arrivée déjà traitée pour l'autre conjoint
+	 * Se detecte par la presence de for ouvert après l'arrivée à traiter  sur le ménage avec comme motif d'ouverture arrivée HS ou HC
+	 */
+	protected abstract boolean isArriveeRedondanteAnterieurPourIndividuEnMenage();
+
+	/**
+	 * @return <code>true</code> si l'arrivée de cet individu en ménage est posterieur à une arrivée déjà traitée pour l'autre conjoint
+	 */
+	protected abstract boolean isArriveeRedondantePosterieurPourIndividuEnMenage();
+	/**
 	 * Création des fors lors de l'arrivée d'un invididu seul
 	 *
 	 * @param habitant personne physique habitante qui vient d'arriver
@@ -371,6 +381,17 @@ public abstract class Arrivee extends Mouvement {
 	@NotNull
 	protected final HandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
+		if(isArriveeRedondanteAnterieurPourIndividuEnMenage()){
+			String stringDateArrivee = RegDateHelper.dateToDashString(getDate());
+			long numeroIndividu = getNoIndividu();
+			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun",stringDateArrivee,numeroIndividu);
+
+			throw new EvenementCivilException(message);
+		}
+
+		if (isArriveeRedondantePosterieurPourIndividuEnMenage()) {
+			return HandleStatus.TRAITE;
+		}
 		if (isArriveeRedondantePourIndividuEnMenage()) {
 			return HandleStatus.REDONDANT;
 		}
