@@ -195,8 +195,8 @@ public abstract class EnumHelper {
 			typePermis2Categorie.put(TypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
 			typePermis2Categorie.put(TypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
 			typePermis2Categorie.put(TypePermis.PROVISOIRE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
-			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE_AVANT_DECISION, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
-			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE_REFUSE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
+			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
+			typePermis2Categorie.put(TypePermis.ETRANGER_ADMIS_PROVISOIREMENT, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
 			typePermis2Categorie.put(TypePermis.SUISSE_SOURCIER, PersonnePhysique.Categorie.SUISSE);
 		}
 	}

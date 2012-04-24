@@ -6,25 +6,52 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.civil.model.EnumTypePermis;
 
 public enum TypePermis {
-
+	/**
+	 * Saisonnier (A). Ce permis a été supprimé en mai 2002.
+	 */
+	SAISONNIER,
+	/**
+	 * Titulaire d’un permis de séjour (B)
+	 */
 	ANNUEL,
+	/**
+	 * Titulaire d’un permis de séjour de courte durée (L)
+	 */
 	COURTE_DUREE,
+	/**
+	 * Diplomate (D ou code LHR 11xx)
+	 */
 	DIPLOMATE,
+	/**
+	 * Titulaire d'un permis d'établissement (C)
+	 */
 	ETABLISSEMENT,
+	/**
+	 * Fonctionnaire internal ou conjoint/enfant de diplomate (Ci)
+	 */
 	FONCTIONNAIRE_INTERNATIONAL,
+	/**
+	 * Frontalier (G)
+	 */
 	FRONTALIER,
 	/**
-	 * Personne à protéger (dans le domaine de l'asile).
+	 * Personne à protéger (S).
 	 */
 	PERSONNE_A_PROTEGER,
-	PROVISOIRE,
-	REQUERANT_ASILE_AVANT_DECISION,
 	/**
-	 * Requérant d'asile refusé en attente de rapatriement.
+	 * Statut provisoire (SP). Il s'agit d'un permis temporaire délivré à l'arrivée d'un étranger en attente de la décision de l'administration sur le permis accordé.
 	 */
-	REQUERANT_ASILE_REFUSE,
+	PROVISOIRE,
 	/**
-	 * Suisse imposé à la source résidant à l'étranger.
+	 * Requérant d'asile (N)
+	 */
+	REQUERANT_ASILE,
+	/**
+	 * Étranger admis provisoirement (F)
+	 */
+	ETRANGER_ADMIS_PROVISOIREMENT,
+	/**
+	 * Suisse imposé à la source résidant à l'étranger (CH).
 	 */
 	SUISSE_SOURCIER;
 
@@ -57,10 +84,10 @@ public enum TypePermis {
 			return PROVISOIRE;
 		}
 		else if (right == EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION) {
-			return REQUERANT_ASILE_AVANT_DECISION;
+			return REQUERANT_ASILE;
 		}
 		else if (right == EnumTypePermis.REQUERANT_ASILE_REFUSE) {
-			return REQUERANT_ASILE_REFUSE;
+			return ETRANGER_ADMIS_PROVISOIREMENT;
 		}
 		else if (right == EnumTypePermis.SUISSE_SOURCIER) {
 			return SUISSE_SOURCIER;
@@ -87,18 +114,20 @@ public enum TypePermis {
 		final int categorie = Integer.parseInt(evdPermisCode.substring(0, 2));
 		switch (categorie) {
 		case 1:
-			// permis A, pas d'équivalence
-			return null;
+			// permis A
+			return SAISONNIER;
 		case 2:
 			// permis B
 			return ANNUEL;
 		case 3:
-		case 4:
 			// permis C
 			return ETABLISSEMENT;
+		case 4:
+			// permis Ci (fonctionnaire international ou conjoint/enfant de diplomate)
+			return FONCTIONNAIRE_INTERNATIONAL;
 		case 5:
 			// permis F
-			return PROVISOIRE;
+			return ETRANGER_ADMIS_PROVISOIREMENT;
 		case 6:
 			// permis G
 			return FRONTALIER;
@@ -107,7 +136,7 @@ public enum TypePermis {
 			return COURTE_DUREE;
 		case 8:
 			// permis N
-			return REQUERANT_ASILE_AVANT_DECISION;
+			return REQUERANT_ASILE;
 		case 9:
 			// permis S
 			return PERSONNE_A_PROTEGER;
@@ -115,6 +144,8 @@ public enum TypePermis {
 			return DIPLOMATE;
 		case 12:
 			return FONCTIONNAIRE_INTERNATIONAL;
+		case 13:
+			return PROVISOIRE;
 		default:
 			// hors-catégorie
 			return null;

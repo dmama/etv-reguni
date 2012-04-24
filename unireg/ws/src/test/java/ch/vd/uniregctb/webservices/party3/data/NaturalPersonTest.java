@@ -45,8 +45,8 @@ public class NaturalPersonTest extends EnumTest {
 		assertEquals(NaturalPersonCategory.C_06_G_PERMIT, EnumHelper.coreToWeb(TypePermis.FRONTALIER));
 		assertEquals(NaturalPersonCategory.C_09_S_PERMIT, EnumHelper.coreToWeb(TypePermis.PERSONNE_A_PROTEGER));
 		// Pas d'équivalent : TypePermis.PROVISOIRE
-		assertEquals(NaturalPersonCategory.C_08_N_PERMIT, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE_AVANT_DECISION));
-		assertEquals(NaturalPersonCategory.C_05_F_PERMIT, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE_REFUSE));
+		assertEquals(NaturalPersonCategory.C_08_N_PERMIT, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE));
+		assertEquals(NaturalPersonCategory.C_05_F_PERMIT, EnumHelper.coreToWeb(TypePermis.ETRANGER_ADMIS_PROVISOIREMENT));
 		// Pas d'équivalent : TypePermis.SUISSE_SOURCIER;
 	}
 }

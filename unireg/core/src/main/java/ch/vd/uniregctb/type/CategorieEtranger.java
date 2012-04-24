@@ -110,10 +110,10 @@ public enum CategorieEtranger {
 		else if (TypePermis.PROVISOIRE == permis) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
-		else if (TypePermis.REQUERANT_ASILE_AVANT_DECISION == permis) {
+		else if (TypePermis.REQUERANT_ASILE == permis) {
 			return _08_REQUERANT_ASILE_N;
 		}
-		else if (TypePermis.REQUERANT_ASILE_REFUSE == permis) {
+		else if (TypePermis.ETRANGER_ADMIS_PROVISOIREMENT == permis) {
 			return _05_ETRANGER_ADMIS_PROVISOIREMENT_F;
 		}
 		else if (TypePermis.COURTE_DUREE == permis) {

@@ -1041,8 +1041,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 				addOrigine(pierre, MockCommune.Lausanne);
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
-				addPermis(pierre, TypePermis.REQUERANT_ASILE_REFUSE, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), false);
-				addPermis(pierre, TypePermis.REQUERANT_ASILE_AVANT_DECISION, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), false);
+				addPermis(pierre, TypePermis.ETRANGER_ADMIS_PROVISOIREMENT, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), false);
+				addPermis(pierre, TypePermis.REQUERANT_ASILE, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), false);
 				addPermis(pierre, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, false);
 			}
 		});

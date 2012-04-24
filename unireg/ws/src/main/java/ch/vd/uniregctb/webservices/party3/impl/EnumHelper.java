@@ -389,9 +389,9 @@ public abstract class EnumHelper {
 			return NaturalPersonCategory.C_09_S_PERMIT;
 		case PROVISOIRE:
 			return NaturalPersonCategory.C_05_F_PERMIT;
-		case REQUERANT_ASILE_AVANT_DECISION:
+		case REQUERANT_ASILE:
 			return NaturalPersonCategory.C_08_N_PERMIT;
-		case REQUERANT_ASILE_REFUSE:
+		case ETRANGER_ADMIS_PROVISOIREMENT:
 			return NaturalPersonCategory.C_05_F_PERMIT;
 		case SUISSE_SOURCIER:
 			return NaturalPersonCategory.SWISS;

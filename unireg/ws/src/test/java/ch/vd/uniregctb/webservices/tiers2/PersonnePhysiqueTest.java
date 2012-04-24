@@ -45,8 +45,8 @@ public class PersonnePhysiqueTest extends EnumTest {
 		assertEquals(PersonnePhysique.Categorie._06_FRONTALIER_G, EnumHelper.coreToWeb(TypePermis.FRONTALIER));
 		assertEquals(PersonnePhysique.Categorie._09_A_PROTEGER_S, EnumHelper.coreToWeb(TypePermis.PERSONNE_A_PROTEGER));
 		// Pas d'équivalent : TypePermis.PROVISOIRE
-		assertEquals(PersonnePhysique.Categorie._08_REQUERANT_ASILE_N, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE_AVANT_DECISION));
-		assertEquals(PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE_REFUSE));
+		assertEquals(PersonnePhysique.Categorie._08_REQUERANT_ASILE_N, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE));
+		assertEquals(PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F, EnumHelper.coreToWeb(TypePermis.ETRANGER_ADMIS_PROVISOIREMENT));
 		// Pas d'équivalent : TypePermis.SUISSE_SOURCIER;
 	}
 }
