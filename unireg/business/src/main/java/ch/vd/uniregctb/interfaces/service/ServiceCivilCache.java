@@ -278,6 +278,11 @@ public class ServiceCivilCache extends ServiceCivilServiceBase implements Unireg
 		return true;
 	}
 
+	@Override
+	public void setIndividuLogger(boolean value) {
+		target.setIndividuLogger(value);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

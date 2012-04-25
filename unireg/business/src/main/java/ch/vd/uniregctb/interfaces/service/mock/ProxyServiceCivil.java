@@ -140,6 +140,12 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
+	public void setIndividuLogger(boolean value) {
+		assertTargetNotNull();
+		target.setIndividuLogger(value);
+	}
+
+	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		assertTargetNotNull();
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);

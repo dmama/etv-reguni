@@ -111,6 +111,7 @@
 		<property name="translator" ref="evenementCivilEchTranslator"/>
 		<property name="tiersService" ref="tiersService"/>
 		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
 	</bean>
 	
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">

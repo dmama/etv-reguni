@@ -9,6 +9,7 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
 		<property name="evenementCivilTranslator" ref="evenementCivilTranslator" />
+		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 	<bean id="evenementCivilTranslator" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslatorImpl">

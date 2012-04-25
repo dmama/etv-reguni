@@ -673,6 +673,11 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return false;
 	}
 
+	@Override
+	public void setIndividuLogger(boolean value) {
+		// rien à faire
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void onIndividuChange(long numero) {
 		// rien à faire

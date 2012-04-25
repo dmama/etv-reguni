@@ -8,23 +8,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.log4j.Logger;
+
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relations;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.common.ForceLogger;
+import ch.vd.uniregctb.interfaces.IndividuDumper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
+import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 
 public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 
-//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
+	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
 
 	private RcPersClient client;
+
+	private final ThreadLocal<MutableBoolean> dumpIndividu = new ThreadLocal<MutableBoolean>() {
+		@Override
+		protected MutableBoolean initialValue() {
+			return new MutableBoolean(false);
+		}
+	};
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setClient(RcPersClient client) {
@@ -65,6 +78,13 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		final Individu individu = IndividuRCPers.get(person, relations, infraService);
 		if (individu != null) {
 			assertCoherence(noIndividu, individu.getNoTechnique());
+		}
+
+		if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
+			final String message = String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
+					IndividuDumper.dump(individu, false, false, false));
+			// force le log en mode trace, même si le LOGGER n'est pas en mode trace
+			new ForceLogger(LOGGER).trace(message);
 		}
 
 		return individu;
@@ -121,6 +141,13 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 			}
 		}
 
+		if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
+			final String message = String.format("getIndividus(nosIndividus=%s, date=%s, parties=%s) => %s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date),
+					ServiceTracing.toString(parties), IndividuDumper.dump(individus, false, false));
+			// force le log en mode trace, même si le LOGGER n'est pas en mode trace
+			new ForceLogger(LOGGER).trace(message);
+		}
+
 		return individus;
 	}
 
@@ -145,5 +172,10 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@Override
 	public boolean isWarmable() {
 		return false;
+	}
+
+	@Override
+	public void setIndividuLogger(boolean value) {
+		dumpIndividu.get().setValue(value);
 	}
 }

@@ -32,6 +32,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreurFactory;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcessor, SmartLifecycle {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchProcessorImpl.class);
+	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
 
 	private EvenementCivilNotificationQueue notificationQueue;
 	private PlatformTransactionManager transactionManager;
@@ -50,6 +52,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
+	private ServiceCivilService serviceCivil;
 
 	private Processor processor;
 	private final Map<Long, Listener> listeners = new LinkedHashMap<Long, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
@@ -84,6 +87,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
 	}
 
 	/**
@@ -241,6 +248,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 */
 	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.getId()));
+		serviceCivil.setIndividuLogger(EVT_INTERNE_LOGGER.isTraceEnabled());
 		try {
 			final boolean success = processEvent(evt);
 			if (!success) {
@@ -249,6 +257,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			return success;
 		}
 		finally {
+			serviceCivil.setIndividuLogger(false);
 			AuthenticationHelper.popPrincipal();
 		}
 	}
