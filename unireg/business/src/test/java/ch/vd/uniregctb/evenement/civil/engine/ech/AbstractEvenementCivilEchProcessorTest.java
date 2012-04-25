@@ -46,6 +46,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		proc.setTranslator(translator);
 		proc.setTiersService(tiersService);
 		proc.setIndexer(globalTiersIndexer);
+		proc.setServiceCivil(serviceCivil);
 		if (restart && processor != null) {
 			processor.stop();
 		}

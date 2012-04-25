@@ -5,7 +5,6 @@ import java.util.Set;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
-import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
@@ -19,7 +18,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.IndividuDumper;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -38,7 +36,7 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  */
 public abstract class EvenementCivilInterne {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilInterne.class);
+//	private static final Logger LOGGER = Logger.getLogger(EvenementCivilInterne.class);
 
 	public static final long NO_OFS_FRACTION_SENTIER = 8000;
 
@@ -306,9 +304,6 @@ public abstract class EvenementCivilInterne {
 
 	private void initIndividu() {
 		individuPrincipal = context.getServiceCivil().getIndividu(noIndividu, date, getParts());
-		if (individuPrincipal != null && LOGGER.isTraceEnabled()) {
-			LOGGER.trace(String.format("Individu trouvé pour l'événement n°%d : %s", this.numeroEvenement, IndividuDumper.dump(individuPrincipal, false, false, false)));
-		}
 	}
 
 	public PersonnePhysique getPrincipalPP() {

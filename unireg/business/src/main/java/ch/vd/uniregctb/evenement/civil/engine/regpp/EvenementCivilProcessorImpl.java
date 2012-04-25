@@ -32,6 +32,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
 import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -45,6 +46,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilProcessorImpl.class);
+	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
 
 	private static final EvenementCivilRegPPErreurFactory ERREUR_FACTORY = new EvenementCivilRegPPErreurFactory();
 
@@ -52,6 +54,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilTranslator evenementCivilTranslator;
+	private ServiceCivilService serviceCivil;
 
 	/**
 	 * {@inheritDoc}
@@ -111,6 +114,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		try {
 			// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
 			AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
+			serviceCivil.setIndividuLogger(EVT_INTERNE_LOGGER.isTraceEnabled());
 
 			// Tout d'abord, on essaie de traiter l'événement
 			result = template.execute(new CheckedTransactionCallback<Long>() {
@@ -143,6 +147,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			result = traiteRollbackSurException(evenementCivilId, e);
 		}
 		finally {
+			serviceCivil.setIndividuLogger(false);
 			AuthenticationHelper.popPrincipal();
 		}
 
@@ -367,5 +372,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilTranslator(EvenementCivilTranslator evenementCivilTranslator) {
 		this.evenementCivilTranslator = evenementCivilTranslator;
+	}
+
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
 	}
 }

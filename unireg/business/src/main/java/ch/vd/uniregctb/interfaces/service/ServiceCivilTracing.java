@@ -13,7 +13,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.interfaces.IndividuDumper;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -123,12 +122,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			final Individu individu = target.getIndividu(noIndividu, date, parties);
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
-						IndividuDumper.dump(individu, false, false, false)));
-			}
-			return individu;
+			return target.getIndividu(noIndividu, date, parties);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -149,11 +143,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			final Individu individu = target.getConjoint(noIndividuPrincipal, date);
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(String.format("getConjoint(noIndividuPrincipal=%d, date=%s) => %s", noIndividuPrincipal, ServiceTracing.toString(date), IndividuDumper.dump(individu, false, false, false)));
-			}
-			return individu;
+			return target.getConjoint(noIndividuPrincipal, date);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -216,12 +206,7 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			final List<Individu> individus = target.getIndividus(nosIndividus, date, parties);
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace(String.format("getIndividus(nosIndividus=%s, date=%s, parties=%s) => %s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date),
-						ServiceTracing.toString(parties), IndividuDumper.dump(individus, false, false)));
-			}
-			return individus;
+			return target.getIndividus(nosIndividus, date, parties);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -394,18 +379,12 @@ public class ServiceCivilTracing implements ServiceCivilService, InitializingBea
 
 	@Override
 	public boolean isWarmable() {
-		Throwable t = null;
-		final long time = tracing.start();
-		try {
-			return target.isWarmable();
-		}
-		catch (RuntimeException e) {
-			t = e;
-			throw e;
-		}
-		finally {
-			tracing.end(time, t, "isWarmable", null);
-		}
+		return target.isWarmable();
+	}
+
+	@Override
+	public void setIndividuLogger(boolean value) {
+		target.setIndividuLogger(value);
 	}
 
 	@Override

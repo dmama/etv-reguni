@@ -142,6 +142,11 @@ public class ServiceCivilMarshaller implements ServiceCivilService, Initializing
 	}
 
 	@Override
+	public void setIndividuLogger(boolean value) {
+		target.setIndividuLogger(value);
+	}
+
+	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
