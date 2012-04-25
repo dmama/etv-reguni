@@ -51,7 +51,7 @@ public class Mariage extends EvenementCivilInterne {
 		this.isFromRcpers = false;
 		Individu nouveauConjoint;
 		try {
-			nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), evenement.getId());
+			nouveauConjoint = getConjointValide(evenement.getId());
 		}
 		catch (ConjointBizarreException e) {
 			nouveauConjoint = null;
@@ -67,7 +67,7 @@ public class Mariage extends EvenementCivilInterne {
 		this.isFromRcpers = true;
 		Individu nouveauConjoint;
 		try {
-			nouveauConjoint = getConjointValide(getNoIndividu(), getDate(), context.getServiceCivil(), event.getId());
+			nouveauConjoint = getConjointValide(event.getId());
 		}
 		catch (ConjointBizarreException e) {
 			nouveauConjoint = null;
@@ -109,25 +109,27 @@ public class Mariage extends EvenementCivilInterne {
 	/**
 	 * [UNIREG-2055] Cette méthode permet de vérifier que le conjoint trouvé pour l'individu principal a bien un état civil cohérent avec l'événement de mariage traité
 	 *
-	 * @param noPrincipal  le numéro d'individu principal considéré
-	 * @param date         la date de valeur
-	 * @param serviceCivil le service civil
-	 * @param idEvent      identifiant de l'événement civil en cours de traitement   
+	 * @param idEvent      identifiant de l'événement civil en cours de traitement
+	 *
 	 * @return le conjoint correct ou null si le conjoint trouvé n'a pas le bon état civil
 	 */
-	private static Individu getConjointValide(long noPrincipal, @NotNull RegDate date, ServiceCivilService serviceCivil, long idEvent) throws ConjointBizarreException {
+	private Individu getConjointValide(long idEvent) throws ConjointBizarreException {
 
-		final Individu conjoint = serviceCivil.getConjoint(noPrincipal, date.getOneDayAfter());
+		final Long noIndividu = getNoIndividu();
+		final RegDate dateDeValidite = getDate();
+		final ServiceCivilService serviceCivil = context.getServiceCivil();
+
+		final Individu conjoint = serviceCivil.getConjoint(noIndividu, dateDeValidite.getOneDayAfter());
 		if (conjoint == null) {
-			Audit.info(idEvent, String.format("Aucun conjoint trouvé pour l'individu %d dans le civil au %s", noPrincipal, RegDateHelper.dateToDisplayString(date.getOneDayAfter())));
+			Audit.info(idEvent, String.format("Aucun conjoint trouvé pour l'individu %d dans le civil au %s", noIndividu, RegDateHelper.dateToDisplayString(dateDeValidite.getOneDayAfter())));
 			return null;
 		}
 
 		// si le conjoint n'a pas d'état civil, on lève une ConjointBizarreException
-		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), date);
+		final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(conjoint.getNoTechnique(), dateDeValidite);
 		if (etatCivil == null) {
 			String msg = String.format("L'individu conjoint %d n'a pas d'état civil actif dans le registre civil au %s",
-					conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(date));
+					conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
 			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, msg);
 		}
@@ -135,15 +137,15 @@ public class Mariage extends EvenementCivilInterne {
 		// si le conjoint n'est pas marié/pacsé, on lève une ConjointBizarreException
 		if (!EtatCivilHelper.estMarieOuPacse(etatCivil)) {
 			String msg = String.format("L'état civil de l'individu conjoint %d est '%s' dans le registre civil au %s",
-					conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(date));
+					conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
 			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, msg);
 		}
 
-		final Individu principal = serviceCivil.getIndividu(noPrincipal, date);
-		if (!isBonConjoint(principal, conjoint, date, serviceCivil)) {
+		final Individu principal = serviceCivil.getIndividu(noIndividu, dateDeValidite);
+		if (!isBonConjoint(principal, conjoint, dateDeValidite, serviceCivil)) {
 			String msg = String.format("Le lien de conjoint n'existe pas depuis l'individu %d vers l'individu %d dans le registre civil au %s",
-					conjoint.getNoTechnique(), noPrincipal, RegDateHelper.dateToDisplayString(date));
+					conjoint.getNoTechnique(), noIndividu, RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
 			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.LIEN, msg);
 		}
@@ -264,7 +266,7 @@ public class Mariage extends EvenementCivilInterne {
 
 	private static class ConjointBizarreException extends Exception {
 
-		public static enum TypeDeBizarrerie {
+		enum TypeDeBizarrerie {
 			ETAT_CIVIL,  // Lorsque la bizarrerie est relative à l'état civil
 			LIEN         // Lorsque la bizarrerie est relative au lien entre les conjoints dans le civil
 		}
