@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.3 - 25 avril 2012 - ajouté le booléen 'fake' sur les adresses -->
 <!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.0beta5 - 28 octobre 2011 - ajouté les ewid et egid sur les adresses -->
 <!-- v1.0beta1 - 1 septembre 2011 - remplacé eCH-0010-4-0f.xsd par eCH-0010-4-0.xsd -->
@@ -117,6 +118,18 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>Le type de l'adresse.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fake" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Indique s'il s'agit d'une adresse "artificielle"; c'est-à-dire, dans le cas d'un contribuable qui ne possède aucun adresse, d'une adresse créée de toutes
+								pièces dans le seul but d'exposer les prénoms/noms et les salutations/formule de politesse. Ainsi, pour déterminer si un contribuable possède ou non des adresses, les
+								adresses "artificielles" doivent être ignorées.
+							</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
