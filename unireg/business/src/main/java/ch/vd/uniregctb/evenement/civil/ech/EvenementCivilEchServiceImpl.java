@@ -99,7 +99,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	}
 
 	private List<EvenementCivilEchBasicInfo> buildListeEvenementsCivilsATraiterPourIndividu(long noIndividu) {
-		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(noIndividu);
+		final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(Arrays.asList(noIndividu));
 		if (evts != null && evts.size() > 0) {
 			final List<EvenementCivilEchBasicInfo> liste = new ArrayList<EvenementCivilEchBasicInfo>(evts.size());
 			for (EvenementCivilEch evt : evts) {

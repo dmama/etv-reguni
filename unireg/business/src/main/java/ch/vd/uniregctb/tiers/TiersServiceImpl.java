@@ -54,6 +54,8 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
@@ -115,6 +117,7 @@ public class TiersServiceImpl implements TiersService {
 	private EvenementFiscalService evenementFiscalService;
 	private GlobalTiersSearcher tiersSearcher;
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
+	private EvenementCivilEchDAO evenementCivilEchDAO;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
 	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
@@ -1303,7 +1306,12 @@ public class TiersServiceImpl implements TiersService {
 		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
-    private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setEvenementCivilEchDAO(EvenementCivilEchDAO evenementCivilEchDAO) {
+		this.evenementCivilEchDAO = evenementCivilEchDAO;
+	}
+
+	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
         forFiscalPrincipal.setDateFin(null);
         forFiscalPrincipal.setMotifFermeture(null);
         return openOrReopenForFiscalPrincipal(forFiscalPrincipal, changeHabitantFlag);
@@ -3997,22 +4005,72 @@ public class TiersServiceImpl implements TiersService {
         return personnes;
     }
 
+	private Set<Long> getIndividusAvecEvenementsCivilsRegPPNonTraites(Set<Long> nosIndividus) {
+		final Set<Long> inds;
+		if (!nosIndividus.isEmpty()) {
+			final List<EvenementCivilRegPP> evts = evenementCivilRegPPDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			if (evts != null && !evts.isEmpty()) {
+				inds = new HashSet<Long>(nosIndividus.size());
+				for (EvenementCivilRegPP evt : evts) {
+					if (evt.getNumeroIndividuPrincipal() != null) {
+						inds.add(evt.getNumeroIndividuPrincipal());
+					}
+					if (evt.getNumeroIndividuConjoint() != null) {
+						inds.add(evt.getNumeroIndividuConjoint());
+					}
+				}
+			}
+			else {
+				inds = Collections.emptySet();
+			}
+		}
+		else {
+			inds = Collections.emptySet();
+		}
+		return inds;
+	}
+
+	private Set<Long> getIndividusAvecEvenementsCivilsECHNonTraites(Set<Long> nosIndividus) {
+		final Set<Long> inds;
+		if (!nosIndividus.isEmpty()) {
+			final List<EvenementCivilEch> evts = evenementCivilEchDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			if (evts != null && !evts.isEmpty()) {
+				inds = new HashSet<Long>(nosIndividus.size());
+				for (EvenementCivilEch evt : evts) {
+					if (evt.getNumeroIndividu() != null) {
+						inds.add(evt.getNumeroIndividu());
+					}
+				}
+			}
+			else {
+				inds = Collections.emptySet();
+			}
+		}
+		else {
+			inds = Collections.emptySet();
+		}
+		return inds;
+	}
+
 	@Override
-	public List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(Tiers tiers) {
+	public Set<Long> getIndividuAvecEvenementsCivilsNonTraites(Tiers tiers) {
+		final Set<Long> set;
+
 		final Set<Long> noTiers = new HashSet<Long>(1);
 		noTiers.add(tiers.getNumero());
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
-		final List<EvenementCivilRegPP> liste;
 		if (!nosIndividus.isEmpty()) {
-			liste = evenementCivilRegPPDAO.getEvenementsCivilsNonTraites(nosIndividus);
+			set = new TreeSet<Long>();
+			set.addAll(getIndividusAvecEvenementsCivilsRegPPNonTraites(nosIndividus));
+			set.addAll(getIndividusAvecEvenementsCivilsECHNonTraites(nosIndividus));
 		}
 		else {
-			liste = Collections.emptyList();
+			set = Collections.emptySet();
 		}
-		return liste;
+		return set;
 	}
 
-    @Override
+	@Override
     public boolean isVeuvageMarieSeul(PersonnePhysique tiers) {
         MenageCommun menageCommun = findDernierMenageCommun(tiers);
         if (menageCommun != null) {

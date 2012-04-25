@@ -7,14 +7,12 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
@@ -1147,11 +1145,11 @@ public interface TiersService {
 	Set<PersonnePhysique> getComposantsMenage(MenageCommun menageCommun, int anneePeriode);
 
 	/**
-	 * Renvoie les événements civils non traités concernant le tiers donné
+	 * Renvoie la liste des numéros d'individus liés à ce tiers et pour lesquels il existe des événements civils (RegPP ou ECH) non traités
 	 * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
-	 * @return les événements civils encore non-traités (en erreur, ou pas encore traités) sur ce tiers
+	 * @return la liste des numéros d'individus liés à ce tiers et pour lesquels il existe des événements civils (RegPP ou ECH) non traités
 	 */
-	List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(Tiers tiers);
+	Set<Long> getIndividuAvecEvenementsCivilsNonTraites(Tiers tiers);
 
     /**
      * Permet de savoir si un tiers est un veuf(ve) marié seul

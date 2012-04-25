@@ -25,7 +25,6 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
-import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -278,21 +277,9 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showEvenementsCivils && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) {
-			final List<EvenementCivilRegPP> evtsNonTraites = tiersService.getEvenementsCivilsNonTraites(tiers);
-			if (evtsNonTraites != null && !evtsNonTraites.isEmpty()) {
-
-				final Set<Long> nos = new TreeSet<Long>();
-				for (EvenementCivilRegPP evt : evtsNonTraites) {
-					final Long indPrincipal = evt.getNumeroIndividuPrincipal();
-					if (indPrincipal != null) {
-						nos.add(indPrincipal);
-					}
-					final Long indConjoint = evt.getNumeroIndividuConjoint();
-					if (indConjoint != null) {
-						nos.add(indConjoint);
-					}
-				}
-
+			final Set<Long> noIndividusAvecEvtsNonTraites = tiersService.getIndividuAvecEvenementsCivilsNonTraites(tiers);
+			if (noIndividusAvecEvtsNonTraites != null && !noIndividusAvecEvtsNonTraites.isEmpty()) {
+				final Set<Long> nos = new TreeSet<Long>(noIndividusAvecEvtsNonTraites);
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
 				s.append(message("label.tiers.evts.non.traites"));
 				for (Long no : nos) {

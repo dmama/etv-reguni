@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -17,10 +18,10 @@ public interface EvenementCivilEchDAO extends GenericDAO<EvenementCivilEch, Long
 
 	/**
 	 * Renvoie l'ensemble des événements civils non encore traités (i.e. dont l'état n'est pas final) pour l'individu donné
-	 * @param noIndividu numéro de l'individu commun à tous les événements à retourner
+	 * @param nosIndividus numéros des individus sur lesquels les événements doivent être recherchés
 	 * @return une liste des événements liés à l'individu donné et dont l'état n'est pas final (ordre non garanti)
 	 */
-	List<EvenementCivilEch> getEvenementsCivilsNonTraites(long noIndividu);
+	List<EvenementCivilEch> getEvenementsCivilsNonTraites(Collection<Long> nosIndividus);
 
 	/**
 	 * Renvoie l'ensemble des événements civils à relancer, i.e. qui sont dans l'état {@link ch.vd.uniregctb.type.EtatEvenementCivil#A_TRAITER A_TRAITER}
