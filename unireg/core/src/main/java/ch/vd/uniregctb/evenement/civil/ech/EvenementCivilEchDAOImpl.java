@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.ech;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -40,14 +41,14 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 	}
 
 	@Override
-	public List<EvenementCivilEch> getEvenementsCivilsNonTraites(final long noIndividu) {
-		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu=:noIndividu and ec.etat in (:etats)";
+	public List<EvenementCivilEch> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
+		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu in (:nosIndividus) and ec.etat in (:etats)";
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilEch>>() {
 			@SuppressWarnings({"unchecked"})
 			@Override
 			public List<EvenementCivilEch> doInHibernate(Session session) throws HibernateException, SQLException {
 				final Query query = session.createQuery(hql);
-				query.setParameter("noIndividu", noIndividu);
+				query.setParameterList("nosIndividus", nosIndividus);
 				query.setParameterList("etats", ETATS_NON_TRAITES);
 				return query.list();
 			}
