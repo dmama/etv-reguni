@@ -1147,9 +1147,9 @@ public interface TiersService {
 	/**
 	 * Renvoie la liste des numéros d'individus liés à ce tiers et pour lesquels il existe des événements civils (RegPP ou ECH) non traités
 	 * @param tiers la personne physique ou le ménage commun considéré (si ménage commun, tous ses membres seront inspectés)
-	 * @return la liste des numéros d'individus liés à ce tiers et pour lesquels il existe des événements civils (RegPP ou ECH) non traités
+	 * @return la liste (triée par ordre croissant) des numéros d'individus liés à ce tiers et pour lesquels il existe des événements civils (RegPP ou ECH) non traités
 	 */
-	Set<Long> getIndividuAvecEvenementsCivilsNonTraites(Tiers tiers);
+	Set<Long> getIndividusAvecEvenementsCivilsNonTraites(Tiers tiers);
 
     /**
      * Permet de savoir si un tiers est un veuf(ve) marié seul

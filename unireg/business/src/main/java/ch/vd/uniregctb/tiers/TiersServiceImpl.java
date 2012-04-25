@@ -4053,7 +4053,7 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public Set<Long> getIndividuAvecEvenementsCivilsNonTraites(Tiers tiers) {
+	public Set<Long> getIndividusAvecEvenementsCivilsNonTraites(Tiers tiers) {
 		final Set<Long> set;
 
 		final Set<Long> noTiers = new HashSet<Long>(1);

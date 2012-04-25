@@ -7,7 +7,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
@@ -277,12 +276,11 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showEvenementsCivils && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) {
-			final Set<Long> noIndividusAvecEvtsNonTraites = tiersService.getIndividuAvecEvenementsCivilsNonTraites(tiers);
-			if (noIndividusAvecEvtsNonTraites != null && !noIndividusAvecEvtsNonTraites.isEmpty()) {
-				final Set<Long> nos = new TreeSet<Long>(noIndividusAvecEvtsNonTraites);
+			final Set<Long> nosIndividusAvecEvtsNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
+			if (nosIndividusAvecEvtsNonTraites != null && !nosIndividusAvecEvtsNonTraites.isEmpty()) {
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
 				s.append(message("label.tiers.evts.non.traites"));
-				for (Long no : nos) {
+				for (Long no : nosIndividusAvecEvtsNonTraites) {
 					s.append(' ').append(no);
 				}
 				s.append("</center></td></tr>\n");
