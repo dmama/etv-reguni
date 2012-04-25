@@ -41,7 +41,9 @@ import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
+import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
+import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
@@ -798,7 +800,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertAddress(dateFrom, dateTo, street, null, town, address);
 	}
 
-	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, @Nullable String houseNumber, String town,
+	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, @Nullable String houseNumber, @Nullable String town,
 	                                  Address address) {
 		assertNotNull(address);
 		assertEquals(dateFrom, address.getDateFrom());
@@ -1406,5 +1408,90 @@ public class PartyWebServiceTest extends WebserviceTest {
 		// pas de rue, pas de numéro
 		assertAddress(newDate(1993, 7, 23), newDate(1999, 12, 31), null, null, "Cossonay-Ville", mailAddresses.get(0));
 		assertAddress(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", mailAddresses.get(1));
+	}
+
+	/**
+	 * [SIFISC-4967] Vérifie que le service retourne bien une adresse "artifielle" lorsqu'on demande les adresses d'un contribuable qui n'en possède pas.
+	 */
+	@Test
+	public void testGetAddressePartyWithoutAnyAddress() throws Exception {
+
+		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final NaturalPerson person = (NaturalPerson) service.getParty(params);
+		assertNotNull(person);
+
+		final List<Address> mailAddresses = person.getMailAddresses();
+		assertNotNull(mailAddresses);
+		assertEquals(1, mailAddresses.size());
+
+		// pas de rue, pas de numéro
+		final Address address0 = mailAddresses.get(0);
+		assertAddress(null, null, null, null, null, address0);
+		assertTrue(address0.isFake()); // il s'agit bien d'une adresse artificielle
+
+		final PersonMailAddressInfo personInfo0 = address0.getPerson();
+		assertNotNull(personInfo0);
+		assertEquals("Julien", personInfo0.getFirstName());
+		assertEquals("Leproux", personInfo0.getLastName());
+		assertEquals("Monsieur", personInfo0.getFormalGreeting());
+		assertEquals("Monsieur", personInfo0.getSalutation());
+
+		final FormattedAddress formattedAddress0 = address0.getFormattedAddress();
+		assertNotNull(formattedAddress0);
+		assertEquals("Monsieur", formattedAddress0.getLine1());
+		assertEquals("Julien Leproux", formattedAddress0.getLine2());
+		assertNull(formattedAddress0.getLine3());
+	}
+
+	/**
+	 * [SIFISC-4967] Vérifie que le service retourne bien une adresse "normale" lorsqu'on demande les adresses d'un contribuable qui en possède une.
+	 */
+	@Test
+	public void testGetAddressePartyWithOneAddress() throws Exception {
+
+		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1956,1,1), null, MockRue.Gressy.LesPechauds);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final NaturalPerson person = (NaturalPerson) service.getParty(params);
+		assertNotNull(person);
+
+		final List<Address> mailAddresses = person.getMailAddresses();
+		assertNotNull(mailAddresses);
+		assertEquals(1, mailAddresses.size());
+
+		// pas de rue, pas de numéro
+		final Address address0 = mailAddresses.get(0);
+		assertAddress(newDate(1956, 1, 1), null, "Les Péchauds", "Gressy", address0);
+		assertFalse(address0.isFake()); // il s'agit d'une adresse normale
+
+		final PersonMailAddressInfo personInfo0 = address0.getPerson();
+		assertNotNull(personInfo0);
+		assertEquals("Julien", personInfo0.getFirstName());
+		assertEquals("Leproux", personInfo0.getLastName());
+		assertEquals("Monsieur", personInfo0.getFormalGreeting());
+		assertEquals("Monsieur", personInfo0.getSalutation());
+
+		final FormattedAddress formattedAddress0 = address0.getFormattedAddress();
+		assertNotNull(formattedAddress0);
+		assertEquals("Monsieur", formattedAddress0.getLine1());
+		assertEquals("Julien Leproux", formattedAddress0.getLine2());
+		assertEquals("Les Péchauds", formattedAddress0.getLine3());
+		assertEquals("1432 Gressy", formattedAddress0.getLine4());
+		assertNull(formattedAddress0.getLine5());
 	}
 }

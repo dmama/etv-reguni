@@ -47,11 +47,18 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	private Integer ewid;
 	private final AdresseGenerique.SourceType source;
 
-	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin) {
+	/**
+	 * Vrai si cette adresse a été créée de toutes pièces dans le seul but de porter les informations du destinataire (noms/prénoms, salutations, ...), et qu'il n'y a donc pas de véritable adresse
+	 * derrière ces données.
+	 */
+	private final boolean artificelle;
+
+	public AdresseEnvoiDetaillee(Tiers destinataire, AdresseGenerique.SourceType source, RegDate dateDebut, RegDate dateFin, boolean artificelle) {
 		this.source = source;
 		this.destinataire = destinataire;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
+		this.artificelle = artificelle;
 	}
 
 	// pour le testing uniquement !
@@ -70,6 +77,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.numeroTechniqueRue = numeroTechniqueRue;
 		this.nomsPrenoms.add(nomPrenom);
 		this.source = source;
+		this.artificelle = false;
 	}
 
 	@Override
@@ -334,6 +342,10 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		return ewid;
 	}
 
+	public boolean isArtificelle() {
+		return artificelle;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -342,6 +354,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 		final AdresseEnvoiDetaillee that = (AdresseEnvoiDetaillee) o;
 
+		if (artificelle != that.artificelle) return false;
 		if (casePostale != null ? !casePostale.equals(that.casePostale) : that.casePostale != null) return false;
 		if (complement != null ? !complement.equals(that.complement) : that.complement != null) return false;
 		if (dateDebut != null ? !dateDebut.equals(that.dateDebut) : that.dateDebut != null) return false;
@@ -389,32 +402,36 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		result = 31 * result + (egid != null ? egid.hashCode() : 0);
 		result = 31 * result + (ewid != null ? ewid.hashCode() : 0);
 		result = 31 * result + (source != null ? source.hashCode() : 0);
+		result = 31 * result + (artificelle ? 1 : 0);
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "AdresseEnvoiDetaillee{" +
-				"dateDebut=" + dateDebut +
-				", dateFin=" + dateFin +
-				", destinataire=" + destinataire +
-				", salutations='" + salutations + '\'' +
-				", formuleAppel='" + formuleAppel + '\'' +
-				", nomsPrenoms=" + nomsPrenoms +
-				", raisonsSociales=" + raisonsSociales +
-				", complement='" + complement + '\'' +
-				", pourAdresse='" + pourAdresse + '\'' +
-				", numeroAppartement='" + numeroAppartement + '\'' +
-				", rueEtNumero=" + rueEtNumero +
-				", casePostale=" + casePostale +
-				", npaEtLocalite=" + npaEtLocalite +
-				", pays=" + pays +
-				", typeAffranchissement=" + typeAffranchissement +
-				", numeroOrdrePostal=" + numeroOrdrePostal +
-				", numeroTechniqueRue=" + numeroTechniqueRue +
-				", egid=" + egid +
-				", ewid=" + ewid +
-				", source=" + source +
-				"} " + super.toString();
+		final StringBuilder sb = new StringBuilder();
+		sb.append("AdresseEnvoiDetaillee");
+		sb.append("{dateDebut=").append(dateDebut);
+		sb.append(", dateFin=").append(dateFin);
+		sb.append(", destinataire=").append(destinataire);
+		sb.append(", salutations='").append(salutations).append('\'');
+		sb.append(", formuleAppel='").append(formuleAppel).append('\'');
+		sb.append(", nomsPrenoms=").append(nomsPrenoms);
+		sb.append(", raisonsSociales=").append(raisonsSociales);
+		sb.append(", complement='").append(complement).append('\'');
+		sb.append(", pourAdresse='").append(pourAdresse).append('\'');
+		sb.append(", numeroAppartement='").append(numeroAppartement).append('\'');
+		sb.append(", rueEtNumero=").append(rueEtNumero);
+		sb.append(", casePostale=").append(casePostale);
+		sb.append(", npaEtLocalite=").append(npaEtLocalite);
+		sb.append(", pays=").append(pays);
+		sb.append(", typeAffranchissement=").append(typeAffranchissement);
+		sb.append(", numeroOrdrePostal=").append(numeroOrdrePostal);
+		sb.append(", numeroTechniqueRue=").append(numeroTechniqueRue);
+		sb.append(", egid=").append(egid);
+		sb.append(", ewid=").append(ewid);
+		sb.append(", source=").append(source);
+		sb.append(", artificelle=").append(artificelle);
+		sb.append('}');
+		return sb.toString();
 	}
 }

@@ -48,6 +48,7 @@ public class AddressBuilder {
 		a.setDateFrom(DataHelper.coreToXML(adresse.getDateDebut()));
 		a.setDateTo(DataHelper.coreToXML(adresse.getDateFin()));
 		a.setType(type);
+		a.setFake(adresse.isArtificelle());
 
 		fillRecipient(a, adresse);
 		fillDestination(a, adresse);

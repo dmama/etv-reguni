@@ -140,9 +140,10 @@ public class AdresseServiceImpl implements AdresseService {
 		final Tiers tiersPourAdresse = (envoi.avecPourAdresse ? envoi.destination : null);
 		final RegDate dateDebut = (adresseDestination == null ? null : adresseDestination.getDateDebut());
 		final RegDate dateFin = (adresseDestination == null ? null : adresseDestination.getDateFin());
+		final boolean artificelle = adresseDestination == null; // SIFISC-4967
 
 		// Remplis l'adresse d'envoi
-		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin);
+		final AdresseEnvoiDetaillee adresseEnvoi = new AdresseEnvoiDetaillee(tiers, envoi.sourceType, dateDebut, dateFin, artificelle);
 		fillDestinataire(adresseEnvoi, envoi.destinataire, tiersPourAdresse, date, true);
 		fillDestination(adresseEnvoi, adresseDestination);
 
@@ -199,7 +200,7 @@ public class AdresseServiceImpl implements AdresseService {
 				}
 			}
 			else if (type != TypeAdresseFiscale.POURSUITE_AUTRE_TIERS) {
-				// on crée une adresse d'envoi minimale
+				// on crée une adresse d'envoi artificielle qui ne contient que la partie "destinataire" (voir SIFISC-4967)
 				results.add(type, createAdresseEnvoi(tiers, null, type, null));
 			}
 		}
@@ -496,14 +497,15 @@ public class AdresseServiceImpl implements AdresseService {
 	 */
 	private AdresseEnvoiDetaillee createAdresseEnvoi(Individu individu, @Nullable RegDate date, boolean strict) throws AdresseException {
 
-		AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE, date, date);
-		adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
-		adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
+		final AdresseEnvoiDetaillee adresse;
 
-		final AdressesCiviles adressesCourantes;
 		try {
-			adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
+			final AdressesCiviles adressesCourantes = new AdressesCiviles(serviceCivilService.getAdresses(individu.getNoTechnique(), date, strict));
 			final Adresse adresseCourrier = adressesCourantes.courrier;
+
+			adresse = new AdresseEnvoiDetaillee(null, AdresseGenerique.SourceType.CIVILE, date, date, adresseCourrier == null);
+			adresse.addFormulePolitesse(getFormulePolitesse(individu, date));
+			adresse.addNomPrenom(tiersService.getDecompositionNomPrenom(individu));
 
 			if (adresseCourrier != null) {
 				fillAdresseEnvoi(adresse, new AdresseCivileAdapter(adresseCourrier, (Tiers) null, false, serviceInfra));
@@ -1896,7 +1898,7 @@ public class AdresseServiceImpl implements AdresseService {
 	@Override
 	public List<String> getNomCourrier(Tiers tiers, RegDate date, boolean strict) throws AdresseException {
 
-		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date);
+		final AdresseEnvoiDetaillee adresse = new AdresseEnvoiDetaillee(tiers, null, date, date, true);
 		fillDestinataire(adresse, tiers, null, date, false);
 
 		List<String> list = adresse.getNomsPrenomsOuRaisonsSociales();
