@@ -91,7 +91,7 @@ public interface MetierService {
 	 *            l'état civil à utiliser dans la situation de famille
 	 * @return le ménage mis à jour.
 	 */
-	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, String remarque, EtatCivil etatCivilFamille);
+	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, @Nullable String remarque, EtatCivil etatCivilFamille);
 
 	/**
 	 * Vérifie que la fusion de deux ménages communs incomplets peut être effectuée.

@@ -902,7 +902,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
+	public MenageCommun reconstitueMenage(MenageCommun menage, PersonnePhysique pp, RegDate date, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
 
 		/*
 		 * ajout du tiers précédemment absent au ménage commun

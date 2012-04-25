@@ -186,11 +186,11 @@ public interface ServiceCivilService {
 	Tutelle getTutelle(long noIndividu, RegDate date);
 
 	/**
-	 * @param noIndividu
+	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de référence, ou null pour obtenir l'état-civil actif
 	 * @return l'état civil actif d'un individu à une date donnée.
 	 */
-	EtatCivil getEtatCivilActif(long noIndividu, RegDate date);
+	EtatCivil getEtatCivilActif(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Retourne les nom et prénoms pour l'adressage de l'individu spécifié.
@@ -204,7 +204,7 @@ public interface ServiceCivilService {
 	 * Retourne les nom et prénoms de l'individu spécifié, dans deux champs distincts
 	 *
 	 * @param individu un individu
-	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom.VIDE} si l'individu est inconnu)
+	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom#VIDE} si l'individu est inconnu)
 	 */
 	NomPrenom getDecompositionNomPrenom(Individu individu);
 
