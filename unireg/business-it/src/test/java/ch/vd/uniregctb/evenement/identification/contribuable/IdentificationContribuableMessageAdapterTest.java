@@ -43,7 +43,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
-	private IdentificationContribuableMessageHandlerImpl handler;
+	private IdentificationContribuableMessageListenerImpl handler;
 	private EsbTemplateWithErrorCollector esbTemplateWithErrorCollector;
 
 	private static class EsbTemplateWithErrorCollector extends EsbJmsTemplate {
@@ -108,7 +108,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			}
 		};
 
-		handler = new IdentificationContribuableMessageHandlerImpl();
+		handler = new IdentificationContribuableMessageListenerImpl();
 		handler.setOutputQueue(OUTPUT_QUEUE);
 		handler.setEsbTemplate(esbTemplate);
 		handler.setEsbMessageFactory(esbMessageFactory);
@@ -473,7 +473,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "http://mamachine:3421/mondocument.pdf";
-		customAttributes.put(IdentificationContribuableMessageHandlerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -540,7 +540,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableMessageHandlerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -572,7 +572,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableMessageHandlerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message

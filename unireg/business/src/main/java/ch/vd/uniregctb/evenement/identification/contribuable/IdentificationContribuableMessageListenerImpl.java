@@ -29,9 +29,9 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IdentificationContribuableMessageHandlerImpl extends EsbMessageEndpointListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
+public class IdentificationContribuableMessageListenerImpl extends EsbMessageEndpointListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageHandlerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageListenerImpl.class);
 
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 
