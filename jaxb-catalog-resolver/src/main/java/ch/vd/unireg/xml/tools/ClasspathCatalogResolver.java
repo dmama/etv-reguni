@@ -144,7 +144,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 		if (sep >= 0) {
 			parent = new File(tempDir, filename.substring(0, sep));
 			filename = filename.substring(sep + 1);
-			if (!parent.mkdirs()) {
+			if (!parent.exists() && !parent.mkdirs()) {
 				throw new RuntimeException("Impossible de créer le répertoire " + parent.getCanonicalPath());
 			}
 		}
