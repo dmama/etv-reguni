@@ -54,7 +54,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		if (action != that.action) return false;
 		if (!date.equals(that.date)) return false;
 		if (etat != that.etat) return false;
-		if (!idReference.equals(that.idReference)) return false;
+		if (idReference != null ? !idReference.equals(that.idReference) : that.idReference != null) return false;
 		if (type != that.type) return false;
 
 		return true;
@@ -67,7 +67,7 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		result = 31 * result + etat.hashCode();
 		result = 31 * result + type.hashCode();
 		result = 31 * result + action.hashCode();
-		result = 31 * result + idReference.hashCode();
+		result = 31 * result + (idReference != null ? idReference.hashCode() : 0);
 		result = 31 * result + date.hashCode();
 		return result;
 	}
