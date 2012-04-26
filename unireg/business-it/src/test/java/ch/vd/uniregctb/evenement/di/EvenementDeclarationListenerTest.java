@@ -21,6 +21,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 
@@ -65,6 +66,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
+		esbValidator.setResourceResolver(new ClasspathCatalogResolver());
 		esbValidator.setSources(new Resource[]{new ClassPathResource("unireg-common-1.xsd"),
 				new ClassPathResource("/event/di/evenementDeclarationImpot-input-1.xsd"),
 				new ClassPathResource("/event/di/evenementDeclarationImpot-common-1.xsd")});
