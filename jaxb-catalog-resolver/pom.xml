@@ -4,7 +4,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>jaxb2-catalog-resolver</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.3</version>
+	<version>1.0.4</version>
 
 	<name>JAXB2 Plugin - Catalog Resolver Implementation and Plugin</name>
 	<description>Une implémentation de catalog resolver qui va chercher certains XSDs dans le classpath + un plugin qui permet de spécifier une classe custom comme catalog resolver dans xjc.

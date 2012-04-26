@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.sun.org.apache.xerces.internal.dom.DOMInputImpl;
@@ -59,7 +61,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 			return r;
 		}
 
-		final String r2 = resolveInClasspath(systemId);
+		final String r2 = resolveInClasspath(publicId, systemId);
 		if (r2 != null) {
 			resolvedCache.put(systemId, r2);
 			return r2;
@@ -81,49 +83,71 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 	/**
 	 * Cette méthode va résoudre le systemId fourni et retourner un chemin vers une copie local de la ressource.
 	 *
-	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd")
-	 * @return un chemin vers la ressource locale (par exemple "file:/tmp/ClasspathCatalogResolver5317162594717290146/eCH-0010-4-0f.xsd")
+	 * @param publicId le publicId, c'est-à-dire le namespace du schéma lui-même (par exemple "http://www.vd.ch/fiscalite/unireg/party/party/1")
+	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd")
+	 * @return un chemin vers la ressource locale (par exemple "file:/tmp/ClasspathCatalogResolver5317162594717290146/unireg-party-1.xsd")
 	 */
-	private String resolveInClasspath(String systemId) {
+	private String resolveInClasspath(String publicId, String systemId) {
 
-		final String resourceLookup = systemId2Classpath(systemId);
-
-		final URL resource;
 		try {
-			// on essaie de résoudre le XSD dans le classpath
-			resource = Thread.currentThread().getContextClassLoader().getResource(resourceLookup);
-			if (resource != null) {
-				final URL path = createTempFile(resourceLookup, resource);
-				System.out.println("Resolved systemId [" + systemId + "] to [" + path.toString() + "]");
-				return path.toString();
+			final List<String> pathes = ids2Classpathes(publicId, systemId);
+
+			for (String p : pathes) {
+				// on essaie de résoudre le XSD dans le classpath
+				final URL resource = Thread.currentThread().getContextClassLoader().getResource(p);
+				if (resource != null) {
+					final URL path = createTempFile(p, resource);
+					System.out.println("Resolved publicId|systemId [" + publicId + "|" + systemId + "] to [" + path.toString() + "]");
+					return path.toString();
+				}
 			}
 		}
 		catch (Exception e) {
 			e.printStackTrace();
-			System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage() + " exception when resolving systemId [" + systemId + "]");
+			System.err.println("Caught " + e.getClass().getSimpleName() + ": " + e.getMessage() + " exception when resolving publicId|systemId [" + publicId + "|" + systemId + "]");
 		}
 
 		return null;
 	}
 
 	/**
-	 * Cette méthode permet de transformer un sytemId en un chemin relatif dans le classpath.
+	 * Cette méthode permet de transformer un sytemId en une liste de chemins relatifs potentiels dans le classpath.
 	 *
-	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0f.xsd")
-	 * @return un chemin relatif dans le classpath (par exemple "eCH-0010-4-0f.xsd")
+	 * @param publicId le publicId, c'est-à-dire le namespace du schéma lui-même (par exemple "http://www.vd.ch/fiscalite/unireg/party/party/1")
+	 * @param systemId le systemId, c'est-à-dire la valeur fournie dans l'attribut schemaLocation d'un xs:import (par exemple "http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd")
+	 * @return une liste de chemins relatifs potentiels dans le classpath (par exemple "eCH-0010-4-0f.xsd")
 	 */
-	private String systemId2Classpath(String systemId) {
-		String resourceLookup = systemId;
+	private static List<String> ids2Classpathes(String publicId, String systemId) {
+
+		final List<String> pathes = new ArrayList<String>();
+		pathes.add(systemId); // des fois que le systemId soit un chemin absolu
+
+		// chemins possibles à partir du systemId
 		if (systemId.startsWith("http://ressources.etat-de-vaud.ch/fiscalite/registre/")) {
 			// pour tout ce qui Unireg, on va chercher dans le classpath, en tenant compte du répertoire relatif
-			resourceLookup = systemId.replace("http://ressources.etat-de-vaud.ch/fiscalite/registre/", "");
+			pathes.add(systemId.replace("http://ressources.etat-de-vaud.ch/fiscalite/registre/", ""));
 		}
 		else if (systemId.startsWith("http://www.ech.ch/xmlns")) {
 			// pour tout ce qui eCH, on va chercher dans la racine du classpath
 			int pos = systemId.lastIndexOf('/');
-			resourceLookup = systemId.substring(pos + 1);
+			pathes.add(systemId.substring(pos + 1));
 		}
-		return resourceLookup;
+
+		// chemins possibles à partir du publicId (moins probables)
+		if (publicId != null && publicId.startsWith("http://www.vd.ch/fiscalite/unireg/")) {
+			// pour tout ce qui Unireg, on va chercher dans le classpath, en tenant compte du répertoire relatif
+			final int pos = systemId.lastIndexOf('/');
+			final String filename = pos < 0 ? systemId : systemId.substring(pos + 1);
+			final String subpath = publicId.replace("http://www.vd.ch/fiscalite/unireg/", "");
+
+			final StringBuilder sb = new StringBuilder();
+			for (String s : subpath.split("/")) {
+				sb.append(s).append('/');
+				pathes.add(sb + filename);
+			}
+		}
+
+		return pathes;
 	}
 
 	/**
@@ -144,7 +168,7 @@ public class ClasspathCatalogResolver extends com.sun.org.apache.xml.internal.re
 		if (sep >= 0) {
 			parent = new File(tempDir, filename.substring(0, sep));
 			filename = filename.substring(sep + 1);
-			if (!parent.mkdirs()) {
+			if (!parent.exists() && !parent.mkdirs()) {
 				throw new RuntimeException("Impossible de créer le répertoire " + parent.getCanonicalPath());
 			}
 		}

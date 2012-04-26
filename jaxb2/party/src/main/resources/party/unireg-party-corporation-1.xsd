@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:corporation="http://www.vd.ch/fiscalite/unireg/party/corporation/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:taxpayer="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxpayer/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-1.xsd" />
+
+	<xs:complexType name="corporationType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Classe concrète qui contient toutes les informations d'un contribuable de type personne morale.
+						Les collections sont renseignées en fonction des parts demandées lors de l'appel au service.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="taxpayer:taxpayerType">
+				<xs:sequence>
+					<xs:element name="name1" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Première ligne de la raison sociale.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="name2" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Deuxième ligne de la raison sociale.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="name3" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Troisième ligne de la raison sociale.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="endDateOfLastBusinessYear" type="common:dateType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de fin du dernier exercice commercial.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="endDateOfNextBusinessYear" type="common:dateType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de bouclement futur de la PM.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="ipmroNumber" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Numéro IPMRO (n'existe pas sur toutes les PMs).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalSeats" type="corporation:legalSeatType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des sièges.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="legalForms" type="corporation:legalFormType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des formes juridiques.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="capitals" type="corporation:capitalType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des capitaux.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsVD" type="corporation:taxSystemType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des régimes fiscaux ICC (Impôt Canton-Commune).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="taxSystemsCH" type="corporation:taxSystemType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des régimes fiscaux IFD (Impôt Fédéral Direct).</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="statuses" type="corporation:corporationStatusType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des états de la PM.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="shortName" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Désignation abrégée de la PM.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="legalSeatType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations du siège d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité du siège de la PM.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité du siège de la PM. Si le siège est toujours actif, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="corporation:legalSeatTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Cet enum permet d'interpréter le numéro OFS contenu dans noOfsSiege.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fsoId" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Numéro OFS étendu de la commune suisse ou du pays de siège.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="legalFormType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations sur la forme juridique d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de la forme juridique; ou non-renseigné si elle est toujours valide.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="code" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le code de la forme juridique, tel que défini dans le table FORME_JURIDIQ_ACI du Host.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de la forme juridique.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="legalSeatTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les localisations possibles pour un siège d'une personne morale.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SWISS_MUNICIPALITY">
+				<xs:annotation>
+					<xs:documentation>Une commune suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FOREIGN_COUNTRY">
+				<xs:annotation>
+					<xs:documentation>Un pays hors-Suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="capitalType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations sur le capital à disposition d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité du régime fiscal.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité du régime fiscal; ou null s'il est toujours valide.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="shareCapital" type="xs:long">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La valeur du capital action de la PM.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="paidInCapital" type="xs:long">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La valeur du capital libéré de la PM.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="sogcEdition" type="corporation:sogcEditionType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'édition de la Feuille officielle suisse du commerce dans laquelle ces informations sont parues.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="absentPaidInCapitalNormal" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Retourne vrai si l'absence de capital libéré est normale, ou faux si elle est anormale.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sogcEditionType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations permettant d'identifier une édition de la Feuille officielle suisse du commerce.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="year" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Année de parution.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="number" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Numéro dans l'année de parution.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="taxSystemType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations sur un régime fiscal d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité du régime fiscal; ou non-renseigné s'il est toujours valide.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="code" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le code du régime fiscal, tel que défini dans le table TY_REGIME_FISCAL du Host.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité du régime fiscal.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="corporationStatusType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations sur l'état d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de l'état de la PM; ou non-renseigné s'il est toujours valide.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="code" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le code de l'état de la PM, tel que défini dans le table ETAT du Host.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de l'état de la PM.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="corporationEventType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Représente un événement d'une personne morale.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="partyNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de contribuable de la personne morale.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="code" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le code Reg-PM de l'événement.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="date" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de valeur de l'événement.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
