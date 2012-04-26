@@ -81,7 +81,7 @@ public class Veuvage extends EvenementCivilInterne {
 		 */
 		PersonnePhysique veuf = getPrincipalPP();
 		RegDate dateEvenement = getDateVeuvage();
-		if(isVeuvageRedondant(veuf,dateEvenement)){
+		if (isVeuvageRedondant(veuf, dateEvenement)) {
 			return HandleStatus.REDONDANT;
 		}
 
@@ -98,21 +98,21 @@ public class Veuvage extends EvenementCivilInterne {
 	}
 
 	private boolean isVeuvageRedondant(PersonnePhysique veuf,RegDate dateEvenement) {
-		EnsembleTiersCouple ensembleTiersCouple = context.getTiersService().getEnsembleTiersCouple(veuf, dateEvenement);
-		MenageCommun menage = ensembleTiersCouple.getMenage();
-		final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
-		if (forMenage == null) {
-			final ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
-			final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(dateEvenement.getOneDayAfter());
+		final EnsembleTiersCouple ensembleTiersCouple = context.getTiersService().getEnsembleTiersCouple(veuf, dateEvenement);
+		if (ensembleTiersCouple != null) {
+			final MenageCommun menage = ensembleTiersCouple.getMenage();
+			final ForFiscalPrincipal forMenage = menage.getForFiscalPrincipalAt(null);
+			if (forMenage == null) {
+				final ForFiscalPrincipal dernierForMenage = menage.getDernierForFiscalPrincipal();
+				final ForFiscalPrincipal forCourantVeuf = veuf.getForFiscalPrincipalAt(dateEvenement.getOneDayAfter());
 
-			if (dernierForMenage != null && dateEvenement.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
-					&& forCourantVeuf !=null && dateEvenement.getOneDayAfter().equals(forCourantVeuf.getDateDebut()) &&
-					MotifFor.VEUVAGE_DECES == forCourantVeuf.getMotifOuverture()) {
-				return true;
+				if (dernierForMenage != null && dateEvenement.equals(dernierForMenage.getDateFin()) && MotifFor.VEUVAGE_DECES == dernierForMenage.getMotifFermeture()
+						&& forCourantVeuf !=null && dateEvenement.getOneDayAfter().equals(forCourantVeuf.getDateDebut()) &&
+						MotifFor.VEUVAGE_DECES == forCourantVeuf.getMotifOuverture()) {
+					return true;
+				}
 			}
 		}
-
 		return false;
-	
 	}
 }

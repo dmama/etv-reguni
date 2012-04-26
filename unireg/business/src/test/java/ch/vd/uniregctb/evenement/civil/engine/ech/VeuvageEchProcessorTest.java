@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Set;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
@@ -146,8 +151,6 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
 				marieIndividus(monsieur, madame, dateMariage);
 			}
-
-
 		});
 
 
@@ -303,6 +306,84 @@ public class VeuvageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertNotNull(ffpMenage);
 				assertEquals(dateVeuvage, ffpMenage.getDateFin());
 				assertEquals(MotifFor.VEUVAGE_DECES, ffpMenage.getMotifFermeture());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas du SIFISC-4992 ; on reçoit un événement de veuvage sur quelqu'un qui n'a pas de ménage commun à la date de l'événement -> NPE dans la détection de redondance de l'événement
+	 */
+	@Test(timeout = 10000L)
+	public void testVeuvageSurIndividuSansCoupleActif() throws Exception {
+
+		final long noIndividu = 4236742354672L;
+		final RegDate dateNaissance = date(1959, 7, 15);
+		final RegDate dateMariage = date(2000, 12, 1);
+		final RegDate dateSeparation = dateMariage.addYears(3);
+		final RegDate dateVeuvage = date(2011, 4, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Guerre", "Martin", true);
+				marieIndividu(individu, dateMariage);
+				veuvifieIndividu(individu, dateVeuvage, false);
+
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateNaissance, null);
+				addNationalite(individu, MockPays.Suisse, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, dateMariage, dateSeparation);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Cossonay);
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
+				addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Cossonay);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long veuvageId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(4236783425647852L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateVeuvage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// on vérifie que l'événement est bien en erreur car l'individu n'est pas marié civilement ni cible d'une redondance
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(veuvageId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				assertNotNull(erreurs);
+				assertEquals(String.format("Aucun ménage commun trouvé pour la personne physique %s valide à la date du veuvage (%s)",
+				                           FormatNumeroHelper.numeroCTBToDisplay(ppId), RegDateHelper.dateToDisplayString(dateVeuvage)), erreur.getMessage());
 				return null;
 			}
 		});
