@@ -20,11 +20,29 @@
 		<xs:complexContent>
 			<xs:extension base="response:responseType">
 				<xs:sequence>
+					<xs:element name="timestamp" type="xs:date" >
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le moment précis où la requête en base a débuté.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="types" type="party:partyTypeType" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
 									<jxb:javadoc>Le ou les types de tiers demandés, ou null si tous les numéros de tous les tiers ont été demandés.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="includeCancelled" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si la réponse inclut les tiers annulés; faux si seuls les tiers non-annulés sont inclus.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
