@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.3 - 26 avril 2012 - première version -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/numbers-request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/numbers-request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:request="http://www.vd.ch/fiscalite/unireg/event/party/request/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+
+	<xs:complexType name="numbersRequestType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui permet de demander à Unireg les numéros de tous les tiers (ou seulement de certains types de tiers).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="request:requestType">
+				<xs:sequence>
+					<xs:element name="types" type="party:partyTypeType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le ou les types de tiers demandés, ou null pour obtenir tous les numéros de tous les tiers.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="includeCancelled" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai s'il faut inclure les tiers annulés; faux si seuls les tiers non-annulés doivent être inclus.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

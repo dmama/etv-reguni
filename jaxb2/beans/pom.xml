@@ -41,6 +41,8 @@
 						<include>event/di/evenementDeclarationImpot-output-1.xsd</include>
 						<include>event/party/address-request-1.xsd</include>
 						<include>event/party/address-response-1.xsd</include>
+						<include>event/party/numbers-request-1.xsd</include>
+						<include>event/party/numbers-response-1.xsd</include>
 					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>

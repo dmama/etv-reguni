@@ -30,11 +30,65 @@
 
 	<!-- unireg-jaxb2-party -->
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.debtor.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='debtorPeriodicityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.address.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='addressType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.relation.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.taxdeclaration.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='taxDeclarationType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.taxresidence.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='managingTaxResidenceType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='simplifiedTaxLiabilityType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxationPeriodType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxLiabilityType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
@@ -62,6 +116,18 @@
 	<jxb:bindings schemaLocation="event/party/address-response-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.party.address.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/numbers-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.numbers.v1" />
+		</jxb:schemaBindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/numbers-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.numbers.v1" />
 		</jxb:schemaBindings>
 	</jxb:bindings>
 
