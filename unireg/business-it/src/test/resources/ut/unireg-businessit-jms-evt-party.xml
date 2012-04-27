@@ -10,6 +10,7 @@
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 			</util:map>
 		</property>
 	</bean>
@@ -32,6 +33,10 @@
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="numberRequestHandler" class="ch.vd.uniregctb.evenement.party.NumbersRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
 </beans>

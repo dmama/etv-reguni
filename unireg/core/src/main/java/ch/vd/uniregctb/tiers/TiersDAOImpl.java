@@ -568,6 +568,55 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Long> getAllIdsFor(boolean includeCancelled, TypeTiers... types) {
+		final StringBuilder whereClause = new StringBuilder();
+		whereClause.append("where 1=1");
+
+		// condition sur l'état annulé
+		if (!includeCancelled) {
+			whereClause.append(" and tiers.annulationDate is null");
+		}
+
+		// conditions sur les types
+		if (types != null && types.length != 0) {
+			whereClause.append(" and tiers.class in (");
+			boolean first = true;
+			for (TypeTiers t : types) {
+				if (!first) {
+					whereClause.append(", ");
+				}
+				whereClause.append(typeToSimpleClassname(t));
+				first = false;
+			}
+			whereClause.append(")");
+		}
+
+		return getHibernateTemplate().find("select tiers.numero from Tiers as tiers " + whereClause);
+	}
+
+	private static String typeToSimpleClassname(TypeTiers type) {
+		switch (type) {
+		case AUTRE_COMMUNAUTE:
+			return AutreCommunaute.class.getSimpleName();
+		case COLLECTIVITE_ADMINISTRATIVE:
+			return CollectiviteAdministrative.class.getSimpleName();
+		case DEBITEUR_PRESTATION_IMPOSABLE:
+			return DebiteurPrestationImposable.class.getSimpleName();
+		case ENTREPRISE:
+			return Entreprise.class.getSimpleName();
+		case ETABLISSEMENT:
+			return Etablissement.class.getSimpleName();
+		case MENAGE_COMMUN:
+			return MenageCommun.class.getSimpleName();
+		case PERSONNE_PHYSIQUE:
+			return PersonnePhysique.class.getSimpleName();
+		default:
+			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + "]");
+		}
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getDirtyIds() {
@@ -728,9 +777,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return getPPByNumeroIndividu(numeroIndividu, true, doNotAutoFlush);
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long, boolean)
-	 */
 	@Override
 	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu, boolean doNotAutoFlush) {
 		return getPPByNumeroIndividu(numeroIndividu, false, doNotAutoFlush);
@@ -968,9 +1014,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.tiers.TiersDAO#getPPByNumeroIndividu(java.lang.Long)
-	 */
 	@Override
 	public PersonnePhysique getPPByNumeroIndividu(long numeroIndividu) {
 		return getPPByNumeroIndividu(numeroIndividu, false);

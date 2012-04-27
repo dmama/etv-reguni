@@ -1496,37 +1496,37 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testGetListContribuablesModifies() throws Exception{
+	public void testGetListContribuablesModifies() throws Exception {
 
 		loadDatabase("tiersCtbModifies.xml");
 		final Date debut = DateHelper.getDate(2010, 12, 21);
 
 		final Calendar cal = DateHelper.getCalendar(2010, 12, 21);
-		cal.add(Calendar.SECOND,6);
+		cal.add(Calendar.SECOND, 6);
 		final Date fin1 = cal.getTime();
 
-		List<Long> listId = tiersDAO.getListeCtbModifies(debut,fin1);
+		List<Long> listId = tiersDAO.getListeCtbModifies(debut, fin1);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(1, listId.size());
 
 		cal.add(Calendar.MINUTE, 35);
 		final Date fin2 = cal.getTime();
 
-		listId = tiersDAO.getListeCtbModifies(debut,fin2);
+		listId = tiersDAO.getListeCtbModifies(debut, fin2);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(2, listId.size());
 
 		cal.add(Calendar.HOUR_OF_DAY, 16);
 		final Date fin3 = cal.getTime();
 
-		listId = tiersDAO.getListeCtbModifies(debut,fin3);
+		listId = tiersDAO.getListeCtbModifies(debut, fin3);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(3, listId.size());
 
 		cal.add(Calendar.DAY_OF_WEEK, 1);
 		final Date fin4 = cal.getTime();
 
-		listId = tiersDAO.getListeCtbModifies(debut,fin4);
+		listId = tiersDAO.getListeCtbModifies(debut, fin4);
 		Assert.assertNotNull(listId);
 		Assert.assertEquals(4, listId.size());
 	}
@@ -1617,6 +1617,206 @@ public class TiersDAOTest extends CoreDAOTest {
 
 	private void assertTiersEquals(Tiers expected, Tiers actual) {
 		assertTrue("Le n°" + expected.getId() + " n'est pas égal au tiers n°" + actual.getId(), expected.equalsTo(actual));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAllIdsFor() throws Exception {
+
+		class Ids {
+			long pp0;
+			long pp1;
+			long menage0;
+			long menage1;
+			long etablissement0;
+			long etablissement1;
+			long entreprise0;
+			long entreprise1;
+			long debiteur0;
+			long debiteur1;
+			long colladm0;
+			long colladm1;
+			long autre0;
+			long autre1;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique pp0 = addNonHabitant("Marie", "Gooert", date(1965, 3, 22), Sexe.FEMININ);
+				PersonnePhysique pp1 = addNonHabitant("Georgette", "van Zum", date(1934, 4, 19), Sexe.FEMININ);
+				pp1.setAnnule(true);
+
+				MenageCommun menage0 = addMenageCommun(null);
+				MenageCommun menage1 = addMenageCommun(null);
+				menage1.setAnnule(true);
+
+				Etablissement etablissement0 = addEtablissement(null);
+				Etablissement etablissement1 = addEtablissement(null);
+				etablissement1.setAnnule(true);
+
+				Entreprise entreprise0 = addEntreprise(423L);
+				Entreprise entreprise1 = addEntreprise(424L);
+				entreprise1.setAnnule(true);
+
+				DebiteurPrestationImposable debiteur0 = addDebiteur();
+				DebiteurPrestationImposable debiteur1 = addDebiteur();
+				debiteur1.setAnnule(true);
+
+				CollectiviteAdministrative colladm0 = addCollAdm(0);
+				CollectiviteAdministrative colladm1 = addCollAdm(1);
+				colladm1.setAnnule(true);
+
+				AutreCommunaute autre0 = addAutreCommunaute("dollar est ton dieu");
+				AutreCommunaute autre1 = addAutreCommunaute("en voilà un qui voit");
+				autre1.setAnnule(true);
+
+				ids.pp0 = pp0.getNumero();
+				ids.pp1 = pp1.getNumero();
+				ids.menage0 = menage0.getNumero();
+				ids.menage1 = menage1.getNumero();
+				ids.etablissement0 = etablissement0.getNumero();
+				ids.etablissement1 = etablissement0.getNumero();
+				ids.entreprise0 = entreprise0.getNumero();
+				ids.entreprise1 = entreprise1.getNumero();
+				ids.debiteur0 = debiteur0.getNumero();
+				ids.debiteur1 = debiteur1.getNumero();
+				ids.colladm0 = colladm0.getNumero();
+				ids.colladm1 = colladm1.getNumero();
+				ids.autre0 = autre0.getNumero();
+				ids.autre1 = autre1.getNumero();
+				return null;
+			}
+		});
+
+		// tous les ids, y compris les annulés
+		{
+			final List<Long> allIds = tiersDAO.getAllIdsFor(true);
+			assertNotNull(allIds);
+			assertEquals(14, allIds.size());
+			assertTrue(allIds.containsAll(
+					Arrays.asList(ids.pp0, ids.pp1, ids.menage0, ids.menage1, ids.etablissement0, ids.etablissement1, ids.entreprise0, ids.entreprise1, ids.debiteur0, ids.debiteur1, ids.colladm0,
+							ids.colladm1, ids.autre0, ids.autre1)));
+
+			// variante
+			final List<Long> allIds2 =
+					tiersDAO.getAllIdsFor(true, TypeTiers.AUTRE_COMMUNAUTE, TypeTiers.COLLECTIVITE_ADMINISTRATIVE, TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE, TypeTiers.ENTREPRISE,
+							TypeTiers.ETABLISSEMENT,
+							TypeTiers.MENAGE_COMMUN, TypeTiers.PERSONNE_PHYSIQUE);
+			assertNotNull(allIds2);
+			assertEquals(14, allIds2.size());
+			assertTrue(allIds2.containsAll(
+					Arrays.asList(ids.pp0, ids.pp1, ids.menage0, ids.menage1, ids.etablissement0, ids.etablissement1, ids.entreprise0, ids.entreprise1, ids.debiteur0, ids.debiteur1, ids.colladm0,
+							ids.colladm1, ids.autre0, ids.autre1)));
+		}
+
+		// tous les ids, sans les annulés
+		{
+			final List<Long> allIds = tiersDAO.getAllIdsFor(false);
+			assertNotNull(allIds);
+			assertEquals(7, allIds.size());
+			assertTrue(allIds.containsAll(Arrays.asList(ids.pp0, ids.menage0, ids.etablissement0, ids.entreprise0, ids.debiteur0, ids.colladm0, ids.autre0)));
+
+			// variante
+			final List<Long> allIds2 =
+					tiersDAO.getAllIdsFor(false, TypeTiers.AUTRE_COMMUNAUTE, TypeTiers.COLLECTIVITE_ADMINISTRATIVE, TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE, TypeTiers.ENTREPRISE, TypeTiers.ETABLISSEMENT,
+							TypeTiers.MENAGE_COMMUN, TypeTiers.PERSONNE_PHYSIQUE);
+			assertNotNull(allIds2);
+			assertEquals(7, allIds2.size());
+			assertTrue(allIds2.containsAll(Arrays.asList(ids.pp0, ids.menage0, ids.etablissement0, ids.entreprise0, ids.debiteur0, ids.colladm0, ids.autre0)));
+		}
+
+		// les ids de toutes les personnes physiques
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.PERSONNE_PHYSIQUE);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.pp0, ids.pp1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.PERSONNE_PHYSIQUE);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.pp0));
+		}
+
+		// les ids de toutes les ménages communs
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.MENAGE_COMMUN);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.menage0, ids.menage1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.MENAGE_COMMUN);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.menage0));
+		}
+
+		// les ids de toutes les établissements
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.ETABLISSEMENT);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.etablissement0, ids.etablissement1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.ETABLISSEMENT);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.etablissement0));
+		}
+
+		// les ids de toutes les débiteurs
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.debiteur0, ids.debiteur1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.DEBITEUR_PRESTATION_IMPOSABLE);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.debiteur0));
+		}
+
+		// les ids de toutes les entreprises
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.ENTREPRISE);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.entreprise0, ids.entreprise1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.ENTREPRISE);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.entreprise0));
+		}
+
+		// les ids de toutes les collectivités administratives
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.COLLECTIVITE_ADMINISTRATIVE);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.colladm0, ids.colladm1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.COLLECTIVITE_ADMINISTRATIVE);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.colladm0));
+		}
+
+		// les ids de toutes les autres communautés
+		{
+			final List<Long> all = tiersDAO.getAllIdsFor(true, TypeTiers.AUTRE_COMMUNAUTE);
+			assertNotNull(all);
+			assertEquals(2, all.size());
+			assertTrue(all.containsAll(Arrays.asList(ids.autre0, ids.autre1)));
+
+			final List<Long> active = tiersDAO.getAllIdsFor(false, TypeTiers.AUTRE_COMMUNAUTE);
+			assertNotNull(active);
+			assertEquals(1, active.size());
+			assertTrue(active.contains(ids.autre0));
+		}
 	}
 
 	@SuppressWarnings({"unchecked", "UnusedAssignment"})

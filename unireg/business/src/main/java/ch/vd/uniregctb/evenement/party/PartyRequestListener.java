@@ -34,7 +34,6 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
-import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -109,7 +108,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
-		return element == null ? null : (AddressRequest) element.getValue();
+		return element == null ? null : (Request) element.getValue();
 	}
 
 	private Schema getRequestSchema() throws SAXException, IOException {

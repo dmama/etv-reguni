@@ -33,6 +33,7 @@ import org.dbunit.operation.DatabaseOperation;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -859,7 +860,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return ensemble;
 	}
 
-	protected MenageCommun addMenageCommun(Long noTiers) {
+	protected MenageCommun addMenageCommun(@Nullable Long noTiers) {
 		MenageCommun menage = new MenageCommun();
 		menage.setNumero(noTiers);
 		menage = hibernateTemplate.merge(menage);
@@ -934,7 +935,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
-	protected Etablissement addEtablissement(Long numero) {
+	protected Etablissement addEtablissement(@Nullable Long numero) {
 		Etablissement eta = new Etablissement();
 		eta.setNumero(numero);
 		eta = hibernateTemplate.merge(eta);
@@ -955,7 +956,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		return dpi;
 	}
 
-	protected Entreprise addEntreprise(Long numeroEntreprise) {
+	protected Entreprise addEntreprise(@NotNull Long numeroEntreprise) {
 		Entreprise ent = new Entreprise();
 		ent.setNumero(numeroEntreprise);
 		ent = hibernateTemplate.merge(ent);
