@@ -640,7 +640,7 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	@Override
 	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
-		if (individu != null) {
+		if (individu != null && !individu.isNonHabitantNonRenvoye()) {
 			// on fait la copie avec les parts demandées seulements
 			final Set<AttributeIndividu> parts;
 			if (parties == null) {

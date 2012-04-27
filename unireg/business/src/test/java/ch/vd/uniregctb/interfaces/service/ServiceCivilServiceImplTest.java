@@ -13,6 +13,7 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
@@ -446,5 +447,40 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertNull(domicile.getDateFin());
 			assertNull(domicile.getCommune());
 		}
+	}
+
+	/**
+	 * C'est le cas du marié avec un non-habitant RCPers : la relation est bien renvoyée par le service
+	 * avec un numéro d'individu pour le conjoint, mais le GetPerson ne renvoie personne pour ce conjoint...
+	 */
+	@Test
+	public void testIndividuAvecRelationVersConjointQueLeServiceNeRenvoiePas() throws Exception {
+
+		final long noIndividuPresent = 1564236767L;
+		final long noIndividuConjointAbsent = 3254625426L;
+		final RegDate dateMariage = date(1989, 4, 9);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu present = addIndividu(noIndividuPresent, null, "Flintstone", "Henry", true);
+				final MockIndividu absent = addIndividu(noIndividuConjointAbsent, null, "Flintstone", "Missing", false);
+				absent.setNonHabitantNonRenvoye(true);
+				marieIndividus(present, absent, dateMariage);
+			}
+		});
+
+		// on connait le numéro d'individu du conjoint
+		final Long noIndividuConjoint = serviceCivil.getNumeroIndividuConjoint(noIndividuPresent, null);
+		assertNotNull(noIndividuConjoint);
+		assertEquals((long) noIndividuConjoint, noIndividuConjointAbsent);
+
+		// mais le service civil ne le renvoie pas
+		final Individu individuNonTrouve = serviceCivil.getIndividu(noIndividuConjointAbsent, null);
+		assertNull(individuNonTrouve);
+
+		// ni là non plus...
+		final Individu conjoint = serviceCivil.getConjoint(noIndividuPresent, null);
+		assertNull(conjoint);
 	}
 }

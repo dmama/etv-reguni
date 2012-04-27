@@ -49,6 +49,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private boolean sexeMasculin;
 	private RegDate dateArriveeVD;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
+	private boolean nonHabitantNonRenvoye = false;
 
 	public MockIndividu() {
 		// à priori, toutes les parts *peuvent* être renseignées
@@ -321,6 +322,14 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	public void setSexeMasculin(boolean sexeMasculin) {
 		this.sexeMasculin = sexeMasculin;
+	}
+
+	public boolean isNonHabitantNonRenvoye() {
+		return nonHabitantNonRenvoye;
+	}
+
+	public void setNonHabitantNonRenvoye(boolean nonHabitantNonRenvoye) {
+		this.nonHabitantNonRenvoye = nonHabitantNonRenvoye;
 	}
 
 	@Override
