@@ -130,6 +130,13 @@ public class Deces extends EvenementCivilInterne {
 		 * Validations métier
 		 */
 		ValidationResults validationResults = context.getMetierService().validateDeces(defunt, getDate());
+
+		/*
+		 * Verification de la redondance eventuell
+		 */
+		if (!validationResults.getErrors().isEmpty()) {
+
+		}
 		addValidationResults(erreurs, warnings, validationResults);
 	}
 
