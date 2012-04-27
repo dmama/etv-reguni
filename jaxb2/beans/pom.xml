@@ -128,6 +128,17 @@
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<!-- BEGIN_LVERSION -->
+					<finalName>PartyService1_1.3-SNAPSHOT</finalName>
+					<!-- END_LVERSION -->
+					<descriptors>
+						<descriptor>release_partyservice1.xml</descriptor>
+					</descriptors>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
