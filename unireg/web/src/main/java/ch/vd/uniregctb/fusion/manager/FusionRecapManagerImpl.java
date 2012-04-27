@@ -5,12 +5,10 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.fusion.view.FusionRecapView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -27,10 +25,6 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 
 	private TiersService tiersService;
 
-	private AdresseService adresseService;
-
-	private HostCivilService hostCivilService;
-
 	private MessageSource messageSource;
 
 	public TiersService getTiersService() {
@@ -40,24 +34,6 @@ public class FusionRecapManagerImpl implements FusionRecapManager, MessageSource
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
-
-	public AdresseService getAdresseService() {
-		return adresseService;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
-	public HostCivilService getHostCivilService() {
-		return hostCivilService;
-	}
-
-
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
-	}
-
 
 	public TiersGeneralManager getTiersGeneralManager() {
 		return tiersGeneralManager;

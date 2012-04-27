@@ -93,7 +93,7 @@
 	<bean id="tiersManager" class="ch.vd.uniregctb.tiers.manager.TiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
-		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="webCivilService" ref="webCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="hostPersonneMoraleService" ref="hostPersonneMoraleService" />
 		<property name="adresseService" ref="adresseService" />
@@ -132,7 +132,6 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="lrDAO" ref="lrDAO" />
-		<property name="hostCivilService" ref="hostCivilService" />
 	</bean>
 
 	<bean id="diVisuController" class="ch.vd.uniregctb.tiers.DeclarationImpotVisuController" parent="abstractTiersController">
@@ -145,9 +144,7 @@
 	</bean>
 	
 	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="diDAO" ref="diDAO" />
-		<property name="hostCivilService" ref="hostCivilService" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 	</bean>
 	

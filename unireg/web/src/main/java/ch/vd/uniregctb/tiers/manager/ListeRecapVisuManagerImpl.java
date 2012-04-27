@@ -18,7 +18,6 @@ import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -38,8 +37,6 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 	private TiersGeneralManager tiersGeneralManager;
 
 	private ListeRecapitulativeDAO lrDAO;
-
-	private HostCivilService hostCivilService;
 
 	private MessageSource messageSource;
 
@@ -82,28 +79,12 @@ public class ListeRecapVisuManagerImpl implements ListeRecapVisuManager,MessageS
 		return lrView;
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
 
-	public ListeRecapitulativeDAO getLrDAO() {
-		return lrDAO;
-	}
-
 	public void setLrDAO(ListeRecapitulativeDAO lrDAO) {
 		this.lrDAO = lrDAO;
-	}
-
-	public HostCivilService getHostCivilService() {
-		return hostCivilService;
-	}
-
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
 	}
 
 	public TiersGeneralManager getTiersGeneralManager() {

@@ -21,7 +21,7 @@
 	</bean>
 
     <bean id ="evtCivManager" abstract="true">
-		<property name="hostCivilService" ref="hostCivilService" />
+		<property name="webCivilService" ref="webCivilService" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />

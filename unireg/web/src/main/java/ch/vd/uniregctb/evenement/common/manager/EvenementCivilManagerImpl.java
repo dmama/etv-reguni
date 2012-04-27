@@ -15,8 +15,8 @@ import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
 import ch.vd.uniregctb.evenement.common.view.TiersAssocieView;
-import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
+import ch.vd.uniregctb.individu.WebCivilService;
 import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -44,12 +44,12 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 	protected ServiceCivilService serviceCivilService;
 	protected ServiceInfrastructureService serviceInfrastructureService;
 	protected MessageSource messageSource;
-	protected HostCivilService hostCivilService;
+	protected WebCivilService webCivilService;
 	private final Logger LOGGER = Logger.getLogger(EvenementCivilManagerImpl.class);
 
 	@SuppressWarnings("unused")
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
+	public void setWebCivilService(WebCivilService webCivilService) {
+		this.webCivilService = webCivilService;
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -139,7 +139,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 	}
 
 	protected IndividuView retrieveIndividu(Long numeroIndividu) {
-		return hostCivilService.getIndividu(numeroIndividu);
+		return webCivilService.getIndividu(numeroIndividu);
 	}
 
 	protected void retrieveTiersAssocieMenage(Long idEvenement, Long numeroIndividu, EvenementCivilDetailView evtView) throws AdresseException {

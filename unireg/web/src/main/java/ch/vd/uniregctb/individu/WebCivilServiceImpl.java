@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
@@ -17,7 +16,6 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -27,9 +25,9 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * @author Francois Dardare
  *
  */
-public class HostCivilServiceImpl implements HostCivilService, MessageSourceAware {
+public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware {
 
-	//private static final Logger LOGGER = Logger.getLogger(HostCivilServiceImpl.class);
+	//private static final Logger LOGGER = Logger.getLogger(WebCivilServiceImpl.class);
 
 	private ServiceCivilService serviceCivilService;
 
@@ -57,19 +55,13 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
-		IndividuView indCible = null;
-
-		Individu indSource = getServiceCivilService().getIndividu(numeroIndividu, null);
-
+		final Individu indSource = getServiceCivilService().getIndividu(numeroIndividu, null);
 		if (indSource == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
-		if (indSource != null) {
-			// Copie les données de l'individu
-			indCible = alimenteIndividuView(indSource);
-		}
-		return indCible;
+		// Copie les données de l'individu
+		return alimenteIndividuView(indSource);
 	}
 
 	/**
@@ -78,8 +70,7 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 * @return
 	 */
 	private IndividuView alimenteIndividuView(Individu indSource) {
-		IndividuView indCible = null;
-		indCible = new IndividuView();
+		final IndividuView indCible = new IndividuView();
 		indCible.setNumeroIndividu(indSource.getNoTechnique());
 		indCible.setNom(indSource.getNom());
 		indCible.setPrenom(indSource.getPrenom());
@@ -105,11 +96,13 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 	 */
 	private void traiteSexe(Individu indSource, IndividuView indCible) {
 
-		Sexe sexe;
-		if (indSource.isSexeMasculin())
+		final Sexe sexe;
+		if (indSource.isSexeMasculin()) {
 			sexe = Sexe.MASCULIN;
-		else
+		}
+		else {
 			sexe = Sexe.FEMININ;
+		}
 		indCible.setSexe(sexe);
 	}
 
@@ -193,43 +186,6 @@ public class HostCivilServiceImpl implements HostCivilService, MessageSourceAwar
 			}
 			indCible.setNationalite(b.toString());
 		}
-	}
-
-	/**
-	 * Retour le nom (et prénom) de l'utilisateur en fonction du numero d'individu
-	 * @param numeroIndividu
-	 * @return
-	 */
-	@Override
-	public String getNomUtilisateur(Long numeroIndividu) {
-
-		final String nomUtilisateur;
-		if (numeroIndividu != null) {
-			final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null);
-			if (indSource == null) {
-				throw new IndividuNotFoundException(numeroIndividu);
-			}
-			final String nom = indSource.getNom();
-			final String prenom = indSource.getPrenom();
-			final boolean blankNom = StringUtils.isBlank(nom);
-			final boolean blankPrenom = StringUtils.isBlank(prenom);
-			if (!blankNom && !blankPrenom) {
-				nomUtilisateur = String.format("%s %s", prenom.trim(), nom.trim());
-			}
-			else if (!blankNom) {
-				nomUtilisateur = nom.trim();
-			}
-			else if (!blankPrenom) {
-				nomUtilisateur = prenom.trim();
-			}
-			else {
-				nomUtilisateur = "";
-			}
-		}
-		else {
-			nomUtilisateur = "";
-		}
-		return nomUtilisateur;
 	}
 
 	/**

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.individu;
 
 
-public interface HostCivilService {
+public interface WebCivilService {
 
 	/**
 	 * Alimente une vue IndividuView en fonction du numero d'individu
@@ -9,12 +9,5 @@ public interface HostCivilService {
 	 * @return un objet IndividuView
 	 */
 	public IndividuView getIndividu(Long numeroIndividu);
-
-	/**
-	 * Retour l'utilisateur en fonction du numero d'individu
-	 * @param numeroIndividu
-	 * @return
-	 */
-	public String getNomUtilisateur(Long numeroIndividu) ;
 
 }

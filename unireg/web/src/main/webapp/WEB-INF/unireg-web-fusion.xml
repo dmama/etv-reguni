@@ -37,8 +37,6 @@
 	<bean id="fusionRecapManager" class="ch.vd.uniregctb.fusion.manager.FusionRecapManagerImpl">
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="adresseService" ref="adresseService" />
-		<property name="hostCivilService" ref="hostCivilService" />
 	</bean>
 
 </beans>

@@ -63,7 +63,7 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<bean id="hostCivilService" class="ch.vd.uniregctb.individu.HostCivilServiceImpl">
+	<bean id="webCivilService" class="ch.vd.uniregctb.individu.WebCivilServiceImpl">
 		<property name="serviceCivilService" ref="serviceCivilService" />
 	</bean>
 

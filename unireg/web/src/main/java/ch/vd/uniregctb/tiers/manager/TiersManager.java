@@ -45,8 +45,8 @@ import ch.vd.uniregctb.entreprise.HostPersonneMoraleService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.individu.HostCivilService;
 import ch.vd.uniregctb.individu.IndividuView;
+import ch.vd.uniregctb.individu.WebCivilService;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
@@ -123,7 +123,7 @@ public class TiersManager implements MessageSourceAware {
 
 	private final List<TypeAdresseCivil> typesAdressesCiviles = Arrays.asList(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE, TypeAdresseCivil.SECONDAIRE, TypeAdresseCivil.TUTEUR);
 
-	private HostCivilService hostCivilService;
+	private WebCivilService webCivilService;
 
 	private HostPersonneMoraleService hostPersonneMoraleService;
 
@@ -163,7 +163,7 @@ public class TiersManager implements MessageSourceAware {
 		IndividuView individuView = null;
 		Long noIndividu = habitant.getNumeroIndividu();
 		if (noIndividu != null) {
-			individuView = hostCivilService.getIndividu(noIndividu);
+			individuView = webCivilService.getIndividu(noIndividu);
 		}
 		if (habitant.getDateDeces() != null && individuView != null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
@@ -1196,8 +1196,8 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
+	public void setWebCivilService(WebCivilService webCivilService) {
+		this.webCivilService = webCivilService;
 	}
 
 	public TiersDAO getTiersDAO() {

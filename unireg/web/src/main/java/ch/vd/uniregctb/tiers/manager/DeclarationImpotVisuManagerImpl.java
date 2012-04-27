@@ -10,8 +10,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.individu.HostCivilService;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -24,11 +22,7 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 
 	private TiersGeneralManager tiersGeneralManager;
 
-	private TiersDAO tiersDAO ;
-
 	private DeclarationImpotOrdinaireDAO diDAO;
-
-	private HostCivilService hostCivilService;
 
 	private MessageSource messageSource;
 
@@ -55,28 +49,8 @@ public class DeclarationImpotVisuManagerImpl implements DeclarationImpotVisuMana
 		return diView;
 	}
 
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
-	public DeclarationImpotOrdinaireDAO getDiDAO() {
-		return diDAO;
-	}
-
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
-	}
-
-	public HostCivilService getHostCivilService() {
-		return hostCivilService;
-	}
-
-	public void setHostCivilService(HostCivilService hostCivilService) {
-		this.hostCivilService = hostCivilService;
 	}
 
 	public TiersGeneralManager getTiersGeneralManager() {
