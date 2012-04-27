@@ -10,6 +10,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
@@ -84,6 +85,13 @@ public abstract class XmlUtils {
 		final int month = (date.month() == RegDate.UNDEFINED ? DatatypeConstants.FIELD_UNDEFINED : date.month());
 		final int day = (date.day() == RegDate.UNDEFINED ? DatatypeConstants.FIELD_UNDEFINED : date.day());
 		return getDataTypeFactory().newXMLGregorianCalendar(year, month, day, 0, 0, 0, 0, DatatypeConstants.FIELD_UNDEFINED);
+	}
+
+	public static XMLGregorianCalendar date2xmlcal(Date date) {
+		if (date == null) {
+			return null;
+		}
+		return getDataTypeFactory().newXMLGregorianCalendar(new GregorianCalendar());
 	}
 
 	private static DatatypeFactory getDataTypeFactory() {

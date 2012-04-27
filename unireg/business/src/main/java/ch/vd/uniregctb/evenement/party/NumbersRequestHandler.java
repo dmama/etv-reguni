@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.party;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +14,7 @@ import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
 import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -40,6 +42,7 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 		// on récupère les ids demandés
 		final List<PartyType> types = request.getTypes();
 		final TypeTiers[] tiersTypes = party2tiers(types);
+		final Date time = new Date();
 		final List<Long> ids = tiersDAO.getAllIdsFor(request.isIncludeCancelled(), tiersTypes);
 
 		// construction de la réponse
@@ -47,6 +50,8 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 		if (types != null) {
 			response.getTypes().addAll(types);
 		}
+		response.setTimestamp(XmlUtils.date2xmlcal(time));
+		response.setIncludeCancelled(request.isIncludeCancelled());
 		response.getIds().addAll(long2Int(ids));
 
 		return response;

@@ -26,6 +26,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -155,6 +156,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			{
 				final NumbersResponse response = (NumbersResponse) handler.handle(request);
 				assertNotNull(response);
+				assertFalse(response.isIncludeCancelled());
 
 				final List<PartyType> types = response.getTypes();
 				assertNotNull(types);
@@ -172,6 +174,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			{
 				final NumbersResponse response = (NumbersResponse) handler.handle(request);
 				assertNotNull(response);
+				assertTrue(response.isIncludeCancelled());
 
 				final List<PartyType> types = response.getTypes();
 				assertNotNull(types);
