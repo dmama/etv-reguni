@@ -137,13 +137,18 @@ public class Deces extends EvenementCivilInterne {
 			/*
 			 * Détection de la redondance pour les evenements venant de Rcpers.
 			 *    -> L'evenement de deces peut être redondant si l'evenement de veuvage de son conjoint a été traité avant
-			 *    -> TODO FRED à tester le cas ou les 2 conjoints décédent le même jour
 			 */
 			if (fromRcpers) {
 				final ForFiscalPrincipal ffpMenage = menage.getForFiscalPrincipalAt(getDate());
+				final ForFiscalPrincipal ffpDefunt = defunt.getForFiscalPrincipalAt(getDate().getOneDayAfter());
 				if (ffpMenage != null && ffpMenage.getMotifFermeture() == MotifFor.VEUVAGE_DECES && getDate().equals(ffpMenage.getDateFin())) {
 					// L'événement est redondant si le for fiscal principal du couple est fermé à la date de déces avec un motif veuvage décés
 					isRedondant = true;
+					if (ffpDefunt != null && ffpDefunt.getMotifOuverture() == MotifFor.VEUVAGE_DECES && getDate().getOneDayAfter().equals(ffpDefunt.getDateDebut())) {
+					// sauf dans le cas ou le défunt est veuf depuis le lendemain du jour de son déces ( on est dans le cas ou les 2 conjoints sont mort le même jour)
+						isRedondant = false;
+					}
+
 				}
 			}
 		}
