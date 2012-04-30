@@ -108,7 +108,6 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 	 * celui-ci est en erreur alors qu'il serait plus judicieux qu'il soit redondant si sont for est
 	 * cohérent (fermé pour motif décès).
 	 *
-	 * TODO FRED LE TEST ILLUSTRE LE COMPORTEMENT ACTUEL ET NON LE COMPORTEMENT SOUHAITER APRES LA CORRECTION
 	 */
 	@Test(timeout = 10000L)
 	public void testEvenementDecesArriveApresEvenementChangementEtatCivilDuSurvivant () throws Exception {
@@ -229,7 +228,7 @@ public class DecesEchProcessorTest extends AbstractEvenementCivilEchProcessorTes
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(decesId);
 				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat()); // TODO FRED Apres correction du comportement l'état devra etre REDONDANT
+				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 				return null;
 			}
 		});

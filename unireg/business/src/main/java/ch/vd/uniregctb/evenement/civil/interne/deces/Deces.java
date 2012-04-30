@@ -21,8 +21,10 @@ import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Modélise un événement de décès.
@@ -33,19 +35,25 @@ public class Deces extends EvenementCivilInterne {
 
 	protected static Logger LOGGER = Logger.getLogger(Deces.class);
 
+	private final boolean fromRcpers;
+	private boolean isRedondant = false;
+
 	/**
 	 * Le conjoint Survivant.
 	 */
 	private Individu conjointSurvivant;
 
+
 	protected Deces(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		conjointSurvivant = context.getServiceCivil().getConjoint(evenement.getNumeroIndividuPrincipal(), evenement.getDateEvenement().getOneDayBefore());
+		this.fromRcpers = false;
 	}
 
 	protected Deces(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		conjointSurvivant = context.getServiceCivil().getConjoint(evenement.getNumeroIndividu(), evenement.getDateEvenement().getOneDayBefore());
+		this.fromRcpers = true;
 	}
 
 	/**
@@ -55,6 +63,7 @@ public class Deces extends EvenementCivilInterne {
 	protected Deces(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 		this.conjointSurvivant = conjoint;
+		this.fromRcpers = false;
 	}
 
 	public Individu getConjointSurvivant() {
@@ -124,6 +133,19 @@ public class Deces extends EvenementCivilInterne {
 			if (menage == null) {
 				throw new EvenementCivilException("Le tiers ménage commun n'a pu être trouvé");
 			}
+
+			/*
+			 * Détection de la redondance pour les evenements venant de Rcpers.
+			 *    -> L'evenement de deces peut être redondant si l'evenement de veuvage de son conjoint a été traité avant
+			 *    -> TODO FRED à tester le cas ou les 2 conjoints décédent le même jour
+			 */
+			if (fromRcpers) {
+				final ForFiscalPrincipal ffpMenage = menage.getForFiscalPrincipalAt(getDate());
+				if (ffpMenage != null && ffpMenage.getMotifFermeture() == MotifFor.VEUVAGE_DECES && getDate().equals(ffpMenage.getDateFin())) {
+					// L'événement est redondant si le for fiscal principal du couple est fermé à la date de déces avec un motif veuvage décés
+					isRedondant = true;
+				}
+			}
 		}
 
 		/*
@@ -131,18 +153,16 @@ public class Deces extends EvenementCivilInterne {
 		 */
 		ValidationResults validationResults = context.getMetierService().validateDeces(defunt, getDate());
 
-		/*
-		 * Verification de la redondance eventuell
-		 */
-		if (!validationResults.getErrors().isEmpty()) {
-
-		}
 		addValidationResults(erreurs, warnings, validationResults);
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+
+		if (isRedondant) {
+			return HandleStatus.REDONDANT;
+		}
 
 		/*
 		 * Obtention du tiers correspondant au defunt.
@@ -189,4 +209,5 @@ public class Deces extends EvenementCivilInterne {
 		}
 		return HandleStatus.TRAITE;
 	}
+
 }
