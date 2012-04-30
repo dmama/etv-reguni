@@ -2884,4 +2884,128 @@ public class MetiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * SIFISC-485 : un mariage doit pouvoir être saisi le jour du décès
+	 */
+	@Test
+	public void testMariageJourDuDeces() throws Exception {
+
+		final long noIndividu = 23781537537L;
+		final RegDate dateNaissance = date(1974, 1, 1);
+		final RegDate dateDeces = date(2010, 4, 16);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Frankenstein", "Junior", true);
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissance, null);
+				ind.setDateDeces(dateDeces);
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bex);
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateMariage = dateDeces;
+
+		// appel du service métier
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				try {
+					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, false, null);
+				}
+				catch (MetierServiceException e) {
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		});
+
+		// vérification de la création du ménage (juste pour voir s'il a fait quelque chose...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertEquals(dateDeces, tiersService.getDateDeces(pp));
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateMariage, ffp.getDateDebut());
+				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
+				assertEquals(dateDeces, ffp.getDateFin());
+				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-485 : un mariage doit pouvoir être saisi le jour du décès... mais pas le lendemain
+	 */
+	@Test
+	public void testMariageLendemainDuDeces() throws Exception {
+
+		final long noIndividu = 23781537537L;
+		final RegDate dateNaissance = date(1974, 1, 1);
+		final RegDate dateDeces = date(2010, 4, 16);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Frankenstein", "Junior", true);
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateNaissance, null);
+				ind.setDateDeces(dateDeces);
+			}
+		});
+
+		// mise en place fisccale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bex);
+				return pp.getNumero();
+			}
+		});
+
+		final RegDate dateMariage = dateDeces.getOneDayAfter();
+
+		// appel du service métier
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				try {
+					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, false, null);
+					fail("Mariage post-mortem interdit !");
+				}
+				catch (MetierServiceException e) {
+					assertEquals("Il n'est pas possible de créer un rapport d'appartenance ménage après la date de décès d'une personne physique", e.getMessage());
+				}
+				status.setRollbackOnly();
+				return null;
+			}
+		});
+	}
 }

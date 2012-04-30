@@ -12,6 +12,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreur;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
@@ -33,6 +34,7 @@ import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 
 public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 
@@ -548,6 +550,77 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 						" en date du 05.05.2005", erreurs.get(0).getMessage());
 				assertEquals("Le contribuable n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.madame) + " appartient déjà au ménage commun n° " + FormatNumeroHelper.numeroCTBToDisplay(ids.menage) +
 						" en date du 05.05.2005", erreurs.get(1).getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMariagePostMortem() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
+		final RegDate dateNaissanceMadame = date(1974, 8, 1);
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateDecesMonsieur = dateMariage.addDays(-5);
+
+		// création d'un ménage-commun marié au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissanceMonsieur, "Crispus", "Santacorpus", true);
+				final MockIndividu madame = addIndividu(noMadame, dateNaissanceMadame, "Lisette", "Bouton", false);
+				addNationalite(monsieur, MockPays.Suisse, dateNaissanceMonsieur, null);
+				addNationalite(madame, MockPays.Suisse, dateNaissanceMadame, null);
+				marieIndividus(monsieur, madame, dateMariage);
+			}
+		});
+
+		class Ids {
+			long monsieur;
+			long madame;
+		}
+
+		// création des personnes physiques, dont une est déjà décédée fiscalement
+		final Ids ids = doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Ids>() {
+			@Override
+			public Ids execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, dateNaissanceMonsieur.addYears(18), MotifFor.MAJORITE, dateDecesMonsieur, MotifFor.VEUVAGE_DECES, MockCommune.Echallens);
+				monsieur.setDateDeces(dateDecesMonsieur);       // décès fiscal, pas encore annoncé au civil
+
+				final PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, dateNaissanceMadame.addYears(18), MotifFor.MAJORITE, MockCommune.Chamblon);
+
+				final Ids ids = new Ids();
+				ids.monsieur = monsieur.getNumero();
+				ids.madame = madame.getNumero();
+				return ids;
+			}
+		});
+
+		// traitement de l'événement de mariage
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+
+				final Individu monsieur = serviceCivil.getIndividu(noMonsieur, dateMariage);
+				final Individu madame = serviceCivil.getIndividu(noMadame, dateMariage);
+				final Mariage mariage = createValidMariage(monsieur, madame, dateMariage);
+
+				final MessageCollector collector = buildMessageCollector();
+				mariage.validate(collector, collector);
+				assertEmpty(collector.getWarnings());
+				assertEmpty(collector.getErreurs());
+
+				try {
+					mariage.handle(collector);
+					fail("Le mariage devrait être interdit post-mortem !");
+				}
+				catch (EvenementCivilException e) {
+					assertEquals("Il n'est pas possible de créer un rapport d'appartenance ménage après la date de décès d'une personne physique", e.getMessage());
+				}
 				return null;
 			}
 		});
