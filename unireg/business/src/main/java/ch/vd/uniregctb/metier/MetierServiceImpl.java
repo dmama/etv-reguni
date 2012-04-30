@@ -1439,9 +1439,8 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	/**
-	 * (non-Javadoc)
 	 *
-	 * @see ch.vd.uniregctb.metier.MetierService#validateSeparation(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.tiers.PersonnePhysique, ch.vd.uniregctb.tiers.PersonnePhysique)
+	 * @see ch.vd.uniregctb.metier.MetierService#validateSeparation(ch.vd.uniregctb.tiers.MenageCommun, ch.vd.registre.base.date.RegDate)
 	 */
 	@Override
 	public ValidationResults validateSeparation(MenageCommun menage, RegDate date) {
@@ -1873,8 +1872,8 @@ public class MetierServiceImpl implements MetierService {
 			 */
 			PersonnePhysique veuf = menageComplet.getConjoint(defunt);
 
-			if (veuf != null && veuf.getForFiscalPrincipalAt(null) != null) {
-				results.addError("Le conjoint survivant possède un for fiscal principal actif");
+			if (veuf != null && veuf.getForFiscalPrincipalAt(date) != null) {
+				results.addError("Le conjoint survivant possède un for fiscal principal actif à la date du déces");
 			}
 		}
 

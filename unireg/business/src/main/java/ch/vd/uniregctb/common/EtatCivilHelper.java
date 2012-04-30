@@ -1,21 +1,17 @@
 package ch.vd.uniregctb.common;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
-/**
- *
- * @author Pavel BLANCO
- *
- */
 public class EtatCivilHelper {
 
 	/**
-	 * Retourne true si l'état civil représente la valeur MARIE ou PACS
-	 * @param etatCivil
-	 * @return
+	 * @param etatCivil à tester
+	 * @return  true si l'état civil représente la valeur MARIE ou PACS
 	 */
-	public static boolean estMarieOuPacse(EtatCivil etatCivil) {
+	public static boolean estMarieOuPacse(@Nullable EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
@@ -23,11 +19,10 @@ public class EtatCivilHelper {
 	}
 
 	/**
-	 * Retourne true si l'état civil représente la valeur SEPARE ou PACS_INTERROMPU.
-	 * @param etatCivil
-	 * @return
+	 * @param etatCivil à tester
+	 * @return  true si l'état civil représente la valeur SEPARE ou PACS_INTERROMPU.
 	 */
-	public static boolean estSepare(EtatCivil etatCivil) {
+	public static boolean estSepare(@Nullable EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
@@ -35,11 +30,10 @@ public class EtatCivilHelper {
 	}
 
 	/**
-	 * Retourne true si l'état civil représente la valeur DIVORCE ou PACS_TERMINE.
-	 * @param etatCivil
-	 * @return
+	 * @param etatCivil à tester
+	 * @return  true si l'état civil représente la valeur DIVORCE ou PACS_TERMINE.
 	 */
-	public static boolean estDivorce(EtatCivil etatCivil) {
+	public static boolean estDivorce(@Nullable EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
@@ -49,7 +43,7 @@ public class EtatCivilHelper {
 	/**
 	 * @return <b>vrai</b> si l'état civil est VEUF; <b>faux</b> autrement.
 	 */
-	public static boolean estVeuf(EtatCivil etatCivil) {
+	public static boolean estVeuf(@Nullable EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
