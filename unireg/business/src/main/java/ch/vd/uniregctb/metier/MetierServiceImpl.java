@@ -275,7 +275,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement,
-	                                             boolean changeHabitantFlag, RegDate dateFermeture, MotifFor motifFermeture) throws MetierServiceException {
+	                                             boolean changeHabitantFlag) throws MetierServiceException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
 
@@ -495,24 +495,18 @@ public class MetierServiceImpl implements MetierService {
 
 			if (menageCommun.getForFiscalPrincipalAt(dateEffective) == null) {
 				/*
-				 * Cas ou l'on créé un nouveau ménage commun, il n'aura pas de for ouvert
+				 * Cas ou l'on créé un nouveau ménage commun, il aura pas de for ouvert
 				 */
-				if (dateFermeture != null) {
-					tiersService.openAndCloseForFiscalPrincipal(menageCommun, dateEffective, MotifRattachement.DOMICILE, noOfsCommune,
-					                                            typeAutoriteCommune, modeImposition, motifOuverture, dateFermeture, motifFermeture, changeHabitantFlag);
-				}
-				else {
-					tiersService.openForFiscalPrincipal(menageCommun, dateEffective, MotifRattachement.DOMICILE, noOfsCommune,
-					                                    typeAutoriteCommune, modeImposition, motifOuverture, changeHabitantFlag);
-				}
+				tiersService.openForFiscalPrincipal(menageCommun, dateEffective, MotifRattachement.DOMICILE, noOfsCommune,
+						typeAutoriteCommune, modeImposition, motifOuverture, changeHabitantFlag);
 			}
 
 			/*
 			 * réouverture des autres fors
 			 */
-			createForsSecondairesApresMariage(dateEffective, menageCommun, ffsPrincipal, ffsConjoint, motifOuverture, dateFermeture, motifFermeture);
-			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture, dateFermeture, motifFermeture);
-			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture, dateFermeture, motifFermeture);
+			createForsSecondairesApresMariage(dateEffective, menageCommun, ffsPrincipal, ffsConjoint, motifOuverture, null, null);
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiPrincipal, motifOuverture, null, null);
+			createForsAutreElementImpossable(dateEffective, menageCommun, ffaeiConjoint, motifOuverture, null, null);
 		}
 
 		if (!StringUtils.isBlank(remarque)) {
@@ -523,7 +517,7 @@ public class MetierServiceImpl implements MetierService {
 			addRemarque(menageCommun, remarque);
 		}
 
-		updateSituationFamilleMariage(menageCommun, dateEffective, etatCivilFamille, dateFermeture);
+		updateSituationFamilleMariage(menageCommun, dateEffective, etatCivilFamille);
 
 		return menageCommun;
 	}
@@ -684,7 +678,7 @@ public class MetierServiceImpl implements MetierService {
 		return retour;
 	}
 
-	private void updateSituationFamilleMariage(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, RegDate dateFermeture) {
+	private void updateSituationFamilleMariage(MenageCommun menageCommun, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {
 
 		/*
 		 * S'il y a un non-habitant dans le couple, la situation de
@@ -740,7 +734,6 @@ public class MetierServiceImpl implements MetierService {
 			SituationFamilleMenageCommun situationFamilleMenage = new SituationFamilleMenageCommun();
 			situationFamilleMenage.setContribuablePrincipalId(principal.getId());
 			situationFamilleMenage.setDateDebut(date);
-			situationFamilleMenage.setDateFin(dateFermeture);
 			situationFamilleMenage.setEtatCivil(etatCivilFamille);
 			situationFamilleMenage.setNombreEnfants(0);
 			situationFamilleMenage.setTarifApplicable(TarifImpotSource.NORMAL);
@@ -840,7 +833,6 @@ public class MetierServiceImpl implements MetierService {
 	                                    boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
 
 		final RegDate dateFinRapport = getDateMaxRapportPourCauseDeces(principal, conjoint);
-		final MotifFor motifFermetureFor = dateFinRapport == null ? null : MotifFor.VEUVAGE_DECES;
 
 		// date de fin avant date de début -> on ne peut pas créer de rapport valide!
 		if (dateFinRapport != null && dateFinRapport.isBefore(date)) {
@@ -851,15 +843,15 @@ public class MetierServiceImpl implements MetierService {
 		 * Création des rapports entre tiers ménage commun
 		 */
 		Audit.info("Création des rapports entre tiers ménage commun et tiers");
-		getTiersService().addTiersToCouple(menage, principal, date, dateFinRapport);
+		getTiersService().addTiersToCouple(menage, principal, date, null);
 		if (conjoint != null) {
-			getTiersService().addTiersToCouple(menage, conjoint, date, dateFinRapport);
+			getTiersService().addTiersToCouple(menage, conjoint, date, null);
 		}
 
 		/*
 		 * Mariage de 2 personnes
 		 */
-		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null, changeHabitantFlag, dateFinRapport, motifFermetureFor);
+		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null, changeHabitantFlag);
 	}
 
 	private boolean isValidSituationFamille(RegDate date, Contribuable contribuable) {
@@ -970,7 +962,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
-		updateSituationFamilleMariage(menage, date, etatCivilFamille, null);
+		updateSituationFamilleMariage(menage, date, etatCivilFamille);
 
 		if (!StringUtils.isBlank(remarque)) {
 			addRemarque(menage, remarque);
@@ -1111,7 +1103,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
-		updateSituationFamilleMariage(menageChoisi, dateDebut, etatCivilFamille, null);
+		updateSituationFamilleMariage(menageChoisi, dateDebut, etatCivilFamille);
 
 		// ajout de la remarque aux tiers mis à jour
 		if (!StringUtils.isBlank(remarque)) {
@@ -1396,7 +1388,6 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		final RegDate dateFinRapport = getDateMaxRapportPourCauseDeces(principal, conjoint);
-		final MotifFor motifFermetureFor = dateFinRapport == null ? null : MotifFor.VEUVAGE_DECES;
 
 		// date de fin avant date de début -> on ne peut pas créer de rapport valide!
 		if (dateFinRapport != null && dateFinRapport.isBefore(date)) {
@@ -1407,15 +1398,15 @@ public class MetierServiceImpl implements MetierService {
 		 * Réouverture des rapports entre tiers du ménage commun
 		 */
 		Audit.info(numeroEvenement, "Réouverture des rapports entre tiers ménage commun et tiers");
-		getTiersService().addTiersToCouple(menageCommun, principal, date, dateFinRapport);
+		getTiersService().addTiersToCouple(menageCommun, principal, date, null);
 		if (conjoint != null) {
-			getTiersService().addTiersToCouple(menageCommun, conjoint, date, dateFinRapport);
+			getTiersService().addTiersToCouple(menageCommun, conjoint, date, null);
 		}
 
 		/*
 		 * Réunification du couple
 		 */
-		return doMariageReconciliation(menageCommun, date, remarque, ch.vd.uniregctb.type.EtatCivil.MARIE, numeroEvenement, changeHabitantFlag, dateFinRapport, motifFermetureFor);
+		return doMariageReconciliation(menageCommun, date, remarque, ch.vd.uniregctb.type.EtatCivil.MARIE, numeroEvenement, changeHabitantFlag);
 	}
 
 

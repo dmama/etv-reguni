@@ -2950,8 +2950,8 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNotNull(ffp);
 				assertEquals(dateMariage, ffp.getDateDebut());
 				assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffp.getMotifOuverture());
-				assertEquals(dateDeces, ffp.getDateFin());
-				assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
+				assertNull(ffp.getDateFin());
+				assertNull(ffp.getMotifFermeture());
 
 				return null;
 			}
