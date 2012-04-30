@@ -169,7 +169,10 @@ public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 					if (a.getDateFinValidite() != null && a.getDateFinValidite().compareTo(upToJava) > 0) {
 						a = new AdresseWrapperSansDateFin(a);
 					}
-					this.adresses.add(AdresseImpl.get(a));
+					final AdresseImpl adr = AdresseImpl.get(a);
+					if (adr != null) {
+						this.adresses.add(adr);
+					}
 				}
 			}
 		}
