@@ -159,9 +159,16 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 		return individu;
 	}
 
-	protected EtatCivil addEtatCivil(MockIndividu individu, RegDate dateDebut, TypeEtatCivil type) {
+	protected EtatCivil addEtatCivil(MockIndividu individu, @Nullable RegDate dateDebut, TypeEtatCivil type) {
 		final Collection<EtatCivil> etats = individu.getEtatsCivils();
 		final EtatCivil etat = creeEtatCivil(dateDebut, type);
+		etats.add(etat);
+		return etat;
+	}
+
+	protected EtatCivil addEtatCivil(MockIndividu individu, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type) {
+		final Collection<EtatCivil> etats = individu.getEtatsCivils();
+		final EtatCivil etat = creeEtatCivil(dateDebut, dateFin, type);
 		etats.add(etat);
 		return etat;
 	}
@@ -571,6 +578,14 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	private static EtatCivil creeEtatCivil(RegDate date, TypeEtatCivil typeEtatCivil) {
 		final MockEtatCivil etatCivil = new MockEtatCivil();
 		etatCivil.setDateDebut(date);
+		etatCivil.setTypeEtatCivil(typeEtatCivil);
+		return etatCivil;
+	}
+
+	private static EtatCivil creeEtatCivil(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil typeEtatCivil) {
+		final MockEtatCivil etatCivil = new MockEtatCivil();
+		etatCivil.setDateDebut(dateDebut);
+		etatCivil.setDateFin(dateFin);
 		etatCivil.setTypeEtatCivil(typeEtatCivil);
 		return etatCivil;
 	}

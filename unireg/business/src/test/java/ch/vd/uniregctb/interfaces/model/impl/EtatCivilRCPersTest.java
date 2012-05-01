@@ -160,6 +160,27 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		assertEtatCivil(date(2006, 1, 4), null, TypeEtatCivil.PACS_INTERROMPU, etats.get(3));
 	}
 
+	/**
+	 * [SIFISC-4995] Dans le cas où un individu est célibataire puis immédiatement séparé, RcPers insère un état 'marié' avec date nulle.
+	 * Ce test est là pour vérifier que cet état 'marié' artificiel est ignoré chez nous.
+	 */
+	@Test
+	public void testGetCelibatairePuisSepare() throws Exception {
+
+		final MaritalData data = new MaritalData();
+		data.setDateOfMaritalStatus(null);
+		data.setMaritalStatus("2");
+
+		final MaritalData.Separation separation = new MaritalData.Separation();
+		separation.setDateOfSeparation(XmlUtils.regdate2xmlcal(date(2005, 5, 29)));
+		data.getSeparation().add(separation);
+
+		final List<EtatCivil> etats = EtatCivilRCPers.get(data);
+		assertNotNull(etats);
+		assertEquals(1, etats.size());
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.SEPARE, etats.get(0));
+	}
+
 	private static void assertEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type, EtatCivil etat) {
 		assertNotNull(etat);
 		assertEquals(dateDebut, etat.getDateDebut());

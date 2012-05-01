@@ -47,7 +47,9 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 		// L'état civil principal
 		final RegDate dateDebut = XmlUtils.xmlcal2regdate(maritalStatus.getDateOfMaritalStatus());
 		final TypeEtatCivil type = EchHelper.etatCivilFromEch11(maritalStatus.getMaritalStatus(), maritalStatus.getCancelationReason());
-		etatsCivils.add(new EtatCivilRCPers(dateDebut, type));
+		if (dateDebut != null) { // [SIFISC-4995] on ignore les états 'marié' sans date de mariage
+			etatsCivils.add(new EtatCivilRCPers(dateDebut, type));
+		}
 
 		if (type == TypeEtatCivil.MARIE || type == TypeEtatCivil.PACS) {
 			
