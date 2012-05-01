@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.webservice.party3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
+import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
 import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par1;
@@ -1637,5 +1639,39 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 			assertNull(rel1.getDateTo());
 			assertEquals(10119539, rel1.getOtherPartyNumber());
 		}
+	}
+
+	/**
+	 * [SIFISC-4995] Vérifie qu'on expose correctement une personne qui possède un état-civil marié sans date de mariage.
+	 */
+	@Test
+	public void testGetNaturalPersonWithUnknownWeddingDate() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest(login, 10615671, Arrays.asList(PartyPart.FAMILY_STATUSES));
+		final NaturalPerson person = (NaturalPerson) service.getParty(params);
+		assertNotNull(person);
+
+		final List<FamilyStatus> statuses = person.getFamilyStatuses();
+		assertNotNull(statuses);
+		assertEquals(3, statuses.size());
+
+		final FamilyStatus status0 = statuses.get(0);
+		assertNotNull(status0);
+		assertEquals(newDate(1979, 5, 17), status0.getDateFrom());
+		assertEquals(newDate(2008, 12, 31), status0.getDateTo());
+		assertEquals(MaritalStatus.SINGLE, status0.getMaritalStatus());
+
+		// l'état civil marié sans date est ignoré
+		final FamilyStatus status1 = statuses.get(1);
+		assertNotNull(status1);
+		assertEquals(newDate(2009, 1, 1), status1.getDateFrom());
+		assertEquals(newDate(2011, 5, 25), status1.getDateTo());
+		assertEquals(MaritalStatus.SEPARATED, status1.getMaritalStatus());
+
+		final FamilyStatus status2 = statuses.get(2);
+		assertNotNull(status2);
+		assertEquals(newDate(2011, 5, 26), status2.getDateFrom());
+		assertNull(status2.getDateTo());
+		assertEquals(MaritalStatus.MARRIED, status2.getMaritalStatus());
 	}
 }
