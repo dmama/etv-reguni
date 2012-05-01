@@ -205,7 +205,8 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         validationInterceptor.setEnabled(false);
         try {
             return action.execute();
-        } finally {
+        }
+        finally {
             validationInterceptor.setEnabled(true);
         }
     }
@@ -220,22 +221,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      * @throws Exception en case d'exception
      */
     protected <T> T doInNewTransactionAndSessionWithoutValidation(final TransactionCallback<T> action) throws Exception {
-        validationInterceptor.setEnabled(false);
-        try {
-            return doInNewTransaction(new TransactionCallback<T>() {
-	            @Override
-	            public T doInTransaction(final TransactionStatus status) {
-		            return hibernateTemplate.executeWithNewSession(new HibernateCallback<T>() {
-			            @Override
-			            public T doInHibernate(Session session) throws HibernateException, SQLException {
-				            return action.doInTransaction(status);
-			            }
-		            });
-	            }
-            });
-        } finally {
-            validationInterceptor.setEnabled(true);
-        }
+	    return doWithoutValidation(new ExecuteCallback<T>() {
+		    @Override
+		    public T execute() throws Exception {
+			    return doInNewTransactionAndSession(action);
+		    }
+	    });
     }
 
     protected static void assertForPrincipal(RegDate debut, MotifFor motifOuverture, Commune commune, MotifRattachement motif, ModeImposition modeImposition, ForFiscalPrincipal forPrincipal) {
