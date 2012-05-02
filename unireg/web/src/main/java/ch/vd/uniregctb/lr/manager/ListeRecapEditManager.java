@@ -3,7 +3,7 @@ package ch.vd.uniregctb.lr.manager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
-import ch.vd.uniregctb.delai.DelaiDeclarationView;
+import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;

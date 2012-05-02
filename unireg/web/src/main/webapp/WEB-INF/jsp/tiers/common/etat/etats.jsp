@@ -18,7 +18,7 @@
 				<fmt:message key="option.etat.avancement.${etat.etat}" />
 			<c:if test="${!etat.annule && etat.etat == 'SOMMEE'}">
 				&nbsp;
-				<a href="../declaration/copie-conforme-sommation.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onClick="Page_ImprimerCopieSommation(${etat.id})">&nbsp;</a>
+				<a href="../declaration/copie-conforme-sommation.do?idEtat=${etat.id}" class="pdf" id="copie-sommation-${etat.id}" onclick="Link.tempSwap(this, '#disabled-copie-sommation-${etat.id}');">&nbsp;</a>
 				<span class="pdf-grayed" id="disabled-copie-sommation-${etat.id}" style="display: none;">&nbsp;</span>
 			</c:if>
 		</display:column>
@@ -39,27 +39,5 @@
 	<display:setProperty name="paging.banner.one_item_found" value=""/>
 	</display:table>
 
-<script type="text/javascript">
-
-	 	function Page_ActivationImpressionCopieSommation(idEtat, actif) {
-	 		var eltActif = document.getElementById("copie-sommation-" + idEtat);
-	 		var eltInactif = document.getElementById("disabled-copie-sommation-" + idEtat);
-	 		if (actif) {
-	 			eltActif.style.display = "";
-	 			eltInactif.style.display = "none";
-	 		}
-	 		else {
-	 			eltInactif.style.display = "";
-	 			eltActif.style.display = "none";
-			}
-	 	}
-
-		function Page_ImprimerCopieSommation(idEtat) {
-			Page_ActivationImpressionCopieSommation(idEtat, false);
-			setTimeout("Page_ActivationImpressionCopieSommation(" + idEtat + ", true);", 2000);
-		}
-
-</script>
-	
 </fieldset>
 </c:if>

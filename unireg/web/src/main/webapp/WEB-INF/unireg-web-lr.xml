@@ -61,7 +61,7 @@
 
 	<bean id="lrEditDelaiController" class="ch.vd.uniregctb.lr.ListeRecapEditDelaiController" parent="abstractListeRecapController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.delai.DelaiDeclarationView" />
+		<property name="commandClass" value="ch.vd.uniregctb.di.view.DelaiDeclarationView" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="lr/edit/delai" />
 		<property name="successView" value="common/refresh-parent" />

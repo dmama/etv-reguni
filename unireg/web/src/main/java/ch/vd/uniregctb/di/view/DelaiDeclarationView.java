@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.delai;
+package ch.vd.uniregctb.di.view;
 
 import java.sql.Timestamp;
 

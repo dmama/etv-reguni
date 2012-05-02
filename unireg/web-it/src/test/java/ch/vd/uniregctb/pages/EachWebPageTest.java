@@ -1,11 +1,12 @@
 package ch.vd.uniregctb.pages;
 
-import ch.vd.uniregctb.common.WebitTest;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import ch.vd.uniregctb.common.WebitTest;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -106,17 +107,6 @@ public class EachWebPageTest extends WebitTest {
 	@Test
 	public void testTiersVisuLRInexistante() throws Exception {
 		assertPage("/tiers/lr.do?idLr=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
-	}
-
-	// Page de visualisation d'une DI
-	@Test
-	public void testTiersVisuDI() throws Exception {
-		assertPage("/tiers/di.do?idDi=2", "");
-	}
-
-	@Test
-	public void testTiersVisuDIInexistante() throws Exception {
-		assertPage("/tiers/di.do?idDi=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	// Page de visualisation d'un for

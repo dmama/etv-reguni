@@ -130,7 +130,6 @@
 				<entry key="/tiers/launchcat.do" value-ref="tiersLaunchCatController" />
 				<entry key="/tiers/visu.do" value-ref="tiersVisuController" />
 				<entry key="/tiers/lr.do" value-ref="lrVisuController" />
-				<entry key="/tiers/di.do" value-ref="diVisuController" />
 				<entry key="/fiscal/for.do" value-ref="tiersForController" />
 				<entry key="/adresses/adresse.do" value-ref="tiersAdresseController" />
 				<entry key="/tiers/rapport.do" value-ref="tiersRapportController" />
