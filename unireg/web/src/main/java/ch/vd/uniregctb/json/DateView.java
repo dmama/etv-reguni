@@ -2,6 +2,7 @@ package ch.vd.uniregctb.json;
 
 import ch.vd.registre.base.date.RegDate;
 
+// TODO (msi) : supprimer cette classe et la remplacer par une RegDate (qui est dorénavant gérée correctement en JSON grâce à la classe RegDateJsonSerializer)
 @SuppressWarnings({"UnusedDeclaration"})
 public class DateView {
 	private int year;
