@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import ch.vd.uniregctb.type.MotifFor;
 import org.apache.log4j.Logger;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.GenericGenerator;
@@ -1666,6 +1667,35 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return fors;
 	}
 
+    /**
+     * @param date date a laquelle on doit verifié que le tiers possède un for annulé.
+     * @param motif motif du for
+     *
+     * @return true si le tiers a un for fiscal principale annulé à la date précisée pour le motif précisé
+     */
+    @Transient
+    public boolean hasForFiscalPrincipalAnnule(RegDate date, @Nullable MotifFor motif) {
+
+        Assert.notNull(date);
+
+        if (forsFiscaux == null) {
+            return false;
+        }
+
+        for (ForFiscal f : forsFiscaux) {
+            if (!f.isPrincipal() || !f.isAnnule() ) {
+                 continue;
+            }
+            ForFiscalPrincipal ffp = (ForFiscalPrincipal) f;
+            if (RegDateHelper.isBetween(date, ffp.getDateDebut(), ffp.getDateFin(), NullDateBehavior.EARLIEST)) {
+                if (motif == null || ffp.getMotifOuverture() == motif) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 	public void dumpForDebug() {
 		dumpForDebug(0);
 	}
@@ -1813,4 +1843,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			return false;
 		return true;
 	}
+
+
 }

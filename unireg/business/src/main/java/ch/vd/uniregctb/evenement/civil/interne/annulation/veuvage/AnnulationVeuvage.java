@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.veuvage;
 
+import ch.vd.uniregctb.type.MotifFor;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -19,12 +20,17 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 public class AnnulationVeuvage extends EvenementCivilInterne {
 
+    private final boolean traiteRedondance; // Basiquement, on ne traite la redondance que pour les evts issus de Rcpers
+    private boolean isRedondant;
+
 	protected AnnulationVeuvage(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+        this.traiteRedondance = false;
 	}
 
 	protected AnnulationVeuvage(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
+        this.traiteRedondance = true;
 	}
 
 	/**
@@ -33,6 +39,7 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 	@SuppressWarnings({"JavaDoc"})
 	protected AnnulationVeuvage(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
+        traiteRedondance = false;
 	}
 
 	@Override
@@ -46,16 +53,27 @@ public class AnnulationVeuvage extends EvenementCivilInterne {
 		EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(veuf, getDate().getOneDayAfter());
 
 		if (menageComplet != null || (menageComplet != null && (menageComplet.getMenage() != null || menageComplet.getConjoint(veuf) != null))) {
-			/*
-			 * Normalement l'événement de veuvage ne doit s'appliquer aux personnes encores mariées (seules).
-			 */
-			erreurs.addErreur("L'événement d'annulation veuvage ne peut pas s'appliquer à une personne mariée.");
+            if (traiteRedondance) {
+                // L'évenement est peut-être Redondant,pour detecter ça on verifie que :
+                //   - l'individu a un for annulé le jour suivant le veuvage
+                //   - le for annulé a pour motif: veuvage
+                isRedondant = getPrincipalPP().hasForFiscalPrincipalAnnule(getDate().getOneDayAfter(), MotifFor.VEUVAGE_DECES);
+            }
+
+            if (!traiteRedondance || !isRedondant) {
+                // Normalement l'événement de veuvage ne doit s'appliquer aux personnes encores mariées (seules).
+                erreurs.addErreur("L'événement d'annulation veuvage ne peut pas s'appliquer à une personne mariée.");
+            }
 		}
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+
+        if (traiteRedondance && isRedondant) {
+            return HandleStatus.REDONDANT;
+        }
 
 		/*
 		 * Obtention du tiers
