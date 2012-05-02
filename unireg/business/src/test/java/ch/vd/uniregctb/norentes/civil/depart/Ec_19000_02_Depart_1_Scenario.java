@@ -151,7 +151,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 		// On check que Alain  est parti
 		{
 			final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabAlain);
-			assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat(), "");
+			assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "");
 
 			final PersonnePhysique hab = (PersonnePhysique)tiersDAO.get(noHabAlain);
 			final List<ForFiscal> list = hab.getForsFiscauxSorted();
