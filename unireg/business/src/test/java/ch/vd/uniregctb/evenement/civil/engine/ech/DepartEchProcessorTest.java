@@ -118,7 +118,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	}
 
 	@Test
-	public void testDepartDestinationInconnue() throws Exception {
+	public void testDepartDestinationNonRenseignee() throws Exception {
 
 		final long noIndividu = 126673246L;
 		final RegDate depart = date(2011, 10, 31);
@@ -170,7 +170,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
 				Assert.assertNotNull(pp);
@@ -183,6 +183,158 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 	}
+
+	@Test
+	public void testDepartDestinationInconnue() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate depart = date(2011, 10, 31);
+		final RegDate arrivee = date(2003, 1, 1);
+
+		// le p'tit nouveau
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1967, 4, 23);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
+
+
+				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,MockPays.PaysInconnu.getNoOFS()));
+				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique luis = addHabitant(noIndividu);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(depart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+
+				final ForFiscalPrincipal forVaudois = pp.getForFiscalPrincipalAt(depart);
+				Assert.assertNotNull(forVaudois);
+				Assert.assertEquals(depart, forVaudois.getDateFin());
+				Assert.assertEquals(MotifFor.DEPART_HS, forVaudois.getMotifFermeture());
+
+
+				final ForFiscalPrincipal dernierForFiscalPrincipal = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(dernierForFiscalPrincipal);
+				Assert.assertEquals(null, dernierForFiscalPrincipal.getDateFin());
+				Assert.assertEquals(MotifFor.DEPART_HS, dernierForFiscalPrincipal.getMotifOuverture());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartDestinationNonIdentifiable() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate depart = date(2011, 10, 31);
+		final RegDate arrivee = date(2003, 1, 1);
+
+		// le p'tit nouveau
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1967, 4, 23);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
+
+
+				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,null));
+				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique luis = addHabitant(noIndividu);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(depart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = "La destination de départ est no identifiable car le numéro ofs de destination n'est pas renseigné)";
+				Assert.assertEquals(message,erreur.getMessage());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+
+				final ForFiscalPrincipal forVaudois = pp.getForFiscalPrincipalAt(depart);
+				Assert.assertNotNull(forVaudois);
+				Assert.assertEquals(null, forVaudois.getDateFin());
+				return null;
+			}
+		});
+	}
+
+
 
 	@Test
 	public void testDepartCelibataireHorsCanton() throws Exception {

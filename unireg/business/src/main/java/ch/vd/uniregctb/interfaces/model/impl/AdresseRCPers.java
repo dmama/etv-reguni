@@ -169,6 +169,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 			return null;
 		}
 
+		if(location.getUnknown()!=null){
+			return new Localisation(LocalisationType.HORS_SUISSE,ServiceInfrastructureService.noPaysInconnu);
+
+		}
+
 		final Destination.ForeignCountry foreignCountry = location.getForeignCountry();
 		if (foreignCountry != null) {
 			return new Localisation(LocalisationType.HORS_SUISSE, foreignCountry.getCountry().getCountryId());

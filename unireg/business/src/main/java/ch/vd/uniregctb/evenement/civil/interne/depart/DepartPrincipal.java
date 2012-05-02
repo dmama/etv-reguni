@@ -107,16 +107,7 @@ public class DepartPrincipal extends Depart {
 
 		verifierMouvementIndividu(this, false, erreurs, warnings);
 
-		// Si le pays de destination est inconnu, on leve un warning
-		if (findMotifFermetureFor() == MotifFor.DEPART_HS) {
-			if (isPaysInconnu()) {
-				warnings.addWarning("Le nouveau pays n'a pas été trouvé : veuillez vérifier le motif de fermeture du for principal");
-			}
 
-		} // Verification de la nouvelle commune principale en hors canton
-		else if (getNouvelleCommune() == null) {
-			warnings.addWarning("La nouvelle commune principale n'a pas été trouvée : veuillez vérifier le motif de fermeture du for principal");
-		}
 	}
 
 	@Override

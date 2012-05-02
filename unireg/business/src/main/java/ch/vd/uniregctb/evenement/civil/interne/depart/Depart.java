@@ -235,6 +235,14 @@ public abstract class Depart extends Mouvement {
 		return (getNouvelleLocalisation() != null && getNouvelleLocalisation().getNoOfs() != null);
 	}
 
+	/** Determine si une destination n'a pas de numéro ofs indiquée.
+	 *
+	 * @return true si on pas de numéro ofs false sinon
+	 */
+	protected boolean isDestinationNontIdentifiable(){
+		return (getNouvelleLocalisation() != null && getNouvelleLocalisation().getNoOfs() == null);
+	}
+
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
@@ -259,6 +267,13 @@ public abstract class Depart extends Mouvement {
 			 */
 			if (getNumeroOfsEntiteForAnnonce() == null) {
 				erreurs.addErreur("La commune d'annonce n'est pas renseignée");
+			}
+
+			/**
+			 * La destination du départ est non identifiable
+			 */
+			if (isDestinationNontIdentifiable()) {
+				erreurs.addErreur("La destination de départ est no identifiable car le numéro ofs de destination n'est pas renseigné)");
 			}
 		}
 	}
