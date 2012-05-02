@@ -6,7 +6,7 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.delai.DelaiDeclarationView;
+import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DeclarationImpotEditDelaiValidator implements Validator {

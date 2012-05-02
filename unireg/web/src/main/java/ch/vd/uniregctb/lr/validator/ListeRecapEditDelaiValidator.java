@@ -5,7 +5,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.delai.DelaiDeclarationView;
+import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 
 public class ListeRecapEditDelaiValidator implements Validator {
 

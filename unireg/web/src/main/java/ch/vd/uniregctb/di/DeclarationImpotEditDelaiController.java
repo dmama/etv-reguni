@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.delai.DelaiDeclarationView;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;

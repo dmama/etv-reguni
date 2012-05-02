@@ -857,7 +857,7 @@ var Tiers = {
 	formatNumero: function(numero) {
 		var s = '';
 		if (numero) {
-			var numero = '' + numero;
+			numero = '' + numero;
 			var length = numero.length;
 			if (length < 3) {
 				s = numero;
@@ -915,6 +915,35 @@ var Tiers = {
 		});
 	}
 }
+
+//===================================================
+
+var Link = {
+
+	/**
+	 * Génère le code html qui va bien pour afficher une icône de visualisation des logs d'un élément.
+	 * @param nature la nature de l'entité
+	 * @param id l'id de l'entité
+	 * @return {String} le code html qui va bien.
+	 */
+	consulterLog:function (nature, id) {
+		return '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'' + nature + '\', ' + id + ');">&nbsp;</a>';
+	},
+
+	/**
+	 * Remplace de manière temporaire un lien par un autre élément (par exemple, le même lien, mais désactivé).
+	 * @param link un élément jquery
+	 * @param replacement un élément de remplacement temporaire
+	 */
+	tempSwap:function (link, replacement) {
+		$(link).hide();
+		$(replacement).show();
+		setTimeout(function () {
+			$(link).show();
+			$(replacement).hide();
+		}, 2000);
+	}
+};
 
 //===================================================
 
@@ -1167,7 +1196,7 @@ var StringUtils = {
 	},
 
 	escapeHTML: function(text) {
-		return text ? $('<div/>').text(text).html() : null;
+		return text ? $('<div/>').text(text).html() : '';
 	},
 
 	leftpad: function (val, len, car) {
@@ -1299,6 +1328,32 @@ var DateUtils = {
 	}
 }
 
+var RegDate = {
+
+	/**
+	 * Converti une regdate (structure year/month/day) en date
+	 * @param regdate
+	 */
+	toDate: function(regdate) {
+		if (!regdate) {
+			return null;
+		}
+		d = new Date();
+		d.setDate(regdate.day); // 1..31
+		d.setMonth(regdate.month - 1); // 0..11
+		d.setFullYear(regdate.year); // 4 digits
+		return d;
+	},
+
+	format: function(regdate, format) {
+		var date = this.toDate(regdate);
+		if (!date) {
+			return '';
+		}
+		format = format || 'shortDate';
+		return date.format(format);
+	}
+}
 //===================================================
 
 /*
@@ -1397,7 +1452,7 @@ var dateFormat = function () {
 // Some common format strings
 dateFormat.masks = {
 	"default":      "dd.mm.yyyy HH:MM:ss",
-	shortDate:      "m/d/yy",
+	shortDate:      "dd.mm.yyyy",
 	mediumDate:     "mmm d, yyyy",
 	longDate:       "mmmm d, yyyy",
 	fullDate:       "dddd, mmmm d, yyyy",
@@ -1998,9 +2053,9 @@ var Batch = {
 
 //===================================================
 
-var DisplayTable =  {
+var DisplayTable = {
 
-	buildPagination: function(page, pageSize, totalCount, buildGotoPageStatement) {
+	buildPagination:function (page, pageSize, totalCount, buildGotoPageStatement) {
 
 		var html = '';
 
@@ -2045,7 +2100,7 @@ var DisplayTable =  {
 
 		return html;
 	}
-}
+};
 
 //===================================================
 
@@ -2079,4 +2134,93 @@ var Inbox = {
 		}, 'json')
 		.error(Ajax.notifyErrorHandler("recherche du nombre d'éléments dans la boîte de réception"));
 	}
-}
+};
+
+//===================================================
+
+var DI = {
+	/**
+	 * Cette méthode ouvere un fenêtre popup avec les détails (read-only) de la déclaration dont l'id est passé en paramètre.
+	 * @param diId l'id de la déclaration d'impôt ordinaire à afficher.
+	 */
+	open_details: function(diId) {
+
+		$.getJSON(getContextPath() + "/di/details.do?id=" + diId + "&" + new Date().getTime(), function(view) {
+			if (view) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
+				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + view.periodeFiscale + '</td>';
+				info += '<td width="25%">Code contrôle&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(view.codeControle) + '</td></tr>';
+				info += '<tr class="even"><td width="25%">Début période imposition&nbsp;:</td><td width="25%">' + RegDate.format(view.dateDebut) + '</td>';
+				info += '<td width="25%">Fin période imposition&nbsp;:</td><td width="25%">' + RegDate.format(view.dateFin) + '</td></tr>';
+				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(view.typeDocumentMessage) + '</td>';
+				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
+
+				var delais = '';
+				if (view.delais) {
+					delais = '<fieldset><legend><span>Délais</span></legend>';
+					delais += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation éditée</th><th>Date traitement</th><th></th></tr></thead><tbody>';
+					for (var i in view.delais) {
+						var d = view.delais[i];
+						delais += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
+						delais += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+						delais += '<td>';
+						if (d.confirmationEcrite) {
+							delais += '<input type="checkbox" checked="checked" disabled="disabled">';
+							delais += '<a href="'+ getContextPath() + '/declaration/copie-conforme-delai.do?idDelai=' + d.id + '" class="pdf" id="print-delai-' + d.id + '" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
+							delais += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
+						}
+						else {
+							delais += '<input type="checkbox" disabled="disabled">';
+						}
+						delais += '</td>';
+						var logModifDate = d.logModifDate ? new Date(d.logModifDate) : null;
+						delais += '<td>' + RegDate.format(d.dateTraitement) + '</td><td style="action"><img src="../images/consult_off.gif" title="' + d.logModifUser + '-' + DateUtils.toNormalString(logModifDate) + '"></td></tr>';
+					}
+					delais += '</tbody></table></fieldset>\n';
+				}
+
+				var etats = '';
+				if (view.etats) {
+					etats = '<fieldset><legend><span>Etats</span></legend>';
+					etats += '<table id="etat" class="display"><thead><tr><th>Date</th><th>Etat</th><th>Source</th><th></th></tr></thead><tbody>';
+					for (var i in view.etats) {
+						var e = view.etats[i];
+						etats += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
+						etats += '<td>' + RegDate.format(e.dateObtention);
+						if (!e.annule && e.etat == 'SOMMEE') {
+							etats += '&nbsp;' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage);
+						}
+						etats += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
+						if (!e.annule && e.etat == 'SOMMEE') {
+							etats += '&nbsp;' + '<a href="' + getContextPath() + '/declaration/copie-conforme-sommation.do?idEtat=' + e.id + '" class="pdf" id="copie-sommation-' + e.id + '" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
+							etats += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
+						}
+						etats += '</td><td>';
+						if (e.etat == 'RETOURNEE') {
+							etats += StringUtils.escapeHTML(e.sourceMessage);
+						}
+						etats += '</td><td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
+					}
+				}
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					title: "Détails de la déclaration d'impôt",
+					width: 650,
+					modal: true,
+					buttons: {
+						Ok: function() {
+							dialog.dialog("close");
+						}
+					}
+				});
+			}
+			else {
+				alert("La déclaration n'existe pas.");
+			}
+		})
+		.error(Ajax.notifyErrorHandler("affichage des détails de la déclaration"));
+	}
+};

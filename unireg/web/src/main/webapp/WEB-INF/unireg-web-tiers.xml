@@ -135,15 +135,11 @@
 		<property name="hostCivilService" ref="hostCivilService" />
 	</bean>
 
-	<bean id="diVisuController" class="ch.vd.uniregctb.tiers.DeclarationImpotVisuController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.di.view.DeclarationImpotDetailView" />
-		<property name="commandName" value="command" />
-		<property name="diVisuManager" ref="diVisuManager" />
-		<property name="formView" value="tiers/visualisation/di/di" />
-		<property name="successView" value="redirect:/tiers/lr.do" />
+	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
+		<property name="diDAO" ref="diDAO" />
+		<property name="messageSource" ref="messageSource" />
 	</bean>
-	
+
 	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="diDAO" ref="diDAO" />
