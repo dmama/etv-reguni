@@ -99,4 +99,117 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testAnnulationMariageAvecRedondance() throws Exception {
+
+		final long noIndividuLui = 36712456523468L;
+		final long noIndividuElle = 34674853272545L;
+		final RegDate dateMariage = date(2012, 2, 10);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissanceLui = date(1960, 1, 26);
+				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissanceLui, "Casanova", "Paco", true);
+				addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateNaissanceLui, null);
+				addNationalite(lui, MockPays.Suisse, dateNaissanceLui, null);
+
+				final RegDate dateNaissanceElle = date(1980, 6, 12);
+				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissanceElle, "Nette", "Jeu", false);
+				addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateNaissanceElle, null);
+				addNationalite(elle, MockPays.Suisse, dateNaissanceElle, null);
+			}
+		});
+
+		// mise en place fiscale avec mariage
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+				return mc.getNumero();
+			}
+		});
+
+		// création de l'événement civil d'annulation de mariage
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3478251253526867L);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNull(ffp);
+				return null;
+			}
+		});
+
+		//Event d'annulation de mariage pour madame
+		// création de l'événement civil d'annulation de mariage
+		final long evtIdMadame = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evtMadame = new EvenementCivilEch();
+				evtMadame.setId(3478256623526867L);
+				evtMadame.setType(TypeEvenementCivilEch.MARIAGE);
+				evtMadame.setAction(ActionEvenementCivilEch.ANNULATION);
+				evtMadame.setDateEvenement(dateMariage);
+				evtMadame.setEtat(EtatEvenementCivil.A_TRAITER);
+				evtMadame.setNumeroIndividu(noIndividuElle);
+				return hibernateTemplate.merge(evtMadame).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuElle);
+
+		// vérification du résultat
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtIdMadame);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(mcId);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNull(ffp);
+				return null;
+			}
+		});
+	}
 }
+

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.interne.annulation.mariage;
 
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +27,8 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 /**
  * Adapter pour l'annulation de mariage.
@@ -74,6 +77,9 @@ public class AnnulationMariage extends EvenementCivilInterne {
 		// Obtention du tiers correspondant au conjoint principal.
 		final PersonnePhysique principal = getPrincipalPP();
 
+		if (isAnnulationRedondante()) {
+			return HandleStatus.REDONDANT;
+		}
 		// Récupération de l'ensemble tiers couple
 		final EnsembleTiersCouple menageComplet = context.getTiersService().getEnsembleTiersCouple(principal, getDate());
 		// Vérification de la cohérence
@@ -112,6 +118,27 @@ public class AnnulationMariage extends EvenementCivilInterne {
 			context.getDataEventService().onIndividuChange(conjoint.getNumeroIndividu());
 		}
 		return HandleStatus.TRAITE;
+	}
+
+	private boolean isAnnulationRedondante() {
+
+		PersonnePhysique personne = getPrincipalPP();
+		MenageCommun menageCommun = null;
+
+		final Set<RapportEntreTiers> rapportsSujet = personne.getRapportsSujet();
+		if (rapportsSujet != null) {
+			for (RapportEntreTiers rapportSujet : rapportsSujet) {
+				if (TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapportSujet.getType() &&
+						rapportSujet.getDateDebut().equals(getDate()) && rapportSujet.isAnnule()) {
+					// le rapport annulée de l'apartenance a été trouvé, on est redondant
+					return true;
+
+				}
+			}
+
+		}
+
+		return false;
 	}
 
 	/**
