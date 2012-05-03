@@ -6,7 +6,7 @@
   		<fmt:message key="title.recapitulatif.separation" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/creation-separation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<a href="#" onclick="ouvrirAide('<c:url value='/docs/creation-separation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
 
@@ -18,15 +18,15 @@
 			<jsp:include page="rapport.jsp" />
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver?"/>
-			<input type="submit" value="<fmt:message key="label.bouton.sauver"/>" onClick="javascript:return Page_sauverSeparation(event || window.event);" />	
+			<input type="button" value="<fmt:message key="label.bouton.sauver"/>" onclick="return Page_sauverSeparation();" />
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_sauverSeparation(event) {
-				if(!confirm('Voulez-vous vraiment séparer ces deux personnes ?')) {
-					return Event.stop(event);
+			function Page_sauverSeparation() {
+				if (confirm('Voulez-vous vraiment séparer ces deux personnes ?')) {
+					$('#formRecapSeparation').submit();
 			 	}
-			 	return true ;
+			 	return false;
 			}
 		</script>
 	</tiles:put>
