@@ -1140,7 +1140,7 @@ var Histo = {
 		for (i = 1; i < rows.length; i++) { // on ignore l'entête
 			var line = rows[i];
 			var dateFin = line.cells[dateFinIndex].innerHTML;
-			var isHisto = (dateFin != null && isNotBlank(dateFin)); // date fin != null -> valeur historique
+			var isHisto = (dateFin != null && StringUtils.isNotBlank(dateFin)); // date fin != null -> valeur historique
 
 			// affiche ou cache la ligne
 			if (isHisto) {
@@ -1180,11 +1180,11 @@ var StringUtils = {
 	},
 
 	isBlank: function(s) {
-		return trim(s).length == 0;
+		return this.trim(s).length == 0;
 	},
 
 	isNotBlank: function(s) {
-		return !isBlank(s);
+		return !this.isBlank(s);
 	},
 
 	isEmptyString: function(str) {
