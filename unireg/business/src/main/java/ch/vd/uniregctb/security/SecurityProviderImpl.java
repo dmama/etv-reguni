@@ -97,8 +97,8 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 			LOGGER.warn("| Attention ! IfoSec est en mode 'test unitaire' : certaines procédures sont bypassées. |");
 			LOGGER.warn("+---------------------------------------------------------------------------------------+");
 
+			AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 			try {
-				AuthenticationHelper.pushPrincipal(AuthenticationHelper.SYSTEM_USER);
 				Audit.warn("IfoSec est en mode 'test unitaire'.");
 			}
 			finally {

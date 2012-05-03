@@ -111,9 +111,10 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 		final CheckedTransactionTemplate template = new CheckedTransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+
+		// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
+		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 		try {
-			// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
-			AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 			serviceCivil.setIndividuLogger(EVT_INTERNE_LOGGER.isTraceEnabled());
 
 			// Tout d'abord, on essaie de traiter l'événement
@@ -147,8 +148,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			result = traiteRollbackSurException(evenementCivilId, e);
 		}
 		finally {
-			serviceCivil.setIndividuLogger(false);
 			AuthenticationHelper.popPrincipal();
+			serviceCivil.setIndividuLogger(false);
 		}
 
 		return result;

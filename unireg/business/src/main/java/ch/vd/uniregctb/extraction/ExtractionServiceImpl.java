@@ -434,10 +434,10 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 				LOGGER.error("Thread d'extractions asynchrones arrêté sur une exception", e);
 			}
 			finally {
+				AuthenticationHelper.popPrincipal();
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info(String.format("Arrêt du thread d'extractions asynchrones %s", getName()));
 				}
-				AuthenticationHelper.popPrincipal();
 			}
 		}
 
