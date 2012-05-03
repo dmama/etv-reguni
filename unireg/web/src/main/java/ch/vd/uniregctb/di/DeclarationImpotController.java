@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.di;
 
 import org.springframework.context.MessageSource;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
-import ch.vd.uniregctb.di.view.DiView;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -22,11 +22,11 @@ import ch.vd.uniregctb.security.SecurityProvider;
 @Controller
 public class DeclarationImpotController {
 
-	private DeclarationImpotOrdinaireDAO diDAO;
+	private HibernateTemplate hibernateTemplate;
 	private MessageSource messageSource;
 
-	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
-		this.diDAO = diDAO;
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setMessageSource(MessageSource messageSource) {
@@ -38,23 +38,23 @@ public class DeclarationImpotController {
 	 * @return les détails d'une déclaration d'impôt au format JSON
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
-	@RequestMapping(value = "/di/details.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/decl/details.do", method = RequestMethod.GET)
 	@ResponseBody
-	public DiView details(@RequestParam("id") long id) throws AccessDeniedException {
+	public DeclarationView details(@RequestParam("id") long id) throws AccessDeniedException {
 
 		if (!SecurityProvider.isGranted(Role.VISU_ALL) && !SecurityProvider.isGranted(Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
-		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null) {
+		final Declaration decl = hibernateTemplate.get(Declaration.class, id);
+		if (decl == null) {
 			return null;
 		}
 
 		// vérification des droits en lecture
-		final Long tiersId = di.getTiers().getId();
+		final Long tiersId = decl.getTiers().getId();
 		ControllerUtils.checkAccesDossierEnLecture(tiersId);
 
-		return new DiView(di, messageSource);
+		return new DeclarationView(decl, messageSource);
 	}
 }

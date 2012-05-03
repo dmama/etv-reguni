@@ -8,13 +8,18 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-public class DiView {
+/**
+ * Vue d'une déclaration d'impôt (ordinaire ou source).
+ */
+@SuppressWarnings("UnusedDeclaration")
+public class DeclarationView {
 
 	private Long tiersId;
 	private String codeControle;
@@ -26,16 +31,19 @@ public class DiView {
 	private List<DelaiDeclarationView> delais;
 	private List<EtatDeclarationView> etats;
 
-	public DiView(DeclarationImpotOrdinaire di, MessageSource messageSource) {
-		this.tiersId = di.getTiers().getId();
-		this.codeControle = di.getCodeControle();
-		this.periodeFiscale = di.getPeriode().getAnnee();
-		this.dateDebut = di.getDateDebut();
-		this.dateFin = di.getDateFin();
-		this.typeDocument = di.getTypeDeclaration();
-		this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
-		this.delais = initDelais(di.getDelais(), di.getPremierDelai());
-		this.etats = initEtats(di.getEtats(), messageSource);
+	public DeclarationView(Declaration decl, MessageSource messageSource) {
+		this.tiersId = decl.getTiers().getId();
+		this.periodeFiscale = decl.getPeriode().getAnnee();
+		this.dateDebut = decl.getDateDebut();
+		this.dateFin = decl.getDateFin();
+		if (decl instanceof DeclarationImpotOrdinaire) {
+			final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
+			this.codeControle = di.getCodeControle();
+			this.typeDocument = di.getTypeDeclaration();
+			this.typeDocumentMessage = messageSource.getMessage("option.type.document." + this.typeDocument.name(), null, WebContextUtils.getDefaultLocale());
+		}
+		this.delais = initDelais(decl.getDelais(), decl.getPremierDelai());
+		this.etats = initEtats(decl.getEtats(), messageSource);
 	}
 
 	private static List<DelaiDeclarationView> initDelais(Set<DelaiDeclaration> delais, RegDate premierDelai) {

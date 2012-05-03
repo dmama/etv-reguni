@@ -93,22 +93,6 @@ public class EachWebPageTest extends WebitTest {
 		assertPage("/tiers/visu.do?id=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
 	}
 
-	/*--------------------------------------------
-	 *
-	 * Visualisation/Edition d'un tiers (overlays)
-	 *
-	 *--------------------------------------------*/
-	// Page de visualisation d'une LR
-	@Test
-	public void testTiersVisuLR() throws Exception {
-		assertPage("/tiers/lr.do?idLr=1", "");
-	}
-
-	@Test
-	public void testTiersVisuLRInexistante() throws Exception {
-		assertPage("/tiers/lr.do?idLr=12345678", "Page d'erreur", "La LR spécifiée n'existe pas");
-	}
-
 	// Page de visualisation d'un for
 	@Test
 	public void testTiersEditFor() throws Exception {
