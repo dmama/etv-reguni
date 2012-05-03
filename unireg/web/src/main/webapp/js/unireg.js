@@ -1671,6 +1671,48 @@ var Tooltips = {
 
 //===================================================
 
+Object.extend = function(destination, source) {
+	for (var property in source) {
+		destination[property] = source[property];
+	}
+	return destination;
+};
+
+if (!window.Event) {
+	var Event = new Object();
+}
+
+Object.extend(Event, {
+	KEY_BACKSPACE: 8,
+	KEY_TAB:       9,
+	KEY_RETURN:   13,
+	KEY_ESC:      27,
+	KEY_LEFT:     37,
+	KEY_UP:       38,
+	KEY_RIGHT:    39,
+	KEY_DOWN:     40,
+	KEY_DELETE:   46,
+	KEY_HOME:     36,
+	KEY_END:      35,
+	KEY_PAGEUP:   33,
+	KEY_PAGEDOWN: 34,
+
+	element: function(event) {
+		return event.target || event.srcElement;
+	},
+	stop : function(event) {
+		if (event.preventDefault) {
+			event.preventDefault();
+			event.stopPropagation();
+		} else {
+			event.returnValue = false;
+			event.cancelBubble = true;
+		}
+		return false;
+	}
+
+});
+
 var Modifier = {
 
 	formName : null,
