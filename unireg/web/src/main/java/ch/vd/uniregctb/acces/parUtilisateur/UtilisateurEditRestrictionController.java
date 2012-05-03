@@ -23,8 +23,7 @@ import ch.vd.uniregctb.security.SecurityCheck;
 @Controller
 public class UtilisateurEditRestrictionController {
 
-
-    private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits";
+    private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez pas les droits IfoSec nécessaires à cette opération de gestion des droits.";
     protected final Logger LOGGER = Logger.getLogger(UtilisateurEditRestrictionController.class);
 
     private UtilisateurEditRestrictionManager utilisateurEditRestrictionManager;
@@ -61,7 +60,7 @@ public class UtilisateurEditRestrictionController {
     }
 
     @RequestMapping(value = "/acces/restrictions-utilisateur/exporter.do", method = RequestMethod.POST)
-    @SecurityCheck(rolesToCheck = {Role.SEC_DOS_ECR}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+    @SecurityCheck(rolesToCheck = {Role.SEC_DOS_LEC}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
     public String onPostExporter(@RequestParam("noIndividuOperateur") Long noIndividuOperateur) {
         final ExtractionJob job = utilisateurEditRestrictionManager.exportListeDroitsAcces(noIndividuOperateur);
         Flash.message(String.format("Demande d'export enregistrée (%s)", job.getDescription()));

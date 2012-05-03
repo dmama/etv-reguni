@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.security;
 
-public class AccessDeniedException extends Exception {
+public class AccessDeniedException extends RuntimeException {
 
 	private static final long serialVersionUID = -2430759010720236223L;
 
