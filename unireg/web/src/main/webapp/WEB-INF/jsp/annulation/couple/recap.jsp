@@ -6,7 +6,7 @@
   		<fmt:message key="title.recapitulatif.annulation.menage.commun" />
   	</tiles:put>
   	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/annulation-couple.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<a href="#" onclick="ouvrirAide('<c:url value='/docs/annulation-couple.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
   	<tiles:put name="body">
 
@@ -26,15 +26,15 @@
 			</fieldset>
 			<!-- Debut Boutons -->
 			<unireg:RetourButton link="list.do" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
-			<input type="submit" value="<fmt:message key="label.bouton.annuler.menage"/>" onClick="javascript:return Page_sauverSeparation(event || window.event);" />	
+			<input type="button" value="<fmt:message key="label.bouton.annuler.menage"/>" onclick="return Page_sauverAnnulation();" />
 			<!-- Fin Boutons -->
 		</form:form>
 		<script type="text/javascript" language="Javascript">
-			function Page_sauverSeparation(event) {
-				if(!confirm('Voulez-vous vraiment annuler la mise en ménage commun de ces deux personnes ?')) {
-					return Event.stop(event);
-			 	}
-			 	return true ;
+			function Page_sauverAnnulation() {
+				if (confirm('Voulez-vous vraiment annuler la mise en ménage commun de ces deux personnes ?')) {
+					$('#formRecapAnnulationCouple').submit();
+				}
+				return false;
 			}
 		</script>
 	</tiles:put>
