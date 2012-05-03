@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.annulation.separation;
 
+import java.util.Set;
+
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
@@ -15,8 +17,11 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Adapter pour l'annulation de séparation.
@@ -77,6 +82,10 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		if (isAnnulationRedondante()) {
+			return HandleStatus.REDONDANT;
+		}
+
 		// Récupération du tiers principal.
 		PersonnePhysique principal = getPrincipalPP();
 		// Récupération du menage du tiers
@@ -90,4 +99,20 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 		}
 		return HandleStatus.TRAITE;
 	}
+
+	private  boolean isAnnulationRedondante(){
+		PersonnePhysique principal = getPrincipalPP();
+		Set<ForFiscal> forFiscaux =  principal.getForsFiscaux();
+		for (ForFiscal forFiscal : forFiscaux) {
+			if (forFiscal.getDateDebut().equals(getDate()) && forFiscal.isAnnule() && forFiscal.isPrincipal()) {
+				ForFiscalPrincipal forPrincipal = (ForFiscalPrincipal)forFiscal;
+				if (MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT == forPrincipal.getMotifOuverture()) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+
 }
