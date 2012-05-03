@@ -2138,70 +2138,25 @@ var Inbox = {
 
 //===================================================
 
-var DI = {
+var Decl = {
 	/**
-	 * Cette méthode ouvere un fenêtre popup avec les détails (read-only) de la déclaration dont l'id est passé en paramètre.
-	 * @param diId l'id de la déclaration d'impôt ordinaire à afficher.
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de la déclaration d'impôt ordinaire (DI) dont l'id est passé en paramètre.
+	 * @param diId l'id de la déclaration à afficher.
 	 */
-	open_details: function(diId) {
+	open_details_di: function(diId) {
 
-		$.getJSON(getContextPath() + "/di/details.do?id=" + diId + "&" + new Date().getTime(), function(view) {
-			if (view) {
+		$.getJSON(getContextPath() + "/decl/details.do?id=" + diId + "&" + new Date().getTime(), function(di) {
+			if (di) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
-				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + view.periodeFiscale + '</td>';
-				info += '<td width="25%">Code contrôle&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(view.codeControle) + '</td></tr>';
-				info += '<tr class="even"><td width="25%">Début période imposition&nbsp;:</td><td width="25%">' + RegDate.format(view.dateDebut) + '</td>';
-				info += '<td width="25%">Fin période imposition&nbsp;:</td><td width="25%">' + RegDate.format(view.dateFin) + '</td></tr>';
-				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(view.typeDocumentMessage) + '</td>';
+				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + di.periodeFiscale + '</td>';
+				info += '<td width="25%">Code contrôle&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.codeControle) + '</td></tr>';
+				info += '<tr class="even"><td width="25%">Début période imposition&nbsp;:</td><td width="25%">' + RegDate.format(di.dateDebut) + '</td>';
+				info += '<td width="25%">Fin période imposition&nbsp;:</td><td width="25%">' + RegDate.format(di.dateFin) + '</td></tr>';
+				info += '<tr class="odd"><td width="25%">Type déclaration&nbsp;:</td><td width="25%">' + StringUtils.escapeHTML(di.typeDocumentMessage) + '</td>';
 				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
 
-				var delais = '';
-				if (view.delais) {
-					delais = '<fieldset><legend><span>Délais</span></legend>';
-					delais += '<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation éditée</th><th>Date traitement</th><th></th></tr></thead><tbody>';
-					for (var i in view.delais) {
-						var d = view.delais[i];
-						delais += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
-						delais += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
-						delais += '<td>';
-						if (d.confirmationEcrite) {
-							delais += '<input type="checkbox" checked="checked" disabled="disabled">';
-							delais += '<a href="'+ getContextPath() + '/declaration/copie-conforme-delai.do?idDelai=' + d.id + '" class="pdf" id="print-delai-' + d.id + '" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
-							delais += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
-						}
-						else {
-							delais += '<input type="checkbox" disabled="disabled">';
-						}
-						delais += '</td>';
-						var logModifDate = d.logModifDate ? new Date(d.logModifDate) : null;
-						delais += '<td>' + RegDate.format(d.dateTraitement) + '</td><td style="action"><img src="../images/consult_off.gif" title="' + d.logModifUser + '-' + DateUtils.toNormalString(logModifDate) + '"></td></tr>';
-					}
-					delais += '</tbody></table></fieldset>\n';
-				}
-
-				var etats = '';
-				if (view.etats) {
-					etats = '<fieldset><legend><span>Etats</span></legend>';
-					etats += '<table id="etat" class="display"><thead><tr><th>Date</th><th>Etat</th><th>Source</th><th></th></tr></thead><tbody>';
-					for (var i in view.etats) {
-						var e = view.etats[i];
-						etats += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
-						etats += '<td>' + RegDate.format(e.dateObtention);
-						if (!e.annule && e.etat == 'SOMMEE') {
-							etats += '&nbsp;' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage);
-						}
-						etats += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
-						if (!e.annule && e.etat == 'SOMMEE') {
-							etats += '&nbsp;' + '<a href="' + getContextPath() + '/declaration/copie-conforme-sommation.do?idEtat=' + e.id + '" class="pdf" id="copie-sommation-' + e.id + '" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
-							etats += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
-						}
-						etats += '</td><td>';
-						if (e.etat == 'RETOURNEE') {
-							etats += StringUtils.escapeHTML(e.sourceMessage);
-						}
-						etats += '</td><td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
-					}
-				}
+				var delais = Decl._buildDelaisTable(di.delais);
+				var etats = Decl._buidlEtatsTable(di.etats);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
 				dialog.html(info + delais + etats);
@@ -2222,5 +2177,100 @@ var DI = {
 			}
 		})
 		.error(Ajax.notifyErrorHandler("affichage des détails de la déclaration"));
+	},
+
+	/**
+	 * Cette méthode ouvre un fenêtre popup avec les détails (read-only) de la déclaration d'impôt source (LR) dont l'id est passé en paramètre.
+	 * @param lrId l'id de la déclaration à afficher.
+	 */
+	open_details_lr: function(lrId) {
+
+		$.getJSON(getContextPath() + "/decl/details.do?id=" + lrId + "&" + new Date().getTime(), function(lr) {
+			if (lr) {
+				var info = '<fieldset class="information"><legend><span>Caractéristiques de la liste récapitulative</span></legend>';
+				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateDebut) + '</td></tr>';
+				info += '<tr class="even"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateFin) + '</td></tr></table></fieldset>\n';
+
+				var delais = Decl._buildDelaisTable(lr.delais);
+				var etats = Decl._buidlEtatsTable(lr.etats);
+
+				var dialog = Dialog.create_dialog_div('details-di-dialog');
+				dialog.html(info + delais + etats);
+
+				dialog.dialog({
+					title: "Détails de la déclaration d'impôt source",
+					width: 650,
+					modal: true,
+					buttons: {
+						Ok: function() {
+							dialog.dialog("close");
+						}
+					}
+				});
+			}
+			else {
+				alert("La déclaration n'existe pas.");
+			}
+		})
+		.error(Ajax.notifyErrorHandler("affichage des détails de la déclaration"));
+	},
+
+	_buildDelaisTable: function (delais) {
+		var html = '';
+		if (delais) {
+			html = '<fieldset><legend><span>Délais</span></legend>';
+			html +=
+				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation éditée</th><th>Date traitement</th><th></th></tr></thead><tbody>';
+			for (var i in delais) {
+				var d = delais[i];
+				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
+				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
+				html += '<td>';
+				if (d.confirmationEcrite) {
+					html += '<input type="checkbox" checked="checked" disabled="disabled">';
+					html += '<a href="' + getContextPath() + '/declaration/copie-conforme-delai.do?idDelai=' + d.id + '" class="pdf" id="print-delai-' + d.id +
+						'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
+					html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
+				}
+				else {
+					html += '<input type="checkbox" disabled="disabled">';
+				}
+				html += '</td>';
+				var logModifDate = d.logModifDate ? new Date(d.logModifDate) : null;
+				html += '<td>' + RegDate.format(d.dateTraitement) + '</td><td style="action"><img src="../images/consult_off.gif" title="' + d.logModifUser + '-' +
+					DateUtils.toNormalString(logModifDate) + '"></td></tr>';
+			}
+			html += '</tbody></table></fieldset>\n';
+		}
+		return html;
+	},
+
+	_buidlEtatsTable: function (etats) {
+		var html = '';
+		if (etats) {
+			html = '<fieldset><legend><span>Etats</span></legend>';
+			html += '<table id="etat" class="display"><thead><tr><th>Date</th><th>Etat</th><th>Source</th><th></th></tr></thead><tbody>';
+			for (var i in etats) {
+				var e = etats[i];
+				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
+				html += '<td>' + RegDate.format(e.dateObtention);
+				if (!e.annule && e.etat == 'SOMMEE') {
+					html += '&nbsp;' + StringUtils.escapeHTML(e.dateEnvoiCourrierMessage);
+				}
+				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
+				if (!e.annule && e.etat == 'SOMMEE') {
+					html += '&nbsp;' + '<a href="' + getContextPath() + '/declaration/copie-conforme-sommation.do?idEtat=' + e.id + '" class="pdf" id="copie-sommation-' + e.id +
+						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
+					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
+				}
+				html += '</td><td>';
+				if (e.etat == 'RETOURNEE') {
+					html += StringUtils.escapeHTML(e.sourceMessage);
+				}
+				html += '</td><td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
+			}
+		}
+		return html;
 	}
+
 };

@@ -119,15 +119,6 @@
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
-	<bean id="lrVisuController" class="ch.vd.uniregctb.tiers.ListeRecapVisuController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.lr.view.ListeRecapDetailView" />
-		<property name="commandName" value="command" />
-		<property name="lrVisuManager" ref="lrVisuManager" />
-		<property name="formView" value="tiers/visualisation/lr/lr" />
-		<property name="successView" value="redirect:/tiers/lr.do" />
-	</bean>
-	
 	<bean id="lrVisuManager" class="ch.vd.uniregctb.tiers.manager.ListeRecapVisuManagerImpl">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
@@ -136,7 +127,7 @@
 	</bean>
 
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
-		<property name="diDAO" ref="diDAO" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="messageSource" ref="messageSource" />
 	</bean>
 

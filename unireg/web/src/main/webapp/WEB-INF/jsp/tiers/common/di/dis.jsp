@@ -55,7 +55,7 @@
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<c:if test="${!di.annule}">
-					<a href="#" class="detail" title="DI" onclick="DI.open_details(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="DI" onclick="Decl.open_details_di(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
 				</c:if>
 				<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
 			</c:if>
