@@ -41,6 +41,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
@@ -664,6 +665,65 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) d;
 				assertEquals(Integer.valueOf(6), di.getCodeSegment());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-4923] Ce test vérifie qu'il est possible d'émettre une déclaration d'impôt sur un contribuable hors-canton qui a vendu son dernier immeuble dans l'année.
+	 * <p/>
+	 * La difficulté tient au fait que les assujettissements économiques s'étendent toujours sur toute l'année et qu'on s'intéresse donc au for de gestion au 31 décembre. Comme à cette date-là, le
+	 * contribuable ne possède plus de for fiscal actif dans le canton, il n'y a plus de for de gestion actif. La solution est donc de rechercher le dernier for de gestion connu.
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testCreerNouvelleDIHorsCantonApresVenteDansLAnnee() throws Exception {
+
+		class Ids {
+			long ppId;
+			long oidCedi;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periode2009);
+
+				final PersonnePhysique pp = addNonHabitant("Annette", "Lebeurre", date(1978, 12, 3), Sexe.FEMININ);
+				addForPrincipal(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, MockCommune.Zurich);
+				addForSecondaire(pp, date(2006, 12, 20), MotifFor.ACHAT_IMMOBILIER, date(2009, 12, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Cully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				ids.ppId = pp.getNumero();
+
+				final CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
+				ids.oidCedi = cedi.getId();
+
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
+				// cet appel levait une exception parce que le for de gestion au 31 décembre 2009 n'était pas connu avant la correction du cas SIFISC-4923
+				manager.creerNouvelleDI(pp, date(2009, 1, 1), date(2009, 12, 31), TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, TypeAdresseRetour.CEDI, RegDate.get().addMonths(2), null);
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.ppId);
+				final List<Declaration> decls = pp.getDeclarationsForPeriode(2009, false);
+				assertNotNull(decls);
+				assertEquals(1, decls.size());
+				assertDI(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
 				return null;
 			}
 		});

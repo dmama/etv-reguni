@@ -13,6 +13,7 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
@@ -672,129 +673,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 
 		if (diEditView.getId() == null) {
-			di = new DeclarationImpotOrdinaire();
-
-			final RegDate dateDebut = diEditView.getRegDateDebutPeriodeImposition();
-
-			// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
-			// di.setNumero(1);
-
-			di.setDateDebut(dateDebut);
-			di.setDateFin(RegDate.get(diEditView.getDateFinPeriodeImposition()));
-
-			final TypeContribuable typeContribuable;
-			final boolean diLibre;
-			final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb, dateDebut.year());
-			if (periodesImposition != null) {
-				final PeriodeImposition dernierePeriode = periodesImposition.get(periodesImposition.size() - 1);
-				typeContribuable = dernierePeriode.getTypeContribuable();
-
-				// une DI est libre si je ne trouve aucune période d'assujettissement qui colle avec les dates de la DI elle-même
-				// (il faut quand-même accessoirement qu'elle soit créée sur la période fiscale courante)
-				if (dateDebut.year() == RegDate.get().year()) {
-					boolean trouveMatch = false;
-					for (PeriodeImposition p : periodesImposition) {
-						trouveMatch = DateRangeHelper.equals(p, di);
-						if (trouveMatch) {
-							break;
-						}
-					}
-					diLibre = !trouveMatch;
-				}
-				else {
-					diLibre = false;
-				}
-			}
-			else {
-				// pas d'assujettissement + di = di libre, forcément...
-				diLibre = true;
-				typeContribuable = null;
-			}
-
-			di.setTypeContribuable(typeContribuable);
-			di.setLibre(diLibre);
-
-			final ForGestion forGestion = tiersService.getForGestionActif(ctb, di.getDateFin());
-			if (forGestion != null) {
-				di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
-			}
-			else {
-				throw new ActionException("le contribuable ne possède pas de for de gestion au " + di.getDateFin());
-			}
-
-			final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateDebut.year());
-			if (periode == null) {
-				throw new ActionException("la période fiscale pour l'année " + dateDebut.year() + " n'existe pas.");
-			}
-			di.setPeriode(periode);
-
-			// assigne le modèle de document à la DI en fonction de ce que contient la vue
-			assigneModeleDocument(diEditView, di);
-
-			final ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative;
-			if (diEditView.getTypeAdresseRetour() == TypeAdresseRetour.ACI) {
-				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
-			}
-			else if (diEditView.getTypeAdresseRetour() == TypeAdresseRetour.CEDI) {
-				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
-			}
-			else {
-				final Integer officeImpot = tiersService.getOfficeImpotId(ctb);
-				if (officeImpot == null) {
-					throw new ActionException("le contribuable ne possède pas de for de gestion");
-				}
-				collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(officeImpot);
-			}
-			di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
-
-			final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, di.getDateFin().year());
-			di.setQualification(derniereQualification);
-
-			final Integer codeSegment = PeriodeImposition.determineCodeSegment(ctb, di.getDateFin().year());
-			if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
-				di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
-			} else {
-				di.setCodeSegment(codeSegment);
-			}
-
-
-			final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
-			di.addEtat(emission);
-
-			// [UNIREG-2705] Création d'une DI déjà retournée
-			if (diEditView.getDateRetour() != null) {
-				if (!RegDateHelper.isAfterOrEqual(diEditView.getRegDateRetour(), RegDate.get(), NullDateBehavior.LATEST)) {
-					throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
-				}
-
-				final EtatDeclaration retour = new EtatDeclarationRetournee(diEditView.getRegDateRetour(), EtatDeclarationRetournee.SOURCE_WEB);
-				di.addEtat(retour);
-			}
-
-			final DelaiDeclaration delai = new DelaiDeclaration();
-			delai.setDelaiAccordeAu(diEditView.getRegDelaiAccorde());
-			delai.setDateDemande(RegDate.get());
-			delai.setDateTraitement(RegDate.get());
-			di.addDelai(delai);
-
-			// persistence du lien entre le contribuable et la nouvelle DI
-			di = (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
-
-			//Mise à jour de l'état de la tâche si il y en a une
-			final TacheCriteria criterion = new TacheCriteria();
-			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			criterion.setAnnee(dateDebut.year());
-			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-			criterion.setContribuable(ctb);
-			final List<Tache> taches = tacheDAO.find(criterion);
-			if (taches != null && !taches.isEmpty()) {
-				for (Tache t : taches) {
-					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
-					if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
-						tache.setEtat(TypeEtatTache.TRAITE);
-					}
-				}
-			}
+			di = creerNouvelleDI(ctb, diEditView.getRegDateDebutPeriodeImposition(), diEditView.getRegDateFinPeriodeImposition(), diEditView.getTypeDeclarationImpot(),
+					diEditView.getTypeAdresseRetour(), diEditView.getRegDelaiAccorde(), diEditView.getRegDateRetour());
 		}
 		else {
 			di = diDAO.get(diEditView.getId());
@@ -826,11 +706,140 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				// les types qui peuvent revenir de la view sont COMPLETE_LOCAL et VAUDTAX
 				// on ne va pas remplacer un COMPLETE_BATCH par un COMPLETE_LOCAL, cela ne sert à rien
 				if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || diEditView.getTypeDeclarationImpot() != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-					assigneModeleDocument(diEditView, di);
+					assigneModeleDocument(di, diEditView.getTypeDeclarationImpot());
 				}
 			}
 		}
 
+		return di;
+	}
+
+	protected DeclarationImpotOrdinaire creerNouvelleDI(Contribuable ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
+	                                                  RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
+
+		// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}
+		// di.setNumero(1);
+
+		di.setDateDebut(dateDebut);
+		di.setDateFin(dateFin);
+
+		final TypeContribuable typeContribuable;
+		final boolean diLibre;
+		final List<PeriodeImposition> periodesImposition = periodeImpositionService.determine(ctb, dateDebut.year());
+		if (periodesImposition != null) {
+			final PeriodeImposition dernierePeriode = periodesImposition.get(periodesImposition.size() - 1);
+			typeContribuable = dernierePeriode.getTypeContribuable();
+
+			// une DI est libre si je ne trouve aucune période d'assujettissement qui colle avec les dates de la DI elle-même
+			// (il faut quand-même accessoirement qu'elle soit créée sur la période fiscale courante)
+			if (dateDebut.year() == RegDate.get().year()) {
+				boolean trouveMatch = false;
+				for (PeriodeImposition p : periodesImposition) {
+					trouveMatch = DateRangeHelper.equals(p, di);
+					if (trouveMatch) {
+						break;
+					}
+				}
+				diLibre = !trouveMatch;
+			}
+			else {
+				diLibre = false;
+			}
+		}
+		else {
+			// pas d'assujettissement + di = di libre, forcément...
+			diLibre = true;
+			typeContribuable = null;
+		}
+
+		di.setTypeContribuable(typeContribuable);
+		di.setLibre(diLibre);
+
+		// [SIFISC-4923] il faut prendre le dernier for de gestion connu (car il arrive qu'il n'y en ait plus de connu
+		// à la date précise demandée, par exemple dans le cas du ctb HC qui vend son dernier immeuble dans l'année).
+		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, di.getDateFin());
+		if (forGestion != null) {
+			di.setNumeroOfsForGestion(forGestion.getNoOfsCommune());
+		}
+		else {
+			throw new ActionException("le contribuable ne possède pas de for de gestion au " + di.getDateFin());
+		}
+
+		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateDebut.year());
+		if (periode == null) {
+			throw new ActionException("la période fiscale pour l'année " + dateDebut.year() + " n'existe pas.");
+		}
+		di.setPeriode(periode);
+
+		// assigne le modèle de document à la DI en fonction de ce que contient la vue
+		assigneModeleDocument(di, typeDocument);
+
+		final ch.vd.uniregctb.tiers.CollectiviteAdministrative collectiviteAdministrative;
+		if (typeAdresseRetour == TypeAdresseRetour.ACI) {
+			collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+		}
+		else if (typeAdresseRetour == TypeAdresseRetour.CEDI) {
+			collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		}
+		else {
+			final Integer officeImpot = tiersService.getOfficeImpotId(ctb);
+			if (officeImpot == null) {
+				throw new ActionException("le contribuable ne possède pas de for de gestion");
+			}
+			collectiviteAdministrative = tiersService.getOrCreateCollectiviteAdministrative(officeImpot);
+		}
+		di.setRetourCollectiviteAdministrativeId(collectiviteAdministrative.getId());
+
+		final Qualification derniereQualification = PeriodeImposition.determineQualification(ctb, di.getDateFin().year());
+		di.setQualification(derniereQualification);
+
+		final Integer codeSegment = PeriodeImposition.determineCodeSegment(ctb, di.getDateFin().year());
+		if (codeSegment == null && periode.getAnnee() >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+			di.setCodeSegment(DeclarationImpotService.VALEUR_DEFAUT_CODE_SEGMENT);
+		}
+		else {
+			di.setCodeSegment(codeSegment);
+		}
+
+
+		final EtatDeclaration emission = new EtatDeclarationEmise(RegDate.get());
+		di.addEtat(emission);
+
+		// [UNIREG-2705] Création d'une DI déjà retournée
+		if (dateRetour != null) {
+			if (!RegDateHelper.isAfterOrEqual(dateRetour, RegDate.get(), NullDateBehavior.LATEST)) {
+				throw new ActionException("La date de retour d'une DI émise aujourd'hui ne peut pas être dans le passé");
+			}
+
+			final EtatDeclaration retour = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
+			di.addEtat(retour);
+		}
+
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setDelaiAccordeAu(delaiAccorde);
+		delai.setDateDemande(RegDate.get());
+		delai.setDateTraitement(RegDate.get());
+		di.addDelai(delai);
+
+		// persistence du lien entre le contribuable et la nouvelle DI
+		di = (DeclarationImpotOrdinaire) tiersDAO.addAndSave(ctb, di);
+
+		//Mise à jour de l'état de la tâche si il y en a une
+		final TacheCriteria criterion = new TacheCriteria();
+		criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+		criterion.setAnnee(dateDebut.year());
+		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
+		criterion.setContribuable(ctb);
+		final List<Tache> taches = tacheDAO.find(criterion);
+		if (taches != null && !taches.isEmpty()) {
+			for (Tache t : taches) {
+				final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) t;
+				if (tache.getDateDebut().equals(di.getDateDebut()) && tache.getDateFin().equals(di.getDateFin())) {
+					tache.setEtat(TypeEtatTache.TRAITE);
+				}
+			}
+		}
 		return di;
 	}
 
@@ -856,14 +865,14 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Assigne le modèle de document à la DI en fonction du type de document trouvé dans la view
 	 *
-	 * @param diEditView view utilisée comme source du type de document ({@link ch.vd.uniregctb.di.view.DeclarationImpotDetailView#getTypeDeclarationImpot()}
 	 * @param di         DI à laquelle le modèle de document sera assigné
+	 * @param typeDeclarationImpot le type de déclaration souhaitée
 	 */
-	private void assigneModeleDocument(DeclarationImpotDetailView diEditView, DeclarationImpotOrdinaire di) {
+	private void assigneModeleDocument(DeclarationImpotOrdinaire di, TypeDocument typeDeclarationImpot) {
 		final PeriodeFiscale periode = di.getPeriode();
-		final ModeleDocument modeleDocument = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, diEditView.getTypeDeclarationImpot());
+		final ModeleDocument modeleDocument = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, typeDeclarationImpot);
 		if (modeleDocument == null) {
-			throw new ActionException(String.format("Le modèle de document %s pour l'année %d n'existe pas.", diEditView.getTypeDeclarationImpot(), periode.getAnnee()));
+			throw new ActionException(String.format("Le modèle de document %s pour l'année %d n'existe pas.", typeDeclarationImpot, periode.getAnnee()));
 		}
 		di.setModeleDocument(modeleDocument);
 	}
