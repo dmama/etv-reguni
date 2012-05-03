@@ -5,7 +5,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
 import java.util.HashMap;
+import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -47,6 +49,15 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	private TiersDAO dao;
 	private PlatformTransactionManager transactionManager;
 
+	private Map<String, Action> actions = new HashMap<String, Action>();
+
+	public DatabaseDumpController() {
+		actions.put("dump", new DownloadAll());
+		actions.put("dump2fs", new DumpToFileSystem());
+		actions.put("fs2import", new ImportFromFileSystem());
+		actions.put("dumptiers", new DownloadTiers());
+	}
+
 	@Override
 	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
@@ -55,104 +66,170 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 		}
 
 		final String environnement = UniregModeHelper.getEnvironnement();
-		if (!environnement.equals("Developpement") && !environnement.equals("Standalone")) {
-			flashError("Cette fonctionalité n'est disponible qu'en développement !");
-			return new ModelAndView(new RedirectView("tiersImport/list.do"));
-		}
+		final boolean inDev = environnement.equals("Developpement") || environnement.equals("Standalone");
 
-		final String action = request.getParameter("action");
-		if (action != null) {
-			if ("dump".equals(action)) {
-				dumpToResponse(request, response);
+		final Action a = getAction(request);
+		if (a != null) {
+
+			if (!inDev && a.inDevOnly()) {
+				flashError("Cette fonctionalité n'est disponible qu'en développement !");
+				return new ModelAndView(new RedirectView("tiersImport/list.do"));
 			}
-			else if ("dump2fs".equals(action)) {
-				dumpToFilesystem();
-				return new ModelAndView(new RedirectView("batch.do"));
-			}
-			else if ("fs2import".equals(action)) {
-				importFromFilesystem(request, response);
-				return new ModelAndView(new RedirectView("batch.do"));
-			}
-			else if ("dumptiers".equals(action)) {
-				dumpTiers(request, response);
-				return new ModelAndView(new RedirectView("batch.do"));
+
+			final ModelAndView mav = a.execute(request, response);
+			if (mav != null) {
+				return mav;
 			}
 		}
 
 		return new ModelAndView(new RedirectView(getSuccessView()));
 	}
 
+	private Action getAction(HttpServletRequest request) {
+		Action a = null;
+
+		final String action = request.getParameter("action");
+		if (action != null) {
+			a = actions.get(action);
+		}
+		return a;
+	}
+
 	/**
-	 * Dump le contenu de la base de données dans la réponse Htpp de telle manière que l'utilisateur puisse immédiatement le sauver sur sa
-	 * machine. Cette manière de faire est limité à 1000 tiers pour éviter de tuer la machine.
+	 * Une action supportée par ce contrôleur.
 	 */
-	private void dumpToResponse(HttpServletRequest request, HttpServletResponse response) throws Exception {
+	private static interface Action {
 
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
+		boolean inDevOnly();
 
-		final int nbTiers = template.execute(new TransactionCallback<Integer>() {
-			@Override
-			public Integer doInTransaction(TransactionStatus status) {
-				return dao.getCount(Tiers.class);
-			}
-		});
+		@Nullable
+		ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	}
 
-		if (nbTiers > MAX_TIERS_TO_DUMP) {
-			throw new TooManyTiersException("Il y a " + nbTiers + " tiers dans la base de données. Impossible d'exporter plus de "
-					+ MAX_TIERS_TO_DUMP);
+	/**
+	 * Dump le contenu de la base de données dans la réponse Htpp de telle manière que l'utilisateur puisse immédiatement le sauver sur sa machine. Cette manière de faire est limité à 1000 tiers pour
+	 * éviter de tuer la machine.
+	 */
+	private class DownloadAll implements Action {
+
+		@Override
+		public boolean inDevOnly() {
+			return true;
 		}
 
-		final ByteArrayOutputStream content = new ByteArrayOutputStream();
+		@Override
+		public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		// Dump la base de données
-		template.execute(new TransactionCallback<Object>() {
-			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				try {
-					dbService.dumpToDbunitFile(content);
+			TransactionTemplate template = new TransactionTemplate(transactionManager);
+			template.setReadOnly(true);
+
+			final int nbTiers = template.execute(new TransactionCallback<Integer>() {
+				@Override
+				public Integer doInTransaction(TransactionStatus status) {
+					return dao.getCount(Tiers.class);
 				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-				return null;
+			});
+
+			if (nbTiers > MAX_TIERS_TO_DUMP) {
+				throw new TooManyTiersException("Il y a " + nbTiers + " tiers dans la base de données. Impossible d'exporter plus de "
+						+ MAX_TIERS_TO_DUMP);
 			}
-		});
-		
 
-		// Retourne le contenu de la base sous forme de fichier XML
-		final String filename = "database-dump-" + RegDate.get().toString() + ".xml";
-		Audit.info("La base de données de données à été exportée directement sur le poste client (" + filename + ").");
+			final ByteArrayOutputStream content = new ByteArrayOutputStream();
 
-		ServletOutputStream out = response.getOutputStream();
-		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
+			// Dump la base de données
+			template.execute(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					try {
+						dbService.dumpToDbunitFile(content);
+					}
+					catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					return null;
+				}
+			});
 
-		String mimetype = this.getServletContext().getMimeType(filename);
-		response.setContentType(mimetype);
-		response.setContentLength(content.size());
-		response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + '\"');
-		FileCopyUtils.copy(content.toByteArray(), out);
+
+			// Retourne le contenu de la base sous forme de fichier XML
+			final String filename = "database-dump-" + RegDate.get().toString() + ".xml";
+			Audit.info("La base de données de données à été exportée directement sur le poste client (" + filename + ").");
+
+			ServletOutputStream out = response.getOutputStream();
+			response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
+
+			String mimetype = DatabaseDumpController.this.getServletContext().getMimeType(filename);
+			response.setContentType(mimetype);
+			response.setContentLength(content.size());
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + '\"');
+			FileCopyUtils.copy(content.toByteArray(), out);
+			return null;
+		}
 	}
 
 	/**
 	 * Démarre un job qui va dumper la base de manière asynchrone
 	 */
-	private void dumpToFilesystem() throws Exception {
-		batchScheduler.startJob(DumpDatabaseJob.NAME, null);
+	private class DumpToFileSystem implements Action {
+
+		@Override
+		public boolean inDevOnly() {
+			return true;
+		}
+
+		@Override
+		public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+			batchScheduler.startJob(DumpDatabaseJob.NAME, null);
+			return new ModelAndView(new RedirectView("batch.do"));
+		}
+	}
+
+	/**
+	 * Démarre un job qui va recharger la base de manière asynchrone
+	 */
+	private class ImportFromFileSystem implements Action {
+
+		@Override
+		public boolean inDevOnly() {
+			return true;
+		}
+
+		@Override
+		public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+			final Document doc = getDoc(request);
+			if (doc != null) {
+				HashMap<String, Object> params = new HashMap<String, Object>();
+				params.put(LoadDatabaseJob.DOC_ID, doc.getId());
+				batchScheduler.startJob(LoadDatabaseJob.NAME, params);
+			}
+			return new ModelAndView(new RedirectView("batch.do"));
+		}
 	}
 
 	/**
 	 * Démarre un job qui va dumper les données (tiers, adresses, rapports, etc.) relatives aux tiers spécifiés.
-	 * @param parameter la liste d'id des tiers (séparés par virgule).
 	 */
-	private void dumpTiers(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		final HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put(DumpTiersListJob.PARAM_TIERS_LIST, request.getParameter("tiers"));
-		params.put(DumpTiersListJob.INCLUDE_DECLARATION, true);
-		params.put(DumpTiersListJob.INCLUDE_RET, true);
-		params.put(DumpTiersListJob.INCLUDE_SIT_FAM, true);
+	private class DownloadTiers implements Action {
 
-		batchScheduler.startJob(DumpTiersListJob.NAME, params);
+		@Override
+		public boolean inDevOnly() {
+			// parce qu'on veut pouvoir exporter un tiers même en production pour permettre de reproduire une situation en développement
+			return false;
+		}
+
+		@Override
+		public ModelAndView execute(HttpServletRequest request, HttpServletResponse response) throws Exception {
+			final HashMap<String, Object> params = new HashMap<String, Object>();
+			params.put(DumpTiersListJob.PARAM_TIERS_LIST, request.getParameter("tiers"));
+			params.put(DumpTiersListJob.INCLUDE_DECLARATION, true);
+			params.put(DumpTiersListJob.INCLUDE_RET, true);
+			params.put(DumpTiersListJob.INCLUDE_SIT_FAM, true);
+
+			batchScheduler.startJob(DumpTiersListJob.NAME, params);
+			return new ModelAndView(new RedirectView("batch.do"));
+		}
 	}
 
 	private Document getDoc(HttpServletRequest request) throws Exception {
@@ -169,23 +246,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 			return null;
 		}
 
-		final Document doc = docService.get(id);
-		return doc;
-	}
-
-	/**
-	 * Démarre un job qui va recharger la base de manière asynchrone
-	 */
-	private void importFromFilesystem(HttpServletRequest request, HttpServletResponse response) throws Exception {
-
-		final Document doc = getDoc(request);
-		if (doc == null) {
-			return;
-		}
-
-		HashMap<String, Object> params = new HashMap<String, Object>();
-		params.put(LoadDatabaseJob.DOC_ID, doc.getId());
-		batchScheduler.startJob(LoadDatabaseJob.NAME, params);
+		return docService.get(id);
 	}
 
 	public void setDatabaseService(DatabaseService dbService) {
