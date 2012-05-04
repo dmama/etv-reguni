@@ -133,8 +133,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		{
 			final Commune lussery = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1998, 12, 1));    // fusion au 31.12.1998
 			assertNotNull(lussery);
-			// FIXME (msi) en attente de la résolution de SIFISC-761
-			// assertEquals("Lussery", lussery.getNomMinuscule());
+			assertEquals("Lussery", lussery.getNomMinuscule());
 		}
 		{
 			final Commune lusseryVillars = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1999, 1, 1));  // fusion au 31.12.1998
@@ -197,7 +196,7 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 			final Commune commune = service.getCommuneByEgid(immeuble, date(2012, 1, 1));
 			assertNotNull(commune);
 			assertEquals(MockCommune.BourgEnLavaux.getNoOFSEtendu(), commune.getNoOFSEtendu());
-			// FIXME (msi) en attente de la résolution de SIFISC-628 : assertEquals("Bourg-en-Lavaux", commune.getNomMinuscule());
+			assertEquals("Bourg-en-Lavaux", commune.getNomMinuscule());
 		}
 	}
 
