@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,6 +39,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Modélise un événement d'arrivée.
@@ -87,11 +89,17 @@ public abstract class Arrivee extends Mouvement {
 	}
 
 	@Override
+    @SuppressWarnings("null")
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 		/*
 		 * Le retour du mort-vivant
 		 */
-		if (getIndividu().getDateDeces() != null) {
+        final Individu indiv = getIndividu();
+        if (indiv == null) {
+            erreurs.addErreur("individu requis pour traiter un décès");
+            return;
+        }
+        if (indiv.getDateDeces() != null) {
 			erreurs.addErreur("L'individu est décédé");
 		}
 	}
@@ -207,7 +215,7 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	protected abstract void doHandleCreationForMenage(PersonnePhysique arrivant, MenageCommun menageCommun, EvenementCivilWarningCollector warnings) throws EvenementCivilException;
 
-	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) {
+	private List<PersonnePhysique> findNonHabitants(Individu individu, boolean assujettissementObligatoire) throws EvenementCivilException {
 		return findNonHabitants(getService(), individu, assujettissementObligatoire);
 	}
 
@@ -218,7 +226,7 @@ public abstract class Arrivee extends Mouvement {
 	 * @param assujettissementObligatoire <b>vrai</b> s'il les non-habitants recherchés doivent posséder un for principal actif.
 	 * @return une liste de non-habitants qui correspondent aux critères.
 	 */
-	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire) {
+	protected static List<PersonnePhysique> findNonHabitants(TiersService tiersService, Individu individu, boolean assujettissementObligatoire) throws EvenementCivilException {
 
 		// les critères de recherche
 		final String nomPrenom = tiersService.getNomPrenom(individu);
@@ -233,7 +241,18 @@ public abstract class Arrivee extends Mouvement {
 
 		final List<PersonnePhysique> nonHabitants = new ArrayList<PersonnePhysique>();
 
-		final List<TiersIndexedData> results = tiersService.search(criteria);
+		List<TiersIndexedData> results;
+
+        try {
+            results = tiersService.search(criteria);
+        } catch (TooManyResultsIndexerException e) {
+            // [SIFISC-4876] On catch cette runtime exception de l'indexeur pour fournir à l'utilisateur un message plus parlant
+            throw new EvenementCivilException (
+                    String.format("Trop de non-habitants (%d au total) correspondent à: %s", e.getNbResults(), nomPrenom),
+                    e
+            );
+        }
+
 		for (final TiersIndexedData tiersIndexedData : results) {
 			final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(tiersIndexedData.getNumero());
 			// [UNIREG-770] le non habitant doit être assujetti
@@ -442,14 +461,12 @@ public abstract class Arrivee extends Mouvement {
 	}
 
 	/**
-	 * Récupère le ménage commun avec le contribuable principal et le conjoint comme parties.
-	 *
-	 * @param habitantPrincipal
-	 * @param habitantConjoint
+	 * @param habitantPrincipal .
+	 * @param habitantConjoint .
 	 * @param dateEvenement date de l'événement d'arrivée
 	 * @param dateDebutMenage date de début des nouveaux rapports d'appartenance ménage en cas de création de ménage
 	 * @param evenementId ID technique de l'événement d'arrivée
-	 * @return
+	 * @return le ménage commun avec le contribuable principal et le conjoint comme parties.
 	 * @throws EvenementCivilException
 	 *             si les deux habitants appartiennent à des ménages différents
 	 */
@@ -528,13 +545,10 @@ public abstract class Arrivee extends Mouvement {
 				/*
 				 * L'individu principal appartient déjà à un ménage => on vérifie que le ménage en question ne possède bien qu'un seul
 				 * membre actif et on rattache le conjoint au ménage
-				 */
-				final MenageCommun menage = menageCommunHabitantPrincipal;
-
-				/*
-				 * Vérification que l'on ajoute pas un deuxième conjoint
-				 */
-				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menage, habitantPrincipal);
+				 *
+                 * Vérification que l'on ajoute pas un deuxième conjoint
+                 */
+				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menageCommunHabitantPrincipal, habitantPrincipal);
 				if (autrePersonne != null) {
 					if (habitantConjoint == null) {
 						// [UNIREG-1184] marié seul dans le civil
@@ -553,13 +567,13 @@ public abstract class Arrivee extends Mouvement {
 				 * On ajoute le rapport entre l'habitant conjoint et le ménage existant
 				 */
 				if (habitantConjoint != null) {
-					final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantConjoint, dateDebutMenage, null);
+					final RapportEntreTiers rapport = getService().addTiersToCouple(menageCommunHabitantPrincipal, habitantConjoint, dateDebutMenage, null);
 
 					menageCommun = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
 					Audit.info(evenementId, String.format("L'arrivant [%d] a été attaché au ménage commun [%d] déjà existant", habitantConjoint.getNumero(), menageCommun.getNumero()));
 				}
 				else {
-					menageCommun = menage;
+					menageCommun = menageCommunHabitantPrincipal;
 				}
 
 			}
@@ -570,13 +584,10 @@ public abstract class Arrivee extends Mouvement {
 				/*
 				 * Le conjoint appartient déjà à un ménage => on vérifie que le ménage en question ne possède bien qu'un seul membre actif
 				 * et on rattache l'individu principal au ménage
-				 */
-				final MenageCommun menage = menageCommunHabitantConjoint;
-
-				/*
-				 * Vérification que l'on ajoute pas un deuxième individu principal
-				 */
-				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menage, habitantConjoint);
+                 *
+                 * Vérification que l'on ajoute pas un deuxième individu principal
+                 */
+				final PersonnePhysique autrePersonne = getAutrePersonneDuMenage(menageCommunHabitantConjoint, habitantConjoint);
 				if (autrePersonne != null) {
 					final String message = String.format("L'individu conjoint [%s] est en ménage commun avec une personne [%s] autre que son individu principal[%s]",
 														habitantConjoint, autrePersonne, habitantPrincipal);
@@ -590,7 +601,7 @@ public abstract class Arrivee extends Mouvement {
 				final RapportEntreTiers rapportExistant = habitantConjoint.getRapportSujetValidAt(null, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
 				Assert.notNull(rapportExistant);
 
-				final RapportEntreTiers rapport = getService().addTiersToCouple(menage, habitantPrincipal, rapportExistant.getDateDebut(), null);
+				final RapportEntreTiers rapport = getService().addTiersToCouple(menageCommunHabitantConjoint, habitantPrincipal, rapportExistant.getDateDebut(), null);
 				menageCommun = (MenageCommun) context.getTiersDAO().get(rapport.getObjetId());
 
 				final String auditString = String.format("L'arrivant [%d] a été rattaché au ménage commun [%d] dèjà existant", habitantPrincipal.getNumero(), menageCommun.getNumero());
@@ -611,7 +622,8 @@ public abstract class Arrivee extends Mouvement {
 	 * @throws EvenementCivilException
 	 *             si plus d'une autre personne est trouvée (ménage à trois, ah là là...)
 	 */
-	private PersonnePhysique getAutrePersonneDuMenage(MenageCommun menageCommun, PersonnePhysique personne) throws EvenementCivilException {
+	@Nullable
+    private PersonnePhysique getAutrePersonneDuMenage(MenageCommun menageCommun, PersonnePhysique personne) throws EvenementCivilException {
 
 		final RapportEntreTiers rapportAutrePersonne = getAppartenanceAuMenageAutrePersonne(menageCommun, personne);
 		if (rapportAutrePersonne == null) {
@@ -632,7 +644,8 @@ public abstract class Arrivee extends Mouvement {
 	 * @throws EvenementCivilException
 	 *             si plus d'une autre personne est trouvée (ménage à trois, ah là là...)
 	 */
-	private RapportEntreTiers getAppartenanceAuMenageAutrePersonne(MenageCommun menageCommun, PersonnePhysique personne)
+	@Nullable
+    private RapportEntreTiers getAppartenanceAuMenageAutrePersonne(MenageCommun menageCommun, PersonnePhysique personne)
 			throws EvenementCivilException {
 
 		RapportEntreTiers appartenanceAutrePersonne = null;
@@ -663,7 +676,8 @@ public abstract class Arrivee extends Mouvement {
 	 * @throws EvenementCivilException
 	 *             si plus d'un ménage commun est trouvé.
 	 */
-	private MenageCommun getMenageCommunActif(PersonnePhysique personne) throws EvenementCivilException {
+	@Nullable
+    private MenageCommun getMenageCommunActif(PersonnePhysique personne) throws EvenementCivilException {
 
 		if (personne == null) {
 			return null;
@@ -694,13 +708,12 @@ public abstract class Arrivee extends Mouvement {
 	/**
 	 * Cherche dans les rapport appartenance ménage, l'existence d'un ménage commun auquel auraient appartenu les deux contribuables.
 	 *
-	 * @param habitantPrincipal
-	 *            le membre principal du ménage
-	 * @param habitantConjoint
-	 *            son conjoint
+	 * @param principal le membre principal du ménage
+	 * @param conjoint son conjoint
 	 * @return le ménage commun trouvé, ou null si aucun trouvé.
 	 */
-	private MenageCommun getAncienMenageCommun(PersonnePhysique principal, PersonnePhysique conjoint) throws EvenementCivilException {
+	@Nullable
+    private MenageCommun getAncienMenageCommun(PersonnePhysique principal, PersonnePhysique conjoint) throws EvenementCivilException {
 
 		MenageCommun ancienMenage = null;
 

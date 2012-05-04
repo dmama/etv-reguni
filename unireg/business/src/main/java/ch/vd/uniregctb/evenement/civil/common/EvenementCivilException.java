@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.common;
 
+import org.apache.commons.lang.StringUtils;
+
 /**
  * Exception lancée par le traitement des événements civils unitaires, et qui
  * détermine le remplissage d'une queue d'erreur
  */
 public class EvenementCivilException extends Exception {
 
-	public EvenementCivilException(String message) {
+    private static final long serialVersionUID = -2525541800388242452L;
+
+    public EvenementCivilException(String message) {
 		super(message);
 	}
 
@@ -20,10 +24,11 @@ public class EvenementCivilException extends Exception {
 
 	@Override
 	public String getMessage() {
-		if (getCause() != null) {
-			return getCause().getMessage();
-		}
-		else {
+        if (StringUtils.isNotBlank(super.getMessage())) {
+            return super.getMessage();
+        } else if (getCause() != null) {
+            return getCause().getMessage();
+        } else {
 			return super.getMessage();
 		}
 	}

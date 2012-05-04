@@ -8,15 +8,12 @@ import ch.vd.uniregctb.tiers.Tiers;
  */
 public class IndexerException extends RuntimeException {
 
-	/**
-	 * Bon bah ouais...
-	 */
 	private static final long serialVersionUID = 9186744290875325753L;
 
 	private final Tiers tiers;
 
 	/**
-	 * @param l'exception a propager
+	 * @param e l'exception a propager
 	 */
 	public IndexerException(Exception e) {
 		super(e.toString(), e);
@@ -24,7 +21,7 @@ public class IndexerException extends RuntimeException {
 	}
 
 	/**
-	 * @param l'exception a propager
+	 * @param e l'exception a propager
 	 */
 	public IndexerException(Tiers tiers, Exception e) {
 		super(e.toString(), e);
@@ -32,36 +29,36 @@ public class IndexerException extends RuntimeException {
 	}
 
 	/**
-	 * @param string
+	 * @param message description de l'exception
 	 */
-	public IndexerException(String string) {
-		super(string);
+	public IndexerException(String message) {
+		super(message);
 		this.tiers = null;
 	}
 
 	/**
-	 * @param string
+	 * @param message description de l'exception
 	 */
-	public IndexerException(Tiers tiers, String string) {
-		super(string);
+	public IndexerException(Tiers tiers, String message) {
+		super(message);
 		this.tiers = tiers;
 	}
 
 	/**
-	 * @param string
-	 * @param l'exception a propager
+	 * @param message description de l'exception
+	 * @param  e l'exception a propager
 	 */
-	public IndexerException(String string, Exception e) {
-		super(string, e);
+	public IndexerException(String message, Exception e) {
+		super(message, e);
 		this.tiers = null;
 	}
 
 	/**
-	 * @param string
-	 * @param l'exception a propager
+	 * @param message description de l'exception
+	 * @param e l'exception a propager
 	 */
-	public IndexerException(Tiers tiers, String string, Exception e) {
-		super(string, e);
+	public IndexerException(Tiers tiers, String message, Exception e) {
+		super(message, e);
 		this.tiers = tiers;
 	}
 

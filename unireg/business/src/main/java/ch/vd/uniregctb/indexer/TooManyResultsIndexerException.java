@@ -2,8 +2,9 @@ package ch.vd.uniregctb.indexer;
 
 public class TooManyResultsIndexerException extends IndexerException {
 
-	private static final long serialVersionUID = 0L;
-	private final int nbResults;
+    private static final long serialVersionUID = 2754210825404154080L;
+
+    private final int nbResults;
 
 	public TooManyResultsIndexerException(Exception e) {
 		super(e);

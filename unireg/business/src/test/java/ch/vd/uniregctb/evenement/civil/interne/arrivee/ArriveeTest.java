@@ -5,7 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -338,6 +341,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+    @ExpectedException(EvenementCivilException.class)
 	public void testFindNonHabitants() throws Exception {
 
 		class Ids {
@@ -361,7 +365,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		removeIndexData();
 
 		doInNewTransaction(new TransactionCallback<Object>() {
-			@Override
+			@Nullable
+            @Override
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jeanNomPrenom = addNonHabitant("Jean", "Dupneu", null, null);
 				final PersonnePhysique jeanNomPrenomDate = addNonHabitant("Jean", "Dupneu", date(1960, 1, 1), null);
@@ -406,6 +411,12 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				ids.jacquesNomPrenomDateSexeAssujetti = jacquesNomPrenomDateSexeAssujetti.getId();
 				ids.rogerNomPrenomSexeAssujetti = rogerNomPrenomSexeAssujetti.getId();
 				ids.cedricNonHabitantAvecNoIndividu = cedricNonHabitantAvecNoIndividu.getId();
+
+                // ajout de 250 M. Jean Pierre Non Habitant
+                RegDate date = date(1960, 1, 1);
+                for (int i = 0; i < 250; i++, date = date.getOneDayAfter()) {
+                    addNonHabitant("Jean", "Pierre", date, Sexe.MASCULIN);
+                }
 				return null;
 			}
 		});
@@ -418,6 +429,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			private MockIndividu jacques;
 			private MockIndividu roger;
 			private MockIndividu cedric;
+            private MockIndividu pierreJean;
 
 			@Override
 			protected void init() {
@@ -425,6 +437,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				jacques = addIndividu(747474, date(1960, 1, 1), "Jacques", "Dupneu", true);
 				roger = addIndividu(585858, date(1960, 1, 1), "Roger", "Dupneu", true);
 				cedric = addIndividu(9191919, date(1960, 1, 1), "Cédric", "Dupneu", true);
+                pierreJean = addIndividu(9191918, date(1960, 1, 1), "Pierre", "Jean", true);
+
 			}
 		}
 
@@ -460,7 +474,15 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			final List<PersonnePhysique> list = Arrivee.findNonHabitants(context.getTiersService(), civil.cedric, true);
 			assertEmpty(list);
 		}
-	}
+
+        // [SIFISC-4876] Si on recherche Jean Pierre, il y en a bcp trop pour l'indexeur; qui doit lever une exception catchée et réemballée dans
+        // dans une EvenementCivilException avec un joli message compréhensible pour l'utilisateur
+        {
+            Arrivee.findNonHabitants(context.getTiersService(), civil.pierreJean, true);
+            fail("Le dernier appel doit lever une exception");
+        }
+
+    }
 
 	private void assertListContains(List<PersonnePhysique> list, Long... ids) {
 		assertNotNull(list);
