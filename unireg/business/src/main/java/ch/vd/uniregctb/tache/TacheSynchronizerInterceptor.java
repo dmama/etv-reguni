@@ -82,14 +82,11 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 
 
 		final boolean authenticated = AuthenticationHelper.isAuthenticated();
-		if (!authenticated) {
-			// [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
-			AuthenticationHelper.setPrincipal("AutoSynchro");
-		}
-		else {
-			final String visa = AuthenticationHelper.getCurrentPrincipal();
-			AuthenticationHelper.pushPrincipal(String.format("%s-recalculTaches", visa));
-		}
+
+		// [UNIREG-2894] dans le context post-transactional suite à la réception d'un événement JMS, l'autentification n'est pas renseignée. On le fait donc à la volée ici.
+		final String newPrincipal = authenticated ? String.format("%s-recalculTaches", AuthenticationHelper.getCurrentPrincipal()) : "AutoSynchro";
+
+		AuthenticationHelper.pushPrincipal(newPrincipal);
 		try {
 
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
@@ -108,13 +105,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			}
 		}
 		finally {
-			if (!authenticated) {
-				// [UNIREG-2894] si on était pas autentifié et qu'on l'a fait à la volée, on resette cette autentification ici.
-				AuthenticationHelper.resetAuthentication();
-			}
-			else {
-				AuthenticationHelper.popPrincipal();
-			}
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
