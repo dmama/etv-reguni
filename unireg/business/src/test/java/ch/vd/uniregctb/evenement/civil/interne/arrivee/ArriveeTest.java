@@ -412,9 +412,9 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				ids.rogerNomPrenomSexeAssujetti = rogerNomPrenomSexeAssujetti.getId();
 				ids.cedricNonHabitantAvecNoIndividu = cedricNonHabitantAvecNoIndividu.getId();
 
-                // ajout de 250 M. Jean Pierre Non Habitant
+                // ajout de 110 M. Jean Pierre Non Habitant
                 RegDate date = date(1960, 1, 1);
-                for (int i = 0; i < 250; i++, date = date.getOneDayAfter()) {
+                for (int i = 0; i < 110; i++) {
                     addNonHabitant("Jean", "Pierre", date, Sexe.MASCULIN);
                 }
 				return null;
