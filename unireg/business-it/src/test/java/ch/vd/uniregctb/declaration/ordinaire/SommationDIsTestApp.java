@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
@@ -32,16 +30,18 @@ public class SommationDIsTestApp extends BusinessItTestApplication {
 	@Override
 	protected void run() throws Exception {
 		super.run();
-		AuthenticationHelper.setPrincipal("[SommationDIsTestApp]");
+		AuthenticationHelper.pushPrincipal("[SommationDIsTestApp]");
+		try {
+			LOGGER.info("***** START SommationDIsTestApp Main *****");
+			service = (DeclarationImpotService) context.getBean("diService");
 
-		LOGGER.info("***** START SommationDIsTestApp Main *****");
-		service = (DeclarationImpotService) context.getBean("diService");
-
-		clearDatabase();
-		loadDatabase(DB_UNIT_DATA_FILE);
-		sommerLesDIs();
-
-		AuthenticationHelper.resetAuthentication();
+			clearDatabase();
+			loadDatabase(DB_UNIT_DATA_FILE);
+			sommerLesDIs();
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 		LOGGER.info("***** END SommationDIsTestApp Main *****");
 	}
 

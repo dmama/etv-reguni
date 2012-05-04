@@ -41,27 +41,31 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	public void testCreationInfos() throws Exception {
 
 		String activeUser = "BlaBla";
-		AuthenticationHelper.setPrincipal(activeUser);
+		AuthenticationHelper.pushPrincipal(activeUser);
+		try {
+			long id = doInNewTransaction(new TxCallback<Long>() {
+				@Override
+				public Long execute(TransactionStatus status) throws Exception {
+					PersonnePhysique nhab = new PersonnePhysique(false);
+					nhab.setNom("Broulis");
+					nhab.setPrenom("Broulis");
 
-		long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nhab = new PersonnePhysique(false);
-				nhab.setNom("Broulis");
-				nhab.setPrenom("Broulis");
+					nhab = (PersonnePhysique) dao.save(nhab);
+					return nhab.getNumero();
+				}
+			});
 
-				nhab = (PersonnePhysique) dao.save(nhab);
-				return nhab.getNumero();
-			}
-		});
+			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
+			Date creationDate = nhab.getLogCreationDate();
+			// String dateStr = DateHelper.dateTimeToDisplayString(creationDate);
+			String user = nhab.getLogCreationUser();
 
-		PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-		Date creationDate = nhab.getLogCreationDate();
-		// String dateStr = DateHelper.dateTimeToDisplayString(creationDate);
-		String user = nhab.getLogCreationUser();
-
-		assertEquals(activeUser, user);
-		assertNotNull(creationDate);
+			assertEquals(activeUser, user);
+			assertNotNull(creationDate);
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	@Test
@@ -69,55 +73,59 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	public void testModificationInfos() throws Exception {
 
 		final String activeUser = "BlaBla";
-		AuthenticationHelper.setPrincipal(activeUser);
+		AuthenticationHelper.pushPrincipal(activeUser);
+		try {
+			final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
+			final String oldUser = "BliBli";
 
-		final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
-		final String oldUser = "BliBli";
+			final long id = doInNewTransaction(new TxCallback<Long>() {
+				@Override
+				public Long execute(TransactionStatus status) throws Exception {
+					PersonnePhysique nhab = new PersonnePhysique(false);
+					nhab.setNom("Broulis");
+					nhab.setPrenom("Broulis");
+					nhab.setLogCreationUser(oldUser);
+					nhab.setLogCreationDate(modifInitalDate);
+					nhab.setLogModifUser(oldUser);
+					nhab.setLogModifMillis(modifInitalDate.getTime());
 
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nhab = new PersonnePhysique(false);
-				nhab.setNom("Broulis");
-				nhab.setPrenom("Broulis");
-				nhab.setLogCreationUser(oldUser);
-				nhab.setLogCreationDate(modifInitalDate);
-				nhab.setLogModifUser(oldUser);
-				nhab.setLogModifMillis(modifInitalDate.getTime());
+					nhab = (PersonnePhysique) dao.save(nhab);
+					return nhab.getNumero();
+				}
+			});
 
-				nhab = (PersonnePhysique) dao.save(nhab);
-				return nhab.getNumero();
-			}
-		});
+			Date beforeTx = DateHelper.getCurrentDate();
+			Thread.sleep(100);
 
-		Date beforeTx = DateHelper.getCurrentDate();
-		Thread.sleep(100);
+			doInNewTransaction(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
+					nhab.setNom("Pauli");
+					return null;
+				}
+			});
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			Thread.sleep(100);
+			Date afterTx = DateHelper.getCurrentDate();
+
+			{
 				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-				nhab.setNom("Pauli");
-				return null;
+				Date modifAfterDate = nhab.getLogModifDate();
+				String user = nhab.getLogCreationUser();
+
+				String modifAfterDateStr = modifAfterDate.toString();
+				// String modifInitalDateStr = modifInitalDate.toString();
+
+				assertEquals(activeUser, user);
+				assertNotNull(modifAfterDateStr);
+				assertTrue(modifInitalDate.before(modifAfterDate));
+				assertTrue(beforeTx.getTime() < modifAfterDate.getTime());
+				assertTrue(afterTx.getTime() > modifAfterDate.getTime());
 			}
-		});
-
-		Thread.sleep(100);
-		Date afterTx = DateHelper.getCurrentDate();
-
-		{
-			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-			Date modifAfterDate = nhab.getLogModifDate();
-			String user = nhab.getLogCreationUser();
-
-			String modifAfterDateStr = modifAfterDate.toString();
-			// String modifInitalDateStr = modifInitalDate.toString();
-
-			assertEquals(activeUser, user);
-			assertNotNull(modifAfterDateStr);
-			assertTrue(modifInitalDate.before(modifAfterDate));
-			assertTrue(beforeTx.getTime() < modifAfterDate.getTime());
-			assertTrue(afterTx.getTime() > modifAfterDate.getTime());
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 
@@ -129,80 +137,84 @@ public class ModificationLogInterceptorTest extends CoreDAOTest {
 	public void testModificationForFiscaux() throws Exception {
 
 		final String activeUser = "BlaBla";
-		AuthenticationHelper.setPrincipal(activeUser);
+		AuthenticationHelper.pushPrincipal(activeUser);
+		try {
+			final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
+			final String oldUser = "BliBli";
 
-		final Date modifInitalDate = DateHelper.getDate(2002, 3, 21);
-		final String oldUser = "BliBli";
+			final long id = doInNewTransaction(new TxCallback<Long>() {
+				@Override
+				public Long execute(TransactionStatus status) throws Exception {
+					PersonnePhysique nhab = new PersonnePhysique(false);
+					nhab.setNom("Broulis");
+					nhab.setPrenom("Broulis");
+					nhab.setLogCreationUser(oldUser);
+					nhab.setLogCreationDate(modifInitalDate);
+					nhab.setLogModifUser(oldUser);
+					nhab.setLogModifMillis(modifInitalDate.getTime());
 
-		final long id = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				PersonnePhysique nhab = new PersonnePhysique(false);
-				nhab.setNom("Broulis");
-				nhab.setPrenom("Broulis");
-				nhab.setLogCreationUser(oldUser);
-				nhab.setLogCreationDate(modifInitalDate);
-				nhab.setLogModifUser(oldUser);
-				nhab.setLogModifMillis(modifInitalDate.getTime());
+					ForFiscalPrincipal f = new ForFiscalPrincipal();
+					f.setDateDebut(RegDate.get(1990, 1, 1));
+					f.setDateFin(null);
+					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+					f.setNumeroOfsAutoriteFiscale(5586);
+					f.setMotifRattachement(MotifRattachement.DOMICILE);
+					f.setMotifOuverture(MotifFor.MAJORITE);
+					f.setModeImposition(ModeImposition.ORDINAIRE);
+					nhab.addForFiscal(f);
 
-				ForFiscalPrincipal f = new ForFiscalPrincipal();
-				f.setDateDebut(RegDate.get(1990, 1, 1));
-				f.setDateFin(null);
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(5586);
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setMotifOuverture(MotifFor.MAJORITE);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				nhab.addForFiscal(f);
+					nhab = (PersonnePhysique) dao.save(nhab);
+					return nhab.getNumero();
+				}
+			});
 
-				nhab = (PersonnePhysique) dao.save(nhab);
-				return nhab.getNumero();
-			}
-		});
+			Date beforeTx = DateHelper.getCurrentDate();
+			Thread.sleep(100);
 
-		Date beforeTx = DateHelper.getCurrentDate();
-		Thread.sleep(100);
+			doInNewTransaction(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
+					ForFiscalPrincipal f = nhab.getDernierForFiscalPrincipal();
+					f.setDateFin(RegDate.get(2008, 10, 10));
+					f.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 
-		doInNewTransaction(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+					f = new ForFiscalPrincipal();
+					f.setDateDebut(RegDate.get(2008, 10, 11));
+					f.setDateFin(null);
+					f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
+					f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+					f.setNumeroOfsAutoriteFiscale(4321);
+					f.setMotifRattachement(MotifRattachement.DOMICILE);
+					f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
+					f.setModeImposition(ModeImposition.ORDINAIRE);
+					nhab.addForFiscal(f);
+
+					return null;
+				}
+			});
+
+			Thread.sleep(100);
+			Date afterTx = DateHelper.getCurrentDate();
+
+			{
 				PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-				ForFiscalPrincipal f = nhab.getDernierForFiscalPrincipal();
-				f.setDateFin(RegDate.get(2008, 10, 10));
-				f.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
+				Date modifAfterDate = nhab.getLogModifDate();
+				String user = nhab.getLogCreationUser();
 
-				f = new ForFiscalPrincipal();
-				f.setDateDebut(RegDate.get(2008, 10, 11));
-				f.setDateFin(null);
-				f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
-				f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-				f.setNumeroOfsAutoriteFiscale(4321);
-				f.setMotifRattachement(MotifRattachement.DOMICILE);
-				f.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
-				f.setModeImposition(ModeImposition.ORDINAIRE);
-				nhab.addForFiscal(f);
+				String modifAfterDateStr = modifAfterDate.toString();
+				// String modifInitalDateStr = modifInitalDate.toString();
 
-				return null;
+				assertEquals(activeUser, user);
+				assertNotNull(modifAfterDateStr);
+				assertTrue(modifInitalDate.before(modifAfterDate));
+				assertTrue(beforeTx.getTime() < modifAfterDate.getTime());
+				assertTrue(afterTx.getTime() > modifAfterDate.getTime());
 			}
-		});
-
-		Thread.sleep(100);
-		Date afterTx = DateHelper.getCurrentDate();
-
-		{
-			PersonnePhysique nhab = (PersonnePhysique) dao.get(id);
-			Date modifAfterDate = nhab.getLogModifDate();
-			String user = nhab.getLogCreationUser();
-
-			String modifAfterDateStr = modifAfterDate.toString();
-			// String modifInitalDateStr = modifInitalDate.toString();
-
-			assertEquals(activeUser, user);
-			assertNotNull(modifAfterDateStr);
-			assertTrue(modifInitalDate.before(modifAfterDate));
-			assertTrue(beforeTx.getTime() < modifAfterDate.getTime());
-			assertTrue(afterTx.getTime() > modifAfterDate.getTime());
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 	}
 }

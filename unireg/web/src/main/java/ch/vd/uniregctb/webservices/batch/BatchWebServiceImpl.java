@@ -33,6 +33,8 @@ import ch.vd.uniregctb.scheduler.JobParamType;
 @WebService(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch", name = "BatchPort", serviceName = "BatchService")
 public class BatchWebServiceImpl implements BatchWebService {
 
+	private static final String BATCH_VISA = "[Batch WS]";
+
 	private BatchScheduler batchScheduler;
 	private DocumentService documentService;
 
@@ -45,9 +47,12 @@ public class BatchWebServiceImpl implements BatchWebService {
 	public void start(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch", partName = "params", name = "StartBatch") StartBatch params)
 			throws BatchWSException {
+
+		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
-			LOGGER.debug(params);
-			setAuthentication();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(params);
+			}
 
 			final JobDefinition job = batchScheduler.getJob(params.name);
 			if (job == null) {
@@ -99,6 +104,9 @@ public class BatchWebServiceImpl implements BatchWebService {
 			LOGGER.error(e, e);
 			throw new BatchWSException(e.getMessage());
 		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	private byte[] getFileBytes(DataHandler dataHandler) throws BatchWSException {
@@ -128,15 +136,19 @@ public class BatchWebServiceImpl implements BatchWebService {
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
 	public List<JobName> getListJobs() {
 
-		setAuthentication();
+		AuthenticationHelper.pushPrincipal(BATCH_VISA);
+		try {
+			final List<JobName> listeJobDefinition = new ArrayList<JobName>();
+			final List<ch.vd.uniregctb.scheduler.JobDefinition> values = batchScheduler.getSortedJobs();
 
-		List<JobName> listeJobDefinition = new ArrayList<JobName>();
-		final List<ch.vd.uniregctb.scheduler.JobDefinition> values = batchScheduler.getSortedJobs();
-
-		for (ch.vd.uniregctb.scheduler.JobDefinition jobDefinition : values) {
-			listeJobDefinition.add(new JobName(jobDefinition.getName()));
+			for (ch.vd.uniregctb.scheduler.JobDefinition jobDefinition : values) {
+				listeJobDefinition.add(new JobName(jobDefinition.getName()));
+			}
+			return listeJobDefinition;
 		}
-		return listeJobDefinition;
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	@Override
@@ -146,9 +158,12 @@ public class BatchWebServiceImpl implements BatchWebService {
 	public void stop(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch", partName = "params", name = "StopBatch") StopBatch params)
 			throws BatchWSException {
+
+		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
-			LOGGER.debug(params);
-			setAuthentication();
+			if (LOGGER.isDebugEnabled()) {
+				LOGGER.debug(params);
+			}
 			batchScheduler.stopJob(params.name);
 		}
 		catch (SchedulerException e) {
@@ -156,6 +171,9 @@ public class BatchWebServiceImpl implements BatchWebService {
 		}
 		catch (IllegalArgumentException e) {
 			throw new BatchWSException("Nom du Batch incorrect");
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
 
 	}
@@ -166,16 +184,20 @@ public class BatchWebServiceImpl implements BatchWebService {
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
 	public ch.vd.uniregctb.webservices.batch.JobDefinition getJobDefinition(JobDefParam arg) {
 
-		setAuthentication();
+		AuthenticationHelper.pushPrincipal(BATCH_VISA);
+		try {
+			final Map<String, JobDefinition> values = batchScheduler.getJobs();
+			final JobDefinition jobDefinition = values.get(arg.name);
+			if (jobDefinition == null) {
+				return null;
+			}
 
-		final Map<String, JobDefinition> values = batchScheduler.getJobs();
-		final JobDefinition jobDefinition = values.get(arg.name);
-		if (jobDefinition == null) {
-			return null;
+			final ch.vd.uniregctb.webservices.batch.JobDefinition def = new ch.vd.uniregctb.webservices.batch.JobDefinition(jobDefinition);
+			return def;
 		}
-
-		final ch.vd.uniregctb.webservices.batch.JobDefinition def = new ch.vd.uniregctb.webservices.batch.JobDefinition(jobDefinition);
-		return def;
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 	}
 
 	@Override
@@ -184,41 +206,42 @@ public class BatchWebServiceImpl implements BatchWebService {
 	@WebResult(targetNamespace = "http://www.vd.ch/uniregctb/webservices/batch")
 	public Report getLastReport(LastReport params) throws BatchWSException {
 
-		setAuthentication();
-
-		final JobDefinition job = batchScheduler.getJob(params.name);
-		if (job == null) {
-			return null;
-		}
-
-		final Document document = job.getLastRunReport();
-		if (document == null) {
-			return null;
-		}
-
-		// On rempli le rapport
-		final Report report = new Report(document);
+		AuthenticationHelper.pushPrincipal(BATCH_VISA);
 		try {
-			documentService.readDoc(document, new ReadDocCallback<Document>() {
-				@Override
-				public void readDoc(Document doc, InputStream is) throws Exception {
 
-					byte[] data = new byte[(int) doc.getFileSize()];
-					is.read(data);
+			final JobDefinition job = batchScheduler.getJob(params.name);
+			if (job == null) {
+				return null;
+			}
 
-					report.contentByteStream = new DataHandler(new ByteArrayDataSource(data, "application/octet-stream"));
-				}
-			});
+			final Document document = job.getLastRunReport();
+			if (document == null) {
+				return null;
+			}
+
+			// On rempli le rapport
+			final Report report = new Report(document);
+			try {
+				documentService.readDoc(document, new ReadDocCallback<Document>() {
+					@Override
+					public void readDoc(Document doc, InputStream is) throws Exception {
+
+						byte[] data = new byte[(int) doc.getFileSize()];
+						is.read(data);
+
+						report.contentByteStream = new DataHandler(new ByteArrayDataSource(data, "application/octet-stream"));
+					}
+				});
+			}
+			catch (Exception e) {
+				throw new BatchWSException("Impossible de lire le rapport sur le dique", e);
+			}
+
+			return report;
 		}
-		catch (Exception e) {
-			throw new BatchWSException("Impossible de lire le rapport sur le dique", e);
+		finally {
+			AuthenticationHelper.popPrincipal();
 		}
-
-		return report;
-	}
-
-	public void setAuthentication() {
-		AuthenticationHelper.setPrincipal("[Batch WS]");
 	}
 
 	public void setBatchScheduler(BatchScheduler batchScheduler) {

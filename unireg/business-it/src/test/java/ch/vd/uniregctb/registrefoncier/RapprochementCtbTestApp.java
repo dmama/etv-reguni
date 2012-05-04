@@ -38,25 +38,29 @@ public class RapprochementCtbTestApp extends BusinessItTestApplication {
 	@Override
 	protected void run() throws Exception {
 		super.run();
-		AuthenticationHelper.setPrincipal("[RapprochementCtbTestApp]");
-		LOGGER.info("***** START RapprochementCtbTestApp Main *****");
-		registreFoncierService = (RegistreFoncierService) context.getBean("registreFoncierService");
-		rapportService = (RapportService) context.getBean("rapportService");
-		status =  new JobStatusManager();
+
+		AuthenticationHelper.pushPrincipal("[RapprochementCtbTestApp]");
+		try {
+			LOGGER.info("***** START RapprochementCtbTestApp Main *****");
+			registreFoncierService = (RegistreFoncierService) context.getBean("registreFoncierService");
+			rapportService = (RapportService) context.getBean("rapportService");
+			status =  new JobStatusManager();
 
 
-		LOGGER.info("==> chargement du fichier des proprio");
+			LOGGER.info("==> chargement du fichier des proprio");
 
-		final byte[] byteFile = loadFile(RAPPROCHEMENT_FILE);
-		final List<ProprietaireFoncier> listeProprietaireFoncier = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(byteFile, status);
+			final byte[] byteFile = loadFile(RAPPROCHEMENT_FILE);
+			final List<ProprietaireFoncier> listeProprietaireFoncier = RapprocherCtbRegistreFoncierJob.extractProprioFromCSV(byteFile, status);
 
-		LOGGER.info("==> Rapprochement des ctb et proprio");
+			LOGGER.info("==> Rapprochement des ctb et proprio");
 
-		final RapprocherCtbResults results = registreFoncierService.rapprocherCtbRegistreFoncier(listeProprietaireFoncier, status, RegDate.get(), 1);
-		final RapprocherCtbRapport rapport = rapportService.generateRapport(results, status);
+			final RapprocherCtbResults results = registreFoncierService.rapprocherCtbRegistreFoncier(listeProprietaireFoncier, status, RegDate.get(), 1);
+			final RapprocherCtbRapport rapport = rapportService.generateRapport(results, status);
 
-		AuthenticationHelper.resetAuthentication();
-
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 
 		LOGGER.info("***** END RapprochementCtbTestApp Main *****");
 	}

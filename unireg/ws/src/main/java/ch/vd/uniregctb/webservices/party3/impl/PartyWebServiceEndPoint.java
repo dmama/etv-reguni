@@ -95,8 +95,13 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkLimitedReadAccess(params.getLogin());
-			return service.searchParty(params);
+			try {
+				checkLimitedReadAccess(params.getLogin());
+				return service.searchParty(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -107,7 +112,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -121,12 +125,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			final PartyType type = service.getPartyType(params);
-			if (type != null) {
-				checkPartyReadAccess(params.getPartyNumber());
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				final PartyType type = service.getPartyType(params);
+				if (type != null) {
+					checkPartyReadAccess(params.getPartyNumber());
+				}
+				return type;
 			}
-			return type;
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -137,7 +146,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -151,13 +159,18 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			final Party party = service.getParty(params);
-			if (party != null) {
-				checkPartyReadAccess(params.getPartyNumber());
-				assertCoherence(params.getPartyNumber(), party.getNumber());
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				final Party party = service.getParty(params);
+				if (party != null) {
+					checkPartyReadAccess(params.getPartyNumber());
+					assertCoherence(params.getPartyNumber(), party.getNumber());
+				}
+				return party;
 			}
-			return party;
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -168,7 +181,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -179,49 +191,54 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
+			try {
+				checkGeneralReadAccess(params.getLogin());
 
-			BatchParty batch;
+				BatchParty batch;
 
-			if (params.getPartyNumbers() != null && params.getPartyNumbers().size() == 1) {
-				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getParty
+				if (params.getPartyNumbers() != null && params.getPartyNumbers().size() == 1) {
+					// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getParty
 
-				batch = new BatchParty();
+					batch = new BatchParty();
 
-				final Integer numero = params.getPartyNumbers().iterator().next();
-				try {
-					final GetPartyRequest p = new GetPartyRequest();
-					p.setLogin(params.getLogin());
-					p.setPartyNumber(numero);
-					p.getParts().addAll(params.getParts());
+					final Integer numero = params.getPartyNumbers().iterator().next();
+					try {
+						final GetPartyRequest p = new GetPartyRequest();
+						p.setLogin(params.getLogin());
+						p.setPartyNumber(numero);
+						p.getParts().addAll(params.getParts());
 
-					final Party party = service.getParty(p);
-					if (party != null) {
+						final Party party = service.getParty(p);
+						if (party != null) {
+							final BatchPartyEntry entry = new BatchPartyEntry();
+							entry.setNumber(numero);
+							entry.setParty(party);
+							batch.getEntries().add(entry);
+						}
+					}
+					catch (WebServiceException e) {
 						final BatchPartyEntry entry = new BatchPartyEntry();
 						entry.setNumber(numero);
-						entry.setParty(party);
+						entry.setExceptionInfo(e.getFaultInfo());
 						batch.getEntries().add(entry);
 					}
 				}
-				catch (WebServiceException e) {
-					final BatchPartyEntry entry = new BatchPartyEntry();
-					entry.setNumber(numero);
-					entry.setExceptionInfo(e.getFaultInfo());
-					batch.getEntries().add(entry);
+				else {
+					// Cas général, on part en mode batch
+					batch = service.getBatchParty(params);
 				}
-			}
-			else {
-				// Cas général, on part en mode batch
-				batch = service.getBatchParty(params);
-			}
 
-			if (batch != null) {
-				checkBatchReadAccess(batch);
-				checkBatchCoherence(batch);
-				logEmbeddedExceptions(params, batch);
-			}
+				if (batch != null) {
+					checkBatchReadAccess(batch);
+					checkBatchCoherence(batch);
+					logEmbeddedExceptions(params, batch);
+				}
 
-			return batch;
+				return batch;
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -232,7 +249,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -244,8 +260,13 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			return service.getTaxOffices(params);
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				return service.getTaxOffices(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -256,7 +277,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -267,9 +287,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			checkPartyWriteAccess(params.getPartyNumber());
-			service.setAutomaticReimbursementBlocking(params);
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				checkPartyWriteAccess(params.getPartyNumber());
+				service.setAutomaticReimbursementBlocking(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -280,7 +305,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
@@ -294,9 +318,14 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			// Note : il n'y a pas de contrôle d'accès sur les PMs.
-			return service.searchCorporationEvents(params);
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				// Note : il n'y a pas de contrôle d'accès sur les PMs.
+				return service.searchCorporationEvents(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -307,7 +336,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -318,13 +346,18 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			final DebtorInfo info = service.getDebtorInfo(params);
-			if (info != null) {
-				checkPartyReadAccess(params.getDebtorNumber());
-				assertCoherence(params.getDebtorNumber(), info.getNumber());
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				final DebtorInfo info = service.getDebtorInfo(params);
+				if (info != null) {
+					checkPartyReadAccess(params.getDebtorNumber());
+					assertCoherence(params.getDebtorNumber(), info.getNumber());
+				}
+				return info;
 			}
-			return info;
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -335,7 +368,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -346,16 +378,21 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
+			try {
+				checkGeneralReadAccess(params.getLogin());
 
-			if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.getLogin().getUserId(), params.getLogin().getOid())) {
-				throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + params.getLogin().getUserId() + '/' + params.getLogin().getOid() +
-						") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+				if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.getLogin().getUserId(), params.getLogin().getOid())) {
+					throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + params.getLogin().getUserId() + '/' + params.getLogin().getOid() +
+							") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+				}
+
+				final AcknowledgeTaxDeclarationsResponse reponses = service.acknowledgeTaxDeclarations(params);
+				logEmbeddedErrors(params, reponses);
+				return reponses;
 			}
-
-			final AcknowledgeTaxDeclarationsResponse reponses = service.acknowledgeTaxDeclarations(params);
-			logEmbeddedErrors(params, reponses);
-			return reponses;
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -366,7 +403,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
@@ -382,8 +418,13 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
-			checkGeneralReadAccess(params.getLogin());
-			return service.getModifiedTaxpayers(params);
+			try {
+				checkGeneralReadAccess(params.getLogin());
+				return service.getModifiedTaxpayers(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -394,7 +435,6 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -404,7 +444,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Login l'utilisateur dans l'application.
 	 *
 	 * @param login le login de l'utilisateur
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si le login n'est pas renseigné convenablement.
 	 */
 	private void login(UserLogin login) throws WebServiceException {
@@ -413,21 +453,21 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 			throw ExceptionHelper.newBusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.", BusinessExceptionCode.INVALID_REQUEST);
 		}
 
-		AuthenticationHelper.setPrincipal(login.getUserId(), login.getOid());
+		AuthenticationHelper.pushPrincipal(login.getUserId(), login.getOid());
 	}
 
 	/**
 	 * Logout l'utilisateur de l'application
 	 */
 	private void logout() {
-		AuthenticationHelper.resetAuthentication();
+		AuthenticationHelper.popPrincipal();
 	}
 
 	/**
 	 * Vérifie que l'utilisateur courant possède bien les droits de lecture limités ou complete sur l'application.
 	 *
 	 * @param login l'information de login de l'utilisareur
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si l'utilisateur courant ne possède pas les droits de lecture
 	 */
 	private static void checkLimitedReadAccess(UserLogin login) throws WebServiceException {
@@ -442,7 +482,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Vérifie que l'utilisateur courant possède bien les droits de lecture sur l'application en général.
 	 *
 	 * @param login l'information de login de l'utilisareur
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si l'utilisateur courant ne possède pas les droits de lecture
 	 */
 	private static void checkGeneralReadAccess(UserLogin login) throws WebServiceException {
@@ -456,7 +496,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Vérifie que l'utilisateur courant possède bien les droits de lecture sur le tiers spécifié.
 	 *
 	 * @param partyId le tiers sur lequel on veut vérifier les droits d'accès
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si l'utilisateur courant ne possède pas les droits de lecture
 	 */
 	private static void checkPartyReadAccess(long partyId) throws WebServiceException {
@@ -509,7 +549,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Vérifie que l'utilisateur courant possède bien les droits de lecture et écriture sur le tiers spécifié.
 	 *
 	 * @param partyId le tiers sur lequel on veut vérifier les droits d'accès
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si l'utilisateur courant ne possède pas les droits de lecture et écriture
 	 */
 	private static void checkPartyWriteAccess(long partyId) throws WebServiceException {
@@ -525,7 +565,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 *
 	 * @param expected l'id demandé
 	 * @param actual   l'id retourné
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si les deux ids ne sont pas égaux.
 	 */
 	private void assertCoherence(long expected, long actual) throws WebServiceException {
@@ -539,7 +579,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 * Vérifie que l'id de chaque tiers retourné corresponds bien à celui demandé.
 	 *
 	 * @param batch le batch à vérifier
-	 * @throws ch.vd.uniregctb.webservices.party3.WebServiceException
+	 * @throws ch.vd.unireg.webservices.party3.WebServiceException
 	 *          si les ids retournés ne correspondent pas à ceux demandés.
 	 */
 	private void checkBatchCoherence(BatchParty batch) throws WebServiceException {

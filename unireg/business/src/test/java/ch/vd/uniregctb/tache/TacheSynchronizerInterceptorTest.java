@@ -39,6 +39,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings({"JavaDoc"})
 @ContextConfiguration(locations = {
@@ -110,7 +111,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				final Contribuable ralf = (Contribuable) hibernateTemplate.get(Contribuable.class, CTB_ID);
+				final Contribuable ralf = hibernateTemplate.get(Contribuable.class, CTB_ID);
 				assertNotNull(ralf);
 				try {
 					final List<SynchronizeAction> list = tacheService.determineSynchronizeActionsForDIs(ralf);
@@ -129,6 +130,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 
 		setWantSynchroTache(true); // on l'intercepteur pour maintenant crééer les tâches d'envoi automatiquement
 
+		assertTrue(AuthenticationHelper.isAuthenticated());
 		final String principal = AuthenticationHelper.getCurrentPrincipal();
 		AuthenticationHelper.resetAuthentication();
 		try {
@@ -153,7 +155,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 			});
 		}
 		finally {
-			AuthenticationHelper.setPrincipal(principal);
+			AuthenticationHelper.pushPrincipal(principal);
 		}
 
 		// on s'assure que la tâche a bien été créée

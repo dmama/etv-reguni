@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -17,8 +16,6 @@ public class DeclarationTest extends WithoutSpringTest {
 
 	@Test
 	public void testIsValid() {
-
-		AuthenticationHelper.setPrincipal("[UT] "+getClass().getSimpleName());
 
 		final Declaration declaration = new DeclarationImpotOrdinaire();
 		declaration.setDateDebut(RegDate.get(2000, 1, 1));

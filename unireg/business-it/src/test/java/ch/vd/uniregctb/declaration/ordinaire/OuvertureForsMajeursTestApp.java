@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
@@ -38,23 +36,25 @@ public class OuvertureForsMajeursTestApp extends BusinessItTestApplication {
 	protected void run() throws Exception {
 
 		super.run();
-		AuthenticationHelper.setPrincipal("[OuvertureForsMajeursTestApp]");
+		AuthenticationHelper.pushPrincipal("[OuvertureForsMajeursTestApp]");
+		try {
+			LOGGER.info("***** START OuvertureForsMajeursTestApp Main *****");
+			service = (MetierService) context.getBean("metierService");
+			rapportService = (RapportService) context.getBean("rapportService");
 
-		LOGGER.info("***** START OuvertureForsMajeursTestApp Main *****");
-		service = (MetierService) context.getBean("metierService");
-		rapportService = (RapportService) context.getBean("rapportService");
+			LOGGER.info("==> chargement de la base de données");
+			clearDatabase();
+			loadDatabase(DB_UNIT_DATA_FILE);
 
-		LOGGER.info("==> chargement de la base de données");
-		clearDatabase();
-		loadDatabase(DB_UNIT_DATA_FILE);
+			LOGGER.info("==> réindexation des données");
+			reindexDatabase();
 
-		LOGGER.info("==> réindexation des données");
-		reindexDatabase();
-
-		LOGGER.info("==> ouverture des fors");
-		ouvrirLesFors();
-
-		AuthenticationHelper.resetAuthentication();
+			LOGGER.info("==> ouverture des fors");
+			ouvrirLesFors();
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 		LOGGER.info("***** END OuvertureForsMajeursTestApp Main *****");
 	}
 

@@ -48,8 +48,13 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 
 		try {
 			login(params.login);
-			final Niveau niveau = SecurityProvider.getDroitAcces(params.login.userId, params.numeroTiers);
-			return EnumHelper.coreToWeb(niveau);
+			try {
+				final Niveau niveau = SecurityProvider.getDroitAcces(params.login.userId, params.numeroTiers);
+				return EnumHelper.coreToWeb(niveau);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (WebServiceException e) {
 			LOGGER.error(e, e);
@@ -58,9 +63,6 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 		catch (Exception e) {
 			LOGGER.error(e, e);
 			throw new WebServiceException(e);
-		}
-		finally {
-			logout();
 		}
 	}
 
@@ -92,8 +94,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 			throw new WebServiceException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
 
-		AuthenticationHelper.setPrincipal(login.userId);
-		AuthenticationHelper.setCurrentOID(login.oid);
+		AuthenticationHelper.pushPrincipal(login.userId, login.oid);
 	}
 
 	/**

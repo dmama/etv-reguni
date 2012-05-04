@@ -30,27 +30,15 @@ public class AuthenticationHelper {
 		return stackByThread.get();
 	}
 
-	public static void setPrincipal(String visa) {
-
-		UsernamePasswordAuthenticationToken authentication = createAuthentication(visa);
-
-		/* Enregistre le context de sécurité */
-		setAuthentication(authentication);
-	}
-
-	// Testing
-	public static void setCurrentOID(int i) {
-		UniregSecurityDetails details = getDetails();
-		details.setIfoSecOID(i);
-	}
-
-	public static void setPrincipal(String username, int oid) {
-
-		final UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
-		final UniregSecurityDetails details = getDetails(authentication);
-		details.setIfoSecOID(oid);
-
-		setAuthentication(authentication);
+	/**
+	 * crée un objet Authentication
+	 *
+	 * @param username un nom de l'utilisateur
+	 * @return un objet Authentication
+	 */
+	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
+		final User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new GrantedAuthorityImpl(username)));
+		return new UsernamePasswordAuthenticationToken(user, "noPwd");
 	}
 
 	/**
@@ -59,18 +47,35 @@ public class AuthenticationHelper {
 	 * @param username un nom de l'utilisateur
 	 * @return un objet Authentication
 	 */
-	private static UsernamePasswordAuthenticationToken createAuthentication(String username) {
-		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(new GrantedAuthorityImpl(username)));
-		return new UsernamePasswordAuthenticationToken(user, "noPwd");
+	private static UsernamePasswordAuthenticationToken createAuthentication(String username, int oid) {
+		final UsernamePasswordAuthenticationToken authentication = createAuthentication(username);
+		final UniregSecurityDetails details = getDetails(authentication);
+		details.setIfoSecOID(oid);
+		return authentication;
 	}
 
 	/**
-	 * Défini un nouvel utilisateur principal et mémorise-là de manière à la récupérer avec {@link #popPrincipal()}.
+	 * Définit un nouvel utilisateur principal et mémorise-là de manière à la récupérer avec {@link #popPrincipal()}.
 	 *
-	 * @param username
-	 *            le nom de l'utilsateur principal
+	 * @param username le visa de l'utilisateur principal
 	 */
 	public static void pushPrincipal(String username) {
+		// crée et enregistre le nouveau context de sécurité */
+		pushAuthentication(createAuthentication(username));
+	}
+
+	/**
+	 * Définit un nouvel utilisateur principal et mémorise-là de manière à la récupérer avec {@link #popPrincipal()}.
+	 *
+	 * @param username le visa de l'utilisateur principal
+	 * @param oid l'oid de l'utilisateur
+	 */
+	public static void pushPrincipal(String username, int oid) {
+		// crée et enregistre le nouveau context de sécurité */
+		pushAuthentication(createAuthentication(username, oid));
+	}
+
+	private static void pushAuthentication(Authentication authentication) {
 		final Authentication current;
 		if (getAuthentication() == null) {
 			// pas autentifier -> on stock une authentification nulle de manière à retrouver la fin de la pile.
@@ -82,8 +87,8 @@ public class AuthenticationHelper {
 		}
 		stack().push(current);
 
-		// crée et enregistre le nouveau context de sécurité */
-		setAuthentication(createAuthentication(username));
+		// enregistre le nouveau context de sécurité */
+		setAuthentication(authentication);
 	}
 
 	/**
@@ -151,31 +156,33 @@ public class AuthenticationHelper {
 	}
 
 	public static Integer getCurrentOID() {
-		Integer oid = null;
-		UniregSecurityDetails details = getDetails();
-		oid = details.getIfoSecOID();
-		return oid;
+		final UniregSecurityDetails details = getDetails();
+		return details.getIfoSecOID();
 	}
 
 	public static String getCurrentOIDSigle() {
-		UniregSecurityDetails details = getDetails();
-		String sigle = details.getIfoSecOIDSigle();
-		return sigle;
+		final UniregSecurityDetails details = getDetails();
+		return details.getIfoSecOIDSigle();
 	}
 
 	public static void setCurrentOID(int i, String sigle) {
-		UniregSecurityDetails details = getDetails();
+		final UniregSecurityDetails details = getDetails();
 		details.setIfoSecOID(i);
 		details.setIfoSecOIDSigle(sigle);
 	}
 
+	public static void setCurrentOID(int i) {
+		final UniregSecurityDetails details = getDetails();
+		details.setIfoSecOID(i);
+	}
+
 	public static String getFirstName() {
-		UniregSecurityDetails details = getDetails();
+		final UniregSecurityDetails details = getDetails();
 		return details.getIamFirstName();
 	}
 
 	public static String getLastName() {
-		UniregSecurityDetails details = getDetails();
+		final UniregSecurityDetails details = getDetails();
 		return details.getIamLastName();
 	}
 }

@@ -110,8 +110,13 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkLimitedReadAccess(params.login);
-			return service.searchTiers(params);
+			try {
+				checkLimitedReadAccess(params.login);
+				return service.searchTiers(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -130,7 +135,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -149,12 +153,17 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			final Type type = service.getTiersType(params);
-			if (type != null) {
-				checkTiersReadAccess(params.tiersNumber);
+			try {
+				checkGeneralReadAccess(params.login);
+				final Type type = service.getTiersType(params);
+				if (type != null) {
+					checkTiersReadAccess(params.tiersNumber);
+				}
+				return type;
 			}
-			return type;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -173,7 +182,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -192,13 +200,18 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			final Tiers tiers = service.getTiers(params);
-			if (tiers != null) {
-				checkTiersReadAccess(params.tiersNumber);
-				assertCoherence(params.tiersNumber, tiers.numero);
+			try {
+				checkGeneralReadAccess(params.login);
+				final Tiers tiers = service.getTiers(params);
+				if (tiers != null) {
+					checkTiersReadAccess(params.tiersNumber);
+					assertCoherence(params.tiersNumber, tiers.numero);
+				}
+				return tiers;
 			}
-			return tiers;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -217,7 +230,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -236,13 +248,18 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			final TiersHisto tiers = service.getTiersPeriode(params);
-			if (tiers != null) {
-				checkTiersReadAccess(params.tiersNumber);
-				assertCoherence(params.tiersNumber, tiers.numero);
+			try {
+				checkGeneralReadAccess(params.login);
+				final TiersHisto tiers = service.getTiersPeriode(params);
+				if (tiers != null) {
+					checkTiersReadAccess(params.tiersNumber);
+					assertCoherence(params.tiersNumber, tiers.numero);
+				}
+				return tiers;
 			}
-			return tiers;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -261,7 +278,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -280,13 +296,18 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			final TiersHisto tiers = service.getTiersHisto(params);
-			if (tiers != null) {
-				checkTiersReadAccess(params.tiersNumber);
-				assertCoherence(params.tiersNumber, tiers.numero);
+			try {
+				checkGeneralReadAccess(params.login);
+				final TiersHisto tiers = service.getTiersHisto(params);
+				if (tiers != null) {
+					checkTiersReadAccess(params.tiersNumber);
+					assertCoherence(params.tiersNumber, tiers.numero);
+				}
+				return tiers;
 			}
-			return tiers;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -305,7 +326,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -321,38 +341,43 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
+			try {
+				checkGeneralReadAccess(params.login);
 
-			BatchTiers batch;
-			
-			if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
-				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiers
-				final Long numero = params.tiersNumbers.iterator().next();
-				try {
-					final Tiers tiers = service.getTiers(new GetTiers(params.login, numero, params.date, params.parts));
-					if (tiers == null) {
-						batch = new BatchTiers();
+				BatchTiers batch;
+
+				if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
+					// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiers
+					final Long numero = params.tiersNumbers.iterator().next();
+					try {
+						final Tiers tiers = service.getTiers(new GetTiers(params.login, numero, params.date, params.parts));
+						if (tiers == null) {
+							batch = new BatchTiers();
+						}
+						else {
+							batch = new BatchTiers(new BatchTiersEntry(numero, tiers));
+						}
 					}
-					else {
-						batch = new BatchTiers(new BatchTiersEntry(numero, tiers));
+					catch (WebServiceException e) {
+						batch = new BatchTiers(new BatchTiersEntry(numero, e));
 					}
 				}
-				catch (WebServiceException e) {
-					batch = new BatchTiers(new BatchTiersEntry(numero, e));
+				else {
+					// Cas général, on part en mode batch
+					batch = service.getBatchTiers(params);
 				}
-			}
-			else {
-				// Cas général, on part en mode batch
-				batch = service.getBatchTiers(params);
-			}
-			
-			if (batch != null) {
-				checkBatchReadAccess(batch);
-				checkBatchCoherence(batch);
-				logEmbeddedExceptions(params, batch);
-			}
 
-			return batch;
+				if (batch != null) {
+					checkBatchReadAccess(batch);
+					checkBatchCoherence(batch);
+					logEmbeddedExceptions(params, batch);
+				}
+
+				return batch;
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -371,7 +396,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -387,38 +411,43 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
+			try {
+				checkGeneralReadAccess(params.login);
 
-			BatchTiersHisto batch;
+				BatchTiersHisto batch;
 
-			if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
-				// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiersHisto
-				final Long numero = params.tiersNumbers.iterator().next();
-				try {
-					final TiersHisto tiers = service.getTiersHisto(new GetTiersHisto(params.login, numero, params.parts));
-					if (tiers == null) {
-						batch = new BatchTiersHisto();
+				if (params.tiersNumbers != null && params.tiersNumbers.size() == 1) {
+					// Cas particulier d'un seul numéro demandé, on dégrade gracieusement en getTiersHisto
+					final Long numero = params.tiersNumbers.iterator().next();
+					try {
+						final TiersHisto tiers = service.getTiersHisto(new GetTiersHisto(params.login, numero, params.parts));
+						if (tiers == null) {
+							batch = new BatchTiersHisto();
+						}
+						else {
+							batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, tiers));
+						}
 					}
-					else {
-						batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, tiers));
+					catch (WebServiceException e) {
+						batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, e));
 					}
 				}
-				catch (WebServiceException e) {
-					batch = new BatchTiersHisto(new BatchTiersHistoEntry(numero, e));
+				else {
+					// Cas général, on part en mode batch
+					batch = service.getBatchTiersHisto(params);
 				}
-			}
-			else {
-				// Cas général, on part en mode batch
-				batch = service.getBatchTiersHisto(params);
-			}
 
-			if (batch != null) {
-				checkBatchReadAccess(batch);
-				checkBatchCoherence(batch);
-				logEmbeddedExceptions(params, batch);
-			}
+				if (batch != null) {
+					checkBatchReadAccess(batch);
+					checkBatchCoherence(batch);
+					logEmbeddedExceptions(params, batch);
+				}
 
-			return batch;
+				return batch;
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -437,7 +466,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -456,9 +484,14 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			checkTiersWriteAccess(params.tiersNumber);
-			service.setTiersBlocRembAuto(params);
+			try {
+				checkGeneralReadAccess(params.login);
+				checkTiersWriteAccess(params.tiersNumber);
+				service.setTiersBlocRembAuto(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -477,7 +510,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
@@ -496,9 +528,14 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			// Note : il n'y a pas de contrôle d'accès sur les PMs.
-			return service.searchEvenementsPM(params);
+			try {
+				checkGeneralReadAccess(params.login);
+				// Note : il n'y a pas de contrôle d'accès sur les PMs.
+				return service.searchEvenementsPM(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -517,7 +554,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -533,13 +569,18 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			final DebiteurInfo info = service.getDebiteurInfo(params);
-			if (info != null) {
-				checkTiersReadAccess(params.numeroDebiteur);
-				assertCoherence(params.numeroDebiteur, info.numeroDebiteur);
+			try {
+				checkGeneralReadAccess(params.login);
+				final DebiteurInfo info = service.getDebiteurInfo(params);
+				if (info != null) {
+					checkTiersReadAccess(params.numeroDebiteur);
+					assertCoherence(params.numeroDebiteur, info.numeroDebiteur);
+				}
+				return info;
 			}
-			return info;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -558,7 +599,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -574,16 +614,21 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
+			try {
+				checkGeneralReadAccess(params.login);
 
-			if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
-				throw new AccessDeniedException(
-						"L'utilisateur spécifié (" + params.login.userId + '/' + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+				if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
+					throw new AccessDeniedException(
+							"L'utilisateur spécifié (" + params.login.userId + '/' + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
+				}
+
+				final List<ReponseQuittancementDeclaration> reponses = service.quittancerDeclarations(params);
+				logEmbeddedErrors(params, reponses);
+				return reponses;
 			}
-
-			final List<ReponseQuittancementDeclaration> reponses = service.quittancerDeclarations(params);
-			logEmbeddedErrors(params, reponses);
-			return reponses;
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -602,7 +647,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logWriteAccess(params, end - start);
 		}
@@ -615,8 +659,13 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
-			checkGeneralReadAccess(params.login);
-			return service.getListeCtbModifies(params);
+			try {
+				checkGeneralReadAccess(params.login);
+				return service.getListeCtbModifies(params);
+			}
+			finally {
+				logout();
+			}
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
@@ -635,7 +684,6 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new TechnicalException(e);
 		}
 		finally {
-			logout();
 			final long end = loadMeter.end();
 			logReadAccess(params, end - start);
 		}
@@ -664,14 +712,14 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			throw new BusinessException("L'identification de l'utilisateur (userId + oid) doit être renseignée.");
 		}
 
-		AuthenticationHelper.setPrincipal(login.userId, login.oid);
+		AuthenticationHelper.pushPrincipal(login.userId, login.oid);
 	}
 
 	/**
 	 * Logout l'utilisateur de l'application
 	 */
 	private void logout() {
-		AuthenticationHelper.resetAuthentication();
+		AuthenticationHelper.popPrincipal();
 	}
 
 	/**

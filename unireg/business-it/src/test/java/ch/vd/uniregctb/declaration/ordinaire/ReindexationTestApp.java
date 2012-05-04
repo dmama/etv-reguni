@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -31,16 +29,19 @@ public class ReindexationTestApp extends BusinessItTestApplication {
 	@Override
 	protected void run() throws Exception {
 
-		AuthenticationHelper.setPrincipal("[ReindexationTestApp]");
-		super.run();
+		AuthenticationHelper.pushPrincipal("[ReindexationTestApp]");
+		try {
+			super.run();
 
-		LOGGER.info("***** START ReindexationTestApp Main *****");
-		globalTiersIndexer = (GlobalTiersIndexer) context.getBean("globalTiersIndexer");
+			LOGGER.info("***** START ReindexationTestApp Main *****");
+			globalTiersIndexer = (GlobalTiersIndexer) context.getBean("globalTiersIndexer");
 
-		loadDatabase(DB_UNIT_DATA_FILE);
-		reindexerLaBase();
-
-		AuthenticationHelper.resetAuthentication();
+			loadDatabase(DB_UNIT_DATA_FILE);
+			reindexerLaBase();
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 		LOGGER.info("***** END ReindexationTestApp Main *****");
 	}
 

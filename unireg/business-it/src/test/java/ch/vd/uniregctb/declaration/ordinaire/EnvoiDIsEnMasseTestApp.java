@@ -34,17 +34,20 @@ public class EnvoiDIsEnMasseTestApp extends BusinessItTestApplication {
 	@Override
 	protected void run() throws Exception {
 
-		AuthenticationHelper.setPrincipal("[EnvoiDIsEnMasseTestApp]");
-		super.run();
+		AuthenticationHelper.pushPrincipal("[EnvoiDIsEnMasseTestApp]");
+		try {
+			super.run();
 
-		LOGGER.info("***** START EnvoiDIsEnMasseTestApp Main *****");
-		service = (DeclarationImpotService) context.getBean("diService");
+			LOGGER.info("***** START EnvoiDIsEnMasseTestApp Main *****");
+			service = (DeclarationImpotService) context.getBean("diService");
 
-		clearDatabase();
-		loadDatabase(DB_UNIT_DATA_FILE);
-		envoyerDIsEnMasse();
-
-		AuthenticationHelper.resetAuthentication();
+			clearDatabase();
+			loadDatabase(DB_UNIT_DATA_FILE);
+			envoyerDIsEnMasse();
+		}
+		finally {
+			AuthenticationHelper.popPrincipal();
+		}
 		LOGGER.info("***** END EnvoiDIsEnMasseTestApp Main *****");
 	}
 

@@ -50,12 +50,12 @@ public class EvenementCivilListener extends EsbMessageEndpointListener implement
 			final String visaMutation = StringUtils.trimToNull(esbMessage.getBusinessUser());
 
 			// le user de création est initialisé avec le user à l'origine de l'événement civil
-			AuthenticationHelper.setPrincipal(visaMutation != null ? visaMutation : DEFAULT_BUSINESS_USER);
+			AuthenticationHelper.pushPrincipal(visaMutation != null ? visaMutation : DEFAULT_BUSINESS_USER);
 			try {
 				onEvenementCivil(message);
 			}
 			finally {
-				AuthenticationHelper.resetAuthentication();
+				AuthenticationHelper.popPrincipal();
 			}
 		}
 		catch (EvenementCivilException e) {
