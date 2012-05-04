@@ -16,6 +16,12 @@
 
 		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
+		<script type="text/javascript" language="javascript">
+			function getContextPath() {
+				return '<c:url value="/"/>';
+			}
+		</script>
+
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>
@@ -23,11 +29,8 @@
 
 			<div id="sommaire">
 				<div style="position:absolute; top:5px; left:5px;">
-					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>" /></div>
+					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>"  alt="loading..."/></div>
 				</div>
-				<script>
-					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
-				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">
 						<span class="label"><fmt:message key="label.canton.vaud" /></span>
@@ -38,7 +41,7 @@
 
 			<div id="header" >
 				<span class="departement"><a href="http://www.aci.vd.ch" target="_blank"><fmt:message key="label.aci" /></a></span>
-				<div class="application"></div>
+				<div class="application iepngfix"></div>
 			</div>
 
 			<div id="content">
@@ -47,7 +50,7 @@
 					<tiles:getAsString name='tools' ignore='true'/>
 					<ul>
 						<li>
-						<unireg:user></unireg:user>
+						<unireg:user/>
 						</li>
 						<tiles:getAsString name='vue' ignore='true'/>
 						<li>
@@ -89,8 +92,8 @@
 			</div>
 
 			<div id="footer">
-				<b><fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
-				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
+				<strong><fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 			</div>
 			
 	</body>
