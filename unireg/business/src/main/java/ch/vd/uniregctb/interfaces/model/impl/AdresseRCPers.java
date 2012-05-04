@@ -77,7 +77,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();
 		this.numeroAppartement = addressInfo.getDwellingNumber();
-		this.numeroTechniqueRue = null; // TODO (msi) check this
+		this.numeroTechniqueRue = null; // RcPers ne retourne plus ce numéro technique
 		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
 		this.numeroPostal = initNPA(addressInfo);
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
