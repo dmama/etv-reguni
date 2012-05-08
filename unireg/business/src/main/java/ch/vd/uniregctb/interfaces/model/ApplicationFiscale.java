@@ -4,8 +4,18 @@ package ch.vd.uniregctb.interfaces.model;
  * Les applications fiscales connues de Unireg.
  */
 public enum ApplicationFiscale {
-	TAO_PP,
-	TAO_BA,
-	TAO_IS,
-	SIPF
+	TAO_PP("label.TAOPP"),
+	TAO_BA("label.TAOBA"),
+	TAO_IS("label.TAOIS"),
+	SIPF("label.SIPF");
+
+	private String messageKey;
+
+	private ApplicationFiscale(String messageKey) {
+		this.messageKey = messageKey;
+	}
+
+	public String getMessageKey() {
+		return messageKey;
+	}
 }

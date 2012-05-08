@@ -5,6 +5,7 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -63,20 +64,22 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
 
-	private static final List<Action> actions;
+	public static final List<Action> actions;
 
 	static {
-		actions = new ArrayList<Action>();
-		actions.add(new Reindexer());
-		actions.add(new Marier());
-		actions.add(new Deceder());
-		actions.add(new Separer());
-		actions.add(new Reactiver());
-		actions.add(new AnnulerCouple());
-		actions.add(new AnnulerSeparation());
-		actions.add(new AnnulerDeces());
-		actions.add(new AnnulerTiers());
-		actions.add(new Exporter());
+		List<Action> list = new ArrayList<Action>();
+		list.add(new Reindexer());
+		list.add(new Marier());
+		list.add(new Deceder());
+		list.add(new Separer());
+		list.add(new Reactiver());
+		list.add(new AnnulerCouple());
+		list.add(new AnnulerSeparation());
+		list.add(new AnnulerDeces());
+		list.add(new AnnulerTiers());
+		list.add(new Exporter());
+
+		actions = Collections.unmodifiableList(list);
 	}
 
 	private Long numero;
@@ -289,7 +292,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		// Numéro de contribuable
 		s.append("<tr class=\"").append(nextRowClass()).append("\">\n");
-		s.append("\t<td width=\"25%\" nowrap>").append(message("label.numero.tiers")).append("&nbsp;:</td>\n");
+		s.append("\t<td width=\"25%\" nowrap>").append(message("label.numero.tiers")).append("&nbsp;:&nbsp;</td>\n");
 		s.append("\t<td width=\"50%\">").append(FormatNumeroHelper.numeroCTBToDisplay(numero));
 		if (showLinks) {
 			final JspTagConsulterLog consulter = new JspTagConsulterLog();
@@ -641,7 +644,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return basePath + image;
 	}
 
-	private TypeAvatar getTypeAvatar(Tiers tiers) {
+	public static TypeAvatar getTypeAvatar(Tiers tiers) {
 
 		final TypeAvatar type;
 
@@ -714,7 +717,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return type;
 	}
 
-	private static interface Action {
+	public static interface Action {
 		boolean isGranted();
 		boolean isValide(Tiers tiers);
 		String getLabel();

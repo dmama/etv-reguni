@@ -81,7 +81,7 @@
 
 			function refresh_remplacant(id) {
 				if (id) {
-					$('#vignetteTiersRemplacant').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Tiers%20rempla%E7ant&showAvatar=true');
+					Tiers.loadVignette($('#vignetteTiersRemplacant'), id, {showAvatar : true, titre : 'Tiers remplaçant'});
 					$('#flecheRemplacement').show();
 				}
 				else {

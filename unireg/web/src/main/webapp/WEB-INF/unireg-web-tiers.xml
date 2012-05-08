@@ -26,8 +26,12 @@
 
 	<bean id="tiersLaunchCatController" class="ch.vd.uniregctb.tiers.TiersLaunchCatController" />
 
-	<bean id="tiersVignetteController" class="ch.vd.uniregctb.tiers.TiersVignetteController" >
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVignetteView" />
+	<bean id="tiersVignetteController" class="ch.vd.uniregctb.tiers.vignette.VignetteController" >
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="messageSource" ref="messageSource" />
 	</bean>
 
 	<bean id="validationController" class="ch.vd.uniregctb.validation.ValidationController">

@@ -3604,8 +3604,11 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public String getRoleAssujettissement(Tiers tiers, RegDate date) {
+    public String getRoleAssujettissement(Tiers tiers, @Nullable RegDate date) {
         String str = null;
+	    if (date == null) {
+		    date = RegDate.get();
+	    }
 
         // les I107 sont "inactifs" (mais attention, ce flag est un peu galvaudé ces temps... donc je
         // teste aussi l'absence de fors fiscaux non annulés)

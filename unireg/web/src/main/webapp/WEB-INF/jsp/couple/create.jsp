@@ -232,7 +232,7 @@
 			function refresh_vignette_pp1(id) {
 				if (id) {
 					// on rafraichit la vignette
-					$('#pp1Id_vignette').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Premi%E8re%20personne%20physique&showAvatar=true&' + new Date().getTime());
+					Tiers.loadVignette($('#pp1Id_vignette'), id, {showAvatar : true, titre : 'Première personne physique'});
 				}
 				else {
 					$('#pp1Id_vignette').html('<div class="ctbInconnu iepngfix" onclick="return search_pp1();"/>');
@@ -243,7 +243,7 @@
 			function refresh_vignette_pp2(id) {
 				if (id) {
 					// on rafraichit la vignette
-					$('#pp2Id_vignette').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Seconde%20personne%20physique&showAvatar=true&' + new Date().getTime());
+					Tiers.loadVignette($('#pp2Id_vignette'), id, {showAvatar : true, titre : 'Seconde personne physique'});
 				}
 				else {
 					var marieSeul = $('#marieSeul').is(':checked');
@@ -260,7 +260,7 @@
 			function refresh_vignette_mc(id) {
 				if (id) {
 					// on rafraichit la vignette
-					$('#mcId_vignette').load(getContextPath() + '/tiers/vignette.do?numero=' + id + '&titre=Contribuable%20existant&showAvatar=true&' + new Date().getTime());
+					Tiers.loadVignette($('#mcId_vignette'), id, {showAvatar : true, titre : 'Contribuable existant'});
 				}
 				else {
 					$('#mcId_vignette').html('<div class="ctbInconnu iepngfix" onclick="return search_mc();"/>');

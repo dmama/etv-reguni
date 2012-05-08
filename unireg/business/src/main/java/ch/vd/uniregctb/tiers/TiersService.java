@@ -999,7 +999,7 @@ public interface TiersService {
      * @param date  une date de validité
      * @return une dénomination de l'assujettissement du tiers
      */
-    public String getRoleAssujettissement(Tiers tiers, RegDate date);
+    public String getRoleAssujettissement(Tiers tiers, @Nullable RegDate date);
 
     /**
      * Défini la date limite d'exclusion sur les contribuables spécifiés par leur numéros.

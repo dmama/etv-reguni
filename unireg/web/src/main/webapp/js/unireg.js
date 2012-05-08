@@ -834,7 +834,7 @@ var Rapport = {
 			Form.doPostBack("theForm", "annulerRapport", idRapport);
 		}
 	}
-}
+};
 
 //===================================================
 
@@ -843,10 +843,231 @@ var Rapport = {
  */
 var Tiers = {
 	/**
-	 * Récupère des informations générales sur un tiers (voir la classe java TiersInfoController pour le détails des données retournées)
+	 * Charge une vignette contenant les informations résumées d'un tiers (= contenu identique au bandeau principal).
+	 * @param div le div ou l'élément html qui doit contenir la vignette
+	 * @param numero un numéro de tiers
+	 * @param options une liste d'options pour l'affichage d'informations supplémentaires.
 	 */
-	queryInfo : function(numero, callback) {
-		$.getJSON(getContextPath() + 'tiers/info.do?numero=' + numero + '&' + new Date().getTime(), callback, 'json').error(Ajax.popupErrorHandler);
+	loadVignette:function (div, numero, options) {
+		options = options || {};
+		var titre = options.titre || 'Caractéristiques du tiers';
+		var showAvatar = options.showAvatar;
+		var showLinks = options.showLinks;
+		var showValidation = options.showValidation;
+		var showEvenementsCivils = options.showEvenementsCivils;
+		var showComplements = options.showComplements;
+
+		var url = getContextPath() + 'tiers/vignette-info.do?numero=' + numero +
+			'&fillActions=' + (showLinks ? 'true' : 'false') +
+			'&fillAdresses=true' +
+			'&fillEnsemble=' + (showLinks ? 'true' : 'false') +
+			'&fillRoles=true' +
+			'&fillUrlVers=' + (showLinks ? 'true' : 'false') + '&' + new Date().getTime();
+
+		// affiche une image de chargement
+		div.css('position', 'relative');
+		var loading = $('<div style="position:absolute; left:' + ((div.width() / 2) - 12) + 'px; top:' + ((div.height() / 2) - 12) + 'px">' +
+			'<img src="'+ getContextPath() + '/images/loading.gif"/></div>');
+		div.prepend(loading);
+
+		// récupère les informations du tiers
+		$.getJSON(url, function(tiers) {
+
+			var html = '';
+			if (tiers) {
+				// construit la vignette
+				html += '<fieldset class="information"><legend><span>'+ StringUtils.escapeHTML(titre) + '</span></legend>';
+				html += '<input name="debugNatureTiers" type="hidden" value="' + tiers.nature + '"/>';
+				html += '<input name="debugTypeForPrincipalActif" type="hidden" value="' + tiers.typeAutoriteFiscaleForPrincipal + '"/>';
+				if (showAvatar || showLinks) {
+					html += '<table cellspacing="0" cellpadding="0" border="0"><tr><td>\n';
+					html += Tiers._buildDescriptifTiers(tiers, showLinks, showEvenementsCivils, showValidation, showComplements);
+					html += '</td><td width="130 px">\n';
+					html += Tiers._buildImageTiers(tiers);
+					html += '</td></tr></table>';
+				}
+				html +=	'</fieldset>';
+			}
+			else {
+				// le tiers n'existe pas
+				html += '<div class="ctbInconnu iepngfix"/>';
+			}
+
+			div.html(html);
+
+		}, 'json')
+		.error(Ajax.popupErrorHandler);
+	},
+
+	_buildDescriptifTiers : function(tiers, showLinks, showEvenementsCivils, showValidation, showComplements) {
+		var html = '';
+
+		if (showValidation) {
+			// TODO (msi)
+		}
+		html += '<table cellspacing="0" cellpadding="5" border="0" class="display_table">';
+		if (tiers.dateAnnulation) {
+			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS ANNULE</center></td></tr>\n';
+		}
+		else if (tiers.dateDesactivation) {
+			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS DESACTIVE AU ' + RegDate.format(tiers.dateDesactivation) + '</center></td></tr>\n';
+		}
+		else {
+			if (showEvenementsCivils) {
+				// TODO (msi)
+			}
+
+			// Numéro de contribuable
+			html += '<tr class="odd">';
+			html += '<td width="25%" nowrap>N° de tiers&nbsp;:&nbsp;</td>';
+			html += '<td width="50%">' + Tiers.formatNumero(tiers.numero);
+			if (showLinks) {
+				html += Link.consulterLog('Tiers', tiers.numero);
+			}
+			html += '</td>';
+			if (!tiers.dateAnnulation && showLinks) {
+				html += '<td width="25%">';
+				html += Tiers._buildVers(tiers);
+				html += '</td>';
+			}
+			else {
+				html += '<td width="25%">&nbsp;</td>\n';
+			}
+			html += '</tr>\n';
+
+			// Rôle
+			html += '<tr class="even">';
+			html += '<td width="25%">Rôle&nbsp;:</td>';
+			html += '<td width="50%">' + StringUtils.escapeHTML(tiers.roleLigne1);
+			if (tiers.roleLigne2) {
+				html += '<br>' + StringUtils.escapeHTML(tiers.roleLigne2);
+			}
+			html += '</td>\n';
+
+			// Actions
+			if (showLinks) {
+				if (!tiers.actions || tiers.actions.length == 0) {
+					// pas d'action à afficher
+					html += '<td width="25%">&nbsp;</td>';
+				}
+				else {
+					html += '<td width="25%"><div style="float:right;margin-right:10px;text-align:right">';
+					html += '<span>Actions : </span><select onchange="return App.executeAction($(this).val());">';
+					html += '<option>---</option>';
+					for(var i in tiers.actions) {
+						var action = tiers.actions[i];
+						html += '<option value="' + action.url + '">' + StringUtils.escapeHTML(action.label) + '</option>';
+					}
+					html += '</select></div></td>';
+				}
+			}
+			else {
+				html += '<td width="25%">&nbsp;</td>\n';
+			}
+			html += '</tr>\n';
+
+			// Adresse envoi
+			if (tiers.adresseEnvoi) {
+				// 1ère ligne
+				html += '<tr class="odd">';
+				html += '<td width="25%">Adresse&nbsp;:</td>';
+				html += '<td width="75%" colspan="2">' + StringUtils.escapeHTML(tiers.adresseEnvoi.ligne1) + '</td>';
+				// lignes 2 à 6
+				for (var i = 2; i <= 6; ++i) {
+					var line = tiers.adresseEnvoi['ligne' + i];
+					if (StringUtils.isNotBlank(line)) {
+						html += '<tr class="odd">';
+						html += '<td width="25%">&nbsp;</td>';
+						html += '<td width="75%" colspan="2">' + StringUtils.escapeHTML(line) + '</td>';
+						html += '</tr>';
+					}
+				}
+			}
+			else {
+				html += '<tr class="odd"><td width="25%">Adresse&nbsp;:</td>';
+				html += '<td width="75%" colspan="2" class="error">Erreur ! L\'adresse d\'envoi n\'a pas pu être déterminée pour la raison suivante:</td></tr>';
+				html += '<tr class="odd"><td width="25%">&nbsp;</td>';
+				html += '<td width="75%" colspan="2" class="error">=&gt;&nbsp;' + StringUtils.escapeHTML(tiers.adresseEnvoiException) + '</td>';
+				html += '<tr class="odd"><td width="25%">Adresse&nbsp;:</td>';
+				html +=
+					'<td  width="75%"  colspan="2" class="error">Si ce problème persiste, veuillez s\'il-vous-plaît contacter l\'administrateur pour lui communiquer le message ci-dessus. Merci.</td></tr>';
+			}
+			if (showComplements) {
+				// TODO (msi)
+			}
+		}
+		html += '</table>';
+		return html;
+	},
+
+	_buildVers : function(tiers) {
+		var html = '<div style="float: right;margin-right: 10px">';
+		html += '<span>Vers : </span>';
+
+		html += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
+		html += '<option value="">---</option>';
+		for (var i in tiers.urlsVers) {
+			var uv = tiers.urlsVers[i];
+			html += '<option value="' + uv.url + '">' + StringUtils.escapeHTML(uv.label) + '</option>';
+		}
+		html += '</select></div>';
+		return html;
+	},
+
+	_buildImageTiers : function(tiers) {
+		var image = this._getImageUrl(tiers.typeAvatar, false);
+		return '<img class="iepngfix" src="' + getContextPath() + image + '">';
+	},
+
+	_getImageUrl : function(typeAvatar, forLink) {
+		var image;
+		switch (typeAvatar) {
+		case 'HOMME':
+			image = "homme.png";
+			break;
+		case 'FEMME':
+			image = "femme.png";
+			break;
+		case 'SEXE_INCONNU':
+			image = "inconnu.png";
+			break;
+		case 'MC_MIXTE':
+			image = "menagecommun.png";
+			break;
+		case 'MC_HOMME_SEUL':
+			image = "homme_seul.png";
+			break;
+		case 'MC_FEMME_SEULE':
+			image = "femme_seule.png";
+			break;
+		case 'MC_HOMME_HOMME':
+			image = "homme_homme.png";
+			break;
+		case 'MC_FEMME_FEMME':
+			image = "femme_femme.png";
+			break;
+		case 'MC_SEXE_INCONNU':
+			image = "mc_inconnu.png";
+			break;
+		case 'ENTREPRISE':
+			image = "entreprise.png";
+			break;
+		case 'ETABLISSEMENT':
+			image = "etablissement.png";
+			break;
+		case 'AUTRE_COMM':
+			image = "autrecommunaute.png";
+			break;
+		case 'COLLECT_ADMIN':
+			image = "collectiviteadministrative.png";
+			break;
+		case 'DEBITEUR':
+			image = "debiteur.png";
+			break;
+		}
+
+		var basePath = (forLink ? "/images/tiers/links/" : "/images/tiers/");
+		return basePath + image;
 	},
 
 	/**
@@ -1171,6 +1392,9 @@ var Histo = {
 var StringUtils = {
 
 	trim: function(string) {
+		if (!string) {
+			return '';
+		}
 		if (string.trim) {
 			return string.trim();
 		}

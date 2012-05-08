@@ -28,8 +28,4 @@
 		<property name="ifoSecService" ref="ifoSecService" />
 	</bean>
 
-	<bean id="tiersInfoController" class="ch.vd.uniregctb.json.TiersInfoController">
-		<property name="tiersDAO" ref="tiersDAO" />
-	</bean>
-
 </beans>
