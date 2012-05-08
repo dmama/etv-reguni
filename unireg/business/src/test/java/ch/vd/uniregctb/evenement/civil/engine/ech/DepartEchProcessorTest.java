@@ -1,28 +1,36 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 import junit.framework.Assert;
+import net.sf.ehcache.CacheManager;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.interfaces.model.Adresse;
+import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresse;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilCache;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
+import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
@@ -32,16 +40,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
-
-	private ServiceInfrastructureService infraService;
-	private TiersService tiersService;
-
-	@Override
-	protected void runOnSetUp() throws Exception {
-		super.runOnSetUp();
-		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		tiersService = getBean(TiersService.class, "tiersService");
-	}
 
 	@Test
 	public void testDepartCelibataireHorsSuisse() throws Exception {
@@ -679,7 +677,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 
-		// événement d'arrivée
+		// événement de départ
 		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -799,5 +797,128 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
+	@Test
+	public void testNettoyageCacheAvantDecisionStrategie() throws Exception {
 
+		final long noIndividu = 12546744578L;
+		final RegDate dateNaissance = date(1965, 3, 12);
+		final RegDate dateDepart = date(2011, 12, 6);
+
+		// créée le service civil et un cache par devant
+		final ServiceCivilCache cache = new ServiceCivilCache();
+		cache.setCacheManager(getBean(CacheManager.class, "ehCacheManager"));
+		cache.setCacheName("serviceCivil");
+		cache.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		cache.setTarget(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu gerard = addIndividu(noIndividu, dateNaissance, "Manfind", "Gérard", true);
+				addAdresse(gerard, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateNaissance, null);
+			}
+		});
+		cache.afterPropertiesSet();
+		try {
+			serviceCivil.setUp(cache);
+
+			// création de la personne physique fiscale
+			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addHabitant(noIndividu);
+					addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
+					return pp.getNumero();
+				}
+			});
+
+			// on préchauffe le cache avec Gérard (la date "null" est due au cas jira SIFISC-4250, voir ServiceCivilBase.getAdresses(long, RegDate, boolean)
+			{
+				final Individu cached = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
+				Assert.assertNotNull(cached);
+				Assert.assertEquals(dateNaissance, cached.getDateNaissance());
+			}
+			{
+				// pour éviter les surprises plus tard, on préchauffe également le cache de l'individu à la date de l'événement
+				final Individu cached = serviceCivil.getIndividu(noIndividu, dateDepart, AttributeIndividu.ADRESSES);
+				Assert.assertNotNull(cached);
+				Assert.assertEquals(dateNaissance, cached.getDateNaissance());
+			}
+
+			// changement d'adresse
+			doModificationIndividu(noIndividu, new IndividuModification() {
+				@Override
+				public void modifyIndividu(MockIndividu individu) {
+					final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
+					oldAddress.setDateFinValidite(dateDepart);
+					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFSEtendu()));
+
+					final MockAdresse newAddress = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
+					individu.getAdresses().add(newAddress);
+				}
+			});
+
+			// puisqu'il est déjà dans le cache, on ne devrait pas encore voir la nouvelle adresse
+			{
+				final Individu individuDansCache = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
+				final Collection<Adresse> adresses = individuDansCache.getAdresses();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(1, adresses.size());
+				final Adresse adresseAvantModif = adresses.iterator().next();
+				Assert.assertNull(adresseAvantModif.getLocalisationSuivante());
+				Assert.assertNull(adresseAvantModif.getDateFin());
+				Assert.assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adresseAvantModif.getLocalite());
+			}
+
+			// maintenant, on fait arriver un événement de départ (qui correspond au changement d'adresse)
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateDepart);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.DEPART);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du résultat (il doit avoir été ignoré, le bug que nous avions dans SIFISC-4882 était que l'événement partait en erreur
+			// avec le message "impossible de déterminer si départ principal ou secondaire" car le cache n'avait pas encore été invalidé au moment
+			// où on inspectait les adresses pour retrouver celle qui se terminait à la date de l'événement)
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					return null;
+				}
+			});
+
+			// par acquis de conscience, vérifions maintenant que l'on a bien maintenant la nouvelle adresse
+			{
+				final Individu individuDansCache = serviceCivil.getIndividu(noIndividu, null, AttributeIndividu.ADRESSES);
+				final Collection<Adresse> adresses = individuDansCache.getAdresses();
+				Assert.assertNotNull(adresses);
+				Assert.assertEquals(2, adresses.size());
+
+				final Iterator<Adresse> iterator = adresses.iterator();
+				final Adresse oldAddress = iterator.next();
+				Assert.assertNotNull(oldAddress.getLocalisationSuivante());
+				Assert.assertEquals(dateDepart, oldAddress.getDateFin());
+				Assert.assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), oldAddress.getLocalite());
+
+				final Adresse newAddress = iterator.next();
+				Assert.assertNotNull(newAddress);
+				Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), newAddress.getLocalite());
+			}
+		}
+		finally {
+			cache.destroy();
+		}
+	}
 }

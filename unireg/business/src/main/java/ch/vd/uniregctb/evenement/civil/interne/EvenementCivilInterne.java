@@ -95,7 +95,8 @@ public abstract class EvenementCivilInterne {
 		this.conjointPP = null;
 
 		if (noIndividu != null && options.isRefreshCache()) {
-			refreshIndividuCache(noIndividu, context);
+			// pas la peine de rafraîchir le cache de l'individu, cela a déjà été fait bien avant
+			refreshConjointCache(noIndividu, context);
 		}
 	}
 
@@ -127,6 +128,12 @@ public abstract class EvenementCivilInterne {
 
 		// on doit d'abord invalider le cache de l'individu de l'événement afin que l'appel à getIndividu() soit pertinent
 		context.getDataEventService().onIndividuChange(noIndividu);
+
+		// éventuellement, on rafraîchit également le cache des individus conjoints
+		refreshConjointCache(noIndividu, context);
+	}
+
+	private void refreshConjointCache(Long noIndividu, EvenementCivilContext context) {
 
 		// si demandé par le type d'événement, le cache des invididus conjoints doit être rafraîchi lui-aussi
 		if (forceRefreshCacheConjoint()) {

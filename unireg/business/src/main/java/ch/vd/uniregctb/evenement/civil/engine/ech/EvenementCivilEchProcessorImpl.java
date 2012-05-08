@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilMessageCollector;
@@ -49,6 +50,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private PlatformTransactionManager transactionManager;
 	private EvenementCivilEchDAO evtCivilDAO;
 	private EvenementCivilEchTranslator translator;
+	private DataEventService dataEventService;
 
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
@@ -91,6 +93,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	public void setServiceCivil(ServiceCivilService serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 
 	/**
@@ -140,6 +146,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			int pointer = 0;
 			try {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
+
+				// première chose, on invalide le cache de l'individu (afin que les stratégies aient déjà une version à jour des individus)
+				dataEventService.onIndividuChange(noIndividu);
+
 				for (EvenementCivilEchBasicInfo evt : evts) {
 					if (!stopping) {
 						if (!processEventAndDoPostProcessingOnError(evt, evts, pointer)) {

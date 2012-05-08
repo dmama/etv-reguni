@@ -70,7 +70,7 @@ public class DepartTranslationStrategy implements EvenementCivilTranslationStrat
 				return false;
 			}
 			else {
-				throw new EvenementCivilException("Impossible de déterminer si départ principal ou secondaire");
+				throw new EvenementCivilException("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.");
 			}
 		}
 		catch (AdresseException e) {
