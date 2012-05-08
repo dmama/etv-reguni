@@ -82,7 +82,7 @@ public class ArriveeTranslationStrategy implements EvenementCivilTranslationStra
 				return false;
 			}
 			else {
-				throw new EvenementCivilException("Impossible de déterminer si arrivée principale ou secondaire");
+				throw new EvenementCivilException("Aucune adresse principale ou secondaire ne débute à la date de l'événement.");
 			}
 		}
 		catch (AdresseException e) {

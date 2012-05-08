@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import org.apache.commons.lang.mutable.MutableBoolean;
 
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.interfaces.service.rcpers.ProxyRcPersClientHelper;
@@ -14,6 +15,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected EvenementCivilEchDAO evtCivilDAO;
 	protected EvenementCivilEchService evtCivilService;
 	protected ProxyRcPersClientHelper rcPersClientHelper;
+	protected DataEventService dataEventService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -22,6 +24,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");
 		rcPersClientHelper = getBean(ProxyRcPersClientHelper.class, "rcPersClientHelper");
+		dataEventService = getBean(DataEventService.class, "dataEventService");
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
 
@@ -47,6 +50,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		proc.setTiersService(tiersService);
 		proc.setIndexer(globalTiersIndexer);
 		proc.setServiceCivil(serviceCivil);
+		proc.setDataEventService(dataEventService);
 		if (restart && processor != null) {
 			processor.stop();
 		}

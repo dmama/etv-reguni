@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 import ch.vd.uniregctb.interfaces.model.Adresse;
@@ -32,7 +34,25 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
-			adresses = individu.getAdresses();
+			adresses = deepCopy(individu.getAdresses());
+		}
+	}
+
+	protected static <T> Collection<T> deepCopy(Collection<T> original) {
+		if (original == null) {
+			return null;
+		}
+
+		try {
+			final List<T> newCollection = new ArrayList<T>(original.size());
+			for (T elt : original) {
+				//noinspection unchecked
+				newCollection.add((T) ((MockCloneable) elt).clone());
+			}
+			return newCollection;
+		}
+		catch (CloneNotSupportedException e) {
+			throw new IllegalArgumentException(e);
 		}
 	}
 }

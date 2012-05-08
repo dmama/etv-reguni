@@ -11,7 +11,7 @@ import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
-public class MockAdresse implements Adresse {
+public class MockAdresse implements Adresse, MockCloneable {
 
 	public CasePostale casePostale;
 	public RegDate dateDebutValidite;
@@ -251,5 +251,10 @@ public class MockAdresse implements Adresse {
 	@Override
 	public boolean isValidAt(RegDate date) {
 		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 }
