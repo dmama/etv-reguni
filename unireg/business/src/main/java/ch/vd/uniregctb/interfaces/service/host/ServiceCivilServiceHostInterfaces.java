@@ -20,10 +20,10 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 
-public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
+public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
 
@@ -55,7 +55,11 @@ public class ServiceCivilServiceHostInterfaces extends ServiceCivilServiceBase {
 			final int annee = date == null ? 2400 : date.year();
 			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)), date, parties);
 			if (ind != null) {
-				assertCoherence(noIndividu, ind.getNoTechnique());
+				long actual = ind.getNoTechnique();
+				if (noIndividu != actual) {
+					throw new IllegalArgumentException(String.format(
+							"Incohérence des données retournées détectées: individu demandé = %d, individu retourné = %d.", noIndividu, actual));
+				}
 			}
 
 			if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {

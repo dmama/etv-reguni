@@ -1355,7 +1355,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1503,7 +1503,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -1750,7 +1750,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -2443,7 +2443,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		 * Création des données du mock service civil
 		 */
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu pierre = addIndividu(noIndividuPierre, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);

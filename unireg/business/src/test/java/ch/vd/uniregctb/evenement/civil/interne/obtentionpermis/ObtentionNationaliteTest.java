@@ -12,6 +12,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -84,7 +85,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 	});
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivilSimple = new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
 		@Override
 		protected void init() {
 			MockIndividu momo = addIndividu(NO_INDIVIDU_NATIONALITE_FRANCE, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -98,7 +99,7 @@ public class ObtentionNationaliteTest extends WithoutSpringTest {
 			addNationalite(momo, MockPays.France, DATE_OBTENTION_NATIONALITE, null);
 			addNationalite(julie, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
 		}
-	};
+	});
 
 	private MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);

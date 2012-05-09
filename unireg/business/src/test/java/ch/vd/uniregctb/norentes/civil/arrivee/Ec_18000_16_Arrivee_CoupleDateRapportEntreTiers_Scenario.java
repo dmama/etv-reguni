@@ -53,7 +53,7 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				indAntonio = addIndividu(noIndAntonio, date(1976, 4, 25) , "Lauria", "Antonio", true);

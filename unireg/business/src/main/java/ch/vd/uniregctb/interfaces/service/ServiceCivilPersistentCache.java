@@ -29,19 +29,19 @@ import ch.vd.uniregctb.stats.StatsService;
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class ServiceCivilPersistentCache extends ServiceCivilServiceBase implements UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
+public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCacheInterface, DataEventListener, InitializingBean, DisposableBean, ServiceCivilServiceWrapper {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilPersistentCache.class);
 
 	public static final String CACHE_NAME = "ServiceCivilPersistent";
 
 	private PersistentCache<IndividuCacheValueWithParts> cache;
-	private ServiceCivilService target;
+	private ServiceCivilRaw target;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 	private DataEventService dataEventService;
 
-	public void setTarget(ServiceCivilService target) {
+	public void setTarget(ServiceCivilRaw target) {
 		this.target = target;
 	}
 
@@ -297,12 +297,12 @@ public class ServiceCivilPersistentCache extends ServiceCivilServiceBase impleme
 	}
 
 	@Override
-	public ServiceCivilService getTarget() {
+	public ServiceCivilRaw getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilService getUltimateTarget() {
+	public ServiceCivilRaw getUltimateTarget() {
 		if (target instanceof ServiceCivilServiceWrapper) {
 			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
 		}

@@ -23,14 +23,16 @@ import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilException;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceTracing;
 
-public class ServiceCivilRCPers extends ServiceCivilServiceBase {
+public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
 
 	private RcPersClient client;
+	private ServiceInfrastructureService infraService;
 
 	private final ThreadLocal<MutableBoolean> dumpIndividu = new ThreadLocal<MutableBoolean>() {
 		@Override
@@ -42,6 +44,10 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setClient(RcPersClient client) {
 		this.client = client;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@Override
@@ -77,7 +83,11 @@ public class ServiceCivilRCPers extends ServiceCivilServiceBase {
 		final Person person = list.getListOfResults().getResult().get(0).getPerson();
 		final Individu individu = IndividuRCPers.get(person, relations, infraService);
 		if (individu != null) {
-			assertCoherence(noIndividu, individu.getNoTechnique());
+			long actual = individu.getNoTechnique();
+			if (noIndividu != actual) {
+				throw new IllegalArgumentException(String.format(
+						"Incohérence des données retournées détectées: individu demandé = %d, individu retourné = %d.", noIndividu, actual));
+			}
 		}
 
 		if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {

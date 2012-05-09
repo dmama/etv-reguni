@@ -8,10 +8,10 @@ public interface ServiceCivilServiceWrapper {
 	/**
 	 * @return le service immédiatement wrappé
 	 */
-	ServiceCivilService getTarget();
+	ServiceCivilRaw getTarget();
 
 	/**
 	 * @return le service wrappé en bout de chaîne
 	 */
-	ServiceCivilService getUltimateTarget();
+	ServiceCivilRaw getUltimateTarget();
 }

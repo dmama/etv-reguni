@@ -6,7 +6,9 @@
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil" />
+	<bean id="serviceCivilServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
 	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
 
 	<!-- Bean client ServicePM MOCK -->

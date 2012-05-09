@@ -38,16 +38,13 @@
 
 	<!-- Service Civil -->
 
-	<bean id="serviceCivilServiceBase" abstract="true" class="ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase">
-		<property name="infraService" ref="serviceInfrastructureService"/>
-	</bean>
-
-	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceCivilServiceHostInterfaces" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceCivilServiceHostInterfaces">
 		<property name="serviceCivil" ref="_serviceCivil" />
 	</bean>
 
-	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.rcpers.ServiceCivilRCPers" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.rcpers.ServiceCivilRCPers">
 		<property name="client" ref="rcPersClient" />
+		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 
 	<bean id="serviceCivilServiceMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceCivilMarshaller">
@@ -61,7 +58,7 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache">
 		<property name="target" ref="serviceCivilServiceTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceCivil" />
@@ -70,7 +67,12 @@
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceCivilService" name="serviceCivilServiceCache"/>
+	<bean id="serviceCivilImpl" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="target" ref="serviceCivilServiceCache"/>
+	</bean>
+
+	<alias alias="serviceCivilService" name="serviceCivilImpl"/>
 
 	<!-- Service Securité -->
 

@@ -14,6 +14,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -63,7 +64,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 	});
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivil = new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
 
 		@Override
 		protected void init() {
@@ -84,7 +85,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
 			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
 		}
-	};
+	});
 
 	final MockTiersDAO tiersDAO = new MockTiersDAO();
 	final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);

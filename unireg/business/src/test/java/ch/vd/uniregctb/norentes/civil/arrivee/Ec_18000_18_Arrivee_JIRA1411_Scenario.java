@@ -69,7 +69,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine, date(1952, 2, 21) , "Lenormand", "Antoine", true);

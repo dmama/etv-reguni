@@ -28,6 +28,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -78,7 +79,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 	@Override
 	public void onSetUp() {
 
-		serviceCivil = new MockServiceCivil() {
+		serviceCivil = new ServiceCivilImpl(serviceInfra, new MockServiceCivil() {
 
 			@Override
 			protected void init() {
@@ -99,7 +100,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 				addIndividu(123L, RegDate.get(1970, 1, 1), "Dupont", "Philippe", true);
 				addIndividu(4567L, RegDate.get(1970, 1, 1), "Dupond", "Arnold", true);
 			}
-		};
+		});
 
 		tiersDAO = new MockTiersDAO();
 

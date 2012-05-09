@@ -2,37 +2,27 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.HistoriqueCommune;
-import ch.vd.uniregctb.common.DonneesCivilesException;
-import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Origine;
-import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
  * Service civil qui permet de choisir l'implémentation RegPP ou RcPers à utiliser
  */
-public class ServiceCivilMarshaller implements ServiceCivilService, InitializingBean {
+public class ServiceCivilMarshaller implements ServiceCivilRaw, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceCivilMarshaller.class);
 
 	private UniregModeHelper modeHelper;
-	private ServiceCivilService target;
-	private ServiceCivilService regpp;
-	private ServiceCivilService rcpers;
+	private ServiceCivilRaw target;
+	private ServiceCivilRaw regpp;
+	private ServiceCivilRaw rcpers;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setModeHelper(UniregModeHelper modeHelper) {
@@ -40,12 +30,12 @@ public class ServiceCivilMarshaller implements ServiceCivilService, Initializing
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setRegpp(ServiceCivilService regpp) {
+	public void setRegpp(ServiceCivilRaw regpp) {
 		this.regpp = regpp;
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
-	public void setRcpers(ServiceCivilService rcpers) {
+	public void setRcpers(ServiceCivilRaw rcpers) {
 		this.rcpers = rcpers;
 	}
 
@@ -66,74 +56,13 @@ public class ServiceCivilMarshaller implements ServiceCivilService, Initializing
 	}
 
 	@Override
-	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
-		return target.getAdresses(noIndividu, date, strict);
-	}
-
-	@Override
-	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
-		return target.getAdressesHisto(noIndividu, strict);
-	}
-
-	@Override
 	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 		return target.getIndividu(noIndividu, date, parties);
 	}
 
 	@Override
-	public Individu getConjoint(Long noIndividuPrincipal, @Nullable RegDate date) {
-		return target.getConjoint(noIndividuPrincipal, date);
-	}
-
-	@Override
-	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
-		return target.getNumeroIndividuConjoint(noIndividuPrincipal, date);
-	}
-
-	@Override
-	public Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal) {
-		return target.getNumerosIndividusConjoint(noIndividuPrincipal);
-	}
-
-	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		return target.getIndividus(nosIndividus, date, parties);
-	}
-
-	@Override
-	public Collection<Origine> getOrigines(long noTechniqueIndividu, RegDate date) {
-		return target.getOrigines(noTechniqueIndividu, date);
-	}
-
-	@Override
-	public Collection<Permis> getPermis(long noIndividu, @Nullable RegDate date) {
-		return target.getPermis(noIndividu, date);
-	}
-
-	@Override
-	public Tutelle getTutelle(long noTechniqueIndividu, RegDate date) {
-		return target.getTutelle(noTechniqueIndividu, date);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public Collection getNationalites(long noTechniqueIndividu, RegDate date) {
-		return target.getNationalites(noTechniqueIndividu, date);
-	}
-
-	@Override
-	public String getNomPrenom(Individu individu) {
-		return target.getNomPrenom(individu);
-	}
-
-	@Override
-	public NomPrenom getDecompositionNomPrenom(Individu individu) {
-		return target.getDecompositionNomPrenom(individu);
-	}
-
-	@Override
-	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
-		return target.getEtatCivilActif(noIndividu, date);
 	}
 
 	@Override
@@ -144,10 +73,5 @@ public class ServiceCivilMarshaller implements ServiceCivilService, Initializing
 	@Override
 	public void setIndividuLogger(boolean value) {
 		target.setIndividuLogger(value);
-	}
-
-	@Override
-	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
-		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 }

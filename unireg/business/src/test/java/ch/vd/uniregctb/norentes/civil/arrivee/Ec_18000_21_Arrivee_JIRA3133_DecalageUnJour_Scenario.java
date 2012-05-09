@@ -60,7 +60,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(numeroIndividu, dateNaissance, "Bouchet", "Olivier", true);

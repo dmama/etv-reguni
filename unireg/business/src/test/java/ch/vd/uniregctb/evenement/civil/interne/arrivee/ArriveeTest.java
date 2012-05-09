@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 import org.springframework.test.annotation.ExpectedException;
@@ -20,6 +19,7 @@ import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
@@ -36,6 +36,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -124,7 +125,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		});
 
 		// Crée les données du mock service civil
-		ServiceCivilService serviceCivil = new MockServiceCivil() {
+		ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(numeroIndividu, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -137,7 +138,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 				addAdresse(pierre, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
-		};
+		});
 
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);
 		final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);

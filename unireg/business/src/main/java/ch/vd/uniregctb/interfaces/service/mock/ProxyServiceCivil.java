@@ -19,9 +19,12 @@ import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceWrapper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Proxy du service civil à enregistrer dans l'application context et permettant à chaque test unitaire de spécifier précisemment l'instance
@@ -29,14 +32,26 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
  */
 public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServiceWrapper {
 
-	private ServiceCivilService target;
+	private ServiceCivilRaw target;
+	private final ServiceCivilImpl service;
 
 	public ProxyServiceCivil() {
-		this.target = null;
+		this.service = new ServiceCivilImpl();
 	}
 
-	public void setUp(ServiceCivilService target) {
+	public ProxyServiceCivil(ServiceInfrastructureService infraService) {
+		this.target = null;
+		this.service = new ServiceCivilImpl();
+		this.service.setInfraService(infraService);
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.service.setInfraService(infraService);
+	}
+
+	public void setUp(ServiceCivilRaw target) {
 		this.target = target;
+		this.service.setTarget(target);
 	}
 
 	public void tearDown() {
@@ -46,81 +61,81 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	@Override
 	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
-		return target.getAdresses(noIndividu, date, strict);
+		return service.getAdresses(noIndividu, date, strict);
 	}
 
 	@Override
 	public AdressesCivilesHistoriques getAdressesHisto(long noIndividu, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();
-		return target.getAdressesHisto(noIndividu, strict);
+		return service.getAdressesHisto(noIndividu, strict);
 	}
 
 	@Override
 	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
-		return target.getIndividu(noIndividu, date, parties);
+		return service.getIndividu(noIndividu, date, parties);
 	}
 
 	@Override
 	public Individu getConjoint(Long noIndividuPrincipal, @Nullable RegDate date) {
 		assertTargetNotNull();
-		return target.getConjoint(noIndividuPrincipal, date);
+		return service.getConjoint(noIndividuPrincipal, date);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Long getNumeroIndividuConjoint(Long noIndividuPrincipal, RegDate date) {
 		assertTargetNotNull();
-		return target.getNumeroIndividuConjoint(noIndividuPrincipal, date);
+		return service.getNumeroIndividuConjoint(noIndividuPrincipal, date);
 	}
 
 	@Override
 	public Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal) {
 		assertTargetNotNull();
-		return target.getNumerosIndividusConjoint(noIndividuPrincipal);
+		return service.getNumerosIndividusConjoint(noIndividuPrincipal);
 	}
 
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
-		return target.getIndividus(nosIndividus, date, parties);
+		return service.getIndividus(nosIndividus, date, parties);
 	}
 
 	@Override
 	public Collection<Origine> getOrigines(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getOrigines(noTechniqueIndividu, date);
+		return service.getOrigines(noTechniqueIndividu, date);
 	}
 
 	@Override
 	public Collection<Permis> getPermis(long noIndividu, @Nullable RegDate date) {
 		assertTargetNotNull();
-		return target.getPermis(noIndividu, date);
+		return service.getPermis(noIndividu, date);
 	}
 
 	@Override
 	public Tutelle getTutelle(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getTutelle(noTechniqueIndividu, date);
+		return service.getTutelle(noTechniqueIndividu, date);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection getNationalites(long noTechniqueIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getNationalites(noTechniqueIndividu, date);
+		return service.getNationalites(noTechniqueIndividu, date);
 	}
 
 	@Override
 	public String getNomPrenom(Individu individu) {
 		assertTargetNotNull();
-		return target.getNomPrenom(individu);
+		return service.getNomPrenom(individu);
 	}
 
 	@Override
 	public NomPrenom getDecompositionNomPrenom(Individu individu) {
 		assertTargetNotNull();
-		return target.getDecompositionNomPrenom(individu);
+		return service.getDecompositionNomPrenom(individu);
 	}
 
 	private void assertTargetNotNull() {
@@ -130,34 +145,34 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	@Override
 	public EtatCivil getEtatCivilActif(long noIndividu, RegDate date) {
 		assertTargetNotNull();
-		return target.getEtatCivilActif(noIndividu, date);
+		return service.getEtatCivilActif(noIndividu, date);
 	}
 
 	@Override
 	public boolean isWarmable() {
 		assertTargetNotNull();
-		return target.isWarmable();
+		return service.isWarmable();
 	}
 
 	@Override
 	public void setIndividuLogger(boolean value) {
 		assertTargetNotNull();
-		target.setIndividuLogger(value);
+		service.setIndividuLogger(value);
 	}
 
 	@Override
 	public List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException {
 		assertTargetNotNull();
-		return target.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
+		return service.getCommunesDomicileHisto(depuis, noIndividu, strict, seulementVaud);
 	}
 
 	@Override
-	public ServiceCivilService getTarget() {
+	public ServiceCivilRaw getTarget() {
 		return target;
 	}
 
 	@Override
-	public ServiceCivilService getUltimateTarget() {
+	public ServiceCivilRaw getUltimateTarget() {
 		if (target instanceof ServiceCivilServiceWrapper) {
 			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
 		}

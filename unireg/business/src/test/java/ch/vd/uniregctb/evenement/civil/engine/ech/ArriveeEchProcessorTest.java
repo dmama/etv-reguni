@@ -18,7 +18,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
 import ch.vd.uniregctb.metier.MetierService;
@@ -36,13 +35,11 @@ import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
-	private ServiceInfrastructureService infraService;
 	private MetierService metierService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		metierService = getBean(MetierService.class,"metierService");
 	}
 
@@ -113,7 +110,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 		
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -233,7 +230,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		final RegDate dateMariage = date(2001, 10, 1);
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -354,7 +351,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);
@@ -482,7 +479,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 
 
 		// mise en place civile
-		serviceCivil.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final RegDate naissanceLui = date(1970, 3, 12);

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -58,7 +59,7 @@ public class FinPermisTest extends WithoutSpringTest {
 	});
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivil = new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
 
 		@Override
 		protected void init() {
@@ -81,7 +82,7 @@ public class FinPermisTest extends WithoutSpringTest {
 			addPermis(rosa, TypePermis.COURTE_DUREE, RegDate.get(2003, 10, 25), DATE_DEBUT_PERMIS.getOneDayBefore(), false);
 			addPermis(rosa, TypePermis.ETABLISSEMENT, DATE_DEBUT_PERMIS, DATE_FIN_PERMIS, false);
 		}
-	};
+	});
 
 	final MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, tiersDAO);

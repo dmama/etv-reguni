@@ -62,7 +62,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final RegDate naissanceOlivier = date(1969, 1, 18);

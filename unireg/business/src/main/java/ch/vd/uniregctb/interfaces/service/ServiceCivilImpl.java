@@ -29,11 +29,28 @@ import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 
-public abstract class ServiceCivilServiceBase implements ServiceCivilService {
+public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServiceWrapper {
 
-	//private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceBase.class);
+	//private static final Logger LOGGER = Logger.getLogger(ServiceCivilImpl.class);
 
-	protected ServiceInfrastructureService infraService;
+	private ServiceInfrastructureService infraService;
+	private ServiceCivilRaw target;
+
+	public ServiceCivilImpl() {
+	}
+
+	public ServiceCivilImpl(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
+
+	public ServiceCivilImpl(ServiceInfrastructureService infraService, ServiceCivilRaw target) {
+		this.infraService = infraService;
+		this.target = target;
+	}
+
+	public void setTarget(ServiceCivilRaw target) {
+		this.target = target;
+	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
@@ -264,16 +281,38 @@ public abstract class ServiceCivilServiceBase implements ServiceCivilService {
 		return DateRangeHelper.collate(result);
 	}
 
-	/**
-	 * Vérifie que l'id de l'individu retourné corresponds bien à celui demandé.
-	 *
-	 * @param expected la valeur attendue
-	 * @param actual   la valeur constatée
-	 */
-	protected void assertCoherence(long expected, long actual) {
-		if (expected != actual) {
-			throw new IllegalArgumentException(String.format(
-					"Incohérence des données retournées détectées: tiers demandé = %d, tiers retourné = %d.", expected, actual));
+	@Override
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
+		return target.getIndividu(noIndividu, date, parties);
+	}
+
+	@Override
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+		return target.getIndividus(nosIndividus, date, parties);
+	}
+
+	@Override
+	public boolean isWarmable() {
+		return target.isWarmable();
+	}
+
+	@Override
+	public void setIndividuLogger(boolean value) {
+		target.setIndividuLogger(value);
+	}
+
+	@Override
+	public ServiceCivilRaw getTarget() {
+		return target;
+	}
+
+	@Override
+	public ServiceCivilRaw getUltimateTarget() {
+		if (target instanceof ServiceCivilServiceWrapper) {
+			return ((ServiceCivilServiceWrapper) target).getUltimateTarget();
+		}
+		else {
+			return target;
 		}
 	}
 }

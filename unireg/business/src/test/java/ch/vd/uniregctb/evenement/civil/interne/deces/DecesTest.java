@@ -22,6 +22,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -193,7 +194,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 	});
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivilSimple = new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
 		@Override
 		protected void init() {
 			MockIndividu momo = addIndividu(54321, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -220,7 +221,7 @@ public class DecesTest extends AbstractEvenementCivilInterneTest {
 			addOrigine(bea, MockCommune.Lausanne);
 			addOrigine(julien, MockCommune.Lausanne);
 		}
-	};
+	});
 
 	private EvenementCivilContext contextSimple;
 

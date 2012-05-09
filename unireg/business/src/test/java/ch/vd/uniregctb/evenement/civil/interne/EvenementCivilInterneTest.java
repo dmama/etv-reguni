@@ -20,6 +20,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -42,7 +43,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final long noIndividuConjoint = 2;
 
 		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
-		final ServiceCivilService serviceCivil = new MockServiceCivil() {
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndividuPrincipal, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -57,7 +58,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				// marie les individus
 				marieIndividus(pierre, julie, RegDate.get(1985, 7, 11));
 			}
-		};
+		});
 
 		/*
 		 * Création d'un événement civil composé de deux individus
@@ -95,7 +96,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final RegDate dateMariage = RegDate.get(1985, 7, 11);
 
 		final ServiceInfrastructureService infrastructureService = new ServiceInfrastructureImpl(new DefaultMockServiceInfrastructureService());
-		final ServiceCivilService serviceCivil = new MockServiceCivil(infrastructureService) {
+		final ServiceCivilService serviceCivil = new ServiceCivilImpl(infrastructureService, new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu pierre = addIndividu(noIndMonsieur, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
@@ -110,7 +111,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				// marie les individus
 				marieIndividus(pierre, julie, dateMariage);
 			}
-		};
+		});
 		final MyDataEventService dataEventService = new MyDataEventService();
 
 		/*

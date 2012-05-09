@@ -3,11 +3,11 @@ package ch.vd.uniregctb.checker;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
 
 public class ServiceCivilChecker implements ServiceChecker {
 
-	private ServiceCivilService serviceCivilRaw;
+	private ServiceCivilRaw serviceCivilRaw;
 	private String details;
 
 	@Override
@@ -30,7 +30,7 @@ public class ServiceCivilChecker implements ServiceChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivilRaw(ServiceCivilService serviceCivilRaw) {
+	public void setServiceCivilRaw(ServiceCivilRaw serviceCivilRaw) {
 		this.serviceCivilRaw = serviceCivilRaw;
 	}
 }

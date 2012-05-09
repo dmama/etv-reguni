@@ -68,7 +68,7 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(infraService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 
 			@Override
 			protected void init() {

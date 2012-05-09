@@ -12,7 +12,7 @@
 	  <property name="cachePercent" value="${extprop.civil.cache.cachePercent}" />
 	</bean>
 
-	<bean id="serviceCivilServicePersistentCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilPersistentCache" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServicePersistentCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilPersistentCache">
 		<property name="target" ref="serviceCivilServiceTracing" />
 		<property name="cache" ref="civilBerkeleyCache" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
@@ -21,7 +21,7 @@
 	</bean>
 
 	<!-- Override du cache *standard* du service civil pour le faire pointer vers le cache *persistent* -->
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache" parent="serviceCivilServiceBase">
+	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache">
 		<property name="target" ref="serviceCivilServicePersistentCache" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceCivil" />

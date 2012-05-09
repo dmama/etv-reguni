@@ -84,7 +84,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 
 	@Override
 	protected void initServiceCivil() {
-		serviceCivilService.setUp(new MockServiceCivil(serviceInfrastructureService) {
+		serviceCivilService.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 

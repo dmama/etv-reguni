@@ -13,6 +13,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockLocalite;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -139,7 +140,7 @@ public class TutelleTest extends WithoutSpringTest {
 	});
 
 	// Crée les données du mock service civil
-	ServiceCivilService serviceCivilSimple = new DefaultMockServiceCivil() {
+	ServiceCivilService serviceCivilSimple = new ServiceCivilImpl(infrastructureService, new DefaultMockServiceCivil() {
 		@Override
 		protected void init() {
 			MockIndividu momo = addIndividu(NO_INDIVIDU_PUPILLE_AVEC_TUTEUR, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -163,7 +164,7 @@ public class TutelleTest extends WithoutSpringTest {
 			setTutelle(julie, pierre, null, TypeTutelle.TUTELLE);
 			setTutelle(david, null, TypeTutelle.TUTELLE);
 		}
-	};
+	});
 
 	private MockTiersDAO tiersDAO = new MockTiersDAO();
 	private EvenementCivilContext context = new EvenementCivilContext(serviceCivilSimple, infrastructureService, tiersDAO);

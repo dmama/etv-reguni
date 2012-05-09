@@ -48,7 +48,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPermisList;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.model.mock.MockTutelle;
 import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilServiceBase;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
@@ -74,8 +74,7 @@ import ch.vd.uniregctb.type.TypeTutelle;
  * </pre>
  */
 @SuppressWarnings({"JavaDoc"})
-public abstract class MockServiceCivil extends ServiceCivilServiceBase {
-
+public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
 	 * Map des individus par numéro.
@@ -85,20 +84,9 @@ public abstract class MockServiceCivil extends ServiceCivilServiceBase {
 	/**
 	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
 	 * pour l'initialisation des données
-	 * @param infraService
-	 */
-	public MockServiceCivil(ServiceInfrastructureService infraService) {
-		setInfraService(infraService);
-		init();
-	}
-
-	/**
-	 * Constructeur par défaut qui appelle init pour initialiser le mock
-	 * (si le service infrastructure est nécessaire aux méthodes testées,
-	 * il faut utiliser {@link #MockServiceCivil(ServiceInfrastructureService)})
 	 */
 	public MockServiceCivil() {
-		this(null);
+		init();
 	}
 
 	/**

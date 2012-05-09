@@ -20,7 +20,6 @@ import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
 import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceCivil;
-import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static org.junit.Assert.assertEquals;
@@ -31,14 +30,6 @@ import static org.junit.Assert.fail;
 
 public class ServiceCivilServiceImplTest extends BusinessTest {
 
-	private final ProxyServiceCivil service = new ProxyServiceCivil();
-
-	@Override
-	public void onTearDown() throws Exception {
-		service.tearDown();
-		super.onTearDown();
-	}
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetEtatCivilActifAucunEtatCivil() {
@@ -46,7 +37,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		// Aucun état civil
 		final long noIndividu = 1;
 
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -54,9 +45,9 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		EtatCivil etatCivil1 = service.getEtatCivilActif(noIndividu, null);
+		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
 		assertNull(etatCivil1);
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(2000, 1, 13));
+		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(2000, 1, 13));
 		assertNull(etatCivil2);
 
 	}
@@ -71,7 +62,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		ec1.setDateDebut(RegDate.get(1960, 3, 1));
 
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -82,14 +73,14 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		EtatCivil etatCivil1 = service.getEtatCivilActif(noIndividu, null);
+		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
 		assertNotNull(etatCivil1);
 		assertSame(ec1, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
+		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(etatCivil2);
 
-		EtatCivil etatCivil3 = service.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
+		EtatCivil etatCivil3 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
 		assertNotNull(etatCivil3);
 		assertSame(ec1, etatCivil3);
 	}
@@ -111,7 +102,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		ec2.setDateDebut(RegDate.get(1985, 4, 21));
 		ec3.setDateDebut(RegDate.get(1973, 1, 8));
 
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -124,22 +115,22 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		EtatCivil etatCivil1 = service.getEtatCivilActif(noIndividu, null);
+		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
 		assertNotNull(etatCivil1);
 		assertSame(ec2, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
+		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNull(etatCivil2);
 
-		EtatCivil etatCivil3 = service.getEtatCivilActif(noIndividu, RegDate.get(1940, 11, 20));
+		EtatCivil etatCivil3 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1940, 11, 20));
 		assertNotNull(etatCivil3);
 		assertSame(ec1, etatCivil3);
 
-		EtatCivil etatCivil4 = service.getEtatCivilActif(noIndividu, RegDate.get(1975, 12, 25));
+		EtatCivil etatCivil4 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1975, 12, 25));
 		assertNotNull(etatCivil4);
 		assertSame(ec3, etatCivil4);
 
-		EtatCivil etatCivil5 = service.getEtatCivilActif(noIndividu, RegDate.get(1988, 1, 2));
+		EtatCivil etatCivil5 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1988, 1, 2));
 		assertNotNull(etatCivil5);
 		assertSame(ec2, etatCivil5);
 	}
@@ -156,7 +147,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final MockEtatCivil ec1 = new MockEtatCivil();
 		ec1.setDateDebut(null);
 
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu momo = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -167,15 +158,15 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		EtatCivil etatCivil1 = service.getEtatCivilActif(noIndividu, null);
+		EtatCivil etatCivil1 = serviceCivil.getEtatCivilActif(noIndividu, null);
 		assertNotNull(etatCivil1);
 		assertSame(ec1, etatCivil1);
 
-		EtatCivil etatCivil2 = service.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
+		EtatCivil etatCivil2 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1903, 1, 13));
 		assertNotNull(etatCivil2);
 		assertSame(ec1, etatCivil2);
 
-		EtatCivil etatCivil3 = service.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
+		EtatCivil etatCivil3 = serviceCivil.getEtatCivilActif(noIndividu, RegDate.get(1989, 11, 20));
 		assertNotNull(etatCivil3);
 		assertSame(ec1, etatCivil3);
 	}
@@ -190,7 +181,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final long noIndividu = 1;
 
 		// crée un individu avec deux adresses principales actives en même temps
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -200,7 +191,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		});
 
 		try {
-			service.getAdresses(noIndividu, RegDate.get(2002, 7, 1), true);
+			serviceCivil.getAdresses(noIndividu, RegDate.get(2002, 7, 1), true);
 			fail();
 		}
 		catch (DonneesCivilesException e) {
@@ -218,7 +209,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final long noIndividu = 1;
 
 		// crée un individu avec deux adresses principales actives en même temps
-		service.setUp(new MockServiceCivil() {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				MockIndividu individu = addIndividu(noIndividu, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
@@ -227,7 +218,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final AdressesCiviles adresses = new AdressesCiviles(service.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false));
+		final AdressesCiviles adresses = new AdressesCiviles(serviceCivil.getAdresses(noIndividu, RegDate.get(2002, 7, 1), false));
 		assertNotNull(adresses);
 		assertNull(adresses.courrier);
 		assertNull(adresses.secondaire);
@@ -254,8 +245,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		service.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -267,7 +257,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(naissance, noIndividu, false, false);
+		final List<HistoriqueCommune> domiciles = serviceCivil.getCommunesDomicileHisto(naissance, noIndividu, false, false);
 		assertNotNull(domiciles);
 		assertEquals(5, domiciles.size());
 
@@ -321,8 +311,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate arriveeLeSentier = RegDate.get(1990, 4, 22);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		service.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -334,7 +323,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			}
 		});
 
-		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(naissance, noIndividu, false, true);
+		final List<HistoriqueCommune> domiciles = serviceCivil.getCommunesDomicileHisto(naissance, noIndividu, false, true);
 		assertNotNull(domiciles);
 		assertEquals(4, domiciles.size());
 
@@ -383,8 +372,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		final RegDate departLeSentier = RegDate.get(1999, 12, 31);
 
 		// crée un individu avec tout un parcours (y compris HC/HS)
-		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
-		service.setUp(new MockServiceCivil(infraService) {
+		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, naissance, "Durant", "Maurice", true);
@@ -397,7 +385,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		});
 
 		final RegDate limite = naissance.addMonths(-12);
-		final List<HistoriqueCommune> domiciles = service.getCommunesDomicileHisto(limite, noIndividu, false, true);
+		final List<HistoriqueCommune> domiciles = serviceCivil.getCommunesDomicileHisto(limite, noIndividu, false, true);
 		assertNotNull(domiciles);
 		assertEquals(7, domiciles.size());
 
@@ -450,7 +438,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 	}
 
 	/**
-	 * C'est le cas du marié avec un non-habitant RCPers : la relation est bien renvoyée par le service
+	 * C'est le cas du marié avec un non-habitant RCPers : la relation est bien renvoyée par le serviceCivil
 	 * avec un numéro d'individu pour le conjoint, mais le GetPerson ne renvoie personne pour ce conjoint...
 	 */
 	@Test
@@ -475,7 +463,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 		assertNotNull(noIndividuConjoint);
 		assertEquals((long) noIndividuConjoint, noIndividuConjointAbsent);
 
-		// mais le service civil ne le renvoie pas
+		// mais le serviceCivil civil ne le renvoie pas
 		final Individu individuNonTrouve = serviceCivil.getIndividu(noIndividuConjointAbsent, null);
 		assertNull(individuNonTrouve);
 
