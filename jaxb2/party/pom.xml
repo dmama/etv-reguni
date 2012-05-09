@@ -54,6 +54,8 @@
 						<arg>-extension</arg>
 						<arg>-Xpretty-classname</arg>
 						<arg>-Xunireg-ws</arg>
+						<arg>-Xnamespace-prefix</arg>
+						<arg>-Xnamespace-prefix-file:../base/mapping.txt</arg>
 						<arg>-Xts</arg>
 						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
 						<arg>-Xvalue-constructor</arg>
@@ -68,6 +70,11 @@
 					</execution>
 				</executions>
 				<dependencies>
+					<dependency>
+						<groupId>ch.vd.jaxb2</groupId>
+						<artifactId>jaxb2-namespace-prefix</artifactId>
+						<version>1.0.0</version>
+					</dependency>
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-pretty-classname</artifactId>
