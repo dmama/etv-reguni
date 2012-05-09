@@ -18,7 +18,7 @@
 		<module>../common</module>
 		<module>../ech</module>
 		<module>../party</module>
-		<module>../beans</module>
+		<module>../events</module>
 		<module>../rcpers</module>
 	</modules>
 

@@ -4,7 +4,7 @@
 
 	<modelVersion>4.0.0</modelVersion>
 
-	<artifactId>unireg-jaxb2-beans</artifactId>
+	<artifactId>unireg-jaxb2-events</artifactId>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -16,8 +16,8 @@
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
 
-	<name>Unireg - Beans JAXB2</name>
-	<description>Les beans JAXB2 du projet Unireg</description>
+	<name>Unireg - Events Beans JAXB2</name>
+	<description>Beans JAXB2 qui décrivent les données des événements reçus et envoyés par le projet Unireg</description>
 
 	<dependencies>
 		<dependency>
