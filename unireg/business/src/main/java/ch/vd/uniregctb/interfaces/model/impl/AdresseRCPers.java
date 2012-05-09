@@ -58,11 +58,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(contact, infraService);
 	}
 
-	public static AdresseRCPers get(Residence residence, @Nullable Residence next, ServiceInfrastructureService infraService) {
+	public static AdresseRCPers get(Residence residence, @Nullable Residence next) {
 		if (residence == null) {
 			return null;
 		}
-		return new AdresseRCPers(residence, next, infraService);
+		return new AdresseRCPers(residence, next);
 	}
 
 	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureService infraService) {
@@ -91,7 +91,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localisationSuivante = null;
 	}
 
-	public AdresseRCPers(Residence residence, @Nullable Residence next, ServiceInfrastructureService infraService) {
+	public AdresseRCPers(Residence residence, @Nullable Residence next) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 
@@ -106,7 +106,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroOrdrePostal = addressInfo.getSwissZipCodeId() == null ? 0 : addressInfo.getSwissZipCodeId();
 		this.numeroPostal = String.valueOf(addressInfo.getSwissZipCode());
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
-		this.noOfsPays = initNoOfsPays(addressInfo.getCountry(), infraService);
+		this.noOfsPays = ServiceInfrastructureService.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
 		this.rue = addressInfo.getStreet();
 		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
 		this.typeAdresse = initTypeAdresseResidence(residence);
@@ -204,6 +204,12 @@ public class AdresseRCPers implements Adresse, Serializable {
 	}
 
 	private static int initNoOfsPays(String countryCode, ServiceInfrastructureService infraService) {
+
+		if ("CH".equals(countryCode)) {
+			// short path : 90% des adresses sont en Suisse
+			return ServiceInfrastructureService.noOfsSuisse;
+		}
+
 		final Pays pays = infraService.getPays(countryCode);
 		if (pays == null) {
 			return 0;

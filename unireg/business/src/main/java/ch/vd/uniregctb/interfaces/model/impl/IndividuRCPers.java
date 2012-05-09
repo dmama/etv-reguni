@@ -307,7 +307,7 @@ public class IndividuRCPers implements Individu, Serializable {
 				for (int i = 0, residenceSize = list.size(); i < residenceSize; i++) {
 					final Residence r = list.get(i);
 					final Residence next = i + 1 < residenceSize ? list.get(i + 1) : null;
-					res.add(AdresseRCPers.get(r, next, infraService)); // va calculer une date de fin si nécessaire
+					res.add(AdresseRCPers.get(r, next)); // va calculer une date de fin si nécessaire
 				}
 
 				adresses.addAll(res);
