@@ -57,7 +57,7 @@
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.uniregctb</groupId>
-			<artifactId>unireg-jaxb2-beans</artifactId>
+			<artifactId>unireg-jaxb2-events</artifactId>
 			<version>1.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
