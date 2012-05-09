@@ -3,10 +3,11 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CasePostale;
-import ch.vd.uniregctb.interfaces.model.Commune;
 
 /**
  * Données minimale d'une adresse autre tiers <b>annulée</b> ([UNIREG-3154]).
@@ -119,8 +120,9 @@ public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseG
 		return true;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
+	public Integer getNoOfsCommuneAdresse() {
 		return null;
 	}
 

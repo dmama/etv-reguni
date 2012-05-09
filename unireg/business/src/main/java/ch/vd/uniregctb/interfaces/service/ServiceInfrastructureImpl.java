@@ -342,11 +342,14 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 		// 2ème choix : la commune attachée à l'adresse
 		if (commune == null) {
-			final Commune candidate = adresse.getCommuneAdresse();
-			// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
-			// sinon, on prend l'adresse depuis la localité
-			if (candidate != null && !candidate.isPrincipale()) {
-				commune = candidate;
+			final Integer noOfs = adresse.getNoOfsCommuneAdresse();
+			if (noOfs != null) {
+				final Commune candidate = getCommuneByNumeroOfsEtendu(noOfs, date);
+				// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
+				// sinon, on prend l'adresse depuis la localité
+				if (candidate != null && !candidate.isPrincipale()) {
+					commune = candidate;
+				}
 			}
 		}
 
@@ -580,7 +583,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 		final Integer numero = adresse.getNumeroRue();
 		if (numero == null || numero == 0) {
-			final Commune commune = adresse.getCommuneAdresse();
+			final Integer noOfs = adresse.getNoOfsCommuneAdresse();
+			final Commune commune = (noOfs == null ? null : getCommuneByNumeroOfsEtendu(noOfs, adresse.getDateDebut()));
 			return commune != null && estDansLeCanton(commune);
 		}
 		else {

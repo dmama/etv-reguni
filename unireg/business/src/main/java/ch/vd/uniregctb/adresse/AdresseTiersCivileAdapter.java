@@ -3,6 +3,8 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -13,7 +15,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -265,9 +266,10 @@ public class AdresseTiersCivileAdapter extends AdresseAdapter {
 		return false;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
-		return adresse.getCommuneAdresse();
+	public Integer getNoOfsCommuneAdresse() {
+		return adresse.getNoOfsCommuneAdresse();
 	}
 
 	@Override

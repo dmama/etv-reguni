@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.model.LocalisationType;
 import ch.vd.uniregctb.interfaces.model.Pays;
@@ -30,7 +29,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -4329134883865292620L;
+	private static final long serialVersionUID = 6370371735246030462L;
 	
 	private final RegDate dateDebut;
 	private RegDate dateFin;
@@ -46,7 +45,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 	private final String rue;
 	private final String titre;
 	private final TypeAdresseCivil typeAdresse;
-	private final Commune communeAdresse;
+	private final Integer noOfsCommuneAdresse;
 	private final Integer egid;
 	private final Integer ewid;
 	private final Localisation localisationPrecedente;
@@ -85,7 +84,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.rue = addressInfo.getStreet();
 		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
-		this.communeAdresse = null;
+		this.noOfsCommuneAdresse = null;
 		this.egid = null; // les adresses courrier ne possèdent pas d'egid/ewid, par définition
 		this.ewid = null;
 		this.localisationPrecedente = null; // les adresses courrier ne possèdent pas de localisation précédente/suivante, par définition
@@ -111,7 +110,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.rue = addressInfo.getStreet();
 		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
 		this.typeAdresse = initTypeAdresseResidence(residence);
-		this.communeAdresse = initCommune(residence.getResidenceMunicipality().getMunicipalityId(), this.dateDebut, infraService);
+		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
 		this.localisationPrecedente = initLocalisation(residence.getComesFrom());
@@ -190,13 +189,6 @@ public class AdresseRCPers implements Adresse, Serializable {
 		}
 
 		return null;
-	}
-
-	private static Commune initCommune(Integer municipalityId, RegDate date, ServiceInfrastructureService infraService) {
-		if (municipalityId == null){
-			return null;
-		}
-		return infraService.getCommuneByNumeroOfsEtendu(municipalityId, date);
 	}
 
 	private static String initNPA(AddressInformation addressInfo) {
@@ -315,9 +307,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return typeAdresse;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
-		return communeAdresse;
+	public Integer getNoOfsCommuneAdresse() {
+		return noOfsCommuneAdresse;
 	}
 
 	@Override

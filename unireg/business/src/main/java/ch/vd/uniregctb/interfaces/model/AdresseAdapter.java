@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -96,9 +98,10 @@ public class AdresseAdapter implements Adresse {
 		return target.getTypeAdresse();
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
-		return target.getCommuneAdresse();
+	public Integer getNoOfsCommuneAdresse() {
+		return target.getNoOfsCommuneAdresse();
 	}
 
 	@Override

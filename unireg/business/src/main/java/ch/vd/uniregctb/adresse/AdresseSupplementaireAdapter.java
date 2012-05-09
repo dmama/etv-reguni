@@ -3,13 +3,14 @@ package ch.vd.uniregctb.adresse;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CasePostale;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localite;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -299,8 +300,9 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 		return adresse.isPermanente();
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
+	public Integer getNoOfsCommuneAdresse() {
 		// les adresses purement fiscales ne sont pas attachées à des communes directement
 		// -> il faut donc passer par la localité postale
 		return null;

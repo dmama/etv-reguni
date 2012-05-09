@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -11,7 +12,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Entreprise;
 
@@ -138,8 +138,9 @@ public class AdressePMAdapter implements AdresseGenerique {
 		return isDefault;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
+	public Integer getNoOfsCommuneAdresse() {
 		// devra changer si un jour les adresses d'entreprises pointent
 		// directement vers une commune...
 		return null;

@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -29,7 +31,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	public String rue;
 	public String titre;
 	public TypeAdresseCivil typeAdresse;
-	public Commune communeAdresse;
+	public Integer noOfsCommuneAdresse;
 	public Integer egid;
 	public Localisation localisationPrecedente;
 	public Localisation localisationSuivante;
@@ -204,13 +206,14 @@ public class MockAdresse implements Adresse, MockCloneable {
 		this.typeAdresse = typeAdresse;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
-		return communeAdresse;
+	public Integer getNoOfsCommuneAdresse() {
+		return noOfsCommuneAdresse;
 	}
 
 	public void setCommuneAdresse(Commune c) {
-		communeAdresse = c;
+		noOfsCommuneAdresse = (c == null ? null : c.getNoOFSEtendu());
 	}
 
 	@Override

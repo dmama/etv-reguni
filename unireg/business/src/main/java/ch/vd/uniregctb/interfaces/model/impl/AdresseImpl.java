@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
@@ -11,14 +12,13 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.Localisation;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -8140768971615719637L;
+	private static final long serialVersionUID = -8183104360877534906L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -34,7 +34,7 @@ public class AdresseImpl implements Adresse, Serializable {
 	private final String rue;
 	private final String titre;
 	private final TypeAdresseCivil typeAdresse;
-	private final Commune communeAdresse;
+	private final Integer noOfsCommuneAdresse;
 	private final Integer egid;
 	private final Integer ewid;
 
@@ -67,7 +67,9 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.rue = target.getRue();
 		this.titre = target.getTitre();
 		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
-		this.communeAdresse = CommuneImpl.get(target.getCommuneAdresse());
+
+		final CommuneImpl commune = CommuneImpl.get(target.getCommuneAdresse());
+		this.noOfsCommuneAdresse = commune == null ? null : commune.getNoOFSEtendu();
 
 		if (this.typeAdresse == TypeAdresseCivil.COURRIER || this.typeAdresse == TypeAdresseCivil.TUTEUR) {
 			// les adresses courrier (et tuteur) ne doivent pas posséder d'egid/ewid (= ça n'a pas de sens).
@@ -176,9 +178,10 @@ public class AdresseImpl implements Adresse, Serializable {
 		return typeAdresse;
 	}
 
+	@Nullable
 	@Override
-	public Commune getCommuneAdresse() {
-		return communeAdresse;
+	public Integer getNoOfsCommuneAdresse() {
+		return noOfsCommuneAdresse;
 	}
 
 	@Override

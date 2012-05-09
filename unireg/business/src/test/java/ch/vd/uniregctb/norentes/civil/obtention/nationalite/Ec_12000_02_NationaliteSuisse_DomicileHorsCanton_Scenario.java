@@ -104,7 +104,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 		assertEquals(0, ff.size(), "Il ne devrait pas y avoir de for fiscal");
 
 		final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(julie, TypeAdresseFiscale.DOMICILE, null, false);
-		assertEquals(MockCommune.Neuchatel.getNoOFSEtendu(), adresseDomicile.getCommuneAdresse().getNoOFSEtendu(), "L'adresse de domicile devrait être à Neuchâtel");
+		assertEquals(MockCommune.Neuchatel.getNoOFSEtendu(), adresseDomicile.getNoOfsCommuneAdresse(), "L'adresse de domicile devrait être à Neuchâtel");
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Obtention de Nationalité Suisse")

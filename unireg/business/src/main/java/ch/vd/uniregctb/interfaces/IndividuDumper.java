@@ -15,7 +15,6 @@ import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
 import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.District;
 import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Localisation;
@@ -24,7 +23,6 @@ import ch.vd.uniregctb.interfaces.model.Nationalite;
 import ch.vd.uniregctb.interfaces.model.Origine;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.Region;
 import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
 import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
@@ -38,7 +36,6 @@ public abstract class IndividuDumper {
 	private static ServiceInfrastructureService infraService;
 
 	private static final TIntObjectHashMap tabs = new TIntObjectHashMap();
-	private static Integer NO_OFS_PAYS_INCONNU = 8999;
 
 	public static void setInfraService(ServiceInfrastructureService infraService) {
 		IndividuDumper.infraService = infraService;
@@ -402,12 +399,14 @@ public abstract class IndividuDumper {
 			}
 		});
 
+		final Integer noPaysInconnu = ServiceInfrastructureService.noPaysInconnu;
+
 		StringBuilder s = new StringBuilder();
 		s.append("[");
 		boolean first = true;
 		for (Adresse adresse : adresses) {
 			if (ignoreSpecific) {
-				if (NO_OFS_PAYS_INCONNU.equals(adresse.getNoOfsPays())) {
+				if (noPaysInconnu.equals(adresse.getNoOfsPays())) {
 					// le pays inconnu n'existe pas dans RcPers et les adresses avec ce pays ne sont pas migrées
 					continue;
 				}
@@ -433,23 +432,25 @@ public abstract class IndividuDumper {
 		if (adresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
 			return true;
 		}
-		final Commune commune = adresse.getCommuneAdresse();
-		if (commune != null && !"VD".equals(commune.getSigleCanton())) {
-			return true;
-		}
-		final int ordrePoste = adresse.getNumeroOrdrePostal();
-		if (infraService != null && ordrePoste > 0) {
-			if (isLocaliteHorsCanton(ordrePoste)) {
+		if (infraService != null) {
+			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(adresse.getNoOfsCommuneAdresse(), adresse.getDateDebut());
+			if (commune != null && !"VD".equals(commune.getSigleCanton())) {
 				return true;
 			}
-		}
-		final Integer noRue = adresse.getNumeroRue();
-		if (noRue != null) {
-			final Rue rue = infraService.getRueByNumero(noRue);
-			if (rue != null) {
-				final Integer noLocalite = rue.getNoLocalite();
-				if (noLocalite != null && isLocaliteHorsCanton(noLocalite)) {
+			final int ordrePoste = adresse.getNumeroOrdrePostal();
+			if (ordrePoste > 0) {
+				if (isLocaliteHorsCanton(ordrePoste)) {
 					return true;
+				}
+			}
+			final Integer noRue = adresse.getNumeroRue();
+			if (noRue != null) {
+				final Rue rue = infraService.getRueByNumero(noRue);
+				if (rue != null) {
+					final Integer noLocalite = rue.getNoLocalite();
+					if (noLocalite != null && isLocaliteHorsCanton(noLocalite)) {
+						return true;
+					}
 				}
 			}
 		}
@@ -477,7 +478,7 @@ public abstract class IndividuDumper {
 		s.append("Adresse{\n");
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("casePostale=").append(dumpCasePostale(a.getCasePostale(), depth + 1)).append(", \n");
-			s.append(tab(depth + 1)).append("communeAdresse=").append(dumpCommune(a.getCommuneAdresse(), ignoreSpecific, depth + 1)).append(", \n");
+			s.append(tab(depth + 1)).append("noOfsCommuneAdresse=").append(a.getNoOfsCommuneAdresse()).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("dateDebut=").append(a.getDateDebut()).append(", \n");
 		s.append(tab(depth + 1)).append("dateFin=").append(a.getDateFin()).append(", \n");
@@ -521,61 +522,6 @@ public abstract class IndividuDumper {
 		s.append("Localisation{\n");
 		s.append(tab(depth + 1)).append("noOfs=").append(loc.getNoOfs()).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(loc.getType()).append(", \n");
-		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpCommune(Commune commune, boolean ignoreSpecific, int depth) {
-		if (commune == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("Commune{\n");
-		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("dateDebut=").append(commune.getDateDebutValidite()).append(", \n");
-			s.append(tab(depth + 1)).append("dateFin=").append(commune.getDateFinValidite()).append(", \n");
-			s.append(tab(depth + 1)).append("district=").append(dumpDistrict(commune.getDistrict(), depth + 1)).append(", \n");
-		}
-		s.append(tab(depth + 1)).append("noOfs=").append(commune.getNoOFS()).append(", \n");
-		s.append(tab(depth + 1)).append("noOfsEtendu=").append(commune.getNoOFSEtendu()).append(", \n");
-		s.append(tab(depth + 1)).append("nomMajuscule=").append(dumpString(commune.getNomMajuscule())).append(", \n");
-		s.append(tab(depth + 1)).append("nomMinuscule=").append(dumpString(commune.getNomMinuscule())).append(", \n");
-		s.append(tab(depth + 1)).append("numTechMere=").append(commune.getNumTechMere()).append(", \n");
-		//noinspection deprecation
-		s.append(tab(depth + 1)).append("numeroTechnique=").append(commune.getNumeroTechnique()).append(", \n");
-		s.append(tab(depth + 1)).append("sigleCanton=").append(dumpString(commune.getSigleCanton())).append(", \n");
-		s.append(tab(depth + 1)).append("sigleOfs=").append(dumpString(commune.getSigleOFS())).append(", \n");
-		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpDistrict(District district, int depth) {
-		if (district == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("District{\n");
-		s.append(tab(depth + 1)).append("code=").append(district.getCode()).append(", \n");
-		s.append(tab(depth + 1)).append("designation=").append(dumpString(district.getDesignation())).append(", \n");
-		s.append(tab(depth + 1)).append("region=").append(dumpRegion(district.getRegion(), depth + 1)).append(", \n");
-		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpRegion(Region region, int depth) {
-		if (region == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("Region{\n");
-		s.append(tab(depth + 1)).append("code=").append(region.getCode()).append(", \n");
-		s.append(tab(depth + 1)).append("code=").append(dumpString(region.getDesignation())).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();
