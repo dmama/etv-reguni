@@ -35,7 +35,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 	protected ServiceCivilService service;
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetIndividu() throws Exception {
 
 		Individu jean = service.getIndividu(333528, date(2007, 12, 31));
@@ -46,7 +46,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(jean);
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetIndividuComplet() throws Exception {
 
 		final Individu individu =
@@ -185,7 +185,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("CH", nationalite.getPays().getSigleOFS());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetConjoint() throws Exception {
 
 		Individu individu = service.getIndividu(692185, null);
@@ -197,7 +197,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("Théodora", conjoint.getPrenom());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetNumeroIndividuConjoint() {
 		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
@@ -211,7 +211,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals(845875, numeroAmelie.longValue());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetIndividuConjoint() {
 		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
@@ -242,7 +242,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals(387602, conjoint.getNoTechnique());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetAdressesAvecEgidEtEwid() {
 
 		final Individu ind0 = service.getIndividu(1015956, date(2010, 12, 31), AttributeIndividu.ADRESSES);
@@ -260,7 +260,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		}
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetIndividuAvecPermis() {
 
 		final Individu ind = service.getIndividu(986204, null, AttributeIndividu.PERMIS);

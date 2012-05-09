@@ -1,12 +1,16 @@
 package ch.vd.uniregctb.interfaces;
 
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class ServiceCivilRcPersTest extends AbstractServiceCivilTest {
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		service = getBean(ServiceCivilService.class, "serviceCivilRcPers");
+		final ServiceCivilRaw raw = getBean(ServiceCivilRaw.class, "serviceCivilRcPers");
+		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
+		service = new ServiceCivilImpl(infraService, raw);
 	}
 }
