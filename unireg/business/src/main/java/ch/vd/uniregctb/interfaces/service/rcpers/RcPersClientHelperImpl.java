@@ -32,14 +32,12 @@ public class RcPersClientHelperImpl implements RcPersClientHelper {
 		if (ref != null) {
 			final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
 			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), infraService);
-			if (individu != null) {
-				final EventIdentification idtf = ref.getIdentification();
-				final Long refMessageId = idtf.getReferenceMessageId();
-				final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getDate());
-				final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getType());
-				final ActionEvenementCivilEch action = ActionEvenementCivilEch.fromEchCode(idtf.getAction());
-				return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
-			}
+			final EventIdentification idtf = ref.getIdentification();
+			final Long refMessageId = idtf.getReferenceMessageId();
+			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getDate());
+			final TypeEvenementCivilEch type = TypeEvenementCivilEch.fromEchCode(idtf.getType());
+			final ActionEvenementCivilEch action = ActionEvenementCivilEch.fromEchCode(idtf.getAction());
+			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
 		}
 		return null;
 	}

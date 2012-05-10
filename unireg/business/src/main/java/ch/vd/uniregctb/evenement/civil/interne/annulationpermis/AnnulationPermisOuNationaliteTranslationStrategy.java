@@ -46,9 +46,13 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	protected static Individu getIndividuFromEvent(long eventId, EvenementCivilEchContext context) throws EvenementCivilException {
 		final IndividuApresEvenement data = context.getRcPersClientHelper().getIndividuFromEvent(eventId);
 		if (data == null) {
-			throw new EvenementCivilException(String.format("Pas de données fournies pour l'individu de l'événement %d", eventId));
+			throw new EvenementCivilException(String.format("Pas de données fournies l'événement civil %d", eventId));
 		}
-		return data.getIndividu();
+		final Individu individu = data.getIndividu();
+		if (individu == null) {
+			throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", eventId));
+		}
+		return individu;
 	}
 	
 }
