@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.rcpers.IndividuApresEvenement;
 import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
 
@@ -105,7 +106,11 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			if (apresEvenement == null) {
 				throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
 			}
-			return apresEvenement.getIndividu().getNoTechnique();
+			final Individu individu = apresEvenement.getIndividu();
+			if (individu == null) {
+				throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", event.getId()));
+			}
+			return individu.getNoTechnique();
 		}
 	}
 
