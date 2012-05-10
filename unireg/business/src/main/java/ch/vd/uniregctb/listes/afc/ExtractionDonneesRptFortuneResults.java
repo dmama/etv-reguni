@@ -15,7 +15,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeContribuable;
 
 public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeriodeImpositionResults {
 
@@ -76,8 +75,7 @@ public class ExtractionDonneesRptFortuneResults extends ExtractionDonneesRptPeri
 	protected InfoPeriodeImposition buildInfoPeriodeImpositionFromPeriodeImposition(Contribuable ctb, InfoIdentificationCtb identification, ModeImposition modeImposition, MotifRattachement motifRattachement,
 	                                                           PeriodeImposition periode, MotifFor motifDebut, MotifFor motifFin,
 	                                                           Integer ofsCommuneForGestion, TypeAutoriteFiscale autoriteFiscaleForPrincipal) {
-		final TypeContribuable typeContribuable = periode.getTypeContribuable();
-		final boolean limite = typeContribuable == TypeContribuable.HORS_CANTON || typeContribuable == TypeContribuable.HORS_SUISSE;
+		final boolean limite = (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.PAYS_HS || autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_HC);
 		return new InfoPeriodeImpositionFortune(ctb.getNumero(), identification, modeImposition, periode.getDateDebut(), periode.getDateFin(),
 		                                        motifRattachement, motifDebut, motifFin, ofsCommuneForGestion, autoriteFiscaleForPrincipal, limite);
 	}

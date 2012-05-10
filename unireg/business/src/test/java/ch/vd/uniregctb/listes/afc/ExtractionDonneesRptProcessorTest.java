@@ -2486,7 +2486,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.IMMEUBLE_PRIVE, elt.motifRattachement);
 			Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, elt.autoriteFiscaleForPrincipal);
-			Assert.assertFalse(elt.limite);
+			Assert.assertTrue(elt.limite);
 		}
 	}
 }
