@@ -1,45 +1,44 @@
-/**
- *
- */
 package ch.vd.uniregctb.type;
 
-import ch.vd.common.model.EnumTypeAdresse;
-
 public enum TypeAdresseCivil {
-	SECONDAIRE(EnumTypeAdresse.SECONDAIRE),
-	PRINCIPALE(EnumTypeAdresse.PRINCIPALE),
-	COURRIER(EnumTypeAdresse.COURRIER),
-	TUTEUR(EnumTypeAdresse.TUTELLE);
+	SECONDAIRE,
+	PRINCIPALE,
+	COURRIER,
+	TUTEUR;
 
-	private final EnumTypeAdresse host;
-
-	TypeAdresseCivil(EnumTypeAdresse host) {
-		this.host = host;
-	}
-
-	public static TypeAdresseCivil get(EnumTypeAdresse right) {
-		if (right == null) {
+	public static TypeAdresseCivil fromDbValue(String val) {
+		if (val == null) {
 			return null;
 		}
-
-		if (right == EnumTypeAdresse.SECONDAIRE) {
-			return SECONDAIRE;
+		if ("C".equals(val)) {
+			return TypeAdresseCivil.COURRIER;
 		}
-		else if (right == EnumTypeAdresse.PRINCIPALE) {
-			return PRINCIPALE;
+		else if ("P".equals(val)) {
+			return TypeAdresseCivil.PRINCIPALE;
 		}
-		else if (right == EnumTypeAdresse.COURRIER) {
-			return COURRIER;
+		else if ("S".equals(val)) {
+			return TypeAdresseCivil.SECONDAIRE;
 		}
-		else if (right == EnumTypeAdresse.TUTELLE) {
-			return TUTEUR;
+		else if ("T".equals(val)) {
+			return TypeAdresseCivil.TUTEUR;
 		}
 		else {
-			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + right.getName() + ']');
+			throw new IllegalArgumentException("Code d'adresse civil inconnu = [" + val + "]");
 		}
 	}
-
-	public EnumTypeAdresse asHost() {
-		return host;
+	
+	public String toDbValue() {
+		switch (this) {
+		case COURRIER:
+			return "C";
+		case PRINCIPALE:
+			return "P";
+		case SECONDAIRE:
+			return "S";
+		case TUTEUR:
+			return "T";
+		default:
+			throw new IllegalArgumentException("Type d'adresse civil inconnu = [" + this + "]");
+		}
 	}
 }

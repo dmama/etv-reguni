@@ -19,6 +19,7 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuriteService, InitializingBean, DisposableBean {
@@ -243,8 +244,8 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 	}
 
 	@Override
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
-		final ProfilOperateur  resultat;
+	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+		final IfoSecProfil  resultat;
 		final KeyGetProfileUtilisateurVisaOperateurCodeCollectivite key = new KeyGetProfileUtilisateurVisaOperateurCodeCollectivite(visaOperateur, codeCollectivite);
 		final Element element = cache.get(key);
 		if (element == null) {
@@ -252,7 +253,7 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 			cache.put(new Element(key, resultat));
 		}
 		else {
-			resultat = (ProfilOperateur) element.getObjectValue();
+			resultat = (IfoSecProfil) element.getObjectValue();
 		}
 
 		return resultat;

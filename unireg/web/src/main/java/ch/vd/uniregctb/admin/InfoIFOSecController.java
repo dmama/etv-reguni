@@ -10,10 +10,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import ch.vd.securite.model.Procedure;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.security.IfoSecProcedure;
+import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.security.IfoSecService;
 import ch.vd.uniregctb.security.Role;
 
@@ -34,10 +34,10 @@ public class InfoIFOSecController {
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 
-		final ProfilOperateur profile = serviceSecurite.getProfileUtilisateur(visa, oid);
-		List<Procedure> proceduresUnireg = null;
+		final IfoSecProfil profile = serviceSecurite.getProfileUtilisateur(visa, oid);
+		List<IfoSecProcedure> proceduresUnireg = null;
 		List<Role> rolesIfoSecByPass = null;
-		List<Procedure> proceduresAutres = null;
+		List<IfoSecProcedure> proceduresAutres = null;
 		if (profile != null) {
 			proceduresUnireg = getProceduresUnireg(profile);
 			rolesIfoSecByPass = getProceduresIfoSecByPass(profile);
@@ -55,28 +55,28 @@ public class InfoIFOSecController {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<Procedure> getProceduresUnireg(ProfilOperateur profile) {
-		return (List<Procedure>) CollectionUtils.select((List<Procedure>) profile.getProcedures(), new Predicate() {
+	private List<IfoSecProcedure> getProceduresUnireg(IfoSecProfil profile) {
+		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				Procedure p = (Procedure) object;
+				IfoSecProcedure p = (IfoSecProcedure) object;
 				return p.getCode().startsWith("UR");
 			}
 		});
 	}
 
-	private List<Role> getProceduresIfoSecByPass(ProfilOperateur profile) {
+	private List<Role> getProceduresIfoSecByPass(IfoSecProfil profile) {
 		final List<Role> list = new ArrayList<Role>(ifoSecService.getBypass(profile.getVisaOperateur()));
 		Collections.sort(list);
 		return list;
 	}
 
 	@SuppressWarnings({"unchecked"})
-	private List<Procedure> getProceduresAutres(ProfilOperateur profile) {
-		return (List<Procedure>) CollectionUtils.select((List<Procedure>) profile.getProcedures(), new Predicate() {
+	private List<IfoSecProcedure> getProceduresAutres(IfoSecProfil profile) {
+		return (List<IfoSecProcedure>) CollectionUtils.select(profile.getProcedures(), new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
-				Procedure p = (Procedure) object;
+				IfoSecProcedure p = (IfoSecProcedure) object;
 				return !p.getCode().startsWith("UR");
 			}
 		});

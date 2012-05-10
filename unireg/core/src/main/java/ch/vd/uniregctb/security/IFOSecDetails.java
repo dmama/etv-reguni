@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.security;
 
-import ch.vd.securite.model.ProfilOperateur;
-
 public interface IFOSecDetails {
 
 	Integer getIfoSecOID();
@@ -12,7 +10,7 @@ public interface IFOSecDetails {
 
 	void setIfoSecOIDSigle(String ifoSecOIDSigle);
 
-	ProfilOperateur getIfoSecProfil();
+	IfoSecProfil getIfoSecProfil();
 
-	void setIfoSecProfil(ProfilOperateur ifosecProfil);
+	void setIfoSecProfil(IfoSecProfil ifosecProfil);
 }

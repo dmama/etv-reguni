@@ -14,6 +14,7 @@ import ch.vd.securite.service.ServiceSecurite;
 import ch.vd.uniregctb.common.JvmVersionHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.utils.proxy.ProxyBuisnessException;
 
 public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
@@ -68,9 +69,10 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	}
 
 	@Override
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		try {
-			return serviceSecurite.getProfileUtilisateur(visaOperateur, codeCollectivite);
+			final ProfilOperateur profile = serviceSecurite.getProfileUtilisateur(visaOperateur, codeCollectivite);
+			return IfoSecProfilImpl.get(profile);
 		}
 		catch (RemoteException e) {
 			throw new ServiceSecuriteException("impossible de récupérer le profil de l'utilisateur " + visaOperateur + " pour l'OID "

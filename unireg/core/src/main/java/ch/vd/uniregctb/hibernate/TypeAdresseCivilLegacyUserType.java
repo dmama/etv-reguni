@@ -9,7 +9,6 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.usertype.UserType;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
@@ -61,11 +60,10 @@ public class TypeAdresseCivilLegacyUserType implements UserType {
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
 		final String name = rs.getString(names[0]);
-		EnumTypeAdresse result = null;
-		if (!rs.wasNull()) {
-			result = EnumTypeAdresse.getEnum(name);
+		if (rs.wasNull()) {
+			return null;
 		}
-		return TypeAdresseCivil.get(result);
+		return TypeAdresseCivil.fromDbValue(name);
 	}
 
 	@Override
@@ -74,8 +72,7 @@ public class TypeAdresseCivilLegacyUserType implements UserType {
 			st.setNull(index, Types.VARCHAR);
 		}
 		else {
-			final EnumTypeAdresse e = ((TypeAdresseCivil) value).asHost();
-			st.setString(index, e.getName());
+			st.setString(index, ((TypeAdresseCivil) value).toDbValue());
 		}
 	}
 
@@ -87,7 +84,7 @@ public class TypeAdresseCivilLegacyUserType implements UserType {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Class returnedClass() {
-		return EnumTypeAdresse.class;
+		return TypeAdresseCivil.class;
 	}
 
 	@Override

@@ -4,8 +4,6 @@ import java.util.Hashtable;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.securite.model.ProfilOperateur;
-
 public class UniregSecurityDetails extends Hashtable<String, Object> implements IAMDetails, IFOSecDetails {
 
 	private static final long serialVersionUID = 7427380869548372766L;
@@ -13,7 +11,7 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	private String[] iamRoles = null;
 	private String iamFirstName = null;
 	private String iamLastName = null;
-	private ProfilOperateur ifoSecProfil = null;
+	private IfoSecProfil ifoSecProfil = null;
 	private Integer ifoSecOID = null;
 	private String ifoSecOIDSigle = null;
 
@@ -52,12 +50,12 @@ public class UniregSecurityDetails extends Hashtable<String, Object> implements 
 	}
 
 	@Override
-	public ProfilOperateur getIfoSecProfil() {
+	public IfoSecProfil getIfoSecProfil() {
 		return ifoSecProfil;
 	}
 
 	@Override
-	public void setIfoSecProfil(@Nullable ProfilOperateur ifosecProfil) {
+	public void setIfoSecProfil(@Nullable IfoSecProfil ifosecProfil) {
 		this.ifoSecProfil = ifosecProfil;
 	}
 

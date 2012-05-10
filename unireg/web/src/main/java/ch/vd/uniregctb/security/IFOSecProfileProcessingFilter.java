@@ -18,10 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.securite.model.Procedure;
-import ch.vd.securite.model.ProfilOperateur;
-import ch.vd.securite.model.impl.ProfilOperateurImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
 
 /**
  * Ce filtre est utilisé pour récupérer le profile IFOSec de l'utilisateur connecté et le stocker dans le context de sécurité. Il ne fait aucun contrôle d'accès par lui-même.
@@ -46,7 +44,7 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 			}
 
 			// On peut maintenant renseigner le profile
-			final ProfilOperateur profil = getProfilOperateur(visa, oid);
+			final IfoSecProfil profil = getProfilOperateur(visa, oid);
 			details.setIfoSecProfil(profil);
 
 			// On ajoute les procédures Ifosec autorisées dans la liste (nécessaire pour que le jsp tag <authz> fonctionne)
@@ -66,14 +64,14 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	}
 
 	@SuppressWarnings({"unchecked"})
-	protected static List<GrantedAuthorityImpl> getIfoSecGrantedAuthorities(ProfilOperateur profil) {
+	protected static List<GrantedAuthorityImpl> getIfoSecGrantedAuthorities(IfoSecProfil profil) {
 
 		final List<GrantedAuthorityImpl> granted;
 
-		final List<Procedure> procedures = (List<Procedure>) profil.getProcedures();
+		final List<IfoSecProcedure> procedures = profil.getProcedures();
 		if (procedures != null) {
 			granted = new ArrayList<GrantedAuthorityImpl>();
-			for (Procedure procedure : procedures) {
+			for (IfoSecProcedure procedure : procedures) {
 				final String ifoSec = procedure.getCode();
 				final Role role = Role.fromIfoSec(ifoSec);
 				if (role != null) {
@@ -95,14 +93,14 @@ public class IFOSecProfileProcessingFilter extends GenericFilterBean {
 	 * @param oid  le numéro de l'office d'impôt
 	 * @return le profil de l'opérateur
 	 */
-	private ProfilOperateur getProfilOperateur(String visa, Integer oid) {
-		final ProfilOperateur profil;
+	private IfoSecProfil getProfilOperateur(String visa, Integer oid) {
+		final IfoSecProfil profil;
 		// Récupération des procedures auxquelles a le droit l'opérateur
 		if (oid != null) {
 			profil = serviceSecurite.getProfileUtilisateur(visa, oid);
 		}
 		else {
-			profil = new ProfilOperateurImpl();
+			profil = new IfoSecProfilImpl();
 		}
 		return profil;
 	}

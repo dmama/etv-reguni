@@ -9,6 +9,7 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.security.IfoSecProfil;
 
 public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 
@@ -38,7 +39,7 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	@Override
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return target.getProfileUtilisateur(visaOperateur, codeCollectivite);
 	}
 

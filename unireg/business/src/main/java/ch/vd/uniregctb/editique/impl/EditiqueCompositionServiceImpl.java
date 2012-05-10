@@ -14,7 +14,6 @@ import ch.vd.editique.service.enumeration.TypeFormat;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelper;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperParams;
+import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -296,7 +296,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		final Integer oid = AuthenticationHelper.getCurrentOID();
 		if (visa != null && oid != null) {
-			ProfilOperateur po = serviceSecurite.getProfileUtilisateur(visa, oid);
+			IfoSecProfil po = serviceSecurite.getProfileUtilisateur(visa, oid);
 			if (po != null) {
 				tel = po.getNoTelephone();
 			}

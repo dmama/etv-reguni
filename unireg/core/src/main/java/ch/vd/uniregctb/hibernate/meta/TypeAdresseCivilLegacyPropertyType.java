@@ -11,6 +11,6 @@ public class TypeAdresseCivilLegacyPropertyType extends UserTypePropertyType {
 
 	@Override
 	public String getConvertMethod(String value) {
-		return "TypeAdresseCivil.get(EnumTypeAdresse.getEnum(" + value + "))";
+		return "TypeAdresseCivil.fromDbValue(" + value + ")";
 	}
 }

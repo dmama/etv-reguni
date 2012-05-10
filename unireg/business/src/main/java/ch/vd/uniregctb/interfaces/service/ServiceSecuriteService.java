@@ -8,6 +8,7 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.securite.service.SecuriteException;
+import ch.vd.uniregctb.security.IfoSecProfil;
 
 public interface ServiceSecuriteService {
 
@@ -54,7 +55,7 @@ public interface ServiceSecuriteService {
 	 * @throws RemoteException
 	 *             si un problème technique survient durant l'invocation du service.
 	 */
-	ProfilOperateur getProfileUtilisateur(String  visaOperateur, int codeCollectivite);
+	IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite);
 
 
 	/**

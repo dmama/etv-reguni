@@ -3,8 +3,6 @@ package ch.vd.uniregctb.type;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.civil.model.EnumTypePermis;
-
 public enum TypePermis {
 	/**
 	 * Saisonnier (A). Ce permis a été supprimé en mai 2002.
@@ -54,48 +52,6 @@ public enum TypePermis {
 	 * Suisse imposé à la source résidant à l'étranger (CH).
 	 */
 	SUISSE_SOURCIER;
-
-	public static TypePermis get(EnumTypePermis right) {
-		if (right == null) {
-			return null;
-		}
-		if (right == EnumTypePermis.ANNUEL) {
-			return ANNUEL;
-		}
-		else if (right == EnumTypePermis.COURTE_DUREE) {
-			return COURTE_DUREE;
-		}
-		else if (right == EnumTypePermis.DIPLOMATE) {
-			return DIPLOMATE;
-		}
-		else if (right == EnumTypePermis.ETABLLISSEMENT) {
-			return ETABLISSEMENT;
-		}
-		else if (right == EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL) {
-			return FONCTIONNAIRE_INTERNATIONAL;
-		}
-		else if (right == EnumTypePermis.FRONTALIER) {
-			return FRONTALIER;
-		}
-		else if (right == EnumTypePermis.PERSONNE_A_PROTEGER) {
-			return PERSONNE_A_PROTEGER;
-		}
-		else if (right == EnumTypePermis.PROVISOIRE) {
-			return PROVISOIRE;
-		}
-		else if (right == EnumTypePermis.REQUERANT_ASILE_AVANT_DECISION) {
-			return REQUERANT_ASILE;
-		}
-		else if (right == EnumTypePermis.REQUERANT_ASILE_REFUSE) {
-			return ETRANGER_ADMIS_PROVISOIREMENT;
-		}
-		else if (right == EnumTypePermis.SUISSE_SOURCIER) {
-			return SUISSE_SOURCIER;
-		}
-		else {
-			throw new IllegalArgumentException("Type de permis inconnu  = [" + right.getName() + ']');
-		}
-	}
 
 	public static TypePermis get(String evdPermisCode) {
 		if (StringUtils.isBlank(evdPermisCode)) {

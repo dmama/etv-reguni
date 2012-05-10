@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -66,7 +67,7 @@ public class AdresseImpl implements Adresse, Serializable {
 				(target.getPays() == null ? ServiceInfrastructureService.noOfsSuisse : target.getPays().getNoOFS()); // le pays n'est pas toujours renseignée dans le base lorsqu'il s'agit de la Suisse
 		this.rue = target.getRue();
 		this.titre = target.getTitre();
-		this.typeAdresse = TypeAdresseCivil.get(target.getTypeAdresse());
+		this.typeAdresse = initTypeAdresse(target.getTypeAdresse());
 
 		final CommuneImpl commune = CommuneImpl.get(target.getCommuneAdresse());
 		this.noOfsCommuneAdresse = commune == null ? null : commune.getNoOFSEtendu();
@@ -80,6 +81,28 @@ public class AdresseImpl implements Adresse, Serializable {
 			// [SIFISC-3460] la valeur minimale admise pour les EGID et les EWID est 1 (on teste aussi les valeurs maximales, tant qu'on y est)
 			this.egid = string2int(target.getEgid(), 1, 999999999);
 			this.ewid = string2int(target.getEwid(), 1, 999);
+		}
+	}
+
+	private static TypeAdresseCivil initTypeAdresse(EnumTypeAdresse type) {
+		if (type == null) {
+			return null;
+		}
+
+		if (type == EnumTypeAdresse.SECONDAIRE) {
+			return TypeAdresseCivil.SECONDAIRE;
+		}
+		else if (type == EnumTypeAdresse.PRINCIPALE) {
+			return TypeAdresseCivil.PRINCIPALE;
+		}
+		else if (type == EnumTypeAdresse.COURRIER) {
+			return TypeAdresseCivil.COURRIER;
+		}
+		else if (type == EnumTypeAdresse.TUTELLE) {
+			return TypeAdresseCivil.TUTEUR;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'adresse civile inconnue = [" + type.getName() + ']');
 		}
 	}
 

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.interfaces.model.impl;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.civil.model.EnumTypeTutelle;
 import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.model.Tutelle;
 import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
@@ -41,7 +42,25 @@ public class TutelleImpl implements Tutelle, Serializable {
 		this.numeroCollectiviteAutoriteTutelaire = target.getNumeroCollectiviteAutoriteTutellaire();
 		this.tuteur = IndividuImpl.get(target.getTuteur(), upTo);
 		this.tuteurGeneral = TuteurGeneralImpl.get(target.getTuteurGeneral());
-		this.typeTutelle = TypeTutelle.get(target.getTypeTutelle());
+		this.typeTutelle = initTypeTutelle(target.getTypeTutelle());
+	}
+
+	private static TypeTutelle initTypeTutelle(EnumTypeTutelle type) {
+		if (type == null) {
+			return null;
+		}
+		else if (type == EnumTypeTutelle.TUTELLE) {
+			return TypeTutelle.TUTELLE;
+		}
+		else if (type == EnumTypeTutelle.CURATELLE) {
+			return TypeTutelle.CURATELLE;
+		}
+		else if (type == EnumTypeTutelle.CONSEIL_LEGAL) {
+			return TypeTutelle.CONSEIL_LEGAL;
+		}
+		else {
+			throw new IllegalArgumentException("Type de tutelle inconnu = [" + type.getName() + ']');
+		}
 	}
 
 	@Override

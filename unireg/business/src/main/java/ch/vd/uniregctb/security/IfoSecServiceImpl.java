@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.securite.model.Procedure;
-import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 public class IfoSecServiceImpl implements IfoSecService {
@@ -37,19 +35,19 @@ public class IfoSecServiceImpl implements IfoSecService {
 
 		// on test les profils normaux
 
-		final ProfilOperateur profile = securiteService.getProfileUtilisateur(visaOperateur, codeCollectivite);
+		final IfoSecProfil profile = securiteService.getProfileUtilisateur(visaOperateur, codeCollectivite);
 		if (profile == null) {
 			// pas de profile, pas de droit
 			return false;
 		}
 
-		final List<Procedure> procedures = profile.getProcedures();
+		final List<IfoSecProcedure> procedures = profile.getProcedures();
 		if (procedures == null) {
 			// pas de procédure, pas de droit
 			return false;
 		}
 
-		for (Procedure p : procedures) {
+		for (IfoSecProcedure p : procedures) {
 			String code = p.getCode();
 			Role r = Role.fromIfoSec(code);
 			if (r == role) {

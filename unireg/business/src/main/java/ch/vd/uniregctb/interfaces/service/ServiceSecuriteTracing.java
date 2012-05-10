@@ -9,6 +9,7 @@ import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
+import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
@@ -116,7 +117,7 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	}
 
 	@Override
-	public ProfilOperateur getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
+	public IfoSecProfil getProfileUtilisateur(final String visaOperateur, final int codeCollectivite) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {

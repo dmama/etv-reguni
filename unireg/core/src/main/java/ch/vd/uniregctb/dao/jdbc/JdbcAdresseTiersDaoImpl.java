@@ -15,7 +15,6 @@ import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 
-import ch.vd.common.model.EnumTypeAdresse;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
@@ -249,7 +248,7 @@ public class JdbcAdresseTiersDaoImpl implements JdbcAdresseTiersDao {
 				final String logCuser = rs.getString(12);
 				final Timestamp logMdate = rs.getTimestamp(13);
 				final String logMuser = rs.getString(14);
-				final TypeAdresseCivil stype = TypeAdresseCivil.get(EnumTypeAdresse.getEnum(rs.getString(24)));
+				final TypeAdresseCivil stype = TypeAdresseCivil.fromDbValue(rs.getString(24));
 				final String temp28 = rs.getString(28);
 				final TypeAdresseTiers usageType = (rs.wasNull() ? null : Enum.valueOf(TypeAdresseTiers.class, temp28));
 			

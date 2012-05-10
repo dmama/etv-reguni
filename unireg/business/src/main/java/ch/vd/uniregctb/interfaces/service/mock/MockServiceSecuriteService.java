@@ -8,18 +8,19 @@ import java.util.Map;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
-import ch.vd.securite.model.Procedure;
 import ch.vd.securite.model.ProfilOperateur;
-import ch.vd.securite.model.impl.ProcedureImpl;
-import ch.vd.securite.model.impl.ProfilOperateurImpl;
 import ch.vd.uniregctb.interfaces.model.mock.MockOperateur;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
+import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
+import ch.vd.uniregctb.security.IfoSecProcedure;
+import ch.vd.uniregctb.security.IfoSecProfil;
 
 public abstract class MockServiceSecuriteService implements ServiceSecuriteService {
 
 	private final Map<String, Operateur> operatorsByVisa = new HashMap<String, Operateur>();
 	private final Map<Long, Operateur> operatorsByIndividu = new HashMap<Long, Operateur>();
-	private final Map<String, ProfilOperateur> profilesOperatorByIndividu = new HashMap<String, ProfilOperateur>();
+	private final Map<String, IfoSecProfil> profilesOperatorByIndividu = new HashMap<String, IfoSecProfil>();
 
 	public MockServiceSecuriteService() {
 		init();
@@ -38,7 +39,7 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 	}
 
 	@Override
-	public ProfilOperateur getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
+	public IfoSecProfil getProfileUtilisateur(String visaOperateur, int codeCollectivite) {
 		return profilesOperatorByIndividu.get(visaOperateur);
 	}
 
@@ -62,11 +63,11 @@ public abstract class MockServiceSecuriteService implements ServiceSecuriteServi
 		operatorsByIndividu.put(noIndividu, o);
 		operatorsByVisa.put(visa, o);
 
-		final ProfilOperateurImpl profile = new ProfilOperateurImpl();
-		final List<Procedure> procedures = new ArrayList<Procedure>();
+		final IfoSecProfilImpl profile = new IfoSecProfilImpl();
+		final List<IfoSecProcedure> procedures = new ArrayList<IfoSecProcedure>();
 		if (roles != null) {
 			for (String r : roles) {
-				ProcedureImpl p = new ProcedureImpl();
+				IfoSecProcedureImpl p = new IfoSecProcedureImpl();
 				p.setCode(r);
 				procedures.add(p);
 			}

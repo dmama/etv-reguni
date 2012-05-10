@@ -6,6 +6,7 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.type.TypeAdressePM;
@@ -61,7 +62,25 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 		this.numeroPostal = target.getNumeroPostal();
 		this.numeroPostalComplementaire = target.getNumeroPostalComplementaire();
 		this.rue = target.getRue();
-		this.type = TypeAdressePM.get(target.getType());
+		this.type = initTypeAdresse(target.getType());
+	}
+
+	private static TypeAdressePM initTypeAdresse(EnumTypeAdresseEntreprise type) {
+		if (type == null) {
+			return null;
+		}
+		if (type == EnumTypeAdresseEntreprise.COURRIER) {
+			return TypeAdressePM.COURRIER;
+		}
+		else if (type == EnumTypeAdresseEntreprise.SIEGE) {
+			return TypeAdressePM.SIEGE;
+		}
+		else if (type == EnumTypeAdresseEntreprise.FACTURATION) {
+			return TypeAdressePM.FACTURATION;
+		}
+		else {
+			throw new IllegalArgumentException("Type d'adresse PM inconnu = [" + type.getName() + ']');
+		}
 	}
 
 	private static RegDate initDateFin(Date dateFinValidite, RegDate today) {

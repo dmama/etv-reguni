@@ -20,12 +20,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.GenericFilterBean;
 
-import ch.vd.infrastructure.model.impl.CollectiviteAdministrativeImpl;
 import ch.vd.registre.web.filter.IAMUtil;
-import ch.vd.securite.model.Procedure;
-import ch.vd.securite.model.ProfilOperateur;
-import ch.vd.securite.model.impl.ProcedureImpl;
-import ch.vd.securite.model.impl.ProfilOperateurImpl;
+import ch.vd.uniregctb.interfaces.service.host.IfoSecProcedureImpl;
+import ch.vd.uniregctb.interfaces.service.host.IfoSecProfilImpl;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
@@ -75,7 +72,7 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 					// Récupération des infos de bypass IFOSec
 					final Integer oid = Integer.valueOf(SecurityDebugConfig.getIfoSecBypassOID());
 					final String oidSigle = SecurityDebugConfig.getIfoSecBypassOIDSigle();
-					final ProfilOperateur profil = getBypassProfil(visa, oid, oidSigle);
+					final IfoSecProfil profil = getBypassProfil(visa, oid, oidSigle);
 					final List<GrantedAuthorityImpl> ifoSecGranted = IFOSecProfileProcessingFilter.getIfoSecGrantedAuthorities(profil);
 
 					details.setIfoSecOID(oid);
@@ -98,27 +95,18 @@ public class DevSecurityBypassProcessingFilter extends GenericFilterBean {
 		filterChain.doFilter(servletRequest, servletResponse);
 	}
 
-	private static ProfilOperateur getBypassProfil(String visa, Integer oid, String oidSigle) {
+	private static IfoSecProfil getBypassProfil(String visa, Integer oid, String oidSigle) {
 
-		final ProfilOperateurImpl profil = new ProfilOperateurImpl();
+		final IfoSecProfilImpl profil = new IfoSecProfilImpl();
 		profil.setVisaOperateur(visa);
-
-		//la collectivité
-		final CollectiviteAdministrativeImpl collec = new CollectiviteAdministrativeImpl();
-		collec.setNoColAdm(oid);
-		collec.setSigle(oidSigle);
-		collec.setNomComplet1(oidSigle);
-		collec.setSigleCanton("VD");
-		collec.setNoCCP("");
-		profil.setCollectivite(collec);
 
 		// Les procédures
 		final String procedureStr = SecurityDebugConfig.getIfoSecBypassProcedures(visa);
-		final List<Procedure> listProcedure = new ArrayList<Procedure>();
+		final List<IfoSecProcedure> listProcedure = new ArrayList<IfoSecProcedure>();
 		for (String procedure : procedureStr.split(", ")) {
 			procedure = procedure.replace("[", "");
 			procedure = procedure.replace("]", "");
-			final ProcedureImpl proc = new ProcedureImpl();
+			final IfoSecProcedureImpl proc = new IfoSecProcedureImpl();
 			proc.setCode(procedure);
 			proc.setCodeActivite("O");
 			proc.setNumero(0);
