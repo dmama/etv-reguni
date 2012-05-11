@@ -48,9 +48,9 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 			throw new NullPointerException("le champs individu de l'objet doit être renseigné avant de pouvoir utiliser cette méthode");
 		}
 		if (evt.getNoIndividu() != getIndividu().getNumeroIndividu()) {
-			throw new IllegalStateException(
+			throw new RuntimeException(
 					String.format(
-							"impossible de defenir un evenement prioritaire qui porte sur un autre numero d'individu(attendu: %d reçu: %d)",
+							"impossible de définir un événement prioritaire qui porte sur un autre numero d'individu(attendu: %d reçu: %d)",
 							getIndividu().getNumeroIndividu(), evt.getId()));
 		}
 		this.evtPrioritaire = evt;

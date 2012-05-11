@@ -130,7 +130,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 
 	private EvenementCivilRegPPElementListeView buildView(EvenementCivilRegPP evt) throws AdresseException {
 		final EvenementCivilRegPPElementListeView evtRegPPElementListeView = new EvenementCivilRegPPElementListeView(evt);
-		final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(evt.getNumeroIndividuPrincipal());
+		final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(evt.getNumeroIndividuPrincipal());
 		try {
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);

@@ -1,17 +1,11 @@
 package ch.vd.uniregctb.evenement.ech.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
@@ -24,7 +18,11 @@ import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRecherche
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
@@ -32,15 +30,9 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 	private static final long TIMEOUT_RECYCLAGE = 5000; // ms
 
-	private EvenementCivilEchDAO evenementDAO;
 	private EvenementCivilEchService evenementService;
 	private EvenementCivilNotificationQueue evenementNotificationQueue;
 	private EvenementCivilEchProcessor evenementProcessor;
-
-	@SuppressWarnings("unused")
-	public void setEvenementDAO(EvenementCivilEchDAO evenementDAO) {
-		this.evenementDAO = evenementDAO;
-	}
 
 	@SuppressWarnings("unused")
 	public void setEvenementService(EvenementCivilEchService evenementService) {
@@ -58,10 +50,10 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	@Override
-	@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
 	public EvenementCivilEchDetailView get(Long id) throws AdresseException, ServiceInfrastructureException {
 		final EvenementCivilEchDetailView evtView = new EvenementCivilEchDetailView();
-		final EvenementCivilEch evt = evenementDAO.get(id);
+		final EvenementCivilEch evt = evenementService.get(id);
 		if (evt == null) {
 			throw newObjectNotFoundException(id);
 		}
@@ -73,52 +65,71 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 			retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
 			retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
 			retrieveEvenementAssocie(numeroIndividu, evtView);
-		}
+		} else {
+            if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
+                evtView.setRecyclable(true);
+            }
+        }
 		return evtView;
 	}
 
+
 	@Override
-	@Transactional (rollbackFor = Throwable.class)
-	public boolean recycleEvenementCivil(Long id) {
-		EvenementCivilEch evt = evenementDAO.get(id);
-		boolean individuRecycle = false;
+	public boolean recycleEvenementCivil(Long id) throws EvenementCivilException {
+		EvenementCivilEch evt = evenementService.get(id);
 		if (evt==null) {
 			throw newObjectNotFoundException(id);
 		}
-		List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(evt.getNumeroIndividu());
-		if (list == null || list.isEmpty()) {
-			throw new IllegalStateException("La liste devrait toujours avoir au moins un élément");
-		}
-		if (list.get(0).getId() == id) {
-			// L'evenement est recyclable
-			final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
-			final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
-			try {
-				evenementNotificationQueue.post(evt.getNumeroIndividu(), true);
-				individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
-			} finally {
-				evenementProcessor.unregisterListener(listnerHandle);
-			}
-		} else {
-			LOGGER.warn(String.format("Tentative incohérente de recyclage de l'événement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", id));
-		}
-		return individuRecycle;
+        if (evt.getNumeroIndividu() == null) {
+            return recycleEvenementCivilSansNumeroIndividu(evt);
+        } else {
+            return recycleEvenementCivil(evt);
+        }
+
+	}
+
+    private boolean recycleEvenementCivilSansNumeroIndividu(EvenementCivilEch evt) throws EvenementCivilException {
+        if (evt.getNumeroIndividu() != null) {
+            throw new IllegalArgumentException("l'événement " + evt.getId() + " doit référencer un événement sans individu. Or l'individu " + evt.getNumeroIndividu() + " y est associé");
+        }
+        // récupération de l'individu
+        final long noIndividu = evenementService.getNumeroIndividuPourEvent(evt);
+
+        // sauvegarde de l'individu dans l'événement
+        evt = evenementService.assigneNumeroIndividu(evt, noIndividu);
+
+        return recycleEvenementCivil(evt);
+    }
+
+    private boolean recycleEvenementCivil(EvenementCivilEch evt) {
+        boolean individuRecycle = false;
+        List<EvenementCivilEchBasicInfo> list = evenementService.buildLotEvenementsCivils(evt.getNumeroIndividu());
+        if (list == null || list.isEmpty()) {
+            throw new RuntimeException("La liste devrait toujours avoir au moins un élément");
+        }
+        if (list.get(0).getId() == evt.getId()) {
+            // L'evenement est recyclable
+            final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
+            final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
+            try {
+                evenementNotificationQueue.post(evt.getNumeroIndividu(), true);
+                individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
+            } finally {
+                evenementProcessor.unregisterListener(listnerHandle);
+            }
+        } else {
+            LOGGER.warn(String.format("Tentative incohérente de recyclage de l'événement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", evt.getId()));
+        }
+        return individuRecycle;
+    }
+
+    @Override
+	public void forceEvenement(Long id) {
+        evenementService.forceEvenement(id);
 	}
 
 	@Override
-	@Transactional (rollbackFor = Throwable.class)
-	public void forceEtatTraite(Long id) {
-		EvenementCivilEch evt = evenementDAO.get(id);
-		if (evt==null) {
-			throw newObjectNotFoundException(id);
-		}
-		if (!evt.getEtat().isTraite() || evt.getEtat() == EtatEvenementCivil.A_VERIFIER) {
-			evt.setEtat(EtatEvenementCivil.FORCE);
-		}
-	}
-
-	@Override
-	@Transactional(readOnly = true)
+    @Transactional (readOnly = true)
 	public List<EvenementCivilEchElementListeRechercheView> find(EvenementCivilEchCriteriaView bean, ParamPagination pagination) throws AdresseException {
 		final List<EvenementCivilEchElementListeRechercheView> evtsElementListeRechercheView = new ArrayList<EvenementCivilEchElementListeRechercheView>();
 		if (bean.isModeLotEvenement()) {
@@ -131,7 +142,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
 			}
 		} else {
-			final List<EvenementCivilEch> evts = evenementDAO.find(bean, pagination);
+			final List<EvenementCivilEch> evts = evenementService.find(bean, pagination);
 			for (EvenementCivilEch evt : evts) {
 				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
@@ -141,17 +152,16 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	@Override
-	@Transactional(readOnly = true)
 	public int count(EvenementCivilEchCriteriaView bean) {
 		if (bean.isModeLotEvenement()) {
 			return evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu()).size();
 		} else {
-			return evenementDAO.count(bean);
+			return evenementService.count(bean);
 		}
 	}
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEchBasicInfo evt) throws AdresseException {
-		return buildView(evenementDAO.get(evt.getId()));
+		return buildView(evenementService.get(evt.getId()));
 	}
 
 	private EvenementCivilEchElementListeRechercheView buildView(EvenementCivilEch evt) throws AdresseException {

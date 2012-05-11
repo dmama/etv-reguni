@@ -5,9 +5,11 @@ import java.util.List;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -37,14 +39,14 @@ public interface EvenementCivilEchManager {
 	 * @return true si l'evenement a été recyclé avant la sortie de la méthode (le traitement est asynchrone)
 	 * false si l'evenement est toujours en attente de traitement une fois sortie de la méthode
 	 */
-	public boolean recycleEvenementCivil(Long id);
+	public boolean recycleEvenementCivil(Long id) throws EvenementCivilException;
 
 	/**
 	 * Force l'etat de l'evenement à TRAITE
 	 *
 	 * @param id id de l'evt à forcer
 	 */
-	public void forceEtatTraite(Long id);
+	public void forceEvenement(Long id);
 
 	/**
 	 * Recherche des événements correspondant aux critères
@@ -63,5 +65,4 @@ public interface EvenementCivilEchManager {
 	 * @return le nombre d'évenements correspondant aux critères
 	 */
 	public int count(EvenementCivilEchCriteriaView bean);
-
 }

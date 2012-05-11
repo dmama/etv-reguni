@@ -25,7 +25,6 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 	</bean>
 
@@ -35,7 +34,6 @@
 	</bean>
 
 	<bean id="evtCivEchManager" class="ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManagerImpl" parent="evtCivManager">
-		<property name="evenementDAO" ref="evenementCivilEchDAO" />
 		<property name="evenementService" ref="evtCivilEchService" />
 		<property name="evenementNotificationQueue" ref="evtCivilEchNotificationQueue" />
 		<property name="evenementProcessor" ref="evtCivilEchProcessor" />

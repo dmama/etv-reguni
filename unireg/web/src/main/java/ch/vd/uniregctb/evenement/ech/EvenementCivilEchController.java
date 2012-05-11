@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 import org.springframework.beans.propertyeditors.CustomCollectionEditor;
@@ -204,13 +205,13 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-		manager.forceEtatTraite(id);
+		manager.forceEvenement(id);
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
-	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
+	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
 		boolean recycle = manager.recycleEvenementCivil(id);
 		if (recycle) {
 			Flash.message("Événement recyclé");

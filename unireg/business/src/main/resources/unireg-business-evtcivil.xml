@@ -47,6 +47,7 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO"/>
+        <property name="rcPersClientHelper" ref="rcPersClientHelper"/>
 	</bean>
 
 </beans>

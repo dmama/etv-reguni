@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 
+import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -16,10 +19,12 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import java.sql.SQLException;
+import java.util.*;
 
 public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, InitializingBean {
 
@@ -35,7 +40,8 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	 */
 	private static final Comparator<EvenementCivilEchBasicInfo> EVT_CIVIL_COMPARATOR = new EvenementCivilEchBasicInfoComparator();
 
-	private EvenementCivilEchDAO evenementCivilEchDAO;
+    private RcPersClientHelper rcPersClientHelper;
+    private EvenementCivilEchDAO evenementCivilEchDAO;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
 
@@ -75,7 +81,12 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
-	@Override
+    @SuppressWarnings({"UnusedDeclaration"})
+    public void setRcPersClientHelper(RcPersClientHelper rcPersClientHelper) {
+        this.rcPersClientHelper = rcPersClientHelper;
+    }
+
+    @Override
 	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -113,4 +124,73 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 			return Collections.emptyList();
 		}
 	}
+
+    @Override
+    public long getNumeroIndividuPourEvent(EvenementCivilEch event) throws EvenementCivilException {
+        if (event.getNumeroIndividu() != null) {
+            return event.getNumeroIndividu();
+        }
+        else {
+            final IndividuApresEvenement apresEvenement = rcPersClientHelper.getIndividuFromEvent(event.getId());
+            if (apresEvenement == null) {
+                throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
+            }
+            final Individu individu = apresEvenement.getIndividu();
+            if (individu == null) {
+                throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", event.getId()));
+            }
+            return individu.getNoTechnique();
+        }
+    }
+
+    @Override
+    public EvenementCivilEch assigneNumeroIndividu(final EvenementCivilEch event, final long numeroIndividu) {
+        if (event.getNumeroIndividu() == null || event.getNumeroIndividu() != numeroIndividu) {
+            final TransactionTemplate template = new TransactionTemplate(transactionManager);
+            template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+            return template.execute(new TransactionCallback<EvenementCivilEch>() {
+                @Override
+                public EvenementCivilEch doInTransaction(TransactionStatus status) {
+                    final EvenementCivilEch evt = evenementCivilEchDAO.get(event.getId());
+                    evt.setNumeroIndividu(numeroIndividu);
+                    return evenementCivilEchDAO.save(evt);
+                }
+            });
+        }
+        else {
+            return event;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public EvenementCivilEch get(Long id) {
+        return evenementCivilEchDAO.get(id);
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, ParamPagination pagination) {
+        return evenementCivilEchDAO.find(criterion, pagination);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public int count(EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
+        return evenementCivilEchDAO.count(criterion);
+    }
+
+    @Override
+    @Transactional
+    public void forceEvenement(Long id) {
+        EvenementCivilEch evt = evenementCivilEchDAO.get(id);
+        if (evt==null) {
+            throw new ObjectNotFoundException("evenement ech " + id);
+        }
+        if (evt.getEtat().isTraite() && evt.getEtat() != EtatEvenementCivil.A_VERIFIER) {
+            throw new IllegalArgumentException("l'état de l'événement " + id + " ne lui permet pas d'être forcé");
+        }
+        evt.setEtat(EtatEvenementCivil.FORCE);
+    }
 }

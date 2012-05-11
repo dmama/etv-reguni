@@ -32,6 +32,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.WebContextUtils;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Element de code factorisés entre les managers des evt ech et regPP
@@ -40,7 +41,6 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 
 	protected AdresseService adresseService;
 	protected TiersService tiersService;
-	protected TiersDAO tiersDAO;
 	protected ServiceCivilService serviceCivilService;
 	protected ServiceInfrastructureService serviceInfrastructureService;
 	protected MessageSource messageSource;
@@ -50,10 +50,6 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 	@SuppressWarnings("unused")
 	public void setWebCivilService(WebCivilService webCivilService) {
 		this.webCivilService = webCivilService;
-	}
-
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
 	}
 
 	@SuppressWarnings("unused")
@@ -144,7 +140,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 
 	protected void retrieveTiersAssocieMenage(Long idEvenement, Long numeroIndividu, EvenementCivilDetailView evtView) throws AdresseException {
 		try {
-			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
+			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple ensembleTiersCouple = tiersService.getEnsembleTiersCouple(habitantPrincipal, RegDate.get());
 				if (ensembleTiersCouple != null) {
@@ -164,7 +160,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 
 	protected void retrieveTiersAssociePrincipal(Long idEvenement, Long numeroIndividu, EvenementCivilDetailView evtView) throws AdresseException {
 		try {
-			final PersonnePhysique habitantPrincipal = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
+			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 			if (habitantPrincipal != null) {
 				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantPrincipal);
 				tiersAssocie.setLocaliteOuPays(retieveLocaliteOuPays(habitantPrincipal));
@@ -190,7 +186,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 
 	protected void retrieveTiersAssocieConjoint(Long id, Long individuConjoint,EvenementCivilDetailView evtView) throws AdresseException {
 		try {
-			final PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(individuConjoint);
+			final PersonnePhysique habitantConjoint = tiersService.getPersonnePhysiqueByNumeroIndividu(individuConjoint);
 			if (habitantConjoint != null) {
 				final TiersAssocieView tiersAssocie = createTiersAssocieView(habitantConjoint);
 				evtView.addTiersAssocies(tiersAssocie);
