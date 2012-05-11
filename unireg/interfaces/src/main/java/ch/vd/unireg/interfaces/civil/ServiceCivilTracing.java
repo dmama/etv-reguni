@@ -104,11 +104,6 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public void setIndividuLogger(boolean value) {
-		target.setIndividuLogger(value);
-	}
-
-	@Override
 	public void afterPropertiesSet() throws Exception {
 		if (statsService != null) {
 			statsService.registerService(SERVICE_NAME, tracing);

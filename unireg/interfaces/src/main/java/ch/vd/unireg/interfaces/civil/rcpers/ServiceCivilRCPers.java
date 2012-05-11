@@ -8,9 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
-import org.apache.log4j.Logger;
-
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
@@ -19,6 +16,7 @@ import ch.vd.evd0006.v1.Event;
 import ch.vd.evd0006.v1.EventIdentification;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -32,17 +30,11 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class ServiceCivilRCPers implements ServiceCivilRaw {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
+//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilRCPers.class);
 
 	private RcPersClient client;
 	private ServiceInfrastructureRaw infraService;
-
-	private final ThreadLocal<MutableBoolean> dumpIndividu = new ThreadLocal<MutableBoolean>() {
-		@Override
-		protected MutableBoolean initialValue() {
-			return new MutableBoolean(false);
-		}
-	};
+	private ServiceCivilInterceptor interceptor;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setClient(RcPersClient client) {
@@ -51,6 +43,10 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	public void setInfraService(ServiceInfrastructureRaw infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setInterceptor(ServiceCivilInterceptor interceptor) {
+		this.interceptor = interceptor;
 	}
 
 	@Override
@@ -93,12 +89,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			}
 		}
 
-		if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
-// FIXME (msi) utiliser le service civil interceptor
-//			final String message = String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
-//					IndividuDumper.dump(individu, false, false, false));
-//			// force le log en mode trace, même si le LOGGER n'est pas en mode trace
-//			new ForceLogger(LOGGER).trace(message);
+		if (interceptor != null) {
+			interceptor.afterGetIndividu(individu, noIndividu, date, parties);
 		}
 
 		return individu;
@@ -155,12 +147,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			}
 		}
 
-		if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
-// FIXME (msi) utiliser le service civil interceptor
-//			final String message = String.format("getIndividus(nosIndividus=%s, date=%s, parties=%s) => %s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date),
-//					ServiceTracing.toString(parties), IndividuDumper.dump(individus, false, false));
-//			// force le log en mode trace, même si le LOGGER n'est pas en mode trace
-//			new ForceLogger(LOGGER).trace(message);
+		if (interceptor != null) {
+			interceptor.afterGetIndividus(individus, nosIndividus, date, parties);
 		}
 
 		return individus;
@@ -203,10 +191,5 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	@Override
 	public boolean isWarmable() {
 		return false;
-	}
-
-	@Override
-	public void setIndividuLogger(boolean value) {
-		dumpIndividu.get().setValue(value);
 	}
 }

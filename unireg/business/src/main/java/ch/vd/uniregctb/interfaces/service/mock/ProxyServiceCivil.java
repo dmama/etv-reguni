@@ -162,9 +162,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public void setIndividuLogger(boolean value) {
+	public void setIndividuLogging(boolean value) {
 		assertTargetNotNull();
-		service.setIndividuLogger(value);
+		service.setIndividuLogging(value);
 	}
 
 	@Override

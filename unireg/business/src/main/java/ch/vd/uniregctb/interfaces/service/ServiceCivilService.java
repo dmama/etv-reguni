@@ -225,9 +225,9 @@ public interface ServiceCivilService {
 	boolean isWarmable();
 
 	/**
-	 * Active ou non le dump des individus récupérés dans le registre civil pour le thread courant.
+	 * Active ou non le dump des individus récupérés dans le registre civil <b>pour le thread courant</b>.
 	 *
 	 * @param value <b>vrai</b> si le dump est activé; <b>faux</b> s'il n'est pas activé.
 	 */
-	void setIndividuLogger(boolean value);
+	void setIndividuLogging(boolean value);
 }

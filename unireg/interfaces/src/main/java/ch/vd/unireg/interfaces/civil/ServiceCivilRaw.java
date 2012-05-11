@@ -58,11 +58,4 @@ public interface ServiceCivilRaw {
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();
-
-	/**
-	 * Active ou non le dump des individus récupérés dans le registre civil pour le thread courant.
-	 *
-	 * @param value <b>vrai</b> si le dump est activé; <b>faux</b> s'il n'est pas activé.
-	 */
-	void setIndividuLogger(boolean value);
 }

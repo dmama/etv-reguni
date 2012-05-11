@@ -39,6 +39,7 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	private ServiceInfrastructureService infraService;
 	private ServiceCivilRaw target;
+	private ServiceCivilLogger serviceLogger;
 
 	public ServiceCivilImpl() {
 	}
@@ -58,6 +59,10 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setServiceLogger(ServiceCivilLogger serviceLogger) {
+		this.serviceLogger = serviceLogger;
 	}
 
 	@Override
@@ -306,8 +311,10 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public void setIndividuLogger(boolean value) {
-		target.setIndividuLogger(value);
+	public void setIndividuLogging(boolean value) {
+		if (serviceLogger != null) { // les tests unitaires n'utilisent pas de logger sur le mock du service civil
+			serviceLogger.setIndividuLogging(value);
+		}
 	}
 
 	@Override

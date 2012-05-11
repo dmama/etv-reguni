@@ -243,11 +243,6 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 		return true;
 	}
 
-	@Override
-	public void setIndividuLogger(boolean value) {
-		target.setIndividuLogger(value);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

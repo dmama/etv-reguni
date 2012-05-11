@@ -287,11 +287,6 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		return true;
 	}
 
-	@Override
-	public void setIndividuLogger(boolean value) {
-		target.setIndividuLogger(value);
-	}
-
 	/**
 	 * {@inheritDoc}
 	 */

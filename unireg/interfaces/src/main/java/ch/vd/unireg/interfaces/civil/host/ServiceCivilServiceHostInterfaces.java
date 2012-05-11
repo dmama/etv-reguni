@@ -7,14 +7,13 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.mutable.MutableBoolean;
-import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.civil.service.ServiceCivil;
 import ch.vd.registre.common.service.RegistreException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.ServiceCivilInterceptor;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -24,28 +23,22 @@ import ch.vd.uniregctb.common.JvmVersionHelper;
 
 public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 
-	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
+//	private static final Logger LOGGER = Logger.getLogger(ServiceCivilServiceHostInterfaces.class);
 
 	private ServiceCivil serviceCivil;
-
-	private final ThreadLocal<MutableBoolean> dumpIndividu = new ThreadLocal<MutableBoolean>() {
-		@Override
-		protected MutableBoolean initialValue() {
-			return new MutableBoolean(false);
-		}
-	};
+	private ServiceCivilInterceptor interceptor;
 
 	public ServiceCivilServiceHostInterfaces() {
 		JvmVersionHelper.checkJvmWrtHostInterfaces();
 	}
 
-	/**
-	 * @param serviceCivil
-	 *            the serviceCivil to set
-	 */
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceCivil(ServiceCivil serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public void setInterceptor(ServiceCivilInterceptor interceptor) {
+		this.interceptor = interceptor;
 	}
 
 	@Override
@@ -61,12 +54,8 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 				}
 			}
 
-			if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
-// FIXME (msi) utiliser le service civil interceptor
-//				final String message = String.format("getIndividu(noIndividu=%d, date=%s, parties=%s) => %s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties),
-//						IndividuDumper.dump(ind, false, false, false));
-//				// force le log en mode trace, même si le LOGGER n'est pas en mode trace
-//				new ForceLogger(LOGGER).trace(message);
+			if (interceptor != null) {
+				interceptor.afterGetIndividu(ind, noIndividu, date, parties);
 			}
 
 			return ind;
@@ -98,12 +87,8 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 				}
 			}
 
-			if (LOGGER.isTraceEnabled() || dumpIndividu.get().booleanValue()) {
-// FIXME (msi) utiliser le service civil interceptor
-//				final String message = String.format("getIndividus(nosIndividus=%s, date=%s, parties=%s) => %s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date),
-//						ServiceTracing.toString(parties), IndividuDumper.dump(list, false, false));
-//				// force le log en mode trace, même si le LOGGER n'est pas en mode trace
-//				new ForceLogger(LOGGER).trace(message);
+			if (interceptor != null) {
+				interceptor.afterGetIndividus(list, nosIndividus, date, parties);
 			}
 
 			return list;
@@ -124,10 +109,5 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 	@Override
 	public boolean isWarmable() {
 		return false;
-	}
-
-	@Override
-	public void setIndividuLogger(boolean value) {
-		dumpIndividu.get().setValue(value);
 	}
 }

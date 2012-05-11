@@ -4,11 +4,13 @@
 
 	<bean id="serviceCivilServiceHost" class="ch.vd.unireg.interfaces.civil.host.ServiceCivilServiceHostInterfaces">
 		<property name="serviceCivil" ref="_serviceCivil" />
+		<property name="interceptor" ref="serviceCivilInterceptor"/>
 	</bean>
 
 	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
 		<property name="client" ref="rcPersClient" />
 		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="interceptor" ref="serviceCivilInterceptor"/>
 	</bean>
 
 	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.ServiceCivilMarshaller">

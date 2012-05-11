@@ -257,7 +257,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
 	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
-		serviceCivil.setIndividuLogger(EVT_INTERNE_LOGGER.isTraceEnabled());
+		serviceCivil.setIndividuLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.getId()));
 		try {
 			final boolean success = processEvent(evt);
@@ -268,7 +268,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			serviceCivil.setIndividuLogger(false);
+			serviceCivil.setIndividuLogging(false);
 		}
 	}
 

@@ -115,7 +115,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		// on ajoute le numéro de l'événement civil comme suffix à l'utilisateur principal, de manière à faciliter le tracing
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evenementCivilId));
 		try {
-			serviceCivil.setIndividuLogger(EVT_INTERNE_LOGGER.isTraceEnabled());
+			serviceCivil.setIndividuLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
 
 			// Tout d'abord, on essaie de traiter l'événement
 			result = template.execute(new CheckedTransactionCallback<Long>() {
@@ -149,7 +149,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		}
 		finally {
 			AuthenticationHelper.popPrincipal();
-			serviceCivil.setIndividuLogger(false);
+			serviceCivil.setIndividuLogging(false);
 		}
 
 		return result;

@@ -75,9 +75,4 @@ public class ServiceCivilMarshaller implements ServiceCivilRaw, InitializingBean
 	public boolean isWarmable() {
 		return target.isWarmable();
 	}
-
-	@Override
-	public void setIndividuLogger(boolean value) {
-		target.setIndividuLogger(value);
-	}
 }
