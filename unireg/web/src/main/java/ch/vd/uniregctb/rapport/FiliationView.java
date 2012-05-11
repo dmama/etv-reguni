@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.rapport;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.TiersService;

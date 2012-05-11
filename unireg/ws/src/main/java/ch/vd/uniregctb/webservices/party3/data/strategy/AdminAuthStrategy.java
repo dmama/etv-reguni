@@ -39,7 +39,7 @@ public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority>
 		super.initBase(to, from, context);
 
 		final CollectiviteAdministrative coladm = (CollectiviteAdministrative) from;
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative civil = context.infraService.getCollectivite(coladm.getNumeroCollectiviteAdministrative());
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative civil = context.infraService.getCollectivite(coladm.getNumeroCollectiviteAdministrative());
 		if (civil == null) {
 			final String message = String.format("Impossible de trouver la collectivité avec le n°%d", coladm.getNumeroCollectiviteAdministrative());
 			LOGGER.error(message);

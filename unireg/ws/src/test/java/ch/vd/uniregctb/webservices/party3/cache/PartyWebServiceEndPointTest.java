@@ -9,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
@@ -18,7 +19,6 @@ import ch.vd.unireg.webservices.party3.SearchPartyResponse;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.uniregctb.common.WebserviceTest;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;

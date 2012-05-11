@@ -17,13 +17,13 @@
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceInfrastructureService"/>
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService"/>
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
 		<property name="rawService" ref="serviceInfrastructureServiceHost" />
 	</bean>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceMarshaller" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil" />
+	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil" />
 	<alias alias="serviceCivilService" name="serviceCivilServiceMarshaller"/>
 
 	<!-- Bean client ServicePM MOCK -->

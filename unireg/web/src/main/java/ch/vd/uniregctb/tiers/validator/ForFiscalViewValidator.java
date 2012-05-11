@@ -10,7 +10,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.Pays;
+import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;

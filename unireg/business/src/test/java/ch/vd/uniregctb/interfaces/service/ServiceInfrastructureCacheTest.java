@@ -15,20 +15,23 @@ import org.springframework.util.ResourceUtils;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Canton;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.cache.UniregCacheManagerImpl;
-import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
-import ch.vd.uniregctb.interfaces.model.Canton;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.District;
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
-import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.model.OfficeImpot;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.Rue;
-import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
-import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -232,6 +235,11 @@ public class ServiceInfrastructureCacheTest {
 
 		@Override
 		public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Pays getPays(String codePays) throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
 

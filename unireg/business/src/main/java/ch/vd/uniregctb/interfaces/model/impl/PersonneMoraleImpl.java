@@ -8,6 +8,7 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.AdresseEntrepriseImpl;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.service.rcpers;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 
 public class ProxyRcPersClientHelper implements RcPersClientHelper {
 	

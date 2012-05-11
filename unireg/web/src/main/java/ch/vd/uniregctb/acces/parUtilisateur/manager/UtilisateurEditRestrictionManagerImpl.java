@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.displaytag.pagination.PaginatedList;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.acces.parUtilisateur.view.DroitAccesUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.RecapPersonneUtilisateurView;
 import ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurEditRestrictionView;
@@ -30,7 +30,6 @@ import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.manager.UtilisateurManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.general.view.UtilisateurView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.security.DroitAccesDAO;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.DroitAccesService;

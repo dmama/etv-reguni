@@ -16,23 +16,25 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Canton;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
-import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
-import ch.vd.uniregctb.interfaces.model.Canton;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
-import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.model.LogicielMetier;
-import ch.vd.uniregctb.interfaces.model.OfficeImpot;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
-import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
-import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 
 /**
  * Service d'infrastructure utilisée par le code métier. Ce service expose toutes les méthodes du service d'infrastructure <i>raw</i> en y ajoutant des méthodes utilitaires.
@@ -160,21 +162,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 */
 	@Override
 	public Pays getPays(String codePays) throws ServiceInfrastructureException {
-
-		// note : cette méthode est horriblement inefficace, mais comme le service infrastructure est sensé se trouver derrière un cache, on
-		// va comme ça.
-
-		Pays pays = null;
-
-		final List<Pays> payss = getPays();
-		for (Pays p : payss) {
-			if (p.getSigleOFS() != null && p.getSigleOFS().equals(codePays)) {
-				pays = p;
-				break;
-			}
-		}
-
-		return pays;
+		return rawService.getPays(codePays);
 	}
 
 	@Override

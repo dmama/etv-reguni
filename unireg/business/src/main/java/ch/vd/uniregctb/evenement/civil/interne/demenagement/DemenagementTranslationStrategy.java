@@ -4,6 +4,9 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -16,10 +19,7 @@ import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStr
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveePrincipale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Règles métiers permettant de traiter les événements de déménagement intra communal.

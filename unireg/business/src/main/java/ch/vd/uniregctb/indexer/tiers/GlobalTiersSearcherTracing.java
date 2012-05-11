@@ -8,7 +8,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersFilter;

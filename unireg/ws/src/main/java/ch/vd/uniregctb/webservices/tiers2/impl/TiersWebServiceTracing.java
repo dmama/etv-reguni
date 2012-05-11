@@ -12,7 +12,7 @@ import org.apache.cxf.management.counters.ResponseTimeCounter;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservices.common.ResponseTimeTracingCounter;
 

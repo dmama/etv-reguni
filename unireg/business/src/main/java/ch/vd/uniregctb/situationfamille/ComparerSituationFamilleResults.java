@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 
 public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSituationFamilleResults> {
@@ -87,7 +88,7 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 		final Long contribuableId = situation.getContribuablePrincipalId();
 		final String etatCivilLocal = situation.getEtatCivil().name();
 		final RegDate debutEtatCivilLocal = situation.getDateDebut();
-		final String etatCivilHost = etatCivil.getTypeEtatCivil().asCore().name();
+		final String etatCivilHost = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()).name();
 		final RegDate debutEtatCivilHost = etatCivil.getDateDebut();
 		listeSituationsDifferentes.add(new SituationsDifferentes(id, contribuableId, etatCivilLocal, debutEtatCivilLocal, etatCivilHost, debutEtatCivilHost));
 

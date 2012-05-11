@@ -6,7 +6,7 @@ import org.apache.lucene.search.Query;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**

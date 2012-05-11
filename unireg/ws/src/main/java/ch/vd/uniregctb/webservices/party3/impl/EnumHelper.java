@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
@@ -63,7 +64,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static MaritalStatus coreToWeb(ch.vd.uniregctb.interfaces.model.TypeEtatCivil etatCivil) {
+	public static MaritalStatus coreToWeb(TypeEtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}

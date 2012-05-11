@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;

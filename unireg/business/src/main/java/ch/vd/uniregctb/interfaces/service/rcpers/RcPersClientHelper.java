@@ -1,5 +1,10 @@
 package ch.vd.uniregctb.interfaces.service.rcpers;
 
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+
+/**
+ * TODO (msi) supprimer ce bean et utiliser le service civil à la place
+ */
 public interface RcPersClientHelper {
 
 	/**

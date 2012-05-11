@@ -9,15 +9,15 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.TuteurGeneral;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockTuteurGeneral;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TuteurGeneral;
-import ch.vd.uniregctb.interfaces.model.mock.MockCollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
-import ch.vd.uniregctb.interfaces.model.mock.MockTuteurGeneral;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceCivil;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -214,7 +214,7 @@ public class Tutelle2Test extends AbstractEvenementCivilInterneTest {
 		}
 	}
 
-	private Tutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative autoriteTutelaire) {
+	private Tutelle createTutelle(Individu pupille, Individu tuteur, TuteurGeneral tuteurGeneral, ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative autoriteTutelaire) {
 		return new Tutelle(pupille, null, DATE_TUTELLE, 4848, tuteur, tuteurGeneral, TypeTutelle.TUTELLE, autoriteTutelaire, context);
 	}
 

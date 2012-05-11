@@ -4,75 +4,16 @@
 
 	<!-- Service Infrastructure -->
 	
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceInfrastructureHostInterfaces">
-		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
-		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
-	</bean>
-
-	<bean id="serviceInfrastructureFidor" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureFidor">
-		<property name="fidorClient" ref="fidorClient" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-	</bean>
-
-	<bean id="serviceInfrastructureMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureMarshaller">
-		<property name="hostService" ref="serviceInfrastructureServiceHost" />
-		<property name="fidorService" ref="serviceInfrastructureFidor" />
-	</bean>
-
-	<bean id="serviceInfrastructureTracing" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureTracing">
-		<property name="target" ref="serviceInfrastructureMarshaller" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="serviceInfrastructureCache" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureCache">
-		<property name="target" ref="serviceInfrastructureTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceInfra" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
-		<property name="rawService" ref="serviceInfrastructureCache" />
+		<property name="rawService" ref="serviceInfrastructureRaw" />
 	</bean>
 
 	<!-- Service Civil -->
 
-	<bean id="serviceCivilServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceCivilServiceHostInterfaces">
-		<property name="serviceCivil" ref="_serviceCivil" />
-	</bean>
-
-	<bean id="serviceCivilRcPers" class="ch.vd.uniregctb.interfaces.service.rcpers.ServiceCivilRCPers">
-		<property name="client" ref="rcPersClient" />
+	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="target" ref="serviceCivilRaw"/>
 	</bean>
-
-	<bean id="serviceCivilServiceMarshaller" class="ch.vd.uniregctb.interfaces.service.ServiceCivilMarshaller">
-		<property name="modeHelper" ref="uniregModeHelper"/>
-		<property name="regpp" ref="serviceCivilServiceHost" />
-		<property name="rcpers" ref="serviceCivilRcPers" />
-	</bean>
-
-	<bean id="serviceCivilServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceMarshaller" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="serviceCivilServiceCache" class="ch.vd.uniregctb.interfaces.service.ServiceCivilCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-	<bean id="serviceCivilImpl" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
-		<property name="infraService" ref="serviceInfrastructureService"/>
-		<property name="target" ref="serviceCivilServiceCache"/>
-	</bean>
-
-	<alias alias="serviceCivilService" name="serviceCivilImpl"/>
 
 	<!-- Service Securité -->
 

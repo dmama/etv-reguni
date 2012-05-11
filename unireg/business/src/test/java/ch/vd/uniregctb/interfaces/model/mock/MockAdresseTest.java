@@ -1,12 +1,13 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class MockAdresseTest extends WithoutSpringTest {
 

@@ -5,7 +5,7 @@ import java.util.Collection;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 
 /**
  * Interface implémentée par le service de pré-chauffage du cache du service civil

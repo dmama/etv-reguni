@@ -18,6 +18,7 @@
 
 	<modules>
 		<module>../core</module>
+		<module>../interfaces</module>
 		<module>../business</module>
 		<module>../web</module>
 		<module>../ws</module>

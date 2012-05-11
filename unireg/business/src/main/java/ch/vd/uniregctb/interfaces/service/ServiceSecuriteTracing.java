@@ -10,6 +10,7 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
 import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.security.IfoSecProfil;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**

@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 

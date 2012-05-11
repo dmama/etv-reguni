@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -23,7 +24,6 @@ import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
 

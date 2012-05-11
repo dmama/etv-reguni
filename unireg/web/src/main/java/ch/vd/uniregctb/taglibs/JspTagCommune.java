@@ -10,7 +10,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**

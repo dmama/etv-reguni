@@ -6,9 +6,12 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilProcessor;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 
@@ -16,7 +19,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilProcessor evenementCivilProcessor;
-
+	private ServiceCivilService serviceCivil;
 
 	@Test
 	@Rollback
@@ -24,6 +27,15 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 	public void execute() throws Exception {
 
 		final long noInd = 333527L;
+
+		if (serviceCivil instanceof ProxyServiceCivil) {
+			((ProxyServiceCivil) serviceCivil).setUp(new MockServiceCivil() {
+				@Override
+				protected void init() {
+					addIndividu(noInd, RegDate.get(2002, 3, 2), "Annette", "Dulac", false);
+				}
+			});
+		}
 
 		TransactionTemplate tmpl = new TransactionTemplate(getTransactionManager());
         tmpl.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
@@ -62,4 +74,7 @@ public class IcEvtCivilNaissanceTest extends InContainerTest {
 		this.evenementCivilRegPPDAO = evenementCivilRegPPDAO;
 	}
 
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
+	}
 }

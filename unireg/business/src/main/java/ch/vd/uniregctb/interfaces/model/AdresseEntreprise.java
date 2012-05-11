@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.uniregctb.type.TypeAdressePM;
 
 public interface AdresseEntreprise {

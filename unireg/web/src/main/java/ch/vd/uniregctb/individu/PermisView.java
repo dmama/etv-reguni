@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.Permis;
+import ch.vd.unireg.interfaces.civil.data.Permis;
 
 public class PermisView implements DateRange, Serializable {
 

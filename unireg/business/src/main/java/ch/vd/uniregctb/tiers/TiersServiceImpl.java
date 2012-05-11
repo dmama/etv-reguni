@@ -40,6 +40,18 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -48,6 +60,7 @@ import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.EntityKey;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -62,20 +75,8 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
-import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.District;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
-import ch.vd.uniregctb.interfaces.model.Region;
-import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -255,10 +256,10 @@ public class TiersServiceImpl implements TiersService {
             if (sitFam != null) {
                 Individu ind = getIndividu(nonHabitant);
                 if (ind != null) {
-                    ch.vd.uniregctb.interfaces.model.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
+                    ch.vd.unireg.interfaces.civil.data.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
                     TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
-                    if (etatCivilDuCivil != null && (
-                            sitFam.getEtatCivil() != etatCivilDuCivil.asCore() ||
+	                if (etatCivilDuCivil != null && (
+                            sitFam.getEtatCivil() != EtatCivilHelper.civil2core(etatCivilDuCivil) ||
                                     sitFam.getNombreEnfants() == 0)) {
                         situationFamilleService.closeSituationFamille(nonHabitant, date);
                     }
@@ -3185,7 +3186,7 @@ public class TiersServiceImpl implements TiersService {
     public Integer getOfficeImpotId(int noOfsCommune) {
         Integer oid = null;
         try {
-            ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative office = serviceInfra.getOfficeImpotDeCommune(noOfsCommune);
+            ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative office = serviceInfra.getOfficeImpotDeCommune(noOfsCommune);
             if (office != null) {
                 oid = office.getNoColAdm();
             }
@@ -3884,7 +3885,7 @@ public class TiersServiceImpl implements TiersService {
                 raisonSociale = getRaisonSociale((Entreprise) referent);
             } else if (referent instanceof CollectiviteAdministrative) {
                 try {
-                    final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
+                    final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(((CollectiviteAdministrative) referent).getNumeroCollectiviteAdministrative());
                     raisonSociale = new ArrayList<String>(3);
                     if (ca != null) {
                         final String ligne1 = ca.getNomComplet1();
@@ -4098,7 +4099,7 @@ public class TiersServiceImpl implements TiersService {
     public String getNomCollectiviteAdministrative(int collId) {
         String nom = null;
         try {
-            final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfra.getCollectivite(collId);
+            final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfra.getCollectivite(collId);
 
             if (ca != null) {
                 final String ligne1 = ca.getNomComplet1();

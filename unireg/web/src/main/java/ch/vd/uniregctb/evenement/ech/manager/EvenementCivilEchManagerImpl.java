@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
@@ -20,7 +21,6 @@ import ch.vd.uniregctb.evenement.common.view.ErreurEvenementCivilView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchDetailView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;

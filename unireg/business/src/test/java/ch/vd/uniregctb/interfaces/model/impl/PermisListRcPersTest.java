@@ -6,9 +6,10 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.PermisListRcPers;
+import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.mock.MockPermis;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;

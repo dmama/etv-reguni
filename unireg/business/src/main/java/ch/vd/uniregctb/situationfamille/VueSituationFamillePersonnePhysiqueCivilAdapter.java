@@ -5,6 +5,7 @@ import java.util.Date;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.type.EtatCivil;
 
@@ -17,9 +18,9 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 	private final RegDate dateFin;
 	private final RegDate dateDebut;
 
-	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.uniregctb.interfaces.model.EtatCivil etatCourant,
-			ch.vd.uniregctb.interfaces.model.EtatCivil etatSuivant, boolean nullAllowed) {
-		this.etatCivil = etatCourant.getTypeEtatCivil().asCore();
+	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.unireg.interfaces.civil.data.EtatCivil etatCourant,
+			ch.vd.unireg.interfaces.civil.data.EtatCivil etatSuivant, boolean nullAllowed) {
+		this.etatCivil = EtatCivilHelper.civil2core(etatCourant.getTypeEtatCivil());
 		this.dateDebut = etatCourant.getDateDebut();
 		if (etatSuivant == null) {
 			this.dateFin =null;
@@ -30,8 +31,8 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 				if (nullAllowed)
 					this.dateFin = null;
 				else {
-				throw new InterfaceDataException("L'état civil [" + etatCivil.name() + "] commençant le " + dateDebut
-						+ " est suivi par l'état civil [" + etatSuivant.getTypeEtatCivil().asCore()
+					throw new InterfaceDataException("L'état civil [" + etatCivil.name() + "] commençant le " + dateDebut
+						+ " est suivi par l'état civil [" + EtatCivilHelper.civil2core(etatSuivant.getTypeEtatCivil())
 						+ "] qui possède une date de début nulle !");
 				}
 			}
@@ -41,8 +42,8 @@ public class VueSituationFamillePersonnePhysiqueCivilAdapter implements VueSitua
 		}
 	}
 
-	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.uniregctb.interfaces.model.EtatCivil etatCourant, RegDate dateDebut, RegDate dateFin) {
-		this.etatCivil = etatCourant.getTypeEtatCivil().asCore();
+	public VueSituationFamillePersonnePhysiqueCivilAdapter(ch.vd.unireg.interfaces.civil.data.EtatCivil etatCourant, RegDate dateDebut, RegDate dateFin) {
+		this.etatCivil = EtatCivilHelper.civil2core(etatCourant.getTypeEtatCivil());
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}

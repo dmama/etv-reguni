@@ -19,7 +19,7 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Map;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 
 public class TracingCallableStatement extends TracingPreparedStatement implements CallableStatement {
 

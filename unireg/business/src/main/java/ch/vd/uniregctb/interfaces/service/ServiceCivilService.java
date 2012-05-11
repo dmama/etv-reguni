@@ -7,18 +7,20 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.Tutelle;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.Origine;
-import ch.vd.uniregctb.interfaces.model.Permis;
-import ch.vd.uniregctb.interfaces.model.Tutelle;
 
 public interface ServiceCivilService {
 
@@ -60,7 +62,7 @@ public interface ServiceCivilService {
 	 * @return une liste des communes de domiciles fréquentées depuis la date de référence
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          en cas d'erreur dans les données civiles
-	 * @throws ServiceInfrastructureException
+	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException
 	 *          en cas d'erreur dans les données d'infrastructure
 	 */
 	List<HistoriqueCommune> getCommunesDomicileHisto(RegDate depuis, long noIndividu, boolean strict, boolean seulementVaud) throws DonneesCivilesException, ServiceInfrastructureException;
@@ -207,6 +209,15 @@ public interface ServiceCivilService {
 	 * @return une pair composée du (ou des) prénom(s) (premier élément) et du nom (deuxième élément) de l'individu (ou {@link NomPrenom#VIDE} si l'individu est inconnu)
 	 */
 	NomPrenom getDecompositionNomPrenom(Individu individu);
+
+	/**
+	 * Renvoie un individu correspondant à l'événement donné
+	 * <p/>
+	 * <b>Attention : </b> les relations ne sont pas renseignées sur cet individu
+	 * @param eventId identifiant de l'événement
+	 * @return l'individu correspondant à l'état juste après le traitement civil de l'événement, ou <code>null</code> si l'id ne correspond à rien
+	 */
+	IndividuApresEvenement getIndividuFromEvent(long eventId);
 
 	/**
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().

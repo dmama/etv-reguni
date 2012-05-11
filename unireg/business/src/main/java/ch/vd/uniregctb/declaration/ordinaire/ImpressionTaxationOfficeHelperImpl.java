@@ -24,6 +24,8 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -33,8 +35,6 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -145,7 +145,7 @@ public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper i
 		dossier.setNumOffice(oid.toString());
 
 		try {
-			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectivite = serviceInfrastructureService.getCollectivite(oid);
+			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectivite = serviceInfrastructureService.getCollectivite(oid);
 			final String nomComplet;
 			if (!StringUtils.isBlank(collectivite.getNomComplet2()) && !StringUtils.isBlank(collectivite.getNomComplet3())) {
 				nomComplet = String.format("%s %s", collectivite.getNomComplet2().trim(), collectivite.getNomComplet3().trim());

@@ -2,10 +2,10 @@ package ch.vd.uniregctb.declaration.source;
 
 import noNamespace.FichierImpressionDocument;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 public interface ImpressionListeRecapHelper {
 

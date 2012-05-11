@@ -13,6 +13,8 @@
 		<param-value>
 			classpath*:/unireg-core-dao.xml,
 			classpath*:/unireg-core-sf.xml,
+			classpath*:/unireg-interfaces-civil.xml,
+			classpath*:/unireg-interfaces-infra.xml,
 			classpath*:/unireg-business-essentials.xml;
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtfiscal.xml,

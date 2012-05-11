@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.interfaces.model.helper;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.indexer.IndexerException;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 

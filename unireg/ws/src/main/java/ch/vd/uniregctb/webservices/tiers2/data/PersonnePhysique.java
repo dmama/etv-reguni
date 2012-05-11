@@ -10,7 +10,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
@@ -195,7 +197,7 @@ public class PersonnePhysique extends Contribuable {
 			this.categorie = EnumHelper.coreToWeb(personne.getCategorieEtranger());
 		}
 		else {
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), date, AttributeIndividu.PERMIS);
+			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), date, AttributeIndividu.PERMIS);
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne.getNumeroIndividu(), personne.getNumero());
 				LOGGER.error(message);
@@ -217,7 +219,7 @@ public class PersonnePhysique extends Contribuable {
 			this.ancienNumeroAssureSocial = individu.getNoAVS11();
 			this.dateArrivee = DataHelper.coreToWeb(individu.getDateArriveeVD());
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis().getPermisActif(date);
+			final Permis permis = individu.getPermis().getPermisActif(date);
 			if (permis == null) {
 				this.categorie = Categorie.SUISSE;
 			}

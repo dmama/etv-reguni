@@ -16,11 +16,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamilleDAO;
@@ -116,7 +117,7 @@ public class ComparerSituationFamilleProcessor {
 			final Long numeroIndividu = personne.getNumeroIndividu();
 			if(numeroIndividu!=null){
 				EtatCivil etatCivil =  serviceCivil.getEtatCivilActif(numeroIndividu,null);
-				if(situation.getEtatCivil() != etatCivil.getTypeEtatCivil().asCore()){
+				if(situation.getEtatCivil() != EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil())){
 					rapport.get().addSituationsDifferentes(situation,etatCivil);
 				}
 			}

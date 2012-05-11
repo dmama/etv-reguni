@@ -24,6 +24,7 @@ import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.common.InterfacesTestingConstants;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -83,6 +84,8 @@ public abstract class BusinessItTestApplication {
 				CoreTestingConstants.UNIREG_CORE_SF,
 				CoreTestingConstants.UNIREG_CORE_UT_DATASOURCE,
 				CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES,
+				InterfacesTestingConstants.UNIREG_INTERFACES_CIVIL,
+				InterfacesTestingConstants.UNIREG_INTERFACES_INFRA,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
 				BusinessTestingConstants.UNIREG_BUSINESS_INTERFACES,
 				BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,

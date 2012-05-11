@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.interfaces.model.Commune;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {

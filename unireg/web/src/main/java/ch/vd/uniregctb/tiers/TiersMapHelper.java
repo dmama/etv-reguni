@@ -9,10 +9,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
-import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.model.LogicielMetier;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRecherche;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeRechercheForFiscal;

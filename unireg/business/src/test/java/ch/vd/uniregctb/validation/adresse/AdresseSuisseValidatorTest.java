@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
-import ch.vd.uniregctb.interfaces.model.mock.MockRue;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 

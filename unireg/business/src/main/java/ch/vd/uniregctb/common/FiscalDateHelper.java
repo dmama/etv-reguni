@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 
 /**
  * Classe de gestion des particularité fiscales dans le traitement des dates.

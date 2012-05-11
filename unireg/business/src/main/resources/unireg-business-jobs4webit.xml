@@ -50,6 +50,7 @@
 	<bean id="icEvtCivilNaissanceTest" class="ch.vd.uniregctb.testing.IcEvtCivilNaissanceTest" parent="inContainerTest">
 		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
 		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
+		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 </beans>

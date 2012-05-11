@@ -17,13 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.common.StringComparator;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.OfficeImpot;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**

@@ -5,12 +5,12 @@ import java.util.List;
 import org.apache.commons.lang.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.ParamSorting;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.extraction.ExtractionJob;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;
 import ch.vd.uniregctb.mouvement.MouvementDossierCriteria;
 import ch.vd.uniregctb.mouvement.view.BordereauEnvoiReceptionView;

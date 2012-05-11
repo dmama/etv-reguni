@@ -19,6 +19,9 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
@@ -47,12 +50,9 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.individu.WebCivilService;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesActives;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.model.Logiciel;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailComparator;
@@ -155,7 +155,6 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Recupere l'individu correspondant au tiers
 	 *
-	 * @param tiers
 	 * @return
 	 */
 	protected IndividuView getIndividuView(PersonnePhysique habitant) {
@@ -175,7 +174,6 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Recupere l'entreprise correspondant au tiers
 	 *
-	 * @param tiers
 	 * @return
 	 */
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
@@ -336,7 +334,6 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente List<RapportView>
 	 *
-	 * @param tiers
 	 * @return
 	 * @throws AdresseException
 	 */
@@ -496,7 +493,6 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Alimente Set<ListeRecapitulativeView>
 	 *
-	 * @param debiteur
 	 * @return
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
@@ -553,7 +549,6 @@ public class TiersManager implements MessageSourceAware {
 	/**
 	 * Met a jour la vue en fonction du menage commun
 	 *
-	 * @param habitant
 	 * @param tiersView
 	 */
 	protected void setMenageCommun(TiersView tiersView, MenageCommun menageCommun) {

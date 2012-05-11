@@ -11,9 +11,10 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -102,10 +103,10 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 	private List<Long> getOidIds() throws ServiceInfrastructureException {
 		List<EnumTypeCollectivite> typesCollectivite = new ArrayList<EnumTypeCollectivite>();
 		typesCollectivite.add(EnumTypeCollectivite.SIGLE_CIR);
-		List<ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative> collectivites = serviceInfrastructureService
+		List<CollectiviteAdministrative> collectivites = serviceInfrastructureService
 				.getCollectivitesAdministratives(typesCollectivite);
 		List<Long> listId = new ArrayList<Long>();
-		for (ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteAdministrative : collectivites) {
+		for (CollectiviteAdministrative collectiviteAdministrative : collectivites) {
 			listId.add((long) collectiviteAdministrative.getNoColAdm());
 		}
 		Collections.sort(listId);

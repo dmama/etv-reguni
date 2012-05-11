@@ -11,15 +11,15 @@ import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relations;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0006.v1.Event;
+import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
-import ch.vd.uniregctb.interfaces.model.impl.IndividuRCPers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class RcPersServiceTest {
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetPeople() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
@@ -40,7 +40,7 @@ public class RcPersServiceTest {
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetRelations() throws Exception {
 
 		final RcPersClientImpl client = buildClient();
@@ -73,7 +73,7 @@ public class RcPersServiceTest {
 		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 

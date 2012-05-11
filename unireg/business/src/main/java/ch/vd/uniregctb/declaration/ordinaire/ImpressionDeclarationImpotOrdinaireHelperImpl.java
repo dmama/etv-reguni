@@ -34,6 +34,9 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -48,9 +51,6 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -219,7 +219,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	/**
 	 * Alimente la partie expéditeur du document
 	 *
-	 * @param declaration        la déclaration
 	 * @param infoEnteteDocument l'entête du document XML dont il faut compléter les informations
 	 * @return les informations de l'expéditeur
 	 * @throws ServiceInfrastructureException en cas de problème avec le service infrastructure
@@ -243,7 +242,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		remplitAdresse(adresseExpediteur, adresse);
 		expediteur.setAdresse(adresseExpediteur);
 
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(oid.getNumeroCollectiviteAdministrative());
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(oid.getNumeroCollectiviteAdministrative());
 
 		expediteur.setAdrMes(collectivite.getAdresseEmail());
 		expediteur.setNumTelephone(collectivite.getNoTelephone());
@@ -470,7 +469,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 * laquel l'édition du document a lieu) -> SAUF une exception : si la DI concerne la période fiscale courante (il s'agit d'une DI libre), alors l'OID doit être l'OID de gestion courant du moment de
 	 * l'édition du docuement.
 	 *
-	 * @param declaration
 	 * @return
 	 */
 	protected Integer getNumeroOfficeImpotRetour(InformationsDocumentAdapter informationsDocument) {
@@ -521,7 +519,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 
 	private void remplitAdresseRetourCEDI(DIRetour.AdresseRetour adresseRetour, Integer officeImpotId) throws EditiqueException {
 
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cedi;
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cedi;
 		try {
 			cedi = infraService.getCEDI();
 		}
@@ -785,7 +783,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	 * [UNIREG-1740] Détermine le délai de retour de la déclaration. Pour les déclarations créées en masse après UNIREG-1740, ce délai est stocké dans la déclaration elle-même; pour les autres, on
 	 * utilise le délai accordé.
 	 *
-	 * @param declaration une déclaration
 	 * @return une chaîne de caractères représentant la date du délai de retour.
 	 */
 	private static String determineDelaiRetourImprime(InformationsDocumentAdapter infoAdapter) {

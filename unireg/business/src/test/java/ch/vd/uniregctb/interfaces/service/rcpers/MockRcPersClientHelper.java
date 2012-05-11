@@ -8,14 +8,15 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.AdoptionReconnaissance;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.EtatCivilListImpl;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.RelationVersIndividu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockEtatCivil;
-import ch.vd.uniregctb.interfaces.model.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilListImpl;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 

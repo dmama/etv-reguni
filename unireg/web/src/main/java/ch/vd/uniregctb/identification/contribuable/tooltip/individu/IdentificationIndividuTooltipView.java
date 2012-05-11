@@ -3,8 +3,9 @@ package ch.vd.uniregctb.identification.contribuable.tooltip.individu;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -35,7 +36,7 @@ public class IdentificationIndividuTooltipView {
 			this.autresPrenoms = individu.getAutresPrenoms();
 			this.dateNaissance = individu.getDateNaissance();
 			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
-			this.etatCivil = individu.getEtatCivilCourant().getTypeEtatCivil().asCore();
+			this.etatCivil = EtatCivilHelper.civil2core(individu.getEtatCivilCourant().getTypeEtatCivil());
 			this.numeroAssureSocial = individu.getNouveauNoAVS();
 			this.ancienNumeroAVS = individu.getNoAVS11();
 			this.numeroRCE = individu.getNumeroRCE();

@@ -15,7 +15,7 @@ import org.springframework.jms.core.MessagePostProcessor;
 import org.springframework.jms.core.ProducerCallback;
 import org.springframework.jms.core.SessionCallback;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**

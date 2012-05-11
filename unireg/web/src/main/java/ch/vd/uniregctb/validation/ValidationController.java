@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -82,7 +83,7 @@ public class ValidationController {
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 					if (etatCivil.getDateDebut() == null) {
 						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
-								etatCivil.getTypeEtatCivil().asCore());
+								EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()));
 						validationResults.addWarning(message);
 					}
 				}

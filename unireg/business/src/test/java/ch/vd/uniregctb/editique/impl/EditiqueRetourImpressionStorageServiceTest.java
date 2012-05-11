@@ -13,9 +13,9 @@ import ch.vd.uniregctb.editique.EditiqueResultatDocument;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.LoadMonitor;
 import ch.vd.uniregctb.stats.ServiceStats;
+import ch.vd.uniregctb.stats.ServiceTracingInterface;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTest {

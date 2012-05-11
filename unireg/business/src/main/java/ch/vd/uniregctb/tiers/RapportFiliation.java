@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.Individu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 
 /**
  * Contient les caractéristiques d'un rapport de filiation entre une personne physique/individu et une autre personne physique/individu.

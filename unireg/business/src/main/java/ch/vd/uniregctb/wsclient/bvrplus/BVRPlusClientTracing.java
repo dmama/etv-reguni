@@ -5,7 +5,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrDemande;
 import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClient;
 import ch.vd.uniregctb.webservice.sipf.BVRPlusClientException;

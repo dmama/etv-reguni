@@ -2,10 +2,10 @@ package ch.vd.uniregctb.webservices.party3.data;
 
 import java.util.List;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.BankAccount;
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.webservices.party3.impl.Context;
 
 public class BankAccountBuilder {

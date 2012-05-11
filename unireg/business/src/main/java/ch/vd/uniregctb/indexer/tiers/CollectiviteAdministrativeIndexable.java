@@ -28,7 +28,7 @@ public class CollectiviteAdministrativeIndexable extends ContribuableIndexable {
 
 		final CollectiviteAdministrative ca = (CollectiviteAdministrative) tiers;
 		final long noColAdm = ca.getNumeroCollectiviteAdministrative();
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivile;
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivile;
 		collectiviteCivile = serviceInfra.getCollectivite((int) noColAdm);
 		if (collectiviteCivile == null) {
 			throw new IllegalArgumentException("Impossible de récupérer la collectivité administrative avec le numéro " + noColAdm);

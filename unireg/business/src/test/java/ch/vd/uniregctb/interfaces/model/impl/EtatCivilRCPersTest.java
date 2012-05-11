@@ -7,10 +7,11 @@ import org.junit.Test;
 
 import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivilRCPers;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

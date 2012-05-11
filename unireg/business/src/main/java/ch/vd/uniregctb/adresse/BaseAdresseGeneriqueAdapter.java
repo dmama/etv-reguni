@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.common.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 
 /*
  * Classe de base commune à toutes les classes qui adaptent - d'une manière ou d'une autre - une adresse générique.

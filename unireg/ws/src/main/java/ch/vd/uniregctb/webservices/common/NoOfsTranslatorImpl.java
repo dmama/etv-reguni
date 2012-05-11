@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**

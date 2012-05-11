@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -32,7 +33,6 @@ import ch.vd.uniregctb.extraction.BaseExtractorImpl;
 import ch.vd.uniregctb.extraction.BatchableExtractor;
 import ch.vd.uniregctb.extraction.ExtractionJob;
 import ch.vd.uniregctb.extraction.ExtractionService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAO;
 import ch.vd.uniregctb.mouvement.EnvoiDossierVersCollectiviteAdministrative;
@@ -304,7 +304,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 
 	private String getNomCollectiviteAdministrative(int noCa) {
 		try {
-			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = getServiceInfra().getCollectivite(noCa);
+			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = getServiceInfra().getCollectivite(noCa);
 			return ca.getNomCourt();
 		}
 		catch (ServiceInfrastructureException e) {

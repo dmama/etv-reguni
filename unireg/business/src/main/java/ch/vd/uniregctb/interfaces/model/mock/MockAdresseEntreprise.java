@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
-import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class MockAdresseEntreprise implements AdresseEntreprise {

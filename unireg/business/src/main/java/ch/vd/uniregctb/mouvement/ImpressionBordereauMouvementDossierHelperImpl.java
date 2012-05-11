@@ -15,6 +15,8 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -22,8 +24,6 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -148,7 +148,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 
 		// signature
 		final CollectiviteAdministrative caSignataire = bordereau.getExpediteur();
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = infraService.getCollectivite(caSignataire.getNumeroCollectiviteAdministrative());
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = infraService.getCollectivite(caSignataire.getNumeroCollectiviteAdministrative());
 		final BordereauEnvoiDocument.BordereauEnvoi.Signature signature = bordereauEnvoi.addNewSignature();
 		signature.setOfficeImpot(ca.getNomCourt());
 		bordereauEnvoi.setSignature(signature);

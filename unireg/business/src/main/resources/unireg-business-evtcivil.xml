@@ -40,8 +40,7 @@
 	</bean>
 
 	<bean id="rcPersClientHelper" class="ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelperImpl">
-		<property name="rcPersClient" ref="rcPersClient"/>
-		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 	<bean id="evtCivilEchService" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchServiceImpl">

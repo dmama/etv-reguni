@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.interfaces.model.mock;
 
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 
 public class MockInstitutionFinanciere implements InstitutionFinanciere {
 

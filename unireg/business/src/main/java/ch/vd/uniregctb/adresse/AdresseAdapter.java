@@ -4,8 +4,8 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.Rue;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public abstract class AdresseAdapter implements AdresseGenerique {

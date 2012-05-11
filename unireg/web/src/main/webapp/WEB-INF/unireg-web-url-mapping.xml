@@ -241,8 +241,8 @@
 				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
 				<entry key="weblogic.common.resourcepool.ResourceLimitException" value="errors/jdbcConnection" />
 				<entry key="org.springframework.jdbc.UncategorizedSQLException" value="errors/jdbcConnection" />
-				<entry key="ch.vd.uniregctb.interfaces.service.ServiceCivilException" value="errors/errorServiceCivil" />
-				<entry key="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
+				<entry key="ch.vd.unireg.interfaces.civil.ServiceCivilException" value="errors/errorServiceCivil" />
+				<entry key="ch.vd.unireg.interfaces.infra.ServiceInfrastructureException" value="errors/errorServiceInfrastructure" />
 				<entry key="ch.vd.uniregctb.interfaces.service.ServiceSecuriteException" value="errors/errorServiceSecurite" />
 				<entry key="ch.vd.uniregctb.interfaces.service.PersonneMoraleException" value="errors/errorPersonneMorale" />
 				<entry key="ch.vd.uniregctb.interfaces.InterfaceDataException" value="errors/errorDataInterface" />

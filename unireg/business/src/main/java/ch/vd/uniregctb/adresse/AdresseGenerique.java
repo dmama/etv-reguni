@@ -3,9 +3,9 @@ package ch.vd.uniregctb.adresse;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.common.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.AdresseAvecCommune;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.uniregctb.common.Loggable;
-import ch.vd.uniregctb.interfaces.model.AdresseAvecCommune;
 import ch.vd.uniregctb.tiers.Tiers;
 
 /**

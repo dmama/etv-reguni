@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.junit.Test;
 
+import ch.vd.unireg.cache.BerkeleyPersistentCache;
+import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
 import static org.junit.Assert.assertEquals;

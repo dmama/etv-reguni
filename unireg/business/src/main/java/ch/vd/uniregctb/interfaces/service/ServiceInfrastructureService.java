@@ -7,51 +7,53 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
+import ch.vd.unireg.interfaces.infra.data.Canton;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
+import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.unireg.interfaces.infra.data.Logiciel;
+import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
+import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
-import ch.vd.uniregctb.interfaces.model.Adresse;
-import ch.vd.uniregctb.interfaces.model.ApplicationFiscale;
-import ch.vd.uniregctb.interfaces.model.Canton;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
-import ch.vd.uniregctb.interfaces.model.Localite;
-import ch.vd.uniregctb.interfaces.model.Logiciel;
-import ch.vd.uniregctb.interfaces.model.LogicielMetier;
-import ch.vd.uniregctb.interfaces.model.OfficeImpot;
-import ch.vd.uniregctb.interfaces.model.Pays;
-import ch.vd.uniregctb.interfaces.model.Rue;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
-import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
-import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 
 public interface ServiceInfrastructureService {
 
-	static final String SERVICE_NAME = "ServiceInfra";
+	static final String SERVICE_NAME = ServiceInfrastructureRaw.SERVICE_NAME;
 
-	final static int noACI = 22;
-	final static int noACIImpotSource = 47;
-	final static int noACISuccessions = 1344;
-	final static int noCEDI = 1012;
-	final static int noTuteurGeneral = 1013;
-	final static int noCAT = 1341;
+	final static int noACI = ServiceInfrastructureRaw.noACI;
+	final static int noACIImpotSource = ServiceInfrastructureRaw.noACIImpotSource;
+	final static int noACISuccessions = ServiceInfrastructureRaw.noACISuccessions;
+	final static int noCEDI = ServiceInfrastructureRaw.noCEDI;
+	final static int noTuteurGeneral = ServiceInfrastructureRaw.noTuteurGeneral;
+	final static int noCAT = ServiceInfrastructureRaw.noCAT;
 
-	final static int noOfsSuisse = 8100;
-	public final static int noPaysApatride = 8998;
-	final static int noPaysInconnu = 8999;
+	final static int noOfsSuisse = ServiceInfrastructureRaw.noOfsSuisse;
+	final static int noPaysApatride = ServiceInfrastructureRaw.noPaysApatride;
+	final static int noPaysInconnu = ServiceInfrastructureRaw.noPaysInconnu;
 
 	/**
 	 * Constante sigle du canton de Vaud
 	 */
-	static final String SIGLE_CANTON_VD = "VD";
+	static final String SIGLE_CANTON_VD = ServiceInfrastructureRaw.SIGLE_CANTON_VD;
 
 	/**
 	 * Constante sigle du pays Suisse
 	 */
-	static final String SIGLE_SUISSE = "CH";
+	static final String SIGLE_SUISSE = ServiceInfrastructureRaw.SIGLE_SUISSE;
 
 	/**
 	 * @return la liste des pays.
-	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	List<Pays> getPays() throws ServiceInfrastructureException;
 

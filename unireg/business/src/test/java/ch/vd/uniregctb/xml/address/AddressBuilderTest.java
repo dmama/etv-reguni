@@ -3,6 +3,7 @@ package ch.vd.uniregctb.xml.address;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
@@ -13,7 +14,6 @@ import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
-import ch.vd.uniregctb.interfaces.model.mock.MockPays;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 

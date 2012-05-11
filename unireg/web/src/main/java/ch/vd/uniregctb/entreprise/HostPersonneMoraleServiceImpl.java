@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
+import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Capital;
 import ch.vd.uniregctb.interfaces.model.EtatPM;
 import ch.vd.uniregctb.interfaces.model.ForPM;
@@ -13,8 +15,6 @@ import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Siege;
-import ch.vd.uniregctb.interfaces.model.TypeEtatPM;
-import ch.vd.uniregctb.interfaces.model.TypeRegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;

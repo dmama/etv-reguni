@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
+	</bean>
+
+	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
+		<property name="hostService" ref="serviceInfrastructureServiceHost" />
+		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	</bean>
+
+	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
+		<property name="target" ref="serviceInfrastructureMarshaller" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceInfra" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+</beans>

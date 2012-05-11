@@ -8,14 +8,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
-import ch.vd.uniregctb.ech.EchHelper;
-import ch.vd.uniregctb.interfaces.model.AttributeIndividu;
-import ch.vd.uniregctb.interfaces.model.Individu;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.webservices.party3.impl.Context;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
@@ -56,7 +57,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setCategory(EnumHelper.coreToWeb(personne.getCategorieEtranger()));
 		}
 		else {
-			final ch.vd.uniregctb.interfaces.model.Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
+			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
 
 			if (individu == null) {
 				final String message = String.format("Impossible de trouver l'individu n°%d pour l'habitant n°%d", personne
@@ -69,7 +70,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
-			final ch.vd.uniregctb.interfaces.model.Permis permis = individu.getPermis().getPermisActif(null);
+			final Permis permis = individu.getPermis().getPermisActif(null);
 			if (permis == null) {
 				to.setCategory(NaturalPersonCategory.SWISS);
 			}

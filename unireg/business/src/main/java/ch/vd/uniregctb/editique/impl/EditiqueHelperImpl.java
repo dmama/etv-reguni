@@ -12,6 +12,8 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -24,8 +26,6 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -139,12 +139,12 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	 */
 	@Override
 	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci = infraService.getACI();
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
 		return remplitExpediteur(aci, infoEnteteDocument);
 	}
 
-	private Expediteur remplitExpediteur(ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
-		final ch.vd.uniregctb.interfaces.model.Adresse adresse = ca.getAdresse();
+	private Expediteur remplitExpediteur(ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
+		final ch.vd.unireg.interfaces.civil.data.Adresse adresse = ca.getAdresse();
 		final Commune commune = infraService.getCommuneByAdresse(adresse, null);
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -183,13 +183,13 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	 */
 	@Override
 	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative cat = infraService.getCAT();
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative cat = infraService.getCAT();
 		return remplitExpediteur(cat, infoEnteteDocument);
 	}
 
 	@Override
 	public Expediteur remplitExpediteur(CollectiviteAdministrative collAdm, InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = infraService.getCollectivite(collAdm.getNumeroCollectiviteAdministrative());
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = infraService.getCollectivite(collAdm.getNumeroCollectiviteAdministrative());
 		return remplitExpediteur(ca, infoEnteteDocument);
 	}
 
@@ -232,8 +232,8 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		//
 		// Expediteur
 		//
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
-		ch.vd.uniregctb.interfaces.model.Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aciImpotSource = infraService.getACIImpotSource();
+		ch.vd.unireg.interfaces.civil.data.Adresse adresseAciImpotSource = aciImpotSource.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
@@ -273,8 +273,8 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		//
 		// Expediteur
 		//
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative aci =  infraService.getACI();
-		ch.vd.uniregctb.interfaces.model.Adresse aciAdresse = aci.getAdresse();
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci =  infraService.getACI();
+		ch.vd.unireg.interfaces.civil.data.Adresse aciAdresse = aci.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();

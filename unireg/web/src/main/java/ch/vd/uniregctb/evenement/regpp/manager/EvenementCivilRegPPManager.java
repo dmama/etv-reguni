@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.regpp.manager;
 
 import java.util.List;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -9,7 +10,6 @@ import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPDetailView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 
 /**
  * Classe qui permet de collecter les informations nécessaires à l'affichage
@@ -25,7 +25,7 @@ public interface EvenementCivilRegPPManager {
 	 * @return la structure EvenementCivilRegPPDetailView correspondant à l'id
 	 *
 	 * @throws AdressesResolutionException ...
-	 * @throws ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException ...
+	 * @throws ch.vd.unireg.interfaces.infra.ServiceInfrastructureException ...
 	 */
 	public EvenementCivilRegPPDetailView get(Long id) throws AdresseException, ServiceInfrastructureException;
 

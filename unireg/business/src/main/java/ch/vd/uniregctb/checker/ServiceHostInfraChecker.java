@@ -2,8 +2,8 @@ package ch.vd.uniregctb.checker;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class ServiceHostInfraChecker implements ServiceChecker {

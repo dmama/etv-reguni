@@ -18,7 +18,7 @@ import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 
 /**
  * Connection de débugging qui stocke la callstack de l'appelant à l'ouverture.

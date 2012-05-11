@@ -4,7 +4,7 @@ import java.util.Map;
 
 import org.apache.cxf.management.counters.ResponseTimeCounter;
 
-import ch.vd.uniregctb.interfaces.service.ServiceTracingInterface;
+import ch.vd.uniregctb.stats.ServiceTracingInterface;
 
 /**
  * Permet d'adapter un ResponseTimeCounter à l'interface ServiceTracingInterface.

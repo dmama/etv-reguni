@@ -4,6 +4,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers2.data.CategorieDebiteur;
@@ -38,7 +39,7 @@ public abstract class EnumHelper {
 		return value;
 	}
 
-	public static EtatCivil coreToWeb(ch.vd.uniregctb.interfaces.model.TypeEtatCivil etatCivil) {
+	public static EtatCivil coreToWeb(TypeEtatCivil etatCivil) {
 		if (etatCivil == null) {
 			return null;
 		}

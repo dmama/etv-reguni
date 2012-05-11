@@ -2,8 +2,8 @@ package ch.vd.uniregctb.checker;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 
 public class ServiceCivilChecker implements ServiceChecker {
 

@@ -9,12 +9,13 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
+import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Nationalite;
-import ch.vd.uniregctb.interfaces.model.Origine;
-import ch.vd.uniregctb.interfaces.model.Permis;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -138,7 +139,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 
 			final EtatCivil etatCivil = indSource.getEtatCivilCourant();
 			if (etatCivil != null) {
-				indCible.setEtatCivil(etatCivil.getTypeEtatCivil().asCore().name());
+				indCible.setEtatCivil(EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()).name());
 				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(etatCivil.getDateDebut()));
 			}
 

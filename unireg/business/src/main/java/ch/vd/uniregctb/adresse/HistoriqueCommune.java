@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.interfaces.model.Commune;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 
 /**
  * Décrit la présence dans une commune pendant une période

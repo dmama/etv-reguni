@@ -22,22 +22,22 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
-import ch.vd.uniregctb.common.CasePostale;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.model.Adresse;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
-import ch.vd.uniregctb.interfaces.model.Commune;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.Pays;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -764,7 +764,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private String getRaisonSociale(CollectiviteAdministrative collectivite) {
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
 		return c.getNomCourt();
 	}
 
@@ -773,7 +773,7 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @return la raison sociale pour l'adressage de la collectivité administrative spécifiée.
 	 */
 	private List<String> getRaisonSocialeLongue(CollectiviteAdministrative collectivite) {
-		final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
+		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative c = serviceInfra.getCollectivite(collectivite
 				.getNumeroCollectiviteAdministrative());
 
 		final List<String> nomsComplets = new ArrayList<String>(3);
@@ -1583,7 +1583,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		final Integer numero = collectivite.getNumeroCollectiviteAdministrative();
 		if (numero != null) {
-			ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil;
+			ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivil;
 			collectiviteCivil = serviceInfra.getCollectivite(numero);
 			Assert.notNull(collectiviteCivil);
 
@@ -1598,7 +1598,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 		AdressesCivilesHisto adresses = new AdressesCivilesHisto();
 
-		ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectiviteCivil = serviceInfra.getCollectivite(collectivite.getNumeroCollectiviteAdministrative());
 		Assert.notNull(collectiviteCivil);
 
 		final Adresse adresse = collectiviteCivil.getAdresse();

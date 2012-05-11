@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueResultatDocument;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
@@ -87,7 +87,7 @@ public class TacheListManagerImpl implements TacheListManager {
 	private String getNomCollectiviteAdministrativeAssociee(Tache tache) throws ServiceInfrastructureException {
 		final CollectiviteAdministrative caAssignee = tache.getCollectiviteAdministrativeAssignee();
 		if (caAssignee != null) {
-			final ch.vd.uniregctb.interfaces.model.CollectiviteAdministrative ca = serviceInfrastructureService.getCollectivite(caAssignee.getNumeroCollectiviteAdministrative());
+			final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative ca = serviceInfrastructureService.getCollectivite(caAssignee.getNumeroCollectiviteAdministrative());
 			return ca.getNomCourt();
 		}
 		else {

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces;
 
+import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilImpl;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilRaw;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 public class ServiceCivilHostInterfacesTest extends AbstractServiceCivilTest {

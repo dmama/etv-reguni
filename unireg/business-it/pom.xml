@@ -36,6 +36,13 @@
 	    </dependency>
 	    <dependency>
 			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-interfaces</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+	    </dependency>
+	    <dependency>
+			<groupId>${pom.parent.groupId}</groupId>
 			<artifactId>uniregctb-business</artifactId>
 			<version>${pom.parent.version}</version>
 			<type>test-jar</type>

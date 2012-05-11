@@ -10,7 +10,7 @@ import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0006.v1.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
-import ch.vd.uniregctb.interfaces.service.ServiceTracing;
+import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class RcPersClientTracing implements RcPersClient, InitializingBean, DisposableBean {

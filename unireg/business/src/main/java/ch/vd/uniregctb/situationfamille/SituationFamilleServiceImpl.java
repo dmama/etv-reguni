@@ -17,14 +17,14 @@ import ch.vd.registre.base.date.DateRangeHelper.AdapterCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.Individu;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -292,7 +292,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		return String.format("Contribuable %s / Individu n°%d: l'état civil %s n'a pas de date de début !",
 							FormatNumeroHelper.numeroCTBToDisplay(habitant.getNumero()),
 							habitant.getNumeroIndividu(),
-							etat.getTypeEtatCivil().asCore());
+				EtatCivilHelper.civil2core(etat.getTypeEtatCivil()));
 	}
 
 	private RegDate findDateDebutEtatCivil(EtatCivil etatCivil, PersonnePhysique habitant, Individu individu) {
@@ -449,8 +449,8 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 		// Défaut dans le cas d'un habitant: on va chercher son état civil dans le registre civil.
 		if (pp.isConnuAuCivil() && takeCivilAsDefault) {
 			final Individu individu = tiersService.getIndividu(pp);
-			final ch.vd.uniregctb.interfaces.model.EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), date);
-			return etatCivil == null ? null : etatCivil.getTypeEtatCivil().asCore();
+			final EtatCivil etatCivil = serviceCivil.getEtatCivilActif(individu.getNoTechnique(), date);
+			return etatCivil == null ? null : EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		}
 
 		return null;

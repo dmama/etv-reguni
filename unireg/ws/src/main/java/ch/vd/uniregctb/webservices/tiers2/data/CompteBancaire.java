@@ -7,8 +7,8 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 import java.util.List;
 
-import ch.vd.uniregctb.interfaces.model.InstitutionFinanciere;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
 
 /**

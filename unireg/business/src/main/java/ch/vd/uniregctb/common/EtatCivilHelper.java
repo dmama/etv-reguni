@@ -2,8 +2,8 @@ package ch.vd.uniregctb.common;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.uniregctb.interfaces.model.EtatCivil;
-import ch.vd.uniregctb.interfaces.model.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 
 public class EtatCivilHelper {
 
@@ -48,5 +48,35 @@ public class EtatCivilHelper {
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
 		return type == TypeEtatCivil.VEUF || type == TypeEtatCivil.PACS_VEUF;
+	}
+
+	public static ch.vd.uniregctb.type.EtatCivil civil2core(TypeEtatCivil etatCivil) {
+		if (etatCivil == null) {
+			return null;
+		}
+		switch (etatCivil) {
+		case CELIBATAIRE:
+			return ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE;
+		case DIVORCE:
+			return ch.vd.uniregctb.type.EtatCivil.DIVORCE;
+		case MARIE:
+			return ch.vd.uniregctb.type.EtatCivil.MARIE;
+		case PACS:
+			return ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
+		case PACS_TERMINE:
+			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
+		case PACS_VEUF:
+			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_DECES;
+		case PACS_INTERROMPU:
+			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
+		case SEPARE:
+			return ch.vd.uniregctb.type.EtatCivil.SEPARE;
+		case VEUF:
+			return ch.vd.uniregctb.type.EtatCivil.VEUF;
+		case NON_MARIE:
+			return ch.vd.uniregctb.type.EtatCivil.NON_MARIE;
+		default:
+			throw new IllegalArgumentException("Type d'état-civil inconnu = [" + etatCivil + "]");
+		}
 	}
 }

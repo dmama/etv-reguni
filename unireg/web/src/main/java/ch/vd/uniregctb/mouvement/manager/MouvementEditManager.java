@@ -2,7 +2,7 @@ package ch.vd.uniregctb.mouvement.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementListView;
 

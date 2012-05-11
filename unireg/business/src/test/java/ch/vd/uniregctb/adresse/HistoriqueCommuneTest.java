@@ -4,8 +4,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.interfaces.model.mock.MockCommune;
 
 public class HistoriqueCommuneTest extends WithoutSpringTest {
 

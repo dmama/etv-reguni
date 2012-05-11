@@ -7,7 +7,8 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.civil.data.Pays;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
@@ -163,7 +164,7 @@ public class Adresse implements Range {
 
 		final Integer noOfsPays = adresse.getNoOfsPays();
 		if (noOfsPays != null) {
-			ch.vd.uniregctb.interfaces.model.Pays p;
+			Pays p;
 			try {
 				p = serviceInfra.getPays(noOfsPays);
 			}
