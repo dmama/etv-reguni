@@ -2,8 +2,9 @@
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
 <!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by UID (Etat de Vaud) -->
 <!-- edited with XMLSPY v2004 rel. 3 U (http://www.xmlspy.com) by UID (Etat de Vaud) -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="ChampsISCommuns_0.0.4.xsd" />
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified"
+	attributeFormDefault="unqualified">
+	<xs:include schemaLocation="ChampsISCommuns_0.0.4.xsd"/>
 	<!--Version 1.1 - 10.09.04 : infoPiedDePage modifié, version 1.2, 22.10.04, modification de la condition pour ligReference, vresion 1.3, 25.10.04 ajout d'éléments communs aux documents de clôture et inclusion des champsTAOCommuns, version 1.4, 26.10.04, changement de l'origine des amendes ICC et IFD-->
 	<!--Version 1.5 - 10.11.04 : modification des règles d'émission de l'IFD-->
 	<!--Version 1.6 - 11.11.04 : nomPrepose optionnel-->
@@ -29,8 +30,8 @@
 	<!--Version 0.0.2  - 15.12.08 : JVO - MinOcc Balise non obligatoire pour REGISTRE-->
 	<xs:simpleType name="typPrefixe">
 		<xs:restriction base="xs:string">
-			<xs:length value="13" />
-			<xs:pattern value="(RG|IS)[A-Z][A-Z][0-9]{2}[0-9]{2}\w{5}" />
+			<xs:length value="13"/>
+			<xs:pattern value="(RG|IS)[A-Z][A-Z][0-9]{2}[0-9]{2}\w{5}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:complexType name="typAdresse">
@@ -83,14 +84,14 @@
 		<xs:sequence>
 			<xs:element name="prefixe" type="typPrefixe">
 				<xs:annotation>
-					<xs:appinfo />
+					<xs:appinfo/>
 					<xs:documentation>RGPX0701PERIO</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="OrigDuplicat">
 				<xs:simpleType>
 					<xs:restriction base="xs:token">
-						<xs:pattern value="ORG|DPL|SIM|PDS" />
+						<xs:pattern value="ORG|DPL|SIM|PDS"/>
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
@@ -104,7 +105,7 @@
 					<xs:documentation>O ou blanc</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="AnneeFiscale" type="typAnnee" nillable="true" />
+			<xs:element name="AnneeFiscale" type="typAnnee" nillable="true"/>
 			<xs:element name="DateDecompte" type="typDatAAAAMMJJ" nillable="true">
 				<xs:annotation>
 					<xs:documentation>AAAAMMJJ</xs:documentation>
@@ -118,7 +119,7 @@
 								<xs:sequence>
 									<xs:element name="prefixe" type="typPrefixe">
 										<xs:annotation>
-											<xs:appinfo />
+											<xs:appinfo/>
 											<xs:documentation>RGPX0701TITIM</xs:documentation>
 										</xs:annotation>
 									</xs:element>
@@ -135,7 +136,7 @@
 								<xs:sequence>
 									<xs:element name="prefixe" type="typPrefixe">
 										<xs:annotation>
-											<xs:appinfo />
+											<xs:appinfo/>
 											<xs:documentation>RGPX0701IMPCC</xs:documentation>
 										</xs:annotation>
 									</xs:element>
@@ -159,7 +160,7 @@
 	</xs:complexType>
 	<xs:complexType name="typEntete">
 		<xs:sequence>
-			<xs:element name="prefixe" type="typPrefixe" />
+			<xs:element name="prefixe" type="typPrefixe"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:annotation>
@@ -174,7 +175,7 @@
 				<xs:element name="prefixe" type="typPrefixe">
 					<xs:annotation>
 						<xs:documentation>RGPX0701TECHN</xs:documentation>
-						<xs:appinfo />
+						<xs:appinfo/>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="nomFichier" type="xs:string">
@@ -182,19 +183,19 @@
 						<xs:documentation>Nom du fichier au format XXPxBaammjj_hhmmss000</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="sigleApplication" minOccurs="0" />
+				<xs:element ref="sigleApplication" minOccurs="0"/>
 				<xs:element name="idUtilisateur" type="xs:token" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>ID2005 ~ nom ou code de l'utilisateur</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="codTraitement" />
-				<xs:element name="codSpecimen" type="xs:token" />
+				<xs:element ref="codTraitement"/>
+				<xs:element name="codSpecimen" type="xs:token"/>
 				<xs:element name="codRecommande" minOccurs="0">
 					<xs:simpleType>
 						<xs:restriction base="xs:token">
-							<xs:enumeration value="O" />
-							<xs:enumeration value="N" />
+							<xs:enumeration value="O"/>
+							<xs:enumeration value="N"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -204,8 +205,8 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:int">
-							<xs:minInclusive value="0" />
-							<xs:totalDigits value="8" />
+							<xs:minInclusive value="0"/>
+							<xs:totalDigits value="8"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -215,12 +216,12 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:int">
-							<xs:minInclusive value="0" />
-							<xs:totalDigits value="8" />
+							<xs:minInclusive value="0"/>
+							<xs:totalDigits value="8"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
-				<xs:element name="idXmlAggrege" type="xs:string" minOccurs="0" />
+				<xs:element name="idXmlAggrege" type="xs:string" minOccurs="0"/>
 			</xs:all>
 		</xs:complexType>
 	</xs:element>
@@ -233,12 +234,12 @@
 				<xs:element name="prefixe" type="typPrefixe">
 					<xs:annotation>
 						<xs:documentation>RGPX0701ROUTE</xs:documentation>
-						<xs:appinfo />
+						<xs:appinfo/>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="nbDocuments" type="xs:int" />
-				<xs:element ref="codTraitement" />
-				<xs:element ref="sigleApplication" />
+				<xs:element name="nbDocuments" type="xs:int"/>
+				<xs:element ref="codTraitement"/>
+				<xs:element ref="sigleApplication"/>
 				<xs:element name="titre" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>"Application émettrice"</xs:documentation>
@@ -259,9 +260,9 @@
 						<xs:documentation>No type enveloppe</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="infoAnnexe" minOccurs="7" maxOccurs="7" />
-				<xs:element name="destination" type="xs:string" />
-				<xs:element ref="remarque" minOccurs="2" maxOccurs="2" />
+				<xs:element ref="infoAnnexe" minOccurs="7" maxOccurs="7"/>
+				<xs:element name="destination" type="xs:string"/>
+				<xs:element ref="remarque" minOccurs="2" maxOccurs="2"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -274,7 +275,7 @@
 				<xs:element name="prefixe" type="typPrefixe">
 					<xs:annotation>
 						<xs:documentation>RGPX0701DOCUM</xs:documentation>
-						<xs:appinfo />
+						<xs:appinfo/>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="codPorteAdresse" nillable="true" minOccurs="0">
@@ -283,7 +284,7 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:pattern value="[M ]" />
+							<xs:pattern value="[M ]"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -307,7 +308,7 @@
 						<xs:documentation>ICC_IFD_ALL</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element ref="cleRgp" minOccurs="0" />
+				<xs:element ref="cleRgp" minOccurs="0"/>
 				<xs:element name="version" type="xs:string">
 					<xs:annotation>
 						<xs:documentation>V 1.0</xs:documentation>
@@ -319,7 +320,7 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:pattern value="CONF|CANT" />
+							<xs:pattern value="CONF|CANT"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -329,9 +330,20 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:pattern value="PP|IS|PM" />
+							<xs:pattern value="PP|IS|PM"/>
 						</xs:restriction>
 					</xs:simpleType>
+				</xs:element>
+				<xs:element name="affranchissement" minOccurs="0" nillable="true">
+					<xs:annotation>
+						<xs:documentation>Information d'affranchissement postal</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="zone" type="typZoneAffranchissement"/>
+							<xs:element name="type" type="typTypeAffranchissement" minOccurs="0"/>
+						</xs:sequence>
+					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
@@ -345,10 +357,10 @@
 				<xs:element name="prefixe" type="typPrefixe">
 					<xs:annotation>
 						<xs:documentation>RGPX0701FOLDE</xs:documentation>
-						<xs:appinfo />
+						<xs:appinfo/>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="nomApplication" type="xs:string" fixed="FOLDERS" />
+				<xs:element name="nomApplication" type="xs:string" fixed="FOLDERS"/>
 				<xs:element name="typDossier" type="xs:string" fixed="003">
 					<xs:annotation>
 						<xs:documentation>Attribué par l'Editique</xs:documentation>
@@ -370,8 +382,8 @@
 					</xs:annotation>
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:length value="40" />
-							<xs:pattern value="[0-9]{6} .{19} [0-9]{13}" />
+							<xs:length value="40"/>
+							<xs:pattern value="[0-9]{6} .{19} [0-9]{13}"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -392,7 +404,7 @@
 				<xs:element name="prefixe" type="typPrefixe" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>RGPX0701HAUT1</xs:documentation>
-						<xs:appinfo />
+						<xs:appinfo/>
 					</xs:annotation>
 				</xs:element>
 				<xs:element name="expediteur">
@@ -425,18 +437,20 @@
 											<xs:documentation>Titre, initiales et nom de l'utilisateur</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-									<xs:element name="srvExp" type="xs:string" minOccurs="0" />
+									<xs:element name="srvExp" type="xs:string" minOccurs="0"/>
 									<xs:element name="ideUti" type="xs:string" minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Visa utilisateur</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-									<xs:element name="localiteExpedition" type="typCdata" minOccurs="0">
+									<xs:element name="localiteExpedition" type="typCdata"
+										minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Localité</xs:documentation>
 										</xs:annotation>
 									</xs:element>
-									<xs:element name="dateExpedition" type="typDatAAAAMMJJ" minOccurs="0">
+									<xs:element name="dateExpedition" type="typDatAAAAMMJJ"
+										minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Date d'expédition au format YYYYMMDD (20050113 = 13 janvier 2005)</xs:documentation>
 										</xs:annotation>
@@ -466,8 +480,9 @@
 						<xs:complexContent>
 							<xs:extension base="typAdresse">
 								<xs:sequence>
-									<xs:element name="numRecommande" type="xs:string" minOccurs="0" />
-									<xs:element name="numContribuable" type="typNumeroCtb" minOccurs="0">
+									<xs:element name="numRecommande" type="xs:string" minOccurs="0"/>
+									<xs:element name="numContribuable" type="typNumeroCtb"
+										minOccurs="0">
 										<xs:annotation>
 											<xs:documentation>Identifiant, e.g. no de la personne</xs:documentation>
 										</xs:annotation>
@@ -477,7 +492,7 @@
 						</xs:complexContent>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="porteAdresse" type="typAdresse" minOccurs="0" />
+				<xs:element name="porteAdresse" type="typAdresse" minOccurs="0"/>
 				<xs:element name="ligReference" type="typCdata" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>Ligne de référence (e.g. concerne)</xs:documentation>
@@ -501,10 +516,10 @@
 							<xs:element name="prefixe" type="typPrefixe">
 								<xs:annotation>
 									<xs:documentation>RGPX0701COPIE</xs:documentation>
-									<xs:appinfo />
+									<xs:appinfo/>
 								</xs:annotation>
 							</xs:element>
-							<xs:element name="txtCopie" type="xs:string" />
+							<xs:element name="txtCopie" type="xs:string"/>
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
@@ -517,7 +532,7 @@
 							<xs:element name="prefixe" type="typPrefixe">
 								<xs:annotation>
 									<xs:documentation>RGPX0701SIGNA</xs:documentation>
-									<xs:appinfo />
+									<xs:appinfo/>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="service" type="xs:string">
@@ -547,7 +562,7 @@
 							<xs:element name="prefixe" type="typPrefixe">
 								<xs:annotation>
 									<xs:documentation>RGPX0701ANNEX</xs:documentation>
-									<xs:appinfo />
+									<xs:appinfo/>
 								</xs:annotation>
 							</xs:element>
 						</xs:sequence>
@@ -562,7 +577,7 @@
 							<xs:element name="prefixe" type="typPrefixe" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>RGPX0701FORML</xs:documentation>
-									<xs:appinfo />
+									<xs:appinfo/>
 								</xs:annotation>
 							</xs:element>
 							<xs:element name="VisUti" type="xs:string" minOccurs="0">
@@ -587,7 +602,7 @@
 							<xs:element name="prefixe" type="typPrefixe" minOccurs="0">
 								<xs:annotation>
 									<xs:documentation>RGPX0701DISPO</xs:documentation>
-									<xs:appinfo />
+									<xs:appinfo/>
 								</xs:annotation>
 							</xs:element>
 						</xs:all>
@@ -607,14 +622,14 @@
 				<xs:element name="annDescription">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:maxLength value="30" />
+							<xs:maxLength value="30"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
 				<xs:element name="annCode">
 					<xs:simpleType>
 						<xs:restriction base="xs:string">
-							<xs:maxLength value="1" />
+							<xs:maxLength value="1"/>
 						</xs:restriction>
 					</xs:simpleType>
 				</xs:element>
@@ -630,7 +645,7 @@
 	<xs:element name="remarque">
 		<xs:simpleType>
 			<xs:restriction base="xs:string">
-				<xs:maxLength value="80" />
+				<xs:maxLength value="80"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
@@ -646,47 +661,47 @@
 		</xs:annotation>
 		<xs:simpleType>
 			<xs:restriction base="xs:token">
-				<xs:pattern value="D|B|F" />
+				<xs:pattern value="D|B|F"/>
 			</xs:restriction>
 		</xs:simpleType>
 	</xs:element>
 	<xs:element name="prefixe" type="typPrefixe">
 		<xs:annotation>
 			<xs:documentation>RGPX0701XXXXX</xs:documentation>
-			<xs:appinfo />
+			<xs:appinfo/>
 		</xs:annotation>
 	</xs:element>
 	<xs:element name="cleRgp">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="anneeFiscale" />
-				<xs:element ref="genreDecision" minOccurs="0" />
-				<xs:element ref="genreImpot" minOccurs="0" />
-				<xs:element ref="numeroTaxation" minOccurs="0" />
-				<xs:element ref="numeroVersion" minOccurs="0" />
-				<xs:element ref="indicateurDENC" minOccurs="0" />
+				<xs:element ref="anneeFiscale"/>
+				<xs:element ref="genreDecision" minOccurs="0"/>
+				<xs:element ref="genreImpot" minOccurs="0"/>
+				<xs:element ref="numeroTaxation" minOccurs="0"/>
+				<xs:element ref="numeroVersion" minOccurs="0"/>
+				<xs:element ref="indicateurDENC" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="genreDecision" type="genreDecisionType" />
+	<xs:element name="genreDecision" type="genreDecisionType"/>
 	<xs:element name="genreImpot">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element name="Impot" type="genreImpotType" maxOccurs="unbounded" />
+				<xs:element name="Impot" type="genreImpotType" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="numeroTaxation" type="noTaxationType" />
-	<xs:element name="anneeFiscale" type="typAnnee" />
-	<xs:element name="numeroVersion" type="noVersionType" />
-	<xs:element name="indicateurDENC" type="indicateurDENCType" />
+	<xs:element name="numeroTaxation" type="noTaxationType"/>
+	<xs:element name="anneeFiscale" type="typAnnee"/>
+	<xs:element name="numeroVersion" type="noVersionType"/>
+	<xs:element name="indicateurDENC" type="indicateurDENCType"/>
 	<xs:simpleType name="indicateurDENCType">
 		<xs:restriction base="xs:string">
-			<xs:pattern value="(|0|1)" />
+			<xs:pattern value="(|0|1)"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="genreDecisionType">
-		<xs:restriction base="xs:string" />
+		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="genreImpotType">
 		<xs:restriction base="xs:string">
@@ -701,20 +716,20 @@
 		<xs:annotation>
 			<xs:documentation>Si renseigné, est sur 4 caractères</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string" />
+		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="noVersionType">
 		<xs:annotation>
 			<xs:documentation>Si renseigné, est sur 2 caractères</xs:documentation>
 		</xs:annotation>
-		<xs:restriction base="xs:string" />
+		<xs:restriction base="xs:string"/>
 	</xs:simpleType>
 	<xs:simpleType name="typCodeNip">
 		<xs:annotation>
 			<xs:documentation>de type Code de contrôle pour le renvoi des DI électroniques</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:pattern value="[0-9a-zA-Z]{4,6}" />
+			<xs:pattern value="[0-9a-zA-Z]{4,6}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typCodeTrame">
@@ -722,15 +737,32 @@
 			<xs:documentation>de type Code Trame qui determine les pliures sur les DI </xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:pattern value="[0-9a-zA-Z]{1}" />
+			<xs:pattern value="[0-9a-zA-Z]{1}"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typCodeSegment">
 		<xs:annotation>
 			<xs:documentation>de type Code Segment qui determine le type de contribuable (0 = Normal, 1 = indépendant, 2 = avec Titre imporant) sur la DI</xs:documentation>
 		</xs:annotation>
-			<xs:restriction base="xs:token">
-				<xs:pattern value="0|1|2" />
-			</xs:restriction>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="0|1|2"/>
+		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="typZoneAffranchissement">
+		<xs:annotation>
+			<xs:documentation>de type string qui determine la zone d'affranchissement postal (CH = Suisse, EU = Europe, RM = Reste du monde) sur les documents fiscaux</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="CH|EU|RM"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typTypeAffranchissement">
+		<xs:annotation>
+			<xs:documentation>de type string qui determine le type d'affranchissement (A,B) sur les documents fiscaux</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:token">
+			<xs:pattern value="A|B|"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 </xs:schema>
