@@ -33,7 +33,7 @@ public abstract class RcPersWatchDogTest {
 
 	protected abstract RcPersClientImpl buildClient() throws Exception;
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetOnePerson() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
@@ -50,7 +50,7 @@ public abstract class RcPersWatchDogTest {
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetUPIPerson() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
@@ -68,7 +68,7 @@ public abstract class RcPersWatchDogTest {
 		assertEquals("António", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetRelations() throws Exception {
 
 		final RcPersClientImpl client = buildClient();
@@ -101,7 +101,7 @@ public abstract class RcPersWatchDogTest {
 		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
