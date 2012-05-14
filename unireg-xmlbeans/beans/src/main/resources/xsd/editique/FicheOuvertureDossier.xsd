@@ -5,7 +5,7 @@
 <!--Version  0.0.4  - 27.04.09: JVO - Supprimé <Civil2>-->
 <!--Version  0.0.5  - 01.05.09: JVO - Pas de formatage <DateNaissance1> et DateNaissance2>-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DonneesTechniques_0.0.7.xsd"/>
+	<xs:include schemaLocation="DonneesTechniques.xsd"/>
 	<xs:element name="FicheOuvertureDossier">
 		<!-- Description du schema pour l'impression du document BVR-->
 		<xs:complexType>

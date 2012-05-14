@@ -6,7 +6,7 @@
 <!--Version  0.0.4  - 26.01.10 : JVO - New Logique XSD-->
 <!--Version 0.0.5  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:include schemaLocation="DIRetourCivilEnfant_0.0.4.xsd" />
+	<xs:include schemaLocation="DIRetourCivilEnfant.xsd" />
 
 	<xs:complexType name="Annexe_320_Type">
 		<xs:annotation>
