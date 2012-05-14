@@ -86,7 +86,7 @@
 			</display:column>
 			<display:column style="action">
 				<c:if test="${tableEvtsEch.id != null}">
-					<unireg:consulterLog entityNature="Evenement" entityId="${tableEvtsEch.id}"/>
+					<unireg:consulterLog entityNature="EvenementEch" entityId="${tableEvtsEch.id}"/>
 				</c:if>
 		</display:column>
 		</display:table>
