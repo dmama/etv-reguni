@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model.impl;
+package ch.vd.unireg.interfaces.civil.data;
 
 import java.util.Arrays;
 
@@ -6,8 +6,6 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.civil.data.PermisListRcPers;
 import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 

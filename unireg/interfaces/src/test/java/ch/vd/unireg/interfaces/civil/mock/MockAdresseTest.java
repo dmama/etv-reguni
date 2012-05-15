@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model.mock;
+package ch.vd.unireg.interfaces.civil.mock;
 
 import org.junit.Test;
 

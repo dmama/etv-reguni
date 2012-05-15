@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.interfaces.model.impl;
+package ch.vd.unireg.interfaces.civil.data;
 
 import java.util.List;
 
@@ -7,9 +7,6 @@ import org.junit.Test;
 
 import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.EtatCivilRCPers;
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;
 
