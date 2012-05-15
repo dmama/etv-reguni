@@ -24,6 +24,8 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
+import ch.vd.uniregctb.common.BatchIterator;
+import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -35,6 +37,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	private RcPersClient client;
 	private ServiceInfrastructureRaw infraService;
 	private ServiceCivilInterceptor interceptor;
+
+	private static final int NB_PARAMS_MAX_PAR_GET = 100;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setClient(RcPersClient client) {
@@ -156,7 +160,19 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	private ListOfPersons getPersonsSafely(Collection<Long> ids, RegDate date, boolean withHistory) {
 		try {
-			return client.getPersons(ids, date, withHistory);
+			ListOfPersons list = null;
+			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(ids, NB_PARAMS_MAX_PAR_GET);
+			while (batches.hasNext()) {
+				final ListOfPersons localList = client.getPersons(batches.next(), date, withHistory);
+				if (list == null) {
+					list = localList;
+				}
+				else {
+					list.setNumberOfResults(list.getNumberOfResults().add(localList.getNumberOfResults()));
+					list.getListOfResults().getResult().addAll(localList.getListOfResults().getResult());
+				}
+			}
+			return list;
 		}
 		catch (Exception e) {
 			throw new ServiceCivilException(e);
@@ -165,7 +181,19 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	private ListOfRelations getRelationsSafely(Collection<Long> nosIndividus, RegDate date, boolean withHistory) {
 		try {
-			return client.getRelations(nosIndividus, date, withHistory);
+			ListOfRelations list = null;
+			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(nosIndividus, NB_PARAMS_MAX_PAR_GET);
+			while (batches.hasNext()) {
+				final ListOfRelations localList = client.getRelations(batches.next(), date, withHistory);
+				if (list == null) {
+					list = localList;
+				}
+				else {
+					list.setNumberOfResults(list.getNumberOfResults().add(localList.getNumberOfResults()));
+					list.getListOfResults().getResult().addAll(localList.getListOfResults().getResult());
+				}
+			}
+			return list;
 		}
 		catch (Exception e) {
 			throw new ServiceCivilException(e);

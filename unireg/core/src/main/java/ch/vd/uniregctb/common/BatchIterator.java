@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Interface de l'itérateur sur lots. Elle définit grosso-modo la même genre d'interface que {@link java.util.Iterator}, mais avec une sémantique légèrement différente pour permettre des
- * implémentations créatives (voir {@link ParallelBatchTransactionTemplate.BlockingQueueIterator}, par exemple).
+ * implémentations créatives
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
