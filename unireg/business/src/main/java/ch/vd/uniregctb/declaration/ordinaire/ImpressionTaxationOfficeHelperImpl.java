@@ -250,6 +250,8 @@ public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper i
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
+		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(contribuable);
+		infoDocument.setAffranchissement(affranchissement);
 
 		final Integer officeImpotId = getOfficeImpotAt(contribuable, declaration.getDateFin());
 		if (officeImpotId != null) {

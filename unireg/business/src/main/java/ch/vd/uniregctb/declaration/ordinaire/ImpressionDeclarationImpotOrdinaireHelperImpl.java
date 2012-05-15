@@ -188,6 +188,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
+		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(tiers);
+		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
 

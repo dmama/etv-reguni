@@ -171,7 +171,7 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	 *
 	 * @return
 	 */
-	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) {
+	private InfoDocument remplitInfoDocument(DeclarationImpotSource lr) throws EditiqueException {
 		final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 		infoDocument.setPrefixe(buildPrefixeInfoDocument(getTypeDocumentEditique()));
 		infoDocument.setTypDoc(TYPE_DOC_SOMMATION_LR);
@@ -219,6 +219,8 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_IS);
+		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(dpi);
+		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
 

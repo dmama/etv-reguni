@@ -33,6 +33,8 @@ import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
+import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
+
 public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelper implements ImpressionConfirmationDelaiHelper {
 
 	private static final String VERSION_XSD = "1.0";
@@ -135,6 +137,8 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
 		infoDocument.setIdEnvoi("");
+		final Affranchissement affranchissement= editiqueHelper.getAffranchissement(params.getDi().getTiers());
+		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
 

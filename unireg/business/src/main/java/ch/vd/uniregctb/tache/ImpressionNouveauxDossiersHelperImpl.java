@@ -197,6 +197,10 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
+		//J'ai décidé que Le bordereau etait par définition limité à la suisse
+		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = InfoDocumentDocument1.InfoDocument.Factory.newInstance().addNewAffranchissement();
+		affranchissement.setZone(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE);
+		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}
 

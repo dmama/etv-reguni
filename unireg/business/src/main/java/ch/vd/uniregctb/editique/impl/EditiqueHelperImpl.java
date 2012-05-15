@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 
 import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
+import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
@@ -15,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -33,6 +35,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
+import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
+
 public class EditiqueHelperImpl extends EditiqueAbstractHelper implements EditiqueHelper {
 
 	public static final Logger LOGGER = Logger.getLogger(EditiqueHelperImpl.class);
@@ -41,6 +45,9 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	private static final String APPLICATION_ARCHIVAGE = "FOLDERS";
 	private static final String TYPE_DOSSIER_ARCHIVAGE = "003";
+
+
+
 
 	private ServiceInfrastructureService infraService;
 	private AdresseService adresseService;
@@ -333,6 +340,35 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	@Override
 	public String getTypeDossierArchivage() {
 		return TYPE_DOSSIER_ARCHIVAGE;
+	}
+
+	@Override
+	public Affranchissement getAffranchissement(Tiers tiers) throws EditiqueException {
+		final AdresseEnvoiDetaillee adresse;
+		try {
+			adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
+		}
+		catch (AdresseException e) {
+			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " +tiers.getNumero()+" erreur: "+e.getMessage());
+		}
+		final Affranchissement affranchissement = InfoDocumentDocument1.InfoDocument.Factory.newInstance().addNewAffranchissement();
+
+		switch (adresse.getTypeAffranchissement()){
+			case SUISSE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
+				break;
+			case EUROPE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
+				break;
+			case MONDE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
+				break;
+
+			default:
+				throw new EditiqueException("type d'affranchissement inconnu = " + adresse.getTypeAffranchissement());
+		}
+
+		return affranchissement;
 	}
 
 	public void setAdresseService(AdresseService adresseService) {

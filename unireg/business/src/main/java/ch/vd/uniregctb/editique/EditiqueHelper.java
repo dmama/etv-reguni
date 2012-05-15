@@ -3,6 +3,7 @@ package ch.vd.uniregctb.editique;
 import java.rmi.RemoteException;
 
 import noNamespace.InfoArchivageDocument.InfoArchivage;
+import noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
@@ -19,6 +20,10 @@ import ch.vd.uniregctb.tiers.Tiers;
 public interface EditiqueHelper {
 
 	public static final String DI_ID = "DI_ID";
+
+	public static final String ZONE_AFFRANCHISSEMENT_SUISSE="CH";
+	public static final String ZONE_AFFRANCHISSEMENT_EUROPE="EU";
+	public static final String ZONE_AFFRANCHISSEMENT_RESTE_MONDE="RM";
 
 	/**
 	 * Alimente la partie PorteAdresse du document
@@ -135,4 +140,13 @@ public interface EditiqueHelper {
 	 * @return le code du type de dossier à donner au service d'archivage (pour tous les documents gérés par Unireg)
 	 */
 	public String getTypeDossierArchivage();
+
+
+	/**Determine le code affranchissement à partir de l'adresse passé en paramètre
+	 *
+	 *
+	 * @param tiers@return l'affranchissement correspondant à l'adresse
+	 */
+
+	public Affranchissement getAffranchissement(Tiers tiers) throws EditiqueException;
 }

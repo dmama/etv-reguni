@@ -15,6 +15,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse.Adresse;
+import noNamespace.TypFichierImpression;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
@@ -834,6 +835,32 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 
 	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testZoneAffranchissement() throws Exception {
+
+		addCollAdm(MockCollectiviteAdministrative.CEDI);
+		addCollAdm(MockOfficeImpot.OID_VEVEY);
+		final CollectiviteAdministrative aci = addCollAdm(MockCollectiviteAdministrative.ACI);
+
+		// Crée une personne physique
+		final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2008, 1, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey);
+
+		final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+		final ModeleDocument modele2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode2010);
+		final DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(pp, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2010);
+		declaration2010.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFSEtendu());
+		declaration2010.setRetourCollectiviteAdministrativeId(aci.getId());
+
+		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010), TypFichierImpression.Factory.newInstance(),
+				null, false);
+		assertNotNull(document);
+		assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE,document.getInfoDocument().getAffranchissement().getZone());
+	}
+
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)

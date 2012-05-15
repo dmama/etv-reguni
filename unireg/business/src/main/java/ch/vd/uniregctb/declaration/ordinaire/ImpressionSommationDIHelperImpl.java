@@ -184,6 +184,8 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		infoDocument.setVersion(VERSION_XSD);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
+		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(params.getDi().getTiers());
+		infoDocument.setAffranchissement(affranchissement);
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, TypeAdresseFiscale.COURRIER, false);
 			String idEnvoi = "";
