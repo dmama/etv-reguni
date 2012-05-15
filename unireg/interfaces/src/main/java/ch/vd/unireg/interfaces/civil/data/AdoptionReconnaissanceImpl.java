@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 
 public class AdoptionReconnaissanceImpl implements AdoptionReconnaissance, Serializable {
 
-	private static final long serialVersionUID = -4845025882379646564L;
+	private static final long serialVersionUID = -6180868916129409648L;
 
 	private final Individu adopte;
 	private final RegDate dateAccueil;

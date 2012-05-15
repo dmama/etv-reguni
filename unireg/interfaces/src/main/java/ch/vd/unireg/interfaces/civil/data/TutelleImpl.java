@@ -8,7 +8,7 @@ import ch.vd.uniregctb.type.TypeTutelle;
 
 public class TutelleImpl implements Tutelle, Serializable {
 
-	private static final long serialVersionUID = -687108599649537399L;
+	private static final long serialVersionUID = -1258171130548686359L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

@@ -1222,9 +1222,9 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		// on ne cache pas cette information parce que l'url est composée d'une partie statique auquelle est appondue le numéro d'id, et que le service concret fait ça de manière très efficace.
-		return target.getUrlVers(application, tiersId);
+		return target.getUrlVers(application, tiersId, oid);
 	}
 
 	private static class KeyGetLogiciel {

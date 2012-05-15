@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class TuteurGeneralImpl implements TuteurGeneral, Serializable {
 
-	private static final long serialVersionUID = -5079133760089123152L;
+	private static final long serialVersionUID = 7505233440025215586L;
 
 	private final String noTelephoneContact;
 	private final String nomContact;

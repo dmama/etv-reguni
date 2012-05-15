@@ -8,14 +8,13 @@ public class ApplicationChecker {
 
 	private String version;
 	private ServiceCivilChecker serviceCivilChecker;
-	private ServiceHostInfraChecker serviceHostInfraChecker;
-	private ServiceFidorChecker serviceFidorChecker;
+	private ServiceInfraChecker serviceInfraChecker;
 	private ServiceSecuriteChecker serviceSecuriteChecker;
 	private TiersSearcherChecker tiersSearcherChecker;
 
 	public String getStatus() {
 		final Status status;
-		if (serviceCivilChecker.getStatus() == Status.OK && serviceHostInfraChecker.getStatus() == Status.OK && serviceFidorChecker.getStatus() == Status.OK &&
+		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK &&
 				serviceSecuriteChecker.getStatus() == Status.OK && tiersSearcherChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
@@ -27,8 +26,7 @@ public class ApplicationChecker {
 
 	public String getStatusJSON() {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
-				"'serviceHostInfra' : '" + serviceHostInfraChecker.getStatus().name() + "', " +
-				"'serviceFidor' : '" + serviceFidorChecker.getStatus().name() + "', " +
+				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
 				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
 				"'globalTiersSearcher' : '" + tiersSearcherChecker.getStatus().name() + "'}";
 	}
@@ -56,13 +54,8 @@ public class ApplicationChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceHostInfraChecker(ServiceHostInfraChecker serviceHostInfraChecker) {
-		this.serviceHostInfraChecker = serviceHostInfraChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceFidorChecker(ServiceFidorChecker serviceFidorChecker) {
-		this.serviceFidorChecker = serviceFidorChecker;
+	public void setServiceInfraChecker(ServiceInfraChecker serviceInfraChecker) {
+		this.serviceInfraChecker = serviceInfraChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

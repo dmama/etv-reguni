@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class DistrictImpl extends EntiteFiscaleImpl implements District, Serializable {
 
-	private static final long serialVersionUID = -520418181304544408L;
+	private static final long serialVersionUID = -3164487570387673899L;
 
 	private Region region;
 

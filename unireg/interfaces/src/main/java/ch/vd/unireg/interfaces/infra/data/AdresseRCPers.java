@@ -29,7 +29,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseRCPers implements Adresse, Serializable {
 
-	private static final long serialVersionUID = 6370371735246030462L;
+	private static final long serialVersionUID = 8531777934600620271L;
 	
 	private final RegDate dateDebut;
 	private RegDate dateFin;

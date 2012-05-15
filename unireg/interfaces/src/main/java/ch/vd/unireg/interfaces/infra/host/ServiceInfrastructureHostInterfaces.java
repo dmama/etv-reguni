@@ -587,7 +587,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		throw new NotImplementedException("La méthode 'getUrlVers' ne doit pas être appelée sur le service host-interfaces.");
 	}
 

@@ -20,6 +20,7 @@
 		<module>../core</module>
 		<module>../interfaces</module>
 		<module>../business</module>
+		<module>../nexus</module>
 		<module>../web</module>
 		<module>../ws</module>
 	</modules>
@@ -467,6 +468,15 @@
 			</modules>
 		</profile>
 
+		<!-- ================= Profile pour les developpeurs pour éviter l'utilisation du cache centralisé Nexus ================= -->
+
+		<profile>
+			<id>no-nexus</id>
+			<properties>
+				<interfaces-mode>direct</interfaces-mode>
+			</properties>
+		</profile>
+
 		<!-- ================= Profile pour les developpeurs pour skipper les tests  ================= -->
 		
 		<profile>
@@ -567,9 +577,12 @@
 		<!--<unireg.deploymenturl>/fiscalite/unireg</unireg.deploymenturl>-->
 		<unireg-web.appname>unireg-web</unireg-web.appname>
 		<unireg-ws.appname>unireg-ws</unireg-ws.appname>
+		<unireg-nexus.appname>unireg-nexus</unireg-nexus.appname>
 		<unireg.standalone>false</unireg.standalone>
 		<unireg.webxml>web.normal.xml</unireg.webxml>
 		<unireg.webreleasexml>release.xml</unireg.webreleasexml>
+
+		<interfaces-mode>nexus</interfaces-mode>
 
 		<unireg.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/unireg.properties</unireg.properties.path>
 		<credentials.properties.path>${ch.vd.appDir}/${unireg-web.appname}/config/credentials.properties</credentials.properties.path>
@@ -578,6 +591,10 @@
 		<unireg-ws.properties.path>${ch.vd.appDir}/${unireg-ws.appname}/config/unireg.properties</unireg-ws.properties.path>
 		<unireg-ws.credentials.path>${ch.vd.appDir}/${unireg-ws.appname}/config/credentials.properties</unireg-ws.credentials.path>
 		<unireg-ws.log4j.location>file:${ch.vd.appDir}/${unireg-ws.appname}/config/unireg-log4j.xml</unireg-ws.log4j.location>
+
+		<unireg-nexus.properties.path>${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg.properties</unireg-nexus.properties.path>
+		<unireg-nexus.credentials.path>${ch.vd.appDir}/${unireg-nexus.appname}/config/credentials.properties</unireg-nexus.credentials.path>
+		<unireg-nexus.log4j.location>file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j.xml</unireg-nexus.log4j.location>
 
 		<!-- Application settings -->
 		<copyright.year>2011</copyright.year>

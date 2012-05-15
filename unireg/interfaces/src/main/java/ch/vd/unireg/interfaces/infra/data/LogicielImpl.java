@@ -1,6 +1,10 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-public class LogicielImpl implements Logiciel {
+import java.io.Serializable;
+
+public class LogicielImpl implements Logiciel, Serializable {
+
+	private static final long serialVersionUID = 3113479150988685206L;
 
 	private final String contactMetierMail;
 	private final String contactMetierNom;

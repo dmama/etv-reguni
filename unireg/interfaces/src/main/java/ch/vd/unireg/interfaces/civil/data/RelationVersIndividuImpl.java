@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
 
-	private static final long serialVersionUID = -544626150364973488L;
+	private static final long serialVersionUID = 3590334211719029030L;
 
 	private long numeroAutreIndividu;
 	private RegDate dateDebut;

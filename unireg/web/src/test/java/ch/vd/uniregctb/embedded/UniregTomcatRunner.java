@@ -49,6 +49,7 @@ public class UniregTomcatRunner {
 
 		System.setProperty("unireg-web.appname", "unireg-web");
 		System.setProperty("unireg.standalone", "false");
+		System.setProperty("interfaces-mode", "direct");
 		System.setProperty("unireg.log4j.location", "file:${ch.vd.appDir}/${unireg-web.appname}/config/unireg-log4j.xml");
 
 		final String propertiesPath = String.format("%s/%s/config/unireg.properties", appDir, System.getProperty("unireg-web.appname"));

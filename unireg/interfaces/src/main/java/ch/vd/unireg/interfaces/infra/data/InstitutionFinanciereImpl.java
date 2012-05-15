@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class InstitutionFinanciereImpl implements InstitutionFinanciere, Serializable {
 
-	private static final long serialVersionUID = 255343809870190510L;
+	private static final long serialVersionUID = 2897961922279151851L;
 	
 	private final String adresse1;
 	private final String adresse2;

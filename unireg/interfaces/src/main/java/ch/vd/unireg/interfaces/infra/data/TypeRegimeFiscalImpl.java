@@ -1,6 +1,10 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-public class TypeRegimeFiscalImpl implements TypeRegimeFiscal {
+import java.io.Serializable;
+
+public class TypeRegimeFiscalImpl implements TypeRegimeFiscal, Serializable {
+
+	private static final long serialVersionUID = 2040229723470123167L;
 
 	private String code;
 	private String libelle;

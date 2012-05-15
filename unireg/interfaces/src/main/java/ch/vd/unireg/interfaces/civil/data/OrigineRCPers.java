@@ -6,7 +6,7 @@ import ch.ech.ech0011.v5.PlaceOfOrigin;
 
 public class OrigineRCPers implements Origine, Serializable {
 
-	private static final long serialVersionUID = 6092653856557033522L;
+	private static final long serialVersionUID = 8693728941213245492L;
 
 	private String nomLieu;
 

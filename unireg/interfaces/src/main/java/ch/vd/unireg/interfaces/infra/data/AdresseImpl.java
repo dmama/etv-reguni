@@ -19,7 +19,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseImpl implements Adresse, Serializable {
 
-	private static final long serialVersionUID = -8183104360877534906L;
+	private static final long serialVersionUID = -820697734458838998L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

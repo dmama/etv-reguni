@@ -7,7 +7,7 @@ import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 
 public class NationaliteImpl implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = 134684618996801933L;
+	private static final long serialVersionUID = 1926357251819602282L;
 	
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

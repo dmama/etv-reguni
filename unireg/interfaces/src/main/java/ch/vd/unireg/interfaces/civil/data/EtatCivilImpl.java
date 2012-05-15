@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class EtatCivilImpl implements EtatCivil, Serializable {
 
-	private static final long serialVersionUID = 3282374011657120967L;
+	private static final long serialVersionUID = -8967175489109484L;
 	
 	private final RegDate dateDebut;
 	private RegDate dateFin;

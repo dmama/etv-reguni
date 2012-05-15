@@ -10,7 +10,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class PermisListHost extends PermisListBase implements Serializable {
 
-	private static final long serialVersionUID = -6499453915396649854L;
+	private static final long serialVersionUID = -6680212763119881704L;
 
 	public PermisListHost(long noIndividu) {
 		super(noIndividu);

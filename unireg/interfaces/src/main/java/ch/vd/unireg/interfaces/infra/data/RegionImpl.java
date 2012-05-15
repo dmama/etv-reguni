@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class RegionImpl extends EntiteFiscaleImpl implements Region, Serializable {
 
-	private static final long serialVersionUID = 5665657861935801686L;
+	private static final long serialVersionUID = -7825334681839561757L;
 
 	public static RegionImpl get(ch.vd.fidor.ws.v2.Region target) {
 		if (target == null) {

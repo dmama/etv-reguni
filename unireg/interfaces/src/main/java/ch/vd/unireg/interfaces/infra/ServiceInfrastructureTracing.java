@@ -687,11 +687,11 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public String getUrlVers(final ApplicationFiscale application, final Long tiersId) {
+	public String getUrlVers(final ApplicationFiscale application, final Long tiersId, final Integer oid) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getUrlVers(application, tiersId);
+			return target.getUrlVers(application, tiersId, oid);
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -705,7 +705,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			tracing.end(time, t, "getUrlVers", new Object() {
 				@Override
 				public String toString() {
-					return String.format("application=%s, tiersId=%d", application.name(), tiersId);
+					return String.format("application=%s, tiersId=%d, oid=%d", application.name(), tiersId, oid);
 				}
 			});
 		}

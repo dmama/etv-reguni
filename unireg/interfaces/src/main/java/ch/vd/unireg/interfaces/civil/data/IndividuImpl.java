@@ -21,7 +21,7 @@ import ch.vd.uniregctb.common.StringHelper;
 
 public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializable {
 
-	private static final long serialVersionUID = 6263014813568645977L;
+	private static final long serialVersionUID = 8413284544809242695L;
 
 	private final long noTechnique;
 	private final String prenom;

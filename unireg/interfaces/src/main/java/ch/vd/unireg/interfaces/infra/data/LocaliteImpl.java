@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 
 public class LocaliteImpl implements Localite, Serializable {
 
-	private static final long serialVersionUID = 2998886376392463517L;
+	private static final long serialVersionUID = -8507140048340746513L;
 	
 	private final Commune commune;
 	private final RegDate dateFin;

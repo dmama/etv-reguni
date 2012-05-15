@@ -1,9 +1,12 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-public abstract class EntiteFiscaleImpl implements EntiteFiscale {
+import java.io.Serializable;
+
+public abstract class EntiteFiscaleImpl implements EntiteFiscale, Serializable {
+
+	private static final long serialVersionUID = -8674294582132866017L;
 
 	private Integer code;
-
 	private String designation;
 
 	@Override

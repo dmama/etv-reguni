@@ -463,7 +463,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		return null;
 	}
 

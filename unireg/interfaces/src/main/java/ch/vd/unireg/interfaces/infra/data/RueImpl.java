@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class RueImpl implements Rue, Serializable {
 
-	private static final long serialVersionUID = -5307681617982000774L;
+	private static final long serialVersionUID = 6059798153298428189L;
 	
 	private final String designationCourrier;
 	private final Integer noLocalite;

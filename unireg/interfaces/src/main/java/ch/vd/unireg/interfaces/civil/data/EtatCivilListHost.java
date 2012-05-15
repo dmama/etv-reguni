@@ -22,7 +22,7 @@ import ch.vd.registre.base.date.RegDateHelper;
  */
 public class EtatCivilListHost implements Serializable, EtatCivilList {
 
-	private static final long serialVersionUID = 5273477522204852303L;
+	private static final long serialVersionUID = 533918768148428444L;
 
 	final private long numeroIndividu; // pour le logging
 	final private List<EtatCivil> list;

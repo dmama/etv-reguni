@@ -16,7 +16,7 @@ import ch.vd.uniregctb.type.TexteCasePostale;
  */
 public class CasePostale implements Serializable {
 
-	private static final long serialVersionUID = 2527828768944165781L;
+	private static final long serialVersionUID = 2958384367125929556L;
 
 	private TexteCasePostale type;
 	private Integer numero;

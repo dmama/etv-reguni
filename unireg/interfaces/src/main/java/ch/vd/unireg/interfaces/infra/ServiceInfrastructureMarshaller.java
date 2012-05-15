@@ -172,8 +172,8 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
-		return fidorService.getUrlVers(application, tiersId);
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
+		return fidorService.getUrlVers(application, tiersId, oid);
 	}
 
 	@Override

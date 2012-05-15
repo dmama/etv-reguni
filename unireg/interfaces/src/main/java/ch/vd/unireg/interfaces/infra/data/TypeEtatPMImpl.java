@@ -1,6 +1,10 @@
 package ch.vd.unireg.interfaces.infra.data;
 
-public class TypeEtatPMImpl implements TypeEtatPM {
+import java.io.Serializable;
+
+public class TypeEtatPMImpl implements TypeEtatPM, Serializable {
+
+	private static final long serialVersionUID = 5814738254309200425L;
 
 	private String code;
 	private String libelle;

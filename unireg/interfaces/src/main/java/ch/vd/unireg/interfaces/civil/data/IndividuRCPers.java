@@ -37,7 +37,7 @@ import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -2444268873580091585L;
+	private static final long serialVersionUID = -2916940998537867946L;
 
 	private static final String EST_CONJOINT = "1";
 	private static final String EST_PARTENAIRE_ENREGISTRE = "2";

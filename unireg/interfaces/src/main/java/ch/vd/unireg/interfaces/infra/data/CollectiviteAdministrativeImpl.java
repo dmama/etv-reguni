@@ -8,7 +8,7 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
 
-	private static final long serialVersionUID = -8466081857429254813L;
+	private static final long serialVersionUID = 7240105233074827079L;
 	
 	private final Adresse adresse;
 	private final RegDate dateFin;

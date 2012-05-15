@@ -18,7 +18,7 @@ import ch.vd.registre.base.date.RegDateHelper;
  */
 public class EtatCivilListRCPers implements EtatCivilList, Serializable {
 
-	private static final long serialVersionUID = 6713284237329600601L;
+	private static final long serialVersionUID = 4035484073324401539L;
 
 	final private List<EtatCivil> list;
 

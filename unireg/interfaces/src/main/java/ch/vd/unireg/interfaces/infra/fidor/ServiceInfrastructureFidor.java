@@ -40,7 +40,6 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.webservice.fidor.FidorClient;
 
 /**
@@ -361,7 +360,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	@Override
-	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+	public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 		if (urlsApplication == null) {
 			urlsStats.addMiss();
 			initUrls();
@@ -373,7 +372,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			return null;
 		}
 		final String url = urlsApplication.get(application);
-		return resolve(url, tiersId, AuthenticationHelper.getCurrentOID());
+		return resolve(url, tiersId, oid);
 	}
 
 	private static String resolve(String url, Long numero, Integer oid) {

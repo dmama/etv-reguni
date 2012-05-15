@@ -36,8 +36,7 @@ public class StatusController {
 	private UniregModeHelper modeHelper;
 
 	private ServiceChecker serviceCivilChecker;
-	private ServiceChecker serviceHostInfraChecker;
-	private ServiceChecker serviceFidorChecker;
+	private ServiceChecker serviceInfraChecker;
 	private ServiceChecker serviceSecuriteChecker;
 	private ServiceChecker serviceBVRChecker;
 
@@ -71,13 +70,8 @@ public class StatusController {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceHostInfraChecker(ServiceChecker serviceHostInfraChecker) {
-		this.serviceHostInfraChecker = serviceHostInfraChecker;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceFidorChecker(ServiceChecker serviceFidorChecker) {
-		this.serviceFidorChecker = serviceFidorChecker;
+	public void setServiceInfraChecker(ServiceChecker serviceInfraChecker) {
+		this.serviceInfraChecker = serviceInfraChecker;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -108,15 +102,9 @@ public class StatusController {
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/admin/status/hostInfra.do", method = RequestMethod.GET)
-	public ServiceStatusView hostInfraStatus() {
-		return new ServiceStatusView("serviceHostInfra", serviceHostInfraChecker);
-	}
-
-	@ResponseBody
-	@RequestMapping(value = "/admin/status/fidor.do", method = RequestMethod.GET)
-	public ServiceStatusView fidorStatus() {
-		return new ServiceStatusView("serviceFidor", serviceFidorChecker);
+	@RequestMapping(value = "/admin/status/infra.do", method = RequestMethod.GET)
+	public ServiceStatusView infraStatus() {
+		return new ServiceStatusView("serviceInfra", serviceInfraChecker);
 	}
 
 	@ResponseBody

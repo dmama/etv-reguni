@@ -6,7 +6,7 @@ import org.apache.commons.lang.StringUtils;
 
 public class OrigineImpl implements Origine, Serializable {
 
-	private static final long serialVersionUID = -4733215913274172897L;
+	private static final long serialVersionUID = -8869175049393047485L;
 
 	private final String nomLieu;
 

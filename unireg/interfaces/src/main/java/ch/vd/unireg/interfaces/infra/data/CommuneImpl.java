@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 4937434910175701641L;
+	private static final long serialVersionUID = 4126668258450436037L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;

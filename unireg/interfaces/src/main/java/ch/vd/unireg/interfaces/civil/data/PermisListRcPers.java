@@ -9,7 +9,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 
 public class PermisListRcPers extends PermisListBase implements Serializable {
 
-	private static final long serialVersionUID = 8395595738140001951L;
+	private static final long serialVersionUID = 4776065381997664389L;
 
 	public PermisListRcPers(long noIndividu) {
 		super(noIndividu);

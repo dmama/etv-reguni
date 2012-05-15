@@ -34,6 +34,7 @@ import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 
 /**
@@ -749,7 +750,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 
 	@Override
 	public String getUrlVers(ApplicationFiscale application, Long tiersId) {
-		return rawService.getUrlVers(application, tiersId);
+		return rawService.getUrlVers(application, tiersId, AuthenticationHelper.getCurrentOID());
 	}
 
 	@Override

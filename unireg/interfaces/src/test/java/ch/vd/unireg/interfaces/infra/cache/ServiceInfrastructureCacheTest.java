@@ -367,7 +367,7 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public String getUrlVers(ApplicationFiscale application, Long tiersId) {
+		public String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid) {
 			throw new NotImplementedException();
 		}
 

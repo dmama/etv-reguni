@@ -5,15 +5,15 @@ import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 
-public class ServiceFidorChecker implements ServiceChecker {
+public class ServiceInfraChecker implements ServiceChecker {
 
-	private ServiceInfrastructureRaw serviceFidorRaw;
+	private ServiceInfrastructureRaw serviceInfraRaw;
 	private String details;
 
 	@Override
 	public Status getStatus() {
 		try {
-			final Logiciel logiciel = serviceFidorRaw.getLogiciel(1L);
+			final Logiciel logiciel = serviceInfraRaw.getLogiciel(1L);
 			Assert.isEqual("Epsitec SA", logiciel.getFournisseur());
 			details = null;
 			return Status.OK;
@@ -30,7 +30,7 @@ public class ServiceFidorChecker implements ServiceChecker {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceFidorRaw(ServiceInfrastructureRaw serviceFidorRaw) {
-		this.serviceFidorRaw = serviceFidorRaw;
+	public void setServiceInfraRaw(ServiceInfrastructureRaw serviceInfraRaw) {
+		this.serviceInfraRaw = serviceInfraRaw;
 	}
 }

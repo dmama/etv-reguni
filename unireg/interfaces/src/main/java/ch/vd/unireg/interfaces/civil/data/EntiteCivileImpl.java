@@ -16,7 +16,7 @@ import ch.vd.unireg.interfaces.infra.data.AdresseImpl;
 
 public abstract class EntiteCivileImpl implements EntiteCivile, Serializable {
 
-	private static final long serialVersionUID = 8648205824787291869L;
+	private static final long serialVersionUID = 1341614688967441978L;
 	
 	private Collection<Adresse> adresses;
 

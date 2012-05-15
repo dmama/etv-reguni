@@ -6,7 +6,7 @@ import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
 
 public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 
-	private static final long serialVersionUID = 2664100976020066771L;
+	private static final long serialVersionUID = -8262770098305127500L;
 
 	private final int noOFS;
 	private final String nomMajuscule;

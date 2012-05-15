@@ -1,5 +1,6 @@
 package ch.vd.unireg.interfaces.civil.data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +16,9 @@ import ch.vd.registre.base.date.RegDateHelper;
 /**
  * Liste générique d'états civils qui sont triés par ordre croissant des dates de début de validité.
  */
-public class EtatCivilListImpl implements EtatCivilList {
+public class EtatCivilListImpl implements EtatCivilList, Serializable {
+
+	private static final long serialVersionUID = -1753841258700923040L;
 
 	final private List<EtatCivil> list;
 

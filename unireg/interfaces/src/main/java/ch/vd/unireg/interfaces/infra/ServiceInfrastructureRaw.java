@@ -246,9 +246,10 @@ public interface ServiceInfrastructureRaw {
 	 *
 	 * @param application l'application considérée
 	 * @param tiersId     le numéro de tiers
+	 * @param oid
 	 * @return une chaîne de caractère qui contient l'url demandée
 	 */
-	String getUrlVers(ApplicationFiscale application, Long tiersId);
+	String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid);
 
 	/**
 	 * Retourne un logiciel déterminé par son id.

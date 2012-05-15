@@ -16,7 +16,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public abstract class PermisListBase implements PermisList, Serializable {
 
-	private static final long serialVersionUID = -4653791288913518054L;
+	private static final long serialVersionUID = 1959569064393468810L;
 
 	final private long numeroIndividu; // pour le logging
 	final private List<Permis> list;

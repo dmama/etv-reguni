@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.civil.data;
 
+import java.io.Serializable;
+
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -9,7 +11,9 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 /**
  * Classe container qui regroupe l'état d'un individu juste après un événement
  */
-public class IndividuApresEvenement {
+public class IndividuApresEvenement implements Serializable {
+
+	private static final long serialVersionUID = 8915092776165545905L;
 
 	/**
 	 * Etat de l'individu lui-même

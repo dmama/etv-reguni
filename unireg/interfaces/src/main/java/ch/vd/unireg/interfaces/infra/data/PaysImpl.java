@@ -7,7 +7,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
-	private static final long serialVersionUID = -6750309642346732586L;
+	private static final long serialVersionUID = -5514409667912935009L;
 
 	private final boolean valide;
 	private final boolean etatSouverain;
