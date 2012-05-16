@@ -340,10 +340,13 @@ public class ForFiscalViewValidator implements Validator {
 					date = RegDate.get(forFiscalView.getDateOuverture());
 				}
 
-				// [UNIREG-1235] La règle est en fait la suivante:
+				// [UNIREG-1235]
+				// La règle est la suivante:
 				// - un contribuable de nationalité suisse ne peut être qu'à l'ordinaire ou indigent
 				// - un contribuable étranger avec un permis C peut être à l'ordinaire, indigent, ou à la dépense
 				// - pour tous les autres, tous les modes sont admis (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
+                // - [SIFISC-4528] exception pour les non-habitants étrangers, on ne contrôle pas leur permis pour pouvoir eventuellement leur ajouter un for source
+                //   antérieur à leur obtention du permis C,
 				final Set<ModeImposition> autorises = new HashSet<ModeImposition>();
 
 				// nationalité suisse ou étrangère ?
@@ -356,8 +359,8 @@ public class ForFiscalViewValidator implements Validator {
 					isSuisse = null;
 				}
 
-				// Suisse ?
-				if (isSuisse != null && isSuisse) {
+				// Suisse et habitant?
+				if (isSuisse != null && isSuisse && pp.isHabitantVD()) {
 					autorises.add(ModeImposition.INDIGENT);
 					autorises.add(ModeImposition.ORDINAIRE);
 				}
@@ -373,8 +376,8 @@ public class ForFiscalViewValidator implements Validator {
 						isSansPermisC = null;
 					}
 
-					// permis C ?
-					if (isSansPermisC != null && !isSansPermisC) {
+					// permis C et habitant ?
+					if (isSansPermisC != null && !isSansPermisC && pp.isHabitantVD()) {
 						autorises.add(ModeImposition.INDIGENT);
 						autorises.add(ModeImposition.ORDINAIRE);
 						autorises.add(ModeImposition.DEPENSE);
