@@ -107,4 +107,40 @@ public enum TypePermis {
 			return null;
 		}
 	}
+
+	public static String toEch(TypePermis typePermis) {
+		if (typePermis == null) {
+			return null;
+		}
+
+		switch (typePermis) {
+		case SAISONNIER:
+			return "01";
+		case ANNUEL:
+			return "02";
+		case ETABLISSEMENT:
+			return "03";
+		case FONCTIONNAIRE_INTERNATIONAL:
+			return "04";
+		case ETRANGER_ADMIS_PROVISOIREMENT:
+			return "05";
+		case FRONTALIER:
+			return "06";
+		case COURTE_DUREE:
+			return "07";
+		case REQUERANT_ASILE:
+			return "08";
+		case PERSONNE_A_PROTEGER:
+			return "09";
+		case DIPLOMATE:
+			return "11";
+		case PROVISOIRE:
+			return "13";
+		case SUISSE_SOURCIER:
+			return null;
+		default:
+			throw new IllegalArgumentException("Type de permis inconnu = [" + typePermis + "]");
+
+		}
+	}
 }

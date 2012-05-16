@@ -2,6 +2,7 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +22,6 @@ import ch.vd.evd0001.v3.Identity;
 import ch.vd.evd0001.v3.MaritalData;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.PersonIdentification;
-import ch.vd.evd0001.v3.Relations;
 import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.evd0001.v3.ResidencePermit;
@@ -70,23 +71,15 @@ public class IndividuRCPers implements Individu, Serializable {
 	private List<Nationalite> nationalites;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
-	public static Individu get(Person target, @Nullable Relations relations, ServiceInfrastructureRaw infraService) {
+	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
 			return null;
 		}
 
-		return new IndividuRCPers(target, relations != null ? relations.getRelationshipHistory() : null, infraService);
+		return new IndividuRCPers(target, relations, history, infraService);
 	}
-	
-	public static Individu get(Person target, @Nullable List<Relationship> relationships, ServiceInfrastructureRaw infraService) {
-		if (target == null) {
-			return null;
-		}
 
-		return new IndividuRCPers(target, relationships, infraService);
-	}
-	
-	public IndividuRCPers(Person person, @Nullable List<Relationship> relationships, ServiceInfrastructureRaw infraService) {
+	public IndividuRCPers(Person person, @Nullable List<Relationship> relations, boolean history, ServiceInfrastructureRaw infraService) {
 		this.noTechnique = getNoIndividu(person);
 
 		final Identity identity = person.getIdentity();
@@ -109,24 +102,44 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.origines = initOrigins(person);
 		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
-		this.adresses = initAdresses(person.getContactHistory(), person.getResidenceHistory(), infraService);
+
+		if (history) {
+			this.adresses = initAdresses(null, person.getContactHistory(), person.getResidenceHistory(), infraService);
+		}
+		else {
+			this.adresses = initAdresses(person.getCurrentContact(), null, person.getCurrentResidence(), infraService);
+		}
+
 		try {
-			this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
+			if (history) {
+				this.etatsCivils = initEtatsCivils(person.getMaritalStatusHistory());
+			}
+			else {
+				this.etatsCivils = initEtatsCivils(person.getCurrentMaritalStatus());
+			}
 		}
 		catch (IllegalArgumentException e) {
 			throw new IllegalArgumentException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
 		}
-		if (relationships != null) {
-			this.enfants = initEnfants(relationships);
-			this.parents = initParents(this.naissance, relationships);
-			this.conjoints = initConjoints(relationships);
+
+		if (relations != null) {
+			this.enfants = initEnfants(relations);
+			this.parents = initParents(this.naissance, relations);
+			this.conjoints = initConjoints(relations);
 		}
-		this.permis = initPermis(this.noTechnique, person.getResidencePermitHistory());
+
+		if (history) {
+			this.permis = initPermis(this.noTechnique, person.getResidencePermitHistory());
+		}
+		else { // [SIFISC-5181] prise en compte des valeurs courantes
+			this.permis = initPermis(this.noTechnique, person.getCurrentResidencePermit());
+		}
+
 		this.nationalites = initNationalites(person, infraService);
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
-		if (relationships == null) {
+		if (relations == null) {
 			this.availableParts.remove(AttributeIndividu.CONJOINTS);
 			this.availableParts.remove(AttributeIndividu.ENFANTS);
 			this.availableParts.remove(AttributeIndividu.PARENTS);
@@ -237,6 +250,13 @@ public class IndividuRCPers implements Individu, Serializable {
 		return list;
 	}
 
+	private static PermisListRcPers initPermis(long numeroIndividu, ResidencePermit permis) {
+		if (permis == null) {
+			return null;
+		}
+		return new PermisListRcPers(numeroIndividu, Arrays.asList(PermisRCPers.get(permis)));
+	}
+
 	private static PermisListRcPers initPermis(long numeroIndividu, List<ResidencePermit> permis) {
 		if (permis == null) {
 			return null;
@@ -246,6 +266,14 @@ public class IndividuRCPers implements Individu, Serializable {
 			list.add(PermisRCPers.get(p));
 		}
 		return new PermisListRcPers(numeroIndividu, list);
+	}
+
+	private static EtatCivilList initEtatsCivils(MaritalData maritalStatus) {
+		final List<EtatCivil> list = new ArrayList<EtatCivil>();
+		if (maritalStatus != null) {
+			list.addAll(EtatCivilRCPers.get(maritalStatus));
+		}
+		return new EtatCivilListRCPers(list);
 	}
 
 	protected static EtatCivilList initEtatsCivils(List<MaritalData> maritalStatus) {
@@ -259,13 +287,21 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	protected static Collection<Adresse> initAdresses(List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
+	protected static Collection<Adresse> initAdresses(@Nullable MailAddress currentContact, @Nullable List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
+
 		final List<Adresse> adresses = new ArrayList<Adresse>();
+
 		if (contact != null) {
+			// l'historique est renseigné
 			for (HistoryContact hc : contact) {
 				adresses.add(AdresseRCPers.get(hc, infraService));
 			}
 		}
+		else if (currentContact != null) {
+			// l'état courant est renseigné (voir SIFISC-5181)
+			adresses.add(AdresseRCPers.get(currentContact, infraService));
+		}
+
 		if (residence != null) {
 
 			final Map<Integer, List<Residence>> adressesParCommune = splitParCommune(residence);

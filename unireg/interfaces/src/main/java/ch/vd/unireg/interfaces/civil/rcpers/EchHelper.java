@@ -178,6 +178,36 @@ public abstract class EchHelper {
 		}
 	}
 
+	public static String etatCivilToEch11(TypeEtatCivil etatCivil) {
+
+		if (etatCivil == null) {
+			return null;
+		}
+
+		switch (etatCivil) {
+		case CELIBATAIRE:
+			return "1";
+		case MARIE:
+			return "2";
+		case VEUF:
+			return "3";
+		case DIVORCE:
+			return "4";
+		case NON_MARIE:
+			return "5";
+		case PACS:
+			return "6";
+		case PACS_TERMINE:
+			return "7/1";
+		case PACS_VEUF:
+			return "7/4";
+		case SEPARE:
+		case PACS_INTERROMPU:
+		default:
+			throw new IllegalArgumentException("L'état-civil [" + etatCivil + "] n'existe pas dans la norme eCH");
+		}
+	}
+
 	public static CantonAbbreviation sigleCantonToAbbreviation(String sigleCanton) {
 		for (CantonAbbreviation abbreviation : CantonAbbreviation.values()) {
 			if (abbreviation.name().equalsIgnoreCase(sigleCanton)) {

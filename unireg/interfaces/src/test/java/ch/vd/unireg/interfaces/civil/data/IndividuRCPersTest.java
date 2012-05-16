@@ -7,14 +7,22 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ech.ech0007.v4.SwissMunicipality;
+import ch.ech.ech0010.v4.AddressInformation;
+import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
+import ch.ech.ech0044.v2.NamedPersonId;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.evd0001.v3.DwellingAddress;
 import ch.vd.evd0001.v3.HistoryContact;
+import ch.vd.evd0001.v3.Identity;
 import ch.vd.evd0001.v3.MaritalData;
+import ch.vd.evd0001.v3.Person;
+import ch.vd.evd0001.v3.PersonIdentification;
+import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
+import ch.vd.evd0001.v3.ResidencePermit;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -23,10 +31,13 @@ import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureServic
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IndividuRCPersTest extends WithoutSpringTest {
@@ -146,7 +157,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// initialisation des adresses
 		final Collection<Adresse> adresses =
-				IndividuRCPers.initAdresses(Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2), infraService);
+				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2), infraService);
 		assertNotNull(adresses);
 		assertEquals(5, adresses.size());
 
@@ -198,7 +209,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 		// initialisation des adresses
 		final Collection<Adresse> adresses =
-				IndividuRCPers.initAdresses(Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2, z1, z2), infraService);
+				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(p1, p2, p3, s1, s2, z1, z2), infraService);
 		assertNotNull(adresses);
 		assertEquals(7, adresses.size());
 
@@ -228,6 +239,206 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertAdresse(date(1970, 1, 1), date(1984, 12, 31), "Ch. des Colombaires", "Cully", secondaires.get(1));
 		assertAdresse(date(1978, 1, 1), date(1981, 12, 31), "Ch. du Mont", "Epesses", secondaires.get(2));
 		assertAdresse(date(1985, 1, 1), null, "Place du Temple", "Cully", secondaires.get(3));
+	}
+
+	@Test
+	public void testGetPersonWithHistoryValues() throws Exception {
+
+		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
+		// les adresses
+		person.getContactHistory().add(newHistoryContact(date(1965, 3, 12), date(1983, 7, 4), MockRue.Cully.ChDesColombaires));
+		person.getContactHistory().add(newHistoryContact(date(1983, 7, 5), null, MockRue.Chamblon.RueDesUttins));
+		person.getResidenceHistory().add(newResidencePrincipale(date(1965, 3, 12), null, date(1983, 7, 4), MockRue.Cully.ChDesColombaires));
+		person.getResidenceHistory().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
+
+		// les états-civils
+		person.getMaritalStatusHistory().add(newMaritalData(date(1965, 3, 12), TypeEtatCivil.CELIBATAIRE));
+		person.getMaritalStatusHistory().add(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE));
+
+		// les permis
+		person.getResidencePermitHistory().add(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
+
+		// les relations
+		final List<Relationship> relations = new ArrayList<Relationship>();
+		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
+
+		// on vérifie que les valeurs historisées sont bien lues
+		final Individu ind = IndividuRCPers.get(person, relations, true, infraService);
+		assertNotNull(ind);
+		assertEquals(123345L, ind.getNoTechnique());
+		assertEquals("Jean", ind.getPrenom());
+		assertEquals("Rucher", ind.getNom());
+		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
+		assertTrue(ind.isSexeMasculin());
+
+		final Collection<Adresse> adresses = ind.getAdresses();
+		assertNotNull(adresses);
+		assertEquals(4, adresses.size());
+
+		final List<Adresse> courriers = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<Adresse>();
+		for (Adresse a : adresses) {
+			if (a.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
+				courriers.add(a);
+			}
+			else if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				principales.add(a);
+			}
+		}
+
+		assertEquals(2, courriers.size());
+		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Ch. des Colombaires", "Cully", courriers.get(0));
+		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", courriers.get(1));
+
+		assertEquals(2, principales.size());
+		assertAdresse(date(1965, 3, 12), date(1983, 7, 4), "Ch. des Colombaires", "Cully", principales.get(0));
+		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", principales.get(1));
+
+		final EtatCivilList etatCivils = ind.getEtatsCivils();
+		assertNotNull(etatCivils);
+		assertEquals(2, etatCivils.size());
+		assertEtatCivil(date(1965, 3, 12), date(1989, 4, 30), TypeEtatCivil.CELIBATAIRE, etatCivils.get(0));
+		assertEtatCivil(date(1989, 5, 1), null, TypeEtatCivil.MARIE, etatCivils.get(1));
+
+		final PermisList permis = ind.getPermis();
+		assertNotNull(permis);
+		assertEquals(1, permis.size());
+		assertPermis(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT, permis.get(0));
+	}
+
+	/**
+	 * [SIFISC-5181] Ce test s'assure que les valeurs courantes sont bien prises en compte en mode non-historique.
+	 */
+	@Test
+	public void testGetPersonWithCurrentValues() throws Exception {
+
+		final Person person = newPerson(123345L, "Jean", "Rucher", date(1965, 3, 12), Sexe.MASCULIN);
+		// les adresses courantes
+		person.setCurrentContact(newMailAddress(MockRue.Chamblon.RueDesUttins));
+		person.getCurrentResidence().add(newResidencePrincipale(date(1983, 7, 5), null, null, MockRue.Chamblon.RueDesUttins));
+
+		// l'état-civil courant
+		person.setCurrentMaritalStatus(newMaritalData(date(1989, 5, 1), TypeEtatCivil.MARIE));
+
+		// le permis courant
+		person.setCurrentResidencePermit(newResidencePermit(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT));
+
+		// les relations courantes
+		final List<Relationship> relations = new ArrayList<Relationship>();
+		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
+
+		// on vérifie que les valeurs courantes sont bien lues
+		final Individu ind = IndividuRCPers.get(person, relations, false, infraService);
+		assertNotNull(ind);
+		assertEquals(123345L, ind.getNoTechnique());
+		assertEquals("Jean", ind.getPrenom());
+		assertEquals("Rucher", ind.getNom());
+		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
+		assertTrue(ind.isSexeMasculin());
+
+		final Collection<Adresse> adresses = ind.getAdresses();
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		final List<Adresse> courriers = new ArrayList<Adresse>();
+		final List<Adresse> principales = new ArrayList<Adresse>();
+		for (Adresse a : adresses) {
+			if (a.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
+				courriers.add(a);
+			}
+			else if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				principales.add(a);
+			}
+		}
+
+		assertEquals(1, courriers.size());
+		assertAdresse(null, null, "Rue des Uttins", "Chamblon", courriers.get(0));
+
+		assertEquals(1, principales.size());
+		assertAdresse(date(1983, 7, 5), null, "Rue des Uttins", "Chamblon", principales.get(0));
+
+		final EtatCivilList etatCivils = ind.getEtatsCivils();
+		assertNotNull(etatCivils);
+		assertEquals(1, etatCivils.size());
+		assertEtatCivil(date(1989, 5, 1), null, TypeEtatCivil.MARIE, etatCivils.get(0));
+
+		final PermisList permis = ind.getPermis();
+		assertNotNull(permis);
+		assertEquals(1, permis.size());
+		assertPermis(date(1965, 3, 12), null, TypePermis.ETABLISSEMENT, permis.get(0));
+	}
+
+	private static void assertPermis(RegDate dateDebut, @Nullable RegDate dateFin, TypePermis typePermis, Permis permis) {
+		assertNotNull(permis);
+		assertEquals(dateDebut, permis.getDateDebut());
+		assertEquals(dateFin, permis.getDateFin());
+		assertEquals(typePermis, permis.getTypePermis());
+	}
+
+	private enum TypeRelation {
+
+		VERS_CONJOINT("1"),
+		VERS_PARTENAIRE_ENREGISTRE("2"),
+		VERS_MERE("3"),
+		VERS_PERE("4"),
+		VERS_FILLE("101"),
+		VERS_FILS("102");
+
+		private final String echCode;
+
+		TypeRelation(String echCode) {
+			this.echCode = echCode;
+		}
+
+		public String getEchCode() {
+			return echCode;
+		}
+	}
+
+	private static Relationship newRelation(RegDate dateDebut, @Nullable RegDate dateFin, long noIndividuLie, TypeRelation typeRelation) {
+		final Relationship relation = new Relationship();
+		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
+		relation.setRelationValidFrom(XmlUtils.regdate2xmlcal(dateFin));
+		relation.setLocalPersonId(new NamedPersonId("ct.vd.rcpers", String.valueOf(noIndividuLie)));
+		relation.setTypeOfRelationship(typeRelation.getEchCode());
+		return relation;
+	}
+
+	private static ResidencePermit newResidencePermit(RegDate dateDebut, @Nullable RegDate dateFin, TypePermis typePermis) {
+		final ResidencePermit permit = new ResidencePermit();
+		permit.setResidencePermitValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
+		permit.setResidencePermitTill(XmlUtils.regdate2xmlcal(dateFin));
+		permit.setResidencePermit(TypePermis.toEch(typePermis));
+		return permit;
+	}
+
+	private static HistoryContact newHistoryContact(RegDate dateDebut, @Nullable RegDate dateFin, MockRue rue) {
+		final HistoryContact contactHistory = new HistoryContact();
+		final MailAddress mailAddress = newMailAddress(rue);
+		contactHistory.setContact(mailAddress);
+		contactHistory.setContactValidFrom(XmlUtils.regdate2xmlcal(dateDebut));
+		contactHistory.setContactValidTill(XmlUtils.regdate2xmlcal(dateFin));
+		return contactHistory;
+	}
+
+	private static MailAddress newMailAddress(MockRue rue) {
+		final MailAddress mailAddress = new MailAddress();
+		mailAddress.setAddressInformation(newAddressInformation(rue));
+		return mailAddress;
+	}
+
+	private static Person newPerson(long noInd, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
+		final Person person = new Person();
+		final Identity identity = new Identity();
+		identity.setCallName(prenom);
+		final PersonIdentification identification = new PersonIdentification();
+		identification.setLocalPersonId(new NamedPersonId("ch.vd.rcpers", String.valueOf(noInd)));
+		identification.setOfficialName(nom);
+		identification.setDateOfBirth(EchHelper.partialDateToEch44(dateNaissance));
+		identification.setSex(EchHelper.sexeToEch44(sexe));
+		identity.setPersonIdentification(identification);
+		person.setIdentity(identity);
+		return person;
 	}
 
 	private static void assertAdresse(@Nullable RegDate dateDebut, @Nullable RegDate dateFin, @Nullable String rue, @Nullable String localite, Adresse adresse) {
@@ -273,6 +484,14 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		return info;
 	}
 
+	private static AddressInformation newAddressInformation(MockRue rue) {
+		AddressInformation info = new AddressInformation();
+		info.setStreet(rue.getDesignationCourrier());
+		info.setSwissZipCodeId(rue.getLocalite().getNPA());
+		info.setTown(rue.getLocalite().getNomCompletMinuscule());
+		return info;
+	}
+
 	private static void assertEtatCivil(RegDate dateDebut, @Nullable RegDate dateFin, TypeEtatCivil type, EtatCivil etat) {
 		assertNotNull(etat);
 		assertEquals(dateDebut, etat.getDateDebut());
@@ -284,6 +503,13 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final MaritalData data = new MaritalData();
 		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
 		data.setMaritalStatus(type);
+		return data;
+	}
+
+	private static MaritalData newMaritalData(RegDate date, TypeEtatCivil etatCivil) {
+		final MaritalData data = new MaritalData();
+		data.setDateOfMaritalStatus(XmlUtils.regdate2xmlcal(date));
+		data.setMaritalStatus(EchHelper.etatCivilToEch11(etatCivil));
 		return data;
 	}
 

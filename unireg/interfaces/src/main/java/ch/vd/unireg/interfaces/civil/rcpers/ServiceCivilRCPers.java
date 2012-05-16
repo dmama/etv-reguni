@@ -12,6 +12,7 @@ import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.evd0001.v3.Relations;
+import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0006.v1.Event;
 import ch.vd.evd0006.v1.EventIdentification;
 import ch.vd.registre.base.date.RegDate;
@@ -66,14 +67,15 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
-		final Relations relations;
+		final List<Relationship> relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
 			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), date, true);
 			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
 				if (rel.getListOfResults().getResult().size() > 1) {
 					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
 				}
-				relations = rel.getListOfResults().getResult().get(0).getRelation();
+				final Relations r = rel.getListOfResults().getResult().get(0).getRelation();
+				relations = (r == null ? null : r.getRelationshipHistory());
 			}
 			else {
 				relations = null;
@@ -84,7 +86,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		final Person person = list.getListOfResults().getResult().get(0).getPerson();
-		final Individu individu = IndividuRCPers.get(person, relations, infraService);
+		final Individu individu = IndividuRCPers.get(person, relations, true, infraService);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -120,15 +122,18 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
-		final Map<Long, Relations> allRelations;
+		final Map<Long, List<Relationship>> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
 			final ListOfRelations rel = getRelationsSafely(nosIndividus, date, true);
 			if (rel != null && rel.getListOfResults().getResult() != null) {
-				allRelations = new HashMap<Long, Relations>();
+				allRelations = new HashMap<Long, List<Relationship>>();
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
 					final Relations relations = relRes.getRelation();
 					if (relations != null) {
-						allRelations.put(IndividuRCPers.getNoIndividu(relations.getLocalPersonId()), relations);
+						final List<Relationship> relationship = relations.getRelationshipHistory();
+						if (relationship != null) {
+							allRelations.put(IndividuRCPers.getNoIndividu(relations.getLocalPersonId()), relationship);
+						}
 					}
 				}
 			}
@@ -145,8 +150,8 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		for (ListOfPersons.ListOfResults.Result personRes : list.getListOfResults().getResult()) {
 			final Person person = personRes.getPerson();
 			if (person != null) {
-				final Relations relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
-				final Individu individu = IndividuRCPers.get(person, relations, infraService);
+				final List<Relationship> relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
+				final Individu individu = IndividuRCPers.get(person, relations, true, infraService);
 				individus.add(individu);
 			}
 		}
@@ -205,7 +210,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		final Event ref = client.getEvent(eventId);
 		if (ref != null) {
 			final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
-			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), infraService);
+			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, infraService);
 			final EventIdentification idtf = ref.getIdentification();
 			final Long refMessageId = idtf.getReferenceMessageId();
 			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getDate());

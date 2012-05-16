@@ -58,6 +58,13 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(contact, infraService);
 	}
 
+	public static AdresseRCPers get(MailAddress address, ServiceInfrastructureRaw infraService) {
+		if (address == null) {
+			return null;
+		}
+		return new AdresseRCPers(address, null, null, infraService);
+	}
+
 	public static AdresseRCPers get(Residence residence, @Nullable Residence next) {
 		if (residence == null) {
 			return null;
@@ -66,12 +73,15 @@ public class AdresseRCPers implements Adresse, Serializable {
 	}
 
 	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureRaw infraService) {
-		final MailAddress address = contact.getContact();
+		this(contact.getContact(), XmlUtils.xmlcal2regdate(contact.getContactValidFrom()), XmlUtils.xmlcal2regdate(contact.getContactValidTill()), infraService);
+	}
+
+	public AdresseRCPers(MailAddress address, RegDate dateDebut, RegDate dateFin, ServiceInfrastructureRaw infraService) {
 		final AddressInformation addressInfo = address.getAddressInformation();
 
-		this.dateDebut = XmlUtils.xmlcal2regdate(contact.getContactValidFrom());
-		this.dateFin = XmlUtils.xmlcal2regdate(contact.getContactValidTill());
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
+		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin);
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();

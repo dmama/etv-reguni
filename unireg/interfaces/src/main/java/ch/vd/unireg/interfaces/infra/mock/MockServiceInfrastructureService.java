@@ -243,7 +243,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	@Override
 	public Pays getPays(String codePays) throws ServiceInfrastructureException {
 		for (Pays p : pays) {
-			if (p.getCodeIso2().equals(codePays)) {
+			if (p.getCodeIso2() != null && p.getCodeIso2().equals(codePays)) {
 				return p;
 			}
 		}
