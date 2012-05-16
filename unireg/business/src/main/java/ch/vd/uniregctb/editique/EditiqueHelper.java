@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 
 import noNamespace.InfoArchivageDocument.InfoArchivage;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
-import noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
@@ -148,12 +147,11 @@ public interface EditiqueHelper {
 	 * Determine le code affranchissement à ajouter à l'infoDocument à partir du tiers passé en paramètre
 	 *@param infoDocument les informations du doccument a envoyer à éditique
 	 * @param tiers le tiers concerné par l'envoi
-	 * @return l'affranchissement correspondant à l'adresse courrier du tiers
 	 * @throws EditiqueException
 	 *
 	 */
 
-	public Affranchissement getAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException;
+	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException;
 
 	/**
 	 *  Determine le code affranchissement à ajouter à l'infoDocument à partir de l'adresse passé en paramètre
@@ -162,5 +160,5 @@ public interface EditiqueHelper {
 	 * @return l'affranchissement correspondant à l'adresse
 	 * @throws EditiqueException
 	 */
-	public Affranchissement getAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
+	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
 }

@@ -219,8 +219,7 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_IS);
-		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(infoDocument,dpi);
-		infoDocument.setAffranchissement(affranchissement);
+		editiqueHelper.remplitAffranchissement(infoDocument, dpi);
 		return infoDocument;
 	}
 

@@ -343,7 +343,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	}
 
 	@Override
-	public  Affranchissement getAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
+	public  void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
 
 		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 
@@ -361,12 +361,10 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			default:
 				throw new EditiqueException("type d'affranchissement inconnu = " + adresseEnvoiDetaillee.getTypeAffranchissement());
 		}
-
-		return affranchissement;
 	}
 
 	@Override
-	public Affranchissement getAffranchissement(InfoDocument infoDocument,Tiers tiers) throws EditiqueException {
+	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException {
 		AdresseEnvoiDetaillee adresse;
 		try {
 			adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
@@ -374,7 +372,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		catch (AdresseException e) {
 			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " +tiers.getNumero()+" erreur: "+e.getMessage());
 		}
-		return getAffranchissement(infoDocument,adresse);
+		remplitAffranchissement(infoDocument, adresse);
 	}
 
 	public void setAdresseService(AdresseService adresseService) {

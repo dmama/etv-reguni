@@ -179,8 +179,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 				}
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
-			final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(infoDocument,adresseEnvoiDetaillee);
-			infoDocument.setAffranchissement(affranchissement);
+			editiqueHelper.remplitAffranchissement(infoDocument, adresseEnvoiDetaillee);
 		}
 		catch (Exception e) {
 			String message = "Exception lors de l'identification de la provenance de l'adresse";
