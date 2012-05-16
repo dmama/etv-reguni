@@ -42,6 +42,8 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
+import static noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
+
 /**
  *
  * Classe utilitaire pour la génération du xml à envoyer à éditique
@@ -184,8 +186,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		infoDocument.setVersion(VERSION_XSD);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
-		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(params.getDi().getTiers());
-		infoDocument.setAffranchissement(affranchissement);
+
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, TypeAdresseFiscale.COURRIER, false);
 			String idEnvoi = "";
@@ -200,6 +201,8 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 				}
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
+			final Affranchissement affranchissement= editiqueHelper.getAffranchissement(infoDocument,adresseEnvoiDetaillee);
+			infoDocument.setAffranchissement(affranchissement);
 		} catch (Exception e) {
 			final String message = "Exception lors de l'identification de la provenance de l'adresse";
 			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + params.getDi().getTiers().getNumero(), e);

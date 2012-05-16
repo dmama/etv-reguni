@@ -179,6 +179,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 				}
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
+			final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(infoDocument,adresseEnvoiDetaillee);
+			infoDocument.setAffranchissement(affranchissement);
 		}
 		catch (Exception e) {
 			String message = "Exception lors de l'identification de la provenance de l'adresse";
@@ -188,8 +190,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
-		final InfoDocument.Affranchissement affranchissement= editiqueHelper.getAffranchissement(tiers);
-		infoDocument.setAffranchissement(affranchissement);
+
 		return infoDocument;
 	}
 

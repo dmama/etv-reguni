@@ -137,7 +137,7 @@ public class ImpressionConfirmationDelaiHelperImpl extends EditiqueAbstractHelpe
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
 		infoDocument.setIdEnvoi("");
-		final Affranchissement affranchissement= editiqueHelper.getAffranchissement(params.getDi().getTiers());
+		final Affranchissement affranchissement= editiqueHelper.getAffranchissement(infoDocument,params.getDi().getTiers());
 		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;
 	}

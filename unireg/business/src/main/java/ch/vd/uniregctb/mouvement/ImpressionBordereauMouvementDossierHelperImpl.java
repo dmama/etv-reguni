@@ -192,8 +192,10 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
-		//J'ai décidé que Le bordereau etait par définition limité à la suisse
-		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = InfoDocumentDocument1.InfoDocument.Factory.newInstance().addNewAffranchissement();
+		// les bordereaux d'envoi de mouvements de dossier en masse ne sont jamais imprimés en batch, toujours en local :
+		// la valeur que l'on met dans l'affranchissement n'a aucune importance.
+		// Ils sont toujours envoyés aux OID, qui sont effectivement en Suisse
+		final InfoDocumentDocument1.InfoDocument.Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 		affranchissement.setZone(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE);
 		infoDocument.setAffranchissement(affranchissement);
 		return infoDocument;

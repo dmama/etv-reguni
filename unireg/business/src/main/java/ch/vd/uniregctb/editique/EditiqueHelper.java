@@ -3,6 +3,7 @@ package ch.vd.uniregctb.editique;
 import java.rmi.RemoteException;
 
 import noNamespace.InfoArchivageDocument.InfoArchivage;
+import noNamespace.InfoDocumentDocument1.InfoDocument;
 import noNamespace.InfoDocumentDocument1.InfoDocument.Affranchissement;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
@@ -11,6 +12,7 @@ import noNamespace.TypAdresse;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -142,11 +144,23 @@ public interface EditiqueHelper {
 	public String getTypeDossierArchivage();
 
 
-	/**Determine le code affranchissement à partir de l'adresse passé en paramètre
+	/**
+	 * Determine le code affranchissement à ajouter à l'infoDocument à partir du tiers passé en paramètre
+	 *@param infoDocument les informations du doccument a envoyer à éditique
+	 * @param tiers le tiers concerné par l'envoi
+	 * @return l'affranchissement correspondant à l'adresse courrier du tiers
+	 * @throws EditiqueException
 	 *
-	 *
-	 * @param tiers@return l'affranchissement correspondant à l'adresse
 	 */
 
-	public Affranchissement getAffranchissement(Tiers tiers) throws EditiqueException;
+	public Affranchissement getAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException;
+
+	/**
+	 *  Determine le code affranchissement à ajouter à l'infoDocument à partir de l'adresse passé en paramètre
+	 * @param infoDocument les informations du doccument a envoyer à éditique
+	 * @param adresseEnvoiDetaillee adresse qui va nous permettre de determiner l'affranchissement
+	 * @return l'affranchissement correspondant à l'adresse
+	 * @throws EditiqueException
+	 */
+	public Affranchissement getAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
 }
