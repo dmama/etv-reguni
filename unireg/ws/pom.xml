@@ -414,7 +414,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>uniregws</finalName>
+					<finalName>unireg-ws</finalName>
 					<descriptors>
 						<descriptor>${unireg.webreleasexml}</descriptor>
 					</descriptors>

@@ -41,7 +41,7 @@
 			<source>target/uniregctb-web-5.1-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
-			<destName>uniregweb.war</destName>
+			<destName>unireg-web.war</destName>
 		</file>
 	</files>
 </assembly>

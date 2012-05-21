@@ -325,7 +325,7 @@
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<configuration>
-					<finalName>uniregweb</finalName>
+					<finalName>unireg-web</finalName>
 					<descriptors>
 						<descriptor>${unireg.webreleasexml}</descriptor>
 					</descriptors>

@@ -5,19 +5,6 @@
 	</formats>
 	<includeBaseDirectory>false</includeBaseDirectory>
 	<fileSets>
-		<!-- Documentation -->
-		<fileSet>
-			<directory>../base/doc</directory>
-			<outputDirectory>docs</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<includes>
-				<include>INSTALL.doc</include>
-				<include>jmx.doc</include>
-			</includes>
-			<excludes>
-				<exclude>~*.doc</exclude>
-			</excludes>
-		</fileSet>
 		<!-- Fichier properties et ehcache.xml -->
 		<fileSet>
 			<directory>config/integration</directory>
@@ -27,11 +14,6 @@
 		<fileSet>
 			<directory>config/integration-po</directory>
 			<outputDirectory>config/integration-po</outputDirectory>
-			<useDefaultExcludes>true</useDefaultExcludes>
-		</fileSet>
-		<fileSet>
-			<directory>config/integration-te</directory>
-			<outputDirectory>config/integration-te</outputDirectory>
 			<useDefaultExcludes>true</useDefaultExcludes>
 		</fileSet>
 		<fileSet>
@@ -59,23 +41,16 @@
 			<includes>
 				<include>unireg-log4j.xml</include>
 			</includes>
-			<outputDirectory>config/integration-te</outputDirectory>
-		</fileSet>
-		<fileSet>
-			<directory>config/</directory>
-			<includes>
-				<include>unireg-log4j.xml</include>
-			</includes>
 			<outputDirectory>config/validation</outputDirectory>
 		</fileSet>
 	</fileSets>
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-ws-5.1-SNAPSHOT.war</source>
+			<source>target/uniregctb-nexus-5.1-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
-			<destName>unireg-ws.war</destName>
+			<destName>unireg-nexus.war</destName>
 		</file>
 	</files>
 </assembly>

@@ -52,87 +52,101 @@ webDeployDir=$baseDir/app/unireg-web/${version}
 wsAppDir=$baseDir/applications/unireg-ws
 wsDeployDir=$baseDir/app/unireg-ws/${version}
 
+nexusAppDir=$baseDir/applications/unireg-nexus
+nexusDeployDir=$baseDir/app/unireg-nexus/${version}
+
 webFileOrig=uniregweb-release.zip
-webFileDest=uniregweb-release-${version}-${DATE}.zip
 wsFileOrig=uniregws-release.zip
-wsFileDest=uniregws-release-${version}-${DATE}.zip
+nexusFileOrig=uniregnexus-release.zip
+
+#########
+
+function compile_all() {
+
+  if [ $DEPLOY_ONLY == 0 ]; then
+	  (cd unireg/base && mvn -Pnot,oracle,ext clean install)
+  fi
+  if [ $? != 0 ]; then
+	  echo "!!! Erreur lors du build" >&2
+	  exit 1
+  fi
+
+}
+
+function assemble_app() {
+  appName = $1
+
+  if [ $DEPLOY_ONLY == 0 ]; then
+	  (cd unireg/$appName && mvn -Pnot,oracle assembly:assembly)
+  fi
+  if [ $? != 0 ]; then
+	  echo "!!! Erreur lors de l'assembly de $appName" >&2
+	  exit 1
+  fi
+
+  cp -v unireg/web/target/$webFileOrig unireg/web/target/$webFileDest
+}
+
+function copy_with_timestamp() {
+  inputFile = $1
+  dirFile = $(dirname $inputFile)
+  outputFile = $(basename $inputFile .zip)-${version}-${DATE}.zip
+
+  cp -v $inputFile $dirFile/$outputFile
+  echo "$dirFile/$outputFile"
+}
+
+function deploy_app() {
+  zipFile = $1
+  appDir = $2
+  deployDir = $3
+
+  scp unireg/*/target/$zipFile $user:$upDir/
+
+  ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
+  ssh $user "cd $upDir/explode && unzip $upDir/$zipFile"
+
+  # copie des fichiers de config
+  ssh $user "mkdir -p $appDir/config"
+  ssh $user "cp $upDir/explode/config/$env/* $appDir/config"
+
+  # copie du war
+  ssh $user "mkdir -p $deployDir/deployment"
+  ssh $user "cp $upDir/explode/deployment/*.war $deployDir/deployment/"
+
+  # mise-à-jour du lien symbolique
+  ssh $user "cd $appDir && rm -f deployment && ln -s $deployDir/deployment deployment"
+}
+
+#########
 
 # Compilation
-if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/base && mvn -Pnot,oracle,ext clean install)
-fi
-if [ $? != 0 ]; then
-	echo "!!! Erreur lors du build" >&2
-	exit 1
-fi
+compile_all
+assemble_app web
+assemble_app ws
+assemble_app nexus
 
-if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/web && mvn -Pnot,oracle assembly:assembly)
-fi
-if [ $? != 0 ]; then
-	echo "!!! Erreur lors de l'assembly de web" >&2
-	exit 1
-fi
+# add timestamps to zip files
+webFileDest=$(copy_with_timestamp unireg/web/target/$webFileOrig)
+wsFileDest=$(copy_with_timestamp unireg/ws/target/$wsFileOrig)
+nexusFileDest=$(copy_with_timestamp unireg/nexus/target/$nexusFileOrig)
 
-if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/ws && mvn -Pnot,oracle assembly:assembly)
-fi
-if [ $? != 0 ]; then
-	echo "!!! Erreur lors de l'assembly de ws" >&2
-	exit 1
-fi
-
-cp -v unireg/web/target/$webFileOrig unireg/web/target/$webFileDest
-cp -v unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
-
-#
 # arrêt
-#
 ssh $user "cd $baseDir && ./tomcatctl.sh stop"
 echo "Arrêt de tomcat à $(date)"
 
-#
+# Deploiement de nexus
+deploy_app $nexusFileDest $nexusAppDir $nexusDeployDir
+echo "Fin du deploiement de nexus à: $(date)"
+
 # Deploiement de la web-app
-#
-scp unireg/web/target/$webFileDest $user:$upDir/
-
-ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
-ssh $user "cd $upDir/explode && unzip $upDir/$webFileDest"
-
-# copie des fichiers de config
-ssh $user "mkdir -p $webAppDir/config"
-ssh $user "cp $upDir/explode/config/$env/* $webAppDir/config"
-
-# copie du war
-ssh $user "mkdir -p $webDeployDir/deployment"
-ssh $user "cp $upDir/explode/deployment/uniregweb.war $webDeployDir/deployment/unireg-web.war"
-
-# mise-à-jour du lien symbolique
-ssh $user "cd $webAppDir && rm -f deployment && ln -s $webDeployDir/deployment deployment"
+deploy_app $webFileDest $webAppDir $webDeployDir
 echo "Fin du deploiement de la web-app à: $(date)"
 
-#
 # Deploiement des web-services
-#
-scp unireg/ws/target/$wsFileDest $user:$upDir/
-
-ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
-ssh $user "cd $upDir/explode && unzip $upDir/$wsFileDest"
-
-# copie des fichiers de config
-ssh $user "mkdir -p $wsAppDir/config"
-ssh $user "cp $upDir/explode/config/$env/* $wsAppDir/config"
-
-# copie du war
-ssh $user "mkdir -p $wsDeployDir/deployment"
-ssh $user "cp $upDir/explode/deployment/uniregws.war $wsDeployDir/deployment/unireg-ws.war"
-
-# mise-à-jour du lien symbolique
-ssh $user "cd $wsAppDir && rm -f deployment && ln -s $wsDeployDir/deployment deployment"
+deploy_app $wsFileDest $wsAppDir $wsDeployDir
 echo "Fin du deploiement des web-services à: $(date)"
 
-#
 # cleanup & restart
-#
 ssh $user "cd $baseDir && ./tomcatctl.sh clean && ./tomcatctl.sh start"
 echo "Redémarrage de tomcat à $(date)"
