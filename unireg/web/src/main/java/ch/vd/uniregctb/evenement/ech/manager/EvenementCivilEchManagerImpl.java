@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.evenement.ech.manager;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+import org.springframework.transaction.annotation.Transactional;
+
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -18,11 +24,6 @@ import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRecherche
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import org.apache.log4j.Logger;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
@@ -59,12 +60,18 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		}
 		fill(evt, evtView);
 		final Long numeroIndividu = evt.getNumeroIndividu();
+		evtView.setNoIndividu(numeroIndividu);
 		if (numeroIndividu != null) {
-			evtView.setIndividu(retrieveIndividu(numeroIndividu));
-			evtView.setAdresse(retrieveAdresse(numeroIndividu));
-			retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
-			retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
-			retrieveEvenementAssocie(numeroIndividu, evtView);
+			try { // [SIFISC-4834] on permet la visualisation de l'événement même si les données de l'individu sont invalides
+				evtView.setIndividu(retrieveIndividu(numeroIndividu));
+				evtView.setAdresse(retrieveAdresse(numeroIndividu));
+				retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
+				retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
+				retrieveEvenementAssocie(numeroIndividu, evtView);
+			}
+			catch (Exception e) {
+				evtView.setIndividuError(e.getMessage());
+			}
 		} else {
             if (!evt.isAnnule() && !evt.getEtat().isTraite()) {
                 evtView.setRecyclable(true);

@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -81,7 +82,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
-		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin);
+		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceCivilException.class);
 		this.casePostale = initCasePostale(addressInfo.getPostOfficeBoxText(), addressInfo.getPostOfficeBoxNumber());
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();
@@ -107,7 +108,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 
 		this.dateDebut = initDateDebut(residence); // voir SIREF-1617
 		this.dateFin = initDateFin(residence, next); // voir SIREF-1794
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.casePostale = null;
 		this.localite = addressInfo.getTown();
 		this.numero = addressInfo.getHouseNumber();

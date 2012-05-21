@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.common.view.EvenementCivilDetailView;
+import ch.vd.uniregctb.individu.IndividuView;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -44,14 +45,15 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 	}
 
 	public void setEvtPrioritaire(EvenementCivilEchBasicInfo evt) {
-		if (getIndividu() == null || getIndividu().getNumeroIndividu() == null) {
+		final IndividuView individu = getIndividu();
+		if (individu == null || individu.getNumeroIndividu() == null) {
 			throw new NullPointerException("le champs individu de l'objet doit être renseigné avant de pouvoir utiliser cette méthode");
 		}
-		if (evt.getNoIndividu() != getIndividu().getNumeroIndividu()) {
+		if (evt.getNoIndividu() != individu.getNumeroIndividu()) {
 			throw new RuntimeException(
 					String.format(
 							"impossible de définir un événement prioritaire qui porte sur un autre numero d'individu(attendu: %d reçu: %d)",
-							getIndividu().getNumeroIndividu(), evt.getId()));
+							individu.getNumeroIndividu(), evt.getId()));
 		}
 		this.evtPrioritaire = evt;
 	}

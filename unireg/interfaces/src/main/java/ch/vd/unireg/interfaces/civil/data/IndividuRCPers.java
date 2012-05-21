@@ -30,6 +30,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseRCPers;
@@ -118,8 +119,8 @@ public class IndividuRCPers implements Individu, Serializable {
 				this.etatsCivils = initEtatsCivils(person.getCurrentMaritalStatus());
 			}
 		}
-		catch (IllegalArgumentException e) {
-			throw new IllegalArgumentException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
+		catch (ServiceCivilException e) {
+			throw new ServiceCivilException("Individu n°" + this.noTechnique + ": " + e.getMessage(), e);
 		}
 
 		if (relations != null) {

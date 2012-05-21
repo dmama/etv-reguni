@@ -5,7 +5,7 @@
 <tiles:put name="title"><fmt:message key="label.caracteristiques.evenement.ech"/></tiles:put>
 <tiles:put name="fichierAide">
     <c:url var="doc" value="/docs/evenements-ech.pdf"/>
-    <a href="#" onClick="javascript:ouvrirAide('${doc}');" title="AccessKey: a" accesskey="e">Aide</a>
+    <a href="#" onClick="ouvrirAide('${doc}');" title="AccessKey: a" accesskey="e">Aide</a>
 </tiles:put>
 <tiles:put name="body">
 
@@ -38,7 +38,7 @@
         </tr>
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>
-            <td colspan="3"><i><c:out value="${command.evtCommentaireTraitement}"/></i></td>
+            <td colspan="3"><em><c:out value="${command.evtCommentaireTraitement}"/></em></td>
         </tr>
     </table>
 
@@ -64,11 +64,16 @@
     <table>
         <tr class="<unireg:nextRowClass/>">
             <td width="50%"><fmt:message key="label.numero.registre.habitant"/> :</td>
-            <td width="50%">${command.individu.numeroIndividu}</td>
+            <td width="50%">${command.noIndividu}</td>
         </tr>
         <tr class="<unireg:nextRowClass/>">
             <td width="50%"><fmt:message key="label.nom.prenom"/> :</td>
-            <td width="50%">${command.individu.nom}&nbsp;${command.individu.prenom}</td>
+	        <c:if test="${command.individu == null}">
+		        <td width="50%" class="error"><c:out value="${command.individuError}"/></td>
+	        </c:if>
+	        <c:if test="${command.individu != null}">
+		        <td width="50%">${command.individu.nom}&nbsp;${command.individu.prenom}</td>
+	        </c:if>
         </tr>
         <c:if test="${command.adresse.ligne1 != null}">
             <tr class="<unireg:nextRowClass/>">
@@ -108,7 +113,12 @@
         </c:if>
         <tr class="<unireg:nextRowClass/>">
             <td><fmt:message key="label.date.naissance"/>&nbsp;:</td>
-            <td><fmt:formatDate value="${command.individu.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+	        <c:if test="${command.individu == null}">
+		        <td class="error"><c:out value="${command.individuError}"/></td>
+	        </c:if>
+	        <c:if test="${command.individu != null}">
+		        <td><fmt:formatDate value="${command.individu.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+	        </c:if>
         </tr>
     </table>
 </fieldset>

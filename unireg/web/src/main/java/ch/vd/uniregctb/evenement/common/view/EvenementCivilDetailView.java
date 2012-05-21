@@ -21,7 +21,9 @@ abstract public class EvenementCivilDetailView implements Serializable {
 	private Date evtDateTraitement;
 	private String evtCommentaireTraitement;
 	private List<ErreurEvenementCivilView> evtErreurs = new ArrayList<ErreurEvenementCivilView>();
+	private Long noIndividu;
 	private IndividuView individu;
+	private String individuError;
 	private AdresseEnvoi adresse;
 	private List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
 	private List<String> erreursTiersAssocies = new ArrayList<String>();
@@ -98,6 +100,14 @@ abstract public class EvenementCivilDetailView implements Serializable {
 		erreursTiersAssocies.add(message);
 	}
 
+	public Long getNoIndividu() {
+		return noIndividu;
+	}
+
+	public void setNoIndividu(Long noIndividu) {
+		this.noIndividu = noIndividu;
+	}
+
 	public IndividuView getIndividu() {
 		return individu;
 	}
@@ -114,4 +124,11 @@ abstract public class EvenementCivilDetailView implements Serializable {
 		this.adresse = adresse;
 	}
 
+	public void setIndividuError(String individuError) {
+		this.individuError = individuError;
+	}
+
+	public String getIndividuError() {
+		return individuError;
+	}
 }

@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -25,7 +26,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 	private EtatCivilRCPers(RegDate dateDebut, TypeEtatCivil typeEtatCivil) {
 		this.dateDebut = dateDebut;
 		this.dateFin = null;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.typeEtatCivil = typeEtatCivil;
 	}
 
@@ -82,7 +83,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
-		DateRangeHelper.assertValidRange(dateDebut, dateFin);
+		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 	}
 
 	@Override

@@ -61,6 +61,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 
 		final Long individuPrincipal = evt.getNumeroIndividuPrincipal();
 		fill(evt, evtView);
+		evtView.setNoIndividu(individuPrincipal);
 		evtView.setIndividuPrincipal(retrieveIndividu(individuPrincipal));
 		evtView.setAdressePrincipal(retrieveAdresse(individuPrincipal));
 		retrieveTiersAssociePrincipal(evt.getId(), individuPrincipal, evtView);
