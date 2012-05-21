@@ -470,16 +470,17 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 	}
 
 	private static DwellingAddress newDwellingAddress(RegDate movingDate, MockRue rue) {
-		DwellingAddress address = new DwellingAddress();
+		final DwellingAddress address = new DwellingAddress();
 		address.setMovingDate(XmlUtils.regdate2xmlcal(movingDate));
 		address.setAddress(newSwissAddressInformation(rue));
 		return address;
 	}
 
 	private static SwissAddressInformation newSwissAddressInformation(MockRue rue) {
-		SwissAddressInformation info = new SwissAddressInformation();
+		final SwissAddressInformation info = new SwissAddressInformation();
 		info.setStreet(rue.getDesignationCourrier());
-		info.setSwissZipCodeId(rue.getLocalite().getNPA());
+		info.setSwissZipCode(rue.getLocalite().getNPA());
+		info.setSwissZipCodeId(rue.getLocalite().getNoOrdre());
 		info.setTown(rue.getLocalite().getNomCompletMinuscule());
 		return info;
 	}
