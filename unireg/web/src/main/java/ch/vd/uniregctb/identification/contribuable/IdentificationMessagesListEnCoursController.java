@@ -130,7 +130,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			Integer nombreElements = 0;
 
 
-			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
+			if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
 
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true);
 				nombreElements = identificationMessagesListManager.count(bean, false, false, true);
@@ -233,7 +233,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
 		{
-			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
+			if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
 
 				return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
 
@@ -254,8 +254,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
-				|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+		if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			//Les autres rôles ont le droit de voir tout les types de message
 			return identificationMapHelper.initMapTypeMessage(false);
 		}

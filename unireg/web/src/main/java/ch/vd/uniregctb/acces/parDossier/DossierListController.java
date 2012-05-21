@@ -40,7 +40,7 @@ public class DossierListController  extends AbstractTiersListController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR) && !SecurityProvider.isGranted(Role.SEC_DOS_LEC)) {
+		if (!SecurityProvider.isAnyGranted(Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits");
 		}
 

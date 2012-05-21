@@ -114,8 +114,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
 			List<IdentificationMessagesResultView> listIdentifications = null;
-			if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
-					|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+			if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false));
@@ -191,8 +190,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)
-				|| SecurityProvider.isGranted(Role.MW_IDENT_CTB_VISU) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO)) {
+		if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			//Les autres rôles ont le droit de voir tout les types de message
 			return identificationMapHelper.initMapTypeMessage(true);
 		}

@@ -115,7 +115,7 @@ public class RapportController {
 	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
 	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
@@ -153,7 +153,7 @@ public class RapportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Object filiations(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
@@ -199,7 +199,7 @@ public class RapportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public List<DebiteurView> debiteurs(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_LIMITE) && !SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 

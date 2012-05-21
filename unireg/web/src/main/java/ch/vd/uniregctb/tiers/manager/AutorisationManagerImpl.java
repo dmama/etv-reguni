@@ -115,7 +115,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			allowed = SecurityProvider.isGranted(Role.MODIF_VD_SOURC);
 			break;
 		case MIXTE:
-			allowed = SecurityProvider.isGranted(Role.MODIF_VD_ORD) || SecurityProvider.isGranted(Role.MODIF_VD_SOURC);
+			allowed = SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC);
 			break;
 		default:
 			throw new IllegalArgumentException("Type de contribuable inconnu = [" + typeCtb + ']');
@@ -164,7 +164,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	@Override
 	public boolean isEditAllowedCA(CollectiviteAdministrative tiers) {
-		return SecurityProvider.isGranted(Role.CREATE_CA) || SecurityProvider.isGranted(Role.MODIF_CA);
+		return SecurityProvider.isAnyGranted(Role.CREATE_CA, Role.MODIF_CA);
 	}
 
 	@Override
@@ -260,9 +260,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 						map.put(TiersEditView.FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 					}
 				}
-				if (SecurityProvider.isGranted(Role.DI_EMIS_PP) || SecurityProvider.isGranted(Role.DI_DELAI_PM) ||
-						SecurityProvider.isGranted(Role.DI_DUPLIC_PP) || SecurityProvider.isGranted(Role.DI_QUIT_PP) ||
-						SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+				if (SecurityProvider.isAnyGranted(Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(TiersVisuView.MODIF_DI, Boolean.TRUE);
 				}
 			}

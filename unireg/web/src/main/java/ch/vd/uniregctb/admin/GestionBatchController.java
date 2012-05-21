@@ -77,7 +77,7 @@ public class GestionBatchController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 

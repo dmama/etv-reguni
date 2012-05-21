@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.acces.parUtilisateur;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -60,7 +59,7 @@ public class SelectUtilisateurController extends AbstractSimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 		throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR) && !SecurityProvider.isGranted(Role.SEC_DOS_LEC)) {
+		if (!SecurityProvider.isAnyGranted(Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits");
 		}
 		SelectUtilisateurView selectUtilisateurView = (SelectUtilisateurView) command;

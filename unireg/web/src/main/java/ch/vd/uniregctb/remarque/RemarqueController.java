@@ -98,15 +98,15 @@ public class RemarqueController {
 	 * @return <b>vrai</b> si l'utilisateur courant peut ajouter une remarque sur le tiers courant; <b>faux</b> autrement.
 	 */
 	private boolean canAddRemark() {
-		return SecurityProvider.isGranted(Role.COOR_FIN) ||
-				SecurityProvider.isGranted(Role.MODIF_AC) ||
-				SecurityProvider.isGranted(Role.MODIF_VD_ORD) ||
-				SecurityProvider.isGranted(Role.MODIF_VD_SOURC) ||
-				SecurityProvider.isGranted(Role.MODIF_HC_HS) ||
-				SecurityProvider.isGranted(Role.MODIF_HAB_DEBPUR) ||
-				SecurityProvider.isGranted(Role.MODIF_NONHAB_DEBPUR) ||
-				SecurityProvider.isGranted(Role.MODIF_PM) ||
-				SecurityProvider.isGranted(Role.MODIF_CA) ||
-				SecurityProvider.isGranted(Role.MODIF_NONHAB_INACTIF);
+		return SecurityProvider.isAnyGranted(Role.COOR_FIN,
+				Role.MODIF_AC,
+				Role.MODIF_VD_ORD,
+				Role.MODIF_VD_SOURC,
+				Role.MODIF_HC_HS,
+				Role.MODIF_HAB_DEBPUR,
+				Role.MODIF_NONHAB_DEBPUR,
+				Role.MODIF_PM,
+				Role.MODIF_CA,
+				Role.MODIF_NONHAB_INACTIF);
 	}
 }

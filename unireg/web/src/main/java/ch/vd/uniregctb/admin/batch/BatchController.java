@@ -61,7 +61,7 @@ public class BatchController {
 	public String start(@RequestParam(value = "name", required = true) String jobName, @Valid BatchStartParams startParams) {
 
 		try {
-			if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+			if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 				throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 			}
 
@@ -131,7 +131,7 @@ public class BatchController {
 	public String stop(@RequestParam(value = "name", required = true) String name) {
 
 		try {
-			if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+			if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 				throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 			}
 

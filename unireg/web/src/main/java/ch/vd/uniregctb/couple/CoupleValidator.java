@@ -218,7 +218,7 @@ public class CoupleValidator implements Validator {
 			return false;
 		}
 
-		boolean droitTout = SecurityProvider.isGranted(Role.MODIF_VD_ORD) || SecurityProvider.isGranted(Role.MODIF_VD_SOURC) || SecurityProvider.isGranted(Role.MODIF_HC_HS);
+		boolean droitTout = SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS);
 		if (droitTout) {
 			return true;
 		}

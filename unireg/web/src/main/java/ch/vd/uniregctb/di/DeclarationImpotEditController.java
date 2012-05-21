@@ -278,8 +278,7 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 				diListView.setAllowedEmission(true);
 			}
 			else {
-				if (!(SecurityProvider.isGranted(Role.DI_DELAI_PP) || SecurityProvider.isGranted(Role.DI_DUPLIC_PP)
-						|| SecurityProvider.isGranted(Role.DI_QUIT_PP) || SecurityProvider.isGranted(Role.DI_SOM_PP))) {
+				if (!SecurityProvider.isAnyGranted(Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					throw new AccessDeniedException("Vous ne possédez pas les droits d'édition des DIs d'une personne physique");
 				}
 				diListView.setAllowedEmission(false);

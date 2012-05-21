@@ -36,7 +36,7 @@ public class DatabasePreviewController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav) {
 
-		if (!UniregModeHelper.isTestMode() || !(SecurityProvider.isGranted(Role.TESTER) || SecurityProvider.isGranted(Role.ADMIN))) {
+		if (!UniregModeHelper.isTestMode() || !SecurityProvider.isAnyGranted(Role.TESTER, Role.ADMIN)) {
 			Flash.warning("Vous ne possédez pas les droits suffisants pour accéder à la prévisualisation des tiers !");
 			return "redirect:/tiers/list.do";
 		}

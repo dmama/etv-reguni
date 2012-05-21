@@ -61,7 +61,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	@Override
 	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 

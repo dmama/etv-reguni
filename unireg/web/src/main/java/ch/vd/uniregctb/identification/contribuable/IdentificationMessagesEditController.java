@@ -137,11 +137,11 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			if (TARGET_IDENTIFIER.equals(getTarget())) {
 				String idCtbAsString = getEventArgument();
 				Long idCtb = Long.parseLong(idCtbAsString);
-				if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_GEST_BO) || SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
+				if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MAN_EXPERT);
 				}
-				else if (SecurityProvider.isGranted(Role.MW_IDENT_CTB_CELLULE_BO) || SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+				else if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO)) {
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MANUELLEMENT);
 				}

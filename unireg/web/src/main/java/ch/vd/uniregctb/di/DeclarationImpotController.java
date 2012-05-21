@@ -42,7 +42,7 @@ public class DeclarationImpotController {
 	@ResponseBody
 	public DeclarationView details(@RequestParam("id") long id) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL) && !SecurityProvider.isGranted(Role.VISU_LIMITE)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 

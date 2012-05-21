@@ -88,7 +88,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 			if (displayedCount == 0) {
 				b.append("<tr><td>(ce batch ne possède pas de paramètre)</td></tr>");
 			}
-			if (SecurityProvider.isGranted(Role.ADMIN) || SecurityProvider.isGranted(Role.TESTER)) {
+			if (SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 
 				// [SIFISC-145] doit-on pouvoir lancer ce batch directement depuis l'IHM ?
 				if (job.getJobDefinition().isWebStartable()) {

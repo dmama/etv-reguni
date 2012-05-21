@@ -65,7 +65,7 @@ public class ImmeubleController {
 	                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
 	                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL) && !SecurityProvider.isGranted(Role.VISU_IMMEUBLES)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_IMMEUBLES)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 

@@ -106,7 +106,7 @@ public class TiersImportController {
 	@RequestMapping(value = "/import", method = RequestMethod.POST)
 	public String importBuiltinScript(@RequestParam("fileName") String fileName, @RequestParam("action") String action) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -144,7 +144,7 @@ public class TiersImportController {
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String importUploadedScript(@Valid ScriptBean script, BindingResult result) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.ADMIN) && !SecurityProvider.isGranted(Role.TESTER)) {
+		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
