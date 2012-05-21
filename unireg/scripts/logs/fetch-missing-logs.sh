@@ -78,5 +78,10 @@ else
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "unireg-ws${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "ws-access${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
 	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-ws" && fetch-logs "srv-access-ws${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-ws/logs/")
+
+	# partie NEXUS
+	echo "Webapp NEXUS"
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-nexus" && fetch-logs "unireg-nexus${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-nexus/logs/")
+	(cd "$(dirname "$0")/$ENVIRONMENT/unireg-nexus" && fetch-logs "srv-access-nexus${TOMCAT_PART}.log." "https://$MACHINE/unireg/$ENVIRONMENT/unireg-nexus/logs/")
 	
 fi
