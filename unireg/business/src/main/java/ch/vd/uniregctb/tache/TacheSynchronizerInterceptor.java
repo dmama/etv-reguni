@@ -93,7 +93,6 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
 			try {
 				tacheService.synchronizeTachesDIs(set);
-                tacheService.annuleTachesObsoletes(set);
 			}
 			catch (RuntimeException e) {
 				LOGGER.error(e, e);

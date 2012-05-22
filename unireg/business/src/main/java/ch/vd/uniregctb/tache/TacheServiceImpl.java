@@ -1,9 +1,15 @@
 package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -47,7 +53,23 @@ import ch.vd.uniregctb.tache.sync.Context;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheControleDossier;
+import ch.vd.uniregctb.tiers.TacheCriteria;
+import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheNouveauDossier;
+import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -148,61 +170,7 @@ public class TacheServiceImpl implements TacheService {
 		tacheStatsPerOid = stats;
 	}
 
-    @Override
-    public void annuleTachesObsoletes(final Collection<Long> ctbIds) {
-
-        final Map<Long, List<SynchronizeAction>> entityActions = new HashMap<Long, List<SynchronizeAction>>();
-
-        final TransactionTemplate template = new TransactionTemplate(transactionManager);
-        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-        template.execute(new TransactionCallback<Object>() {
-            @Override
-            public Object doInTransaction(TransactionStatus status) {
-                hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
-                    @Override
-                    public Object doInHibernate(Session session) throws HibernateException, SQLException {
-
-                        for (Long ctbId : ctbIds) {
-                            final Tiers tiers = tiersService.getTiers(ctbId);
-                            if (tiers.isDesactive(null)) {
-                                // Si le contribuable est désactivé (ce qui inclus il fait qu'il puisse être annulé)
-                                // alors on annule toutes ses tâches non traitées.
-                                annuleTachesNonTraitees(ctbId);
-                            } else {
-                                // [SIFISC-2690] Annule les tâches d'ouverture de dossier pour les contribuables
-                                // qui n'ont plus de for de gestion actifs
-                                ForGestion forGestionActif = tiersService.getForGestionActif(tiers, null);
-                                if (forGestionActif == null) {
-                                    annuleTachesNonTraitees(ctbId, TypeTache.TacheNouveauDossier);
-                                }
-                            }
-                        }
-                        return null;
-                    }
-                });
-                return null;
-            }
-        });
-    }
-
-    /**
-     * Annule toute les tâches non traitées d'un type donné pour un contribuable
-     *
-     * @param contribuableId l'id du contribuable
-     * @param types les types de tâches à annuler; ne pas renseigner pour annuler tous les types de tâches
-     */
-    private void annuleTachesNonTraitees(Long contribuableId, TypeTache... types) {
-        final List<Tache> taches = tacheDAO.find(contribuableId);
-        final boolean annuleTout = types.length == 0;
-        List<TypeTache> listTypes = Arrays.asList(types);
-        for (Tache tache : taches) {
-            if (tache.getEtat() != TypeEtatTache.TRAITE && tache.getAnnulationDate() == null && (annuleTout || listTypes.contains(tache.getTypeTache()))) {
-                tache.setAnnule(true);
-            }
-        }
-    }
-
-    /**
+	/**
 	 * Genere une tache à partir de la fermeture d'un for principal
 	 *
 	 * @param contribuable le contribuable sur lequel un for principal a été fermé
