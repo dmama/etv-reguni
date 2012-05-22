@@ -6,12 +6,15 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class MockPays extends MockEntityOFS implements Pays {
 
+	//
+	// Les états souverains
+	//
+
 	public static final MockPays Suisse = new MockPays(ServiceInfrastructureRaw.noOfsSuisse, "Suisse", "CH", "CH", "CHE");
 	public static final MockPays Albanie = new MockPays(8201, "Albanie", "AL", "AL", "ALB");
 	public static final MockPays Danemark = new MockPays(8206, "Danemark", "DK", "DK", "DNK");
 	public static final MockPays Allemagne = new MockPays(8207, "Allemagne", "DE", "DE", "DEU");
 	public static final MockPays France = new MockPays(8212, "France", "FR", "FR", "FRA");
-	public static final MockPays Gibraltar = new MockPays(8213, "Gibraltar", "GI", true, false, "GI", "GIB");
 	public static final MockPays RoyaumeUni = new MockPays(8215, "Royaume-Uni", "GB", "GB", "GBR");
 	public static final MockPays Liechtenstein = new MockPays(8222, "Liechtenstein", "LI", "LI", "LIE");
 	public static final MockPays Espagne = new MockPays(8236, "Espagne", "ES", "ES", "ESP");
@@ -22,11 +25,21 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays Japon = new MockPays(8515, "Japon", "JP", "JP", "JPN");
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR", "KR", "KOR");
 
+	//
+	// les territoires
+	//
+
+	public static final MockPays Gibraltar = new MockPays(8213, "Gibraltar", "GI", true, "GI", "GIB", MockPays.RoyaumeUni.getNoOFS());
+
+	//
+	// les cas bizarres (inactifs, pays inconnu...)
+	//
+
 	public static final MockPays PaysInconnu = new MockPays(ServiceInfrastructureRaw.noPaysInconnu, "PaysInconnu", "INC", null, null);
 	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false, null, null);
 
 	private final boolean valide;
-	private final boolean etatSouverain;
+	private final int ofsEtatSouverain;
 	private final String codeIso2;
 	private final String codeIso3;
 
@@ -35,7 +48,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.valide = true;
-		this.etatSouverain = true;
+		this.ofsEtatSouverain = numeroOFS;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -44,7 +57,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.valide = true;
-		this.etatSouverain = true;
+		this.ofsEtatSouverain = numeroOFS;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -53,16 +66,19 @@ public class MockPays extends MockEntityOFS implements Pays {
 		this.valide = valide;
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
-		this.etatSouverain = true;
+		this.ofsEtatSouverain = numeroOFS;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
-	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, boolean valide, boolean etatSouverain, String codeIso2, String codeIso3) {
+	/**
+	 * Constructeur pour les territoires
+	 */
+	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, boolean valide, String codeIso2, String codeIso3, int ofsEtatSouverainParent) {
 		super(numeroOFS, sigleOFS, nomMiniscule);
 		this.valide = valide;
-		this.etatSouverain = etatSouverain;
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
+		this.ofsEtatSouverain = ofsEtatSouverainParent;
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
@@ -88,6 +104,11 @@ public class MockPays extends MockEntityOFS implements Pays {
 
 	@Override
 	public boolean isEtatSouverain() {
-		return etatSouverain;
+		return getNoOFS() == getNoOfsEtatSouverain();
+	}
+
+	@Override
+	public int getNoOfsEtatSouverain() {
+		return ofsEtatSouverain;
 	}
 }

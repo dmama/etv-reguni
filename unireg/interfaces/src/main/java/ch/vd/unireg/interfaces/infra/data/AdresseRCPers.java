@@ -66,11 +66,11 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(address, null, null, infraService);
 	}
 
-	public static AdresseRCPers get(Residence residence, @Nullable Residence next) {
+	public static AdresseRCPers get(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
 		if (residence == null) {
 			return null;
 		}
-		return new AdresseRCPers(residence, next);
+		return new AdresseRCPers(residence, next, infraService);
 	}
 
 	public AdresseRCPers(HistoryContact contact, ServiceInfrastructureRaw infraService) {
@@ -102,7 +102,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.localisationSuivante = null;
 	}
 
-	public AdresseRCPers(Residence residence, @Nullable Residence next) {
+	public AdresseRCPers(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
 		final DwellingAddress dwellingAddress = residence.getDwellingAddress();
 		final SwissAddressInformation addressInfo = dwellingAddress.getAddress();
 
@@ -124,8 +124,8 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
-		this.localisationPrecedente = initLocalisation(residence.getComesFrom());
-		this.localisationSuivante = initLocalisation(residence.getGoesTo());
+		this.localisationPrecedente = initLocalisation(residence.getComesFrom(), infraService);
+		this.localisationSuivante = initLocalisation(residence.getGoesTo(), infraService);
 	}
 
 	/**
@@ -173,20 +173,25 @@ public class AdresseRCPers implements Adresse, Serializable {
 				XmlUtils.xmlcal2regdate(current.getArrivalDate()) == XmlUtils.xmlcal2regdate(next.getArrivalDate());
 	}
 
-	private static Localisation initLocalisation(Destination location) {
+	protected static Localisation initLocalisation(Destination location, ServiceInfrastructureRaw infraService) {
 
 		if (location == null) {
 			return null;
 		}
 
-		if(location.getUnknown()!=null){
-			return new Localisation(LocalisationType.HORS_SUISSE,ServiceInfrastructureRaw.noPaysInconnu);
-
+		if (location.getUnknown() != null) {
+			return new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu);
 		}
 
 		final Destination.ForeignCountry foreignCountry = location.getForeignCountry();
 		if (foreignCountry != null) {
-			return new Localisation(LocalisationType.HORS_SUISSE, foreignCountry.getCountry().getCountryId());
+			final int countryId = foreignCountry.getCountry().getCountryId();
+
+			// [SIFISC-977] attention, ce pays peut n'être qu'un territoire et pas un état souverain !
+			// si c'est le cas, passer à l'état souverain (c'est ce qui nous intéresse pour les fors)
+			final Pays pays = infraService.getPays(countryId);
+			final int ofsEtatSouverain = pays != null ? pays.getNoOfsEtatSouverain() : ServiceInfrastructureRaw.noPaysInconnu;
+			return new Localisation(LocalisationType.HORS_SUISSE, ofsEtatSouverain);
 		}
 
 		final SwissMunicipality swissTown = location.getSwissTown();

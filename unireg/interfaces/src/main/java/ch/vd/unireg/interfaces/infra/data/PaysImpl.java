@@ -7,10 +7,11 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
-	private static final long serialVersionUID = -5514409667912935009L;
+	private static final long serialVersionUID = 3690021946462334427L;
 
 	private final boolean valide;
 	private final boolean etatSouverain;
+	private final Integer ofsEtatSouverainParent;
 	private final String codeIso2;
 	private final String codeIso3;
 
@@ -32,6 +33,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		super(target);
 		this.valide = true; // tous les pays retournés par host-interfaces sont valides
 		this.etatSouverain = true; // cette information n'est pas disponible dans host-interface
+		this.ofsEtatSouverainParent = null; // cette information n'est pas disponible dans host-interface
 		this.codeIso2 = null; // cette information n'est pas disponible dans host-interface
 		this.codeIso3 = null; // cette information n'est pas disponible dans host-interface
 	}
@@ -40,6 +42,7 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
 		this.valide = target.isValide();
 		this.etatSouverain = target.isEtat() != null && target.isEtat();
+		this.ofsEtatSouverainParent = target.getEtatSuperieur();
 		this.codeIso2 = target.getIso2Id();
 		this.codeIso3 = target.getIso3Id();
 	}
@@ -67,5 +70,10 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	@Override
 	public boolean isEtatSouverain() {
 		return etatSouverain;
+	}
+
+	@Override
+	public int getNoOfsEtatSouverain() {
+		return ofsEtatSouverainParent != null ? ofsEtatSouverainParent : getNoOFS();
 	}
 }

@@ -18,6 +18,12 @@ public interface Pays extends EntiteOFS {
 	boolean isEtatSouverain();
 
 	/**
+	 * @return le numéro OFS de l'état souverain de ce pays (est différent de la valeur renvoyée par {@link #getNoOFS()}
+	 * dans le cas des simples territoires)
+	 */
+	int getNoOfsEtatSouverain();
+
+	/**
 	 * @return le code ISO du pays sur deux positions.
 	 */
 	String getCodeIso2();
