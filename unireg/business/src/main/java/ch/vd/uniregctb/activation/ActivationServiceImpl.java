@@ -1,47 +1,27 @@
 package ch.vd.uniregctb.activation;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
-
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
-import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.*;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
 
 public class ActivationServiceImpl implements ActivationService {
 
 	private TiersService tiersService;
 
-	private TacheDAO tacheDAO;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTacheDAO(TacheDAO tacheDAO) {
-		this.tacheDAO = tacheDAO;
 	}
 
 	/**
@@ -67,13 +47,6 @@ public class ActivationServiceImpl implements ActivationService {
 			final ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(dateAnnulation);
 			if (ffp != null && ffp.getMotifFermeture() != MotifFor.ANNULATION && ffp.getDateFin() == dateAnnulation) {
 				ffp.setMotifFermeture(MotifFor.ANNULATION);
-			}
-
-			final List<Tache> taches = tacheDAO.find(contribuable.getNumero());
-			for (Tache tache : taches) {
-				if (tache.getEtat() != TypeEtatTache.TRAITE && tache.getAnnulationDate() == null) {
-					tache.setAnnule(true);
-				}
 			}
 		}
 

@@ -232,7 +232,6 @@
 
 	<bean id="activationService" class="ch.vd.uniregctb.activation.ActivationServiceImpl">
 		<property name="tiersService" ref="tiersService" />
-		<property name="tacheDAO" ref="tacheDAO" />
 	</bean>
 	
 	<bean id="registreFoncierService" class="ch.vd.uniregctb.registrefoncier.RegistreFoncierServiceImpl"> 
