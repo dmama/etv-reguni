@@ -273,7 +273,7 @@ public abstract class Depart extends Mouvement {
 			 * La destination du départ est non identifiable
 			 */
 			if (isDestinationNontIdentifiable()) {
-				erreurs.addErreur("La destination de départ est no identifiable car le numéro ofs de destination n'est pas renseigné)");
+				erreurs.addErreur("La destination de départ n'est pas identifiable car le numéro OFS de destination n'est pas renseigné");
 			}
 		}
 	}

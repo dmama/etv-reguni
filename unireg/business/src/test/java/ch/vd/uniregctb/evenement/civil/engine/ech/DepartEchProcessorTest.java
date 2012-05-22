@@ -317,7 +317,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = "La destination de départ est no identifiable car le numéro ofs de destination n'est pas renseigné)";
+				String message = "La destination de départ n'est pas identifiable car le numéro OFS de destination n'est pas renseigné";
 				Assert.assertEquals(message,erreur.getMessage());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
