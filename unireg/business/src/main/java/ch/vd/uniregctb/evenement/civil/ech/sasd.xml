@@ -1,0 +1,122 @@
+<application xmlns="http://wadl.dev.java.net/2009/02" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<grammars></grammars>
+	<resources base="http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3">
+		<resource path="/search">
+			<method name="GET">
+				<request>
+					<param name="q" style="query" type="xs:string" />
+					<param name="sex" style="query" type="xs:string" />
+					<param name="firstnames" style="query" type="xs:string" />
+					<param name="officialname" style="query" type="xs:string" />
+					<param name="swisszipcode" style="query" type="xs:string" />
+					<param name="municipalityid" style="query" type="xs:string" />
+					<param name="datasource" style="query" type="xs:string" />
+					<param name="contains" style="query" type="xs:string" />
+					<param name="history" style="query" type="xs:boolean" />
+					<param name="idvalue" style="query" type="xs:string" />
+					<param name="originalname" style="query" type="xs:string" />
+					<param name="alliancepartnershipname" style="query" type="xs:string" />
+					<param name="aliasname" style="query" type="xs:string" />
+					<param name="
+nationalitystatus" style="query" type="xs:int" />
+					<param name="nationalitycountryid" style="query" type="xs:int" />
+					<param name="town" style="query" type="xs:string" />
+					<param name="qh" style="query" type="xs:string" />
+					<param name="rdh" style="query" type="xs:string" />
+					<param name="passportname" style="query" type="xs:string" />
+					<param name="othernames" style="query" type="xs:string" />
+					<param name="dateofbirthfrom.date" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.hours" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.minutes" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.month" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.seconds" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.time" style="query" type="xs:long" />
+					<param name="dateofbirthfrom.year" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.day" style="query" type="xs:int" />
+					<param name="dateofbirthfrom.timezoneoffset" style="query" type="xs:int" />
+					<param name="dateofbirthto.date" style="query"
+						   type="xs:int" />
+					<param name="dateofbirthto.hours" style="query" type="xs:int" />
+					<param name="dateofbirthto.minutes" style="query" type="xs:int" />
+					<param name="dateofbirthto.month" style="query" type="xs:int" />
+					<param name="dateofbirthto.seconds" style="query" type="xs:int" />
+					<param name="dateofbirthto.time" style="query" type="xs:long" />
+					<param name="dateofbirthto.year" style="query" type="xs:int" />
+					<param name="dateofbirthto.day" style="query" type="xs:int" />
+					<param name="dateofbirthto.timezoneoffset" style="query" type="xs:int" />
+					<param name="idtype" style="query" type="xs:string" />
+				</request>
+				<response>
+					<representation mediaType="text/html" />
+					<representation mediaType="application/xml" />
+				</response>
+			</method>
+		</resource>
+		<resource path="/persons">
+			<resource path="/{category}/{ids}">
+				<param name="category" style="template" type="xs:string" />
+				<param name="ids" style="template" type="xs:string" />
+				<method name="GET">
+					<request>
+						<param name="date" style="query" />
+						<param name="history" style="query" default="false" type="xs:boolean" />
+					</
+							request>
+					<response>
+						<representation mediaType="application/xml" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="/event">
+			<resource path="/{eventId}">
+				<param name="eventId" style="template" type="xs:string" />
+				<method name="GET">
+					<request></request>
+					<response>
+						<representation mediaType="application/xml" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="/keyexchange">
+			<method name="GET">
+				<response>
+					<representation mediaType="text/html" />
+					<representation mediaType="application/xml" />
+				</response>
+			</method>
+		</resource>
+		<resource path="/household">
+			<resource path="/{category}/{ids}">
+				<param name="category" style="template" type="xs:string" />
+				<param name="ids" style="template" type="xs:string" />
+				<method name="GET">
+					<request>
+						<param name="date" style="query" />
+					</request>
+					<response>
+						<representation mediaType="text/html" />
+						<representation mediaType="application/xml" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="/relations">
+			<resource path="/{category}/{ids}">
+				<param name="category" style="template" type="xs:string"
+						/>
+				<param name="ids" style="template" type="xs:string" />
+				<method name="GET">
+					<request>
+						<param name="date" style="query" />
+						<param name="history" style="query" default="false" type="xs:boolean" />
+					</request>
+					<response>
+						<representation mediaType="application/xml" />
+					</response>
+				</method>
+			</resource>
+		</resource>
+	</resources>
+</application>

@@ -11,10 +11,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee.AnnulationArriveeTranslationStrategy;
@@ -115,12 +115,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	 */
 	private static final EvenementCivilEchTranslationStrategy NOT_IMPLEMENTED = new EvenementCivilEchTranslationStrategy() {
 		@Override
-		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 			throw new EvenementCivilException("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.");
 		}
 
 		@Override
-		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) {
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
 			return false;
 		}
 	};
@@ -130,7 +130,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	 */
 	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new EvenementCivilEchTranslationStrategy() {
 		@Override
-		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 			return new EvenementCivilInterne(event, context, options) {
 				@NotNull
 				@Override
@@ -155,7 +155,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		}
 
 		@Override
-		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) {
+		public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) {
 			return true;
 		}
 	};
@@ -302,7 +302,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
 
-	private EvenementCivilEchContext context;
+	private EvenementCivilContext context;
 	
 	@Override
 	public EvenementCivilInterne toInterne(EvenementCivilEch event, EvenementCivilOptions options) throws EvenementCivilException {
@@ -341,8 +341,16 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilEchContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService,
-		                                       tiersDAO, adresseService, evenementFiscalService);
+		final ServiceCivilService serviceCivil = serviceCivilService;
+		final ServiceInfrastructureService serviceInfra = serviceInfrastructureService;
+		final DataEventService dataEventService1 = dataEventService;
+		final TiersService tiersService1 = tiersService;
+		final GlobalTiersIndexer indexer1 = indexer;
+		final MetierService metierService1 = metierService;
+		final TiersDAO tiersDAO1 = tiersDAO;
+		final AdresseService adresseService1 = adresseService;
+		final EvenementFiscalService evenementFiscalService1 = evenementFiscalService;
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService1, tiersService1, indexer1, metierService1, tiersDAO1, adresseService1, evenementFiscalService1);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

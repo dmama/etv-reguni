@@ -15,10 +15,10 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
@@ -351,7 +351,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		// après avoir créé un nouveau contribuable sur le premier
 		final EvenementCivilEchTranslationStrategy strategy = new EvenementCivilEchTranslationStrategy() {
 			@Override
-			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
+			public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 
 				// un événement qui crée un truc en base
 				final EvenementCivilInterne naissance = new EvenementCivilInterne(event, context, options) {
@@ -396,7 +396,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 
 			@Override
-			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
+			public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 				return false;
 			}
 		};

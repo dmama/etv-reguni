@@ -7,7 +7,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.type.TypePermis;
@@ -26,20 +25,20 @@ public class AnnulationPermisTranslationStrategy extends AnnulationPermisOuNatio
 	}
 
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilEchContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new AnnulationPermis(event, context, options, getTypePermisAnnule(event, context));
 	}
 
 	@Override
-	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
+	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		return !isPermisC(event, context);
 	}
 	
-	private static boolean isPermisC(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
+	private static boolean isPermisC(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		return getTypePermisAnnule(event, context) == TypePermis.ETABLISSEMENT;
 	}
 
-	private static TypePermis getTypePermisAnnule(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
+	private static TypePermis getTypePermisAnnule(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		final Individu individu = getIndividuAvant(event, context);
 		final Permis permis = individu.getPermis().getPermisActif(event.getDateEvenement());
 		if (permis == null) {

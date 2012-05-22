@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchContext;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilTranslationStrategy;
 
@@ -31,7 +31,7 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	 * @throws EvenementCivilException en cas de souci grave (pas d'événement reférence trouvé, pas d'individu...)
 	 */
 	@NotNull
-	protected static Individu getIndividuAvant(EvenementCivilEch event, EvenementCivilEchContext context) throws EvenementCivilException {
+	protected static Individu getIndividuAvant(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		Assert.notNull(event.getRefMessageId(), "Evénement sans événement de référence");
 		return getIndividuFromEvent(event.getRefMessageId(), context);
 	}
@@ -43,7 +43,7 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	 * @throws EvenementCivilException en cas de souci grave (pas d'événement trouvé, pas d'individu...)
 	 */
 	@NotNull
-	protected static Individu getIndividuFromEvent(long eventId, EvenementCivilEchContext context) throws EvenementCivilException {
+	protected static Individu getIndividuFromEvent(long eventId, EvenementCivilContext context) throws EvenementCivilException {
 		final IndividuApresEvenement data = context.getServiceCivil().getIndividuFromEvent(eventId);
 		if (data == null) {
 			throw new EvenementCivilException(String.format("Pas de données fournies l'événement civil %d", eventId));
