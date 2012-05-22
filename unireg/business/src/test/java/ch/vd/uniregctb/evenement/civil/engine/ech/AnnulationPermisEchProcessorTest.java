@@ -11,7 +11,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockPermis;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
-import ch.vd.uniregctb.interfaces.service.rcpers.MockRcPersClientHelper;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -36,15 +35,10 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
-			}
-		});
-		
-		rcPersClientHelper.setup(new MockRcPersClientHelper() {
-			@Override
-			public void init() {
-				final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ETABLISSEMENT));
-				addIndividuFromEvent(noEventAnnonce, ind, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
+
+				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
+				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ETABLISSEMENT));
+				addIndividuFromEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
 			}
 		});
 		
@@ -110,15 +104,10 @@ public class AnnulationPermisEchProcessorTest extends AbstractEvenementCivilEchP
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.COURTE_DUREE));
-			}
-		});
-		
-		rcPersClientHelper.setup(new MockRcPersClientHelper() {
-			@Override
-			public void init() {
-				final MockIndividu ind = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
-				addIndividuFromEvent(noEventAnnonce, ind, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
+
+				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
+				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
+				addIndividuFromEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CHGT_CATEGORIE_ETRANGER);
 			}
 		});
 		

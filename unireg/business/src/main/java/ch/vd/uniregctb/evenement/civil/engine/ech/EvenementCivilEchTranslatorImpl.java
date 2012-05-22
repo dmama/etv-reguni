@@ -49,7 +49,6 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -302,7 +301,6 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
-	private RcPersClientHelper rcPersClientHelper;
 
 	private EvenementCivilEchContext context;
 	
@@ -344,7 +342,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementCivilEchContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService,
-		                                       tiersDAO, adresseService, evenementFiscalService, rcPersClientHelper);
+		                                       tiersDAO, adresseService, evenementFiscalService);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -390,10 +388,5 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void setRcPersClientHelper(RcPersClientHelper rcPersClientHelper) {
-		this.rcPersClientHelper = rcPersClientHelper;
 	}
 }

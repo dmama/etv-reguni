@@ -36,18 +36,13 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
-		<property name="rcPersClientHelper" ref="rcPersClientHelper" />
-	</bean>
-
-	<bean id="rcPersClientHelper" class="ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelperImpl">
-		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 	<bean id="evtCivilEchService" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchServiceImpl">
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementCivilEchDAO" ref="evenementCivilEchDAO"/>
-        <property name="rcPersClientHelper" ref="rcPersClientHelper"/>
+		<property name="serviceCivil" ref="serviceCivilService" />
 	</bean>
 
 </beans>

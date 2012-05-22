@@ -695,7 +695,7 @@ public class TiersServiceImpl implements TiersService {
         if (pp.isHabitantVD()) {
             final long numeroIndividu = pp.getNumeroIndividu();
             final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date);
-            if (nationalites != null) {
+            if (nationalites != null && !nationalites.isEmpty()) {
                 for (Nationalite nationalite : nationalites) {
                     if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
                             (nationalite.getDateFinValidite() == null || nationalite.getDateFinValidite().isAfterOrEqual(date)) &&

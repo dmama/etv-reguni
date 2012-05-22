@@ -1,15 +1,12 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
-import ch.vd.uniregctb.common.ParamPagination;
-import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
-import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
-import ch.vd.uniregctb.interfaces.service.rcpers.RcPersClientHelper;
-import ch.vd.uniregctb.type.EtatEvenementCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -23,8 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import java.sql.SQLException;
-import java.util.*;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, InitializingBean {
 
@@ -40,7 +44,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	 */
 	private static final Comparator<EvenementCivilEchBasicInfo> EVT_CIVIL_COMPARATOR = new EvenementCivilEchBasicInfoComparator();
 
-    private RcPersClientHelper rcPersClientHelper;
+	private ServiceCivilService serviceCivil;
     private EvenementCivilEchDAO evenementCivilEchDAO;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -81,12 +85,11 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    public void setRcPersClientHelper(RcPersClientHelper rcPersClientHelper) {
-        this.rcPersClientHelper = rcPersClientHelper;
-    }
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
+	}
 
-    @Override
+	@Override
 	public List<EvenementCivilEchBasicInfo> buildLotEvenementsCivils(final long noIndividu) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -131,7 +134,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             return event.getNumeroIndividu();
         }
         else {
-            final IndividuApresEvenement apresEvenement = rcPersClientHelper.getIndividuFromEvent(event.getId());
+            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuFromEvent(event.getId());
             if (apresEvenement == null) {
                 throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
             }

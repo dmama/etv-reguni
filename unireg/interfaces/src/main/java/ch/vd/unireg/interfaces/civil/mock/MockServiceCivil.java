@@ -43,7 +43,9 @@ import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.ProgrammingException;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeTutelle;
 
@@ -74,6 +76,8 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 */
 	private final Map<Long, MockIndividu> individusMap = new HashMap<Long, MockIndividu>();
 
+	private final Map<Long, IndividuApresEvenement> evenementsMap = new HashMap<Long, IndividuApresEvenement>();
+
 	/**
 	 * Constructeur qui permet d'injecter le service infrastructure ; appelle init()
 	 * pour l'initialisation des données
@@ -99,14 +103,31 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	/**
 	 * Ajoute un invidu à la map des individus.
-	 * @param numero numéro d'individu à utiliser
+	 *
+	 * @param numero        numéro d'individu à utiliser
 	 * @param dateNaissance date de naissance du nouvel individu
-	 * @param nom nom (de famille) du nouvel individu
-	 * @param prenom prénom du nouvel individu
-	 * @param isMasculin <code>true</code> pour un homme, <code>false</code> pour une femme
+	 * @param nom           nom (de famille) du nouvel individu
+	 * @param prenom        prénom du nouvel individu
+	 * @param isMasculin    <code>true</code> pour un homme, <code>false</code> pour une femme
 	 * @return un {@link MockIndividu}
 	 */
 	protected MockIndividu addIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
+		final MockIndividu individu = createIndividu(numero, dateNaissance, nom, prenom, isMasculin);
+		add(individu);
+		return individu;
+	}
+
+	/**
+	 * Crée un invidu (sans l'ajouter à la map des individus).
+	 *
+	 * @param numero        numéro d'individu à utiliser
+	 * @param dateNaissance date de naissance du nouvel individu
+	 * @param nom           nom (de famille) du nouvel individu
+	 * @param prenom        prénom du nouvel individu
+	 * @param isMasculin    <code>true</code> pour un homme, <code>false</code> pour une femme
+	 * @return un {@link MockIndividu}
+	 */
+	protected MockIndividu createIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
 		final MockIndividu individu = new MockIndividu();
 		individu.setNoTechnique(numero);
 		individu.setDateNaissance(dateNaissance);
@@ -116,7 +137,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 		// Etats civils
 		final EtatCivilListImpl etatsCivils = new EtatCivilListImpl();
-		etatsCivils.add(creeEtatCivil(dateNaissance, TypeEtatCivil.CELIBATAIRE));
+		etatsCivils.add(new MockEtatCivil(dateNaissance, null, TypeEtatCivil.CELIBATAIRE));
 		individu.setEtatsCivils(etatsCivils);
 
 		// Adresses
@@ -131,13 +152,24 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
 		individu.setAdoptionsReconnaissances(adoptions);
 
+		// Nationalités
+		final List<Nationalite> nationalites = new ArrayList<Nationalite>();
+		individu.setNationalites(nationalites);
+
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
 
 		// Permis
 		individu.setPermis(new MockPermisList(numero));
 
-		add(individu);
 		return individu;
+	}
+
+	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type) {
+		addIndividuFromEvent(eventId, individu, dateEvenement, type, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
+	}
+
+	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementRef) {
+		evenementsMap.put(eventId, new IndividuApresEvenement(individu, dateEvenement, type, action, idEvenementRef));
 	}
 
 	protected EtatCivil addEtatCivil(MockIndividu individu, @Nullable RegDate dateDebut, TypeEtatCivil type) {
@@ -666,7 +698,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
-		return null;
+		return evenementsMap.get(eventId);
 	}
 
 	@Override

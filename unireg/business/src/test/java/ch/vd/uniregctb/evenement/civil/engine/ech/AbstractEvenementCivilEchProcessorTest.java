@@ -6,7 +6,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
-import ch.vd.uniregctb.interfaces.service.rcpers.ProxyRcPersClientHelper;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
@@ -14,7 +13,6 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	protected EvenementCivilEchProcessorImpl processor;
 	protected EvenementCivilEchDAO evtCivilDAO;
 	protected EvenementCivilEchService evtCivilService;
-	protected ProxyRcPersClientHelper rcPersClientHelper;
 	protected DataEventService dataEventService;
 
 	@Override
@@ -23,7 +21,6 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		evtCivilDAO  = getBean(EvenementCivilEchDAO.class, "evenementCivilEchDAO");
 		evtCivilService  = getBean(EvenementCivilEchService.class, "evtCivilEchService");
-		rcPersClientHelper = getBean(ProxyRcPersClientHelper.class, "rcPersClientHelper");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 
 		final EvenementCivilEchTranslator translator = getBean(EvenementCivilEchTranslator.class, "evenementCivilEchTranslator");
@@ -37,7 +34,6 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 	@Override
 	public void onTearDown() throws Exception {
 		processor.stop();
-		rcPersClientHelper.tearDown();
 		super.onTearDown();
 	}
 	
