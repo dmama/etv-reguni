@@ -64,7 +64,11 @@ public class MockTacheService implements TacheService {
 	public void synchronizeTachesDIs(Collection<Long> ctbIds) {
 	}
 
-	@Override
+    @Override
+    public void annuleTachesObsoletes(Collection<Long> set) {
+    }
+
+    @Override
 	public void updateStats() {
 	}
 }

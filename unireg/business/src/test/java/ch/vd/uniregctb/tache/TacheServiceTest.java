@@ -2220,15 +2220,15 @@ public class TacheServiceTest extends BusinessTest {
 
 		final Tache tacheAnnul = tacheDAO.get(ids.tacheAnnulDI);
 		assertNotNull(tacheAnnul);
-		assertFalse(tacheAnnul.isAnnule());
+		assertFalse("La tâche d'annulation de DI ne devrait pas être annulée après l'annulation du tiers", tacheAnnul.isAnnule());
 
 		final Tache tacheControl = tacheDAO.get(ids.tacheControl);
 		assertNotNull(tacheControl);
-		assertTrue(tacheControl.isAnnule());
+		assertTrue("La tâche de contrôle devrait être annulée après l'annulation du tiers", tacheControl.isAnnule());
 
 		final Tache tacheEnvoi = tacheDAO.get(ids.tacheEnvoi);
 		assertNotNull(tacheEnvoi);
-		assertTrue(tacheEnvoi.isAnnule());
+		assertTrue("La tâche d'envoi devrait être annulée après l'annulation du tiers", tacheEnvoi.isAnnule());
 	}
 
 	private void sortTachesEnvoi(final List<TacheEnvoiDeclarationImpot> envois) {

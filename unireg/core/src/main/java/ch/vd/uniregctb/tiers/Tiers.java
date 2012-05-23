@@ -1,40 +1,6 @@
 package ch.vd.uniregctb.tiers;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
-import ch.vd.uniregctb.type.MotifFor;
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.DateRangeComparator;
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.date.*;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessComparable;
@@ -42,18 +8,26 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
+
+import javax.persistence.*;
+import java.util.*;
 
 /**
- * <!-- begin-user-doc --> <!-- end-user-doc --> Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
+ * Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
  * personne peut être: - Une personne physique, connu ou non du contrôle des habitants - Une organisation (personne morale ou entité sans
  * personnalité juridique, connue ou non du registre des personnes morales). - Une autre communauté de personnes sans personnalité juridique
  * complète (Pour le moment, limité au couple de personnes mariées ou liées par un partenariat enregistré, vivant en ménage commun
  * (c'est-à-dire non séparées ou dont le partenariat n'est pas pas dissous)).
  *
- * @generated "UML to Java V5.0 (com.ibm.xtools.transform.uml2.java5.internal.UML2JavaTransform)"
  */
 @Entity
 @Table(name = "TIERS")
@@ -63,101 +37,32 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	private static final Logger LOGGER = Logger.getLogger(Tiers.class);
 
-	private static final long serialVersionUID = -265874466414875812L;
-
 	/**
 	 * Numero unique attribue au tiers, qui correspond pour les contribuables PP au numero de contribuable.
 	 */
 	private Long numero;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_X56CINjGEdyNDriNIUNZFw"
-	 */
 	private String complementNom;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_SE9LMJNdEdygKK6Oe0tVlw"
-	 */
 	private String personneContact;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_W-_08NMnEdy4-c1RAQqlyw"
-	 */
 	private String numeroTelephonePrive;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_jaly8NMnEdy4-c1RAQqlyw"
-	 */
 	private String numeroTelephoneProfessionnel;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gNFnwO9YEdyEV8rfFv3rEg"
-	 */
 	private String numeroTelephonePortable;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cn6lQNMnEdy4-c1RAQqlyw"
-	 */
 	private String numeroTelecopie;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tGDLoNMnEdy4-c1RAQqlyw"
-	 */
 	private String adresseCourrierElectronique;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw"
-	 */
 	private Boolean blocageRemboursementAutomatique = Boolean.TRUE;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
 	 * Numero de compte bancaire ou du compte postal au format international IBAN (longueur maximum 21 pour les comptes suisses)
 	 */
 	private String numeroCompteBancaire;
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
 	 * Titulaire du compte bancaire ou du compte postal
 	 */
 	private String titulaireCompteBancaire;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_mMBqUJNhEdygKK6Oe0tVlw"
-	 */
 	private String adresseBicSwift;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_stv7YEE7Ed2XrapGHNAWZw"
-	 */
 	private boolean debiteurInactif = false;
-
-	/**
-	 * Détermine si l'entity à correctement été indexée (faux => entité correctement indexée) Par défaut, l'index est OK ce qui est le cas
-	 * le plus courant
-	 */
 	private Boolean indexDirty;
 
 	/**
@@ -166,49 +71,19 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	private RegDate reindexOn;
 
 	/**
-	 * <!-- begin-user-doc --> L'office d'impôt qui gère le tiers. Cette valeur est automatiquement renseignée par un intercepteur
+	 * L'office d'impôt qui gère le tiers. Cette valeur est automatiquement renseignée par un intercepteur
 	 * hibernate.
 	 * <p>
 	 * On peut normalement déduire cette valeur à partir du for de gestion courant, mais pour des raisons de performances elle est cachée
-	 * ici. <!-- end-user-doc -->
+	 * ici.
 	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R3578KdlEd2Ebedj8uu8CQ"
 	 */
 	private Integer officeImpotId;
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcZNZEdygKK6Oe0tVlw"
-	 */
 	private Set<RapportEntreTiers> rapportsObjet;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcpNZEdygKK6Oe0tVlw"
-	 */
 	private Set<RapportEntreTiers> rapportsSujet;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2w8Y0afTEdy6qP7Nc3dO8g"
-	 */
 	private Set<AdresseTiers> adressesTiers;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtOEseqfEdySTq6PFlf9jQ"
-	 */
 	private Set<Declaration> declarations;
-
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7ofwMV-eEdyCxumqfWBxMQ"
-	 */
 	private Set<ForFiscal> forsFiscaux;
 
 	public Tiers() {
@@ -246,241 +121,89 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return numero;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumero
-	 *            the numero to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8EVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumero(Long theNumero) {
-		// begin-user-code
 		numero = theNumero;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the complementNom
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_X56CINjGEdyNDriNIUNZFw?GETTER"
-	 */
 	@Column(name = "COMPLEMENT_NOM", length = LengthConstants.TIERS_NOM)
 	public String getComplementNom() {
-		// begin-user-code
 		return complementNom;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theComplementNom
-	 *            the complementNom to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_X56CINjGEdyNDriNIUNZFw?SETTER"
-	 */
 	public void setComplementNom(String theComplementNom) {
-		// begin-user-code
 		complementNom = theComplementNom;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the personneContact
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_SE9LMJNdEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "PERSONNE_CONTACT", length = LengthConstants.TIERS_PERSONNE)
 	public String getPersonneContact() {
-		// begin-user-code
 		return personneContact;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param thePersonneContact
-	 *            the personneContact to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_SE9LMJNdEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setPersonneContact(String thePersonneContact) {
-		// begin-user-code
 		personneContact = thePersonneContact;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the numeroTelephonePrive
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_W-_08NMnEdy4-c1RAQqlyw?GETTER"
-	 */
 	@Column(name = "NUMERO_TEL_PRIVE", length = LengthConstants.TIERS_NUMTEL)
 	public String getNumeroTelephonePrive() {
-		// begin-user-code
 		return numeroTelephonePrive;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumeroTelephonePrive
-	 *            the numeroTelephonePrive to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_W-_08NMnEdy4-c1RAQqlyw?SETTER"
-	 */
 	public void setNumeroTelephonePrive(String theNumeroTelephonePrive) {
-		// begin-user-code
 		numeroTelephonePrive = theNumeroTelephonePrive;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the numeroTelephoneProfessionnel
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_jaly8NMnEdy4-c1RAQqlyw?GETTER"
-	 */
 	@Column(name = "NUMERO_TEL_PROF", length = LengthConstants.TIERS_NUMTEL)
 	public String getNumeroTelephoneProfessionnel() {
-		// begin-user-code
 		return numeroTelephoneProfessionnel;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumeroTelephoneProfessionnel
-	 *         the numeroTelephoneProfessionnel to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_jaly8NMnEdy4-c1RAQqlyw?SETTER"
-	 */
 	public void setNumeroTelephoneProfessionnel(String theNumeroTelephoneProfessionnel) {
-		// begin-user-code
 		numeroTelephoneProfessionnel = theNumeroTelephoneProfessionnel;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the numeroTelephonePortable
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gNFnwO9YEdyEV8rfFv3rEg?GETTER"
-	 */
 	@Column(name = "NUMERO_TEL_PORTABLE", length = LengthConstants.TIERS_NUMTEL)
 	public String getNumeroTelephonePortable() {
-		// begin-user-code
 		return numeroTelephonePortable;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumeroTelephonePortable
-	 *            the numeroTelephonePortable to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gNFnwO9YEdyEV8rfFv3rEg?SETTER"
-	 */
 	public void setNumeroTelephonePortable(String theNumeroTelephonePortable) {
-		// begin-user-code
 		numeroTelephonePortable = theNumeroTelephonePortable;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the numeroTelecopie
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cn6lQNMnEdy4-c1RAQqlyw?GETTER"
-	 */
 	@Column(name = "NUMERO_TELECOPIE", length = LengthConstants.TIERS_NUMTEL)
 	public String getNumeroTelecopie() {
-		// begin-user-code
 		return numeroTelecopie;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumeroTelecopie
-	 *            the numeroTelecopie to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_cn6lQNMnEdy4-c1RAQqlyw?SETTER"
-	 */
 	public void setNumeroTelecopie(String theNumeroTelecopie) {
-		// begin-user-code
 		numeroTelecopie = theNumeroTelecopie;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the adresseCourrierElectronique
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tGDLoNMnEdy4-c1RAQqlyw?GETTER"
-	 */
 	@Column(name = "ADRESSE_EMAIL", length = LengthConstants.TIERS_EMAIL)
 	public String getAdresseCourrierElectronique() {
-		// begin-user-code
 		return adresseCourrierElectronique;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theAdresseCourrierElectronique
-	 *            the adresseCourrierElectronique to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_tGDLoNMnEdy4-c1RAQqlyw?SETTER"
-	 */
 	public void setAdresseCourrierElectronique(String theAdresseCourrierElectronique) {
-		// begin-user-code
 		adresseCourrierElectronique = theAdresseCourrierElectronique;
-		// end-user-code
 	}
 
-	/**
-	 * @return Returns the numeroCompteBancaire.
-	 */
 	@Column(name = "NUMERO_COMPTE_BANCAIRE", length = LengthConstants.TIERS_NUMCOMPTE)
 	public String getNumeroCompteBancaire() {
 		return numeroCompteBancaire;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theNumeroCompteBancaire
-	 *            the numeroCompteBancaire to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8JFx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroCompteBancaire(String theNumeroCompteBancaire) {
-		// begin-user-code
 		numeroCompteBancaire = theNumeroCompteBancaire;
-		// end-user-code
 	}
 
-	/**
-	 * @return Returns the titulaireCompteBancaire.
-	 */
 	@Column(name = "TITULAIRE_COMPTE_BANCAIRE", length = LengthConstants.TIERS_PERSONNE)
 	public String getTitulaireCompteBancaire() {
 		return titulaireCompteBancaire;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theTitulaireCompteBancaire
-	 *            the titulaireCompteBancaire to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Jlx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setTitulaireCompteBancaire(String theTitulaireCompteBancaire) {
-		// begin-user-code
 		titulaireCompteBancaire = theTitulaireCompteBancaire;
-		// end-user-code
 	}
 
 	@Transient
@@ -577,91 +300,35 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return result;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the blocageRemboursementAutomatique
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "BLOC_REMB_AUTO")
 	public Boolean getBlocageRemboursementAutomatique() {
-		// begin-user-code
 		return blocageRemboursementAutomatique;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theBlocageRemboursementAutomatique
-	 *         the blocageRemboursementAutomatique to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_gzNEIJNkEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setBlocageRemboursementAutomatique(Boolean theBlocageRemboursementAutomatique) {
-		// begin-user-code
 		blocageRemboursementAutomatique = theBlocageRemboursementAutomatique;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the adresseBicSwift
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_mMBqUJNhEdygKK6Oe0tVlw?GETTER"
-	 */
 	@Column(name = "ADRESSE_BIC_SWIFT", length = LengthConstants.TIERS_ADRESSEBICSWIFT)
 	public String getAdresseBicSwift() {
-		// begin-user-code
 		return adresseBicSwift;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theAdresseBicSwift
-	 *            the adresseBicSwift to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_mMBqUJNhEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setAdresseBicSwift(String theAdresseBicSwift) {
-		// begin-user-code
 		adresseBicSwift = theAdresseBicSwift;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the rapportsObjet
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcZNZEdygKK6Oe0tVlw?GETTER"
-	 */
 	@OneToMany(fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_RET_TRS_OBJ_ID")
 	@JoinColumn(name = "TIERS_OBJET_ID")
 	public Set<RapportEntreTiers> getRapportsObjet() {
-		// begin-user-code
 		return rapportsObjet;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theRapportsObjet
-	 *            the rapportsObjet to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ON1FcZNZEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setRapportsObjet(Set<RapportEntreTiers> theRapportsObjet) {
-		// begin-user-code
 		rapportsObjet = theRapportsObjet;
-		// end-user-code
 	}
 
-	/**
-	 *
-	 * @param rapport
-	 *            the rapport to add
-	 */
 	public void addRapportObjet(RapportEntreTiers rapport) {
 		if (rapportsObjet == null) {
 			rapportsObjet = new HashSet<RapportEntreTiers>();
@@ -682,39 +349,17 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		rapport.setObjet(this);
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the rapportsSujet
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcpNZEdygKK6Oe0tVlw?GETTER"
-	 */
 	@OneToMany(fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_RET_TRS_SUJ_ID")
 	@JoinColumn(name = "TIERS_SUJET_ID")
 	public Set<RapportEntreTiers> getRapportsSujet() {
-		// begin-user-code
 		return rapportsSujet;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theRapportsSujet
-	 *            the rapportsSujet to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BeZlcpNZEdygKK6Oe0tVlw?SETTER"
-	 */
 	public void setRapportsSujet(Set<RapportEntreTiers> theRapportsSujet) {
-		// begin-user-code
 		rapportsSujet = theRapportsSujet;
-		// end-user-code
 	}
 
-	/**
-	 *
-	 * @param rapport
-	 *            the rapport to add
-	 */
 	public void addRapportSujet(RapportEntreTiers rapport) {
 		if (rapportsSujet == null) {
 			rapportsSujet = new HashSet<RapportEntreTiers>();
@@ -829,46 +474,21 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return premierRapport;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the adressesTiers
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2w8Y0afTEdy6qP7Nc3dO8g?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "TIERS_ID", nullable = false)
 	@ForeignKey(name = "FK_ADR_TRS_ID")
 	public Set<AdresseTiers> getAdressesTiers() {
-		// begin-user-code
 		return adressesTiers;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theAdressesTiers
-	 *            the adressesTiers to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_2w8Y0afTEdy6qP7Nc3dO8g?SETTER"
-	 */
 	public void setAdressesTiers(Set<AdresseTiers> theAdressesTiers) {
-		// begin-user-code
 		adressesTiers = theAdressesTiers;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the declarations
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtOEseqfEdySTq6PFlf9jQ?GETTER"
-	 */
 	@OneToMany(mappedBy = "tiers", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_DECL_TRS_ID")
 	public Set<Declaration> getDeclarations() {
-		// begin-user-code
 		return declarations;
-		// end-user-code
 	}
 
 	/**
@@ -954,32 +574,15 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 		return result;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theDeclarations
-	 *            the declarations to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_ZtOEseqfEdySTq6PFlf9jQ?SETTER"
-	 */
 	public void setDeclarations(Set<Declaration> theDeclarations) {
-		// begin-user-code
 		declarations = theDeclarations;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the forsFiscaux
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7ofwMV-eEdyCxumqfWBxMQ?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "TIERS_ID", nullable = false)
 	@ForeignKey(name = "FK_FF_TIERS_ID")
 	public Set<ForFiscal> getForsFiscaux() {
-		// begin-user-code
 		return forsFiscaux;
-		// end-user-code
 	}
 
 	/**
@@ -1026,9 +629,8 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * Retourne les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
+	 *@return les fors triés par - La date d'ouverture - Leur type, selon l'ordinal de l'enum TypeAutoriteFiscale
 	 *
-	 * @return
 	 */
 	@Transient
 	public List<ForFiscal> getForsFiscauxSorted() {
@@ -1166,7 +768,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	// ***********************************************
 	@Transient
-	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(RegDate date) {
+	public ForFiscalPrincipal getDernierForFiscalPrincipalAvant(@Nullable RegDate date) {
 
 		final List<ForFiscal> list = getForsFiscauxSorted();
 		if (list != null) {
@@ -1234,38 +836,18 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *
 	 * @param theForsFiscaux
 	 *            the forsFiscaux to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_7ofwMV-eEdyCxumqfWBxMQ?SETTER"
 	 */
 	public void setForsFiscaux(Set<ForFiscal> theForsFiscaux) {
-		// begin-user-code
 		forsFiscaux = theForsFiscaux;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the debiteurInactif
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_stv7YEE7Ed2XrapGHNAWZw?GETTER"
-	 */
 	@Column(name = "DEBITEUR_INACTIF", nullable = false)
 	public boolean isDebiteurInactif() {
-		// begin-user-code
 		return debiteurInactif;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theDebiteurInactif
-	 *            the debiteurInactif to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_stv7YEE7Ed2XrapGHNAWZw?SETTER"
-	 */
 	public void setDebiteurInactif(boolean theDebiteurInactif) {
-		// begin-user-code
 		debiteurInactif = theDebiteurInactif;
-		// end-user-code
 	}
 
 	public void addAdresseTiers(AdresseTiers adresse) {
@@ -1388,7 +970,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	/**
 	 * Agende une réindexation du tiers dans le futur.
-	 * <p/>
+	 * <p>
 	 * En cas de collision entre deux dates futures de réindexation, la date la plus éloignée dans le futur sera choisie. L'idée est de s'assurer que
 	 * l'indexation du tiers soit cohérente à partir d'une certaine date dans le futur, même s'il pour cela elle risque d'être temporairement incohérente
 	 * entre aujourd'hui et cette date.
@@ -1406,26 +988,20 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 *
 	 * @return L'office d'impôt qui gère le tiers. Retourne <b>null</b> si le tiers n'a pas encore été persisté, ou s'il ne possède pas de
 	 *         for de gestion.
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R3578KdlEd2Ebedj8uu8CQ?GETTER"
 	 */
 	@Column(name = "OID")
 	public Integer getOfficeImpotId() {
-		// begin-user-code
 		return officeImpotId;
-		// end-user-code
 	}
 
 	/**
-	 * <!-- begin-user-doc --> <b>Utilisation uniquement autorisée pour l'intercepteur chargée de tenir à jour cette valeur !</b> <!--
-	 * end-user-doc -->
+	 * <b>Utilisation uniquement autorisée pour l'intercepteur chargée de tenir à jour cette valeur !</b>
 	 *
-	 * @param theOfficeImpotId
+	 * @param officeImpotID
 	 *            the officeImpotId to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R3578KdlEd2Ebedj8uu8CQ?SETTER"
 	 */
 	public void setOfficeImpotId(Integer officeImpotID) {
 		// begin-user-code
@@ -1736,110 +1312,109 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 			return true;
 		if (getClass() != obj.getClass())
 			return false;
-		Tiers other = obj;
-		if (adresseBicSwift == null) {
-			if (other.adresseBicSwift != null)
+        if (adresseBicSwift == null) {
+			if (obj.adresseBicSwift != null)
 				return false;
 		}
-		else if (!adresseBicSwift.equals(other.adresseBicSwift))
+		else if (!adresseBicSwift.equals(obj.adresseBicSwift))
 			return false;
 		if (adresseCourrierElectronique == null) {
-			if (other.adresseCourrierElectronique != null)
+			if (obj.adresseCourrierElectronique != null)
 				return false;
 		}
-		else if (!adresseCourrierElectronique.equals(other.adresseCourrierElectronique))
+		else if (!adresseCourrierElectronique.equals(obj.adresseCourrierElectronique))
 			return false;
 		if (adressesTiers == null) {
-			if (other.adressesTiers != null)
+			if (obj.adressesTiers != null)
 				return false;
 		}
-		else if (!adressesTiers.equals(other.adressesTiers))
+		else if (!adressesTiers.equals(obj.adressesTiers))
 			return false;
 		if (blocageRemboursementAutomatique == null) {
-			if (other.blocageRemboursementAutomatique != null)
+			if (obj.blocageRemboursementAutomatique != null)
 				return false;
 		}
-		else if (!blocageRemboursementAutomatique.equals(other.blocageRemboursementAutomatique))
+		else if (!blocageRemboursementAutomatique.equals(obj.blocageRemboursementAutomatique))
 			return false;
 		if (complementNom == null) {
-			if (other.complementNom != null)
+			if (obj.complementNom != null)
 				return false;
 		}
-		else if (!complementNom.equals(other.complementNom))
+		else if (!complementNom.equals(obj.complementNom))
 			return false;
-		if (debiteurInactif != other.debiteurInactif)
+		if (debiteurInactif != obj.debiteurInactif)
 			return false;
 		if (declarations == null) {
-			if (other.declarations != null)
+			if (obj.declarations != null)
 				return false;
 		}
-		else if (!declarations.equals(other.declarations))
+		else if (!declarations.equals(obj.declarations))
 			return false;
 		if (forsFiscaux == null) {
-			if (other.forsFiscaux != null)
+			if (obj.forsFiscaux != null)
 				return false;
 		}
-		else if (!forsFiscaux.equals(other.forsFiscaux))
+		else if (!forsFiscaux.equals(obj.forsFiscaux))
 			return false;
 		if (numero == null) {
-			if (other.numero != null)
+			if (obj.numero != null)
 				return false;
 		}
-		else if (!numero.equals(other.numero))
+		else if (!numero.equals(obj.numero))
 			return false;
 		if (numeroCompteBancaire == null) {
-			if (other.numeroCompteBancaire != null)
+			if (obj.numeroCompteBancaire != null)
 				return false;
 		}
-		else if (!numeroCompteBancaire.equals(other.numeroCompteBancaire))
+		else if (!numeroCompteBancaire.equals(obj.numeroCompteBancaire))
 			return false;
 		if (numeroTelecopie == null) {
-			if (other.numeroTelecopie != null)
+			if (obj.numeroTelecopie != null)
 				return false;
 		}
-		else if (!numeroTelecopie.equals(other.numeroTelecopie))
+		else if (!numeroTelecopie.equals(obj.numeroTelecopie))
 			return false;
 		if (numeroTelephonePortable == null) {
-			if (other.numeroTelephonePortable != null)
+			if (obj.numeroTelephonePortable != null)
 				return false;
 		}
-		else if (!numeroTelephonePortable.equals(other.numeroTelephonePortable))
+		else if (!numeroTelephonePortable.equals(obj.numeroTelephonePortable))
 			return false;
 		if (numeroTelephonePrive == null) {
-			if (other.numeroTelephonePrive != null)
+			if (obj.numeroTelephonePrive != null)
 				return false;
 		}
-		else if (!numeroTelephonePrive.equals(other.numeroTelephonePrive))
+		else if (!numeroTelephonePrive.equals(obj.numeroTelephonePrive))
 			return false;
 		if (numeroTelephoneProfessionnel == null) {
-			if (other.numeroTelephoneProfessionnel != null)
+			if (obj.numeroTelephoneProfessionnel != null)
 				return false;
 		}
-		else if (!numeroTelephoneProfessionnel.equals(other.numeroTelephoneProfessionnel))
+		else if (!numeroTelephoneProfessionnel.equals(obj.numeroTelephoneProfessionnel))
 			return false;
 		if (personneContact == null) {
-			if (other.personneContact != null)
+			if (obj.personneContact != null)
 				return false;
 		}
-		else if (!personneContact.equals(other.personneContact))
+		else if (!personneContact.equals(obj.personneContact))
 			return false;
 		if (rapportsObjet == null) {
-			if (other.rapportsObjet != null)
+			if (obj.rapportsObjet != null)
 				return false;
 		}
-		else if (!rapportsObjet.equals(other.rapportsObjet))
+		else if (!rapportsObjet.equals(obj.rapportsObjet))
 			return false;
 		if (rapportsSujet == null) {
-			if (other.rapportsSujet != null)
+			if (obj.rapportsSujet != null)
 				return false;
 		}
-		else if (!rapportsSujet.equals(other.rapportsSujet))
+		else if (!rapportsSujet.equals(obj.rapportsSujet))
 			return false;
 		if (titulaireCompteBancaire == null) {
-			if (other.titulaireCompteBancaire != null)
+			if (obj.titulaireCompteBancaire != null)
 				return false;
 		}
-		else if (!titulaireCompteBancaire.equals(other.titulaireCompteBancaire))
+		else if (!titulaireCompteBancaire.equals(obj.titulaireCompteBancaire))
 			return false;
 		return true;
 	}

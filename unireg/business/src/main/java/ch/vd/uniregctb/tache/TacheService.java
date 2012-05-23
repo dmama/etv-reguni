@@ -1,11 +1,5 @@
 package ch.vd.uniregctb.tache;
 
-import java.util.Collection;
-import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
-import org.springframework.transaction.annotation.Transactional;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -14,6 +8,11 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.ModeImposition;
+import org.jetbrains.annotations.Nullable;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Service permettant la génération de tâches à la suite d'événements fiscaux
@@ -106,18 +105,32 @@ public interface TacheService {
 
 	/**
 	 * Synchronize les tâches d'envoi de DIs pour tous les contribuables spécifiés (UNIREG-2305) (SIFISC-3141).
-	 * <p/>
+	 * <br>
 	 * <b>Note:</b> cette méthode gère elle-même les transactions et doit donc être utilisée en context non-transactionel.
-	 * <p/>
+	 * <br>
 	 * <b>Attention !</b> Ne pas appeler cette méthode manuellement : elle est appelée automatiquement depuis un intercepteur après le commit de la transaction.
 	 *
 	 * @param ctbIds les ids des contribuables dont les tâches doivent être synchronisées.
-	 * @see #synchronizeTachesDIs(ch.vd.uniregctb.tiers.Contribuable)
+
 	 */
 	void synchronizeTachesDIs(Collection<Long> ctbIds);
+
+    /**
+     * Annule les tâches obsolètes suite à la modification d'un contribuable
+     * <br>
+     * <b>Note:</b> cette méthode gère elle-même les transactions et doit donc être utilisée en context non-transactionel.
+     * <br>
+     * <b>Attention !</b> Ne pas appeler cette méthode manuellement : elle est appelée automatiquement depuis un intercepteur après le commit de la transaction.
+     *
+     * @param ctbIds les ids des contribuables dont les tâches obsolètes doivent être annulées.
+
+     */
+    void annuleTachesObsoletes(Collection<Long> ctbIds);
 
 	/**
 	 * Cette méthode met-à-jour les statistiques des tâches et des mouvements de dossier en instance
 	 */
 	void updateStats();
+
+
 }

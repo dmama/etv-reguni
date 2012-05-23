@@ -8,6 +8,7 @@ import java.util.Set;
 import junit.framework.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -17,6 +18,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
@@ -47,7 +49,13 @@ import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.type.TypeTache;
 
+@ContextConfiguration(locations = {
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES  // Depuis [SIFISC-2690] l'annulation des taches qui était effectuée par l'ActivationService
+															// est traitée par le TacheSynchronizerInterceptor, on a donc besoin d'un vrai bean tacheService et non pas d'un mock vide
+															// pour valider ce fonctionnement.
+})
 public class ActivationServiceTest extends BusinessTest {
 
 	private ActivationService activationService;
@@ -157,6 +165,7 @@ public class ActivationServiceTest extends BusinessTest {
 	@Test
 	public void testDesactiveTiers() throws Exception {
 
+
 		// mise en place
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
@@ -170,9 +179,15 @@ public class ActivationServiceTest extends BusinessTest {
 				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
 				addTacheControleDossier(TypeEtatTache.TRAITE, date(2002, 4, 1), pp, colAdm);
 				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 5), pp, colAdm);
+				addCollAdm(7);
 				return pp.getNumero();
+
+
 			}
 		});
+
+		// depuis [SIFISC-2690] L'annulation des taches est traitée par le TacheSynchronizerInterceptor
+		setWantSynchroTache(true);
 
 		final RegDate dateDesactivation = date(2009, 12, 31);
 
@@ -274,12 +289,12 @@ public class ActivationServiceTest extends BusinessTest {
 					criterion.setInclureTachesAnnulees(true);
 
 					final List<Tache> taches = tacheDAO.find(criterion);
-					Assert.assertNotNull(taches);
-					Assert.assertEquals(1, taches.size());
-
-					final Tache tache = taches.get(0);
-					Assert.assertNotNull(tache);
-					Assert.assertTrue(tache.isAnnule());
+					for (Tache tache : taches) {
+						Assert.assertNotNull(tache);
+						if (tache.getTypeTache() != TypeTache.TacheAnnulationDeclarationImpot) {
+							Assert.assertTrue("La tâche devrait être annulée", tache.isAnnule());
+						}
+					}
 				}
 
 				// attributs calculés sur le tiers

@@ -15,6 +15,7 @@ import java.util.Set;
 
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -23,18 +24,8 @@ import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.type.MotifFor;
 
-/**
- * <!-- begin-user-doc --> <!-- end-user-doc -->
- *
- * @author jec
- *
- * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8i1x9Edygsbnw9h5bVw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8i1x9Edygsbnw9h5bVw"
- */
 @Entity
 public abstract class Contribuable extends Tiers {
-
-	private static final long serialVersionUID = -3641798749343787983L;
 
 	public static final int CTB_GEN_FIRST_ID = 10000000;
 
@@ -53,59 +44,25 @@ public abstract class Contribuable extends Tiers {
 		super(numero);
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the situationsFamille
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_9KImIuxIEdycMumkNMs2uQ?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "CTB_ID", nullable = false)
 	@ForeignKey(name = "FK_SF_CTB_ID")
 	public Set<SituationFamille> getSituationsFamille() {
-		// begin-user-code
 		return situationsFamille;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theSituationsFamille
-	 *            the situationsFamille to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_9KImIuxIEdycMumkNMs2uQ?SETTER"
-	 */
 	public void setSituationsFamille(Set<SituationFamille> theSituationsFamille) {
-		// begin-user-code
 		situationsFamille = theSituationsFamille;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @return the mouvementDossier
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3qxWkVjJEd2uSoZKEkgcsw?GETTER"
-	 */
 	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@ForeignKey(name = "FK_MOV_DOS_CTB_ID")
 	public Set<MouvementDossier> getMouvementsDossier() {
-		// begin-user-code
 		return mouvementsDossier;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theMouvementDossier
-	 *            the mouvementDossier to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_3qxWkVjJEd2uSoZKEkgcsw?SETTER"
-	 */
 	public void setMouvementsDossier(Set<MouvementDossier> theMouvementDossier) {
-		// begin-user-code
 		mouvementsDossier = theMouvementDossier;
-		// end-user-code
 	}
 
 	@OneToMany(mappedBy = "contribuable", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -139,7 +96,7 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	@Transient
-	public SituationFamille getSituationFamilleAt(RegDate date) {
+	public SituationFamille getSituationFamilleAt(@Nullable RegDate date) {
 
 		if (situationsFamille == null) {
 			return null;
@@ -155,9 +112,7 @@ public abstract class Contribuable extends Tiers {
 	}
 
 	/**
-	 * Retourne les situations de famille non-annulées triées par - La date d'ouverture
-	 *
-	 * @return
+	 * @return les situations de famille non-annulées triées par - La date d'ouverture
 	 */
 	@Transient
 	public List<SituationFamille> getSituationsFamilleSorted() {
@@ -204,7 +159,7 @@ public abstract class Contribuable extends Tiers {
 	/**
 	 * Ajoute un mouvement de dossier
 	 *
-	 * @param mouvementDossier
+	 * @param nouveauMouvementDossier
 	 *            le mouvement de dossier à ajouter
 	 */
 	public void addMouvementDossier(MouvementDossier nouveauMouvementDossier) {
@@ -245,7 +200,8 @@ public abstract class Contribuable extends Tiers {
 		 *
 		 * @return <b>true</b> si le for a été inséré dans la liste, <b>false</b> autrement.
 		 */
-		public boolean checkFor(ForFiscal candidat) {
+		@SuppressWarnings("SimplifiableIfStatement")
+        public boolean checkFor(ForFiscal candidat) {
 			final int s = size();
 			if (s == 0) {
 				// pas de fors dans la liste -> on ajoute le nouveau
@@ -320,7 +276,7 @@ public abstract class Contribuable extends Tiers {
 
 	@Override
 	@Transient
-	protected boolean isDesactiveSelonFors(RegDate date) {
+	protected boolean isDesactiveSelonFors(@Nullable RegDate date) {
 		// pour un contribuable, on dira qu'il est désactivé à une date donnée s'il n'y a pas de for
 		// principal actif à la date donnée et que le dernier for fiscal principal a été fermé
 		// pour un motif "ANNULATION"
