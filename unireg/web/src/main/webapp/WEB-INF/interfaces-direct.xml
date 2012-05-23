@@ -66,6 +66,7 @@
 		<property name="target" ref="serviceInfrastructureTracing" />
 		<property name="cacheManager" ref="ehCacheManager" />
 		<property name="cacheName" value="serviceInfra" />
+		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 		<property name="statsService" ref="statsService" />
 	</bean>

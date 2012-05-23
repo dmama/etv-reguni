@@ -35,12 +35,20 @@
 		diskPersistent="true" 
 		diskExpiryThreadIntervalSeconds="120" />
 
-    <cache name="serviceInfra"
-        maxElementsInMemory="10000"
-        eternal="false"
-        timeToIdleSeconds="3600"
-        timeToLiveSeconds="86400"
-        overflowToDisk="false"
-        />
+	<cache name="serviceInfra"
+		   maxElementsInMemory="10000"
+		   eternal="false"
+		   timeToIdleSeconds="86400"
+		   timeToLiveSeconds="86400"
+		   overflowToDisk="false"
+			/>
+
+	<cache name="serviceInfraShortLived"
+		   maxElementsInMemory="1000"
+		   eternal="false"
+		   timeToIdleSeconds="3600"
+		   timeToLiveSeconds="3600"
+		   overflowToDisk="false"
+			/>
 
 </ehcache>

@@ -40,8 +40,10 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private CacheManager cacheManager;
 	private String cacheName;
+	private String shortLivedCacheName;
 	private ServiceInfrastructureRaw target;
 	private Ehcache cache;
+	private Ehcache shortLivedCache;
 	private UniregCacheManager uniregCacheManager;
 	private StatsService statsService;
 
@@ -52,13 +54,15 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheManager(CacheManager manager) {
 		this.cacheManager = manager;
-		initCache();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCacheName(String cacheName) {
 		this.cacheName = cacheName;
-		initCache();
+	}
+
+	public void setShortLivedCacheName(String shortLivedCacheName) {
+		this.shortLivedCacheName = shortLivedCacheName;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -76,14 +80,15 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	}
 
 	private void initCache() {
-		if (cacheManager != null && cacheName != null) {
-			cache = cacheManager.getCache(cacheName);
-			Assert.notNull(cache);
-		}
+		cache = cacheManager.getCache(cacheName);
+		Assert.notNull(cache);
+		shortLivedCache = cacheManager.getCache(shortLivedCacheName);
+		Assert.notNull(shortLivedCache);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		initCache();
 		if (statsService != null) {
 			statsService.registerCache(ServiceInfrastructureRaw.SERVICE_NAME, this);
 		}
@@ -256,7 +261,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final List<CollectiviteAdministrative> resultat;
 
 		final KeyGetCollectivitesAdministrativesByTypes key = new KeyGetCollectivitesAdministrativesByTypes(typesCollectivite);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getCollectivitesAdministratives(typesCollectivite);
 			cache.put(new Element(key, resultat));
@@ -307,7 +312,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Commune resultat;
 
 		final KeyGetCommuneByLocalite key = new KeyGetCommuneByLocalite(localite);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getCommuneByLocalite(localite);
 			cache.put(new Element(key, resultat));
@@ -392,7 +397,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Integer resultat;
 
 		final KeyGetCommunesByEgid key = new KeyGetCommunesByEgid(egid, date);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getNoOfsCommuneByEgid(egid, date);
 			cache.put(new Element(key, resultat));
@@ -835,7 +840,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Rue resultat;
 
 		final KeyGetRueByNumero key = new KeyGetRueByNumero(numero);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRueByNumero(numero);
 			cache.put(new Element(key, resultat));
@@ -881,7 +886,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final List<Rue> resultat;
 
 		final KeyGetRueByLocalite key = new KeyGetRueByLocalite(localite);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRues(localite);
 			cache.put(new Element(key, resultat));
@@ -927,7 +932,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final List<Rue> resultat;
 
 		final KeyGetRueByCanton key = new KeyGetRueByCanton(canton);
-		final Element element = cache.get(key);
+		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRues(canton);
 			cache.put(new Element(key, resultat));
