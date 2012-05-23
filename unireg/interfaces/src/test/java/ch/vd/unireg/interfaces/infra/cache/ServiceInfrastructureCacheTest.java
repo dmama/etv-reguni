@@ -47,6 +47,7 @@ public class ServiceInfrastructureCacheTest {
 		final CacheManager manager = CacheManager.create(ResourceUtils.getFile("classpath:ut/ehcache.xml").getPath());
 		cache.setCacheManager(manager);
 		cache.setCacheName("serviceInfra");
+		cache.setShortLivedCacheName("serviceInfraShortLived");
 		cache.setUniregCacheManager(new UniregCacheManagerImpl());
 		target = new TestService();
 		cache.setTarget(target);
