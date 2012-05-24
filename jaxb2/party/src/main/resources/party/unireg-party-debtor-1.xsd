@@ -1,0 +1,418 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+
+	<xs:complexType name="debtorType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>
+						Classe concrète qui contient toutes les informations d'un débiteur de prestations imposables. Les collections sont renseignées en fonction des parts demandées lors de
+						l'appel au service.
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="party:partyType">
+				<xs:sequence>
+					<xs:element name="name" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La raison sociale du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="category" type="debtor:debtorCategoryType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La catégorie actuelle du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="communicationMode" type="debtor:communicationModeType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le mode de communication actuel du débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="softwareId" type="xs:long">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'id du logiciel utilisé par le débiteur pour remplir et retourner ses LRs.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="associatedTaxpayerNumber" type="common:partyNumberType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le numéro du contribuable associé à ce débiteur; ou non-renseigné si le débiteur n'est pas lié à un contribuable.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element maxOccurs="unbounded" minOccurs="0" name="periodicities" type="debtor:debtorPeriodicityType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique des périodicités du débiteur.
+										Attention ! Cette collection n'est renseignée qui si la part DEBTOR_PERIODICITIES est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="withoutReminder" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si on n'envoie pas de rappel au débiteur.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="withoutWithholdingTaxDeclaration" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si le débiteur ne reçoit pas de LR.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="debtorInfoType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Informations métier supplémentaires sur d'un débiteur de prestations imposables (voir cas JIRA UNIREG-2110).</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="number" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le numéro de tiers du débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="taxPeriod" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La période fiscale considérée (valide du 1er janvier au 31 décembre).</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="theoreticalNumberOfWithholdingTaxDeclarations" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nombre de déclarations impôt source (LRs) qui peuvent théoriquement être émises dans la période fiscale considérée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numberOfWithholdingTaxDeclarationsIssued" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le nombre de déclarations impôts source (LRs) réellement émises (et non-annulées) dans la période fiscale considérée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="debtorCategoryType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes catégories de débiteur possibles.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADMINISTRATORS">
+				<xs:annotation>
+					<xs:documentation>Administrateurs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SPEAKERS_ARTISTS_SPORTSMEN">
+				<xs:annotation>
+					<xs:documentation>Conférencier, artistes et sportifs.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MORTGAGE_CREDITORS">
+				<xs:annotation>
+					<xs:documentation>Créanciers hypothécaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PENSION_FUND">
+				<xs:annotation>
+					<xs:documentation>Préstations de prévoyance.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REGULAR">
+				<xs:annotation>
+					<xs:documentation>Réguliers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LAW_ON_UNDECLARED_WORK">
+				<xs:annotation>
+					<xs:documentation>Loi sur le travail au noir.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="debtorPeriodicityType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Mode et fréquence d'envoi des LRs d'un débiteur pendant une période donnée.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de début.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de fin.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date d'annulation.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="specificPeriod" type="debtor:withholdingTaxDeclarationPeriodType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Uniquement valide pour la périodicité ONCE : la période à laquelle est envoyée la LR unique.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="periodicity" type="debtor:withholdingTaxDeclarationPeriodicityType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La périodicité temporelle d'envoi des LRs au débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="withholdingTaxDeclarationPeriodicityType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes périodicités possibles pour l'envoi des LRs d'un débiteur.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MONTHLY">
+				<xs:annotation>
+					<xs:documentation>Mensuel.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="YEARLY">
+				<xs:annotation>
+					<xs:documentation>Annuel.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="QUARTERLY">
+				<xs:annotation>
+					<xs:documentation>Trimestriel.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HALF_YEARLY">
+				<xs:annotation>
+					<xs:documentation>Semestriel.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ONCE">
+				<xs:annotation>
+					<xs:documentation>Unique.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="withholdingTaxDeclarationPeriodType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes périodes possibles pour l'envoi d'une LR unique d'un débiteur.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="M01">
+				<xs:annotation>
+					<xs:documentation>Mois de janvier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M02">
+				<xs:annotation>
+					<xs:documentation>Mois de février.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M03">
+				<xs:annotation>
+					<xs:documentation>Mois de mars.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M04">
+				<xs:annotation>
+					<xs:documentation>Mois de avril.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M05">
+				<xs:annotation>
+					<xs:documentation>Mois de mai.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M06">
+				<xs:annotation>
+					<xs:documentation>Mois de juin.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M07">
+				<xs:annotation>
+					<xs:documentation>Mois de juillet.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M08">
+				<xs:annotation>
+					<xs:documentation>Mois de août.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M09">
+				<xs:annotation>
+					<xs:documentation>Mois de septembre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M10">
+				<xs:annotation>
+					<xs:documentation>Mois de octobre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M11">
+				<xs:annotation>
+					<xs:documentation>Mois de novembre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="M12">
+				<xs:annotation>
+					<xs:documentation>Mois de décembre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Q1">
+				<xs:annotation>
+					<xs:documentation>Premier trimestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Q2">
+				<xs:annotation>
+					<xs:documentation>Deuxième trimestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Q3">
+				<xs:annotation>
+					<xs:documentation>Troisième trimestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Q4">
+				<xs:annotation>
+					<xs:documentation>Quatrième trimestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="H1">
+				<xs:annotation>
+					<xs:documentation>Premier semestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="H2">
+				<xs:annotation>
+					<xs:documentation>Second trimestre.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Y">
+				<xs:annotation>
+					<xs:documentation>Année.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="communicationModeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Mode de communication d'un débiteur avec l'administration cantonale vaudoise.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="WEB_SITE">
+				<xs:annotation>
+					<xs:documentation>Site web.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PAPER">
+				<xs:annotation>
+					<xs:documentation>Papier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="UPLOAD">
+				<xs:annotation>
+					<xs:documentation>Electronique.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Ce fichier permet de configurer les services civils et infrastructure en mode direct, c'est-à-dire sans passer par le cache centralisé Nexus.
+	 L'idée est de permettre aux développeurs de travailler en débug sans devoir démarrage deux applications Java. -->
+
+	<!-- Service civil -->
+
+	<bean id="serviceCivilServiceHost" class="ch.vd.unireg.interfaces.civil.host.ServiceCivilServiceHostInterfaces">
+		<property name="serviceCivil" ref="_serviceCivil" />
+		<property name="interceptor" ref="serviceCivilInterceptor"/>
+	</bean>
+
+	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
+		<property name="client" ref="rcPersClient" />
+		<property name="infraService" ref="serviceInfrastructureRaw"/>
+		<property name="interceptor" ref="serviceCivilInterceptor"/>
+	</bean>
+
+	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.ServiceCivilMarshaller">
+		<property name="modeHelper" ref="uniregModeHelper"/>
+		<property name="regpp" ref="serviceCivilServiceHost" />
+		<property name="rcpers" ref="serviceCivilRcPers" />
+	</bean>
+
+	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
+		<property name="target" ref="serviceCivilServiceMarshaller" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
+		<property name="target" ref="serviceCivilServiceTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
+
+	<!-- Service infra -->
+
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.host.ServiceInfrastructureHostInterfaces">
+		<property name="serviceInfrastructure" ref="_serviceInfrastructure" />
+		<property name="serviceInfrastructureFiscal" ref="_serviceInfrastructureFiscal" />
+	</bean>
+
+	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
+		<property name="fidorClient" ref="fidorClient" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+	</bean>
+
+	<bean id="serviceInfrastructureMarshaller" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureMarshaller">
+		<property name="hostService" ref="serviceInfrastructureServiceHost" />
+		<property name="fidorService" ref="serviceInfrastructureFidor" />
+	</bean>
+
+	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
+		<property name="target" ref="serviceInfrastructureMarshaller" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceInfra" />
+		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+
+	<!-- Bean client serviceInfrastructure -->
+	<bean name="_serviceInfrastructure" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.service.ServiceInfrastructure-${host-interfaces.version-short}"/>
+		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.service.ServiceInfrastructure"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- Bean client serviceInfrastructureFiscal -->
+	<bean name="_serviceInfrastructureFiscal" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal-${host-interfaces.version-short}"/>
+		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+	<!-- Bean client serviceCivil -->
+	<bean name="_serviceCivil" class="${host-interfaces.ejb-proxy-class}">
+		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>
+		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
+		<property name="resourceRef" value="false"/>
+		<property name="lookupHomeOnStartup" value="false"/>
+		<property name="refreshHomeOnConnectFailure" value="true"/>
+		<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil"/>
+		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
+	</bean>
+
+</beans>

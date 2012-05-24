@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.EvenementCivilSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtCivil}" />
+	</bean>
+
+	<bean id="evtCivilEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivil}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivil.consumers}"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivil.enabled}" />
+	</bean>
+
+	<bean id="evtCivilListener" class="ch.vd.uniregctb.evenement.civil.regpp.jms.EvenementCivilListener" parent="esbMessageListener">
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO" />
+		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor" />
+	</bean>
+
+	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
+		<property name="delaiPriseEnCompte" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="fetchAwaitingEventsOnStart" value="true"/>
+		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
+	</bean>
+
+	<!-- Evénements civil e-CH -->
+
+	<bean id="evtCivilEchListener" abstract="true" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="esbMessageListener">
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="ignoredEventTypes">
+			<set>
+				<value>CORR_RELIGION</value>
+				<value>CORR_LIEU_NAISSANCE</value>
+				<value>CHGT_RELIGION</value>
+			</set>
+		</property>
+	</bean>
+	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener"/>
+	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener">
+		<property name="rethrower" ref="evtCivilEchRethrower"/>
+	</bean>
+
+	<bean id="evtCivilEchRethrower" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrowerImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="receptionHandler" ref="evtCivilEchReceptionHandler"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueueImpl">
+		<constructor-arg name="delayInSeconds" value="${extprop.evtCivil.acknowledgementDelay}"/>
+		<property name="evtCivilService" ref="evtCivilEchService"/>
+	</bean>
+
+	<bean id="evtCivilEchMasseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivilEchMasse}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchMasse.consumers}"/>
+				<property name="maxMessagesPerSessions" value="100"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilEchMasseListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchMasse.enabled}" />
+	</bean>
+
+	<bean id="evtCivilEchIndividuelEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtCivilEchIndividuel}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="${extprop.jms.queue.evtCivilEchIndividuel.consumers}"/>
+				<property name="maxMessagesPerSessions" value="10"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="evtCivilEchIndividuelListener"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtCivilEchIndividuel.enabled}" />
+	</bean>
+
+	<bean id="evtCivilEchReceptionHandler" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandlerImpl">
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+        <property name="evtCivilService" ref="evtCivilEchService" />
+	</bean>
+
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="translator" ref="evenementCivilEchTranslator"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="indexer" ref="globalTiersIndexer"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="dataEventService" ref="dataEventService"/>
+	</bean>
+	
+	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchRetryProcessorImpl">
+		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="evtCivilDAO" ref="evenementCivilEchDAO"/>
+		<property name="processor" ref="evtCivilEchProcessor"/>
+		<property name="rethrower" ref="evtCivilEchRethrower"/>
+	</bean>
+
+</beans>

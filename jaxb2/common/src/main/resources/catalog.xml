@@ -1,0 +1,6 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" uri="unireg-common-1.xsd"/>
+<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd" uri="unireg-exception-1.xsd"/>
+
+</catalog>

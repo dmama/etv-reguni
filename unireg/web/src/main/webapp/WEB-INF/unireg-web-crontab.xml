@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+	<bean id="cronTab" class="ch.vd.uniregctb.scheduler.CronTab">
+		<property name="scheduler" ref="batchScheduler"/>
+		<property name="definitions" >
+			<list>
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="updateTacheStatsJob"/>
+					<!-- met-à-jour les stats des tâches toutes les 5 minutes, de 6h à 20h tous les jours -->
+					<property name="cronExpression" value="${extprop.crontab.update.tache.stats}"/>
+				</bean>
+
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="databaseIndexingJob"/>
+					<!-- schedule l'indexation des dirties tous les jours, à 2 heures du matin -->
+					<property name="cronExpression" value="${extprop.crontab.reindexation.tiers.dirty}"/>
+					<property name="params">
+						<map>
+							<entry>
+								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.I_NB_THREADS"/></key>
+								<value type="java.lang.Integer">4</value>
+							</entry>
+							<entry>
+								<key><util:constant static-field="ch.vd.uniregctb.indexer.jobs.DatabaseIndexerJob.MODE"/></key>
+								<value type="ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer$Mode">DIRTY_ONLY</value>
+							</entry>
+						</map>
+					</property>
+				</bean>
+				
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="optimizeIndexJob"/>
+					<!-- l'optimisation de l'index lucene tous les jours, à 4 heures du matin -->
+					<property name="cronExpression" value="${extprop.crontab.optimisation.index.lucene}"/>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>

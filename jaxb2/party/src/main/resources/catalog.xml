@@ -1,0 +1,18 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" uri="party/unireg-party-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd" uri="party/unireg-party-address-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd" uri="party/unireg-party-administrativeauthority-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd" uri="party/unireg-party-corporation-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-debtor-1.xsd" uri="party/unireg-party-debtor-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-immovableproperty-1.xsd" uri="party/unireg-party-immovableproperty-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd" uri="party/unireg-party-person-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-relation-1.xsd" uri="party/unireg-party-relation-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxdeclaration-1.xsd" uri="party/unireg-party-taxdeclaration-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-1.xsd" uri="party/unireg-party-taxpayer-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxresidence-1.xsd" uri="party/unireg-party-taxresidence-1.xsd"/>
+
+	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />
+	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
+
+</catalog>

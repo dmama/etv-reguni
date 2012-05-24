@@ -1,0 +1,891 @@
+/* [SIFISC-938] workaround for jQuery bug #4111 (http://bugs.jqueryui.com/ticket/4111) */
+#ui-datepicker-div {
+	display:none;
+}
+
+#header {
+	background-image: url(fond_header_1_120.gif);
+	background-repeat: repeat-x;
+	height: 120px;
+	margin-left: 11.5em; /* firefox + IE7 */
+	_margin-left: 11.25em; /* IE6 */
+	margin-right: 5px;
+	min-width: 800px;
+}
+
+#header.supergra {
+	background-image: url(fond_header_1_120_supergra.gif);
+	background-repeat: repeat-x;
+}
+
+#header a {
+	color: white;
+	font-size: 22px;
+	font-weight: bold;
+}
+
+#header .departement {
+	z-index: 99;
+}
+	
+#header .departement a {
+	text-align: right;
+	float: right;
+	margin-right: 30px;
+	width: 150px;
+}
+
+#header .application {
+	background-image: url(unireg_header.png);
+	background-repeat: no-repeat;
+	width: 500px;
+	height: 120px;
+	position: absolute;
+}
+
+#header .application_supergra {
+	background-image: url(supergra_header.png);
+	background-repeat: no-repeat;
+	width: 500px;
+	height: 120px;
+	position: absolute;
+}
+
+#header div.quicksearch {
+	left: 175px;
+	top: 8.3em !important; top: 8.2em;
+	position: absolute;
+	color: #A6C9E5
+}
+
+#header input.quicksearch {
+	color:gray; 
+	background-color:#A6C9E5; 
+	border:none;
+}
+
+#header .application .label {
+	display: none;
+}
+
+#content {
+	border-left-width: 1px;
+	border-left-style: solid;
+	border-left-color: #ccccff;
+	border-right-style: none;
+	border-bottom-style: none;
+	margin-left: 11.5em;
+	margin-right: 5px;
+}
+
+#content .outils {
+	width: auto;
+	height: 25px;
+	right: 0;
+	float: right;
+}
+
+#content .outils h3 {
+	display: none;
+}
+
+#content .outils ul {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	left: 0;
+	top: 0;
+}
+
+#content .outils li {
+	list-style-type: none;
+	float: left;
+	border-left: 1px solid #ccccff;
+	border-right: 1px solid #ccccff;
+	border-bottom: 1px solid #ccccff;
+	padding-top: 0;
+	padding-right: 5px;
+	padding-bottom: 0;
+	padding-left: 5px;
+	margin: 0;
+}
+
+#content .outils li+li {
+	border-left: 0;
+}
+
+#footer {
+	clear: both;
+	text-align: center;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #ccccff;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: none;
+}
+
+fieldset {
+	margin-top: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	border: 1px solid #cdcdcd;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+	background-color: transparent;
+	padding: 2px;
+}
+
+fieldset legend {
+	border: 1px solid #cdcdcd;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+	width: auto;
+	margin-left: 10px;
+	padding: 2px 20px 2px 20px;
+	font-weight: bold;
+}
+
+.pagebanner {
+	margin-top: 20px;
+}
+
+.help {
+	border: 1px dashed black;
+	background-color: #c5dbef;
+	color: black;
+}
+
+.mandatory label {
+	font-weight: bold;
+	color: red;
+	clear: none;
+	display: inline;
+}
+
+.field-separator label {
+	font-weight: bold;
+	vertical-align: bottom;
+	clear: none;
+	display: inline;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	/* Add the following line for use with DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" documents */
+	/* We should use
+	 * DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+	 * but as the Apache server configuration is not W3C compliant, we have to use an load fashioned
+     * See Didier Luthi for more details about Apache Server configuration */
+    font-size: 12px;
+    font-family: Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+}
+
+button {
+	padding: 1px 6px;
+}
+
+html {
+	
+}
+
+body {
+	font: normal 11px Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+	color: #000000;
+	background-color: #FFFFFF;
+}
+
+a:link,a:visited {
+	color: #336CA6;
+	text-decoration: none;
+}
+
+a:hover,a:active {
+	color: #A66C33;
+	text-decoration: underline;
+}
+
+h1 {
+	font-weight: bold;
+	font-size: 16pt;
+}
+
+h2 {
+	color: #FF5400;
+	font-size: 14pt;
+}
+
+h3 {
+	color: #FF5400;
+	font-size: 12pt;
+}
+
+p {
+	text-align: justify;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+table {
+	width: 99%;
+}
+
+/*
+ * Workaround du bug IE6 qui calcule mal la largeur d'une table avec width=100% lorsqu'il y a un div 
+ * avec float=left : il suffit de définir la table avec width=99% et de l'encapsuler dans un div avec width=99%. 
+ */
+.workaround_IE6_bug, .display_table {
+	width: 99%;
+}
+
+img {
+	border-width: 0;
+}
+
+tr {
+	height: 16px;
+}
+
+th {
+	background-color: #E3F2E9;
+	font-weight: bold;
+	text-align: left;
+}
+
+.number,th.number {
+	text-align: right;
+	padding-right: 1px;
+}
+
+.date,th.date {
+	text-align: left;
+}
+
+th.code {
+	text-align: center;
+}
+
+td.align-left {
+	text-align: left;
+}
+
+td.number {
+	text-align: right;
+}
+
+td.date {
+	text-align: right;
+}
+
+td.code {
+	text-align: center;
+}
+
+.navigation-back {
+	text-align: left;
+	float: left;
+	display: inline;
+}
+
+.navigation-forward {
+	text-align: right;
+	float: right;
+	display: inline;
+}
+
+.navigation-action {
+	text-align: center;
+	clear: both;
+}
+
+.select-with-errors {
+	background-color: #f26b6b;
+}
+
+.input-with-errors {
+	background-color: #FFB0B0;
+	border: solid 1px #f26b6b;
+}
+
+input.numero-ofs,input.numero-npa,input.numero-rue {
+	width: 33px;
+	display: inline;
+}
+
+input.numero-complement-npa,input.canton {
+	width: 22px;
+	display: inline;
+}
+
+.input-format {
+	font-size: x-small;
+}
+
+.erreur,.error {
+	color: red;
+}
+
+.global-error {
+	color: red;
+	font-weight: bold;
+	padding: 0.5em;
+	padding-left: 2em;
+}
+
+.mandatory {
+	padding-left: 5px;
+	color: red;
+	font-weight: bold;
+	cursor: default;
+}
+
+INPUT.readonly {
+	background-color: #FAF3A3;
+	border: solid 1px gray;
+}
+
+/*******************************************************************
+ * Start of Global layout                                          *
+ ******************************************************************/
+#sommaire {
+	display:block;
+	margin-left: 0.5em;
+	width: 10em;
+	float: left;
+}
+
+#sommaire .canton {
+	background-image: url(logoVD.gif);
+	background-repeat: no-repeat;
+	background-position: right bottom;
+	height: 130px;
+	width: 10em;
+	display: block;
+}
+
+#sommaire .postit {
+	
+}
+
+#sommaire .canton .label {
+	display: none;
+}
+
+#sommaire ul {
+	text-align: left;
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+#sommaire li {
+	background: transparent url(iconli.jpg) no-repeat 2px 5px;
+	margin: 0;
+	border-bottom: 1px solid #ECEFD7;
+	padding: 3px 0 3px 20px;
+}
+
+#sommaire li li {
+	background: transparent url(iconlili.jpg) no-repeat 0 5px;
+	margin: 0;
+	border-bottom: none;
+	padding: 3px 0 3px 15px;
+}
+
+#erreur {
+	font-weight: bold;
+	color: #FF0000;
+	display: inline;
+}
+
+.validation_error, .action_error, .warnings {
+	width: auto;
+	_width: 0; /* IE6 equivalent de auto */
+	font-size: x-small;
+	margin: 0.5em auto;
+	margin-left: 2em;
+	margin-bottom: 2em;
+}	
+
+.validation_error td.heading, .warnings td.heading {
+	background: url(warn.png) no-repeat;
+	padding-left: 20px;
+}	
+
+.action_error td.heading {
+	background: url(error.gif) no-repeat;
+	padding-left: 20px;
+}	
+
+.validation_error td.details, .action_error td.details, .warnings td.details {
+	padding-left: 40px;
+}	
+
+.validation_error li.err, .action_error li.err {
+	color: red;
+}
+
+.validation_error li.warn, .action_error li.warn, .warnings li.warn {
+	color: orange;
+}
+
+.callstack {
+	margin-left: 2em;
+	background-color: #CCCCCC;
+	color: black;
+	font-family: monospace;
+	font-size: 10px;
+	font-weight: normal;
+}
+
+table.postit {
+	width: 10em;
+}
+
+table.postit tr.top {
+	height: 12px
+}
+
+table.postit tr.top td {
+	background-image: url(postit-top.png);
+	background-position: 100% 100%;
+}
+
+table.postit tr.middle td {
+	background-image: url(postit-middle.png);
+	background-repeat: repeat-y;
+	background-position: 100% 100%;
+	padding-top: 0.5em;
+	padding-left: 1em;
+	padding-right: 1em;
+}
+
+table.postit tr.bottom {
+	height: 25px
+}
+
+table.postit tr.bottom td {
+	background-image: url(postit-bottom.png);
+	background-position: 100% 100%;
+}
+
+/*
+ * Audit stuff
+ */
+
+#logs_header span {
+	display: block;
+}
+ 
+#logs_header input {
+	margin-left: 10px;
+	margin-right: 2px;
+}
+ 
+#logs th {
+	padding: 2px;
+}
+ 
+#logs td {
+	padding: 1px;
+}
+ 
+#logs tr.odd {
+	background-color: white;
+}
+
+#logs tr.even {
+	background-color: #ddd;
+}
+
+#logs tr.error {
+	color: red;
+}
+
+#logs tr.warn {
+	color: orange;
+}
+
+#logs tr.success {
+	color: green;
+}
+
+/*
+ * Timeline stuff
+ */
+
+.timeline, #legend {
+	width: auto;
+	border-spacing: 0.5em;
+}
+
+.timeline th {
+	border: thin;
+	border-style: solid;
+	padding: 0.3em;
+	text-align: center;
+	background-color: #FFFFCC;
+}
+
+.timeline td {
+	padding: 2px;
+	text-align: center;
+}
+
+.timeline td.periode {
+	border: thin;
+	border-style: solid;
+	border-color: #996633;
+	background-color: #FFFFCC;
+}
+
+.timeline td.principal_vd, #legend td.principal_vd {
+	background-color: #99FF66;
+}
+
+.timeline td.principal_hc, #legend td.principal_hc {
+	background-color: #FFCC66;
+}
+
+.timeline td.principal_hs, #legend td.principal_hs {
+	background-color: #CC6666;
+}
+
+.timeline td.secondaire {
+	background-color: #CCCC99;
+}
+
+.timeline td.gestion {
+	background-color: #CCDD99;
+}
+
+.timeline td.assujettissement {
+	background-color: #99CCCC;
+}
+
+.timeline td.periodeImposition {
+	background-color: #CC99CC;
+}
+
+.timeline td.civile, #legend td.civile {
+	background-color: #99FF66;
+}
+
+.timeline td.fiscale, #legend td.fiscale {
+	background-color: #99CCCC;
+}
+
+.timeline td.representation, #legend td.representation {
+	background-color: #FFCC66;
+}
+
+.timeline td.tutelle, .timeline td.curatelle, .timeline td.conseil_legal,
+#legend td.tutelle, #legend td.curatelle, #legend td.conseil_legal {
+	background-color: #CC6666;
+}
+
+.timeline td.principal, #legend td.principal {
+	background-color: #CC99CC;
+}
+
+.timeline td.conjoint, #legend td.conjoint {
+	background-color: #BA55D3;
+}
+
+.timeline td.pm, #legend td.pm {
+	background-color: #CCDD99;
+}
+
+.timeline td.contribuable, #legend td.contribuable {
+	color: white;
+	background-color: #556B2F;
+}
+
+.timeline td.filler {
+	border: 0;
+}
+
+#legend {
+	float: right;
+	width: 28em;
+}
+
+#legend td {
+	padding: 2px;
+}
+
+#legend th {
+	border: 0;
+	padding: 0.3em;
+	text-align: center;
+	background-color: #FFFFCC;
+}
+
+/*
+ * Job stuff
+ */
+ 
+table.tableJob {
+	width: 99%;
+}
+
+table.tableJob th {
+	padding: 2px;
+}
+
+table.arguments {
+	background-color: white;
+}
+
+table.arguments td.command {
+	background-color: #F7C796;
+/*	background-color: #DBF5F5;*/
+}
+
+table.arguments td.command input {
+	font-weight: bold;
+	padding: 0.5em;
+}
+
+
+table.arguments td {
+	padding: 5px;
+}
+
+table.jobparams {
+	width: auto;
+	margin-left: 1em;
+	background-color: white;
+}
+
+/*
+ * Info stuff
+ */
+
+fieldset.info {
+	padding: 0.5em;
+}
+
+fieldset.info div.output {
+	width: 50em; /* nécessaire pour IE6 */
+	height: 50em;
+	overflow: auto;
+}
+
+fieldset.info label {
+	float: left;
+	width: 15em;
+	margin-right: 0.5em;
+	padding-top: 0.2em;
+	text-align: right;
+}
+
+fieldset.info table {
+/*	width: auto;*/
+}
+
+fieldset.info td {
+	padding: 0.2em;
+}
+
+fieldset.info .asciiart {
+	padding: 0.2em;
+	font-family: monospace;
+	font-size: 11px;
+	width: 50em; /* nécessaire pour IE6 */
+	overflow: auto;
+}
+
+fieldset.info .console {
+	padding: 0.2em;
+	font-family: monospace;
+	font-size: 11px;
+	background-color: black; 
+	color: white;
+	width: 50em; /* nécessaire pour IE6 */
+	height: 50em;
+	overflow: auto;
+}
+
+fieldset.info span.value {
+	font-weight: bold;
+}
+
+/*
+ * Declaration stuff
+ */
+ 
+fieldset.select-di {
+	width: 30em;
+	margin-left: 2em;
+	margin-bottom: 1em;
+	padding-left: 1em;
+	padding-bottom: 1em;
+}
+
+fieldset.select-di label.optionnel {
+	color: teal;
+}
+
+fieldset.select-di label.obligatoire {
+	color: black;
+}
+
+/*
+ * Progress bar stuff
+ */
+div.progress-bar {
+	position: relative;
+	border: 1px solid black;
+}
+
+div.progress-bar-fill {
+	background-color: #A6C9E5;
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+}
+
+div.progress-bar-text {
+	text-align: center;
+	position: relative;
+}
+
+/*
+ * Flèche d'explication du sens d'un rapport-entre-tiers
+ */
+ 
+.fleche_droite_bord_gauche {
+	background-image: url(fleche_droite_bord_gauche.png);
+	width: 16px;
+	height: 85px;
+}
+
+.fleche_droite_bord_droit {
+	background-image: url(fleche_droite_bord_droit.png);
+	width: 44px;
+}
+
+.fleche_gauche_bord_gauche {
+	background-image: url(fleche_gauche_bord_gauche.png);
+	width: 44px;
+	height: 85px;
+}
+
+.fleche_gauche_bord_droit {
+	background-image: url(fleche_gauche_bord_droit.png);
+	width: 16px;
+}
+
+.fleche_milieu {
+	background-image: url(fleche_milieu.png);
+	background-repeat: repeat-x;
+}
+
+.rapport-form label {
+	width: 15em;
+	float: left;
+	text-align: right;
+  	margin-right: 0.5em;
+  	display: block;
+}
+
+/*
+ * Date picker
+ */
+.ui-datepicker-trigger {
+	margin-left: 2px;
+}
+
+/*
+ * Tiers picker
+ */
+#tiers-picker input.text {
+	width:100%;
+	padding: .4em;
+}
+
+#tiers-picker-dialog a {
+	color: #336CA6;
+	text-decoration: none;
+}
+
+#tiers-picker-filter-description {
+	margin-left: 1em;
+	margin-bottom: 2px;
+	font-style: italic;
+	font-size: 8pt;
+}
+
+#tiers-picker-fulltab {
+	background-color: WhiteSmoke;
+}
+
+/*
+ * Override de 2-3 trucs pour rendre les tabs jQuery plus dans le style Unireg
+ */
+
+div.ui-tabs {
+	/**
+	 * On force une marge de 10px parce qu'autrement IE6 sautille lorsque le tab sélectionné change et qu'on utilise les cookies pour mémoriser la dernière sélection.
+	 */
+	margin-top: 10px;
+}
+
+.ui-tabs {
+	border: 0;
+}
+
+.ui-tabs .ui-tabs-hide {
+	 display: none;
+}
+
+.ui-tabs-nav {
+	border: 0;
+	background: none;
+	display: inline-block; /* autrement les tabs prennent toute la hauteur du menu de gauche dans Chrome ... */
+}
+
+.ui-tabs .ui-tabs-nav li {
+	font-weight: bold;
+	border: 0;
+	margin-left: -1px;
+	padding-left: 4px;
+	background: url("tableftF.gif") no-repeat left top;
+}
+
+.ui-tabs .ui-tabs-nav li.error a {
+	color: red;
+}
+
+.ui-tabs .ui-tabs-nav li a {
+	padding-left: 6px;
+	padding-right: 10px;
+	background: url("tabrightF.gif") no-repeat right top;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected {
+	margin-top: 0;
+	background-position: 0 -42px;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a {
+	background-position: 100% -42px;
+}
+
+.ui-tabs .ui-tabs-panel {
+	border: 1px solid #AAA;
+	-moz-border-radius-topright: 4px;
+	-webkit-border-top-right-radius: 4px;
+	border-top-right-radius: 4px;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	padding: 0.3em;
+}
+
+/*******************************************************************
+ * End of Global layout                                            *
+ ******************************************************************/

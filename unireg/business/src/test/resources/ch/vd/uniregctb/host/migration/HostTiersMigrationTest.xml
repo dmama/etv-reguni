@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="H_PAYS">
+		<column>LOG_MDATE</column>
+		<column>NO_OFS</column>
+		<column>CO_ACI</column>
+		<column>NOM_OFS_MIN</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>8100</value>
+			<value>CH</value>
+			<value>Suisse</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>8212</value>
+			<value>FR</value>
+			<value>France</value>
+		</row>
+	</table>
+	<table name="H_COMMUNE">
+		<column>LOG_MDATE</column>
+		<column>NO_TECHNIQUE</column>
+		<column>NOM_OFS_MIN</column>
+		<column>NO_OFS</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>Grancy</value>
+			<value>1234</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>Aclens</value>
+			<value>7654</value>
+		</row>
+	</table>
+	<table name="H_LOCALITE_POSTALE">
+		<column>LOG_MDATE</column>
+		<column>NO_ORDRE_P</column>
+		<column>NOM_COMPLET_MIN</column>
+		<column>FK_COMMUNENO</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>271</value>
+			<value>Grancy</value>
+			<value>1</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>275</value>
+			<value>Aclens</value>
+			<value>2</value>
+		</row>
+	</table>
+	<table name="H_RUE">
+		<column>LOG_MDATE</column>
+		<column>NO_RUE</column>
+		<column>DESIGN_COURRIER</column>
+		<column>FK_LOCPOSNO</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value><![CDATA[Ch. des acacias]]></value>
+			<value>271</value>
+		</row>
+	</table>
+	<table name="H_INDIVIDU">
+		<column>LOG_MDATE</column>
+		<column>NO_INDIVIDU</column>
+		<column>DATE_NAISSANCE</column>
+		<column>NOM</column>
+		<column>PRENOM</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>6543</value>
+			<value>19720227</value>
+			<value>Miramont</value>
+			<value>Danilo</value>
+		</row>
+	</table>
+	<table name="H_SOURCIER">
+		<column>LOG_MDATE</column>
+		<column>NO_SOURCIER</column>
+		<column>NO_IND_REG_FISCAL</column>
+		<column>NOM</column>
+		<column>PRENOM</column>
+		<column>SEXE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>6543</value>
+			<value>Miramont</value>
+			<value>Danilo</value>
+			<value>M</value>
+		</row>
+	</table>
+	<table name="H_ADRESSE_POSTALE">
+		<column>LOG_MDATE</column>
+		<column>FK_SOUNO</column>
+		<column>NO_ADR_POSTALE</column>
+		<column>DAD_VALIDITE</column>
+		<column>DAF_VALIDITE</column>
+		<column>NO_POLICE</column>
+		<column>RUE</column>
+		<column>VILLE_ETRANGER</column>
+		<column>FK_LOCNO</column>
+		<column>FK_PAYSNO_OFS</column>
+		<column>FK_RUENO</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>1</value>
+			<value>20060201</value>
+			<value>20061130</value>
+			<value>12</value>
+			<value><![CDATA[Ch des avouillons]]></value>
+			<value>Marseille</value>
+			<null />
+			<value>8212</value>
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>2</value>
+			<value>20061201</value>
+			<null />
+			<value>78bis</value>
+			<null />
+			<null />
+			<value>275</value>
+			<value>8100</value>
+			<value>1</value>
+		</row>
+	</table>
+	<table name="H_ADR_FISCALE">
+		<column>LOG_MDATE</column>
+		<column>FK_SOUNO</column>
+		<column>NO_SEQUENCE</column>
+		<column>DAD_ADR_FISCALE</column>
+		<column>DAF_ADR_FISCALE</column>
+		<column>FK_COMNO</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>1</value>
+			<value>20060223</value>
+			<value>20061231</value>
+			<value>7654</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>2</value>
+			<value>20070101</value>
+			<null />
+			<value>6532</value>
+		</row>
+	</table>
+	<table name="H_TY_IMPOSITION">
+		<column>LOG_MDATE</column>
+		<column>FK_SOUNO</column>
+		<column>NO_SEQUENCE</column>
+		<column>DAD_TY_IMPOSIT</column>
+		<column>DAF_TY_IMPOSIT</column>
+		<column>TY_IMPOSIT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>1</value>
+			<value>20060223</value>
+			<value>20061231</value>
+			<value>M</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>65</value>
+			<value>2</value>
+			<value>20070101</value>
+			<null />
+			<value>H</value>
+		</row>
+	</table>
+	<table name="H_HISTO_ROLE">
+		<column>LOG_MDATE</column>
+		<column>NO_TECHNIQUE</column>
+		<column>FK_SOUNO</column>
+		<column>DAD_MISE_ROLE</column>
+		<column>DAF_MISE_ROLE</column>
+		<column>NO_ROLE_ORDINAIRE</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>1</value>
+			<value>65</value>
+			<value>20060223</value>
+			<value>20061231</value>
+			<null />
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>2</value>
+			<value>65</value>
+			<value>20070101</value>
+			<null />
+			<value>9883424</value>
+		</row>
+	</table>
+</dataset>

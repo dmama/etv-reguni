@@ -1,0 +1,513 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2012 sp1 (http://www.altova.com) by Gabrielle Déal (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eCH-0006="http://www.ech.ch/xmlns/eCH-0006/2" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4" xmlns:eCH-0011="http://www.ech.ch/xmlns/eCH-0011/5" xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2" xmlns:eVD-0009="http://evd.vd.ch/xmlns/eVD-0009/1" targetNamespace="http://evd.vd.ch/xmlns/eVD-0009/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0011/5" schemaLocation="http://www.ech.ch/xmlns/eCH-0011/5/eCH-0011-5-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0006/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0006/2/eCH-0006-2-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd"/>
+	<xs:simpleType name="longDescriptionType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="250"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="shortDescriptionType">
+		<xs:restriction base="xs:string">
+			<xs:maxLength value="50"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="completeMaritalStatusCodeType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="10"/>
+			<xs:enumeration value="20"/>
+			<xs:enumeration value="21"/>
+			<xs:enumeration value="22"/>
+			<xs:enumeration value="30"/>
+			<xs:enumeration value="40"/>
+			<xs:enumeration value="50"/>
+			<xs:enumeration value="60"/>
+			<xs:enumeration value="61"/>
+			<xs:enumeration value="62"/>
+			<xs:enumeration value="71"/>
+			<xs:enumeration value="72"/>
+			<xs:enumeration value="73"/>
+			<xs:enumeration value="74"/>
+			<xs:enumeration value="79"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="residencePermitCategoryCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="A"/>
+			<xs:enumeration value="B"/>
+			<xs:enumeration value="C"/>
+			<xs:enumeration value="Ci"/>
+			<xs:enumeration value="F"/>
+			<xs:enumeration value="G"/>
+			<xs:enumeration value="L"/>
+			<xs:enumeration value="N"/>
+			<xs:enumeration value="S"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="legalBasesType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="OLCP"/>
+			<xs:enumeration value="OLE"/>
+			<xs:enumeration value="LSEE"/>
+			<xs:enumeration value="LAsi"/>
+			<xs:enumeration value="Ldét"/>
+			<xs:enumeration value="Convention de Vienne"/>
+			<xs:enumeration value="Accords et échanges de lettres"/>
+			<xs:enumeration value="Accord bilatéraux"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="SRNumberType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="142.203"/>
+			<xs:enumeration value="823.21"/>
+			<xs:enumeration value="142.20"/>
+			<xs:enumeration value="142.31"/>
+			<xs:enumeration value="823.20"/>
+			<xs:enumeration value="0.191.01"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="typeOfReportingRelationshipCodeType">
+		<xs:restriction base="xs:integer">
+			<xs:enumeration value="1"/>
+			<xs:enumeration value="2"/>
+			<xs:enumeration value="3"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="religionCodeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="000"/>
+			<xs:enumeration value="111"/>
+			<xs:enumeration value="121"/>
+			<xs:enumeration value="211"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="validityDateType">
+		<xs:sequence>
+			<xs:element name="admissionDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date d'inscription de l'occurrence. Si non renseigné, la données est valide depuis toujours. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="abolitionDate" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date de radiation de l'occurrence. Si non renseigné, la donnée est toujours valide. </xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="legalBasisType">
+		<xs:sequence>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:legalBasesType"/>
+			<xs:element name="SRNumber" type="eVD-0009:SRNumberType" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="civilityType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0010:mrMrsType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="sexType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0044:sexType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="maritalStatusType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0011:maritalStatusType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="separationType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0011:separationType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="cancelationReasonType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0011:partnerShipAbolitionType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="completeMaritalStatusType">
+		<xs:sequence>
+			<xs:element name="code" type="eVD-0009:completeMaritalStatusCodeType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="residencePermitType">
+		<xs:sequence>
+			<xs:element name="residencePermit" type="eCH-0006:residencePermitType"/>
+			<xs:element name="residencePermitCategory" type="eCH-0006:residencePermitCategoryType" minOccurs="0"/>
+			<xs:element name="residencePermitRuling" type="eCH-0006:residencePermitRulingType" minOccurs="0"/>
+			<xs:choice>
+				<xs:element name="residencePermitBorder" type="eCH-0006:residencePermitBorderType" minOccurs="0"/>
+				<xs:element name="residencePermitShort" type="eCH-0006:residencePermitShortType" minOccurs="0"/>
+				<xs:element name="residencePermitToBeRegistered" type="eCH-0006:residencePermitToBeRegisteredType" minOccurs="0"/>
+			</xs:choice>
+			<xs:element name="residencePermitCategoryCode" type="eVD-0009:residencePermitCategoryCodeType" minOccurs="0"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfResidencePermitCategoryType">
+		<xs:sequence>
+			<xs:element name="residencePermitCategory" type="eCH-0006:residencePermitCategoryType"/>
+			<xs:element name="residencePermitCategoryCode" type="eVD-0009:residencePermitCategoryCodeType" minOccurs="0"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfResidencePermitRulingType">
+		<xs:sequence>
+			<xs:element name="residencePermitRuling" type="eCH-0006:residencePermitRulingType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfResidencePermitBorderType">
+		<xs:sequence>
+			<xs:element name="residencePermitBorder" type="eCH-0006:residencePermitBorderType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfResidencePermitShortType">
+		<xs:sequence>
+			<xs:element name="residencePermitShort" type="eCH-0006:residencePermitShortType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfResidencePermitToBeRegisteredType">
+		<xs:sequence>
+			<xs:element name="residencePermitToBeRegistered" type="eCH-0006:residencePermitToBeRegisteredType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfReportingRelationshipType">
+		<xs:sequence>
+			<xs:element name="code" type="eVD-0009:typeOfReportingRelationshipCodeType"/>
+			<xs:element name="longDescription"/>
+			<xs:element name="shortDescription"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="typeOfHouseholdType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0011:typeOfHouseholdType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="religionType">
+		<xs:sequence>
+			<xs:element name="code" type="eVD-0009:religionCodeType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="languageType">
+		<xs:sequence>
+			<xs:element name="code" type="eCH-0011:languageType"/>
+			<xs:element name="longDescription" type="eVD-0009:longDescriptionType"/>
+			<xs:element name="shortDescription" type="eVD-0009:shortDescriptionType"/>
+			<xs:element name="validityDates" type="eVD-0009:validityDateType"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:element name="personNomenclature">
+		<xs:complexType>
+			<xs:choice>
+				<xs:element name="civility" type="eVD-0009:civilityType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.1 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="sex" type="eVD-0009:sexType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.2 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="maritalStatus" type="eVD-0009:maritalStatusType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.3.1 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="separation" type="eVD-0009:separationType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.3.2 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="cancelationReason" type="eVD-0009:cancelationReasonType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.3.3 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="completeMaritalStatus" type="eVD-0009:completeMaritalStatusType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.3.4 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="residencePermit" type="eVD-0009:residencePermitType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.1 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="residencePermitCategory" type="eVD-0009:typeOfResidencePermitCategoryType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.2 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="residencePermitRuling" type="eVD-0009:typeOfResidencePermitRulingType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.3 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeOfresidencePermitShort" type="eVD-0009:typeOfResidencePermitShortType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.4 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeOfResidencePermitBorder" type="eVD-0009:typeOfResidencePermitBorderType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.5 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeOfResidencePermitToBeRegistered" type="eVD-0009:typeOfResidencePermitToBeRegisteredType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.4.6 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.5 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeOfHousehold" type="eVD-0009:typeOfHouseholdType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.6 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="religion" type="eVD-0009:religionType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.7 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="language" type="eVD-0009:languageType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Énumération 3.8 du catalogue officiel des énumérations</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="listOfPersonNomenclatures">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="numberOfResults" type="xs:integer">
+					<xs:annotation>
+						<xs:documentation>Nombre total de résultat de la requête</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="listOfResults">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="listOfCivilities">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.1 du catalogue officiel des énumérations </xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="civility" type="eVD-0009:civilityType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfSexes">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.2 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="sex" type="eVD-0009:sexType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfMaritalStatuses">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.3.1 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="maritalStatus" type="eVD-0009:maritalStatusType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfSeparations">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.3.2 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="separation" type="eVD-0009:separationType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfCancelationReasons">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.3.3 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="cancelationReason" type="eVD-0009:cancelationReasonType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfCompleteMaritalStatuses">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.3.4 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="completeMaritalStatus" type="eVD-0009:completeMaritalStatusType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfResidencePermits">
+								<xs:annotation>
+									<xs:documentation> Énumération 3.4.1 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="residencePermit" type="eVD-0009:residencePermitType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfResidencePermitCategory">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.4.2 du catalogue des cractères</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfResidencePermitCategory" type="eVD-0009:typeOfResidencePermitCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfResidencePermitRuling">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.4.3 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfResidencePermitRuling" type="eVD-0009:typeOfResidencePermitRulingType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfResidencePermitBorder">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.4.4 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfResidencePermitBorder" type="eVD-0009:typeOfResidencePermitBorderType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfResidencePermitShort">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.4.5 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfResidencePermitShort" type="eVD-0009:typeOfResidencePermitShortType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfResidencePermitToBeRegistered">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.4.6 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfResidencePermitToBeRegistered" type="eVD-0009:typeOfResidencePermitToBeRegisteredType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfReportingRelationship">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.5 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfReportingRelationship" type="eVD-0009:typeOfReportingRelationshipType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTypesOfHousehold">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.6 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="typeOfHousehold" type="eVD-0009:typeOfHouseholdType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfReligions">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.7 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="religion" type="eVD-0009:religionType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfLanguages">
+								<xs:annotation>
+									<xs:documentation>Énumération 3.8 du catalogue officiel des énumérations</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="language" type="eVD-0009:languageType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="nextResults" type="xs:string" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>URL permettant d’accéder à la liste de résultats suivants dans le cas d’une grosse requête</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

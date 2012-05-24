@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Service Infrastructure -->
+	
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
+		<property name="rawService" ref="serviceInfrastructureRaw" />
+	</bean>
+
+	<!-- Service Civil -->
+
+	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
+	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
+
+	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="target" ref="serviceCivilRaw"/>
+		<property name="serviceLogger" ref="serviceCivilLogger"/>
+	</bean>
+
+	<!-- Service Securité -->
+
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServiceSecuriteHostInterfaces">
+		<property name="serviceSecurite" ref="_serviceSecurite" />
+	</bean>
+
+	<bean id="serviceSecuriteServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteTracing">
+		<property name="target" ref="serviceSecuriteServiceHost" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="serviceSecuriteCache" class="ch.vd.uniregctb.interfaces.service.ServiceSecuriteCache">
+		<property name="target" ref="serviceSecuriteServiceTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceSecurite" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="serviceSecuriteService" name="serviceSecuriteCache"/>
+
+	<!-- Service PM -->
+	
+	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.host.ServicePersonneMoraleHostInterfaces">
+		<property name="servicePersonneMorale" ref="_servicePersonneMorale" />
+	</bean>
+
+	<bean id="servicePersonneMoraleServiceTracing" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleTracing">
+		<property name="target" ref="servicePersonneMoraleServiceHost" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<bean id="servicePersonneMoraleServiceCache" class="ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleCache">
+		<property name="target" ref="servicePersonneMoraleServiceTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="servicePM" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>
+	
+</beans>

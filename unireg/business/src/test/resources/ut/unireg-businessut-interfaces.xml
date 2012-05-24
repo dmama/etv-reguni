@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService"/>
+
+	<!-- Bean client ServiceCivil MOCK -->
+	<bean id="serviceCivilServiceMock" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+	<alias alias="serviceCivilService" name="serviceCivilServiceMock"/>
+
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM" />
+	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceHost"/>
+	
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService"/>
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
+
+</beans>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- Demandes d'identification de contribuable, cannal "normal" -->
+
+	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageListenerImpl" parent="esbMessageListener" lazy-init="true">
+		<property name="esbMessageFactory" ref="esbMessageFactory" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="demandeHandler" ref="identCtbService" />
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
+	</bean>
+
+	<!-- Alias pour la partie "réponse" après traitement manuel -->
+	<alias alias="identCtbMessageHandler" name="identCtbMessageListener"/>
+
+	<!-- Demandes d'identification de contribuable, cannal prioritaire (= online) -->
+	<!-- Le listener est également dupliqué afin de séparer les statistiques d'événements reçus au niveau JMX -->
+
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageListenerImpl" parent="esbMessageListener" lazy-init="true">
+		<property name="esbMessageFactory" ref="esbMessageFactory" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="demandeHandler" ref="identCtbService" />
+	</bean>
+
+	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter" />
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.ident.ctb.online.input}" />
+				<property name="destinationType" value="javax.jms.Queue" />
+				<property name="maxSessions" value="${extprop.jms.queue.ident.ctb.online.consumers}" />
+				<property name="maxMessagesPerSessions" value="10" />
+			</bean>
+		</property>
+		<property name="messageListener" ref="identCtbMessageListenerOnline" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.online.enabled}" />
+	</bean>
+
+</beans>
