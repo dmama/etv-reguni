@@ -55,9 +55,9 @@ wsDeployDir=$baseDir/app/unireg-ws/${version}
 nexusAppDir=$baseDir/applications/unireg-nexus
 nexusDeployDir=$baseDir/app/unireg-nexus/${version}
 
-webFileOrig=uniregweb-release.zip
-wsFileOrig=uniregws-release.zip
-nexusFileOrig=uniregnexus-release.zip
+webFileOrig=unireg-web-release.zip
+wsFileOrig=unireg-ws-release.zip
+nexusFileOrig=unireg-nexus-release.zip
 
 #########
 
@@ -70,11 +70,10 @@ function compile_all() {
 	  echo "!!! Erreur lors du build" >&2
 	  exit 1
   fi
-
 }
 
 function assemble_app() {
-  appName = $1
+  local appName=$1
 
   if [ $DEPLOY_ONLY == 0 ]; then
 	  (cd unireg/$appName && mvn -Pnot,oracle assembly:assembly)
@@ -83,28 +82,27 @@ function assemble_app() {
 	  echo "!!! Erreur lors de l'assembly de $appName" >&2
 	  exit 1
   fi
-
-  cp -v unireg/web/target/$webFileOrig unireg/web/target/$webFileDest
 }
 
 function copy_with_timestamp() {
-  inputFile = $1
-  dirFile = $(dirname $inputFile)
-  outputFile = $(basename $inputFile .zip)-${version}-${DATE}.zip
+  local inputFile=$1
+  local dirFile=$(dirname $inputFile)
+  local outputFile=$(basename $inputFile .zip)-${version}-${DATE}.zip
 
-  cp -v $inputFile $dirFile/$outputFile
-  echo "$dirFile/$outputFile"
+  cp $inputFile $dirFile/$outputFile
+  echo $dirFile/$outputFile
 }
 
 function deploy_app() {
-  zipFile = $1
-  appDir = $2
-  deployDir = $3
+  local zipFilepath=$1
+  local appDir=$2
+  local deployDir=$3
+  local zipFilename=$(basename $zipFilepath)
 
-  scp unireg/*/target/$zipFile $user:$upDir/
+  scp $zipFilepath $user:$upDir/
 
   ssh $user "rm -rf $upDir/explode && mkdir -p $upDir/explode"
-  ssh $user "cd $upDir/explode && unzip $upDir/$zipFile"
+  ssh $user "cd $upDir/explode && unzip $upDir/$zipFilename"
 
   # copie des fichiers de config
   ssh $user "mkdir -p $appDir/config"
