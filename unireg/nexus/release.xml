@@ -47,7 +47,7 @@
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-nexus-5.1-SNAPSHOT.war</source>
+			<source>target/uniregctb-nexus-5.1.0-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
 			<destName>unireg-nexus.war</destName>
