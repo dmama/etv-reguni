@@ -251,13 +251,22 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	public void start() {
 		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
 		if (rethrower != null) {
-			AuthenticationHelper.pushPrincipal("Relance-démarrage");
-			try {
-				rethrower.fetchAndRethrowEvents();
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-			}
+			// msi (24.05.2012) : on le fait dans un thread séparé pour éviter le deadlock suivant : l'application web est
+			// en cours de démarrage et a besoin des individus stockés dans nexus, mais nexus ne peut pas répondre
+			// à la moindre requête tant que toutes les webapps ne sont pas démarrées.
+			final Thread thread = new Thread() {
+				@Override
+				public void run() {
+					AuthenticationHelper.pushPrincipal("Relance-démarrage");
+					try {
+						rethrower.fetchAndRethrowEvents();
+					}
+					finally {
+						AuthenticationHelper.popPrincipal();
+					}
+				}
+			};
+			thread.start();
 		}
 		running = true;
 	}
