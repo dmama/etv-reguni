@@ -45,6 +45,11 @@
 		<level value="INFO" />
 	</logger>
 
+	<!-- Pour éviter de logger deux fois toutes les exceptions levées par le service civil -->
+	<logger name="org.springframework.remoting.support.RemoteInvocationTraceInterceptor">
+		<level value="ERROR" />
+	</logger>
+
 	<!-- Suppress warnings from Commons Validator -->
 	<logger name="org.apache.commons.validator.ValidatorResources">
 		<level value="ERROR" />
