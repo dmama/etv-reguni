@@ -264,7 +264,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getCollectivitesAdministratives(typesCollectivite);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (List<CollectiviteAdministrative>) element.getObjectValue();
@@ -315,7 +315,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getCommuneByLocalite(localite);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (Commune) element.getObjectValue();
@@ -400,7 +400,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getNoOfsCommuneByEgid(egid, date);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (Integer) element.getObjectValue();
@@ -843,7 +843,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRueByNumero(numero);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (Rue) element.getObjectValue();
@@ -889,7 +889,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRues(localite);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (List<Rue>) element.getObjectValue();
@@ -935,7 +935,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final Element element = shortLivedCache.get(key);
 		if (element == null) {
 			resultat = target.getRues(canton);
-			cache.put(new Element(key, resultat));
+			shortLivedCache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (List<Rue>) element.getObjectValue();
@@ -1217,6 +1217,7 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 	@Override
 	public void reset() {
 		cache.removeAll();
+		shortLivedCache.removeAll();
 	}
 	/**
 	 *  {@inheritDoc}
