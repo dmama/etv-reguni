@@ -35,6 +35,10 @@
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 
-	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
+	<bean id="serviceCivilEndPoint" class="ch.vd.unireg.interfaces.civil.ServiceCivilEndPoint">
+		<property name="target" ref="serviceCivilServiceCache" />
+	</bean>
+
+	<alias alias="serviceCivilRaw" name="serviceCivilEndPoint"/>
 
 </beans>
