@@ -24,8 +24,7 @@ public class WatchDogUniregIntegarationTest extends WatchDogTest {
 	public void testIntegrationConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration...");
 		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/civil.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/hostInfra.do");
-		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/fidor.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/infra.do");
 		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/securite.do");
 		// inutile de se faire spammer pour SIPF assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/int-unireg/web/admin/status/bvr.do");
 	}
