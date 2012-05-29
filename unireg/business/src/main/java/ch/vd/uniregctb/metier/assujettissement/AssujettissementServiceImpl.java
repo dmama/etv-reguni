@@ -96,7 +96,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * (= la fonction de cette méthode).
 	 * <p/>
 	 * <p/>
-	 * <b>Spécifications.</b> L'algorithme de cette méthode découle des régles des spécifications <i>SCU-DeterminerDI-PPAEmettre.doc</i> et <i>SCU-EnvoyerAutomatiquementDI-PP.doc</i>; ainsi que de tous
+	 * <b>Spécifications.</b> L'algorithme de cette méthode découle des régles des spécifications <i>SCU-DeterminerDI-PPAEmettre.doc</i> et <i>SCU-EnvoyerAutomatiquementDI-PP.doc</i>; ainsi que de toutes
 	 * les règles supplémentaires édictées dans les cas JIRAs qui apparaissent dans les commentaires de ce fichier. Il n'y a pas de spécification sur l'assujettissement à proprement parler.
 	 * <p/>
 	 * <p/>
@@ -111,7 +111,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 *     For fiscal secondaire :            | 2003.07.01   Morges
 	 *                                        +------------------------
 	 * </pre>
-	 * L'algorithme va générer les assujettissement suivants (de type {@link Data}) :
+	 * L'algorithme va générer les assujettissements suivants (de type {@link Data}) :
 	 * <pre>
 	 *                               +---------------------------------
 	 *     Vaudois ordinaire :       | 2000.01.01
@@ -171,7 +171,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 *
 	 * @param ctb                    le contribuable dont les assujettissements doivent être déterminés
 	 * @param fors                   les fors fiscaux triés par types du contribuable
-	 * @param noOfsCommunesVaudoises (optionel) filtre d'inclusion des numéros Ofs des communes qui doivent être considérées comme vaudoises (seulement pour le rôle des communes, null dans tous les
+	 * @param noOfsCommunesVaudoises (optionnel) filtre d'inclusion des numéros Ofs des communes qui doivent être considérées comme vaudoises (seulement pour le rôle des communes, null dans tous les
 	 *                               autres cas)
 	 * @return la liste des assujettissements; ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement du contribuable.
