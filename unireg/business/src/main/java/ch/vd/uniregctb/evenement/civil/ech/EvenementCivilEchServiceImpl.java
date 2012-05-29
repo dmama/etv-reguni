@@ -27,6 +27,7 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -34,10 +35,12 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchServiceImpl.class);
 
+	private static final Comparator<ActionEvenementCivilEch> ACTION_PRIORITY_COMPARATOR = new ActionEvenementCivilEchComparator();
+
 	/**
 	 * Comparateur qui trie les types d'événements civil par priorité (les types sans priorité sont placés à la fin)
 	 */
-	private static final Comparator<TypeEvenementCivilEch> PRIORITY_COMPARATOR = new TypeEvenementCivilEchComparator();
+	private static final Comparator<TypeEvenementCivilEch> TYPE_PRIORITY_COMPARATOR = new TypeEvenementCivilEchComparator();
 
 	/**
 	 * Comparateur qui trie les événements civils par date, puis par priorité
@@ -53,8 +56,8 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 	public void afterPropertiesSet() throws Exception {
 		if (LOGGER.isInfoEnabled()) {
 			final List<TypeEvenementCivilEch> all = new ArrayList<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.values()));
-			Collections.sort(all, PRIORITY_COMPARATOR);
-			final StringBuilder b = new StringBuilder("A date égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
+			Collections.sort(all, TYPE_PRIORITY_COMPARATOR);
+			StringBuilder b = new StringBuilder("A date égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
 			boolean first = true;
 			for (TypeEvenementCivilEch type : all) {
 				if (type.getPriorite() != null) {
@@ -64,6 +67,17 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 					b.append(type).append(" (").append(type.getCodeECH()).append(')');
 					first = false;
 				}
+			}
+			final List<ActionEvenementCivilEch> allActions = new ArrayList<ActionEvenementCivilEch>(Arrays.asList(ActionEvenementCivilEch.values()));
+			Collections.sort(allActions, ACTION_PRIORITY_COMPARATOR);
+			b = new StringBuilder("A date égale, et priorité de type égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
+			first = true;
+			for (ActionEvenementCivilEch action : allActions) {
+					if (!first) {
+						b.append(", ");
+					}
+					b.append(action);
+					first = false;
 			}
 			LOGGER.info(b.toString());
 		}
