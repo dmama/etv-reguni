@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,14 +33,10 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 		try {
 			return target.getIndividu(noIndividu, date, parties);
 		}
-		catch (ServiceCivilException e) {
-			LOGGER.error("Exception dans getIndividu(noIndividu=" + noIndividu + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : " + e.getMessage(), e);
-			throw e;
-		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getIndividu(noIndividu=" + noIndividu + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : " + e.getMessage(), e);
+			LOGGER.error("Exception dans getIndividu(noIndividu=" + noIndividu + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceCivilException(e.getMessage());
+			throw new ServiceCivilException(getMessage(e));
 		}
 	}
 
@@ -48,16 +45,11 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 		try {
 			return target.getIndividus(nosIndividus, date, parties);
 		}
-		catch (ServiceCivilException e) {
-			LOGGER.error("Exception dans getIndividus(nosIndividu=" + Arrays.toString(nosIndividus.toArray()) + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : "
-					+ e.getMessage(), e);
-			throw e;
-		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception dans getIndividus(nosIndividu=" + Arrays.toString(nosIndividus.toArray()) + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : "
-					+ e.getMessage(), e);
+					+ getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceCivilException(e.getMessage());
+			throw new ServiceCivilException(getMessage(e));
 		}
 	}
 
@@ -66,14 +58,10 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 		try {
 			return target.getIndividuFromEvent(eventId);
 		}
-		catch (ServiceCivilException e) {
-			LOGGER.error("Exception dans getIndividuFromEvent(eventId=" + eventId + ") : " + e.getMessage(), e);
-			throw e;
-		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getIndividuFromEvent(eventId=" + eventId + ") : " + e.getMessage(), e);
+			LOGGER.error("Exception dans getIndividuFromEvent(eventId=" + eventId + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceCivilException(e.getMessage());
+			throw new ServiceCivilException(getMessage(e));
 		}
 	}
 
@@ -82,14 +70,18 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 		try {
 			return target.isWarmable();
 		}
-		catch (ServiceCivilException e) {
-			LOGGER.error("Exception dans isWarmable() : " + e.getMessage(), e);
-			throw e;
-		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans isWarmable() : " + e.getMessage(), e);
+			LOGGER.error("Exception dans isWarmable() : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
-			throw new ServiceCivilException(e.getMessage());
+			throw new ServiceCivilException(getMessage(e));
 		}
+	}
+
+	private static String getMessage(RuntimeException e) {
+		String message = e.getMessage();
+		if (StringUtils.isBlank(message)) {
+			message = e.getClass().getSimpleName();
+		}
+		return message;
 	}
 }
