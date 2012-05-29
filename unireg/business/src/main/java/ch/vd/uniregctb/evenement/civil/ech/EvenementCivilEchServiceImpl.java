@@ -68,6 +68,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 					first = false;
 				}
 			}
+			LOGGER.info(b.toString());
 			final List<ActionEvenementCivilEch> allActions = new ArrayList<ActionEvenementCivilEch>(Arrays.asList(ActionEvenementCivilEch.values()));
 			Collections.sort(allActions, ACTION_PRIORITY_COMPARATOR);
 			b = new StringBuilder("A date égale, et priorité de type égale, les événements civils e-CH seront traités dans l'ordre suivant : ");
