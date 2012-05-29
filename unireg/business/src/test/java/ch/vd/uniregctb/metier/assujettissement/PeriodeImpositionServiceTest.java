@@ -752,7 +752,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
+	public void testDetermineDepartHorsCantonSourcierMixte137Al1AvecImmeuble() throws Exception {
 
 		final Contribuable ctb = createDepartHorsCantonSourcierMixte137Al1_Invalide(date(2008, 9, 25));
 
@@ -781,6 +781,44 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		}
 	}
 
+	// [SIFISC-62] On s'assure que la DI d'un sourcier mixte 1 sans immeuble qui part hors-canton est bien optionnelle
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDepartHorsCantonSourcierMixte137Al1SansImmeuble() throws Exception {
+
+		final RegDate dateDepart = date(2008, 9, 25);
+		final Contribuable ctb = createDepartHorsCantonSourcierMixte137Al1(dateDepart);
+
+		// 2007
+		{
+			// sourcier mixte
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+		}
+
+		// 2008 (départ en cours d'année)
+		{
+			// sourcier mixte jusqu'au départ, sourcier pur après le départ
+			
+			// [UNIREG-1742] contribuables imposés selon le mode mixte, partis dans un autre canton durant l’année et n’ayant aucun
+			// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
+			// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
+			// note à l’administration fiscale cantonale de leur domicile.
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2008, 1, 1), dateDepart, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, true, true, false, false, list.get(0));
+		}
+
+		// 2009
+		{
+			// sourcier pur
+			assertEmpty(service.determine(ctb, 2009));
+		}
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineDepartHorsCantonSourcierMixte137Al2() throws Exception {
@@ -800,7 +838,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		// 2008 (départ en cours d'année)
 		{
 			// sourcier mixte jusqu'au départ, sourcier pure après le départ
-			
+
 			// [UNIREG-1742] contribuables imposés selon le mode mixte, partis dans un autre canton durant l’année et n’ayant aucun
 			// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 			// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une

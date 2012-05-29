@@ -312,6 +312,19 @@ public abstract class MetierTest extends BusinessTest {
 				});
 	}
 
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(RegDate dateDepart) throws Exception {
+		return createDepartHorsCantonSourcierMixte137Al1(null, dateDepart);
+	}
+
+	protected Contribuable createDepartHorsCantonSourcierMixte137Al1(@Nullable Long noTiers, RegDate dateDepart) throws Exception {
+		Contribuable paul = createContribuableSansFor(noTiers);
+		ForFiscalPrincipal ffp = addForPrincipal(paul, date(1983, 4, 13), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HC, MockCommune.Lausanne);
+		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+		ffp = addForPrincipal(paul, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
+		ffp.setModeImposition(ModeImposition.SOURCE);  // un hors-canton ne peut pas être mixte 137 al. 2
+		return paul;
+	}
+
 	protected Contribuable createDepartHorsCantonSourcierMixte137Al2(RegDate dateDepart) throws Exception {
 		return createDepartHorsCantonSourcierMixte137Al2(null, dateDepart);
 	}

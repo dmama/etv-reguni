@@ -785,7 +785,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			"indépendante)")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDetermineDepartHorsCantonSourcierMixte137Al1() throws Exception {
+	public void testDetermineDepartHorsCantonSourcierMixte137Al1AvecImmeuble() throws Exception {
 
 		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1_Invalide(10000024L, date(2008, 9, 25));
 
@@ -824,7 +824,51 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
-	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000025&print=true&title=${methodName}&description=${docDescription}")	
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=18000025&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "[SIFISC-62] départ HC sourcier mixte 137 Al1 sans immeuble : il y a fractionnement de l'assujettissement à la date du départ (mais pas d'arrondi à la fin de mois)")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDepartHorsCantonSourcierMixte137Al1SansImmeuble() throws Exception {
+
+		final Contribuable paul = createDepartHorsCantonSourcierMixte137Al1(18000025L, date(2008, 9, 25));
+
+		// 2007
+		{
+			final List<Assujettissement> list = service.determine(paul, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = service.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			// [SIFISC-62] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois), comme le mixte 2
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = service.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierPur(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+		}
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/tiers/timeline.do?id=10000025&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(description = "[UNIREG-1742] fractionnement de l'assujettissement en 2008 (mais pas d'arrondi à la fin de mois)")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)

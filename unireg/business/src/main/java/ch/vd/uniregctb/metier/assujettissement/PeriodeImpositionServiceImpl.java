@@ -13,7 +13,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
@@ -232,12 +231,13 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 			boolean optionnelle = false;
 			boolean remplaceeParNote = false;
 
-			if (forsPeriode.principal.getModeImposition() == ModeImposition.MIXTE_137_2 && mixte.getMotifFractFin() == MotifFor.DEPART_HC) {
+			if (mixte.getMotifFractFin() == MotifFor.DEPART_HC && !is31Decembre(mixte.getDateFin())) {
 				// [UNIREG-1742] Cas des contribuables imposés selon le mode mixte, partis dans un autre canton durant l’année et n’ayant aucun
 				// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 				// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
 				// note à l’administration fiscale cantonale de leur domicile.
 				// [UNIREG-2328] A noter que cela ne s'applique pas aux arrivées de hors-canton : dans ce cas l'administration fiscale responsable est l'administration vaudoise.
+				// [SIFISC-62] Dorénavant, cette règle s'applique aussi au sourciers mixte 137 Al.1
 				optionnelle = true;
 				remplaceeParNote = true;
 			}
@@ -475,5 +475,9 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 		}
 
 		return results;
+	}
+
+	private static boolean is31Decembre(RegDate date) {
+		return date.month() == 12 && date.day() == 31;
 	}
 }
