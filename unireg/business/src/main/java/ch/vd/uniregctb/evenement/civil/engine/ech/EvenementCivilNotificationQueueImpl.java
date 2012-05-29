@@ -52,7 +52,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
  * {@link #poll(long, java.util.concurrent.TimeUnit) poll} faire une requête en base dans le vide (car les événements auraient déjà été traités par
  * le passage précédent de la valeur en doublon). Notons bien que ce cas n'est pas totalement exclu dans la première solution, dans le
  * cas où l'identifiant de l'individu est enlevé de la queue entre le moment où l'événenement correspondant est effectivement committé en base
- * et le moment où la méthode {@link #post(Long) post} vérifie sa présence... mais cela devrait se produire moins souvent.
+ * et le moment où la méthode {@link #post(Long, boolean) post} vérifie sa présence... mais cela devrait se produire moins souvent.
  */
 public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue {
 
