@@ -35,7 +35,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 	protected ServiceCivilService service;
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetIndividu() throws Exception {
 
 		Individu jean = service.getIndividu(333528, date(2007, 12, 31));
