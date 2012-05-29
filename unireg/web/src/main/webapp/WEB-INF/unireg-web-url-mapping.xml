@@ -235,7 +235,11 @@
 	<!-- Exception resolver par défaut -->
 	<bean id="urlMappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="order" value="20"/>
+		<!--
+		(msi 29.05.2012) Désactivé le code d'erreur 500 qui est catché par IAM et qui affiche une page très basique.
+		C'est plus intéressant pour l'utilisateur d'avoir une page complète avec tous les détails du problème.
 		<property name="defaultStatusCode" value="500"/>
+		-->
 		<property name="exceptionMappings">
 			<map>
 				<!-- En cas de problème de connexion, on renvoie vers la JSP jdbcConnection.jsp -->
