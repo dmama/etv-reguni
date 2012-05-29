@@ -87,6 +87,95 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return determine(ctb, fpt, noOfsCommunesVaudoises);
 	}
 
+	/**
+	 * Méthode principale pour la détermination des assujettissements d'un contribuable.
+	 * <p/>
+	 * <p/>
+	 * <b>Introduction.</b> Cette méthode prend en entrée les fors fiscaux d'un contribuable, et en déduit les assujettissements. Un <i>for fiscal</i> représente le rattachement concret d'un contribuable
+	 * à une commune. Un <i>assujettissement</i> représente la raison pour laquelle un contribuable est assujetti à l'impôt. Dans Unireg, les assujettissements sont déduits dynamiquement des fors fiscaux
+	 * (= la fonction de cette méthode).
+	 * <p/>
+	 * <p/>
+	 * <b>Spécifications.</b> L'algorithme de cette méthode découle des régles des spécifications <i>SCU-DeterminerDI-PPAEmettre.doc</i> et <i>SCU-EnvoyerAutomatiquementDI-PP.doc</i>; ainsi que de tous
+	 * les règles supplémentaires édictées dans les cas JIRAs qui apparaissent dans les commentaires de ce fichier. Il n'y a pas de spécification sur l'assujettissement à proprement parler.
+	 * <p/>
+	 * <p/>
+	 * <b>Principe de base.</b> L'algorithme de cette méthode est basé sur deux principes simples : <ol> <li>chaque for fiscal génère un assujettissement;</li> <li>les assujettissements sont fusionnés
+	 * pour établir la vue globale.</li> </ol> Ainsi, pour un contribuable qui possède les fors fiscaux suivants (arrivée HC le 1er janvier 2000 + achat d'un immeuble le 1er juillet 2003) :
+	 * <pre>
+	 *                               +---------------------------------
+	 *     For fiscal principal :    | 2000.01.01   Lausanne
+	 *                               +---------------------------------
+	 *
+	 *                                        +------------------------
+	 *     For fiscal secondaire :            | 2003.07.01   Morges
+	 *                                        +------------------------
+	 * </pre>
+	 * L'algorithme va générer les assujettissement suivants (de type {@link Data}) :
+	 * <pre>
+	 *                               +---------------------------------
+	 *     Vaudois ordinaire :       | 2000.01.01
+	 *                               +---------------------------------
+	 *
+	 *                                    +----------------------------
+	 *     Economique :                   | 2003.01.01
+	 *                                    +----------------------------
+	 * </pre>
+	 * .., qui seront finalement fusionnés pour donner le résultat suivant (de type {@link Assujettissement})  :
+	 * <pre>
+	 *                               +---------------------------------
+	 *     Vaudois ordinaire :       | 2000.01.01
+	 *                               +---------------------------------
+	 * </pre>
+	 * <p/>
+	 * <p/>
+	 * <b>Domiciles et économiques.</b> L'exemple ci-dessus permet immédiatement de distinguer deux catégories d'assujettissements : <ul> <li>L'assujettissement pour raison de domicile.</li>
+	 * <li>L'assujettissement pour raison économique.</li> </ul> Les assujettissements pour raison de domicile sont les plus importants et priment sur les assujettissements pour raison économique dans
+	 * tous les cas. La méthode {@link #fusionne(java.util.List, java.util.List)} s'occupe de cette fusion.
+	 * <p/>
+	 * <p/>
+	 * <b>Durées des assujettissement.</b> La durée de l'assujettissement généré par un for fiscal varie en fonction de son type et de son rattachement. De manière générale, on a : <ul> <li><i>for fiscal
+	 * principal vaudois ou hors-canton</i> : valable du 1er janvier de l'année d'arrivée jusqu'au 31 décembre de l'année précédant le départ.</li> <li><i>for fiscal principal hors-Suisse</i> : valable
+	 * du jour d'arrivée jusqu'au jour de départ, précisemment.</li> <li><i>for fiscal secondaire</i> : valable du 1er janvier de l'année d'ouverture jusqu'au 31 décembre de l'année de fermeture.</li>
+	 * </ul> Il s'agit donc de règles générales, qui ne tiennent pas compte des fractionnements et des cas particuliers (voir ci-dessous).
+	 * <p/>
+	 * Les méthodes {@link #determineDateDebutAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} et {@link
+	 * #determineDateFinAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour raison de
+	 * domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} et {@link
+	 * #determineDateFinNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour raison de
+	 * domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont nécessaires plus
+	 * tard pour fusionner les assujettissements économiques).
+	 * <p/>
+	 * <p/>
+	 * <b>Fractionnement de l'assujettissement.</b> De manière générale, un assujettissement s'étend sur une année fiscale complète. Cependant, dans certains cas, l'assujettissement est fractionné : il
+	 * commence ou s'arrête en milieu d'année. L'exemple typique est le cas du départ hors-Suisse d'un contribuable vaudois :
+	 * <pre>
+	 *                               +---------------------------------------------+------------------------
+	 *     For fiscal principal :    | 2000.01.01       Lausanne        2008.05.15 | 2008.05.16   Paris
+	 *                               +---------------------------------------------+------------------------
+	 *
+	 *                               +---------------------------------------------+
+	 *     Assujettissement :        | 2000.01.01   Vaudois ordinaire   2008.05.15 |
+	 *                               +---------------------------------------------+
+	 * </pre>
+	 * Lors d'un départ (ou d'une arrivée) hors-Suisse, l'assujettissement est fractionné à la date de départ (ou d'arrivée). Dans le cas ci-dessus, comme le contribuable ne possède plus de for fiscal
+	 * sur le canton de Vaud, il n'est plus assujetti à partir de son départ.
+	 * <p/>
+	 * La méthode {@link #determineFractionnements(java.util.List)} s'occupe de déterminer les dates de fractionnement.
+	 * <p/>
+	 * <p/>
+	 * <b>Cas particuliers.</b> La difficulté de l'algorithme de l'assujettissement est le nombre de cas particuliers dont il faut tenir compte. Il n'est pas possible d'en dresser une liste exhaustive,
+	 * car il se combinent souvents entre eux pour donner de nouveaux cas particuliers. Parmis les plus évidents, citons : <ul> <li><i>les départs ou arrivées de hors-Suisse</i> : fractionnement de
+	 * l'assujettissement,</li> <li><i>les passages source pur à ordinaire</i> : fractionnement de l'assujettissement + arrondi des dates au mois près,</li> <li><i>les décès et veuvage</i> :
+	 * fractionnement de l'assujettissement,</li> <li><i>les mariages et divorces</i> : l'assujettissement est reporté sur le ménage en cas de mariage, ou sur les divorcés en cas de divorce.</li> </ul>
+	 *
+	 * @param ctb                    le contribuable dont les assujettissements doivent être déterminés
+	 * @param fors                   les fors fiscaux triés par types du contribuable
+	 * @param noOfsCommunesVaudoises (optionel) filtre d'inclusion des numéros Ofs des communes qui doivent être considérées comme vaudoises (seulement pour le rôle des communes, null dans tous les
+	 *                               autres cas)
+	 * @return la liste des assujettissements; ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement du contribuable.
+	 */
 	private List<Assujettissement> determine(Contribuable ctb, ForsParType fors, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		try {
 			ajouteForsPrincipauxFictifs(fors.principaux);
