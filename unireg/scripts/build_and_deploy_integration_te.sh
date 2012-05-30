@@ -34,13 +34,16 @@ user=unireg@spip
 upDir=/ccv/home/unireg/uploads
 tomcatDir=/ccv/home/unireg/apache-tomcat
 
-webFileOrig=uniregweb-release.zip
-webFileDest=uniregweb-release-${version}-${DATE}.zip
-wsFileOrig=uniregws-release.zip
-wsFileDest=uniregws-release-${version}-${DATE}.zip
+webFileOrig=unireg-web-release.zip
+webFileDest=unireg-web-release-${version}-${DATE}.zip
+wsFileOrig=unireg-ws-release.zip
+wsFileDest=unireg-ws-release-${version}-${DATE}.zip
+nexusFileOrig=unireg-nexus-release.zip
+nexusFileDest=unireg-nexus-release-${version}-${DATE}.zip
 
 webAppDir=$tomcatDir/appDir/unireg-web
 wsAppDir=$tomcatDir/appDir/unireg-ws
+nexusAppDir=$tomcatDir/appDir/unireg-nexus
 
 # Compilation
 if [ $DEPLOY_ONLY == 0 ]; then
@@ -48,6 +51,14 @@ if [ $DEPLOY_ONLY == 0 ]; then
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build" >&2
+	exit 1
+fi
+
+if [ $DEPLOY_ONLY == 0 ]; then
+	(cd unireg/nexus && mvn -Pnot,oracle assembly:assembly)
+fi
+if [ $? != 0 ]; then
+	echo "!!! Erreur lors de l'assembly de nexus" >&2
 	exit 1
 fi
 
@@ -69,6 +80,7 @@ fi
 
 cp -v unireg/web/target/$webFileOrig unireg/web/target/$webFileDest
 cp -v unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
+cp -v unireg/nexus/target/$nexusFileOrig unireg/nexus/target/$nexusFileDest
 
 #
 # arrêt
@@ -77,7 +89,27 @@ ssh $user "cd $tomcatDir && bin/catalina.sh stop"
 echo "Arrêt de tomcat à $(date)"
 
 #
-# Deploiement de la web-app
+# Deploiement de la web-app nexus
+#
+
+ssh $user "rm -rf $upDir && mkdir -p $upDir/explode"
+scp unireg/nexus/target/$nexusFileDest $user:$upDir/
+ssh $user "cd $upDir/explode && unzip $upDir/$nexusFileDest"
+
+
+# copie des fichiers de config
+ssh $user "mkdir -p $nexusAppDir/config"
+ssh $user "cp $upDir/explode/config/$env/* $nexusAppDir/config"
+
+# copie du war
+ssh $user "mkdir -p $tomcatDir/webapps"
+ssh $user "rm -rf $tomcatDir/webapps/fiscalite#unireg#nexus*"
+ssh $user "cp $upDir/explode/deployment/unireg-nexus.war $tomcatDir/webapps/fiscalite#unireg#nexus.war"
+
+echo "Fin du deploiement de la web-app nexus à: $(date)"
+
+#
+# Deploiement de la web-app web
 #
 
 ssh $user "rm -rf $upDir && mkdir -p $upDir/explode"
@@ -92,7 +124,7 @@ ssh $user "cp $upDir/explode/config/$env/* $webAppDir/config"
 # copie du war
 ssh $user "mkdir -p $tomcatDir/webapps"
 ssh $user "rm -rf $tomcatDir/webapps/fiscalite#unireg#web*"
-ssh $user "cp $upDir/explode/deployment/uniregweb.war $tomcatDir/webapps/fiscalite#unireg#web.war"
+ssh $user "cp $upDir/explode/deployment/unireg-web.war $tomcatDir/webapps/fiscalite#unireg#web.war"
 
 echo "Fin du deploiement de la web-app à: $(date)"
 
@@ -111,7 +143,7 @@ ssh $user "cp $upDir/explode/config/$env/* $wsAppDir/config"
 # copie du war
 ssh $user "mkdir -p $tomcatDir/webapps"
 ssh $user "rm -rf $tomcatDir/webapps/fiscalite#unireg#ws*"
-ssh $user "cp $upDir/explode/deployment/uniregws.war $tomcatDir/webapps/fiscalite#unireg#ws.war"
+ssh $user "cp $upDir/explode/deployment/unireg-ws.war $tomcatDir/webapps/fiscalite#unireg#ws.war"
 
 echo "Fin du deploiement des web-services à: $(date)"
 
