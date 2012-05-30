@@ -9,7 +9,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
  * Utiliser pour determiner l'ordre de traitement des evenements d'un même individu.
  */
 
-public class TypeEvenementCivilEchComparator implements Comparator<TypeEvenementCivilEch> {
+class TypeEvenementCivilEchComparator implements Comparator<TypeEvenementCivilEch> {
 	@Override
 	public int compare(TypeEvenementCivilEch o1, TypeEvenementCivilEch o2) {
 		final Integer myPrio = o1.getPriorite();

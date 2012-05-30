@@ -5,11 +5,12 @@ import java.util.Map;
 
 public enum ActionEvenementCivilEch {
 
-	PREMIERE_LIVRAISON(1),
-	ANNULATION(3),
-	CORRECTION(4);
+	PREMIERE_LIVRAISON(1,1),
+	ANNULATION(3,3),
+	CORRECTION(4,2);
 
 	private final int echCode;
+	private final int priorite;
 
 	private static final Map<Integer, ActionEvenementCivilEch> typesByCode;
 
@@ -23,8 +24,9 @@ public enum ActionEvenementCivilEch {
 		}
 	}
 
-	private ActionEvenementCivilEch(int code) {
+	private ActionEvenementCivilEch(int code, int priorite) {
 		this.echCode = code;
+		this.priorite = priorite;
 	}
 
 	public static ActionEvenementCivilEch fromEchCode(int code) {
@@ -38,4 +40,9 @@ public enum ActionEvenementCivilEch {
 	public int getEchCode() {
 		return echCode;
 	}
+
+	public int getPriorite() {
+		return priorite;
+	}
+
 }
