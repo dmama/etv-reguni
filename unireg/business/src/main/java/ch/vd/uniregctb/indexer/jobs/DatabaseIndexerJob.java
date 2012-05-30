@@ -6,6 +6,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamEnum;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 
@@ -19,6 +20,7 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 	public static final String I_NB_THREADS = "nbThreads";
 	public static final String MODE = "mode";
+	public static final String FULL_PREFETCH = "fullPrefetch";
 
 	private GlobalTiersIndexer globalTiersIndexer;
 
@@ -38,6 +40,13 @@ public class DatabaseIndexerJob extends JobDefinition {
 		param1.setMandatory(true);
 		param1.setType(new JobParamEnum(Mode.class));
 		addParameterDefinition(param1, Mode.INCREMENTAL);
+
+		final JobParam param2 = new JobParam();
+		param2.setDescription("Précharge toutes les parties des individus");
+		param2.setName(FULL_PREFETCH);
+		param2.setMandatory(false);
+		param2.setType(new JobParamBoolean());
+		addParameterDefinition(param2, false);
 	}
 
 	@Override
@@ -45,8 +54,9 @@ public class DatabaseIndexerJob extends JobDefinition {
 
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, I_NB_THREADS);
 		final Mode mode = getEnumValue(params, MODE, Mode.class);
+		final boolean fullPrefetch = getBooleanValue(params, FULL_PREFETCH);
 
-		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, true, true);
+		globalTiersIndexer.indexAllDatabase(getStatusManager(), nbThreads, mode, true, true, fullPrefetch);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

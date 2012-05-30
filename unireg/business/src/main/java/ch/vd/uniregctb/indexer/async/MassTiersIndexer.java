@@ -31,9 +31,9 @@ public class MassTiersIndexer {
 	private long totalExecTime;
 
 	public MassTiersIndexer(GlobalTiersIndexerImpl indexer, PlatformTransactionManager transactionManager, SessionFactory sessionFactory, int nbThreads, int queueByThreadSize, Mode mode,
-	                        Dialect dialect, boolean prefetchIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO, ServicePersonneMoraleService servicePM) {
-
-		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass", prefetchIndividus, serviceCivilService, prefetchPMs, tiersDAO,
+	                        Dialect dialect, boolean prefetchIndividus, boolean prefetchAllPartsIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO,
+	                        ServicePersonneMoraleService servicePM) {
+		this(nbThreads, queueByThreadSize, new TiersIndexerWorker(mode, indexer, sessionFactory, transactionManager, dialect, "Mass", prefetchIndividus, prefetchAllPartsIndividus, serviceCivilService, prefetchPMs, tiersDAO,
 				servicePM));
 	}
 

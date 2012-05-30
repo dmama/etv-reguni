@@ -50,6 +50,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	private final GlobalTiersIndexer.Mode mode;
 
 	private boolean prefetchIndividus;
+	private final boolean prefetchAllPartsIndividus;
 	private ServiceCivilService serviceCivilService;
 
 	private boolean prefetchPMs;
@@ -61,20 +62,22 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	/**
 	 * Construit un thread d'indexation qui consomme les ids des tiers à indexer à partir d'une queue.
 	 *
-	 * @param mode                le mode d'indexation voulu. Renseigné dans le cas d'une réindexation complète ou partielle; ou <b>null</b> dans le cas d'une indexation au fil de l'eau des tiers.
-	 * @param globalTiersIndexer  l'indexer des tiers
-	 * @param sessionFactory      la session factory hibernate
-	 * @param transactionManager  le transaction manager
-	 * @param dialect             le dialect hibernate utilisé
-	 * @param name                le nom du thread
-	 * @param prefetchIndividus   <b>vrai</b> si le cache des individus doit être préchauffé par lot; <b>faux</b> autrement.
-	 * @param serviceCivilService le service civil qui permet de préchauffer le cache des individus
-	 * @param prefetchPMs         <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
-	 * @param tiersDAO            le tiers DAO
-	 * @param servicePM           le service des personnes morales
+	 * @param mode                      le mode d'indexation voulu. Renseigné dans le cas d'une réindexation complète ou partielle; ou <b>null</b> dans le cas d'une indexation au fil de l'eau des tiers.
+	 * @param globalTiersIndexer        l'indexer des tiers
+	 * @param sessionFactory            la session factory hibernate
+	 * @param transactionManager        le transaction manager
+	 * @param dialect                   le dialect hibernate utilisé
+	 * @param name                      le nom du thread
+	 * @param prefetchIndividus         <b>vrai</b> si le cache des individus doit être préchauffé par lot; <b>faux</b> autrement.
+	 * @param prefetchAllPartsIndividus <b>vrai</b> si toutes les parts des individus doivent être préchargée; <b>faux autrement</b>
+	 * @param serviceCivilService       le service civil qui permet de préchauffer le cache des individus
+	 * @param prefetchPMs               <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
+	 * @param tiersDAO                  le tiers DAO
+	 * @param servicePM                 le service des personnes morales
 	 */
 	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
-	                          String name, boolean prefetchIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO, ServicePersonneMoraleService servicePM) {
+	                          String name, boolean prefetchIndividus, boolean prefetchAllPartsIndividus, ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO,
+	                          ServicePersonneMoraleService servicePM) {
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
@@ -82,6 +85,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		this.dialect = dialect;
 		this.name = name;
 		this.prefetchIndividus = prefetchIndividus;
+		this.prefetchAllPartsIndividus = prefetchAllPartsIndividus;
 		this.serviceCivilService = serviceCivilService;
 		this.prefetchPMs = prefetchPMs;
 		this.tiersDAO = tiersDAO;
@@ -137,7 +141,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 							// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
 							// Sans préchargement, chaque individu est obtenu séparemment à travers le service civil (= au minimum
 							// une requête par individu); et avec le préchargement on peut charger 100 individus d'un coup.
-							warmIndividuCache(session, batch);
+							warmIndividuCache(session, batch, prefetchAllPartsIndividus);
 						}
 						if (prefetchPMs) {
 							warmPMCache(batch);
@@ -182,7 +186,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 		}
 	}
 
-	private void warmIndividuCache(Session session, List<Long> batch) {
+	private void warmIndividuCache(Session session, List<Long> batch, boolean prefetchAllPartsIndividus) {
 
 		long start = System.nanoTime();
 
@@ -191,7 +195,16 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 		if (numerosIndividus.size() > 1) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant (et inutile de préchauffer un seul individu)
 			try {
-				serviceCivilService.getIndividus(numerosIndividus, null, AttributeIndividu.ADRESSES); // chauffe le cache
+				final AttributeIndividu parties[];
+				if (prefetchAllPartsIndividus) {
+					// toutes les parties (pour charger le cache persistent, par exemple)
+					parties = AttributeIndividu.values();
+				}
+				else {
+					// seulement les parties strictement nécessaires à l'indexation
+					parties = new AttributeIndividu[] {AttributeIndividu.ADRESSES};
+				}
+				serviceCivilService.getIndividus(numerosIndividus, null, parties); // chauffe le cache
 
 				long nanosecondes = System.nanoTime() - start;
 				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");

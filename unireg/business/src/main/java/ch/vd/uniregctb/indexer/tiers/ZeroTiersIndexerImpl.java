@@ -13,7 +13,7 @@ public class ZeroTiersIndexerImpl implements GlobalTiersIndexer {
 	}
 
 	@Override
-	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs)
+	public int indexAllDatabase(StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus)
 			throws IndexerException {
 		return 0;
 	}
