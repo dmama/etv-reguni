@@ -25,11 +25,14 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockNationalite;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -5546,6 +5549,88 @@ public class TiersServiceTest extends BusinessTest {
 					Assert.assertEquals(String.format("On ne peut fermer le rapport d'appartenance ménage avant sa date de début (%s)", RegDateHelper.dateToDisplayString(dateMariage)),
 					                    e.getMessage());
 				}
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-5279] annulation d'un surcharge d'adresse courrier HC au moment de l'annulation d'un for principal HS sourcier ouvert pour motif départ HS
+	 */
+	@Test
+	public void testAnnulationForAvecSurchargeCourrier() throws Exception {
+
+		final long noIndividu = 43256734456243562L;
+		final RegDate dateDebutForMixteVaudois = date(2009, 1, 1);
+		final RegDate dateDebutResidenceHS = date(2011, 8, 1);
+		final RegDate dateFinResidenceVD = dateDebutResidenceHS.getOneDayBefore();
+		final RegDate dateDebutSurchargeCourrier = date(2012, 1, 1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1980, 8, 12);
+				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Tartempion", "Ernestine", false);
+				addNationalite(individu, MockPays.France, dateNaissance, null);
+
+				final MockAdresse adresseVD = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDebutForMixteVaudois, dateFinResidenceVD);
+				adresseVD.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				addAdresse(individu, TypeAdresseCivil.COURRIER, "Rue des champs", "42", 74000, null, "Annecy", MockPays.France, dateDebutResidenceHS, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateDebutForMixteVaudois, MotifFor.ARRIVEE_HS, dateFinResidenceVD, MotifFor.DEPART_HS, MockCommune.Echallens, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, dateDebutResidenceHS, MotifFor.DEPART_HS, null, null, MockPays.France, ModeImposition.SOURCE);
+				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateDebutSurchargeCourrier, null, MockRue.Neuchatel.RueDesBeauxArts);
+				tiersService.changeHabitantenNH(pp);
+				return pp.getNumero();
+			}
+		});
+
+		// annulation du for source...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				assertNull(ffp.getDateFin());
+
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				assertNotNull(adresses);
+				assertEquals(1, adresses.size());
+				final AdresseTiers adresse = adresses.iterator().next();
+				assertNotNull(adresse);
+				assertFalse(adresse.isAnnule());
+
+				tiersService.annuleForFiscal(ffp, true);
+				return null;
+			}
+		});
+
+		// et maintenant, le résultat... l'adresse doit bien avoir été annulée (elle est temporaire et commencer après la date de début
+		// du for que l'on ré-ouvre + passage de non-habitant à habitant)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final Set<AdresseTiers> adresses = pp.getAdressesTiers();
+				assertNotNull(adresses);
+				assertEquals(1, adresses.size());
+				final AdresseTiers adresse = adresses.iterator().next();
+				assertNotNull(adresse);
+				assertTrue(adresse.isAnnule());
+				assertNotNull(adresse.getAnnulationUser());     // cet attribut n'était pas rempli avant !
 				return null;
 			}
 		});

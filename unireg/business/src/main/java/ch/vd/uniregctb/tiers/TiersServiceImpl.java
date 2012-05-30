@@ -276,7 +276,7 @@ public class TiersServiceImpl implements TiersService {
                         }
                     }
                     if (!adr.isAnnule() && adr.getDateDebut().isAfterOrEqual(date) && !permanente) {
-                        adr.setAnnulationDate(date.asJavaDate());
+                        adr.setAnnule(true);
                     } else if (!adr.isAnnule() && adr.getDateFin() == null && !permanente) {
                         adr.setDateFin(date);
                     }
