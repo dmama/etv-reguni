@@ -289,6 +289,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         assertEquals(localite, adresse.getLocalite());
     }
 
+    protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Integer egid, Adresse adresse) {
+        assertNotNull(adresse);
+        assertEquals(debut, adresse.getDateDebut());
+        assertEquals(fin, adresse.getDateFin());
+        assertEquals(rue, adresse.getRue());
+        assertEquals(npa, adresse.getNumeroPostal());
+        assertEquals(localite, adresse.getLocalite());
+        assertEquals(egid, adresse.getEgid());
+    }
+
     protected static void assertAdresseCivile(@Nullable RegDate debut, @Nullable RegDate fin, String rue, String npa, String localite, @Nullable Integer egid, @Nullable Integer ewid,
                                               Adresse adresse) {
         assertNotNull(adresse);

@@ -46,7 +46,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(jean);
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetIndividuComplet() throws Exception {
 
 		final Individu individu =
@@ -112,7 +112,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Adresse principale1 = principales.get(1);
 		assertNotNull(principale1);
-		assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, null, principale1);
+		assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, principale1);
 		if (principale1.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
 			assertLocalisation(LocalisationType.CANTON_VD, 5652, principale1.getLocalisationPrecedente());
 		}
@@ -185,7 +185,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("CH", nationalite.getPays().getSigleOFS());
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetConjoint() throws Exception {
 
 		Individu individu = service.getIndividu(692185, null);
@@ -197,7 +197,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("Théodora", conjoint.getPrenom());
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetNumeroIndividuConjoint() {
 		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
@@ -211,7 +211,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals(845875, numeroAmelie.longValue());
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 20000)
 	public void testGetIndividuConjoint() {
 		Individu jeanMarc = service.getIndividu(132720L, date(2006, 12, 31));
 		assertNotNull(jeanMarc);
@@ -242,7 +242,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals(387602, conjoint.getNoTechnique());
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetAdressesAvecEgidEtEwid() {
 
 		final Individu ind0 = service.getIndividu(1015956, date(2010, 12, 31), AttributeIndividu.ADRESSES);
@@ -260,7 +260,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		}
 	}
 
-	@Test(timeout = 5000)
+	@Test(timeout = 10000)
 	public void testGetIndividuAvecPermis() {
 
 		final Individu ind = service.getIndividu(986204, null, AttributeIndividu.PERMIS);
