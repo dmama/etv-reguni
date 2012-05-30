@@ -60,16 +60,18 @@ public interface GlobalTiersIndexer {
 	/**
 	 * Indexe ou réindexe tout ou partie de la base de données.
 	 *
-	 * @param statusManager     un status manager pour suivre l'évolution de l'indexation (peut être nul)
-	 * @param nbThreads         le nombre de threads simultanés utilisés pour indexer la base
-	 * @param mode              le mode d'indexation voulu.
-	 * @param prefetchIndividus détermine si les individus doivent être préchargés en vrac
-	 * @param prefetchPMs       détermine si les PMs doivent être préchargés en vrac
+	 * @param statusManager             un status manager pour suivre l'évolution de l'indexation (peut être nul)
+	 * @param nbThreads                 le nombre de threads simultanés utilisés pour indexer la base
+	 * @param mode                      le mode d'indexation voulu.
+	 * @param prefetchIndividus         détermine si les individus doivent être préchargés en vrac
+	 * @param prefetchPMs               détermine si les PMs doivent être préchargés en vrac
+	 * @param prefetchAllPartsIndividus <b>vrai</b> si toutes les parts des individus doivent être préchargée; <b>faux autrement</b>
 	 * @return le nombre de tiers indexés
 	 * @throws ch.vd.uniregctb.indexer.IndexerException
 	 *          si l'indexation n'a pas pu être faite.
 	 */
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs) throws IndexerException;
+	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus) throws
+			IndexerException;
 
 	/**
 	 * Flag qui indique si l'indexation doit se faire a la volée ou si elle sera faite a posteriori.

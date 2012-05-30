@@ -66,7 +66,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false);
+		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false, false);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -99,7 +99,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties (ce qui inclut les tiers schedulés pour être réindexés)
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false);
+		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false, false);
 
 		// On vérifie que le tiers n'est plus schedulé pour être réindexé
 		assertTiers(false, null, id);
@@ -131,7 +131,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false);
+		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false, false);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -164,7 +164,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		assertEmpty(searcher.search(criteria));
 
 		// On effectue un réindexation des dirties
-		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false);
+		indexer.indexAllDatabase(null, 1, GlobalTiersIndexer.Mode.DIRTY_ONLY, false, false, false);
 
 		// On vérifie que le tiers n'est plus dirty, mais qu'il est toujours schedulé pour être réindexé dans le futur
 		assertTiers(false, dans10jours, id);
@@ -231,7 +231,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		final SessionFactory sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		final GlobalTiersIndexerImpl indexer = new GlobalTiersIndexerImpl() {
 			@Override
-			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchIndividus, boolean prefetchPMs) {
+			protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus) {
 				return new MassTiersIndexer(nbThreads, queueSizeByThread, new BatchWorker<Long>() {
 					@Override
 					public void process(List<Long> data) throws Exception {
@@ -301,7 +301,7 @@ public class GlobalTiersIndexerTest extends BusinessTest {
 		});
 
 		try {
-			indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL, true, true);
+			indexer.indexAllDatabase(null, 4, GlobalTiersIndexer.Mode.FULL, true, true, true);
 			Assert.fail("Comment ça, tout s'est bien passé ???");
 		}
 		catch (IndexerException e) {
