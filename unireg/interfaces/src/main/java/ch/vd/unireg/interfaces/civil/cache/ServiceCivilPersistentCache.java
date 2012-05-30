@@ -10,10 +10,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -140,7 +142,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(final long noIndividu, final RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, @Nullable final RegDate date, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -176,7 +178,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -233,6 +235,11 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		// on ne cache pas ce genre d'info
 		return target.getIndividuFromEvent(eventId);
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		target.ping();
 	}
 
 	/**

@@ -62,13 +62,18 @@ public class ServiceCivilMarshaller implements ServiceCivilRaw, InitializingBean
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 		return target.getIndividus(nosIndividus, date, parties);
 	}
 
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		return target.getIndividuFromEvent(eventId);
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		target.ping();
 	}
 
 	@Override

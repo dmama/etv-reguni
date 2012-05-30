@@ -66,6 +66,18 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 	}
 
 	@Override
+	public void ping() throws ServiceCivilException {
+		try {
+			target.ping();
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception dans ping() : " + getMessage(e), e);
+			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
+			throw new ServiceCivilException(getMessage(e));
+		}
+	}
+
+	@Override
 	public boolean isWarmable() {
 		try {
 			return target.isWarmable();

@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.ListOfRelations;
 import ch.vd.evd0001.v3.Person;
@@ -55,7 +57,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 
 		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
@@ -63,7 +65,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		if (list.getNumberOfResults().intValue() > 1) {
-			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu.");
+			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu = " + noIndividu);
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
@@ -72,7 +74,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), date, true);
 			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
 				if (rel.getListOfResults().getResult().size() > 1) {
-					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu.");
+					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu = " + noIndividu);
 				}
 				final Relations r = rel.getListOfResults().getResult().get(0).getRelation();
 				relations = (r == null ? null : r.getRelationshipHistory());
@@ -114,7 +116,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 
 		final ListOfPersons list = getPersonsSafely(nosIndividus, date, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
@@ -219,6 +221,17 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
 		}
 		return null;
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		final Individu individu = getIndividu(611836, null); // Francis Perroset
+		if (individu == null) {
+			throw new ServiceCivilException("L'individu n°611836 est introuvable");
+		}
+		if (individu.getNoTechnique() != 611836) {
+			throw new ServiceCivilException("Demandé l'individu n°611836, reçu l'individu n°" + individu.getNoTechnique());
+		}
 	}
 
 	@Override

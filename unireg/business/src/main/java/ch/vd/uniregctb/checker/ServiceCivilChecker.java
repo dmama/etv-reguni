@@ -1,9 +1,7 @@
 package ch.vd.uniregctb.checker;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ExceptionUtils;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 
 public class ServiceCivilChecker implements ServiceChecker {
 
@@ -13,8 +11,7 @@ public class ServiceCivilChecker implements ServiceChecker {
 	@Override
 	public Status getStatus() {
 		try {
-			Individu individu = serviceCivilRaw.getIndividu(611836, null); // Francis Perroset
-			Assert.isEqual(611836L, individu.getNoTechnique());
+			serviceCivilRaw.ping();
 			details = null;
 			return Status.OK;
 		}
