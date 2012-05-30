@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -666,7 +667,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null && !individu.isNonHabitantNonRenvoye()) {
 			// on fait la copie avec les parts demandées seulements
@@ -685,7 +686,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
 			final Individu individu = getIndividu(noIndividu, date, parties);
@@ -699,6 +700,11 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		return evenementsMap.get(eventId);
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		// rien à faire
 	}
 
 	@Override

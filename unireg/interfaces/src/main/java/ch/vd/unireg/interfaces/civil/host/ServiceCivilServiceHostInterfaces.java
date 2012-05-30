@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -42,7 +43,7 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
 		try {
 			final int annee = date == null ? 2400 : date.year();
 			Individu ind = IndividuImpl.get(serviceCivil.getIndividu(noIndividu, annee, AttributeIndividu.toEAI(parties)), date, parties);
@@ -70,7 +71,7 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 
 	@SuppressWarnings({"unchecked"})
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 		try {
 			// l'appel à l'EJB a besoin d'une collection sérialisable
 			if (!(nosIndividus instanceof Serializable)) {
@@ -104,6 +105,17 @@ public class ServiceCivilServiceHostInterfaces implements ServiceCivilRaw {
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		throw new NotImplementedException("La méthode getIndividuFromEvent ne doit pas être appelée sur Host-Interface");
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		final Individu individu = getIndividu(611836, null); // Francis Perroset
+		if (individu == null) {
+			throw new ServiceCivilException("L'individu n°611836 est introuvable");
+		}
+		if (individu.getNoTechnique() != 611836) {
+			throw new ServiceCivilException("Demandé l'individu n°611836, reçu l'individu n°" + individu.getNoTechnique());
+		}
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.civil;
 import java.util.Collection;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -36,7 +37,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, final RegDate date, final AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, @Nullable final RegDate date, final AttributeIndividu... parties) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -57,7 +58,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final RegDate date, final AttributeIndividu... parties) {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, @Nullable final RegDate date, final AttributeIndividu... parties) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -95,6 +96,22 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 					return String.format("eventId=%d", eventId);
 				}
 			});
+		}
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			target.ping();
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "ping", null);
 		}
 	}
 

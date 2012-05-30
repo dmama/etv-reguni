@@ -14,11 +14,13 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilRaw;
 import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -172,7 +174,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(final long noIndividu, final RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, @Nullable final RegDate date, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -211,7 +213,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -271,6 +273,11 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		// on ne cache pas ce genre d'info
 		return target.getIndividuFromEvent(eventId);
+	}
+
+	@Override
+	public void ping() throws ServiceCivilException {
+		target.ping();
 	}
 
 	private static void assertPartsPresence(Individu individu, Set<AttributeIndividu> partiesSet) {

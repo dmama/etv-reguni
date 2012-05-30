@@ -55,6 +55,13 @@ public interface ServiceCivilRaw {
 	IndividuApresEvenement getIndividuFromEvent(long eventId);
 
 	/**
+	 * Méthode qui permet de tester que le service civil répond bien. Cette méthode est insensible aux caches.
+	 *
+	 * @throws ServiceCivilException en cas de non-fonctionnement du service civil
+	 */
+	void ping() throws ServiceCivilException;
+
+	/**
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().
 	 */
 	boolean isWarmable();
