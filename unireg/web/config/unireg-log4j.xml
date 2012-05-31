@@ -46,7 +46,7 @@
 		<level value="INFO" />
 	</logger>
 
-	<logger name="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorWithCustomHeaders">
+	<logger name="ch.vd.unireg.servlet.remoting">
 		<level value="INFO" />
 	</logger>
 
