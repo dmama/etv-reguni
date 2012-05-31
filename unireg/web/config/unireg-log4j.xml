@@ -46,6 +46,10 @@
 		<level value="INFO" />
 	</logger>
 
+        <!-- logger name="ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne">
+                <level value="TRACE" />
+        </logger-->
+
 	<logger name="ch.vd.unireg.servlet.remoting">
 		<level value="INFO" />
 	</logger>
@@ -112,7 +116,7 @@
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />
-		<appender-ref ref="CONSOLE" />
+		<!-- appender-ref ref="CONSOLE" /-->
 	</root>
 
 </log4j:configuration>
