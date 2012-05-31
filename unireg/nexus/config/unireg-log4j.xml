@@ -71,7 +71,7 @@
 	<root>
 		<level value="WARN" />
 		<appender-ref ref="LOGFILE" />
-		<appender-ref ref="CONSOLE" />
+		<!-- appender-ref ref="CONSOLE" /-->
 	</root>
 
 </log4j:configuration>
