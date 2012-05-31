@@ -4,11 +4,18 @@
 
 	<!-- Service civil -->
 
+	<bean id="serviceCivilHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorWithCustomHeaders"/>
+
+	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.civil.ServiceCivilRemoteLogger">
+		<property name="executor" ref="serviceCivilHttpRequestExecutor"/>
+	</bean>
+
 	<bean id="serviceCivilRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceCivil.remoting" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="executor" ref="serviceCivilHttpRequestExecutor" />
 	</bean>
 
 	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">

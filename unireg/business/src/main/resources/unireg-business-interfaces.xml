@@ -10,9 +10,6 @@
 
 	<!-- Service Civil -->
 
-	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
-	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
-
 	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="target" ref="serviceCivilRaw"/>
