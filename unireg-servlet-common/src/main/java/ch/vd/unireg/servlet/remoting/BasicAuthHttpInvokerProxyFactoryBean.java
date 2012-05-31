@@ -17,12 +17,17 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 	private int readTimeout;
 	private String username;
 	private String password;
+	private CommonsHttpInvokerRequestExecutor executor = new CommonsHttpInvokerRequestExecutor();
 
 	@Override
 	public void afterPropertiesSet() {
+		initExecutor(executor, readTimeout, username, password, getBeanClassLoader());
+		setHttpInvokerRequestExecutor(executor);
+		super.afterPropertiesSet();
+	}
 
-		CommonsHttpInvokerRequestExecutor exec = new CommonsHttpInvokerRequestExecutor();
-		exec.setBeanClassLoader(getBeanClassLoader()); // JEC: C'est fait dans la super classe par dÃ©faut, ca sert a quoi???
+	public static void initExecutor(CommonsHttpInvokerRequestExecutor exec, int readTimeout, String username, String password, ClassLoader beanClassLoader) {
+		exec.setBeanClassLoader(beanClassLoader); // JEC: C'est fait dans la super classe par dÃ©faut, ca sert a quoi???
 		exec.setReadTimeout(readTimeout);
 
 		if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
@@ -38,9 +43,6 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 			authPrefs.add(AuthPolicy.BASIC);
 			client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
 		}
-
-		setHttpInvokerRequestExecutor(exec);
-		super.afterPropertiesSet();
 	}
 
 	public void setReadTimeout(int readTimeout) {
@@ -55,4 +57,7 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 		this.password = password;
 	}
 
+	public void setExecutor(CommonsHttpInvokerRequestExecutor executor) {
+		this.executor = executor;
+	}
 }
