@@ -12,6 +12,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -196,10 +197,15 @@ public class ServicePersonneMoraleCache extends ServicePersonneMoraleBase implem
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 			PersonneMoraleCacheValueWithParts value = (PersonneMoraleCacheValueWithParts) element.getObjectValue();
 			pm = value.getValueForPartsAndCompleteIfNeeded(set, new CompletePartsCallback<PersonneMorale, PartPM>() {
+				@NotNull
 				@Override
 				public PersonneMorale getDeltaValue(Set<PartPM> delta) {
 					// on complète la liste des parts à la volée
-					return target.getPersonneMorale(id, setToArray(set));
+					final PersonneMorale pm = target.getPersonneMorale(id, setToArray(set));
+					if (pm == null) {
+						throw new PersonneMoraleException("Le service PM ne trouve pas la personne morale n°" + id + " alors que des données la concernant pré-existent dans le cache !");
+					}
+					return pm;
 				}
 
 				@Override

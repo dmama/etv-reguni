@@ -2,6 +2,8 @@ package ch.vd.uniregctb.cache;
 
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 public interface CompletePartsCallback<T, P> {
 
 	/**
@@ -10,6 +12,7 @@ public interface CompletePartsCallback<T, P> {
 	 * @param delta les parties qui doivent être renseignées sur la valeur retournée.
 	 * @return une valeur avec les parties qui vont bien.
 	 */
+	@NotNull
 	T getDeltaValue(Set<P> delta);
 
 	/**

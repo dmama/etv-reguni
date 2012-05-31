@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.interfaces.service;
 
 /**
- * Exception renvoyée par le service civil dans le d'une erreur de réseau ou d'un problème de droit d'accès.
+ * Exception renvoyée par le service PM dans le d'une erreur de réseau ou d'un problème de droit d'accès.
  */
 public class PersonneMoraleException extends RuntimeException {
 
@@ -9,6 +9,10 @@ public class PersonneMoraleException extends RuntimeException {
 
 	public PersonneMoraleException(Throwable e) {
 		super(e);
+	}
+
+	public PersonneMoraleException(String message) {
+		super(message);
 	}
 
 	public PersonneMoraleException(String string, Throwable e) {
