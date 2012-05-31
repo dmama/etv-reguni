@@ -14,6 +14,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -193,10 +194,15 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
 			IndividuCacheValueWithParts value = (IndividuCacheValueWithParts) element.getObjectValue();
 			individu = value.getValueForPartsAndCompleteIfNeeded(partiesSet, new CompletePartsCallback<Individu, AttributeIndividu>() {
+				@NotNull
 				@Override
 				public Individu getDeltaValue(Set<AttributeIndividu> delta) {
 					// on complète la liste des parts à la volée
-					return target.getIndividu(noIndividu, date, setToArray(delta));
+					final Individu ind = target.getIndividu(noIndividu, date, setToArray(delta));
+					if (ind == null) {
+						throw new ServiceCivilException("Le service civil ne trouve pas l'individu n°" + noIndividu + " alors que des données le concernant pré-existent dans le cache !");
+					}
+					return ind;
 				}
 
 				@Override

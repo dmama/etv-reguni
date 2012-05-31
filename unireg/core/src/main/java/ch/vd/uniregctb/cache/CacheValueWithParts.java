@@ -123,11 +123,11 @@ public abstract class CacheValueWithParts<T, P> implements Serializable {
 			return null;
 		}
 
-		Set<P> delta = getMissingParts(parts);
+		final Set<P> delta = getMissingParts(parts);
 		if (delta != null) {
 			// on complète la liste des parts à la volée
-			T deltaTiers = callback.getDeltaValue(delta);
-			addParts(delta, deltaTiers);
+			final T deltaValue = callback.getDeltaValue(delta);
+			addParts(delta, deltaValue);
 			callback.postCompletion();
 		}
 		return getValueForParts(parts);
@@ -147,11 +147,11 @@ public abstract class CacheValueWithParts<T, P> implements Serializable {
 			return null;
 		}
 
-		Set<P> delta = getMissingParts(parts);
+		final Set<P> delta = getMissingParts(parts);
 		if (delta != null) {
 			// on complète la liste des parts à la volée
-			T deltaTiers = callback.getDeltaValue(delta);
-			addParts(delta, deltaTiers);
+			final T deltaValue = callback.getDeltaValue(delta);
+			addParts(delta, deltaValue);
 		}
 		return getValueForParts(parts);
 	}
