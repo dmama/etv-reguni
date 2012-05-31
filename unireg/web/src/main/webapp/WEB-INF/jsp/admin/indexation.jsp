@@ -34,6 +34,23 @@
 		</fieldset>
 
 		<fieldset>
+			<legend><span>Rafraichissement du cache des individus</span></legend>
+			<table>
+				<tr class="<unireg:nextRowClass/>" >
+					<td>Numéro d'individu&nbsp;:</td>
+					<td>
+						<form:input path="indNo" size ="15" cssErrorClass="input-with-errors"/>
+						<form:errors path="indNo" cssClass="error"/>
+						<form:checkbox path="logIndividu" />
+					</td>
+					<td>
+						<input type="button" value="Recharger" onclick="submitIndex('reloadIndividu');"/>
+					</td>
+				</tr>
+			</table>
+		</fieldset>
+
+		<fieldset>
 			<legend><span><fmt:message key="label.effacement.index" /></span></legend>
 			<table>
 				<tr class="<unireg:nextRowClass/>" >

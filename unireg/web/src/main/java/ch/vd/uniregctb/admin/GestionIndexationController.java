@@ -15,15 +15,18 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.admin.indexer.GestionIndexation;
 import ch.vd.uniregctb.admin.indexer.IndexDocument;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.SearchCallback;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
+import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -40,11 +43,14 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 	private GlobalIndexInterface globalIndex;
 	private IndexationManager indexationManager;
+	private ServiceCivilService serviceCivil;
+	private DataEventService dataEventService;
 
 	private static final String ACTION_PARAMETER_NAME = "action";
 	private static final String ACTION_SEARCH_VALUE = "search";
 	private static final String ACTION_PERFORMANCE_VALUE = "performance";
 	private static final String ACTION_REINDEX_TIERS = "reindexTiers";
+	private static final String ACTION_RELOAD_INDIVIDU = "reloadIndividu";
 	public static final String INDEX_LIST_ATTRIBUTE_NAME = "index";
 	public static final String GESTION_INDEXATION_NAME = "gestionIndexation";
 	private static final int maxHits = 100;
@@ -152,6 +158,26 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 				return new ModelAndView(new RedirectView("/tiers/visu.do?id=" + id, true));
 			}
 		}
+		else if (action.equals(ACTION_RELOAD_INDIVIDU)) {
+			if (bean != null) {
+				final String idAsString = FormatNumeroHelper.removeSpaceAndDash(bean.getIndNo());
+				final long id = Long.parseLong(idAsString);
+				serviceCivil.setIndividuLogging(bean.isLogIndividu());
+				try {
+					dataEventService.onIndividuChange(id);
+					final Individu individu = serviceCivil.getIndividu(id, null);
+					if (individu == null) {
+						flash("L'individu n°" + id + " n'existe pas.");
+					}
+					else {
+						flash("L'individu n°" + id + " a été rechargé.");
+					}
+				}
+				finally {
+					serviceCivil.setIndividuLogging(false);
+				}
+			}
+		}
 		mav.setView(new RedirectView(getSuccessView()));
 		return mav;
 	}
@@ -203,6 +229,14 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setIndexationManager(IndexationManager indexationManager) {
 		this.indexationManager = indexationManager;
+	}
+
+	public void setServiceCivil(ServiceCivilService serviceCivil) {
+		this.serviceCivil = serviceCivil;
+	}
+
+	public void setDataEventService(DataEventService dataEventService) {
+		this.dataEventService = dataEventService;
 	}
 }
 
