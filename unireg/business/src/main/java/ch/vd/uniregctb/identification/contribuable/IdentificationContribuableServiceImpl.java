@@ -18,6 +18,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
@@ -245,6 +246,28 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		list = filterSexe(list, criteres);
 		list = filterDateNaissance(list, criteres);
 		list = filterAdresse(list, criteres);
+		list = verifieCoherenceEncasNAVS13(list, criteres);
+		return list;
+	}
+
+	/**
+	 * Permet de vérifier que le ctb trouvé a un numero avs 13 qui est égal au numero 13 de la demande si celui ci est renseigné
+	 *
+	 * @param list     Liste des contribuables trouvées suceptible de correspondre aux critères de recherches
+	 * @param criteres les critères d'identification
+	 * @return les contribuables qui sont conformes à la vérification (il ne devrait y en avoir 1 ou 0)
+	 */
+	private List<PersonnePhysique> verifieCoherenceEncasNAVS13(List<PersonnePhysique> list, CriteresPersonne criteres) {
+		final String criteresNAVS13 = criteres.getNAVS13();
+		if (criteresNAVS13 != null) {
+			CollectionUtils.filter(list, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					return matchNavs13((PersonnePhysique) object, criteresNAVS13);
+				}
+
+			});
+		}
 		return list;
 	}
 
@@ -437,7 +460,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		LOGGER.info("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
-					+ "]. Numéro du contribuable trouvé = " + personne.getNumero());
+				+ "]. Numéro du contribuable trouvé = " + personne.getNumero());
 
 		messageHandler.sendReponse(messageReponse);
 	}
@@ -983,6 +1006,17 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return false;  //To change body of created methods use File | Settings | File Templates.
 	}
 
+	private boolean matchNavs13(PersonnePhysique object, String criteresNAVS13) {
+		String navs13 = tiersService.getNumeroAssureSocial(object);
+		if (navs13 != null) {
+			return AvsHelper.formatNouveauNumAVS(criteresNAVS13).equals(AvsHelper.formatNouveauNumAVS(navs13));
+		}
+		else {
+			//Le contribuable na pas de numéro Avs connu par unireg,on considère ce critère comme ok
+			return true;
+		}
+	}
+
 
 	/**
 	 * Supprime toutes les personnes dont la date de naissances ne correspond pas avec celle spécifié dans le message
@@ -1302,7 +1336,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final CriteresPersonne criteresPersonne = demande.getPersonne();
 		Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
-		if(criteresPersonne!=null){
+		if (criteresPersonne != null) {
 			final List<PersonnePhysique> list = identifie(criteresPersonne);
 			if (list.size() == 1) {
 				// on a trouvé un et un seul contribuable:
@@ -1321,8 +1355,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				return false;
 			}
 		}
-		else{
-			LOGGER.info(String.format("Le message %s ne contient aucune critère sur la personne à identifier, il est passé en traitement manuel.",message.getId()));
+		else {
+			LOGGER.info(String.format("Le message %s ne contient aucune critère sur la personne à identifier, il est passé en traitement manuel.", message.getId()));
 			//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement
 			if (Etat.EXCEPTION == message.getEtat()) {
 				message.setEtat(Etat.A_TRAITER_MANUELLEMENT);
@@ -1339,7 +1373,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return processor.run(dateTraitement, nbThreads, status, idMessage);
 	}
 
-	private String traduireBusinessUser(String user){
+	private String traduireBusinessUser(String user) {
 		String visaUser = user;
 		if (visaUser.contains("JMS-EvtIdentCtb")) {
 			visaUser = "Unireg";
