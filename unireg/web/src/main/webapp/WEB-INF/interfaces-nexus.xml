@@ -16,6 +16,7 @@
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
 		<property name="executor" ref="serviceCivilHttpRequestExecutor" />
+		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
 	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
@@ -41,6 +42,7 @@
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
 	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
@@ -79,6 +81,7 @@
 		<property name="serviceInterface" value="ch.vd.uniregctb.data.DataEventService" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
 	<!-- Listener qui permet au cache centralisé Nexus de recevoir les notifications lors des changements sur les individus -->
