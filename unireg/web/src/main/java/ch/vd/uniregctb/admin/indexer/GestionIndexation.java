@@ -14,6 +14,8 @@ public class GestionIndexation {
 	private String chemin;
 	private String requete;
 	private String id;
+	private String indNo;
+	private boolean logIndividu = true;
 
 
 	/**
@@ -50,6 +52,22 @@ public class GestionIndexation {
 
 	public String getId() {
 		return id;
+	}
+
+	public String getIndNo() {
+		return indNo;
+	}
+
+	public void setIndNo(String indNo) {
+		this.indNo = indNo;
+	}
+
+	public boolean isLogIndividu() {
+		return logIndividu;
+	}
+
+	public void setLogIndividu(boolean logIndividu) {
+		this.logIndividu = logIndividu;
 	}
 
 	/**
