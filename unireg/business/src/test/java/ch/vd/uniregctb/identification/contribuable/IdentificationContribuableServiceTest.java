@@ -532,6 +532,120 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	//SIFISC-5040
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNavs13EtHomonymes() throws Exception {
+		final long noIndividuJerome1 = 151658;
+		final long noIndividuJerome2 = 123497;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu indJerome1 = addIndividu(noIndividuJerome1, date(1982, 7, 26), "Lathion", "Jérôme", true);
+				MockIndividu indJerome2 = addIndividu(noIndividuJerome2, date(1962, 11, 14), "Lathion", "Jérôme", true);
+				addFieldsIndividu(indJerome1, "7568174973276", "", "");
+				addFieldsIndividu(indJerome2, "7566199749203", "", "");
+			}
+		});
+
+		class Ids {
+			Long jerome2;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habJerome2 = addHabitant(noIndividuJerome2);
+				ids.jerome2 = habJerome2.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+
+		CriteresPersonne criteresJerome1 = new CriteresPersonne();
+		criteresJerome1.setPrenoms("Jérôme");
+		criteresJerome1.setNom("Lathion");
+		criteresJerome1.setNAVS13("7568174973276");
+
+
+		final IdentificationContribuable messageJerome1 = createDemandeWithEmetteurId(criteresJerome1, "EMPTY");
+		messageJerome1.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(messageJerome1);
+				return null;
+			}
+		});
+
+		// L'identification a du échouer car le numéro NAVS13 ne correspond pas à la demande
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+
+
+		CriteresPersonne criteresJerome2 = new CriteresPersonne();
+		criteresJerome2.setPrenoms("Jérôme");
+		criteresJerome2.setNom("Lathion");
+		criteresJerome2.setNAVS13("7566199749203");
+
+
+		final IdentificationContribuable messageJerome2 = createDemandeWithEmetteurId(criteresJerome2, "EPSA1003");
+		messageJerome2.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(messageJerome2);
+				return null;
+			}
+		});
+
+		// jérome doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> listJerome2 = identCtbDAO.getAll();
+		assertEquals(2, listJerome2.size());
+
+		//Afin de guarantir que l'on prend toujours le bon message, on trie la liste
+		Collections.sort(list,new Comparator<IdentificationContribuable>() {
+			@Override
+			public int compare(IdentificationContribuable identificationContribuable, IdentificationContribuable identificationContribuable1) {
+				return identificationContribuable.getLogCreationDate().compareTo(identificationContribuable1.getLogCreationDate());
+			}
+		});
+
+		final IdentificationContribuable icJerome2 = listJerome2.get(1);
+
+
+		assertNotNull(icJerome2);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, icJerome2.getEtat());
+		assertEquals(Integer.valueOf(1), icJerome2.getNbContribuablesTrouves());
+
+		final Reponse reponse = icJerome2.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.jerome2, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(icJerome2.getId(), sent.getId());
+
+
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testContribuableSurNAVS11NonHabitant() throws Exception {
@@ -1290,8 +1404,6 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		assertCountDemandes(0);
 
 		globalTiersIndexer.sync();
-
-
 
 
 		// création et traitement du message d'identification
