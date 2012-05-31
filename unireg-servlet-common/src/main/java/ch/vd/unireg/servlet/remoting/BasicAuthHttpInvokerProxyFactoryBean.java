@@ -17,17 +17,18 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 	private int readTimeout;
 	private String username;
 	private String password;
+	private Integer maxConnectionsPerHost;
 	private CommonsHttpInvokerRequestExecutor executor = new CommonsHttpInvokerRequestExecutor();
 
 	@Override
 	public void afterPropertiesSet() {
-		initExecutor(executor, readTimeout, username, password, getBeanClassLoader());
+		initExecutor(executor, readTimeout, username, password, maxConnectionsPerHost, getBeanClassLoader());
 		setHttpInvokerRequestExecutor(executor);
 		super.afterPropertiesSet();
 	}
 
-	public static void initExecutor(CommonsHttpInvokerRequestExecutor exec, int readTimeout, String username, String password, ClassLoader beanClassLoader) {
-		exec.setBeanClassLoader(beanClassLoader); // JEC: C'est fait dans la super classe par dÃ©faut, ca sert a quoi???
+	public static void initExecutor(CommonsHttpInvokerRequestExecutor exec, int readTimeout, String username, String password, Integer maxConnectionsPerHost, ClassLoader beanClassLoader) {
+		exec.setBeanClassLoader(beanClassLoader); // JEC: C'est fait dans la super classe par défaut, ca sert a quoi???
 		exec.setReadTimeout(readTimeout);
 
 		if (StringUtils.isNotBlank(username) && StringUtils.isNotBlank(password)) {
@@ -43,6 +44,11 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 			authPrefs.add(AuthPolicy.BASIC);
 			client.getParams().setParameter(AuthPolicy.AUTH_SCHEME_PRIORITY, authPrefs);
 		}
+
+		if (maxConnectionsPerHost != null) {
+			final HttpClient client = exec.getHttpClient();
+			client.getHttpConnectionManager().getParams().setDefaultMaxConnectionsPerHost(maxConnectionsPerHost);
+		}
 	}
 
 	public void setReadTimeout(int readTimeout) {
@@ -55,6 +61,10 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public void setMaxConnectionsPerHost(Integer maxConnectionsPerHost) {
+		this.maxConnectionsPerHost = maxConnectionsPerHost;
 	}
 
 	public void setExecutor(CommonsHttpInvokerRequestExecutor executor) {
