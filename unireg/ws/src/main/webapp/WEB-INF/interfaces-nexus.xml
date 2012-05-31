@@ -4,7 +4,7 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilRemote" class="ch.vd.uniregctb.common.BasicAuthHttpInvokerProxyFactoryBean">
+	<bean id="serviceCivilRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceCivil.remoting" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
@@ -29,7 +29,7 @@
 
 	<!-- Service infra -->
 
-	<bean id="serviceInfraRemote" class="ch.vd.uniregctb.common.BasicAuthHttpInvokerProxyFactoryBean">
+	<bean id="serviceInfraRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceInfra.remoting" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
