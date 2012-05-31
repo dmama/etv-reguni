@@ -7,6 +7,7 @@
 		<property name="serviceInterface" value="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
 	<bean id="globalTiersSearcherTracing" class="ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcherTracing">
