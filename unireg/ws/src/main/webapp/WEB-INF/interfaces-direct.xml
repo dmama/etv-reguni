@@ -7,6 +7,9 @@
 
 	<!-- Service civil -->
 
+	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
+	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
+
 	<bean id="serviceCivilServiceHost" class="ch.vd.unireg.interfaces.civil.host.ServiceCivilServiceHostInterfaces">
 		<property name="serviceCivil" ref="_serviceCivil" />
 		<property name="interceptor" ref="serviceCivilInterceptor"/>
