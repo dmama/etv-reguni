@@ -61,17 +61,22 @@ public class VoirMessageIdentificationController {
 			final URL url = new URL(documentUrl);
 			try {
 				final HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url);
-				final String proposedFilename = document.getProposedContentFilename();
-				final String filename;
-				if (proposedFilename == null) {
-					final String extension = MimeTypeHelper.getFileExtensionForType(document.getContentType());
-					filename = String.format("message%s", extension);
+				try {
+					final String proposedFilename = document.getProposedContentFilename();
+					final String filename;
+					if (proposedFilename == null) {
+						final String extension = MimeTypeHelper.getFileExtensionForType(document.getContentType());
+						filename = String.format("message%s", extension);
+					}
+					else {
+						filename = proposedFilename;
+					}
+					servletService.downloadAsFile(filename, document.getContentType(), document.getContent(), document.getContentLength(), response);
+					return null;
 				}
-				else {
-					filename = proposedFilename;
+				finally {
+					document.release();
 				}
-				servletService.downloadAsFile(filename, document.getContentType(), document.getContent(), document.getContentLength(), response);
-				return null;
 			}
 			catch (HttpDocumentFetcher.HttpDocumentException e) {
 				LOGGER.error(String.format("Erreur lors de l'extraction du document à l'URL '%s'", url), e);

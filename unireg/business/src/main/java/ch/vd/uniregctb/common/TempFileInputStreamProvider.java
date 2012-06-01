@@ -1,12 +1,10 @@
-package ch.vd.uniregctb.inbox;
+package ch.vd.uniregctb.common;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import ch.vd.uniregctb.common.StreamUtils;
 
 /**
  * Permet de fournir des flux de lecture sur le contenu d'un fichier temporaire (ce fichier sera détruit
@@ -53,8 +51,8 @@ public final class TempFileInputStreamProvider {
 		return size;
 	}
 
-	@SuppressWarnings({"ResultOfMethodCallIgnored"})
 	public void close() {
+		//noinspection ResultOfMethodCallIgnored
 		tempFile.delete();
 	}
 }

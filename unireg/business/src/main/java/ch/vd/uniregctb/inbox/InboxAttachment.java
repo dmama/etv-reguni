@@ -3,6 +3,8 @@ package ch.vd.uniregctb.inbox;
 import java.io.IOException;
 import java.io.InputStream;
 
+import ch.vd.uniregctb.common.TempFileInputStreamProvider;
+
 /**
  * Attachement téléchargeable
  */
