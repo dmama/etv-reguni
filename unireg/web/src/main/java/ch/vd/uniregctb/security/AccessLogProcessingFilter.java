@@ -36,7 +36,7 @@ public class AccessLogProcessingFilter extends GenericFilterBean implements Deta
 	private static final LoadDetailRenderer<ServletRequest> RENDERER = new LoadDetailRenderer<ServletRequest>() {
 		@Override
 		public String toString(ServletRequest object) {
-			return getUrl(object);
+			return String.format("%s:%s", getMethod(object), getUrl(object));
 		}
 	};
 
