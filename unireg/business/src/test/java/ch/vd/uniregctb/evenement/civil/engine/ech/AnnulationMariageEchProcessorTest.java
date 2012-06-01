@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -9,8 +10,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -22,14 +25,19 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
+@ContextConfiguration(locations = {
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_TACHES
+})
 public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
-	
+
 	@Test(timeout = 10000L)
 	public void testAnnulationMariage() throws Exception {
 		
 		final long noIndividuLui = 36712456523468L;
 		final long noIndividuElle = 34674853272545L;
 		final RegDate dateMariage = date(2012, 2, 10);
+		final RegDate dateOuvertureFor2 = date(2000, 1, 1);
+		final RegDate dateOuvertureFor1 = date(1995, 1, 1);
 		
 		// mise en place civile
 		serviceCivil.setUp(new MockServiceCivil() {
@@ -51,8 +59,19 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addCollAdm(MockOfficeImpot.OID_ECHALLENS);
+				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
+
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				addForPrincipal(lui, date(1990, 1, 1), MotifFor.INDETERMINE, dateOuvertureFor1.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.Morges);
+
+
+				addForPrincipal(lui, dateOuvertureFor1, MotifFor.DEMENAGEMENT_VD, dateOuvertureFor2.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, MockCommune.VufflensLaVille);
+
+				addForPrincipal(lui, dateOuvertureFor2, MotifFor.DEMENAGEMENT_VD, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 				
 				final PersonnePhysique elle = addHabitant(noIndividuElle);
 				addForPrincipal(elle, date(2001, 4, 12), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);

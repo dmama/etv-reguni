@@ -1210,12 +1210,6 @@ public class MetierServiceImpl implements MetierService {
 				rapport.setAnnule(true);
 			}
 		}
-		// Réouverture des fors fermés lors du mariage (renvoi une exception si des fors ont été annulé après la date de mariage)
-		reouvreForsFermesPourMariage(principal, date);
-		// même chose pour le conjoint
-		if (conjoint != null) {
-			reouvreForsFermesPourMariage(conjoint, date);
-		}
 
 		if (annulationMenage) {
 			// annulation du tiers ménage
@@ -1227,6 +1221,13 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		updateSituationFamilleAnnulationCouple(menage, date);
+		// Réouverture des fors fermés lors du mariage (renvoi une exception si des fors ont été annulé après la date de mariage)
+		reouvreForsFermesPourMariage(principal, date);
+		// même chose pour le conjoint
+		if (conjoint != null) {
+			reouvreForsFermesPourMariage(conjoint, date);
+		}
+
 	}
 
 	/**
