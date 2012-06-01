@@ -1,9 +1,16 @@
 package ch.vd.uniregctb.tache;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import ch.vd.uniregctb.tiers.*;
 import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -47,7 +54,24 @@ import ch.vd.uniregctb.tache.sync.Context;
 import ch.vd.uniregctb.tache.sync.DeleteDI;
 import ch.vd.uniregctb.tache.sync.SynchronizeAction;
 import ch.vd.uniregctb.tache.sync.UpdateDI;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForGestion;
+import ch.vd.uniregctb.tiers.ForsParTypeAt;
+import ch.vd.uniregctb.tiers.Tache;
+import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheControleDossier;
+import ch.vd.uniregctb.tiers.TacheCriteria;
+import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheDAO.TacheStats;
+import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TacheNouveauDossier;
+import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -540,7 +564,9 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private void executeActions(Long ctbId, List<SynchronizeAction> actions) {
-
+		//TODO(XSIBNM)
+		// Appeler la méthode getCollectiviteAdministrative et asserter que la collectivité existe.
+		// Corriger les tests qui ne passent plus
 		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		if (officeSuccessions == null) {
 			throw new IllegalArgumentException("Impossible de trouver l'office des successions !");
