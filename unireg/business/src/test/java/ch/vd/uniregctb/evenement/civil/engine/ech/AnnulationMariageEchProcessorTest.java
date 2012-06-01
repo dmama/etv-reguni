@@ -30,10 +30,6 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 })
 public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
-
-
-
-	//@Test(timeout = 10000L)
 	@Test
 	public void testAnnulationMariage() throws Exception {
 		
@@ -150,6 +146,11 @@ public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEch
 		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				addCollAdm(MockOfficeImpot.OID_ECHALLENS);
+				addCollAdm(MockOfficeImpot.ACISUCCESSIONS);
+
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
 
