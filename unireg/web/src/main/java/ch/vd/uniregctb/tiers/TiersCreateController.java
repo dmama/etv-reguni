@@ -93,7 +93,7 @@ public class TiersCreateController extends AbstractTiersController {
 		super.initBinder(request, binder);
 
 		// on doit autoriser les dates partielles sur la date de naissance des tiers
-		binder.registerCustomEditor(RegDate.class, "tiers.dateNaissance", new RegDateEditor(true, true));
+		binder.registerCustomEditor(RegDate.class, "tiers.dateNaissance", new RegDateEditor(true, true, false));
 	}
 
 	@Override

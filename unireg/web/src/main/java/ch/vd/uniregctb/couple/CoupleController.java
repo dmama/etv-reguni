@@ -71,7 +71,7 @@ public class CoupleController {
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
 		binder.setValidator(coupleValidator);
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 		binder.registerCustomEditor(Long.class, "pp1Id", new TiersNumberEditor(true));
 		binder.registerCustomEditor(Long.class, "pp2Id", new TiersNumberEditor(true));
 		binder.registerCustomEditor(Long.class, "mcId", new TiersNumberEditor(true));

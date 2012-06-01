@@ -86,7 +86,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 		binder.registerCustomEditor(Long.class, new CustomNumberEditor(Long.class, numberFormat, true));
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class));
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 
 	}
 

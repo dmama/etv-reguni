@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
+import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -9,8 +10,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
@@ -67,7 +66,7 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class, true));
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(Set.class, true));
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
-		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true));
+		binder.registerCustomEditor(RegDate.class, "dateNaissance", new RegDateEditor(true, true, false));
 	}
 
 	/**

@@ -100,11 +100,11 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		binder.registerCustomEditor(List.class, new CustomCollectionEditor(List.class));
 		binder.registerCustomEditor(boolean.class, new CustomBooleanEditor(true));
 		binder.registerCustomEditor(Boolean.class, new CustomBooleanEditor(true));
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 		binder.registerCustomEditor(String.class, new StringTrimmerEditor(true));
 		binder.registerCustomEditor(URL.class, new URLEditor());
 
-		final PropertyEditor partialDateEditor = new RegDateEditor(true, true);
+		final PropertyEditor partialDateEditor = new RegDateEditor(true, true, false);
 
 		final EntityView view = (EntityView) binder.getTarget();
 

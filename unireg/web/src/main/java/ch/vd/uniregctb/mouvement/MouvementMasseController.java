@@ -188,7 +188,7 @@ public class MouvementMasseController {
 
 	@InitBinder
 	public void initBinder(HttpServletRequest request, WebDataBinder binder) {
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
 
 		final Locale locale = request.getLocale();
 		final SimpleDateFormat sdf = new SimpleDateFormat(DateHelper.DATE_FORMAT_DISPLAY, locale);
