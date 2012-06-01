@@ -74,7 +74,7 @@ public class SimulationController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
-		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false));
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, true)); // [SIFISC-5265] Les dates malformées sont considérées comme nulles
 	}
 
 	@RequestMapping(value = "/modeImpositionUpdate.do", method = RequestMethod.GET)
