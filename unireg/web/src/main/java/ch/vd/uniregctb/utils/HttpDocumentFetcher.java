@@ -3,14 +3,19 @@ package ch.vd.uniregctb.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.Proxy;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.Header;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
+import org.apache.commons.httpclient.SimpleHttpConnectionManager;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
+
+import ch.vd.uniregctb.common.TempFileInputStreamProvider;
 
 /**
  * Classe utilitaire pour récupérer un document, étant connue son URL pérenne d'accès
@@ -22,7 +27,8 @@ public abstract class HttpDocumentFetcher {
 	private static final String HTTP_CONTENT_DISPOSITION = "Content-Disposition";
 
 	/**
-	 * Document renvoyé par la méthode {@link #fetch}
+	 * Document renvoyé par la méthode {@link #fetch}<br/>
+	 * <b>Ne pas oublier d'appeler la méthode {@link #release} après utilisation</b>
 	 */
 	public static final class HttpDocument {
 
@@ -42,14 +48,14 @@ public abstract class HttpDocumentFetcher {
 		private final String proposedContentFilename;
 
 		/**
-		 * Flux duquel on peut récupérer le contenu
+		 * Fichier duquel on peut récupérer le contenu
 		 */
-		private InputStream content;
+		private TempFileInputStreamProvider content;
 
-		private HttpDocument(String contentType, @Nullable Integer contentLength, @Nullable String proposedFilename, InputStream content) {
+		private HttpDocument(String contentType, @Nullable Integer contentLength, @Nullable String proposedFilename, InputStream content) throws IOException {
 			this.contentType = contentType;
 			this.contentLength = contentLength;
-			this.content = content;
+			this.content = new TempFileInputStreamProvider("ur-doc-", content);
 			this.proposedContentFilename = proposedFilename;
 		}
 
@@ -67,8 +73,20 @@ public abstract class HttpDocumentFetcher {
 			return proposedContentFilename;
 		}
 
-		public InputStream getContent() {
-			return content;
+		/**
+		 * Attention ! Chaque appel ré-ouvre un nouveau flux !
+		 * @return le flux depuis lequel on peut récupérer le contenu du document
+		 * @throws IOException en cas de problème lors de l'ouverture du flux
+		 */
+		public InputStream getContent() throws IOException {
+			return content.getInputStream();
+		}
+
+		/**
+		 * Libère les ressources allouées pour le document
+		 */
+		public void release() {
+			content.close();
 		}
 	}
 
@@ -124,35 +142,20 @@ public abstract class HttpDocumentFetcher {
 	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK
 	 */
 	public static HttpDocument fetch(URL url) throws IOException, HttpDocumentException {
-		return fetch(url.openConnection());
-	}
+		final GetMethod method;
+		try {
+			method = new GetMethod(url.toExternalForm());
+		}
+		catch (IllegalStateException e) {
+			throw new IllegalArgumentException("URL non supportée : " + url, e);
+		}
 
-	/**
-	 * Récupère le document dont l'URL est passée en paramètre
-	 * @param url URL d'accès au document recherché
-	 * @param proxy proxy à utiliser pour accéder à l'URL
-	 * @return le document trouvé
-	 * @throws IOException en cas d'erreur de communication
-	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK
-	 */
-	public static HttpDocument fetch(URL url, Proxy proxy) throws IOException, HttpDocumentException {
-		return fetch(url.openConnection(proxy));
-	}
-
-	/**
-	 * Récupère les données fournies au travers de la connexion donnée
-	 * @param con connexion à utiliser
-	 * @return le document trouvé
-	 * @throws IOException en cas d'erreur de communication
-	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK
-	 * @throws IllegalArgumentException si la connexion donnée n'est pas une connection HTTP
-	 */
-	private static HttpDocument fetch(URLConnection con) throws IOException, HttpDocumentException {
-		if (con instanceof HttpURLConnection) {
-			final HttpURLConnection httpCon = (HttpURLConnection) con;
-			final int responseCode = httpCon.getResponseCode();
+		try {
+			final SimpleHttpConnectionManager httpConnectionManager = new SimpleHttpConnectionManager(true);
+			final HttpClient client = new HttpClient(httpConnectionManager);
+			final int responseCode = client.executeMethod(method);
 			if (responseCode != HttpURLConnection.HTTP_OK) {
-				final String responseMessage = httpCon.getResponseMessage();
+				final String responseMessage = method.getStatusText();
 				if (responseCode / 100 == 4) {
 					throw new HttpDocumentClientException(responseCode, responseMessage);
 				}
@@ -164,15 +167,21 @@ public abstract class HttpDocumentFetcher {
 				}
 			}
 
-			final String lengthHeader = httpCon.getHeaderField(HTTP_CONTENT_LENGTH);
+			final String lengthHeader = extractResponseString(method, HTTP_CONTENT_LENGTH);
 			final Integer length = lengthHeader != null && !lengthHeader.isEmpty() ? Integer.parseInt(lengthHeader) : null;
-			final String contentType = httpCon.getHeaderField(HTTP_CONTENT_TYPE);
-			final String proposedFilename = extractFilename(httpCon.getHeaderField(HTTP_CONTENT_DISPOSITION));
-			return new HttpDocument(contentType, length, proposedFilename, httpCon.getInputStream());
+			final String contentType = extractResponseString(method, HTTP_CONTENT_TYPE);
+			final String proposedFilename = extractFilename(extractResponseString(method, HTTP_CONTENT_DISPOSITION));
+			return new HttpDocument(contentType, length, proposedFilename, method.getResponseBodyAsStream());
 		}
-		else {
-			throw new IllegalArgumentException("Seules les URL au protocole HTTP sont supportées : " + con.getURL());
+		finally {
+			method.releaseConnection();
 		}
+	}
+
+	@Nullable
+	private static String extractResponseString(HttpMethod method, String headerName) {
+		final Header header = method.getResponseHeader(headerName);
+		return header != null ? StringUtils.trimToNull(header.getValue()) : null;
 	}
 
 	private static final Pattern PATTERN_EXTRACTION_FILENAME = Pattern.compile(".*;\\s*filename\\s*=\\s*([^;]+).*");
