@@ -32,6 +32,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 @Controller
 public class ChooseOIDController {
 
+	private static final String IS_ACTIVE = "O";
 	private ServiceSecuriteService serviceSecurite;
 
 	@RequestMapping(value = "/chooseOID.do", method = RequestMethod.GET)
@@ -71,7 +72,18 @@ public class ChooseOIDController {
 			Collections.sort(list, new Comparator<CollectiviteAdministrative>() {
 				@Override
 				public int compare(CollectiviteAdministrative o1, CollectiviteAdministrative o2) {
-					return o1.getNomCourt().compareTo(o2.getNomCourt());
+					// [SIFISC-4003] Les collectivités actives sont affichées en premier
+					final boolean active1 = IS_ACTIVE.equals(o1.getCodeActivite());
+					final boolean active2 = IS_ACTIVE.equals(o2.getCodeActivite());
+					if (active1 && !active2) {
+						return -1;
+					}
+					else if (!active1 && active2) {
+						return 1;
+					}
+					else {
+						return o1.getNomCourt().compareTo(o2.getNomCourt());
+					}
 				}
 			});
 		}
