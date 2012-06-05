@@ -62,6 +62,7 @@
 
 				<h4>Cellule registre :</h4>
 				<ul>
+					<li>Alain Langel</li>
 					<li>Antonio Rollo</li>
 					<li>David Radelfinger</li>
 				</ul>
@@ -84,6 +85,7 @@
 				<ul>
 					<li>Jérome Jacques</li>
 					<li>Laurent Perret</li>
+					<li>Smita Roy</li>
 				</ul>
 
 				<h3>Personnes ayant contribué à Unireg par le passé</h3>
