@@ -277,44 +277,48 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 		}
 
 		final long start = serviceTracing.start();
-		final long tsAttente = TimeHelper.getPreciseCurrentTimeMillis() + timeout;        // on n'attendra pas plus tard...
+		try {
+			final long tsAttente = TimeHelper.getPreciseCurrentTimeMillis() + timeout;        // on n'attendra pas plus tard...
 
-		synchronized (impressionsRecues) {
+			synchronized (impressionsRecues) {
 
-			// on attends le temps qu'il faut...
-			while (true) {
+				// on attends le temps qu'il faut...
+				while (true) {
 
-				// déjà là ?
-				final EditiqueResultat resultat = impressionsRecues.remove(nomDocument);
-				if (resultat == null) {
+					// déjà là ?
+					final EditiqueResultat resultat = impressionsRecues.remove(nomDocument);
+					if (resultat == null) {
 
-					// et non, on attends un peu... mais pas trop quand-même !
-					final long tempsRestant = tsAttente - TimeHelper.getPreciseCurrentTimeMillis();
-					if (tempsRestant <= 0) {
+						// et non, on attends un peu... mais pas trop quand-même !
+						final long tempsRestant = tsAttente - TimeHelper.getPreciseCurrentTimeMillis();
+						if (tempsRestant <= 0) {
 
-						if (LOGGER.isDebugEnabled()) {
-							LOGGER.debug(String.format("Timeout dépassé pour la récupération du document '%s'", nomDocument));
+							if (LOGGER.isDebugEnabled()) {
+								LOGGER.debug(String.format("Timeout dépassé pour la récupération du document '%s'", nomDocument));
+							}
+
+							return new EditiqueResultatTimeoutImpl(nomDocument);
 						}
 
-						return new EditiqueResultatTimeoutImpl(nomDocument);
+						try {
+							impressionsRecues.wait(tempsRestant);
+						}
+						catch (InterruptedException e) {
+							// interrompu...? on s'en va
+							return new EditiqueResultatTimeoutImpl(nomDocument);
+						}
 					}
-
-					try {
-						impressionsRecues.wait(tempsRestant);
+					else {
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug(String.format("Document '%s' trouvé", nomDocument));
+						}
+						return resultat;
 					}
-					catch (InterruptedException e) {
-						// interrompu...? on s'en va
-						return new EditiqueResultatTimeoutImpl(nomDocument);
-					}
-				}
-				else {
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(String.format("Document '%s' trouvé", nomDocument));
-					}
-					serviceTracing.end(start, "getDocument", nomDocument);
-					return resultat;
 				}
 			}
+		}
+		finally {
+			serviceTracing.end(start, "getDocument", nomDocument);
 		}
 	}
 
