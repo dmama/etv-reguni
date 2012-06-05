@@ -4,8 +4,8 @@
 	<tiles:put name="title">A propos de Unireg</tiles:put>
 	<tiles:put name="head">
 		<style type="text/css">
-			.about h1 {
-				margin-bottom: 0.5em;
+			div.about {
+				margin-top: 0.5em;
 			}
 			.about h3 {
 				margin-top: 1em;
@@ -94,7 +94,7 @@
 					<li>Claudio Parnenzini</li>
 					<li>Céline Grand</li>
 					<li>David Dublancher</li>
-					<li>Francois Dardare</li>
+					<li>François Dardare</li>
 					<li>Gilles Dubey</li>
 					<li>Jean-Eric Cuendet</li>
 					<li>Kamel Chabane</li>
