@@ -55,14 +55,6 @@ public class IbanValidatorTest extends BusinessTest {
 			// ok...
 		}
 
-		// problème de clearing en Suisse
-		try {
-			ibanValidator.validate("CH7900000001234567890");
-			Assert.fail("clearing invalide (0): aurait dû échouer");
-		}
-		catch (IbanBadClearingNumberException e) {
-			// ok...
-		}
 
 		// mauvais caractères utilisés
 		try {
@@ -91,6 +83,22 @@ public class IbanValidatorTest extends BusinessTest {
 			// ok
 		}
 	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testSuppresionControleClearing() throws Exception {
+		// problème de clearing en Suisse
+		try {
+			ibanValidator.validate("CH7900000001234567890");
+
+		}
+		catch (Exception e) {
+			Assert.fail("Le contrôle sur le clearing aurait du être désactivé");
+		}
+
+	}
+
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)

@@ -33,10 +33,6 @@ public class IbanValidator {
 	 */
 	private static Properties longueursValides = null;
 
-	/**
-	 * Dao pour la vérification du numéro de clearing bancaire
-	 */
-	private ClearingDao clearingDao = null;
 
 	/*
 	 * Initialisation :
@@ -74,7 +70,6 @@ public class IbanValidator {
 		validateLength(iban);
 		validateFormat(iban);
 		validatePlausability(iban);
-		validateClearing(iban, clearingDao);
 	}
 
 	public boolean isValidIban(String iban){
@@ -199,20 +194,6 @@ public class IbanValidator {
 		return "CH".equals(codePays);
 	}
 
-	/**
-	 * Valide le numéro de clearing bancaire de l'IBAN (suisse seulement).
-	 *
-	 * @param iban le code IBAN à tester
-	 * @param clearingDao
-	 * @throws IbanBadClearingNumberException si le numéro de clearing bancaire ne correspond à aucun établissement
-	 */
-	private static void validateClearing(String iban, ClearingDao clearingDao) throws IbanBadClearingNumberException {
-
-		// on ne fait le contrôle que pour la suisse
-		if (isSuisse(iban) && !clearingDao.isNumeroClearingValid(extractClearing(iban))) {
-			throw new IbanBadClearingNumberException();
-		}
-	}
 
 	private static String extractCodePays(String iban) {
 		return iban != null && iban.length() > 1 ? iban.substring(0, 2) : null;
@@ -252,10 +233,4 @@ public class IbanValidator {
 		}
 	}
 
-	/**
-	 * @param clearingDao the clearingDao to set
-	 */
-	public void setClearingDao(ClearingDao clearingDao) {
-		this.clearingDao = clearingDao;
-	}
 }
