@@ -329,8 +329,8 @@
 			</div>
 
 			<div id="footer">
-				<strong><fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
-				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
+				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>&nbsp;&nbsp;&nbsp;<small><a href="<c:url value="/about.do"/>">A propos</a></small>
 			</div>
 			
 			<%@ include file="/WEB-INF/jsp/include/tabs-workaround.jsp" %>

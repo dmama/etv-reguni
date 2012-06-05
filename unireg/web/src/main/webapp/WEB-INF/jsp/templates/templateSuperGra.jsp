@@ -145,7 +145,7 @@
 			</div>
 
 			<div id="footer">
-				<b><fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				<b>Version <fmt:message key="version" /></b>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
 				&nbsp;&nbsp;&nbsp;<b><unireg:environnement/></b>
 			</div>
 

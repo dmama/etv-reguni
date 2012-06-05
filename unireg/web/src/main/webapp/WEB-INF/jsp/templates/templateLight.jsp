@@ -92,7 +92,7 @@
 			</div>
 
 			<div id="footer">
-				<strong><fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
+				<strong>Version <fmt:message key="version" /></strong>&nbsp;&nbsp;&nbsp;(Build: <fmt:message key="buildtime"/>)
 				&nbsp;&nbsp;&nbsp;<strong><unireg:environnement/></strong>
 			</div>
 			
