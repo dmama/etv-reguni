@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.mouvement.view;
 
+import java.text.Collator;
 import java.util.Date;
 
 import ch.vd.uniregctb.common.Annulable;

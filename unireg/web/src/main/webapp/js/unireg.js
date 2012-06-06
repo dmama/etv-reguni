@@ -376,25 +376,70 @@ var Dialog = {
 	 */
 	open_details_mouvement: function(id) {
 
-		var dialog = Dialog.create_dialog_div('details-mouvement-dialog');
+		$.getJSON(getContextPath() + "/tiers/mouvement.do?idMvt=" + id + "&" + new Date().getTime(), function(mvt) {
+			if (mvt) {
 
-		// charge le contenu de la boîte de dialogue
-		dialog.load(getContextPath() + '/tiers/mouvement.do?idMvt=' + id + '&' + new Date().getTime());
+				var dateExecution = new Date(mvt.dateExecution);
+				var strDateExecution = 'Le ' + dateExecution.toLocaleDateString().replace (/ /g, "") + ' à ' + dateExecution.toLocaleTimeString();
 
-		dialog.dialog({
-			title: 'Détails du mouvement de dossier',
-			height: 440,
-			width: 900,
-			modal: true,
-			buttons: {
-				Ok: function() {
-					dialog.dialog("close");
-				}
+				var html =
+				'<fieldset class="information">' +
+					'<legend><span>Caractéristiques du mouvement du dossier</span></legend>' +
+					'<table>' +
+						'<tr class="odd" >'+
+							'<td width="25%">Type de mouvement&nbsp;:</td>' +
+							'<td width="25%">' + mvt.typeMouvement + '</td>' +
+							'<td width="25%">Date du mouvement&nbsp;</td>' +
+							'<td width="25%">' + RegDate.format(mvt.dateMouvement) + '</td>' +
+						'</tr>' +
+						'<tr class="even" >' +
+							'<td width="25%">Exécutant&nbsp;:</td>' +
+							'<td width="25%">' +mvt.executant + '</td>' +
+							'<td width="25%">Date / Heure exécution&nbsp;:</td>' +
+							'<td width="25%">' + strDateExecution  + '</td>' +
+						'</tr>' +
+						'<tr class="odd" >' +
+							'<td width="25%">Collectivité administrative&nbsp;:</td>' +
+							'<td width="25%">' + mvt.collectiviteAdministrative + '</td>' +
+							'<td width="25%">&nbsp;</td>' +
+							'<td width="25%">&nbsp;</td>' +
+						'</tr>' +
+					'</table>' +
+				'</fieldset>';
+
+				//Utilisateur
+				html +=
+				'<fieldset>' +
+					'<legend><span>Coordonnées de l\'utilisateur</span></legend>' +
+					'<table>' +
+						'<tr class="even" >' +
+							'<td width="25%">Prénom / Nom&nbsp;:</td>' +
+							'<td width="25%">' + mvt.nomPrenomUtilisateur +'</td>' +
+							'<td width="25%">N° de téléphone fixe&nbsp;:</td>' +
+							'<td width="25%">' + mvt.numeroTelephoneUtilisateur + '</td>' +
+						'</tr>' +
+					'</table>' +
+				'</fieldset>';
+
+				var dialog = Dialog.create_dialog_div('details-mouvement-dialog');
+				dialog.html(html);
+				dialog.dialog({
+					title: 'Détails du mouvement de dossier',
+					height: 240,
+					width: 900,
+					modal: true,
+					buttons: {
+						Ok: function() {
+							dialog.dialog("close");
+						}
+					}
+				});
+
+
+			} else {
+				alert("Le mouvement n'existe pas.");
 			}
-		});
-
-		//prevent the browser to follow the link
-		return false;
+		}).error(Ajax.notifyErrorHandler("affichage des détails du mouvement"));
 	},
 
 	/**
