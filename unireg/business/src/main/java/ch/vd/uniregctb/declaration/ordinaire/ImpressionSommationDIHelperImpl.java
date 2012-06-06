@@ -62,7 +62,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 	private DelaisService delaisService;
 
 	public ImpressionSommationDIHelperImpl() {
-
 	}
 
 	public ImpressionSommationDIHelperImpl(ServiceInfrastructureService serviceInfrastructureService, AdresseService adresseService, TiersService tiersService,
@@ -87,6 +86,9 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		InfoEnteteDocument infoEnteteDocument;
 		try {
 			infoEnteteDocument = remplitEnteteDocument(params);
+		}
+		catch (EditiqueException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -127,6 +129,9 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			infoEnteteDocument.setExpediteur(expediteur);
 			Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
 			infoEnteteDocument.setDestinataire(destinataire);
+		}
+		catch (EditiqueException e) {
+			throw e;
 		}
 		catch (Exception e) {
 			throw new EditiqueException(e);
@@ -200,8 +205,14 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			}
 			infoDocument.setIdEnvoi(idEnvoi);
 			editiqueHelper.remplitAffranchissement(infoDocument, adresseEnvoiDetaillee);
-		} catch (Exception e) {
-			final String message = "Exception lors de l'identification de la provenance de l'adresse";
+		}
+		catch (EditiqueException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			final String originalMessage = StringUtils.trimToNull(e.getMessage());
+			final String originalMessagePart = originalMessage != null ? String.format(" (%s)", originalMessage) : StringUtils.EMPTY;
+			final String message = String.format("Exception lors de l'identification de la provenance de l'adresse%s", originalMessagePart);
 			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + params.getDi().getTiers().getNumero(), e);
 			throw new EditiqueException(message, e);
 		}
