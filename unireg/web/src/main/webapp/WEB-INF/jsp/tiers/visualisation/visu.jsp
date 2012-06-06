@@ -113,6 +113,14 @@
 					</authz:authorize>
 				</c:if>
 
+                <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+                    <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+                        <li id="efactureTab">
+                            <a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
+                        </li>
+                    </authz:authorize>
+                </c:if>
+
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="remarqueTab">
 						<a id="remarqueTabAnchor" href="#tabContent_remarqueTab"><fmt:message key="label.remarques" /></a>
@@ -182,7 +190,15 @@
 				</authz:authorize>
 			</c:if>
 
-			<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+            <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+                <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+                    <div id="tabContent_efactureTab" class="visuTiers">
+                        <jsp:include page="efacture.jsp"/>
+                    </div>
+                </authz:authorize>
+            </c:if>
+
+            <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 				<div id="tabContent_remarqueTab" class="visuTiers">
 						<jsp:include page="../common/remarque/remarques.jsp">
 							<jsp:param name="tiersId" value="${command.tiersGeneral.numero}" />

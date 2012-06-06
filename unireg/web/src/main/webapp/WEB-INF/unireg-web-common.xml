@@ -142,4 +142,16 @@
 		<property name="downloadService" ref="editiqueDownloadService"/>
 	</bean>
 
+	<bean id="copieConformeController" class="ch.vd.uniregctb.copieConforme.CopieConformeController">
+		<property name="servletService" ref="servletService" />
+		<property name="copieConformeManager" ref="copieConformeManager" />
+	</bean>
+
+	<bean id="copieConformeManager" class="ch.vd.uniregctb.copieConforme.CopieConformeManagerImpl">
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="diService" ref="diService"/>
+		<property name="lrService" ref="lrService"/>
+		<property name="editiqueService" ref="editiqueService"/>
+	</bean>
+
 </beans>

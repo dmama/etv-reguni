@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.copieConforme;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,11 +16,13 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.servlet.ServletService;
 
 @Controller
-@RequestMapping(value = "/declaration")
 public class CopieConformeController {
 
 	private static final String ID_DELAI = "idDelai";
 	private static final String ID_ETAT = "idEtat";
+
+	private static final String NOCTB= "noCtb";
+	private static final String KEY = "key";
 
 	/**
 	 * Temps (ms) après lequel un message d'erreur doit être effacé automatiquement
@@ -74,8 +76,7 @@ public class CopieConformeController {
 		}
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	@RequestMapping(value = "/copie-conforme-delai.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/declaration/copie-conforme-delai.do", method = RequestMethod.GET)
 	public String getDocumentDelai(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_DELAI, required = true) final Long idDelai) throws Exception {
 		return getDocumentCopieConforme(request, response, "copieDelai.pdf", "Aucun archivage trouvé pour la confirmation de délai demandée !", new CopieConformeGetter() {
 			@Override
@@ -85,13 +86,24 @@ public class CopieConformeController {
 		});
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	@RequestMapping(value = "/copie-conforme-sommation.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/declaration/copie-conforme-sommation.do", method = RequestMethod.GET)
 	public String getDocumentSommation(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = ID_ETAT, required = true) final Long idEtat) throws Exception {
 		return getDocumentCopieConforme(request, response, "copieSommation.pdf", "Aucun archivage trouvé pour la sommation de déclaration demandée !", new CopieConformeGetter() {
 			@Override
 			public InputStream getCopieConforme() throws EditiqueException {
 				return copieConformeManager.getPdfCopieConformeSommation(idEtat);
+			}
+		});
+	}
+
+	@RequestMapping(value = "/copie-conforme.do", method = RequestMethod.GET)
+	public String getDocument(HttpServletRequest request, HttpServletResponse response,
+	                          @RequestParam(value = NOCTB, required = true) final long noCtb,
+	                          @RequestParam(value = KEY, required = true) final String key) throws Exception {
+		return getDocumentCopieConforme(request, response, "document.pdf", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
+			@Override
+			public InputStream getCopieConforme() throws EditiqueException {
+				return copieConformeManager.getPdfCopieConforme(noCtb, key);
 			}
 		});
 	}

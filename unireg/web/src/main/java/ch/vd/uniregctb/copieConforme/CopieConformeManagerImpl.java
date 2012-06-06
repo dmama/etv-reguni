@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.declaration;
+package ch.vd.uniregctb.copieConforme;
 
 import java.io.InputStream;
 
@@ -6,9 +6,15 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class CopieConformeManagerImpl implements CopieConformeManager {
@@ -18,6 +24,8 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 	private DeclarationImpotService diService;
 
 	private ListeRecapService lrService;
+
+	private EditiqueService editiqueService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -29,6 +37,10 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	public void setLrService(ListeRecapService lrService) {
 		this.lrService = lrService;
+	}
+
+	public void setEditiqueService(EditiqueService editiqueService) {
+		this.editiqueService = editiqueService;
 	}
 
 	@Override
@@ -57,5 +69,20 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, idDelai);
 		Assert.notNull(delai);
 		return diService.getCopieConformeConfirmationDelai(delai);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public InputStream getPdfCopieConforme(long noCtb, String key) throws EditiqueException {
+
+		// TODO jde coder le service de récupération de copie conforme...
+//		return editiqueService.getPDFDeDocumentDepuisArchive(noCtb, TypeDocumentEditique.???, key);
+		try {
+			Thread.sleep(3000);
+		}
+		catch (InterruptedException e) {
+			// pas grave...
+		}
+		return null;
 	}
 }

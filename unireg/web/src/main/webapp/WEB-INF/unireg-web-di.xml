@@ -72,15 +72,4 @@
 	
 	<bean id="diEditDelaiValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditDelaiValidator" />
 
-	<bean id="declarationCopieConformeController" class="ch.vd.uniregctb.declaration.CopieConformeController">
-		<property name="servletService" ref="servletService" />
-		<property name="copieConformeManager" ref="copieConformeManager" />
-	</bean>
-
-	<bean id="copieConformeManager" class="ch.vd.uniregctb.declaration.CopieConformeManagerImpl">
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="diService" ref="diService"/>
-		<property name="lrService" ref="lrService"/>
-	</bean>
-
 </beans>
