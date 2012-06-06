@@ -17,6 +17,7 @@
 			<label for="graphType">Type de graphique :</label>
 			<select id="graphType">
 				<option value="load">charge</option>
+				<option value="ping">latence</option>
 			</select>
 			<br/>
 
@@ -115,6 +116,7 @@
 				$('#show').click(function() {
 					$('#message').text('Veuillez patienter...');
 
+					var kind = $('#graphType').val();
 					var from = formatDate($('#dateDebut').datepicker('getDate'));
 					var to = formatDate($('#dateFin').datepicker('getDate'));
 					var res = $('#resolution').val();
@@ -136,7 +138,7 @@
 					});
 					var criteria = criteria.join(",");
 
-					$('#graph').attr('src', 'load.do?filters=' + filters +
+					$('#graph').attr('src', kind + '.do?filters=' + filters +
 						'&criteria=' + criteria +
 						'&from=' + from  +
 						'&to=' + to +

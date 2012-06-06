@@ -318,7 +318,7 @@
 		<junit.version>4.8.1</junit.version>
 		<slf4j.version>1.6.1</slf4j.version>
 
-		<postgresql.version>8.3-603.jdbc3</postgresql.version>
+		<postgresql.version>9.1-901.jdbc3</postgresql.version>
 		<hibernate.dialect>ch.vd.moscow.database.PostgreSQL83Dialect</hibernate.dialect>
 		<hibernate.query.substitutions />
 		<jdbc.driverClassName>org.postgresql.Driver</jdbc.driverClassName>

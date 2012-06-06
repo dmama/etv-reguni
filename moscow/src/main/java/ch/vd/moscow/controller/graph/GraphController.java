@@ -217,6 +217,77 @@ public class GraphController {
 		return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
 	}
 
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	@RequestMapping(value = "/ping.do", method = RequestMethod.GET)
+	public ResponseEntity<byte[]> ping(@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "from", required = false) Date from,
+	                                   @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss") @RequestParam(value = "to", required = false) Date to,
+	                                   @RequestParam(value = "filters", required = false) Filter[] filters,
+	                                   @RequestParam(value = "criteria", required = false) CallDimension[] breakoutCriteria,
+	                                   @RequestParam(value = "resolution", required = false) TimeResolution resolution,
+	                                   @RequestParam(value = "height", required = false) Integer height,
+	                                   @RequestParam(value = "width", required = false) Integer width) throws Exception {
+
+		if (resolution == null) {
+			resolution = TimeResolution.FIFTEEN_MINUTES;
+		}
+
+		final PingDataSet bds = new PingDataSet(resolution);
+		if (breakoutCriteria != null) {
+			for (CallDimension criterion : breakoutCriteria) {
+				bds.addBreakout(criterion);
+			}
+		}
+
+//		long start = System.nanoTime();
+
+
+		final Collection<CallStats> calls = dao.getLoadStatsFor(filters, from, to, breakoutCriteria, resolution);
+		for (CallStats call : calls) {
+			bds.addCall(call);
+		}
+
+//		long end = System.nanoTime();
+//		LOGGER.debug("time to load :" + (end - start) / 1000000 + " ms");
+
+
+//		start = System.nanoTime();
+
+		final DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		bds.fill(dataset);
+
+		final JFreeChart chart = ChartFactory.createLineChart("Latence", "time", "ping", dataset, PlotOrientation.VERTICAL, true, false, false);
+		setRenderingDefaults(chart);
+
+		// taille des lignes
+		final CategoryPlot plot = (CategoryPlot) chart.getPlot();
+		final LineAndShapeRenderer renderer = (LineAndShapeRenderer) plot.getRenderer();
+		for (int i = 0; i < dataset.getRowCount(); ++i) {
+			renderer.setSeriesStroke(i, new BasicStroke(2.0f));
+		}
+
+		if (width == null) {
+			width = 20 * dataset.getColumnCount();
+		}
+		if (width < 640) {
+			width = 640;
+		}
+		if (height == null) {
+			height = 480;
+		}
+		if (height < 100) {
+			height = 100;
+		}
+		byte[] bytes = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
+
+//		end = System.nanoTime();
+//		LOGGER.debug("time to render :" + (end - start) / 1000000 + " ms");
+
+		final HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_PNG);
+
+		return new ResponseEntity<byte[]>(bytes, headers, HttpStatus.CREATED);
+	}
+
 	protected void setRenderingDefaults(JFreeChart chart) {
 
 		// fond d'écran blacn

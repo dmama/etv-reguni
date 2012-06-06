@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -37,7 +36,7 @@ import ch.vd.moscow.data.Service;
  */
 public class DAOImpl implements DAO {
 
-	private static final Logger LOGGER = Logger.getLogger(DAOImpl.class);
+//	private static final Logger LOGGER = Logger.getLogger(DAOImpl.class);
 
 	private HibernateTemplate hibernateTemplate;
 
@@ -237,12 +236,14 @@ public class DAOImpl implements DAO {
 				for (Object a : list) {
 					final Object[] array = (Object[]) a;
 					final Number calls = (Number) array[0];
+					final Number latency = (Number) array[1];
+					final Number maxPing = (Number) array[2];
 					final List<Object> coord = new ArrayList<Object>(criteria.length);
 					for (int i = 0, criteriaLength = criteria.length; i < criteriaLength; i++) {
-						coord.add(getDimensionValueName(criteria[i], (Number) array[i + 1], dimValues));
+						coord.add(getDimensionValueName(criteria[i], (Number) array[i + 3], dimValues));
 					}
-					final Date date = (Date) array[criteria.length + 1];
-					results.add(new CallStats(calls, coord, date));
+					final Date date = (Date) array[criteria.length + 3];
+					results.add(new CallStats(calls, latency, maxPing, coord, date));
 				}
 
 				if (resolution == TimeResolution.FIVE_MINUTES || resolution == TimeResolution.FIFTEEN_MINUTES) {
@@ -291,7 +292,7 @@ public class DAOImpl implements DAO {
 
 		// build the mighty query
 		final StringBuilder s = new StringBuilder();
-		s.append("select sum(1)");
+		s.append("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing");
 		if (projection != null) {
 			s.append(", ").append(projection);
 		}
