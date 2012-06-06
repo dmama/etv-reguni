@@ -10,16 +10,16 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 
 /**
- * Données minimale d'une adresse autre tiers <b>annulée</b> ([UNIREG-3154]).
+ * Données minimale d'une adresse tiers <b>annulée</b> ([UNIREG-3154][SIFISC-5319]).
  * <p/>
  * Cette adresse est utilisé à la place de l'adresse complète lorsque la résolution de l'adresse est impossible (à cause de cycles, par exemple).
  */
-public class AdresseAutreTiersAnnuleeResolutionExceptionStub implements AdresseGenerique {
+public class AdresseTiersAnnuleeResolutionExceptionStub implements AdresseGenerique {
 
-	private final AdresseAutreTiers target;
+	private final AdresseTiers target;
 	private final Source source;
 
-	public AdresseAutreTiersAnnuleeResolutionExceptionStub(AdresseAutreTiers target) {
+	public AdresseTiersAnnuleeResolutionExceptionStub(AdresseTiers target) {
 		Assert.isTrue(target.isAnnule()); // si l'adresse autre tiers n'est pas annulée, l'exception de résolution des adresses doit être remontée !
 		this.target = target;
 		this.source = new Source(SourceType.FISCALE, null);

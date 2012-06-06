@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.registre.base.validation.ValidationHelper;
@@ -1646,15 +1647,30 @@ public class AdresseServiceImpl implements AdresseService {
 			//                  donc il ne faut pas prendre le tiers passé en paramètre comme habitant, mais bien le tiers attaché à l'adresse surchargée
 			final PersonnePhysique habitant = (PersonnePhysique) a.getTiers();
 			final AdressesCiviles adressesCiviles = getAdressesCiviles(habitant, adresseSurchargee.getDateDebut(), strict);
-			Assert.notNull(adressesCiviles);
-
-			final Adresse adresseCivile = adressesCiviles.ofType(type);
-			try {
-				final AdresseGenerique.Source source = new AdresseGenerique.Source(SourceType.FISCALE, tiers);
-				surcharge = new AdresseTiersCivileAdapter(adresseCivile, a, source, false, serviceInfra);
+			final Adresse adresseCivile = adressesCiviles == null ? null :adressesCiviles.ofType(type);
+			if (adresseCivile == null) {
+				// il n'y a pas d'adresse civile du type et à la date spécifiée : problème.
+				if (adresseSurchargee.isAnnule()) {
+					// [SIFISC-5319] si l'adresse en question est annulée, on peut ignorer l'exception et retourner un stub d'adresse avec le minimum d'information
+					// cela permet de ne pas lever d'exception pour une adresse annulée et de pouvoir quand même afficher la liste complète des adresses fiscales
+					surcharge = new AdresseTiersAnnuleeResolutionExceptionStub(a);
+				}
+				else {
+					throw new AdressesResolutionException("Il n'existe pas d'adresse civile " + type +
+							" sur l'habitant/l'individu n°" + habitant.getNumero() +
+							"/" + habitant.getNumeroIndividu() +
+							" le " + RegDateHelper.dateToDisplayString(adresseSurchargee.getDateDebut()) +
+							" alors qu'une adresse surchargée est pointée dessus.");
+				}
 			}
-			catch (DonneesCivilesException e) {
-				throw new AdresseDataException(e);
+			else {
+				try {
+					final AdresseGenerique.Source source = new AdresseGenerique.Source(SourceType.FISCALE, tiers);
+					surcharge = new AdresseTiersCivileAdapter(adresseCivile, a, source, false, serviceInfra);
+				}
+				catch (DonneesCivilesException e) {
+					throw new AdresseDataException(e);
+				}
 			}
 		}
 		else if (adresseSurchargee instanceof AdresseAutreTiers) {
@@ -1681,7 +1697,7 @@ public class AdresseServiceImpl implements AdresseService {
 				if (adresseSurchargee.isAnnule()) {
 					// [UNIREG-3154] si l'adresse en question est annulée, on peut ignorer l'exception et retourner un stub d'adresse avec le minimum d'information
 					// cela permet de ne pas lever d'exception pour une adresse annulée et de pouvoir quand même afficher la liste complète des adresses fiscales
-					surcharge = new AdresseAutreTiersAnnuleeResolutionExceptionStub(a);
+					surcharge = new AdresseTiersAnnuleeResolutionExceptionStub(a);
 				}
 				else {
 					throw e;
