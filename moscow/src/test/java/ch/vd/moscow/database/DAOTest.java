@@ -45,43 +45,43 @@ public class DAOTest extends MoscowTest {
 	@Test
 	public void testBuildLoadStatsForQueryString() {
 		// no criterion
-		assertEquals("select sum(1) from calls",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls",
 				DAOImpl.buildLoadStatsForQueryString(null, null, null, null, null));
 
 		// filters
-		assertEquals("select sum(1) from calls",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{}, null, null, null, null));
-		assertEquals("select sum(1) from calls where env_id = :filterValue0",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls where env_id = :filterValue0",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1")}, null, null, null, null));
-		assertEquals("select sum(1) from calls where caller_id = :filterValue0",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls where caller_id = :filterValue0",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.CALLER, "sipf")}, null, null, null, null));
-		assertEquals("select sum(1) from calls where env_id = :filterValue0 and caller_id = :filterValue1",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls where env_id = :filterValue0 and caller_id = :filterValue1",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1"), new Filter(CallDimension.CALLER, "sipf")}, null, null, null, null));
 
 		// date criterion
-		assertEquals("select sum(1) from calls where date >= :from",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls where date >= :from",
 				DAOImpl.buildLoadStatsForQueryString(null, null, null, date(2011, 1, 1), null));
-		assertEquals("select sum(1) from calls where date <= :to",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls where date <= :to",
 				DAOImpl.buildLoadStatsForQueryString(null, null, null, null, date(2011, 1, 1)));
 
 		// time resolution
-		assertEquals("select sum(1), date_trunc('day', date) from calls group by date_trunc('day', date)",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, date_trunc('day', date) from calls group by date_trunc('day', date)",
 				DAOImpl.buildLoadStatsForQueryString(null, null, TimeResolution.DAY, null, null));
-		assertEquals("select sum(1), date_trunc('hour', date) from calls group by date_trunc('hour', date)",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, date_trunc('hour', date) from calls group by date_trunc('hour', date)",
 				DAOImpl.buildLoadStatsForQueryString(null, null, TimeResolution.HOUR, null, null));
-		assertEquals("select sum(1), date_trunc('minute', date) from calls group by date_trunc('minute', date)",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, date_trunc('minute', date) from calls group by date_trunc('minute', date)",
 				DAOImpl.buildLoadStatsForQueryString(null, null, TimeResolution.FIFTEEN_MINUTES, null, null));
 
 		// breakdown
-		assertEquals("select sum(1) from calls",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing from calls",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{}, null, null, null));
-		assertEquals("select sum(1), caller_id from calls group by caller_id",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, caller_id from calls group by caller_id",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{CallDimension.CALLER}, null, null, null));
-		assertEquals("select sum(1), caller_id, env_id from calls group by caller_id, env_id",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, caller_id, env_id from calls group by caller_id, env_id",
 				DAOImpl.buildLoadStatsForQueryString(null, new CallDimension[]{CallDimension.CALLER, CallDimension.ENVIRONMENT}, null, null, null));
 
 		// all criteria
-		assertEquals("select sum(1), caller_id, date_trunc('hour', date) from calls where env_id = :filterValue0 and date >= :from and date <= :to group by caller_id, date_trunc('hour', date)",
+		assertEquals("select sum(1) as calls, sum(latency) as latency, max(latency) as maxPing, caller_id, date_trunc('hour', date) from calls where env_id = :filterValue0 and date >= :from and date <= :to group by caller_id, date_trunc('hour', date)",
 				DAOImpl.buildLoadStatsForQueryString(new Filter[]{new Filter(CallDimension.ENVIRONMENT, "1")}, new CallDimension[]{CallDimension.CALLER}, TimeResolution.HOUR, date(2011, 1, 1),
 						date(2011, 1, 2)));
 	}
