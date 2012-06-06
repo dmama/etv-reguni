@@ -154,7 +154,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 				}
 			}
 
-			final List<DateRange> intersections = determineIntersectingRanges(mesures);
+			final List<DateRange> intersections = DateRangeHelper.overlaps(mesures);
 			if (intersections != null) {
 				// génération des messages d'erreur
 				for (DateRange range : intersections) {
@@ -176,7 +176,7 @@ public class PersonnePhysiqueValidator extends ContribuableValidator<PersonnePhy
 				}
 			}
 
-			final List<DateRange> intersections = determineIntersectingRanges(menages);
+			final List<DateRange> intersections = DateRangeHelper.overlaps(menages);
 			if (intersections != null) {
 				// génération des messages d'erreur
 				for (DateRange range : intersections) {

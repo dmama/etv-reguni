@@ -1,14 +1,11 @@
 package ch.vd.uniregctb.validation.tiers;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.DateRange;
-import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -97,7 +94,7 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 				}
 			}
 
-			final List<DateRange> intersections = determineIntersectingRanges(representations);
+			final List<DateRange> intersections = DateRangeHelper.overlaps(representations);
 			if (intersections != null) {
 				// génération des messages d'erreur
 				for (DateRange range : intersections) {
@@ -253,52 +250,4 @@ public abstract class TiersValidator<T extends Tiers> extends EntityValidatorImp
 		return results;
 	}
 
-	/**
-	 * Détermine et retourne les ranges pour lesquelles deux ou plusieurs des ranges spécifiés s'intersectent.
-	 *
-	 * @param ranges une liste de ranges
-	 * @return les ranges d'intersection; ou <b>null</b> si aucun des ranges spécifiés ne s'intersectent.
-	 */
-	protected static List<DateRange> determineIntersectingRanges(List<? extends DateRange> ranges) {
-		List<DateRange> merge = null;
-
-		if (ranges != null) {
-			final int size = ranges.size();
-			if (size > 1) {
-				final List<DateRange> intersectingRanges = new ArrayList<DateRange>(size);
-				for (int i = 0; i < size - 1; ++i) {
-					final DateRange mesure = ranges.get(i);
-					for (DateRange autreMesure : ranges.subList(i + 1, size)) {
-						final DateRange intersection = DateRangeHelper.intersection(mesure, autreMesure);
-						if (intersection != null) {
-							intersectingRanges.add(intersection);
-						}
-					}
-				}
-
-				if (!intersectingRanges.isEmpty()) {
-					Collections.sort(intersectingRanges, new DateRangeComparator<DateRange>());
-
-					merge = new ArrayList<DateRange>(intersectingRanges.size());
-					DateRange current = null;
-					for (DateRange range : intersectingRanges) {
-						if (current == null) {
-							current = range;
-						}
-						else if (DateRangeHelper.intersect(current, range) || DateRangeHelper.isCollatable(current, range)) {
-							current = new DateRangeHelper.Range(RegDateHelper.minimum(current.getDateDebut(), range.getDateDebut(), NullDateBehavior.EARLIEST),
-									RegDateHelper.maximum(current.getDateFin(), range.getDateFin(), NullDateBehavior.LATEST));
-						}
-						else {
-							merge.add(current);
-							current = range;
-						}
-					}
-					merge.add(current);
-
-				}
-			}
-		}
-		return merge;
-	}
 }
