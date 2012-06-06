@@ -797,8 +797,24 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		final KeyGetPaysByCodeIso key = new KeyGetPaysByCodeIso(codePays);
 		final Element element = cache.get(key);
 		if (element == null) {
-			resultat = target.getPays(codePays);
-			cache.put(new Element(key, resultat));
+			// (msi, 05.06.2012) optim : Fidor ne supporte pas de récupérer un pays par son code iso : la méthode ServiceInfrastructureFidor#getPays(String) va donc chercher tous les pays et
+			// retourne celui qui corresponds au code iso, ce qui est horriblement inefficace. Par mesure d'optimisation, on charge tous les pays ici-même et on les stocke tous explicitement
+			// dans le cache avant de retourner celui demandé. De cette manière, tous les appels subséquents tomberont dans le cache.
+			Pays res = null;
+			final List<Pays> pays = getPays();
+			if (pays != null) {
+				for (Pays p : pays) {
+					final String c = p.getCodeIso2();
+					if (res == null && codePays.equals(c)) {
+						res = p;
+					}
+					cache.put(new Element(new KeyGetPaysByCodeIso(c), p));
+				}
+			}
+			if (res == null) { // le pays n'est pas trouvé, on cache aussi cette information
+				cache.put(new Element(new KeyGetPaysByCodeIso(codePays), null));
+			}
+			resultat = res;
 		}
 		else {
 			resultat = (Pays) element.getObjectValue();
