@@ -26,6 +26,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
+import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -68,6 +69,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TarifImpotSource;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -440,6 +442,16 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         adresse.setNumeroRue(rue.getNoRue());
         adresse.setNumeroOrdrePoste(rue.getLocalite().getNPA());
         adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
+        return adresse;
+    }
+
+    protected AdresseCivile addAdresseCivil(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, TypeAdresseCivil type) {
+	    AdresseCivile adresse = new AdresseCivile();
+        adresse.setDateDebut(debut);
+        adresse.setDateFin(fin);
+        adresse.setUsage(usage);
+        adresse.setType(type);
+        adresse = (AdresseCivile) tiersDAO.addAndSave(tiers, adresse);
         return adresse;
     }
 

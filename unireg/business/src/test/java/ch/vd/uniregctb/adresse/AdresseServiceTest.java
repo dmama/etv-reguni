@@ -7907,4 +7907,66 @@ public class AdresseServiceTest extends BusinessTest {
 		assertEquals("Avenue du Funiculaire", adresse1.getLigne3());
 		assertEquals("1304 Cossonay-Ville", adresse1.getLigne4());
 	}
+
+	/**
+	 * [SIFISC-5319] Vérifie que la résolution des adresses sur un contribuable qui possède une adresse surchargée qui pointe vers une adresse civile inexistante lève bien une erreur avec un message
+	 * d'erreur explicite.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAdressesAvecSurchargeSurAdresseCivileInexistante() throws Exception {
+
+		final long noInd = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1976, 5, 12), date(1999, 12, 31));
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2002, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique pp = addHabitant(noInd);
+		addAdresseCivil(pp, TypeAdresseTiers.DOMICILE, date(2001, 1, 1), null, TypeAdresseCivil.PRINCIPALE);
+
+		try {
+			adresseService.getAdressesFiscalHisto(pp, true);
+			fail();
+		}
+		catch (Exception e) {
+			assertEquals("Il n'existe pas d'adresse civile PRINCIPALE sur l'habitant/l'individu n°" + pp.getNumero() + "/12345 le 01.01.2001 alors qu'une adresse surchargée est pointée dessus.",
+					e.getMessage());
+		}
+	}
+
+	/**
+	 * [SIFISC-5319] Vérifie que la résolution des adresses sur un contribuable qui possède une adresse surchargée <b>annulée</b> qui pointe vers une adresse civile inexistante ne lève pas d'exception.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetAdressesAvecSurchargeAnnuleeSurAdresseCivileInexistante() throws Exception {
+
+		final long noInd = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(1976, 5, 12), date(1999, 12, 31));
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, date(2002, 1, 1), null);
+			}
+		});
+
+		final PersonnePhysique pp = addHabitant(noInd);
+		final AdresseCivile adresse = addAdresseCivil(pp, TypeAdresseTiers.DOMICILE, date(2001, 1, 1), null, TypeAdresseCivil.PRINCIPALE);
+		adresse.setAnnule(true);
+
+		final AdressesFiscalesHisto adresses = adresseService.getAdressesFiscalHisto(pp, false);
+		assertNotNull(adresses);
+		assertEquals(3, adresses.domicile.size());
+		assertAdresse(date(1976, 5, 12), date(1999, 12, 31), "Echallens", SourceType.CIVILE, false, adresses.domicile.get(0));
+		assertAdresse(date(2002, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile.get(1));
+		assertAdresse(date(2001, 1, 1), null, "*** adresse résolution exception ***", SourceType.FISCALE, false, adresses.domicile.get(2));
+	}
 }
