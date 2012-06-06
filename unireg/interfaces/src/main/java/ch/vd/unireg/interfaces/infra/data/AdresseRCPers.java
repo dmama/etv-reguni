@@ -212,11 +212,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		if (swissZipCode != null) {
 			return String.valueOf(swissZipCode);
 		}
-		String foreignZipCode = addressInfo.getForeignZipCode();
-		if ("inconnu".equals(foreignZipCode)) {
-			foreignZipCode = null; // FIXME (rcpers) en attente de la résolution de SIREF-1798
-		}
-		return foreignZipCode;
+		return addressInfo.getForeignZipCode();
 	}
 
 	private static int initNoOfsPays(String countryCode, ServiceInfrastructureRaw infraService) {
