@@ -158,13 +158,8 @@
 		<property name="immeubleDAO" ref="immeubleDAO" />
 	</bean>
 
-	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.mouvement.view.MouvementDetailView" />
-		<property name="commandName" value="command" />
+	<bean id="mouvementVisuController" class="ch.vd.uniregctb.tiers.MouvementVisuController">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager" />
-		<property name="formView" value="tiers/visualisation/mouvement/mouvement" />
-		<property name="successView" value="redirect:/tiers/mouvement.do" />
 	</bean>
 
 	<bean id="abstractMouvementManager" abstract="true" class="ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl">
