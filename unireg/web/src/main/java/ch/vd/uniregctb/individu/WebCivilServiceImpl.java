@@ -11,6 +11,7 @@ import org.springframework.context.MessageSourceAware;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
@@ -28,37 +29,27 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  */
 public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware {
 
-	//private static final Logger LOGGER = Logger.getLogger(WebCivilServiceImpl.class);
-
 	private ServiceCivilService serviceCivilService;
-
 	private MessageSource messageSource;
 
-	/**
-	 * @return the serviceCivil
-	 */
-	public ServiceCivilService getServiceCivilService() {
-		return serviceCivilService;
-	}
-
-	/**
-	 * @param serviceCivil
-	 *            the serviceCivil to set
-	 */
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
 	}
 
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
 	/**
-	 * Alimente une vue IndividuView en fonction du numero d'individu
-	 *
-	 * @return un objet IndividuView
+	 * {@inheritDoc}
+	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException si on ne retrouve pas d'individu correspondant
 	 */
 	@Override
 	public IndividuView getIndividu(Long numeroIndividu) {
-		final Individu indSource = getServiceCivilService().getIndividu(numeroIndividu, null);
+		final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null);
 		if (indSource == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
 		}
 
 		// Copie les données de l'individu
@@ -66,11 +57,31 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	}
 
 	/**
-	 * Copie les propriétés d'un Individu de type hostinterface en Individu du registre (interface)
-	 * @param indSource
-	 * @return
+	 * {@inheritDoc}
+	 * @throws ch.vd.uniregctb.common.ObjectNotFoundException Si on ne trouve l'individu ni pas son numero ou par un numero d'evt
 	 */
-	private IndividuView alimenteIndividuView(Individu indSource) {
+	@Override
+	public IndividuView getIndividu(Long numeroIndividu, Long numeroEvenement) {
+		IndividuView individuView = null;
+		try {
+			individuView = getIndividu(numeroIndividu);
+		}
+		catch (ObjectNotFoundException e) {
+			final IndividuApresEvenement indiv = serviceCivilService.getIndividuFromEvent(numeroEvenement);
+			if (indiv == null) {
+				throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			}
+			individuView = alimenteIndividuView(indiv.getIndividu());
+		}
+		return individuView;
+	}
+
+	/**
+	 * Copie les propriétés d'un Individu du registre civil dans une vue IndividuView du registre
+	 * @param indSource l'individu source
+	 * @return la vue alimentée
+	 */
+	private IndividuView alimenteIndividuView(final Individu indSource) {
 		final IndividuView indCible = new IndividuView();
 		indCible.setNumeroIndividu(indSource.getNoTechnique());
 		indCible.setNom(indSource.getNom());
@@ -92,8 +103,8 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	/**
 	 * Traitement du sexe
 	 *
-	 * @param indSource
-	 * @param indCible
+	 * @param indSource individu source
+	 * @param indCible vue destination
 	 */
 	private void traiteSexe(Individu indSource, IndividuView indCible) {
 
@@ -114,7 +125,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 * @param view           la vue à compléter
 	 */
 	private void traitePermis(Long numeroIndividu, IndividuView view) {
-		final Collection<Permis> permis = getServiceCivilService().getPermis(numeroIndividu, null);
+		final Collection<Permis> permis = serviceCivilService.getPermis(numeroIndividu, null);
 		if (permis != null && !permis.isEmpty()) {
 			final List<PermisView> list = new ArrayList<PermisView>();
 			for (Permis p : permis) {
@@ -131,8 +142,8 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	/**
 	 * Traitement de l'etat Civil
 	 *
-	 * @param indSource
-	 * @param indCible
+	 * @param indSource individu source
+	 * @param indCible vue destination
 	 */
 	private void traiteEtatCivil(Individu indSource, IndividuView indCible) {
 		if (indSource != null) {
@@ -156,7 +167,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 * Origine
 	 */
 	private void traiteOrigine(Long numeroIndividu, IndividuView indCible) {
-		final Collection<Origine> origines = getServiceCivilService().getOrigines(numeroIndividu, null);
+		final Collection<Origine> origines = serviceCivilService.getOrigines(numeroIndividu, null);
 		if (origines != null && !origines.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Origine origine : origines) {
@@ -174,7 +185,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 */
 	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
 
-		final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, null);
+		final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(numeroIndividu, null);
 		if (nationalites != null && !nationalites.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Nationalite nationalite : nationalites) {
@@ -189,16 +200,4 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		}
 	}
 
-	/**
-	 * @return the messageSource
-	 */
-	protected MessageSource getMessageSource() {
-		return messageSource;
-	}
-
-	@Override
-	public void setMessageSource(MessageSource messageSource) {
-		this.messageSource = messageSource;
-
-	}
 }

@@ -63,7 +63,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		evtView.setNoIndividu(numeroIndividu);
 		if (numeroIndividu != null) {
 			try { // [SIFISC-4834] on permet la visualisation de l'événement même si les données de l'individu sont invalides
-				evtView.setIndividu(retrieveIndividu(numeroIndividu));
+				evtView.setIndividu(retrieveIndividu(numeroIndividu, evt.getId()));
 				evtView.setAdresse(retrieveAdresse(numeroIndividu));
 				retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
 				retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
