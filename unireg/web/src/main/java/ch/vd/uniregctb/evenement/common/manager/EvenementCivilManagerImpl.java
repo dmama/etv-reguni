@@ -138,6 +138,10 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		return webCivilService.getIndividu(numeroIndividu);
 	}
 
+	protected IndividuView retrieveIndividu(Long numeroIndividu, Long numeroEvenement) {
+		return webCivilService.getIndividu(numeroIndividu, numeroEvenement);
+	}
+
 	protected void retrieveTiersAssocieMenage(Long idEvenement, Long numeroIndividu, EvenementCivilDetailView evtView) throws AdresseException {
 		try {
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
