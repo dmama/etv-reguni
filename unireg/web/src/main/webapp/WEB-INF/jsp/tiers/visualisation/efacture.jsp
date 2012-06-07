@@ -16,18 +16,24 @@
         refreshTable: function() {
             // get the data
             $.get('<c:url value="/efacture/histo.do?ctb=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(destinataire) {
-                var html;
+                var html = '';
                 if (destinataire != null) {
-                    html = '<fieldset>\n';
+                    <authz:authorize ifAnyGranted="ROLE_GEST_EFACTURE">
+                        html += '<table border="0"><tr><td>';
+                        html += '<unireg:raccourciModifier link="../efacture/edit.do?ctb=' + destinataire.ctbId + '" tooltip="Interagir avec les états e-Facture" display="label.bouton.modifier"/>';
+                        html += '</td></tr></table>';
+                    </authz:authorize>
+
+                    html += '<fieldset>\n';
                     // d'abord le destinataire
                     html += '<legend><span><fmt:message key="label.efacture.historique.destinataire" /></span></legend>\n';
-                    html += eFacture.buildHistoriqueDestinataire(destinataire.etats.reverse());
+                    html += eFacture.buildHistoriqueDestinataire(destinataire.etats);
                     html += '</fieldset>\n';
 
                     // puis ses demandes individuelles
                     html += '<fieldset>\n';
                     html += '<legend><span><fmt:message key="label.efacture.historique.demandes" /></span></legend>\n';
-                    html += eFacture.buildHistoriqueDemandes(destinataire.ctbId, destinataire.demandes.reverse());
+                    html += eFacture.buildHistoriqueDemandes(destinataire.ctbId, destinataire.demandes);
                     html += '</fieldset>\n';
                 }
                 else {
@@ -80,7 +86,7 @@
                 html += '<td style="height:20px;"><img style="vertical-align: top;" id="toggle_ef_' + demande.idDemande + '" src="<c:url value="/images/plus.gif"/>" onclick="eFacture.toggleShowDetailDemande(' + demande.idDemande + ');"/>&nbsp;</td>';
                 html += '<td>' + RegDate.format(demande.dateDemande) + '</td>';
 
-                var etatCourant = demande.etats[demande.etats.length - 1];
+                var etatCourant = demande.etatCourant;
                 html += '<td>' + StringUtils.escapeHTML(etatCourant.descriptionEtat) + '</td>';
                 html += '<td>' + RegDate.format(etatCourant.dateObtention) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etatCourant.motifObtention) + '</td>';
@@ -89,7 +95,7 @@
                 html += '<tr style="display:none;" class="' + (d % 2 == 0 ? 'odd' : 'even') + '" id="detail_ef_' + demande.idDemande + '">';
                 html += '<td>&nbsp;</td>';
                 html += '<td colspan="4">';
-                html += eFacture.buildHistoriqueEtatsDemande(noCtb, demande.idDemande, demande.etats.reverse());
+                html += eFacture.buildHistoriqueEtatsDemande(noCtb, demande.idDemande, demande.etats);
                 html += '</td>';
                 html += '</tr>\n';
             }

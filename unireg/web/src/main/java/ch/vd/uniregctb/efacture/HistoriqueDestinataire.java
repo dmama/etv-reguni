@@ -2,13 +2,18 @@ package ch.vd.uniregctb.efacture;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
+ */
 public class HistoriqueDestinataire {
 
 	private long ctbId;
 	private List<EtatDestinataire> etats;
 	private List<HistoriqueDemande> demandes;
-	boolean suspendable;
-	boolean activable;
+	private boolean suspendable;
+	private boolean activable;
 
 	public long getCtbId() {
 		return ctbId;
@@ -48,5 +53,23 @@ public class HistoriqueDestinataire {
 
 	public void setActivable(boolean activable) {
 		this.activable = activable;
+	}
+
+	@Nullable
+	public HistoriqueDemande getDemandeEnCours() {
+		if (demandes == null) {
+			return null;
+		}
+		else {
+			HistoriqueDemande enCours = null;
+			for (HistoriqueDemande candidate : demandes) {
+				final EtatDemande etatCourant = candidate.getEtatCourant();
+				if (etatCourant != null && etatCourant.getType().isEnCours()) {
+					enCours = candidate;
+					break;
+				}
+			}
+			return enCours;
+		}
 	}
 }
