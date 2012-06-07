@@ -1,12 +1,17 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Scanner;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
@@ -154,7 +159,8 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			// sans les tiers annulés
 			request.setIncludeCancelled(false);
 			{
-				final NumbersResponse response = (NumbersResponse) handler.handle(request);
+				final PartyRequestHandlerResult r = handler.handle(request);
+				final NumbersResponse response = (NumbersResponse) r.getResponse();
 				assertNotNull(response);
 				assertFalse(response.isIncludeCancelled());
 
@@ -163,7 +169,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 				assertEquals(2, types.size());
 				assertTrue(types.containsAll(Arrays.asList(PartyType.NATURAL_PERSON, PartyType.HOUSEHOLD)));
 
-				final List<Integer> foundIds = response.getIds();
+				final List<Integer> foundIds = extractIds(r);
 				assertNotNull(foundIds);
 				assertEquals(2, foundIds.size());
 				assertTrue(foundIds.containsAll(Arrays.asList((int) ids.pp0, (int) ids.menage0)));
@@ -172,7 +178,8 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			// avec les tiers annulés
 			request.setIncludeCancelled(true);
 			{
-				final NumbersResponse response = (NumbersResponse) handler.handle(request);
+				final PartyRequestHandlerResult r = handler.handle(request);
+				final NumbersResponse response = (NumbersResponse) r.getResponse();
 				assertNotNull(response);
 				assertTrue(response.isIncludeCancelled());
 
@@ -181,7 +188,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 				assertEquals(2, types.size());
 				assertTrue(types.containsAll(Arrays.asList(PartyType.NATURAL_PERSON, PartyType.HOUSEHOLD)));
 
-				final List<Integer> foundIds = response.getIds();
+				final List<Integer> foundIds = extractIds(r);
 				assertNotNull(foundIds);
 				assertEquals(4, foundIds.size());
 				assertTrue(foundIds.containsAll(Arrays.asList((int) ids.pp0, (int) ids.pp1, (int) ids.menage0, (int) ids.menage1)));
@@ -190,5 +197,25 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 		finally {
 			popSecurityProvider();
 		}
+	}
+
+	private static List<Integer> extractIds(PartyRequestHandlerResult r) throws IOException {
+		final EsbDataHandler attachement = r.getAttachments().get("ids");
+		assertNotNull(attachement);
+
+		final InputStream inputStream = attachement.getDataHandler().getInputStream();
+		assertNotNull(inputStream);
+
+		final List<Integer> foundIds = new ArrayList<Integer>();
+		final Scanner scanner = new Scanner(inputStream, "UTF-8");
+		try {
+			while (scanner.hasNext()) {
+				foundIds.add(Integer.parseInt(scanner.next()));
+			}
+		}
+		finally {
+			scanner.close();
+		}
+		return foundIds;
 	}
 }

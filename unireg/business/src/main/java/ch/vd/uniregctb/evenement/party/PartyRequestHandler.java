@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.party;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.v1.Request;
-import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**
@@ -14,10 +13,10 @@ public interface PartyRequestHandler<T extends Request> {
 	 * Reçoit et répond à la requête.
 	 *
 	 * @param request la requête
-	 * @return une réponse
+	 * @return le résultat du traitement, qui contient la réponse + les éventuels fichiers attachés
 	 * @throws ServiceException en cas d'impossibilité de répondre à la requête
 	 */
-	Response handle(T request) throws ServiceException;
+	PartyRequestHandlerResult handle(T request) throws ServiceException;
 
 	ClassPathResource getRequestXSD();
 

@@ -5,7 +5,6 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.address.v1.AddressRequest;
 import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
-import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -35,7 +34,7 @@ public class AddressRequestHandler implements PartyRequestHandler<AddressRequest
 	}
 
 	@Override
-	public Response handle(AddressRequest request) throws ServiceException {
+	public PartyRequestHandlerResult handle(AddressRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -67,7 +66,7 @@ public class AddressRequestHandler implements PartyRequestHandler<AddressRequest
 			throw new ServiceException(new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.ADDRESSES.name(), null));
 		}
 
-		return response;
+		return new PartyRequestHandlerResult(response);
 	}
 
 	@Override

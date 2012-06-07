@@ -34,6 +34,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -89,18 +90,18 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 		// on traite la requête
-		Response response;
+		PartyRequestHandlerResult result;
 		try {
-			response = handle(request);
+			result = handle(request);
 		}
 		catch (ServiceException e) {
 			final ExceptionResponse r = new ExceptionResponse();
 			r.setExceptionInfo(e.getInfo());
-			response = r;
+			result = new PartyRequestHandlerResult(r);
 		}
 
 		// on répond
-		answer(response, message);
+		answer(result.getResponse(), result.getAttachments(), message);
 	}
 
 	private Request parse(Source message) throws JAXBException, SAXException, IOException {
@@ -131,7 +132,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		}
 	}
 
-	protected Response handle(Request request) throws ServiceException {
+	protected PartyRequestHandlerResult handle(Request request) throws ServiceException {
 
 		final PartyRequestHandler handler = handlers.get(request.getClass());
 		if (handler == null) {
@@ -142,7 +143,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		return handler.handle(request);
 	}
 
-	private void answer(Response response, EsbMessage query) {
+	private void answer(Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) {
 
 		try {
 			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -168,6 +169,13 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			m.setBusinessUser("unireg");
 			m.setContext("party");
 			m.setBody(doc);
+
+			// les attachements éventuels
+			if (attachments != null) {
+				for (Map.Entry<String, EsbDataHandler> entry : attachments.entrySet()) {
+					m.addAttachment(entry.getKey(), entry.getValue());
+				}
+			}
 
 			esbTemplate.send(m);
 		}

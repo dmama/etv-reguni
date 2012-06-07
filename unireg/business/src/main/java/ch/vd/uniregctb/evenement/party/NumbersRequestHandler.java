@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,7 +12,6 @@ import org.springframework.core.io.ClassPathResource;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
-import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -30,7 +30,7 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 	}
 
 	@Override
-	public Response handle(NumbersRequest request) throws ServiceException {
+	public PartyRequestHandlerResult handle(NumbersRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -52,9 +52,28 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 		}
 		response.setTimestamp(XmlUtils.date2xmlcal(time));
 		response.setIncludeCancelled(request.isIncludeCancelled());
-		response.getIds().addAll(long2Int(ids));
+		response.setIdsCount(ids.size());
 
-		return response;
+		final PartyRequestHandlerResult r = new PartyRequestHandlerResult(response);
+		r.addAttachment("ids", ids2byteArray(ids));
+		return r;
+	}
+
+	private static byte[] ids2byteArray(List<Long> ids) {
+		try {
+			return long2String(ids).getBytes("UTF-8");
+		}
+		catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private static String long2String(List<Long> ids) {
+		final StringBuilder s = new StringBuilder();
+		for (Long id : ids) {
+			s.append(id).append('\n');
+		}
+		return s.toString();
 	}
 
 	@Nullable
