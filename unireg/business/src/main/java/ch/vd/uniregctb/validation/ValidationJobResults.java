@@ -79,6 +79,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean calculatePeriodesImposition;
 	public final boolean coherencePeriodesImpositionWrtDIs;
 	public final boolean calculateAdresses;
+	public final boolean modeStrict;
 
 	public int nbCtbsTotal;
 	public final List<Erreur> erreursValidation = new ArrayList<Erreur>();
@@ -88,11 +89,12 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public boolean interrompu;
 
 	public ValidationJobResults(RegDate dateTraitement, boolean calculatePeriodesImposition, boolean coherencePeriodesImpositionWrtDIs,
-	                            boolean calculateAdresses) {
+	                            boolean calculateAdresses, boolean modeStrict) {
 		this.dateTraitement = dateTraitement;
 		this.calculatePeriodesImposition = calculatePeriodesImposition;
 		this.coherencePeriodesImpositionWrtDIs = coherencePeriodesImpositionWrtDIs;
 		this.calculateAdresses = calculateAdresses;
+		this.modeStrict = modeStrict;
 	}
 
 	public int getNbCtbsTotal() {
