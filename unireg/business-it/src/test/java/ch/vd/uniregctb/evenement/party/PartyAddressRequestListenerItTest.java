@@ -62,7 +62,7 @@ import static org.junit.Assert.fail;
 		"classpath:ut/unireg-businessit-jms.xml",
 		"classpath:ut/unireg-businessit-jms-evt-party.xml"
 })
-public class PartyRequestListenerItTest extends BusinessItTest {
+public class PartyAddressRequestListenerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
 

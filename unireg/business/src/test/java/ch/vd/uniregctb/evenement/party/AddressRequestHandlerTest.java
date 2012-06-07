@@ -159,7 +159,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			request.setPartyNumber(id.intValue());
 			request.getTypes().add(AddressType.RESIDENCE);
 
-			final AddressResponse response = (AddressResponse) handler.handle(request);
+			final AddressResponse response = (AddressResponse) handler.handle(request).getResponse();
 			assertNotNull(response);
 
 			final List<Address> addresses = response.getAddresses();
@@ -245,7 +245,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			request.setPartyNumber(id.intValue());
 			request.getTypes().add(AddressType.RESIDENCE);
 
-			final AddressResponse response = (AddressResponse) handler.handle(request);
+			final AddressResponse response = (AddressResponse) handler.handle(request).getResponse();
 			assertNotNull(response);
 
 			final List<Address> addresses = response.getAddresses();
