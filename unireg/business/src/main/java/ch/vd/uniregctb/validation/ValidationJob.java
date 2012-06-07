@@ -40,6 +40,7 @@ public class ValidationJob extends JobDefinition {
 
 	public static final String P_IMPOSITION = "P_IMPOSITION";
 	public static final String ADRESSES = "ADRESSES";
+	public static final String MODE_STRICT = "MODE_STRICT";
 	public static final String DI = "DI";
 	public static final String NB_THREADS = "NB_THREADS";
 
@@ -83,6 +84,13 @@ public class ValidationJob extends JobDefinition {
 		param3.setMandatory(true);
 		param3.setType(new JobParamInteger());
 		addParameterDefinition(param3, 4);
+
+		final JobParam param4 = new JobParam();
+		param4.setDescription("Mode strict");
+		param4.setName(MODE_STRICT);
+		param4.setMandatory(false);
+		param4.setType(new JobParamBoolean());
+		addParameterDefinition(param4, Boolean.TRUE);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -122,13 +130,14 @@ public class ValidationJob extends JobDefinition {
 		final boolean coherencePeriodesImpositionWrtDIs = getBooleanValue(params, DI);
 		final boolean calculateAdresses = getBooleanValue(params, ADRESSES);
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
+		final boolean modeStrict = getBooleanValue(params, MODE_STRICT);
 
 		// Chargement des ids des contribuables à processer
 		statusManager.setMessage("Chargement des ids de tous les contribuables...");
 		final List<Long> ids = getCtbIds(statusManager);
 
 		// Processing des contribuables
-		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses);
+		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict);
 		processAll(ids, results, nbThreads, statusManager);
 		results.end();
 

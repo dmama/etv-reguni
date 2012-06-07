@@ -64,7 +64,7 @@ public class ValidationJobThread extends Thread {
 	public void run() {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		boolean continueProcessing = true;
+		boolean continueProcessing;
 
 		// Valide les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
 		do {
@@ -303,7 +303,7 @@ public class ValidationJobThread extends Thread {
 
 	private void checkAdresses(final Contribuable contribuable, ValidationJobResults results) {
 		try {
-			adresseService.getAdressesFiscalHisto(contribuable, true);
+			adresseService.getAdressesFiscalHisto(contribuable, results.modeStrict);
 		}
 		catch (Exception e) {
 			if (LOGGER.isDebugEnabled()) {
