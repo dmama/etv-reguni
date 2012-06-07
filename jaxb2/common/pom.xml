@@ -39,7 +39,6 @@
 						<arg>-Xpretty-classname</arg>
 						<arg>-Xunireg-ws</arg>
 						<arg>-Xnamespace-prefix</arg>
-						<arg>-Xnamespace-prefix-file:../base/mapping.txt</arg>
 						<arg>-Xts</arg>
 						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
 						<arg>-Xvalue-constructor</arg>
@@ -54,9 +53,9 @@
 				</executions>
 				<dependencies>
 					<dependency>
-						<groupId>ch.vd.jaxb2</groupId>
+						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-namespace-prefix</artifactId>
-						<version>1.1.0</version>
+						<version>1.0</version>
 					</dependency>
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
