@@ -99,7 +99,14 @@ public abstract class EvenementHelper {
 	}
 
 	public static void clearQueue(EsbJmsTemplate esbTemplate, String queueName) throws Exception {
-		while (esbTemplate.receive(queueName) != null) {
+		final long timeout = esbTemplate.getReceiveTimeout();
+		esbTemplate.setReceiveTimeout(100); // on ne veut pas attendre trop longtemps si la queue est déjà vide
+		try {
+			while (esbTemplate.receive(queueName) != null) {
+			}
+		}
+		finally {
+			esbTemplate.setReceiveTimeout(timeout);
 		}
 	}
 
