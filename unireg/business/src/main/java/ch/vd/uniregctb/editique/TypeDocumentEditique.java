@@ -14,7 +14,9 @@ public enum TypeDocumentEditique {
 	CHEMISE_TO("RGPT0801", null, "chemiseTO"),
 	CONFIRMATION_DELAI("RGPC0801", "387", "confirmationDelai"),
 	BORDEREAU_MVT_DOSSIER("RGPB0801", null, "bordereauEnvoiMouvementsDossier"),
-	FICHE_OUVERTURE_DOSSIER("RGPF0801", null, "ficheOuvertureDossier");
+	FICHE_OUVERTURE_DOSSIER("RGPF0801", null, "ficheOuvertureDossier"),
+	E_FACTURE_ATTENTE_INSCRIPTION("RGPE1201","390","impressionMiseEnAttenteEfacture"),
+	E_FACTURE_CONFIRMATION_INSCRIPTION("RGPE1202","391","impressionConfirmationEfacture");
 
 	private final String codeDocumentEditique;
 	private final String codeDocumentArchivage;
