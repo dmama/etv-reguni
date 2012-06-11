@@ -6,9 +6,9 @@ public abstract class AbstractEtat {
 
 	private final RegDate dateObtention;
 	private final String motifObtention;
-	private final String documentArchiveKey;
+	private final ArchiveKey documentArchiveKey;
 
-	protected AbstractEtat(RegDate dateObtention, String motifObtention, String documentArchiveKey) {
+	protected AbstractEtat(RegDate dateObtention, String motifObtention, ArchiveKey documentArchiveKey) {
 		this.dateObtention = dateObtention;
 		this.motifObtention = motifObtention;
 		this.documentArchiveKey = documentArchiveKey;
@@ -22,7 +22,7 @@ public abstract class AbstractEtat {
 		return motifObtention;
 	}
 
-	public String getDocumentArchiveKey() {
+	public ArchiveKey getDocumentArchiveKey() {
 		return documentArchiveKey;
 	}
 }

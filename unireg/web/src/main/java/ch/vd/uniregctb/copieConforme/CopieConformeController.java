@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.servlet.ServletService;
 
 @Controller
@@ -22,6 +23,7 @@ public class CopieConformeController {
 	private static final String ID_ETAT = "idEtat";
 
 	private static final String NOCTB= "noCtb";
+	private static final String TYPE_DOC = "typeDoc";
 	private static final String KEY = "key";
 
 	/**
@@ -99,11 +101,12 @@ public class CopieConformeController {
 	@RequestMapping(value = "/copie-conforme.do", method = RequestMethod.GET)
 	public String getDocument(HttpServletRequest request, HttpServletResponse response,
 	                          @RequestParam(value = NOCTB, required = true) final long noCtb,
+	                          @RequestParam(value = TYPE_DOC, required = true) final TypeDocumentEditique typeDoc,
 	                          @RequestParam(value = KEY, required = true) final String key) throws Exception {
 		return getDocumentCopieConforme(request, response, "document.pdf", "Aucun archivage trouvé pour le document demandé !", new CopieConformeGetter() {
 			@Override
 			public InputStream getCopieConforme() throws EditiqueException {
-				return copieConformeManager.getPdfCopieConforme(noCtb, key);
+				return copieConformeManager.getPdfCopieConforme(noCtb, typeDoc, key);
 			}
 		});
 	}

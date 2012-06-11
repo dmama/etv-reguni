@@ -15,6 +15,7 @@ import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueService;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class CopieConformeManagerImpl implements CopieConformeManager {
@@ -73,16 +74,7 @@ public class CopieConformeManagerImpl implements CopieConformeManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public InputStream getPdfCopieConforme(long noCtb, String key) throws EditiqueException {
-
-		// TODO jde coder le service de récupération de copie conforme...
-//		return editiqueService.getPDFDeDocumentDepuisArchive(noCtb, TypeDocumentEditique.???, key);
-		try {
-			Thread.sleep(3000);
-		}
-		catch (InterruptedException e) {
-			// pas grave...
-		}
-		return null;
+	public InputStream getPdfCopieConforme(long noCtb, TypeDocumentEditique typeDoc, String key) throws EditiqueException {
+		return editiqueService.getPDFDeDocumentDepuisArchive(noCtb, typeDoc, key);
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -125,12 +126,12 @@ public class EFactureController {
 			// un contribuable sur deux a une demande en attente de confirmation signature
 			if (ctbId % 4 == 0) {
 				demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 12), null, null, "Reçue", TypeEtatDemande.RECUE),
-				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", "153677   lKDFG", "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE),
+				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", new ArchiveKey(TypeDocumentEditique.E_FACTURE_CONFIRMATION_INSCRIPTION.name(), "153677   lKDFG"), "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE),
 				                               new EtatDemande(RegDate.get(2012, 9, 25), null, null, "Acceptée", TypeEtatDemande.VALIDEE)));
 			}
 			else {
 				demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 12), null, null, "Reçue", TypeEtatDemande.RECUE),
-				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", "153677   lKDFG", "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE)));
+				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", new ArchiveKey(TypeDocumentEditique.E_FACTURE_CONFIRMATION_INSCRIPTION.name(), "153677   lKDFG"), "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE)));
 			}
 			demandes.add(demande);
 		}
