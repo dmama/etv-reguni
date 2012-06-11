@@ -44,6 +44,7 @@ New -> DIVDTAX_0.0.4.xsd-->
 	<xs:include schemaLocation="is/BVR_STD.xsd"/>
 	<xs:include schemaLocation="is/LRLCBVR.xsd"/>
 	<xs:include schemaLocation="is/SLRLCBVR.xsd"/>
+	<xs:include schemaLocation="LettresEFacture.xsd"/>
 	<xs:group name="typDocument">
 		<xs:choice>
 			<xs:group ref="typDocumentDI"/>
@@ -57,6 +58,7 @@ New -> DIVDTAX_0.0.4.xsd-->
 			<xs:group ref="typDocumentChemiseTO"/>
 			<xs:group ref="typDocumentLRLCBVR"/>
 			<xs:group ref="typDocumentSommationLR"/>
+			<xs:group ref="typDocumentLettresEFacture"/>
 		</xs:choice>
 	</xs:group>
 	<xs:group name="typDocumentLRLCBVR">
@@ -145,6 +147,14 @@ New -> DIVDTAX_0.0.4.xsd-->
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element ref="ChemiseTO"/>
+		</xs:sequence>
+	</xs:group>
+	<xs:group name="typDocumentLettresEFacture">
+		<xs:annotation>
+			<xs:documentation>Documents  Lettres eFacture (REG) (RGPE1201)</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element ref="LettresEFacture"/>
 		</xs:sequence>
 	</xs:group>
 </xs:schema>
