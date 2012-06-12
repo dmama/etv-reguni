@@ -114,7 +114,7 @@
 				</c:if>
 
                 <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-                    <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+                    <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
                         <li id="efactureTab">
                             <a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
                         </li>
