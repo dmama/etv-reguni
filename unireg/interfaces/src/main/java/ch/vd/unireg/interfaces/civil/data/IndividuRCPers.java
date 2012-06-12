@@ -206,7 +206,11 @@ public class IndividuRCPers implements Individu, Serializable {
 	 * @return le numéro d'individu tel que connu par chez nous
 	 */
 	public static long getNoIndividu(Person person) {
-		return getNoIndividu(person.getIdentity().getPersonIdentification().getLocalPersonId());
+		return getNoIndividu(person.getIdentity().getPersonIdentification());
+	}
+
+	public static long getNoIndividu(PersonIdentification identification) {
+		return getNoIndividu(identification.getLocalPersonId());
 	}
 
 	private static String initNumeroAVS11(List<NamedPersonId> otherPersonIds) {

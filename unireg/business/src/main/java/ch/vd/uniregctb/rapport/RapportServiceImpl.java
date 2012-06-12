@@ -47,6 +47,7 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
+import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
@@ -71,6 +72,7 @@ import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
+import ch.vd.uniregctb.identification.individus.IdentificationIndividusNonMigresResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
@@ -1004,7 +1006,6 @@ public class RapportServiceImpl implements RapportService {
 	 * Génère le rapport d'exécution du batch d'import des codes de segmentation fournis par TAO
 	 * @param results les résultats du batch
 	 * @param nbLignesLuesFichierEntree le nombre de lignes lues dans le fichier d'entrée (indication du nombre de doublons)
-	 * @param status le status manager
 	 * @return le rapport
 	 */
 	@Override
@@ -1042,6 +1043,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
 					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public IdentificationIndividusNonMigresRapport generateRapport(final IdentificationIndividusNonMigresResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportIdentIndividusNonMigres";
+		final String description = "Rapport d'exécution du job d'identification d'individus non migrés.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(IdentificationIndividusNonMigresRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentificationIndividusNonMigresRapport>() {
+				@Override
+				public void writeDoc(IdentificationIndividusNonMigresRapport doc, OutputStream os) throws Exception {
+					final PdfIdentIndividusNonMigresRapport document = new PdfIdentIndividusNonMigresRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

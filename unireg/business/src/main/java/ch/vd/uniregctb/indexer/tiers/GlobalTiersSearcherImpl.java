@@ -349,7 +349,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	@Override
 	public Set<Long> getAllIds() {
 
-		final Set<Long> ids = new HashSet<Long>();
+		final Set<Long> ids = new HashSet<Long>(globalIndex.getApproxDocCount());
 
 		// [UNIREG-2597] on veut explicitement tous les ids, sans limite de recherche
 		globalIndex.searchAll(new MatchAllDocsQuery(), new SearchAllCallback() {
