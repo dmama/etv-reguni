@@ -91,29 +91,32 @@ public class BatchController {
 
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 
-		for (Map.Entry<String, Object> param : startParams.getStartParams().entrySet()) {
-			final JobParam jobparam = job.getParameterDefinition(param.getKey());
-			if (jobparam != null) { // il arrive que IE6 foire un peu et reposte les paramètres d'un formulaire posté précédemment...
-				final Object value = param.getValue();
-				final Object typedValue;
-				if (value instanceof String) {
-					final String stringValue = (String) value;
-					if (StringUtils.isEmpty(stringValue)) {
-						typedValue = null;
+		final Map<String, Object> sp = startParams.getStartParams();
+		if (sp != null) {
+			for (Map.Entry<String, Object> param : sp.entrySet()) {
+				final JobParam jobparam = job.getParameterDefinition(param.getKey());
+				if (jobparam != null) { // il arrive que IE6 foire un peu et reposte les paramètres d'un formulaire posté précédemment...
+					final Object value = param.getValue();
+					final Object typedValue;
+					if (value instanceof String) {
+						final String stringValue = (String) value;
+						if (StringUtils.isEmpty(stringValue)) {
+							typedValue = null;
+						}
+						else {
+							final JobParamType type = jobparam.getType();
+							typedValue = type.stringToValue(stringValue.trim());
+						}
+					}
+					else if (value instanceof CommonsMultipartFile) {
+						final CommonsMultipartFile file = (CommonsMultipartFile) value;
+						typedValue = file.getBytes();
 					}
 					else {
-						final JobParamType type = jobparam.getType();
-						typedValue = type.stringToValue(stringValue.trim());
+						throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + ']');
 					}
+					params.put(param.getKey(), typedValue);
 				}
-				else if (value instanceof CommonsMultipartFile) {
-					final CommonsMultipartFile file = (CommonsMultipartFile) value;
-					typedValue = file.getBytes();
-				}
-				else {
-					throw new IllegalArgumentException("Type de paramètre inconnu = [" + value + ']');
-				}
-				params.put(param.getKey(), typedValue);
 			}
 		}
 

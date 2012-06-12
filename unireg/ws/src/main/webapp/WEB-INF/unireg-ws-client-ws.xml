@@ -13,8 +13,10 @@
 		<property name="username" value="${extprop.webservice.rcpers.username}" />
 		<property name="password" value="${extprop.webservice.rcpers.password}" />
 		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
+		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
 		<property name="relationsPath" value="${extprop.webservice.rcpers.relationsPath}" />
 		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
+		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
 	</bean>
 
 	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
@@ -22,6 +24,7 @@
 		<property name="statsService" ref="statsService"/>
 	</bean>
 
+	<!-- TODO (msi) déplacer cette définition dans interfaces-direct.xml -->
 	<alias alias="rcPersClient" name="rcPersClientTracing"/>
 
 </beans>

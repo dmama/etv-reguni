@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
@@ -46,7 +47,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private Tutelle tutelle;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
-	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, RegDate upTo, AttributeIndividu... parts) {
+	public static IndividuImpl get(ch.vd.registre.civil.model.Individu target, @Nullable RegDate upTo, AttributeIndividu... parts) {
 		if (target == null) {
 			return null;
 		}

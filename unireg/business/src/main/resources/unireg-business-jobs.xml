@@ -343,6 +343,8 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+	<!-- Numéro 612 réservé pour identificationIndividusNonMigresJob (voir unireg-web-jobs.xml) -->
+
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
         <constructor-arg value="700"/>
         <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>

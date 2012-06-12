@@ -136,6 +136,7 @@
 		<value>ch.vd.uniregctb.document.ListeNoteRapport</value>
 		<value>ch.vd.uniregctb.document.MigrationCoquillesPMRapport</value>
 		<value>ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport</value>
+		<value>ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport</value>
 		<value>ch.vd.uniregctb.parametrage.ParametreApp</value>
 		<value>ch.vd.uniregctb.rf.Immeuble</value>
 	</util:list>
