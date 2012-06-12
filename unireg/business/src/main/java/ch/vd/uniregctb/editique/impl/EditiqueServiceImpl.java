@@ -54,14 +54,14 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	private int hoursRetourImpressionExpiration = 2;
 
 	private static interface TimeoutManager {
-		EditiqueResultat onTimeout(EditiqueResultat src);
+		EditiqueResultat onTimeout(EditiqueResultatTimeout src);
 	}
 
 	@Override
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuInbox(final String nomDocument, final TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive, final String description) throws EditiqueException {
 		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, asyncReceiveDelay, new TimeoutManager() {
 			@Override
-			public EditiqueResultat onTimeout(EditiqueResultat src) {
+			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
 				final String visa = AuthenticationHelper.getCurrentPrincipal();
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(String.format("Retour d'impression un peu lent pour le document '%s', routage demandé vers l'inbox de l'utilisateur %s", nomDocument, visa));
@@ -78,7 +78,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 	public EditiqueResultat creerDocumentImmediatementSynchroneOuRien(final String nomDocument, final TypeDocumentEditique typeDocument, TypeFormat typeFormat, XmlObject document, boolean archive) throws EditiqueException {
 		return creerDocumentImmediatement(nomDocument, typeDocument, typeFormat, document, archive, syncReceiveTimeout, new TimeoutManager() {
 			@Override
-			public EditiqueResultat onTimeout(EditiqueResultat src) {
+			public EditiqueResultat onTimeout(EditiqueResultatTimeout src) {
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(String.format("Retour d'impression locale non-reçu pour document %s (%s) : Time-out", nomDocument, typeDocument));
 				}
@@ -126,7 +126,7 @@ public final class EditiqueServiceImpl implements EditiqueService, InitializingB
 
 		// si on n'a rien reçu dans le temps imparti, il faut faire quelque chose de spécifique ?
 		if (resultat instanceof EditiqueResultatTimeout) {
-			resultat = timeoutManager.onTimeout(resultat);
+			resultat = timeoutManager.onTimeout((EditiqueResultatTimeout) resultat);
 		}
 		else if (LOGGER.isDebugEnabled()) {
 			// log de l'état de la réponse
