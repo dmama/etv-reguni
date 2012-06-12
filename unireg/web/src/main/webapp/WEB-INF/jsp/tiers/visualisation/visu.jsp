@@ -88,10 +88,10 @@
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 						<c:if test="${command.natureTiers != 'Entreprise'}">
 							<li id="diTab">
-								<a href="#tabContent_diTab""><fmt:message key="label.di" /></a>
+								<a href="#tabContent_diTab"><fmt:message key="label.di" /></a>
 							</li>
 							<li id="mouvementTab">
-								<a href="#tabContent_mouvementTab""><fmt:message key="label.mouvement" /></a>
+								<a href="#tabContent_mouvementTab"><fmt:message key="label.mouvement" /></a>
 							</li>
 						</c:if>
 						<c:if test="${command.natureTiers == 'Entreprise'}">
