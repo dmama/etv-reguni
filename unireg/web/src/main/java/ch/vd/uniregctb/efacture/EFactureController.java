@@ -27,6 +27,12 @@ public class EFactureController {
 	private static final String CTB = "ctb";
 	private static final String ID_DEMANDE = "idDemande";
 
+	private static void checkDroitGestionaireEfacture() {
+		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour interagir avec les états e-facture d'un contribuable");
+		}
+	}
+
 	@ResponseBody
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
 	public HistoriqueDestinataire histo(@RequestParam(value = CTB, required = true) long ctbId) {
@@ -41,9 +47,7 @@ public class EFactureController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	public String edit(Model model, @RequestParam(value = CTB, required = true) long ctbId) {
 
-		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour interagir avec les états e-facture d'un contribuable");
-		}
+		checkDroitGestionaireEfacture();
 
 		final HistoriqueDestinataire histo = buildHistoDestinataire(ctbId);
 		if (histo == null) {
@@ -56,36 +60,48 @@ public class EFactureController {
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
 	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/activate.do", method = RequestMethod.POST)
 	public String activate(@RequestParam(value = CTB, required = true) long ctbId) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/validate.do", method = RequestMethod.POST)
 	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/refuse.do", method = RequestMethod.POST)
 	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
 	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
 	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+		checkDroitGestionaireEfacture();
+
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
