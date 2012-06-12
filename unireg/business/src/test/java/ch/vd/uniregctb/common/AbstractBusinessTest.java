@@ -604,12 +604,12 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return true;
     }
 
-    protected SituationFamille addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {
+    protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {
         SituationFamille situation = new SituationFamillePersonnePhysique();
         situation.setDateDebut(debut);
         situation.setDateFin(fin);
         situation.setNombreEnfants(nombreEnfants);
-        return tiersDAO.addAndSave(pp, situation);
+        return (SituationFamillePersonnePhysique) tiersDAO.addAndSave(pp, situation);
     }
 
     protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, RegDate fin, int nombreEnfants,
