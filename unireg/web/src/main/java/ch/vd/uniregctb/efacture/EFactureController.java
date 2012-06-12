@@ -37,7 +37,7 @@ public class EFactureController {
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
 	public HistoriqueDestinataire histo(@RequestParam(value = CTB, required = true) long ctbId) {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL)) {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.GEST_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
 		}
 

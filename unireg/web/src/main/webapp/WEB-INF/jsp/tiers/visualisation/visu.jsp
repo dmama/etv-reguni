@@ -191,7 +191,7 @@
 			</c:if>
 
             <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-                <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+                <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
                     <div id="tabContent_efactureTab" class="visuTiers">
                         <jsp:include page="efacture.jsp"/>
                     </div>
