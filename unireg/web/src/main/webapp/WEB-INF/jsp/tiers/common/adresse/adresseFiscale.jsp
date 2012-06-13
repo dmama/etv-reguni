@@ -26,7 +26,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.rueCasePostale">
 			<c:out value="${adresse.rue}"/>
-			<c:if test="${not empty adresse.npaCasePostale}">
+			<c:if test="${not empty adresse.formattedCasePostale}">
 			<br/><c:out value="${adresse.formattedCasePostale}"/>
 			</c:if>
 		</display:column>
