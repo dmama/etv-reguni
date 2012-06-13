@@ -451,7 +451,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Pays getSuisse() throws ServiceInfrastructureException {
 		if (suisse == null) {
-			suisse = getPays(ServiceInfrastructureService.SIGLE_SUISSE);
+			suisse = getPays(ServiceInfrastructureService.noOfsSuisse);
 		}
 		return suisse;
 	}
