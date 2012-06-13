@@ -3,6 +3,7 @@ package ch.vd.unireg.cache;
 import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import com.sleepycat.bind.EntryBinding;
 import com.sleepycat.bind.serial.SerialBinding;
@@ -43,6 +44,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 	private TupleBinding<Long> secKeyBinding;
 	private SerialBinding<ObjectKey> keyBinding;
 	private int cachePercent = 5;
+	private long lockTimeout = 500; // valeur par défaut de Berkeley DB
 	private final SimpleCacheStats stats = new SimpleCacheStats();
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -65,6 +67,15 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		this.cachePercent = cachePercent;
 	}
 
+	/**
+	 * Spécifie le timeout pour l'obtention d'un lock.
+	 *
+	 * @param lockTimeout le timeout exprimé en millisecondes
+	 */
+	public void setLockTimeout(long lockTimeout) {
+		this.lockTimeout = lockTimeout;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 
@@ -72,6 +83,7 @@ public class BerkeleyPersistentCache<T extends Serializable> implements Persiste
 		envConfig.setTransactional(true);
 		envConfig.setAllowCreate(true);
 		envConfig.setCachePercent(cachePercent);
+		envConfig.setLockTimeout(lockTimeout, TimeUnit.MILLISECONDS);
 
 		final File dir = new File(homeDirectory);
 		//noinspection ResultOfMethodCallIgnored

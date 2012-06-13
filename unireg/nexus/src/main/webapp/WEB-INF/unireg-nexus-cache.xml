@@ -10,6 +10,7 @@
 		<property name="homeDirectory" value="${extprop.civil.cache.homedir}" />
 		<property name="clazz" value="ch.vd.unireg.interfaces.civil.cache.IndividuCacheValueWithParts" />
 		<property name="cachePercent" value="${extprop.civil.cache.cachePercent}" />
+		<property name="lockTimeout" value="${extprop.civil.cache.lockTimeout}" />
 	</bean>
 
 </beans>
