@@ -5,6 +5,26 @@
 	<!-- Ce fichier permet de configurer les services civils et infrastructure en mode direct, c'est-à-dire sans passer par le cache centralisé Nexus.
 	 L'idée est de permettre aux développeurs de travailler en débug sans devoir démarrage deux applications Java. -->
 
+	<!-- Client RcPers -->
+
+	<bean id="rcPersClientRaw" class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
+		<property name="username" value="${extprop.webservice.rcpers.username}" />
+		<property name="password" value="${extprop.webservice.rcpers.password}" />
+		<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
+		<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
+		<property name="relationsPath" value="${extprop.webservice.rcpers.relationsPath}" />
+		<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
+		<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
+	</bean>
+
+	<bean id="rcPersClientTracing" class="ch.vd.uniregctb.wsclient.rcpers.RcPersClientTracing">
+		<property name="target" ref="rcPersClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="rcPersClient" name="rcPersClientTracing"/>
+
 	<!-- Service civil -->
 
 	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
@@ -42,6 +62,14 @@
 	</bean>
 
 	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
+
+	<!-- Client fidor -->
+
+	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+		<property name="username" value="${extprop.webservice.fidor.username}" />
+		<property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
 
 	<!-- Service infra -->
 
