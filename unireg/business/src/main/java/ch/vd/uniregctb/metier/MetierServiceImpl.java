@@ -1677,13 +1677,19 @@ public class MetierServiceImpl implements MetierService {
 		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[personnePhysiqueSet.size()]);
 		final PersonnePhysique tiers1 = personnes[0];
 		final PersonnePhysique tiers2 = personnes.length > 1 ? personnes[1] : null;
-		final ch.vd.uniregctb.type.EtatCivil etatCivilFamille;
-		if (tiersService.isMemeSexe(tiers1, tiers2)) {
-			etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
+		ch.vd.uniregctb.type.EtatCivil etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.MARIE;
+		if (personnes.length >= 2) {
+			if (tiersService.isMemeSexe(tiers1, tiers2)) {
+				etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE;
+			}
+		} else {
+			// Dans le cas d'un marié seul, on peut avoir à faire à un partenartiat enregistré
+			// on verifie dans le civil si c'est le cas.
+			if (tiers1.isConnuAuCivil()) {
+				etatCivilFamille = EtatCivilHelper.civil2core(serviceCivilService.getEtatCivilActif(tiers1.getNumeroIndividu(), date).getTypeEtatCivil());
+			}
 		}
-		else {
-			etatCivilFamille = ch.vd.uniregctb.type.EtatCivil.MARIE;
-		}
+
 		updateSituationFamilleAnnulationSeparation(menage, date, etatCivilFamille);
 
 	}

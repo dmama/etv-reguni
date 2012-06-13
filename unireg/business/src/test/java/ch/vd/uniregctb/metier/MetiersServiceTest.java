@@ -36,12 +36,16 @@ import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -52,6 +56,7 @@ import ch.vd.uniregctb.validation.fors.ForFiscalValidator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -2979,7 +2984,7 @@ public class MetiersServiceTest extends BusinessTest {
 			}
 		});
 
-		// mise en place fisccale
+		// mise en place fiscale
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
@@ -3007,5 +3012,94 @@ public class MetiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+	/**
+	 * SIFISC-5323 : en cas d'annulation de séparation, pour un "partenaire" seul, sa situation de famille doit
+	 * revenir à partenariat enregistré
+	 */
+	@Test
+	public void testAnnulationSeparationPartenariatSeul() throws Exception {
+
+		final long noIndiv = 123456L;
+		final RegDate dateNaissance = RegDate.get(1963, 6, 25);
+		final RegDate dateMajorite = dateNaissance.addYears(18);
+		final RegDate datePartenariat = dateMajorite.addYears(4);
+		final RegDate dateSeparation = datePartenariat.addYears(2);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu georges = addIndividu(noIndiv, dateNaissance, "Georges", "Michael", true);
+				addEtatCivil(georges, dateNaissance, datePartenariat.getOneDayBefore(), TypeEtatCivil.CELIBATAIRE);
+				addEtatCivil(georges, datePartenariat, TypeEtatCivil.PACS);
+			}
+		});
+
+		// mise en place fiscale
+		final Long[] Ids = doInNewTransactionAndSession(new TransactionCallback<Long[]>() {
+			@Override
+			public Long[] doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndiv);
+				addForPrincipal(pp, dateMajorite, MotifFor.MAJORITE, datePartenariat.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bex);
+				addForPrincipal(pp, dateSeparation.getOneDayAfter(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
+
+				EnsembleTiersCouple etc = addEnsembleTiersCouple(pp,null, datePartenariat, dateSeparation);
+				final MenageCommun mc = etc.getMenage();
+				addForPrincipal(mc, datePartenariat, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Bex);
+				SituationFamilleMenageCommun sfmc = addSituation(mc, datePartenariat, dateSeparation, 0, TarifImpotSource.NORMAL);
+				sfmc.setEtatCivil(EtatCivil.LIE_PARTENARIAT_ENREGISTRE);
+				SituationFamillePersonnePhysique sfpp = addSituation(pp, dateSeparation.getOneDayAfter(), null, 0);
+				sfpp.setEtatCivil(EtatCivil.SEPARE);
+				return new Long[] {pp.getNumero(), mc.getNumero()};
+			}
+		});
+
+		final long ppId = Ids[0];
+		final long menageId = Ids[1];
+
+		// appel du service métier
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(menageId);
+				try {
+					metierService.annuleSeparation(mc, dateSeparation.getOneDayAfter(), 1234L);
+				}
+				catch (MetierServiceException e) {
+					Assert.fail(e.getMessage());
+				}
+				return null;
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(menageId);
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+
+				assertEquals("Le ménage commun devrait avoir 2 situations de famille, 1 annulée et 1 active",
+						2, mc.getSituationsFamille().size());
+
+				assertEquals("La personne physique devrait avoir 1 situation de famille annulée",
+						1, pp.getSituationsFamille().size());
+
+				final SituationFamille sfmcActive = mc.getSituationFamilleActive();
+				final SituationFamille sfppActive =  pp.getSituationFamilleActive();
+
+				assertEquals("La situation de famille active sur le ménage commun doit etre " + EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
+						EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
+						sfmcActive.getEtatCivil());
+				assertNull("Il ne doit pas y avoir de situation de famille active sur la personne physique", sfppActive);
+
+				final SituationFamille sfppAnnulee =  pp.getSituationsFamille().iterator().next();
+				assertTrue("La situation de famille doit etre annulée sur la personne physique", sfppAnnulee.isAnnule());
+
+				return null;
+			}
+		});
+
+
 	}
 }
