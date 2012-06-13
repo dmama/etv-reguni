@@ -7,7 +7,6 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
@@ -35,6 +34,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.EvenementsCivilsNonTraites;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -279,12 +279,29 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		}
 
 		if (showEvenementsCivils && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) {
-			final Set<Long> nosIndividusAvecEvtsNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
-			if (nosIndividusAvecEvtsNonTraites != null && !nosIndividusAvecEvtsNonTraites.isEmpty()) {
+			final EvenementsCivilsNonTraites evtsCivilNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
+			if (evtsCivilNonTraites != null && !evtsCivilNonTraites.isEmpty()) {
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
-				s.append(message("label.tiers.evts.non.traites"));
-				for (Long no : nosIndividusAvecEvtsNonTraites) {
-					s.append(' ').append(no);
+				s.append(message("label.tiers.evts.non.traites")).append("&nbsp;: ");
+
+				boolean sourcePresent = false;
+				for (EvenementsCivilsNonTraites.Source src : EvenementsCivilsNonTraites.Source.values()) {
+					if (evtsCivilNonTraites.hasForSource(src)) {
+						if (sourcePresent) {
+							s.append(", ");
+						}
+						s.append(HtmlUtils.htmlEscape(src.getLibelle())).append(" (");
+						boolean individuPresent = false;
+						for (Long no : evtsCivilNonTraites.getForSource(src)) {
+							if (individuPresent) {
+								s.append(", ");
+							}
+							s.append(no);
+							individuPresent = true;
+						}
+						s.append(")");
+						sourcePresent = true;
+					}
 				}
 				s.append("</center></td></tr>\n");
 			}

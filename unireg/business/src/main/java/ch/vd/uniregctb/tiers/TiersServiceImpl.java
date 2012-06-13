@@ -4057,21 +4057,16 @@ public class TiersServiceImpl implements TiersService {
 	}
 
 	@Override
-	public Set<Long> getIndividusAvecEvenementsCivilsNonTraites(Tiers tiers) {
-		final Set<Long> set;
-
+	public EvenementsCivilsNonTraites getIndividusAvecEvenementsCivilsNonTraites(Tiers tiers) {
 		final Set<Long> noTiers = new HashSet<Long>(1);
 		noTiers.add(tiers.getNumero());
 		final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(noTiers, true);
+		final EvenementsCivilsNonTraites res = new EvenementsCivilsNonTraites();
 		if (!nosIndividus.isEmpty()) {
-			set = new TreeSet<Long>();
-			set.addAll(getIndividusAvecEvenementsCivilsRegPPNonTraites(nosIndividus));
-			set.addAll(getIndividusAvecEvenementsCivilsECHNonTraites(nosIndividus));
+			res.addAll(EvenementsCivilsNonTraites.Source.REGPP, getIndividusAvecEvenementsCivilsRegPPNonTraites(nosIndividus));
+			res.addAll(EvenementsCivilsNonTraites.Source.RCPERS, getIndividusAvecEvenementsCivilsECHNonTraites(nosIndividus));
 		}
-		else {
-			set = Collections.emptySet();
-		}
-		return set;
+		return res;
 	}
 
 	@Override
