@@ -21,7 +21,7 @@
 	   http://activemq.apache.org/schema/core http://activemq.apache.org/schema/core/activemq-core-5.4.2.xsd">
 
 	<!-- ActiveMQ JMS Broker configuration -->
-	<amq:broker id="jmsBroker" useShutdownHook="false" persistent="false">
+	<amq:broker id="jmsBroker" useJmx="false" useShutdownHook="false" persistent="false">
 		<amq:transportConnectors>
 			<amq:transportConnector uri="vm://localhost" />
 		</amq:transportConnectors>
