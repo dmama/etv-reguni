@@ -13,11 +13,25 @@ import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0006.v1.Event;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
 import ch.vd.unireg.wsclient.rcpers.RcPersClientImpl;
+import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class RcPersServiceTest {
+
+	private UniregProperties uniregProperties;
+
+	public RcPersServiceTest() {
+		try {
+			uniregProperties = new UniregProperties();
+			uniregProperties.setFilename("file:../base/unireg-ut.properties");
+			uniregProperties.afterPropertiesSet();
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 	@Test(timeout = 5000)
 	public void testGetPeople() throws Exception {
@@ -85,9 +99,12 @@ public class RcPersServiceTest {
 		assertEquals(168147L, IndividuRCPers.getNoIndividu(p));
 	}
 
-	private static RcPersClientImpl buildClient() throws Exception {
+	private RcPersClientImpl buildClient() throws Exception {
+
+		final String rcpUrl = uniregProperties.getProperty("testprop.webservice.rcpers.url");
+
 		final RcPersClientImpl client = new RcPersClientImpl();
-		client.setBaseUrl("http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3");
+		client.setBaseUrl(rcpUrl);
 		client.setPeoplePath("persons/ct.vd.rcpers");
 		client.setEventPath("event");
 		client.setRelationsPath("relations/ct.vd.rcpers");
