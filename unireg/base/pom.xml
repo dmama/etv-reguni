@@ -650,7 +650,7 @@
 
 		<!-- Parametres de Testing -->
 		<surefire.useFile>false</surefire.useFile>
-		<surefire.argline>-Xms256m -Xmx512m</surefire.argline>
+		<surefire.argline>-Xms256m -Xmx512m -DUseSunHttpHandler=true -Dsun.lang.ClassLoader.allowArraySyntax=true</surefire.argline>
 
 		<!-- Editique -->
 		<!-- Temps de timeout lors des impressions locales qui doivent être synchrones -->
