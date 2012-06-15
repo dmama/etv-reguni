@@ -2,6 +2,7 @@ package ch.vd.uniregctb.editique.impl;
 
 import javax.jms.JMSException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -35,6 +36,8 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl;
+import ch.vd.uniregctb.efacture.ImpressionDocumentEfactureParams;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelper;
@@ -61,6 +64,7 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ServiceSecuriteService serviceSecurite;
 	private ImpressionTaxationOfficeHelper impressionTaxationOfficeHelper;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
+	private ImpressionDocumentEfactureHelperImpl impressionEfactureHelper;
 
 	public void setEditiqueService(EditiqueService editiqueService) {
 		this.editiqueService = editiqueService;
@@ -109,6 +113,11 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	public void setImpressionBordereauMouvementDossierHelper(ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper) {
 		this.impressionBordereauMouvementDossierHelper = impressionBordereauMouvementDossierHelper;
 	}
+
+	public void setImpressionEfactureHelper(ImpressionDocumentEfactureHelperImpl impressionEfactureHelper) {
+		this.impressionEfactureHelper = impressionEfactureHelper;
+	}
+
 
 	private static List<ModeleFeuilleDocumentEditique> buildDefaultAnnexes(DeclarationImpotOrdinaire di) {
 		final Set<ModeleFeuilleDocument> listFeuille = di.getModeleDocument().getModelesFeuilleDocument();
@@ -369,4 +378,15 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final String nomDocument = impressionBordereauMouvementDossierHelper.construitIdDocument(bordereau);
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, prefixe, TypeFormat.PCL, document, false);
 	}
+
+	@Override
+	public void imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
+		final TypeDocumentEditique prefixe = impressionEfactureHelper.getTypeDocumentEditique(typeDoc);
+		ImpressionDocumentEfactureParams params = new ImpressionDocumentEfactureParams(tiers,typeDoc,dateTraitement,dateDemande);
+		final FichierImpressionDocument document = impressionEfactureHelper.remplitDocumentEfacture(params);
+		final String nomDocument = impressionEfactureHelper.construitIdDocument(params);
+		editiqueService.creerDocumentParBatch(nomDocument, prefixe, document, true);
+	}
+
+
 }

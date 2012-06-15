@@ -106,6 +106,29 @@ public enum TypeDocument {
 		public String getDescription() {
 			return "liste récapitulative";
 		}
+	},
+
+	E_FACTURE_ATTENTE_CONTACT{
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Document de demande de contact pour E-facture";
+		}
+	},
+	E_FACTURE_ATTENTE_SIGNATURE{
+		@Override
+		public boolean isOrdinaire() {
+			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "Document de demande de signature pour confirmation E-facture";
+		}
 	};
 
 	/**

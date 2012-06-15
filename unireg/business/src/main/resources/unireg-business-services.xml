@@ -228,6 +228,13 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>
+
+	<bean id="impressionEfactureHelper" class="ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl">
+		<property name="editiqueHelper" ref="editiqueHelper" />
+		<property name="adresseService" ref="adresseService" />
+
+	</bean>
+
 	<bean id="identificationContribuableHelper" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableHelper"/>
 
 	<bean id="activationService" class="ch.vd.uniregctb.activation.ActivationServiceImpl">

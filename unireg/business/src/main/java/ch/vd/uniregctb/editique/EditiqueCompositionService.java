@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique;
 
 import javax.jms.JMSException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface EditiqueCompositionService {
@@ -164,6 +166,23 @@ public interface EditiqueCompositionService {
 	 * @return l'identifiant du document (pour le récupérer ensuite)
 	 */
 	EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereauMouvementDossier) throws EditiqueException, JMSException;
+
+
+	/**Imprime les document de confirmation ou de mise en attente lors d'une demande d'inscription à la E-facture
+	 *
+	 *
+	 *
+	 *
+	 * @param tiers a qui le document doit être envoyé
+	 * @param typeDoc permet de determiner le type de document a imprimer
+	 * @param dateTraitement date du traitement
+	 * @param dateDemande
+	 * @throws EditiqueException
+	 *
+	 */
+	void imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException;
+
+
 
 	/**
 	 * Envoie à l'éditique le formulaire immeuble à imprimer en masse

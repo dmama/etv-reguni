@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique.mock;
 
 import javax.jms.JMSException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
 import ch.vd.uniregctb.mouvement.BordereauMouvementDossier;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class MockEditiqueCompositionService implements EditiqueCompositionService {
@@ -91,6 +93,10 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	@Override
 	public EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereauMouvementDossier) throws EditiqueException, JMSException {
 		return dummyResultat();
+	}
+
+	@Override
+	public void imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
 	}
 
 	@Override

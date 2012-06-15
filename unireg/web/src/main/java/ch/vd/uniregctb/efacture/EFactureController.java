@@ -8,6 +8,8 @@ import java.util.ListIterator;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,9 +18,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.efacture.manager.EfactureManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
 @RequestMapping(value = "/efacture")
@@ -26,6 +31,8 @@ public class EFactureController {
 
 	private static final String CTB = "ctb";
 	private static final String ID_DEMANDE = "idDemande";
+	private static final String DATE_DEMANDE = "dateDemande";
+	private EfactureManager efactureManager;
 
 	private static void checkDroitGestionaireEfacture() {
 		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
@@ -33,6 +40,11 @@ public class EFactureController {
 		}
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	@InitBinder
+	protected void initBinder(WebDataBinder binder) {
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, true));
+	}
 	@ResponseBody
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
 	public HistoriqueDestinataire histo(@RequestParam(value = CTB, required = true) long ctbId) {
@@ -91,16 +103,20 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
-	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
+		efactureManager.imprimerDocumentEfacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,idDemande, dateDemande);
+		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
-	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
+ 		efactureManager.imprimerDocumentEfacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT,idDemande, dateDemande);
+		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
@@ -185,5 +201,9 @@ public class EFactureController {
 			}
 			return dest;
 		}
+	}
+
+	public void setEfactureManager(EfactureManager efactureManager) {
+		this.efactureManager = efactureManager;
 	}
 }
