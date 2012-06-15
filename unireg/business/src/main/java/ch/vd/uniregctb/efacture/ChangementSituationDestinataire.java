@@ -4,6 +4,8 @@ import ch.vd.evd0025.v1.PayerSituation;
 import ch.vd.evd0025.v1.PayerSituationChangeEvent;
 import ch.vd.evd0025.v1.PayerStatus;
 import ch.vd.evd0025.v1.PayerWithSituation;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.XmlUtils;
 
 public class ChangementSituationDestinataire extends EFactureEvent {
 
@@ -28,17 +30,24 @@ public class ChangementSituationDestinataire extends EFactureEvent {
 		}
 	}
 
+	final RegDate date;
 	final long noTiers;
 	final Action action;
 	final String email;
 
 	public ChangementSituationDestinataire(PayerSituationChangeEvent event) {
+		this.date = XmlUtils.xmlcal2regdate(event.getDate());
+
 		final PayerWithSituation payer = event.getPayer();
-		noTiers = Long.parseLong(payer.getPayerId().getBusinessId());
+		this.noTiers = Long.parseLong(payer.getPayerId().getBusinessId());
 
 		final PayerSituation situation = payer.getSituation();
-		action = Action.get(situation.getStatus());
-		email = situation.getEmailAddress();
+		this.action = Action.get(situation.getStatus());
+		this.email = situation.getEmailAddress();
+	}
+
+	public RegDate getDate() {
+		return date;
 	}
 
 	public long getNoTiers() {

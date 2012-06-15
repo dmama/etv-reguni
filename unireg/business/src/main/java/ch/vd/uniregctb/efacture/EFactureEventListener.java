@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -69,9 +68,7 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 		final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
-		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());
-		final Object event = element.getValue();
-
+		final Object event = u.unmarshal(message.getBodyAsSource());
 		final EFactureEvent evt;
 		if (event instanceof PayerSituationChangeEvent) {
 			evt = new ChangementSituationDestinataire((PayerSituationChangeEvent) event);
