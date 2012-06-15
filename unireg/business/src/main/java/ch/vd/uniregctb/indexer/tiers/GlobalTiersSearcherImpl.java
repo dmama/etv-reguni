@@ -132,26 +132,9 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			QueryConstructor.addTiersActif(query, filter);
 		}
 
-		final Query queryNumeros = LuceneHelper.getAnyTermsExact(TiersIndexableData.NUMEROS, keywords);
+		final Query queryNumeros = LuceneHelper.getAnyTermsContient(TiersIndexableData.TOUT, keywords, tokenMinLength);
 		if (queryNumeros != null) {
 			query.add(queryNumeros, BooleanClause.Occur.SHOULD);
-		}
-
-		// critère sur le différents noms
-		final Query subQuery = LuceneHelper.getAnyTermsContient(TiersIndexableData.NOM_RAISON, keywords, tokenMinLength);
-		if (subQuery != null) {
-			subQuery.setBoost(5.0f); // on booste la recherche sur le nom de famille / raison sociale
-			query.add(subQuery, BooleanClause.Occur.SHOULD);
-		}
-		final Query subQuery2 = LuceneHelper.getAnyTermsContient(TiersIndexableData.AUTRES_NOM, keywords, tokenMinLength);
-		if (subQuery2 != null) {
-			query.add(subQuery2, BooleanClause.Occur.SHOULD);
-		}
-
-		// critère sur la localité ou le pays
-		final Query q = LuceneHelper.getAnyTermsCommence(TiersIndexableData.LOCALITE_PAYS, keywords, tokenMinLength);
-		if (q != null) {
-			query.add(q, BooleanClause.Occur.SHOULD);
 		}
 
 		// on effectue la recherche

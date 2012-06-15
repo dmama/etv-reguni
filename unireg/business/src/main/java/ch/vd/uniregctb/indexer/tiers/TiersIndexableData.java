@@ -27,6 +27,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String MODE_IMPOSITION = "S_MODE_IMPOSITION";
 	public static final String NO_SYMIC = "S_NO_SYMIC";
 	public static final String TIERS_ACTIF = "S_TIERS_ACTIF";
+	public static final String TOUT = "S_TOUT";
 
 	// champs de stockage (pas recherchables)
 	public static final String NOM1 = "D_NOM1";
@@ -109,6 +110,9 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.ANNULE, annule);
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
+		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
+		addToutValues(d, numeros, nomRaison, autresNom, dateNaissance, forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, categorieDebiteurIs, noSymic);
+
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
 		addStoredValue(d, TiersIndexableData.NOM2, nom2);
@@ -138,6 +142,19 @@ public class TiersIndexableData extends IndexableData {
 
 	private void addNotAnalyzedValue(Document d, String name, String value) {
 		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.NOT_ANALYZED));
+	}
+
+	private void addToutValues(Document d, String... values) {
+		final StringBuilder sb = new StringBuilder();
+		for (String value : values) {
+			if (StringUtils.isNotBlank(value)) {
+				if (sb.length() > 0) {
+					sb.append(' ');
+				}
+				sb.append(value);
+			}
+		}
+		d.add(new Field(TiersIndexableData.TOUT, sb.toString(), Field.Store.YES, Field.Index.ANALYZED));
 	}
 
 	private String toString(String value) {
