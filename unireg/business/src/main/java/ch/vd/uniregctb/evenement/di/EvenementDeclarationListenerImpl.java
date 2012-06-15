@@ -61,7 +61,7 @@ public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener
 
 		try {
 			final String businessId = message.getBusinessId();
-			LOGGER.info("Arrivée de l'évènement de Déclaration n°" + businessId);
+			LOGGER.info("Arrivée de l'événement de Déclaration n°" + businessId);
 			onMessage(message, EsbMessageHelper.extractCustomHeaders(message));
 
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
