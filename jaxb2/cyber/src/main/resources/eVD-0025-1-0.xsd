@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://evd.vd.ch/xmlns/eVD-0025/1"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/5"
-           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/3"
+           xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
+           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
            xmlns:eCH-0046="http://www.ech.ch/xmlns/eCH-0046/2"
            xmlns:eVD-0025="http://evd.vd.ch/xmlns/eVD-0025/1"
            elementFormDefault="qualified"
@@ -16,10 +16,10 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/5"
-               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/5/eCH-0010-5-0.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3"
-               schemaLocation="http://www.ech.ch/xmlns/eCH-0044/3/eCH-0044-3-0.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd"/>
     <xs:import namespace="http://www.ech.ch/xmlns/eCH-0046/2"
                schemaLocation="http://www.ech.ch/xmlns/eCH-0046/2/eCH-0046-2-1.xsd"/>
 
@@ -460,7 +460,7 @@
                 comme par exemple la clé d'archivage d'un document PDF.
             </xs:documentation>
         </xs:annotation>
-        <xs:restriction base="xs:token">
+        <xs:restriction base="xs:normalizedString">
             <xs:maxLength value="40"/>
         </xs:restriction>
     </xs:simpleType>
@@ -486,7 +486,7 @@
         <xs:complexContent>
             <xs:extension base="eVD-0025:billerType">
                 <xs:sequence>
-                    <xs:element name="name" type="eCH-0010:organisationMailAddressType"/>
+                    <xs:element name="address" type="eCH-0010:organisationMailAddressType"/>
                 </xs:sequence>
             </xs:extension>
         </xs:complexContent>
@@ -523,10 +523,21 @@
     </xs:complexType>
 
     <xs:complexType name="mapEntryType">
-        <xs:attribute name="key" type="xs:token"/>
-        <!-- TODO length restriction -->
-        <xs:attribute name="value" type="xs:token"/>
+        <xs:attribute name="key" type="eVD-0025:mapEntryKeyType"/>
+        <xs:attribute name="value" type="eVD-0025:mapEntryValueType"/>
     </xs:complexType>
+
+    <xs:simpleType name="mapEntryKeyType">
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="mapEntryValueType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="80"/>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:simpleType name="payerUpdateActionType">
         <xs:restriction base="xs:token">
@@ -549,19 +560,33 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <!-- ........................................... -->
-    <!--            Root elements                    -->
-    <!-- ........................................... -->
+    <!-- ...................................................................................... -->
+    <!--            Root elements                                                               -->
+    <!--                                                                                        -->
+    <!-- On n'utilise que des types anonymes pour les éléments racine pour faire plaisir à JAXB -->
+    <!-- ...................................................................................... -->
 
     <!-- ...... Demandes d'inscription des destintataires; validation et mise à jour  .................... -->
 
-    <xs:element name="registrationRequest" type="eVD-0025:registrationRequestType">
+    <xs:element name="registrationRequestValidationRequest">
         <xs:annotation>
             <xs:documentation>
-                Format du message de demande de validation d'inscription envoyé par l'application Cyberfact à Unireg.
-                Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour l'ACI.
+                Message envoyé au référentiel de validation des inscriptions (pour la fiscalité : Unireg)
+                pour initier la validation de la demande d'inscription recue du destinataire  (contribuable).
             </xs:documentation>
         </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registrationRequest" type="eVD-0025:registrationRequestType">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Format du message de demande de validation d'inscription envoyé par l'application Cyberfact à Unireg.
+                            Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour l'ACI.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
     </xs:element>
 
     <xs:element name="updateRegistrationRequest">
@@ -620,30 +645,33 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:element name="payerWithSituation" type="eVD-0025:payerWithSituationType"/>
-
-    <xs:element name="payerWithHistory" type="eVD-0025:payerWithHistoryType"/>
-
-    <xs:element name="listOfPayers" type="eVD-0025:listOfPayersType"/>
-
-    <xs:element name="payerRequestError">
+    <xs:element name="payerSearchResult">
         <xs:complexType>
-            <xs:sequence>
-                <xs:element name="code">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:token">
-                            <xs:maxLength value="20"/>
-                        </xs:restriction>
-                    </xs:simpleType>
+            <xs:choice>
+                <xs:element name="payerWithSituation" type="eVD-0025:payerWithSituationType"/>
+                <xs:element name="payerWithHistory" type="eVD-0025:payerWithHistoryType"/>
+                <xs:element name="listOfPayers" type="eVD-0025:listOfPayersType"/>
+                <xs:element name="payerRequestError">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="code">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:token">
+                                        <xs:maxLength value="20"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="message">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:normalizedString">
+                                        <xs:maxLength value="1000"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
                 </xs:element>
-                <xs:element name="message">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:token">
-                            <xs:maxLength value="1000"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-            </xs:sequence>
+            </xs:choice>
         </xs:complexType>
     </xs:element>
 

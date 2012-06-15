@@ -13,12 +13,6 @@
         </xs:documentation>
     </xs:annotation>
 
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/5"
-               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/5/eCH-0010-5-0.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/3"
-               schemaLocation="http://www.ech.ch/xmlns/eCH-0044/3/eCH-0044-3-0.xsd"/>
-    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0046/2"
-               schemaLocation="http://www.ech.ch/xmlns/eCH-0046/2/eCH-0046-2-1.xsd"/>
     <xs:import namespace="http://evd.vd.ch/xmlns/eVD-0025/1"
                schemaLocation="http://evd.vd.ch/xmlns/eVD-0025/1/eVD-0025-1-0.xsd"/>
 
@@ -56,16 +50,11 @@
                     </xs:restriction>
                 </xs:simpleType>
             </xs:element>
-            <xs:element name="paymentKind">
+            <xs:element name="paymentKind" type="eVD-0026:paymentKindType">
                 <xs:annotation>
-                    <xs:documentation>Type de facture (Facture ou Note de crédit)</xs:documentation>
+                    <xs:documentation>Type de facture (Facture ou Note de crédit). OTHER = pour info, rien à payer.
+                    </xs:documentation>
                 </xs:annotation>
-                <xs:simpleType>
-                    <xs:restriction base="xs:token">
-                        <xs:enumeration value="ESR"/>
-                        <xs:enumeration value="CREDIT"/>
-                    </xs:restriction>
-                </xs:simpleType>
             </xs:element>
             <xs:element name="senderParty" type="eVD-0025:billerWithAddressType">
                 <xs:annotation>
@@ -80,14 +69,37 @@
             <xs:element name="emailNotification" type="xs:boolean" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        Indique si l'application e-facture doit notifier le destinataire par e-mail lorsqu'une facture
-                        est émise.
+                        Indique si l'application e-facture doit notifier le destinataire par e-mail
+                        lorsqu'une facture est émise.
                         Optionnel. Valeur par défaut = false.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
+
+    <xs:simpleType name="paymentKindType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ESR">
+                <xs:annotation>
+                    <xs:documentation>Facture ordinaire: montant à payer positif</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CREDIT">
+                <xs:annotation>
+                    <xs:documentation>Note de crédit: facture à montant négatif ou nul</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="OTHER">
+                <xs:annotation>
+                    <xs:documentation>
+                        Facture pour info:
+                        le montant peut être positif ou nul, mais il ne doit pas être payé. Pas de BVR
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
 
     <xs:complexType name="paymentDataType">
         <xs:annotation>
@@ -210,26 +222,24 @@
         </xs:restriction>
     </xs:simpleType>
 
-    <xs:simpleType name="amountType">
-		<xs:restriction base="xs:decimal">
-			<xs:fractionDigits value="2"/>
-		</xs:restriction>
-    </xs:simpleType>
-
-	<!-- voir http://stackoverflow.com/questions/626319/add-attributes-to-a-simpletype-or-restrictrion-to-a-complextype-in-xml-schema -->
     <xs:complexType name="moneyAmountType">
-        <xs:simpleContent>
-            <xs:extension base="eVD-0026:amountType">
-				<xs:attribute name="currency">
-					<xs:simpleType>
-						<xs:restriction base="xs:token">
-                            <xs:enumeration value="CHF"/>
-                            <xs:enumeration value="EUR"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:attribute>
-            </xs:extension>
-        </xs:simpleContent>
+        <xs:sequence>
+            <xs:element name="amount">
+                <xs:simpleType>
+                    <xs:restriction base="xs:decimal">
+                        <xs:fractionDigits value="2"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="currency">
+                <xs:simpleType>
+                    <xs:restriction base="xs:token">
+                        <xs:enumeration value="CHF"/>
+                        <xs:enumeration value="EUR"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+        </xs:sequence>
     </xs:complexType>
 
     <xs:simpleType name="invoiceIdType">
@@ -246,16 +256,14 @@
     <xs:element name="invoice">
         <xs:complexType>
             <xs:annotation>
-                <xs:documentation>L'élément racine contenant la facture complète au format "pivot"</xs:documentation>
+                <xs:documentation>
+                    L'élément racine contenant la facture complète au format "pivot"
+                    Le document PDF de la facture est livré en attachement au message ESB (RAFT) et ne figure pas
+                    dans le XML pivot.
+                </xs:documentation>
             </xs:annotation>
             <xs:sequence>
-				<xs:annotation>
-					<xs:documentation>
-						Le document PDF de la facture est livré en attachement au message ESB (RAFT) et ne figure pas
-						dans le XML pivot.
-					</xs:documentation>
-				</xs:annotation>
-				<xs:element name="header" type="eVD-0026:headerType">
+                <xs:element name="header" type="eVD-0026:headerType">
                     <xs:annotation>
                         <xs:documentation>
                             Entête de la facture permettant de décrire l'entreprise émettrice, le destinataire de la
