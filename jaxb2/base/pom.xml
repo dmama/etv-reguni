@@ -20,6 +20,7 @@
 		<module>../party</module>
 		<module>../events</module>
 		<module>../rcpers</module>
+		<module>../cyber</module>
 	</modules>
 
 	<dependencies>

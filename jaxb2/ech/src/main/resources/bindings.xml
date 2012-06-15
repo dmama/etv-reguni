@@ -60,6 +60,15 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="eCH-0010-5-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0010.v5" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0010-5" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0011/3/eCH-0011-3-0.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0011.v3" />
@@ -102,6 +111,24 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="eCH-0044-2" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="eCH-0044-3-0.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0044.v3" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0044-3" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="eCH-0046-2-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.ech.ech0046.v2" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="eCH-0046-2" />
 		</jxb:bindings>
 	</jxb:bindings>
 
