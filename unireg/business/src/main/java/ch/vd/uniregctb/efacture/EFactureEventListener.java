@@ -16,7 +16,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0025.v1.ObjectFactory;
-import ch.vd.evd0025.v1.PayerSituationChangeEvent;
+import ch.vd.evd0025.v1.RegistrationRequestValidationRequest;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
@@ -70,8 +70,8 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 		u.setSchema(getRequestSchema());
 		final Object event = u.unmarshal(message.getBodyAsSource());
 		final EFactureEvent evt;
-		if (event instanceof PayerSituationChangeEvent) {
-			evt = new ChangementSituationDestinataire((PayerSituationChangeEvent) event);
+		if (event instanceof RegistrationRequestValidationRequest) {
+			evt = new DemandeValidationInscription(((RegistrationRequestValidationRequest) event).getRegistrationRequest());
 		}
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu : " + event.getClass());
