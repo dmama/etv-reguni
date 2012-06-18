@@ -19,7 +19,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			}
 			else {
 				// TODO e-facture à faire
-				LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
+				LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), FormatNumeroHelper.formatNumAVS(valid.getNoAvs()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
 			}
 		}
 		else {

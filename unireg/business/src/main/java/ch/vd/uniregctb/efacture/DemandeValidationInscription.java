@@ -1,11 +1,21 @@
 package ch.vd.uniregctb.efacture;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class DemandeValidationInscription extends EFactureEvent {
+
+	private static final String AVS13 = "AVS13";
 
 	/**
 	 * Seule la distinction entre inscription et désinscription nous intéresse, pas vrai ?
@@ -27,6 +37,25 @@ public class DemandeValidationInscription extends EFactureEvent {
 		}
 	}
 
+	@NotNull
+	private static Map<String, String> buildAdditionalData(RegistrationRequest request) {
+		Map<String, String> data = null;
+		final ch.vd.evd0025.v1.Map additionalData = request.getAdditionalData();
+		if (additionalData != null) {
+			final List<MapEntry> entries = additionalData.getEntry();
+			if (entries != null && entries.size() > 0) {
+				data = new HashMap<String, String>(entries.size());
+				for (MapEntry entry : entries) {
+					data.put(entry.getKey(), entry.getValue());
+				}
+			}
+		}
+		if (data == null) {
+			data = Collections.emptyMap();
+		}
+		return data;
+	}
+
 	private final String idDemande;
 	private final long ctbId;
 	private final String email;
@@ -41,8 +70,8 @@ public class DemandeValidationInscription extends EFactureEvent {
 		this.dateDemande = XmlUtils.xmlcal2regdate(request.getRegistrationDate());
 		this.action = Action.get(request.getRegistrationMode());
 
-		// TODO e-facture jde comment trouver le numéro AVS dans la map des données supplémentaires ?
-		this.noAvs = "";
+		final Map<String, String> map = buildAdditionalData(request);
+		this.noAvs = map.get(AVS13);
 	}
 
 	public String getIdDemande() {
