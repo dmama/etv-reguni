@@ -9,7 +9,7 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-ws-party3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.3</version> <!-- Attention ! Aussi changer la version dans le fichier PartyService3.wsdl + dans la config du plugin javadoc ! -->
+	<version>3.4-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier PartyService3.wsdl + dans la config du plugin javadoc ! -->
 
 	<name>Unireg - WS Party v3</name>
 	<description>Unireg - classes Java pour le web-service Party v3 de Unireg</description>
@@ -168,7 +168,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service Party v3 (3.3)"
+									doctitle="Unireg - Documentation du web service Party v3 (3.4-SNAPSHOT)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
