@@ -3,7 +3,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="efactureController" class="ch.vd.uniregctb.efacture.EFactureController">
-	<property name="efactureManager" ref="efactureManager" />
+		<property name="efactureManager" ref="efactureManager" />
 	</bean>
 
 	<bean id="efactureManager" class="ch.vd.uniregctb.efacture.manager.EfactureManagerImpl">
