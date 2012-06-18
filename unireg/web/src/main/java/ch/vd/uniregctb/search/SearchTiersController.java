@@ -16,6 +16,7 @@ import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
 @Controller
@@ -24,6 +25,7 @@ public class SearchTiersController {
 
 	private GlobalTiersSearcher searcher;
 	private ApplicationContext applicationContext;
+	private ServiceInfrastructureService infraService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSearcher(GlobalTiersSearcher searcher) {
@@ -33,6 +35,10 @@ public class SearchTiersController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
+	}
+
+	public void setInfraService(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
 	}
 
 	@RequestMapping(value = "/quick.do", method = RequestMethod.GET)
@@ -47,7 +53,7 @@ public class SearchTiersController {
 		final SearchTiersFilter filter = extractFilter(filterBean, filterParams);
 
 		if (isLessThan3Chars(query)) {
-			results = new SearchTiersResults("Veuillez saisir au minium 3 caractères.");
+			results = new SearchTiersResults("Veuillez saisir au minimum 3 caractères.");
 		}
 		else {
 			try {
@@ -55,7 +61,7 @@ public class SearchTiersController {
 				postFilter(filter, list);
 
 				if (list != null && !list.isEmpty()) {
-					results = new SearchTiersResults(buildSummary(list), list);
+					results = new SearchTiersResults(buildSummary(list), list, infraService);
 				}
 				else {
 					results = new SearchTiersResults("Aucun tiers n'a été trouvé.");
@@ -90,7 +96,7 @@ public class SearchTiersController {
 		id = (id == null ? id : id.replaceAll("[^0-9]", "")); // [UNIREG-3253] supprime tous les caractères non-numériques
 
 		if (isLessThan3Chars(id) && isLessThan3Chars(nomRaison) && isLessThan3Chars(localite) && isLessThan3Chars(dateNaissance) && isLessThan3Chars(noAvs)) {
-			results = new SearchTiersResults("Veuillez saisir au minium 3 caractères.");
+			results = new SearchTiersResults("Veuillez saisir au minimum 3 caractères.");
 		}
 		else {
 			try {
@@ -127,7 +133,7 @@ public class SearchTiersController {
 				postFilter(filter, list);
 
 				if (list != null && !list.isEmpty()) {
-					results = new SearchTiersResults(buildSummary(list), list);
+					results = new SearchTiersResults(buildSummary(list), list, infraService);
 				}
 				else {
 					results = new SearchTiersResults("Aucun tiers trouvé.");

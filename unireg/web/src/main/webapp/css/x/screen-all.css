@@ -829,6 +829,20 @@ div.progress-bar-text {
 }
 
 /*
+ * Simple search
+ */
+
+#simple-search input.text {
+	width:100%;
+	padding: .4em;
+}
+
+#simple-search-results th, #simple-search-results td {
+	padding-left: 0.2em;
+	padding-right: 0.2em;
+}
+
+/*
  * Override de 2-3 trucs pour rendre les tabs jQuery plus dans le style Unireg
  */
 

@@ -220,6 +220,7 @@
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">
 		<property name="searcher" ref="globalTiersSearcher" />
 		<property name="applicationContext" ref="applicationContext" />
+		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
 </beans>

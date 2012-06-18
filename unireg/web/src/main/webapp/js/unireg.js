@@ -260,10 +260,10 @@ var Dialog = {
 			for(var i = 0; i < results.entries.length; ++i) {
 				var e = results.entries[i];
 				table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
-				table += '<td><a onclick="document.getElementById(\'' + buttonId + '\').select_tiers_id(this); return false;" href="#">' + StringUtils.escapeHTML(e.numero) + '</a></td>';
+				table += '<td><a onclick="document.getElementById(\'' + buttonId + '\').select_tiers_id(this); return false;" href="#">' + Tiers.formatNumero(e.numero) + '</a></td>';
 				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? ' ' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.dateNaissance) + '</td>';
-				table += '<td>' + StringUtils.escapeHTML(e.domicile) + '</td>';
+				table += '<td>' + (e.npa ? StringUtils.escapeHTML(e.npa) : '') + (e.localitePays ? ' ' + StringUtils.escapeHTML(e.localitePays) : '') + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.forPrincipal) + '</td>';
 			}
 			table += '</tbody></table>';

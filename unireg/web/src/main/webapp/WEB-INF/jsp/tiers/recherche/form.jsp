@@ -4,11 +4,17 @@
 <table>
 	<tr class="<unireg:nextRowClass/>" >
 		<td><fmt:message key="label.numero.tiers" />&nbsp;:</td>
-		<td colspan="2">
+		<td>
 			<form:input  path="numeroFormatte" id="numeroFormatte" cssClass="number"/>
 			<form:errors path="numeroFormatte" cssClass="error"/>
 		</td>
-		<td>&nbsp;</td>
+		<c:if test="${typeRecherche == 'principale' }">
+			<td width="12px"></td>
+			<td style="vertical-align:middle; text-align:right;" width="2%"><a href="#" onclick="return toogle_search();" style="font-size:11px">recherche simple</a></td>
+		</c:if>
+		<c:if test="${typeRecherche != 'principale' }">
+			<td colspan="2">&nbsp;</td>
+		</c:if>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >
 		<td>
