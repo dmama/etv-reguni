@@ -1465,7 +1465,7 @@ var StringUtils = {
 	},
 
 	escapeHTML: function(text) {
-		return text ? $('<div/>').text(text).html() : '';
+		return text ? $('<div/>').text(String(text)).html() : '';
 	},
 
 	leftpad: function (val, len, car) {
