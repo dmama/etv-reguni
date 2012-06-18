@@ -105,11 +105,11 @@
 				$('#simple-search-results').html('');
 
 				if ($('#simple-search').is(':visible')) {
-					$.cookie("search-mode", "simple");
+					$.cookie("search-mode", "simple", { expires: 31 });
 					$('#simple-search-input').focus();
 				}
 				else {
-					$.cookie("search-mode", "advanced");
+					$.cookie("search-mode", "advanced", { expires: 31 });
 				}
 				return false;
 			}
