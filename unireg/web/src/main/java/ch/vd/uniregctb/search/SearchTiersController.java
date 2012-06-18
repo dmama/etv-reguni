@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.search;
 
+import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,9 +47,14 @@ public class SearchTiersController {
 	@ResponseBody
 	public SearchTiersResults quickSearch(@RequestParam(value = "query", required = true) String query,
 	                                 @RequestParam(value = "filterBean", required = false) String filterBean,
-	                                 @RequestParam(value = "filterParams", required = false) String filterParams) {
+	                                 @RequestParam(value = "filterParams", required = false) String filterParams) throws UnsupportedEncodingException {
 
 		SearchTiersResults results;
+
+		// les urls sont envoyées en UTF-8 par jQuery mais interprétées en ISO-8859-1 par Tomcat (voir http://wiki.apache.org/tomcat/FAQ/CharacterEncoding#Q8 pour une correction plus othrodoxe
+		// mais qui nécessiterait de changer la configuration de Tomcat)
+		final byte[] bytes = query.getBytes("ISO-8859-1");
+		query = new String(bytes, "UTF-8");
 
 		final SearchTiersFilter filter = extractFilter(filterBean, filterParams);
 
