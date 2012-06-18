@@ -2190,8 +2190,7 @@ var Postit = {
 			else {
 				$('#postit').hide();
 			}
-		}, 'json')
-		.error(Ajax.notifyErrorHandler("affichage du post-it"));
+		}, 'json');
 	}
 }
 
@@ -2442,8 +2441,7 @@ var Inbox = {
 				$(span).attr('style', '');
 			}
 			this.requestInboxSizeDone = true;
-		}, 'json')
-		.error(Ajax.notifyErrorHandler("recherche du nombre d'éléments dans la boîte de réception"));
+		}, 'json');
 	}
 };
 
