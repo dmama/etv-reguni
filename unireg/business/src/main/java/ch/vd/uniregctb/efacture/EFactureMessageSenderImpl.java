@@ -77,12 +77,6 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public void envoieIgnoreDemandeInscription(String idDemande) throws EvenementEfactureException {
-		// TODO e-facture verifier le besoin d'un éventuel texte libre (description)
-		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.IGNOREE, null, null, null, false);
-	}
-
-	@Override
 	public void envoieSuspensionContribuable(long noCtb) throws EvenementEfactureException {
 		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
 		sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, null, null, false);
