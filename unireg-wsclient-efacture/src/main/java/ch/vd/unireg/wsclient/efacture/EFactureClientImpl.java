@@ -30,8 +30,8 @@ public class EFactureClientImpl implements EFactureClient {
 	}
 
 	@Override
-	public PayerWithHistory getHistory(long ctbId) {
-		final WebClient wc = createWebClient(600000); // 10 minutes
+	public PayerWithHistory getHistory(long ctbId, String billerId) {
+		final WebClient wc = createWebClient(60000); // 1 minute
 		wc.path(historyPath);
 		wc.path(String.valueOf(ctbId));
 		return wc.get(PayerWithHistory.class);
