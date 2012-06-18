@@ -19,7 +19,7 @@
 
 		<script type="text/javascript" language="javascript">
 			function getContextPath() {
-			  return '<c:url value="/"/>';
+			  return '<c:url value="/"/>'.replace(/;jsessionid.*$/, ''); // supprime le jsession id qui apparaît de temps en temps dans IE6...
 			}
             function ouvrirAide(url) {
                 window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
