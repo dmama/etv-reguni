@@ -27,6 +27,13 @@ public interface EFactureMessageSender {
 	void envoieAcceptationDemandeInscription(String idDemande) throws EvenementEfactureException;
 
 	/**
+	 * Envoie un message à la e-facture qui annonce qu'une demande d'inscription a été ignorée
+	 * @param idDemande identifiant de la demande d'inscription ignorée
+	 * @throws EvenementEfactureException en cas de problème
+	 */
+	void envoieIgnoreDemandeInscription(String idDemande) throws EvenementEfactureException;
+
+	/**
 	 * Envoie un message à la e-facture qui annonce la suspension du contribuable
 	 * @param noCtb numéro du contribuable dont les activités e-facture doivent être suspendues
 	 * @throws EvenementEfactureException en cas de problème
