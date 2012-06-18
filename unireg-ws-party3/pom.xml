@@ -168,7 +168,7 @@
 									author="true"
 									classpath="${compile_classpath}"
 									destdir="target/ws.javadoc"
-									doctitle="Unireg - Documentation du web service Party v3 (3.2)"
+									doctitle="Unireg - Documentation du web service Party v3 (3.3)"
 									nodeprecated="false"
 									nodeprecatedlist="false"
 									noindex="false"
