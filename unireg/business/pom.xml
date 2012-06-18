@@ -83,6 +83,11 @@
 			<version>1.3-SNAPSHOT</version>
 		</dependency>
 		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-wsclient-efacture</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
 			<artifactId>jaxb2-catalog-resolver</artifactId>
 			<groupId>ch.vd.uniregctb</groupId>
 			<version>1.0.4</version>
