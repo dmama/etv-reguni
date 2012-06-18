@@ -11,6 +11,7 @@ import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class DemandeValidationInscription extends EFactureEvent {
@@ -64,6 +65,10 @@ public class DemandeValidationInscription extends EFactureEvent {
 	private final String noAvs;
 
 	public DemandeValidationInscription(RegistrationRequest request) {
+
+		// Si ce n'est pas à destination de l'ACI, qu'est-ce que cela fait ici ?
+		Assert.isEqual(EFactureEvent.ACI_BILLER_ID, request.getBillerId());
+
 		this.idDemande = request.getId();
 		this.ctbId = Long.parseLong(request.getPayerBusinessId());
 		this.email = request.getEmail();
