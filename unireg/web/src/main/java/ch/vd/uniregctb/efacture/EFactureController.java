@@ -203,6 +203,21 @@ public class EFactureController {
 		}
 	}
 
+	@RequestMapping(value = "/quittancement/show.do", method = RequestMethod.GET)
+	public String showQuittancementForm() {
+		if (!SecurityProvider.isAnyGranted(Role.GEST_QUIT_EFACTURE)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours de confirmation d'inscription e-Facture");
+		}
+		return "efacture/form";
+	}
+
+	@RequestMapping(value = "/quittancement/beep.do", method = RequestMethod.POST)
+	public String doQuittancement(@RequestParam(value = "noctb") Long noCtb) {
+		// TODO e-facture... quittancer la réception du document signé après quelques vérifications
+		// TODO e-facture on peut par exemple prévoir un affichage systématique flash vert si tout va bien ou rouge en cas de souci
+		return "redirect:/efacture/quittancement/show.do";
+	}
+
 	public void setEfactureManager(EfactureManager efactureManager) {
 		this.efactureManager = efactureManager;
 	}

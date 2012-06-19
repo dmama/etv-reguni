@@ -173,6 +173,14 @@
 							</ul>
 						</li>
 					</authz:authorize>
+
+                    <authz:authorize ifAnyGranted="ROLE_GEST_QUIT_EFACTURE">
+                        <li><fmt:message key="label.efacture"/>
+                            <ul>
+                                <li><a href="<c:url value='/efacture/quittancement/show.do'/>"><fmt:message key="label.efacture.quittancement"/></a></li>
+                            </ul>
+                        </li>
+                    </authz:authorize>
 					
 					<authz:authorize ifAnyGranted="ROLE_TESTER, ROLE_ADMIN">
 						<li><fmt:message key="label.action.admin" />
