@@ -34,11 +34,11 @@ public class EFactureClientTracing implements EFactureClient, InitializingBean, 
 	}
 
 	@Override
-	public PayerWithHistory getHistory(final long noCtb, final String billerId) {
+	public PayerWithHistory getHistory(final long payerBusinessId, final String billerId) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getHistory(noCtb, billerId);
+			return target.getHistory(payerBusinessId, billerId);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -48,7 +48,7 @@ public class EFactureClientTracing implements EFactureClient, InitializingBean, 
 			tracing.end(time, t, "getHistory", new Object() {
 				@Override
 				public String toString() {
-					return String.format("noCtb=%d", noCtb);
+					return String.format("payerBusinessId=%d, billerId=%s", payerBusinessId, billerId);
 				}
 			});
 		}
