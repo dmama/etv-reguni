@@ -80,11 +80,11 @@
 					table += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
 					table += '<option value="">---</option>';
 					if (!e.debiteurInactif) {
-						table += '<option value="' + e.urlTaoPP + '"><fmt:message key="label.TAOPP"/></option>';
-						table += '<option value="' + e.urlTaoBA + '"><fmt:message key="label.TAOBA"/>></option>';
-						table += '<option value="' + e.urlTaoIS + '"><fmt:message key="label.TAOIS"/></option>';
+						table += '<option value="<c:url value="/redirect/TAO_PP.do?id=' + e.numero + '"/>"><fmt:message key="label.TAOPP"/></option>';
+						table += '<option value="<c:url value="/redirect/TAO_BA.do?id=' + e.numero + '"/>"><fmt:message key="label.TAOBA"/></option>';
+						table += '<option value="<c:url value="/redirect/TAO_IS.do?id=' + e.numero + '"/>"><fmt:message key="label.TAOIS"/></option>';
 					}
-					table += '<option value="' + e.urlSIPF + '"><fmt:message key="label.SIPF"/></option>';
+					table += '<option value="<c:url value="/redirect/SIPF.do?id=' + e.numero + '"/>"><fmt:message key="label.SIPF"/></option>';
 					table += '<option value="launchcat.do?numero=' + StringUtils.escapeHTML(e.numero) + '"><fmt:message key="label.CAT"/></option>';
 					table += '</select>';
 				</c:if>

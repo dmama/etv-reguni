@@ -17,7 +17,6 @@ import ch.vd.uniregctb.indexer.TooManyClausesIndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
 @Controller
@@ -26,7 +25,6 @@ public class SearchTiersController {
 
 	private GlobalTiersSearcher searcher;
 	private ApplicationContext applicationContext;
-	private ServiceInfrastructureService infraService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setSearcher(GlobalTiersSearcher searcher) {
@@ -36,10 +34,6 @@ public class SearchTiersController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setApplicationContext(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
-	}
-
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
 	}
 
 	@RequestMapping(value = "/quick.do", method = RequestMethod.GET)
@@ -67,7 +61,7 @@ public class SearchTiersController {
 				postFilter(filter, list);
 
 				if (list != null && !list.isEmpty()) {
-					results = new SearchTiersResults(buildSummary(list), list, infraService);
+					results = new SearchTiersResults(buildSummary(list), list);
 				}
 				else {
 					results = new SearchTiersResults("Aucun tiers n'a été trouvé.");
@@ -139,7 +133,7 @@ public class SearchTiersController {
 				postFilter(filter, list);
 
 				if (list != null && !list.isEmpty()) {
-					results = new SearchTiersResults(buildSummary(list), list, infraService);
+					results = new SearchTiersResults(buildSummary(list), list);
 				}
 				else {
 					results = new SearchTiersResults("Aucun tiers trouvé.");

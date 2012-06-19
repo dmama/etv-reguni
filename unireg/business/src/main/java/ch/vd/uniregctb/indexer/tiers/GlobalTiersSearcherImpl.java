@@ -132,7 +132,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			QueryConstructor.addTiersActif(query, filter);
 		}
 
-		final Query queryNumeros = LuceneHelper.getAnyTermsContient(TiersIndexableData.TOUT, keywords, tokenMinLength);
+		final Query queryNumeros = LuceneHelper.getAnyTermsCommence(TiersIndexableData.TOUT, keywords, tokenMinLength);
 		if (queryNumeros != null) {
 			query.add(queryNumeros, BooleanClause.Occur.SHOULD);
 		}

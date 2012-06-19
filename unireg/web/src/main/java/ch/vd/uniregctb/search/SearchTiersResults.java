@@ -6,10 +6,8 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.indexer.tiers.TopList;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 @SuppressWarnings("UnusedDeclaration")
 public class SearchTiersResults {
@@ -28,12 +26,8 @@ public class SearchTiersResults {
 		private RegDate dateFermeture;
 		private boolean annule;
 		private boolean debiteurInactif;
-		private String urlTaoPP;
-		private String urlTaoBA;
-		private String urlTaoIS;
-		private String urlSIPF;
 
-		public Entry(TiersIndexedData data, ServiceInfrastructureService infraService) {
+		public Entry(TiersIndexedData data) {
 			this.numero = data.getNumero();
 			this.role1 = data.getRoleLigne1();
 			this.role2 = data.getRoleLigne2();
@@ -47,10 +41,6 @@ public class SearchTiersResults {
 			this.dateFermeture = RegDate.get(data.getDateFermetureFor());
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
-			this.urlTaoPP = infraService.getUrlVers(ApplicationFiscale.TAO_PP, this.numero);
-			this.urlTaoBA = infraService.getUrlVers(ApplicationFiscale.TAO_BA, this.numero);
-			this.urlTaoIS = infraService.getUrlVers(ApplicationFiscale.TAO_IS, this.numero);
-			this.urlSIPF = infraService.getUrlVers(ApplicationFiscale.SIPF, this.numero);
 		}
 
 		public Long getNumero() {
@@ -104,22 +94,6 @@ public class SearchTiersResults {
 		public boolean isDebiteurInactif() {
 			return debiteurInactif;
 		}
-
-		public String getUrlTaoPP() {
-			return urlTaoPP;
-		}
-
-		public String getUrlTaoBA() {
-			return urlTaoBA;
-		}
-
-		public String getUrlTaoIS() {
-			return urlTaoIS;
-		}
-
-		public String getUrlSIPF() {
-			return urlSIPF;
-		}
 	}
 
 	private String summary;
@@ -131,11 +105,11 @@ public class SearchTiersResults {
 		this.entries = Collections.emptyList();
 	}
 
-	public SearchTiersResults(String summary, TopList<TiersIndexedData> list, ServiceInfrastructureService infraService) {
+	public SearchTiersResults(String summary, TopList<TiersIndexedData> list) {
 		this.summary = summary;
 		this.entries = new ArrayList<Entry>();
 		for (TiersIndexedData data : list) {
-			this.entries.add(new Entry(data, infraService));
+			this.entries.add(new Entry(data));
 		}
 	}
 
