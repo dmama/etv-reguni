@@ -19,12 +19,12 @@
 
 	// on installe la fonction qui sera appelée à chaque frappe de touche pour la recherche simple
 	query.keyup(function() {
-		var current = query.val();
+		var current = StringUtils.trim(query.val());
 		if (last != current) { // on ne rafraîchit que si le texte a vraiment changé
 			last = current;
 
 			clearTimeout($.data(this, "simple-search-timer"));
-			// on retarde l'appel javascript de 200ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
+			// on retarde l'appel javascript de 250ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
 			var timer = setTimeout(function() {
 
 				var queryString = '/search/quick.do?query=' + encodeURIComponent(current) + '&' + new Date().getTime();
@@ -39,7 +39,7 @@
 					$('#simple-search-results').html(message);
 				});
 
-			}, 200); // 200 ms
+			}, 250); // 250 ms
 			$.data(this, "simple-search-timer", timer);
 		}
 	});
