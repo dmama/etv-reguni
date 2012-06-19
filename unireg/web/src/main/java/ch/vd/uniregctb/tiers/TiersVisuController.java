@@ -10,9 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -42,7 +40,6 @@ public class TiersVisuController extends AbstractTiersController {
 
 	private TiersVisuManager tiersVisuManager ;
 	private TacheListManager tacheListManager;
-	private ServiceInfrastructureService infraService;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
 	public static final String RESULT_SIZE_NAME = "resultSize";
@@ -77,10 +74,6 @@ public class TiersVisuController extends AbstractTiersController {
 
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_NAME, PAGE_SIZE);
 			tiersVisuView = tiersVisuManager.getView(id, adrHistoParam, adrCivileHistoParam, adrCivileHistoConjParam, rapportsPrestationHisto, pagination);
-			tiersVisuView.setUrlTaoPP(infraService.getUrlVers(ApplicationFiscale.TAO_PP, id));
-			tiersVisuView.setUrlTaoBA(infraService.getUrlVers(ApplicationFiscale.TAO_BA, id));
-			tiersVisuView.setUrlTaoIS(infraService.getUrlVers(ApplicationFiscale.TAO_IS, id));
-			tiersVisuView.setUrlSipf(infraService.getUrlVers(ApplicationFiscale.SIPF, id));
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
@@ -163,10 +156,5 @@ public class TiersVisuController extends AbstractTiersController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheListManager(TacheListManager tacheListManager) {
 		this.tacheListManager = tacheListManager;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setInfraService(ServiceInfrastructureService infraService) {
-		this.infraService = infraService;
 	}
 }

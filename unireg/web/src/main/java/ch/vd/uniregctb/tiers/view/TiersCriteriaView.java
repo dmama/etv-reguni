@@ -16,11 +16,6 @@ import ch.vd.uniregctb.type.ModeImposition;
 public class TiersCriteriaView {
 
 	// Valeurs utilisées en sortie seulement
-	private String urlTaoPP;
-	private String urlTaoBA;
-	private String urlSipf;
-	private String urlCat;
-	private String urlRegView;
 	private Long numeroSourcier;
 	private Long numeroDebiteur;
 	private Long numeroNonHabitant;
@@ -58,46 +53,6 @@ public class TiersCriteriaView {
 			setNumero(null);
 		}
 		this.numeroFormatte = numeroFormatte;
-	}
-
-	public String getUrlTaoPP() {
-		return urlTaoPP;
-	}
-
-	public void setUrlTaoPP(String urlTaoPP) {
-		this.urlTaoPP = urlTaoPP;
-	}
-
-	public String getUrlTaoBA() {
-		return urlTaoBA;
-	}
-
-	public void setUrlTaoBA(String urlTaoBA) {
-		this.urlTaoBA = urlTaoBA;
-	}
-
-	public String getUrlSipf() {
-		return urlSipf;
-	}
-
-	public void setUrlSipf(String urlSipf) {
-		this.urlSipf = urlSipf;
-	}
-
-	public String getUrlCat() {
-		return urlCat;
-	}
-
-	public void setUrlCat(String urlCAT) {
-		this.urlCat = urlCAT;
-	}
-
-	public String getUrlRegView() {
-		return urlRegView;
-	}
-
-	public void setUrlRegView(String urlRegView) {
-		this.urlRegView = urlRegView;
 	}
 
 	public Long getNumeroSourcier() {

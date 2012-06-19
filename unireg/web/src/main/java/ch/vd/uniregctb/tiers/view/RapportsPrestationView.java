@@ -109,12 +109,6 @@ public class RapportsPrestationView {
 
 	// Données pour le bandeau
 	public TiersGeneralView tiersGeneral;
-	private String urlSipf;
-	private String urlTaoPP;
-	private String urlTaoBA;
-	private String urlTaoIS;
-	private String urlCAT;
-
 
 	public long getIdDpi() {
 		return idDpi;
@@ -146,45 +140,5 @@ public class RapportsPrestationView {
 
 	public void setTiersGeneral(TiersGeneralView tiersGeneral) {
 		this.tiersGeneral = tiersGeneral;
-	}
-
-	public String getUrlSipf() {
-		return urlSipf;
-	}
-
-	public void setUrlSipf(String urlSipf) {
-		this.urlSipf = urlSipf;
-	}
-
-	public String getUrlTaoPP() {
-		return urlTaoPP;
-	}
-
-	public void setUrlTaoPP(String urlTaoPP) {
-		this.urlTaoPP = urlTaoPP;
-	}
-
-	public String getUrlTaoBA() {
-		return urlTaoBA;
-	}
-
-	public void setUrlTaoBA(String urlTaoBA) {
-		this.urlTaoBA = urlTaoBA;
-	}
-
-	public String getUrlTaoIS() {
-		return urlTaoIS;
-	}
-
-	public void setUrlTaoIS(String urlTaoIS) {
-		this.urlTaoIS = urlTaoIS;
-	}
-
-	public String getUrlCAT() {
-		return urlCAT;
-	}
-
-	public void setUrlCAT(String urlCAT) {
-		this.urlCAT = urlCAT;
 	}
 }

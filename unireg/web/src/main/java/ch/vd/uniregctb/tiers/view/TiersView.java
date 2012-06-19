@@ -87,18 +87,6 @@ public class TiersView {
 
 	private EntrepriseView entreprise;
 
-	private String urlSipf;
-
-	private String urlTaoPP;
-
-	private String urlTaoBA;
-
-	private String urlTaoIS;
-
-	private String urlCAT;
-
-	private String urlRegView;
-
 	private boolean isAllowed;
 
 	private boolean addContactISAllowed;
@@ -239,30 +227,6 @@ public class TiersView {
 		this.debiteurs = debiteurs;
 	}
 
-	public String getUrlSipf() {
-		return urlSipf;
-	}
-
-	public void setUrlSipf(String urlSipf) {
-		this.urlSipf = urlSipf;
-	}
-
-	public String getUrlTaoPP() {
-		return urlTaoPP;
-	}
-
-	public void setUrlTaoPP(String urlTao) {
-		this.urlTaoPP = urlTao;
-	}
-
-	public String getUrlTaoBA() {
-		return urlTaoBA;
-	}
-
-	public void setUrlTaoBA(String urlTao) {
-		this.urlTaoBA = urlTao;
-	}
-
 	public List<RapportPrestationView> getRapportsPrestation() {
 		return rapportsPrestation;
 	}
@@ -286,23 +250,6 @@ public class TiersView {
 	public void setLrs(List<ListeRecapDetailView> lrs) {
 		this.lrs = lrs;
 	}
-
-	public String getUrlCAT() {
-		return urlCAT;
-	}
-
-	public void setUrlCAT(String urlCAT) {
-		this.urlCAT = urlCAT;
-	}
-
-	public String getUrlRegView() {
-		return urlRegView;
-	}
-
-	public void setUrlRegView(String urlRegView) {
-		this.urlRegView = urlRegView;
-	}
-
 
 	public EntrepriseView getEntreprise() {
 		return entreprise;
@@ -342,20 +289,6 @@ public class TiersView {
 
 	public void setSituationsFamilleEnErreurMessage(String situationsFamilleEnErreurMessage) {
 		this.situationsFamilleEnErreurMessage = situationsFamilleEnErreurMessage;
-	}
-
-	/**
-	 * @return the urlTaoIS
-	 */
-	public String getUrlTaoIS() {
-		return urlTaoIS;
-	}
-
-	/**
-	 * @param urlTaoIS the urlTaoIS to set
-	 */
-	public void setUrlTaoIS(String urlTaoIS) {
-		this.urlTaoIS = urlTaoIS;
 	}
 
 	public TiersGeneralView getTiersGeneral() {

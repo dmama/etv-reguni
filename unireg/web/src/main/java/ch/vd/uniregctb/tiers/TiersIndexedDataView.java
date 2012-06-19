@@ -11,10 +11,6 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 public class TiersIndexedDataView implements Annulable {
 
 	private final TiersIndexedData data;
-	private String urlTaoPP;
-	private String urlTaoBA;
-	private String urlTaoIS;
-	private String urlSipf;
 
 	public TiersIndexedDataView(TiersIndexedData data) {
 		this.data = data;
@@ -112,38 +108,6 @@ public class TiersIndexedDataView implements Annulable {
 
 	public boolean isDebiteurInactif() {
 		return data.isDebiteurInactif();
-	}
-
-	public String getUrlTaoPP() {
-		return urlTaoPP;
-	}
-
-	public void setUrlTaoPP(String urlTaoPP) {
-		this.urlTaoPP = urlTaoPP;
-	}
-
-	public String getUrlTaoBA() {
-		return urlTaoBA;
-	}
-
-	public void setUrlTaoBA(String urlTaoBA) {
-		this.urlTaoBA = urlTaoBA;
-	}
-
-	public String getUrlSipf() {
-		return urlSipf;
-	}
-
-	public void setUrlSipf(String urlSipf) {
-		this.urlSipf = urlSipf;
-	}
-
-	public String getUrlTaoIS() {
-		return urlTaoIS;
-	}
-
-	public void setUrlTaoIS(String urlTaoIS) {
-		this.urlTaoIS = urlTaoIS;
 	}
 
 }

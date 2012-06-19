@@ -67,11 +67,11 @@
 								        <c:if test="${!tiers.annule}">readonly="true"</c:if> >
 									<option value="">---</option>
 									<c:if test="${!tiers.debiteurInactif}">
-										<option value="<c:out value='${tiers.urlTaoPP}'/>"><fmt:message key="label.TAOPP"/></option>
-										<option value="<c:out value='${tiers.urlTaoBA}'/>"><fmt:message key="label.TAOBA"/></option>
-										<option value="<c:out value='${tiers.urlTaoIS}'/>"><fmt:message key="label.TAOIS"/></option>
+										<option value="<c:url value="/redirect/TAO_PP.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOPP"/></option>
+										<option value="<c:url value="/redirect/TAO_BA.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOBA"/></option>
+										<option value="<c:url value="/redirect/TAO_IS.do?id=${tiers.numero}"/>"><fmt:message key="label.TAOIS"/></option>
 									</c:if>
-									<option value="<c:out value='${tiers.urlSipf}'/>"><fmt:message key="label.SIPF"/></option>
+									<option value="<c:url value="/redirect/SIPF.do?id=${tiers.numero}"/>"><fmt:message key="label.SIPF"/></option>
 									<option value="<c:out value='launchcat.do?numero=' /><c:out value='${tiers.numero}' />"><fmt:message key="label.CAT"/></option>
 								</select>
 							</c:if>

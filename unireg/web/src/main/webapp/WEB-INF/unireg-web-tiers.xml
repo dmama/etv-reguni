@@ -61,7 +61,6 @@
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="formView" value="tiers/visualisation/visu" />
 		<property name="successView" value="redirect:/tiers/list.do" />
-		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
 	<bean id="rapportsPrestationListController" class="ch.vd.uniregctb.tiers.RapportsPrestationListController">

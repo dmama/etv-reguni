@@ -1053,7 +1053,8 @@ var Tiers = {
 		html += '<option value="">---</option>';
 		for (var i in tiers.urlsVers) {
 			var uv = tiers.urlsVers[i];
-			html += '<option value="' + uv.url + '">' + StringUtils.escapeHTML(uv.label) + '</option>';
+			var url = getContextPath() + '/redirect/' + uv.appName + '.do?id=' + tiers.numero;
+			html += '<option value="' + url + '">' + StringUtils.escapeHTML(uv.label) + '</option>';
 		}
 		html += '</select></div>';
 		return html;

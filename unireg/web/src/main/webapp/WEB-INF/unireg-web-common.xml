@@ -124,7 +124,6 @@
 	<bean id="jspTagBandeauContribuable" class="ch.vd.uniregctb.taglibs.JspTagBandeauTiers">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="serviceInfrastructure" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>

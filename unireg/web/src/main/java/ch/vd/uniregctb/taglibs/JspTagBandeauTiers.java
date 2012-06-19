@@ -19,14 +19,12 @@ import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.general.view.TypeAvatar;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
@@ -60,7 +58,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static MessageSource messageSource;
 	private static TiersDAO tiersDAO;
 	private static TiersService tiersService;
-	private static ServiceInfrastructureService serviceInfrastructure;
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
 
@@ -165,11 +162,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	public void setAdresseService(AdresseService adresseService) {
 		JspTagBandeauTiers.adresseService = adresseService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceInfrastructure(ServiceInfrastructureService serviceInfrastructure) {
-		JspTagBandeauTiers.serviceInfrastructure = serviceInfrastructure;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -520,17 +512,13 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append("\t<option value=\"\">---</option>\n");
 			final boolean isEntreprise = tiers instanceof Entreprise;
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				final String urlTaoPP = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_PP, tiers.getNumero());
-				final String urlTaoBA = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_BA, tiers.getNumero());
-				final String urlTaoIS = serviceInfrastructure.getUrlVers(ApplicationFiscale.TAO_IS, tiers.getNumero());
-				s.append("\t<option value=\"").append(urlTaoPP).append("\">").append(message("label.TAOPP")).append("</option>\n");
-				s.append("\t<option value=\"").append(urlTaoBA).append("\">").append(message("label.TAOBA")).append("</option>\n");
-				s.append("\t<option value=\"").append(urlTaoIS).append("\">").append(message("label.TAOIS")).append("</option>\n");
+				s.append("\t<option value=\"").append(url("/redirect/TAO_PP.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOPP")).append("</option>\n");
+				s.append("\t<option value=\"").append(url("/redirect/TAO_BA.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOBA")).append("</option>\n");
+				s.append("\t<option value=\"").append(url("/redirect/TAO_IS.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.TAOIS")).append("</option>\n");
 			}
-			final String urlSIPF = serviceInfrastructure.getUrlVers(ApplicationFiscale.SIPF, tiers.getNumero());
-			s.append("\t<option value=\"").append(urlSIPF).append("\">").append(message("label.SIPF")).append("</option>\n");
+			s.append("\t<option value=\"").append(url("/redirect/SIPF.do?id=")).append(tiers.getNumero()).append("\">").append(message("label.SIPF")).append("</option>\n");
 			if (!isEntreprise) { // [UNIREG-1949] débranchement uniquement vers SIPF pour les PMs
-				s.append("\t<option value=\"launchcat.do?numero=").append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
+				s.append("\t<option value=\"").append(url("launchcat.do?numero=")).append(tiers.getNumero()).append("\">").append(message("label.CAT")).append("</option>\n");
 			}
 			s.append("</select>\n");
 		}

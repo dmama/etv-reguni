@@ -13,7 +13,6 @@ import org.springframework.web.bind.ServletRequestDataBinder;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
@@ -82,16 +81,7 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 						bean.setNumeroAVS(FormatNumeroHelper.removeSpaceAndDash(bean.getNumeroAVS()));
 					}
 					try {
-						List<TiersIndexedDataView> displaysTiers = searchTiers(bean);
-						for (TiersIndexedDataView oneTiersLine : displaysTiers) {
-							// Populate les URLs TAO/SIPF/...
-							Long numero = oneTiersLine.getNumero();
-							oneTiersLine.setUrlTaoPP(infraService.getUrlVers(ApplicationFiscale.TAO_PP, numero));
-							oneTiersLine.setUrlTaoBA(infraService.getUrlVers(ApplicationFiscale.TAO_BA, numero));
-							oneTiersLine.setUrlTaoIS(infraService.getUrlVers(ApplicationFiscale.TAO_IS, numero));
-							oneTiersLine.setUrlSipf(infraService.getUrlVers(ApplicationFiscale.SIPF, numero));
-						}
-
+						final List<TiersIndexedDataView> displaysTiers = searchTiers(bean);
 						mav.addObject(listAttributeName, displaysTiers);
 					} catch (TooManyResultsIndexerException ee) {
 						errors.reject("error.preciser.recherche");

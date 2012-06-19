@@ -3,12 +3,12 @@ package ch.vd.uniregctb.tiers.vignette;
 public class UrlVersView {
 	private String name;
 	private String label;
-	private String url;
+	private String appName;
 
-	public UrlVersView(String name, String label, String url) {
+	public UrlVersView(String name, String label, String appName) {
 		this.name = name;
 		this.label = label;
-		this.url = url;
+		this.appName = appName;
 	}
 
 	public String getName() {
@@ -19,7 +19,7 @@ public class UrlVersView {
 		return label;
 	}
 
-	public String getUrl() {
-		return url;
+	public String getAppName() {
+		return appName;
 	}
 }

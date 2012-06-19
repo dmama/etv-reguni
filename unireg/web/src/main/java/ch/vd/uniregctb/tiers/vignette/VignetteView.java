@@ -103,9 +103,8 @@ public class VignetteView {
 
 			this.urlsVers = new ArrayList<UrlVersView>();
 			for (ApplicationFiscale af : list) {
-				final String url = infraService.getUrlVers(af, tiers.getNumero());
 				final String label = messageSource.getMessage(af.getMessageKey(), null, WebContextUtils.getDefaultLocale());
-				this.urlsVers.add(new UrlVersView(af.name(), label, url));
+				this.urlsVers.add(new UrlVersView(af.name(), label, af.name()));
 			}
 		}
 
