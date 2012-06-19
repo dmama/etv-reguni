@@ -185,4 +185,26 @@ public class ForFiscalValidatorTest extends AbstractValidatorTest<ForFiscal> {
 			Assert.assertEquals(0, vr.warningsCount());
 		}
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDateDebutDansLeFutur() throws Exception {
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get(), null, MockCommune.Cossonay.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(0, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+		}
+		{
+			final ForFiscalPrincipal ffp = new ForFiscalPrincipal(RegDate.get().addDays(1), null, MockCommune.Cossonay.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+			final ValidationResults vr = validate(ffp);
+			Assert.assertNotNull(vr);
+			Assert.assertEquals(1, vr.errorsCount());
+			Assert.assertEquals(0, vr.warningsCount());
+
+			final String expectedMsg = String.format("La date de début du for %s est dans le futur", ffp);
+			Assert.assertEquals(expectedMsg, vr.getErrors().get(0));
+		}
+	}
 }

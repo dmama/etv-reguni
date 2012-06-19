@@ -1356,71 +1356,64 @@ public class MetiersServiceTest extends BusinessTest {
 		}
 		final Ids ids = new Ids();
 
-		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Grandvaux est
-		// encore active fiscalement (un mois avant la fin)
-		ForFiscalValidator.setFutureBeginDate(MockCommune.Grandvaux.getDateFinValidite().addMonths(-1));
-		try {
-			// Crée un couple avec un for principal à Grandvaux
-			doInTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final PersonnePhysique fabrice = addHabitant(noIndFabrice);
-					final PersonnePhysique georgette = addHabitant(noIndGeorgette);
-					final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
-					final MenageCommun menage = ensemble.getMenage();
+		// Crée un couple avec un for principal à Grandvaux
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique fabrice = addHabitant(noIndFabrice);
+				final PersonnePhysique georgette = addHabitant(noIndGeorgette);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(fabrice, georgette, dateMariage, null);
+				final MenageCommun menage = ensemble.getMenage();
 
-					ids.fabrice = fabrice.getNumero();
-					ids.georgette = georgette.getNumero();
-					ids.menage = menage.getNumero();
+				ids.fabrice = fabrice.getNumero();
+				ids.georgette = georgette.getNumero();
+				ids.menage = menage.getNumero();
 
-					addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux);
-					return null;
-				}
-			});
+				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Grandvaux.getDateFinValidite(), MotifFor.FUSION_COMMUNES, MockCommune.Grandvaux);
+				addForPrincipal(menage, MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, MockCommune.BourgEnLavaux);
+				return null;
+			}
+		});
 
-			// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
-			doInTransaction(new TxCallback<Object>() {
-				@Override
-				public Object execute(TransactionStatus status) throws Exception {
-					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
-					assertNotNull(mc);
-					metierService.separe(mc, dateSeparation, "test", null, true, null);
-					return null;
-				}
-			});
-
-			// vérifie les fors principaux ouverts sur les séparés : Monsieur à Bourg-en-Lavaux (anciennement Riex), Madame à Bourg-en-Lavaux (anciennement Grandvaux)
-
-			// For fermé sur le couple
-			{
+		// Sépare les époux. Monsieur déménage alors à Riex et Madame garde le camion de Ken
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
-
-				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				assertForPrincipal(dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-						MockCommune.Grandvaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				return null;
 			}
+		});
 
-			// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
-			{
-				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
-				assertNotNull(fabrice);
+		// vérifie les fors principaux ouverts sur les séparés : Monsieur à Bourg-en-Lavaux (anciennement Riex), Madame à Bourg-en-Lavaux (anciennement Grandvaux)
 
-				final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
-				assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-			}
+		// For fermé sur le couple
+		{
+			final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
+			assertNotNull(mc);
 
-			// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
-			{
-				final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
-				assertNotNull(georgette);
-
-				final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
-				assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
-			}
+			final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+			assertForPrincipal(MockCommune.Grandvaux.getDateFinValidite().getOneDayAfter(), MotifFor.FUSION_COMMUNES, dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+					MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 		}
-		finally {
-			ForFiscalValidator.setFutureBeginDate(null);
+
+		// For ouvert sur Monsieur : à Riex, car sa nouvelle adresse de domicile est là-bas
+		{
+			final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
+			assertNotNull(fabrice);
+
+			final ForFiscalPrincipal ffp = fabrice.getDernierForFiscalPrincipal();
+			assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+		}
+
+		// For ouvert sur Georgette : à Grandvaux, car son domicile n'a pas changé
+		{
+			final PersonnePhysique georgette = (PersonnePhysique) tiersDAO.get(ids.georgette);
+			assertNotNull(georgette);
+
+			final ForFiscalPrincipal ffp = georgette.getDernierForFiscalPrincipal();
+			assertForPrincipal(dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.BourgEnLavaux, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
 		}
 	}
 

@@ -42,7 +42,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 	}
 
 	public RegDate getDateNaissance() {
-		return this.getDate();
+		return getIndividu().getDateNaissance();
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class CorrectionDateNaissance extends ChangementBase {
 		try {
 			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
-				final RegDate dateNaissance = getDate();
+				final RegDate dateNaissance = getDateNaissance();
 
 				// [UNIREG-1114] La date de naissance est cachée au niveau de l'habitant
 				pp.setDateNaissance(dateNaissance);
