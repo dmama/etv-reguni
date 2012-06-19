@@ -21,9 +21,12 @@
                     value = value.replace(/[^0-9]*/g, ''); // remove non-numeric chars
                     var id = parseInt(value, 10);
                     if (!isNaN(id)) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/quittancement/beep.do?noctb=" + id + '"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/quittancement/beep.do") + "?noctb=" + id + '"/>');
                         form.appendTo('body');
                         form.submit();
+                    }
+                    else {
+                        this.initFocus(input);
                     }
                 },
 
@@ -46,12 +49,12 @@
                     }
                 },
 
-                initFocus: function() {
-                    $('#ctb').focus();
+                initFocus: function(input) {
+                    input.focus();
                 }
             };
 
-            $(QuittanceEFacture.initFocus);
+            $(QuittanceEFacture.initFocus($('#ctb')));
 
         </script>
 
