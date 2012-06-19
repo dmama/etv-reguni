@@ -57,17 +57,20 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public void envoieRefusDemandeInscription(String idDemande) throws EvenementEfactureException {
+	public void envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture) throws EvenementEfactureException {
 		// TODO e-facture à faire, il manque sans doute encore des paramètres pour expliquer le refus et la gestion de la demande de réponse
-		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, null, null, false);
+		final String description = typeRefusEFacture.getDescription();
+		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, description, null, false);
 	}
 
 	@Override
-	public void envoieMiseEnAttenteDemandeInscription(String idDemande) throws EvenementEfactureException {
+	public void envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture) throws EvenementEfactureException {
 		// TODO e-facture à faire, il manque sans doute encore des paramètres pour qualifier la mise en attente
 		// TODO (il y en a deux types dans Unireg, un seul dans e-facture, seulement distingués par les champs annexe)
 		// TODO ainsi que la gestion de la demande de réponse
-		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, null, null, null, false);
+		final String description = typeAttenteEFacture.getDescription();
+		final Integer code = typeAttenteEFacture.getCode();
+		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, code, description, null, false);
 	}
 
 	@Override

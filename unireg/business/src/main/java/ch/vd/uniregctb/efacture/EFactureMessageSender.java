@@ -7,17 +7,21 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce le refus d'une demande d'inscription
+	 *
 	 * @param idDemande identifiant de la demande d'inscription refusée
+	 * @param typeRefusEFacture
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieRefusDemandeInscription(String idDemande) throws EvenementEfactureException;
+	void envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la mise en attente d'une demande d'inscription
+	 *
 	 * @param idDemande identifiant de la demande d'inscription mise en attente
+	 * @param typeAttenteEFacture
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieMiseEnAttenteDemandeInscription(String idDemande) throws EvenementEfactureException;
+	void envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription
