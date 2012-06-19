@@ -14,35 +14,50 @@
 
 <script type="text/javascript">
 
-	var query = $('#simple-search-input');
-	var last = "";
+	$(function() {
 
-	// on installe la fonction qui sera appelée à chaque frappe de touche pour la recherche simple
-	query.keyup(function() {
-		var current = StringUtils.trim(query.val());
-		if (last != current) { // on ne rafraîchit que si le texte a vraiment changé
-			last = current;
+		var last = "";
 
-			clearTimeout($.data(this, "simple-search-timer"));
-			// on retarde l'appel javascript de 250ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
-			var timer = setTimeout(function() {
+		// on installe la fonction qui sera appelée à chaque frappe de touche pour la recherche simple
+		$('#simple-search-input').keyup(function() {
+			var current = StringUtils.trim($('#simple-search-input').val());
+			if (last != current) { // on ne rafraîchit que si le texte a vraiment changé
+				last = current;
 
-				var queryString = App.curl('/search/quick.do?query=' + encodeURIComponent(current) + '&' + new Date().getTime());
+				// on retarde l'appel javascript de 250ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
+				clearTimeout($.data(this, "simple-search-timer"));
+				var timer = setTimeout(function() {
+					executeSimpleQuery(current);
+				}, 250); // 250 ms
+				$.data(this, "simple-search-timer", timer);
+			}
+		});
 
-				// on effectue la recherche par ajax
-				$.get(queryString, function(results) {
-					$('#simple-search-results').html(build_html_simple_results(results));
-				}, 'json')
-				.error(function(xhr, ajaxOptions, thrownError){
-					var message = '<span class="error">Oups ! La recherche a provoqué l\'erreur suivante :' +
-							'&nbsp;<i>' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) + ') : ' + StringUtils.escapeHTML(xhr.responseText) + '</i></span>';
-					$('#simple-search-results').html(message);
-				});
-
-			}, 250); // 250 ms
-			$.data(this, "simple-search-timer", timer);
-		}
+		// on initialise la recherche si un requête existe en session
+		<%--@elvariable id="simpleSearchQuery" type="java.lang.String"--%>
+		<c:if test="${simpleSearchQuery != null}">
+		$('#simple-search-input').val('<c:out value="${simpleSearchQuery}"/>');
+		</c:if>
 	});
+
+	function refreshSimpleSearch() {
+		var query = StringUtils.trim($('#simple-search-input').val());
+		executeSimpleQuery(query);
+	}
+
+	function executeSimpleQuery(query) {
+		var queryString = App.curl('/search/quick.do?query=' + encodeURIComponent(query) + '&saveQueryTo=simpleSearchQuery&' + new Date().getTime());
+
+		// on effectue la recherche par ajax
+		$.get(queryString, function(results) {
+			$('#simple-search-results').html(build_html_simple_results(results));
+		}, 'json')
+		.error(function(xhr, ajaxOptions, thrownError){
+			var message = '<span class="error">Oups ! La recherche a provoqué l\'erreur suivante :' +
+					'&nbsp;<i>' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) + ') : ' + StringUtils.escapeHTML(xhr.responseText) + '</i></span>';
+			$('#simple-search-results').html(message);
+		});
+	}
 
 	function build_html_simple_results(results) {
 		var table = results.summary;

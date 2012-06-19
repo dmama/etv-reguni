@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.search;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.text.ParseException;
 
@@ -41,7 +42,9 @@ public class SearchTiersController {
 	@ResponseBody
 	public SearchTiersResults quickSearch(@RequestParam(value = "query", required = true) String query,
 	                                 @RequestParam(value = "filterBean", required = false) String filterBean,
-	                                 @RequestParam(value = "filterParams", required = false) String filterParams) throws UnsupportedEncodingException {
+	                                 @RequestParam(value = "filterParams", required = false) String filterParams,
+	                                 @RequestParam(value = "saveQueryTo", required = false) String saveQueryTo,
+	                                 HttpServletRequest request) throws UnsupportedEncodingException {
 
 		SearchTiersResults results;
 
@@ -49,6 +52,11 @@ public class SearchTiersController {
 		// mais qui nécessiterait de changer la configuration de Tomcat)
 		final byte[] bytes = query.getBytes("ISO-8859-1");
 		query = new String(bytes, "UTF-8");
+
+		if (StringUtils.isNotBlank(saveQueryTo)) {
+			// on stocke la requête en session si on nous l'a demandé
+			request.getSession().setAttribute(saveQueryTo, query);
+		}
 
 		final SearchTiersFilter filter = extractFilter(filterBean, filterParams);
 

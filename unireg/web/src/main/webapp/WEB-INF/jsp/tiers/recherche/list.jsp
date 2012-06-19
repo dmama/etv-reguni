@@ -96,6 +96,7 @@
 					if (!("autofocus" in document.createElement("input"))) {
 						$('#simple-search-input').focus();
 					}
+					refreshSimpleSearch();
 				}
 			});
 
@@ -107,6 +108,7 @@
 				if ($('#simple-search').is(':visible')) {
 					$.cookie("search-mode", "simple", { expires: 31 });
 					$('#simple-search-input').focus();
+					refreshSimpleSearch();
 				}
 				else {
 					$.cookie("search-mode", "advanced", { expires: 31 });
