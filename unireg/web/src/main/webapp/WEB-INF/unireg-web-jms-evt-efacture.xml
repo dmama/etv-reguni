@@ -21,11 +21,11 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.input.enabled}" />
 	</bean>
 
-	<!--<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.EvenementDeclarationSenderImpl">-->
-		<!--<property name="esbTemplate" ref="esbJmsTemplate" />-->
-		<!--<property name="esbMessageFactory" ref="esbMessageFactory"/>-->
-		<!--<property name="serviceDestination" value="${extprop.jms.queue.evtDeclaration.output}" />-->
-		<!--<property name="enabled" value="${extprop.jms.queue.evtDeclaration.output.enabled}" />-->
-	<!--</bean>-->
+	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.EFactureMessageSenderImpl">
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+		<property name="esbMessageFactory" ref="esbMessageFactory"/>
+		<property name="serviceDestination" value="${extprop.jms.queue.evtEfacture.output}" />
+		<property name="enabled" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
+	</bean>
 
 </beans>

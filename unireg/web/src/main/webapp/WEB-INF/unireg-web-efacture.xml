@@ -7,8 +7,7 @@
 	</bean>
 
 	<bean id="efactureManager" class="ch.vd.uniregctb.efacture.manager.EfactureManagerImpl">
-		<property name="tiersService" ref="tiersService" />
-		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="eFactureService" ref="efactureService" />
 	</bean>
 
 	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">

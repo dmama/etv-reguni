@@ -105,7 +105,7 @@ public class EFactureController {
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
 	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
-		efactureManager.imprimerDocumentEfacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,idDemande, dateDemande);
+		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,idDemande, dateDemande);
 		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire
@@ -115,7 +115,7 @@ public class EFactureController {
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
 	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
- 		efactureManager.imprimerDocumentEfacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT,idDemande, dateDemande);
+ 		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT,idDemande, dateDemande);
 		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire

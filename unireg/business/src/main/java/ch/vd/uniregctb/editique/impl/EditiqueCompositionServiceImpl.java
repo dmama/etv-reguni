@@ -380,12 +380,13 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
+	public String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException {
 		final TypeDocumentEditique prefixe = impressionEfactureHelper.getTypeDocumentEditique(typeDoc);
 		ImpressionDocumentEfactureParams params = new ImpressionDocumentEfactureParams(tiers,typeDoc,dateTraitement,dateDemande);
 		final FichierImpressionDocument document = impressionEfactureHelper.remplitDocumentEfacture(params);
 		final String nomDocument = impressionEfactureHelper.construitIdDocument(params);
 		editiqueService.creerDocumentParBatch(nomDocument, prefixe, document, true);
+		return impressionEfactureHelper.construitIdArchivageDocument(params);
 	}
 
 

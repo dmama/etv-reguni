@@ -1,42 +1,29 @@
 package ch.vd.uniregctb.efacture.manager;
 
-import javax.jms.JMSException;
-import java.util.Date;
-
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class EfactureManagerImpl implements EfactureManager {
 
-	private TiersService tiersService;
-	private EditiqueCompositionService editiqueCompositionService;
+	private EFactureService eFactureService;
 
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException {
-		final Tiers tiers = tiersService.getTiers(ctbId);
-		final Date dateTraitement = DateHelper.getCurrentDate();
-		try {
-			editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument,dateTraitement,dateDemande);
-		}
-		catch (JMSException e) {
-			throw new EditiqueException(e);
-		}
+	public void envoyerDocumentAvecNotificationEFacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
+
+		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
+		String strIdDemande = idDemande.toString();
+		eFactureService.notifieMiseEnattenteInscription(strIdDemande,typeDocument,idArchivage, true);
+
 	}
 
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
-	public void setEditiqueCompositionService(EditiqueCompositionService editiqueCompositionService) {
-		this.editiqueCompositionService = editiqueCompositionService;
+	public void seteFactureService(EFactureService eFactureService) {
+		this.eFactureService = eFactureService;
 	}
 }

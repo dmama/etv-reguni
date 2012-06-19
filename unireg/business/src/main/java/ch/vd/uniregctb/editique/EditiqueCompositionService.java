@@ -173,6 +173,7 @@ public interface EditiqueCompositionService {
 	 *
 	 *
 	 *
+	 *
 	 * @param tiers a qui le document doit être envoyé
 	 * @param typeDoc permet de determiner le type de document a imprimer
 	 * @param dateTraitement date du traitement
@@ -180,7 +181,7 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException
 	 *
 	 */
-	void imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException;
+	String imprimeDocumentEfacture(Tiers tiers, TypeDocument typeDoc, Date dateTraitement, RegDate dateDemande) throws EditiqueException, JMSException;
 
 
 

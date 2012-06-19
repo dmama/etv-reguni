@@ -146,6 +146,13 @@
 		<property name="groupName" value="JMS" />
 	</bean>
 
+	<bean id="efactureService" class="ch.vd.uniregctb.efacture.EFactureServiceImpl">
+		<property name="tiersService" ref="tiersService" />
+		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
+		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
+
+	</bean>
+
 	<bean id="ibanValidator" class="ch.vd.uniregctb.iban.IbanValidator"/>
 
 

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.efacture.manager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface EfactureManager {
@@ -16,5 +17,5 @@ public interface EfactureManager {
 	 * @param dateDemande
 	 */
 
-	public void imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException;
+	public void envoyerDocumentAvecNotificationEFacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException;
 }
