@@ -51,7 +51,7 @@
 			table += '<table border="0" cellspacing="0">';
 			table += '<thead><tr class="header">';
 			table += '<th>N° de tiers</th>' +
-					'<th>Rôle</th>' +
+					'<th nowrap>Rôle</th>' +
 					'<th>Nom / Raison sociale</th>' +
 					'<th>Date naissance</th>' +
 					'<th>NPA</th>' +
