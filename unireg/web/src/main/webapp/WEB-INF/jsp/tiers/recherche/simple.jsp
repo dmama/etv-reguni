@@ -67,7 +67,7 @@
 				table += '<tr class="' + (i % 2 == 1 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				table += '<td><a href="visu.do?id=' + StringUtils.escapeHTML(e.numero) + '">' + Tiers.formatNumero(e.numero) + '</a></td>';
 				table += '<td>' + StringUtils.escapeHTML(e.role1) + (e.role2 ? '<br>' + StringUtils.escapeHTML(e.role2) : '' ) + '</td>';
-				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? ' ' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
+				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? '<br>' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.dateNaissance) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.npa) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.localitePays) + '</td>';
