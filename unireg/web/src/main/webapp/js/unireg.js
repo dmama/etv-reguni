@@ -46,7 +46,7 @@
 		//var selected = null;
 
 		input.autocomplete({
-			source: getContextPath() + url,
+			source: App.curl(url),
 			open: function(event, ui) {
 				if (validateSelection) {
 					input.removeClass('error');
@@ -156,7 +156,7 @@ var Dialog = {
 		};
 
 		// load remote content
-		var url = getContextPath() + "/tiers/picker/tiers-picker.do";
+		var url = App.curl("/tiers/picker/tiers-picker.do");
 		dialog.load(url, function() {
 			// Note: le code de cette fonction réfère à des éléments du DOM qui sont dans la boîte de dialogue. En dehors de ce call-back, cela ne fonctionne pas.
 			var query = $('#tiers-picker-query');
@@ -182,7 +182,7 @@ var Dialog = {
 						queryString += '&' + new Date().getTime();
 
 						// on effectue la recherche par ajax
-						$.get(getContextPath() + queryString, function(results) {
+						$.get(App.curl(queryString), function(results) {
 							$('#tiers-picker-filter-description').text(results.filterDescription);
 							$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
 						}, 'json')
@@ -212,7 +212,7 @@ var Dialog = {
  				queryString += '&' + new Date().getTime()
 
 				// on effectue la recherche par ajax
-				$.get(getContextPath() + queryString, function(results) {
+				$.get(App.curl(queryString), function(results) {
 					$('#tiers-picker-filter-description').text(results.filterDescription);
 					$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
 				}, 'json')
@@ -281,7 +281,7 @@ var Dialog = {
 	open_consulter_log: function(nature, id) {
 
 		// charge le contenu de la boîte de dialogue
-		$.getJSON(getContextPath() + '/common/consult-log.do?nature=' + nature + '&id=' + id + '&' + new Date().getTime(), function(view) {
+		$.getJSON(App.curl('/common/consult-log.do?nature=') + nature + '&id=' + id + '&' + new Date().getTime(), function(view) {
 
 			var dialog = Dialog.create_dialog_div('consulter-log-dialog');
 
@@ -376,7 +376,7 @@ var Dialog = {
 	 */
 	open_details_mouvement: function(id) {
 
-		$.getJSON(getContextPath() + "/tiers/mouvement.do?idMvt=" + id + "&" + new Date().getTime(), function(mvt) {
+		$.getJSON(App.curl("/tiers/mouvement.do?idMvt=") + id + "&" + new Date().getTime(), function(mvt) {
 			if (mvt) {
 
 				var dateExecution = new Date(mvt.dateExecution);
@@ -448,15 +448,14 @@ var Dialog = {
 	create_dialog_div: function(id) {
 		var dialog = $('#' + id);
 		if (!dialog.length) {
-			dialog = $('<div id="' + id + '" style="display:hidden"><img src="'+ getContextPath() + '/images/loading.gif"/></div>');
+			dialog = $('<div id="' + id + '" style="display:hidden"><img src="' + App.curl('/images/loading.gif') + '"/></div>');
 			dialog.appendTo('body');
 		}
 		else {
-			dialog.html('<img src="'+ getContextPath() + '/images/loading.gif"/>'); // on vide la boîte de dialogue de son contenu précédant
+			dialog.html('<img src="'+ App.curl('/images/loading.gif"/>')); // on vide la boîte de dialogue de son contenu précédant
 		}
 		return dialog;
 	}
-
 }
 
 //===================================================
@@ -513,7 +512,7 @@ var Fors = {
 		if (motifOuverture == null) motifOuverture = defaultMotifOuverture;
 
 		// appels ajax pour mettre-à-jour les motifs d'ouverture
-		$.get(getContextPath() + '/fors/motifsOuverture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
+		$.get(App.curl('/fors/motifsOuverture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
 			var list = '';
 			if (!motifOuverture || !(motifOuverture in motifs) && motifs.length > 1) {
 				// on ajoute une option vide si le motif courant (= ancienne valeur) n'est pas mappable sur les nouveaux motifs disponibles (et qu'il y en a plusieurs)
@@ -549,7 +548,7 @@ var Fors = {
 		if (motifFermeture == null) motifFermeture = defaultMotifFermeture;
 
 		// appels ajax pour mettre-à-jour les motifs de fermeture
-		$.get(getContextPath() + '/fors/motifsFermeture.do?tiersId=' + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
+		$.get(App.curl('/fors/motifsFermeture.do?tiersId=') + numeroCtb + '&genreImpot=' + genreImpot + '&rattachement=' + rattachement + '&' + new Date().getTime(), function(motifs) {
 			var list = '<option></option>'; // dans le cas du motif de fermeture, on ajoute toujours une option vide
 			for(var i = 0; i < motifs.length; ++i) {
 				var motif = motifs[i];
@@ -830,7 +829,7 @@ var Quicksearch = {
 		value = value.replace(/[^0-9]*/g, ''); // remove non-numeric chars
 		var id = parseInt(value, 10);
 		if (!isNaN(id)) {
-			document.location = getContextPath() + quickSearchTarget + id;
+			document.location = App.curl(quickSearchTarget) + id;
 		}
 	},
 
@@ -902,7 +901,7 @@ var Tiers = {
 		var showEvenementsCivils = options.showEvenementsCivils;
 		var showComplements = options.showComplements;
 
-		var url = getContextPath() + 'tiers/vignette-info.do?numero=' + numero +
+		var url = App.curl('tiers/vignette-info.do?numero=') + numero +
 			'&fillActions=' + (showLinks ? 'true' : 'false') +
 			'&fillAdresses=true' +
 			'&fillEnsemble=' + (showLinks ? 'true' : 'false') +
@@ -912,7 +911,7 @@ var Tiers = {
 		// affiche une image de chargement
 		div.css('position', 'relative');
 		var loading = $('<div style="position:absolute; left:' + ((div.width() / 2) - 12) + 'px; top:' + ((div.height() / 2) - 12) + 'px">' +
-			'<img src="'+ getContextPath() + '/images/loading.gif"/></div>');
+			'<img src="' + App.curl('/images/loading.gif') + '"/></div>');
 		div.prepend(loading);
 
 		// récupère les informations du tiers
@@ -1053,7 +1052,7 @@ var Tiers = {
 		html += '<option value="">---</option>';
 		for (var i in tiers.urlsVers) {
 			var uv = tiers.urlsVers[i];
-			var url = getContextPath() + '/redirect/' + uv.appName + '.do?id=' + tiers.numero;
+			var url = App.curl('/redirect/') + uv.appName + '.do?id=' + tiers.numero;
 			html += '<option value="' + url + '">' + StringUtils.escapeHTML(uv.label) + '</option>';
 		}
 		html += '</select></div>';
@@ -1062,7 +1061,7 @@ var Tiers = {
 
 	_buildImageTiers : function(tiers) {
 		var image = this._getImageUrl(tiers.typeAvatar, false);
-		return '<img class="iepngfix" src="' + getContextPath() + image + '">';
+		return '<img class="iepngfix" src="' + App.curl(image) + '">';
 	},
 
 	_getImageUrl : function(typeAvatar, forLink) {
@@ -1142,7 +1141,7 @@ var Tiers = {
 	linkTo: function(numero) {
 		var s = '';
 		if (numero) {
-			s = '<a href="' + getContextPath() + 'tiers/visu.do?id=' + numero + '">' + this.formatNumero(numero) + '</a>';
+			s = '<a href="' + App.curl('tiers/visu.do?id=') + numero + '">' + this.formatNumero(numero) + '</a>';
 		}
 		return s;
 	},
@@ -1151,7 +1150,7 @@ var Tiers = {
 	 * Effectue la validation (appel asynchrone) sur le tiers dont le numéro est spécifié, et retourne la liste des erreurs et des warnings à travers le callback spécifié.
 	 */
 	validate: function(numero, callback) {
-		$.getJSON(getContextPath() + 'validation/tiers.do?id=' + numero + '&' + new Date().getTime(), callback, 'json').error(Ajax.notifyErrorHandler("validation du tiers"));
+		$.getJSON(App.curl('validation/tiers.do?id=') + numero + '&' + new Date().getTime(), callback, 'json').error(Ajax.notifyErrorHandler("validation du tiers"));
 	},
 
 	/**
@@ -1756,6 +1755,33 @@ Date.prototype.format = function (mask, utc) {
 
 var App = {
 
+	contextPath : null,
+
+	/**
+	 * Initialise les librairies javascript de l'application. Cette méthode doit être appelée une seule fois par page.
+	 * @param cp le context path de déploiement de l'application (e.g. http://localhost:8080/fiscalite/unireg/web)
+	 */
+	init: function(cp) {
+		cp = cp.replace(/;jsessionid.*$/, ''); // supprime le jsession id qui apparaît de temps en temps dans IE6...
+		this.contextPath = cp;
+		Ajax.init(); // appel immédiat pour catcher tous les appels ajax à partir de maintenant
+	},
+
+	/**
+	 * Résoud une URL relative au context path en une URL absolue, sur le modèle du tag jsp <c:url>.
+	 * @param url une URL relative
+	 * @return une URL absolue pour le déploiement courant de la webapp.
+	 */
+	curl: function(url) {
+		if (!url) {
+			return '';
+		}
+		while (url.indexOf('/') == 0) {
+			url = url.substring(1);
+		}
+		return this.contextPath + url;
+	},
+
 	/**
 	 * @return <b>true</b> si l'application courante est déployée en développement
 	 */
@@ -1810,13 +1836,13 @@ var App = {
 		}
 		if (/^post:/.test(url)) { // requête de type POST
 			var u = url.replace(/^post:/, '');
-			var form = $('<form method="POST" action="' + getContextPath() + u + '"/>');
+			var form = $('<form method="POST" action="' + App.curl(u) + '"/>');
 			form.appendTo('body');
 			form.submit();
 		}
 		else if (/^goto:/.test(url)) { // requête de type GOTO
 			var u = url.replace(/^goto:/, '');
-			window.location.href = getContextPath() + u;
+			window.location.href = App.curl(u);
 		}
 	},
 
@@ -2172,7 +2198,7 @@ var Modifier = {
 
 var Postit = {
 	refresh : function() {
-		$.get(getContextPath() + '/postit/todo.do?' + new Date().getTime(), function(todo) {
+		$.get(App.curl('/postit/todo.do?') + new Date().getTime(), function(todo) {
 			if (todo.taches > 0 || todo.dossiers > 0) {
 				var text = 'Bonjour !<br>Il y a ';
 				if (todo.taches > 0) {
@@ -2206,7 +2232,7 @@ var Batch = {
 			}
 			requestDone = false;
 
-			$.get(getContextPath() + '/admin/batch/running.do?' + new Date().getTime(), function(jobs) {
+			$.get(App.curl('/admin/batch/running.do?') + new Date().getTime(), function(jobs) {
 				var h = Batch.__buildHtmlTableRunningBatches(jobs, readonly);
 				$("#jobsActif").html(h);
 				requestDone = true;
@@ -2232,7 +2258,7 @@ var Batch = {
 		}, 2500); // 2.5s, le temps que l'affichage des batches en cours s'actualise
 
 		var form = $('#' + name);
-		form.attr('action', getContextPath() + '/admin/batch/start.do?name=' + encodeURIComponent(name));
+		form.attr('action', App.curl('/admin/batch/start.do?name=') + encodeURIComponent(name));
 		// cet appel nécessite la plugin jquery.form.js pour gérer l'upload ajax de fichiers dans les formulaires (voir http://malsup.com/jquery/form/)
 		form.ajaxSubmit({
 			success: function(responseText, statusText) {
@@ -2251,7 +2277,7 @@ var Batch = {
 	},
 
 	stop: function(name) {
-		$.post(getContextPath() + '/admin/batch/stop.do?name=' + encodeURIComponent(name), function(returnCode) {
+		$.post(App.curl('/admin/batch/stop.do?name=') + encodeURIComponent(name), function(returnCode) {
 			if (returnCode) {
 				alert(returnCode);
 			}
@@ -2432,7 +2458,7 @@ var Inbox = {
 		}
 		this.requestInboxSizeDone = false;
 
-		$.get(getContextPath() + "/admin/inbox/unreadSize.do?" + new Date().getTime(), function(unreadSize) {
+		$.get(App.curl("/admin/inbox/unreadSize.do?") + new Date().getTime(), function(unreadSize) {
 			if (unreadSize > 0) {
 				$(span).text(text + ' (' + unreadSize + ')');
 				$(span).attr('style', 'font-weight: bold');
@@ -2455,7 +2481,7 @@ var Decl = {
 	 */
 	open_details_di: function(diId) {
 
-		$.getJSON(getContextPath() + "/decl/details.do?id=" + diId + "&" + new Date().getTime(), function(di) {
+		$.getJSON(App.curl("/decl/details.do?id=") + diId + "&" + new Date().getTime(), function(di) {
 			if (di) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
 				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + di.periodeFiscale + '</td>';
@@ -2495,7 +2521,7 @@ var Decl = {
 	 */
 	open_details_lr: function(lrId) {
 
-		$.getJSON(getContextPath() + "/decl/details.do?id=" + lrId + "&" + new Date().getTime(), function(lr) {
+		$.getJSON(App.curl("/decl/details.do?id=") + lrId + "&" + new Date().getTime(), function(lr) {
 			if (lr) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la liste récapitulative</span></legend>';
 				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateDebut) + '</td></tr>';
@@ -2538,7 +2564,7 @@ var Decl = {
 				html += '<td>';
 				if (d.confirmationEcrite) {
 					html += '<input type="checkbox" checked="checked" disabled="disabled">';
-					html += '<a href="' + getContextPath() + '/declaration/copie-conforme-delai.do?idDelai=' + d.id + '" class="pdf" id="print-delai-' + d.id +
+					html += '<a href="' + App.curl('/declaration/copie-conforme-delai.do?idDelai=') + d.id + '" class="pdf" id="print-delai-' + d.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-print-delai-' + d.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-print-delai-' + d.id + '" style="display:none;">&nbsp;</span>';
 				}
@@ -2569,7 +2595,7 @@ var Decl = {
 				}
 				html += '</td><td>' + StringUtils.escapeHTML(e.etatMessage);
 				if (!e.annule && e.etat == 'SOMMEE') {
-					html += '&nbsp;' + '<a href="' + getContextPath() + '/declaration/copie-conforme-sommation.do?idEtat=' + e.id + '" class="pdf" id="copie-sommation-' + e.id +
+					html += '&nbsp;' + '<a href="' + App.curl('/declaration/copie-conforme-sommation.do?idEtat=') + e.id + '" class="pdf" id="copie-sommation-' + e.id +
 						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
 				}

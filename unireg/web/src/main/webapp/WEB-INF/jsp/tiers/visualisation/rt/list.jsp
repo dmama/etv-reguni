@@ -80,7 +80,7 @@
 			<script>
 				function annulerRapportPrestation(idRapport) {
 					if (confirm('Voulez-vous vraiment annuler ce rapport entre tiers ?')) {
-						var form = $('<form method="POST" action="' + getContextPath() + '/rapports-prestation/edit.do">' +
+						var form = $('<form method="POST" action="' + App.curl('/rapports-prestation/edit.do') + '">' +
 							'<input type="hidden" name="__TARGET__" value="annulerRapport"/>' +
 							'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idRapport + '"/>' +
 							'<input type="hidden" name="__URL_RETOUR__" value="' + window.location + '"/></form>');

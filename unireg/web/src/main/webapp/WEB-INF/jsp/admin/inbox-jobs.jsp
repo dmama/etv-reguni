@@ -56,7 +56,7 @@
         	<script>
 				function stopJobEnAttente(uuid) {
 					if (confirm('Êtes-vous sûr de vouloir interrompre/annuler cette extraction ?')) {
-						$.post(getContextPath() + "/admin/inbox/stopJob.do?id=" + uuid, function() {
+						$.post(App.curl("/admin/inbox/stopJob.do?id=" + uuid), function() {
                             refreshJobsEnAttente();
 						});
 					}

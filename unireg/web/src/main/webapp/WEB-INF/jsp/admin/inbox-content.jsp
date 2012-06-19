@@ -55,7 +55,7 @@
         	<script type="text/javascript">
 				function removeInboxContent(uuid) {
 					if (confirm('Êtes-vous sûr de vouloir effacer ce message ?')) {
-						$.post(getContextPath() + "/admin/inbox/removeElement.do?id=" + uuid, function() {
+						$.post(App.curl("/admin/inbox/removeElement.do?id=" + uuid), function() {
                             refreshInboxContent();
 						});
 					}

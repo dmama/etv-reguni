@@ -18,9 +18,6 @@
 		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
 
 		<script type="text/javascript" language="javascript">
-			function getContextPath() {
-			  return '<c:url value="/"/>'.replace(/;jsessionid.*$/, ''); // supprime le jsession id qui apparaît de temps en temps dans IE6...
-			}
             function ouvrirAide(url) {
                 window.open(url, "aide", "top=100, left=750, screenY=50, screenX=100, width=500, height=800, directories=no, location=no, menubar=no, status=no, toolbar=no, resizable=yes");
             }
@@ -38,8 +35,8 @@
 				<div style="position:absolute; top:5px; left:5px;">
 					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>"  alt="loading..."/></div>
 				</div>
-				<script>
-					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
+				<script type="text/javascript">
+					App.init('<c:url value="/"/>');
 				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">

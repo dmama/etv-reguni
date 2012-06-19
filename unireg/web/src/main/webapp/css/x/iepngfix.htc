@@ -18,7 +18,7 @@ IEPNGFix.data = IEPNGFix.data || {};
 var thisFolder = document.URL.replace(/(\\|\/)[^\\\/]*$/, '/');
 //IEPNGFix.blankImg = thisFolder + 'blank.gif';
 // msi 26.5.2009: hack pour récupérer le context path
-IEPNGFix.blankImg = getContextPath() + '/css/x/blank.gif';
+IEPNGFix.blankImg = App.curl('/css/x/blank.gif');
 
 
 IEPNGFix.fix = function(elm, src, t) {

@@ -13,12 +13,6 @@
 		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
 
-		<script type="text/javascript" language="javascript">
-			function getContextPath() {
-			  return '<c:url value="/"/>';
-			}
-		</script>
-
 		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 
 		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
@@ -35,8 +29,8 @@
 				<div style="position:absolute; top:5px; left:5px;">
 					<div id="loadingImage" style="display:none;"><img src="<c:url value="/images/loading.gif"/>" /></div>
 				</div>
-				<script>
-					Ajax.init(); // appel immediat pour catcher tous les appels ajax a partir de maintenant
+				<script type="text/javascript">
+					App.init('<c:url value="/"/>');
 				</script>
 				<div class="canton">
 					<a href="http://www.vd.ch" target="_blank">

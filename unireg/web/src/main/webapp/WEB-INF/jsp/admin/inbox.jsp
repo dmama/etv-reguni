@@ -33,7 +33,7 @@
 					return;
 				}
 				requestJobsEnAttenteDone = false;
-				$('#jobsEnAttente').load(getContextPath() + "/admin/inbox/jobs.do?" + new Date().getTime(), function() {
+				$('#jobsEnAttente').load(App.curl("/admin/inbox/jobs.do?" + new Date().getTime()), function() {
 					onReceivedJobsEnAttente();
 				});
 			}
@@ -43,7 +43,7 @@
 					return;
 				}
 				requestInboxDone = false;
-				$('#inboxContent').load(getContextPath() + "/admin/inbox/content.do?" + new Date().getTime(), function() {
+				$('#inboxContent').load(App.curl("/admin/inbox/content.do?" + new Date().getTime()), function() {
 					onReceivedInboxContent();
 				});
 			}

@@ -102,7 +102,7 @@
 
                 suspend: function(ctbId) {
                     if (confirm('Êtes-vous sûr de vouloir suspendre l\'utilisation des e-Factures pour ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/suspend.do?ctb=" + ctbId + '"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/suspend.do?ctb=" + ctbId) + '"/>');
                         form.appendTo('body');
                         form.submit();
                     }
@@ -110,7 +110,7 @@
 
                 activate: function(ctbId) {
                     if (confirm('Êtes-vous sûr de vouloir activer l\'utilisation des e-Factures pour ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/activate.do?ctb=" + ctbId + '"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/activate.do?ctb=" + ctbId) + '"/>');
                         form.appendTo('body');
                         form.submit();
                     }
@@ -118,7 +118,7 @@
 
                 validate: function(ctbId, idDemande) {
                     if (confirm('Êtes-vous sûr de vouloir valider la demande d\'inscription de ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/validate.do?ctb=" + ctbId + '&idDemande=' + idDemande + '"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/validate.do?ctb=" + ctbId + '&idDemande=' + idDemande) + '"/>');
                         form.appendTo('body');
                         form.submit();
                     }
@@ -126,7 +126,7 @@
 
                 refuse: function(ctbId, idDemande) {
                     if (confirm('Êtes-vous sûr de vouloir refuser la demande d\'inscription de ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/refuse.do?ctb=" + ctbId + '&idDemande=' + idDemande + '"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/refuse.do?ctb=" + ctbId + '&idDemande=' + idDemande) + '"/>');
                         form.appendTo('body');
                         form.submit();
                     }
@@ -134,7 +134,7 @@
 
                 waitForSignature: function(ctbId, idDemande, dateDemande) {
                     if (confirm('Êtes-vous sûr de vouloir envoyer le formulaire d\'acceptation à ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/wait-signature.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande +'"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/wait-signature.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande) +'"/>');
                         form.appendTo('body');
                         form.submit();
                     }
@@ -142,7 +142,7 @@
 
                 waitForContact: function(ctbId, idDemande, dateDemande) {
                     if (confirm('Êtes-vous sûr de vouloir envoyer le courrier de demande de contact à ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + getContextPath() + "/efacture/wait-contact.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande +'"/>');
+                        var form = $('<form method="POST" action="' + App.curl("/efacture/wait-contact.do?ctb=" + ctbId + '&idDemande=' + idDemande + '&dateDemande=' + dateDemande) +'"/>');
                         form.appendTo('body');
                         form.submit();
                     }

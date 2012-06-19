@@ -27,10 +27,10 @@
 			// on retarde l'appel javascript de 250ms pour éviter de faire plusieurs requêtes lorsque l'utilisateur entre plusieurs caractères rapidemment
 			var timer = setTimeout(function() {
 
-				var queryString = '/search/quick.do?query=' + encodeURIComponent(current) + '&' + new Date().getTime();
+				var queryString = App.curl('/search/quick.do?query=' + encodeURIComponent(current) + '&' + new Date().getTime());
 
 				// on effectue la recherche par ajax
-				$.get(getContextPath() + queryString, function(results) {
+				$.get(queryString, function(results) {
 					$('#simple-search-results').html(build_html_simple_results(results));
 				}, 'json')
 				.error(function(xhr, ajaxOptions, thrownError){
