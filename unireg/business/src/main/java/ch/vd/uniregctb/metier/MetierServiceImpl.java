@@ -899,7 +899,7 @@ public class MetierServiceImpl implements MetierService {
 				dateMariage = rapport.getDateDebut();
 			}
 			if (date != dateMariage) {
-				results.addError("La date ne correspond pas à celle du mariage.");
+				results.addError(String.format("La date de début du rapport d'appartenance ménage existant (%s) ne correspond pas à celle du mariage (%s).", RegDateHelper.dateToDisplayString(dateMariage), RegDateHelper.dateToDisplayString(date)));
 			}
 		}
 
