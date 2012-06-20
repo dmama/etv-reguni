@@ -26,10 +26,12 @@ version=$version.$release
 echo "Building version $version ($env)"
 
 user=dsi_unireg@ssv0309v
-relFileOrig=uniregweb-release.zip
-relFileDest=uniregweb-release-${env}-${version}-${DATE}.zip
-wsFileOrig=uniregws-release.zip	
-wsFileDest=uniregws-release-${env}-${version}-${DATE}.zip
+relFileOrig=unireg-web-release.zip
+relFileDest=unireg-web-release-${env}-${version}-${DATE}.zip
+wsFileOrig=unireg-ws-release.zip	
+wsFileDest=unireg-ws-release-${env}-${version}-${DATE}.zip
+nexusFileOrig=unireg-nexus-release.zip	
+nexusFileDest=unireg-nexus-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
 MVN_OPTS="-Pnot,build.source,oracle,all"
@@ -46,6 +48,12 @@ fi
 (cd unireg/base && mvn $MVN_OPTS clean deploy)
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build"
+	exit 1
+fi
+
+(cd unireg/nexus && mvn $MVN_OPTS assembly:assembly)
+if [ $? != 0 ]; then
+	echo "!!! Erreur lors de l'assembly de nexus"
 	exit 1
 fi
 
@@ -68,6 +76,7 @@ if [ $? != 0 ]; then
 fi
 
 # Renommage des fichiers ZIP avec la date
+cp unireg/nexus/target/$nexusFileOrig unireg/nexus/target/$nexusFileDest
 cp unireg/web/target/$relFileOrig unireg/web/target/$relFileDest
 cp unireg/ws/target/$wsFileOrig unireg/ws/target/$wsFileDest
 cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
@@ -75,6 +84,7 @@ cp unireg/ubr/target/$ubrFileOrig unireg/ubr/target/$ubrFileDest
 # Deploiement sur ssv0309v
 REM_DIR="~/release"
 ssh $user "mkdir $REM_DIR"
+scp unireg/nexus/target/$nexusFileDest $user:$REM_DIR
 scp unireg/web/target/$relFileDest $user:$REM_DIR
 scp unireg/ws/target/$wsFileDest $user:$REM_DIR
 scp unireg/ubr/target/$ubrFileDest $user:$REM_DIR
