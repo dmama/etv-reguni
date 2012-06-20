@@ -87,7 +87,7 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/validate.do", method = RequestMethod.POST)
-	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) {
 		checkDroitGestionaireEfacture();
 
 		// TODO jde à faire
@@ -95,7 +95,7 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/refuse.do", method = RequestMethod.POST)
-	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande) {
+	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) {
 		checkDroitGestionaireEfacture();
 
 		// TODO jde à faire
@@ -103,9 +103,9 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
-	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
-		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE,idDemande, dateDemande);
+		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
 		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire
@@ -113,9 +113,9 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
-	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) long idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
- 		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT,idDemande, dateDemande);
+ 		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
 		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
 		// TODO jde à faire
@@ -152,7 +152,7 @@ public class EFactureController {
 		final List<HistoriqueDemande> demandes = new ArrayList<HistoriqueDemande>();
 		{
 			final HistoriqueDemande demande = new HistoriqueDemande();
-			demande.setIdDemande(1);
+			demande.setIdDemande("1");
 			demande.setDateDemande(RegDate.get(2012, 9, 11));
 
 			// un contribuable sur deux a une demande en attente de confirmation signature
@@ -169,7 +169,7 @@ public class EFactureController {
 		}
 		{
 			final HistoriqueDemande demande = new HistoriqueDemande();
-			demande.setIdDemande(2);
+			demande.setIdDemande("2");
 			demande.setDateDemande(RegDate.get(2012, 9, 13));
 			demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 14), null, null, "Reçue", TypeEtatDemande.RECUE),
 			                               new EtatDemande(RegDate.get(2012, 9, 14), "Autre demande déjà en cours", null, "Refusée", TypeEtatDemande.REFUSEE)));

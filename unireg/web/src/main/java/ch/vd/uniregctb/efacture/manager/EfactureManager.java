@@ -7,15 +7,13 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public interface EfactureManager {
 
-
 	/**
 	 * Demande l'impression du document de demande de signature ou de demande de contact
 	 *
 	 * @param ctbId     le numéro de contribuable traité
 	 * @param typeDocument permet de determiner le type de document à envoyer au contribuable
-	 * @param idDemande l'id d ela demande à traiter
+	 * @param idDemande l'id de la demande à traiter
 	 * @param dateDemande
 	 */
-
-	public void envoyerDocumentAvecNotificationEFacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException;
+	void envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException;
 }

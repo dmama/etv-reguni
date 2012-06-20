@@ -12,15 +12,11 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	private EFactureService eFactureService;
 
-
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void envoyerDocumentAvecNotificationEFacture(Long ctbId, TypeDocument typeDocument, Long idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
-
+	public void envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
 		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
-		String strIdDemande = idDemande.toString();
-		eFactureService.notifieMiseEnattenteInscription(strIdDemande,typeDocument,idArchivage, true);
-
+		eFactureService.notifieMiseEnattenteInscription(idDemande, typeDocument, idArchivage, true);
 	}
 
 	public void seteFactureService(EFactureService eFactureService) {

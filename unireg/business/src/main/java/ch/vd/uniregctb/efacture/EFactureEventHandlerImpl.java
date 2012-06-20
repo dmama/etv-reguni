@@ -60,24 +60,24 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	}
 
 	/**
-	 * @param inscription l'inscrition dont on doit verifier les données de base: n° avs, email, date de la demande
+	 * @param inscription l'inscription dont on doit verifier les données de base: n° avs, email, date de la demande
 	 *
 	 * @return true si les verifications de base sont ok; false sinon
 	 *
 	 * @throws EvenementEfactureException s'il y a un problème avec l'envoi d'un message d'erreur
 	 */
 	private boolean performBasicChecks(DemandeValidationInscription inscription) throws EvenementEfactureException {
-		//Check Numéro AVS à 13 chiffres
+		// Check Numéro AVS à 13 chiffres
 		if (!AvsHelper.isValidNouveauNumAVS(inscription.getNoAvs())) {
 			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.NUMERO_AVS_INVALIDE);
 			return false;
 		}
-		//Check Adresse de courrier électronique
+		// Check Adresse de courrier électronique
 		if (!EmailValidator.getInstance().isValid(inscription.getEmail())) {
 			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.EMAIL_INVALIDE);
 			return false;
 		}
-		//Check Date et heure de la demande
+		// Check Date et heure de la demande
 		// TODO A DISCUTER: Les specs parlent d'heure de la demande or RegDate n'a pas d'heure
 		if (inscription.getDateDemande() == null) {
 			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.DATE_DEMANDE_ABSENTE);

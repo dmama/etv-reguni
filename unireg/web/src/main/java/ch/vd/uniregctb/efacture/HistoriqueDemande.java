@@ -11,15 +11,15 @@ import ch.vd.registre.base.date.RegDate;
  */
 public class HistoriqueDemande {
 
-	private long idDemande;
+	private String idDemande;
 	private RegDate dateDemande;
 	private List<EtatDemande> etats;
 
-	public long getIdDemande() {
+	public String getIdDemande() {
 		return idDemande;
 	}
 
-	public void setIdDemande(long idDemande) {
+	public void setIdDemande(String idDemande) {
 		this.idDemande = idDemande;
 	}
 

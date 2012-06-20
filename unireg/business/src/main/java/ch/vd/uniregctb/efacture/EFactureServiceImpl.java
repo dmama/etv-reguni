@@ -17,7 +17,6 @@ public class EFactureServiceImpl implements EFactureService {
 	private EditiqueCompositionService editiqueCompositionService;
 	private EFactureMessageSender eFactureMessageSender;
 
-
 	@Override
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
@@ -33,11 +32,8 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	public void notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
-
-		TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
+		final TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, idArchivage, retourAttendu);
-
-
 	}
 
 	private TypeAttenteEFacture determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
