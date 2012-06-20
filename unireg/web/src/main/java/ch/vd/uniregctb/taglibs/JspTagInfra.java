@@ -3,6 +3,7 @@ package ch.vd.uniregctb.taglibs;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -32,7 +34,7 @@ public class JspTagInfra extends BodyTagSupport {
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
 	private static interface Invocator {
-		Object invoke(ServiceInfrastructureService service, int id) throws Exception;
+		Object invoke(ServiceInfrastructureService service, int id) throws InvocationTargetException, IllegalAccessException;
 	}
 
 	/**
@@ -44,7 +46,7 @@ public class JspTagInfra extends BodyTagSupport {
 			this.method = method;
 		}
 		@Override
-		public Object invoke(ServiceInfrastructureService service, int id) throws Exception {
+		public Object invoke(ServiceInfrastructureService service, int id) throws InvocationTargetException, IllegalAccessException {
 			return method.invoke(service, id);
 		}
 	}
@@ -77,6 +79,9 @@ public class JspTagInfra extends BodyTagSupport {
 		Object property = null;
 		Object title = null;
 		try {
+			if (true) {
+				throw new ServiceInfrastructureException("test infra");
+			}
 			Object entity = invocator.invoke(service, entityId);
 			if (entity != null) {
 				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyName, entity.getClass());
@@ -87,14 +92,8 @@ public class JspTagInfra extends BodyTagSupport {
 					title = titleDescriptor.getReadMethod().invoke(entity);
 				}
 			}
-		}
-		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new JspException(e);
-		}
 
-		if (property != null) {
-			try {
+			if (property != null) {
 				final StringBuilder b = new StringBuilder();
 				if (title != null) {
 					b.append("<span title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
@@ -103,14 +102,26 @@ public class JspTagInfra extends BodyTagSupport {
 				if (title != null) {
 					b.append("</span>");
 				}
-				pageContext.getOut().print(b.toString());
-			}
-			catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
-				throw new JspException(e);
+				print(b.toString());
 			}
 		}
+		catch (Exception e) {
+			// [SIFISC-5427] le mécanisme d'interception des exceptions (voir le bean 'urlMappingExceptionResolver') ne fonctionne pas dans le context
+			// des tags JSP, on doit donc directement afficher un message d'erreur pour signaler le problème.
+			LOGGER.error(e.getMessage(), e);
+			print("<span class=\"error\">##Exception : " + e.getMessage() + "##</span>");
+		}
 		return SKIP_BODY;
+	}
+
+	private void print(String b) throws JspException {
+		try {
+			pageContext.getOut().print(b);
+		}
+		catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new JspException(e);
+		}
 	}
 
 	public void setEntityType(String entityType) {

@@ -42,14 +42,8 @@ public class JspTagCommune extends BodyTagSupport {
 					title = titleDescriptor.getReadMethod().invoke(commune);
 				}
 			}
-		}
-		catch (Exception e) {
-			LOGGER.error(e.getMessage(), e);
-			throw new JspException(e);
-		}
 
-		if (property != null) {
-			try {
+			if (property != null) {
 				final StringBuilder b = new StringBuilder();
 				if (title != null) {
 					b.append("<span title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
@@ -58,14 +52,26 @@ public class JspTagCommune extends BodyTagSupport {
 				if (title != null) {
 					b.append("</span>");
 				}
-				pageContext.getOut().print(b.toString());
-			}
-			catch (IOException e) {
-				LOGGER.error(e.getMessage(), e);
-				throw new JspException(e);
+				print(b.toString());
 			}
 		}
+		catch (Exception e) {
+			// [SIFISC-5427] le mécanisme d'interception des exceptions (voir le bean 'urlMappingExceptionResolver') ne fonctionne pas dans le context
+			// des tags JSP, on doit donc directement afficher un message d'erreur pour signaler le problème.
+			LOGGER.error(e.getMessage(), e);
+			print("<span class=\"error\">##Exception : " + e.getMessage() + "##</span>");
+		}
 		return SKIP_BODY;
+	}
+
+	private void print(String b) throws JspException {
+		try {
+			pageContext.getOut().print(b);
+		}
+		catch (IOException e) {
+			LOGGER.error(e.getMessage(), e);
+			throw new JspException(e);
+		}
 	}
 
 	public void setOfs(Integer ofs) {
