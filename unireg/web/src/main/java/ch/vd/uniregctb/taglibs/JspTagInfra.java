@@ -13,7 +13,6 @@ import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 
 import ch.vd.registre.base.utils.ReadOnlyPropertyDescriptor;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -79,9 +78,6 @@ public class JspTagInfra extends BodyTagSupport {
 		Object property = null;
 		Object title = null;
 		try {
-			if (true) {
-				throw new ServiceInfrastructureException("test infra");
-			}
 			Object entity = invocator.invoke(service, entityId);
 			if (entity != null) {
 				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(entityPropertyName, entity.getClass());
