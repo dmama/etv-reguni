@@ -1,17 +1,25 @@
 package ch.vd.uniregctb.efacture;
 
-import org.apache.commons.validator.EmailValidator;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
-import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 	private final Logger LOGGER = Logger.getLogger(EFactureEventHandlerImpl.class);
+
+	private EFactureService eFactureService;
 	private EFactureMessageSender sender;
+
+	public void seteFactureService(EFactureService eFactureService) {
+		this.eFactureService = eFactureService;
+	}
+
+	public void setSender(EFactureMessageSender sender) {
+		this.sender = sender;
+	}
 
 	@Override
 	public void handle(EFactureEvent event) {
@@ -25,15 +33,28 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 				final DemandeValidationInscription inscription = (DemandeValidationInscription) event;
 				LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(inscription.getCtbId()), FormatNumeroHelper.formatNumAVS(inscription.getNoAvs()), RegDateHelper.dateToDisplayString(inscription.getDateDemande())));
 				try {
-					if (!performBasicChecks(inscription)) {
+					TypeRefusEFacture typeRefus = inscription.performBasicValidation();
+					if (typeRefus != null) {
+						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus);
 						return;
 					}
 
 					// 3.1.3. Vérifier demandes en cours
+					if (eFactureService.getDemandeInscritpionEnCoursDeTraitement(inscription.getCtbId()) != null) {
+						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
+						return;
+					}
 
 					// 3.1.4. Identifier le contribuable
+					typeRefus = eFactureService.identifieContribuable(inscription.getCtbId(), inscription.getNoAvs());
+					if (typeRefus != null) {
+						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
+						return;
+					}
+					sender.envoieReceptionDemandeInscription(inscription.getIdDemande());
 
 					// 3.1.5. Stocker l’adresse de courrier électronique de la demande
+
 
 					// 3.1.6. Vérifier l’existence d’une adresse courrier
 
@@ -59,33 +80,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 		}
 	}
 
-	/**
-	 * @param inscription l'inscription dont on doit verifier les données de base: n° avs, email, date de la demande
-	 *
-	 * @return true si les verifications de base sont ok; false sinon
-	 *
-	 * @throws EvenementEfactureException s'il y a un problème avec l'envoi d'un message d'erreur
-	 */
-	private boolean performBasicChecks(DemandeValidationInscription inscription) throws EvenementEfactureException {
-		// Check Numéro AVS à 13 chiffres
-		if (!AvsHelper.isValidNouveauNumAVS(inscription.getNoAvs())) {
-			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.NUMERO_AVS_INVALIDE);
-			return false;
-		}
-		// Check Adresse de courrier électronique
-		if (!EmailValidator.getInstance().isValid(inscription.getEmail())) {
-			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.EMAIL_INVALIDE);
-			return false;
-		}
-		// Check Date et heure de la demande
-		// TODO A DISCUTER: Les specs parlent d'heure de la demande or RegDate n'a pas d'heure
-		if (inscription.getDateDemande() == null) {
-			sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.DATE_DEMANDE_ABSENTE);
-			return false;
-		}
 
-		return true;
-	}
 
 	@Override
 	public ClassPathResource getRequestXSD() {

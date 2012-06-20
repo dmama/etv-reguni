@@ -79,6 +79,13 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
+	public void envoieReceptionDemandeInscription(String idDemande) throws EvenementEfactureException {
+		//TODO e-facture ??? cf. spec TraiterDemandeAdhesionEfacture : 3.1.4 -> Dans le cas où l’identification est réussie, l’état de la demande passe à « Reçu ».
+		// mais pas d'état reçu...
+
+	}
+
+	@Override
 	public void envoieAcceptationDemandeInscription(String idDemande) throws EvenementEfactureException {
 		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
 		sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDEE, null, null, null, false);

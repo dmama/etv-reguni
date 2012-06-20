@@ -283,6 +283,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="eFactureMessageSender" ref="eFactureMessageSender" />
+		<property name="eFactureClient" ref="eFactureClient" />
 	</bean>
 
 </beans>

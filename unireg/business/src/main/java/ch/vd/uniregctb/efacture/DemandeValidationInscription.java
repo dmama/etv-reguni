@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.validator.EmailValidator;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
+import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -77,6 +79,7 @@ public class DemandeValidationInscription extends EFactureEvent {
 
 		final Map<String, String> map = buildAdditionalData(request);
 		this.noAvs = map.get(AVS13);
+
 	}
 
 	public String getIdDemande() {
@@ -101,5 +104,30 @@ public class DemandeValidationInscription extends EFactureEvent {
 
 	public String getNoAvs() {
 		return noAvs;
+	}
+
+	/**
+	 * Effectue les contrôles de cohérence de base pour l'objet
+	 *
+	 * @return le type de refus pour le contrôle en echec ou null si tout est ok
+	 *
+	 */
+	TypeRefusEFacture performBasicValidation() {
+		if (getAction() == Action.INSCRIPTION) {
+			//Check Numéro AVS à 13 chiffres
+			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
+				return TypeRefusEFacture.NUMERO_AVS_INVALIDE;
+			}
+			//Check Adresse de courrier électronique
+			if (!EmailValidator.getInstance().isValid(getEmail())) {
+				return TypeRefusEFacture.EMAIL_INVALIDE;
+			}
+			//Check Date et heure de la demande
+			// TODO A DISCUTER: Les specs parlent d'heure de la demande or RegDate n'a pas d'heure
+			if (getDateDemande() == null) {
+				return TypeRefusEFacture.DATE_DEMANDE_ABSENTE;
+			}
+		}
+		return null;
 	}
 }

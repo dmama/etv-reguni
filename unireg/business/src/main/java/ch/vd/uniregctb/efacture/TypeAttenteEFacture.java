@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 public enum TypeAttenteEFacture {
 
+	PAS_EN_ATTENTE (0, "Pas En Attente"), // TODO FRED En attendant de voir avec martin pour rendre le code reason optionnel
 	EN_ATTENTE_CONTACT(1, "Mise en attente : l'assujettissement est incohérent avec la e-Facture"),
 	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation d'inscription");
 
@@ -22,5 +23,14 @@ public enum TypeAttenteEFacture {
 	@Nullable
 	public Integer getCode() {
 		return code;
+	}
+
+	public static TypeAttenteEFacture valueOf (Integer code) {
+		for(TypeAttenteEFacture t : TypeAttenteEFacture.values()) {
+			if (t.code.equals(code)) {
+				return t;
+			}
+		}
+		throw new IllegalArgumentException(code + "n'est pas un TypeAttenteEFacture valide");
 	}
 }

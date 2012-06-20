@@ -12,6 +12,11 @@ public class MockEFactureMessageSender implements EFactureMessageSender {
 	}
 
 	@Override
+	public void envoieReceptionDemandeInscription(String idDemande) throws EvenementEfactureException {
+		//To change body of implemented methods use File | Settings | File Templates.
+	}
+
+	@Override
 	public void envoieAcceptationDemandeInscription(String idDemande) throws EvenementEfactureException {
 
 	}

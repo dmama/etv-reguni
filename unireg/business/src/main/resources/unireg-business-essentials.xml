@@ -148,7 +148,6 @@
 
 	<bean id="ibanValidator" class="ch.vd.uniregctb.iban.IbanValidator"/>
 
-
 	<!-- Database service -->
 	<bean id="databaseService" class="ch.vd.uniregctb.database.DatabaseServiceImpl">
 		<property name="localSessionFactoryBean" ref="&amp;sessionFactory" />
