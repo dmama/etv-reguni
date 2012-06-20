@@ -29,7 +29,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	private EsbJmsTemplate esbTemplate;
 	private EsbMessageFactory esbMessageFactory;
 	private boolean enabled = true;
-	private String serviceDestination;
+	private String serviceDestinationDemande;
+	private String serviceDestinationDestinataire;
 	private String serviceReplyTo;
 
 	private final ObjectFactory objectFactory = new ObjectFactory();
@@ -48,11 +49,14 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 		this.enabled = enabled;
 	}
 
-	public void setServiceDestination(String serviceDestination) {
-		this.serviceDestination = serviceDestination;
+	public void setServiceDestinationDemande(String serviceDestinationDemande) {
+		this.serviceDestinationDemande = serviceDestinationDemande;
 	}
 
-	//TODO définir comment intitialiser cet valeur: Par injection Spring ou dans l'implementation
+	public void setServiceDestinationDestinataire(String serviceDestinationDestinataire) {
+		this.serviceDestinationDestinataire = serviceDestinationDestinataire;
+	}
+
 	public void setServiceReplyTo(String serviceReplyTo) {
 		this.serviceReplyTo = serviceReplyTo;
 	}
@@ -117,7 +121,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				msg.setStatus(status);
 				marshaller.marshal(msg, doc);
 			}
-		});
+		}, serviceDestinationDemande);
 	}
 
 	private void sendMiseAJourDestinataire(final long noCtb, final PayerUpdateAction action,
@@ -142,10 +146,10 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				msg.setPayerUpdateAction(action);
 				marshaller.marshal(msg, doc);
 			}
-		});
+		}, serviceDestinationDestinataire);
 	}
 
-	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller) throws EvenementEfactureException {
+	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller, String serviceDestination) throws EvenementEfactureException {
 
 		if (enabled) {
 			final String principal = AuthenticationHelper.getCurrentPrincipal();
