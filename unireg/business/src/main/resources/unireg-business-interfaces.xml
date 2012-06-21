@@ -58,21 +58,5 @@
 	</bean>
 
 	<alias alias="servicePersonneMoraleService" name="servicePersonneMoraleServiceCache"/>
-
-	<!-- service e-facture -->
-
-	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">
-		<property name="baseUrl" value="${extprop.webservice.efacture.url}" />
-		<property name="username" value="${extprop.webservice.efacture.username}" />
-		<property name="password" value="${extprop.webservice.efacture.password}" />
-		<property name="historyPath" value="${extprop.webservice.efacture.historyPath}" />
-	</bean>
-
-	<bean id="eFactureClientTracing" class="ch.vd.uniregctb.wsclient.efacture.EFactureClientTracing">
-		<property name="target" ref="eFactureClientRaw"/>
-		<property name="statsService" ref="statsService"/>
-	</bean>
-
-	<alias alias="eFactureClient" name="eFactureClientTracing"/>
 	
 </beans>
