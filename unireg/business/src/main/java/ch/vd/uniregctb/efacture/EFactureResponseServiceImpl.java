@@ -45,6 +45,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 					if (LOGGER.isInfoEnabled()) {
 						LOGGER.info(String.format("Purge de la réponse e-facture au message '%s' qui n'intéresse apparemment personne", key));
 					}
+					super.onPurge(key, value);
 				}
 			};
 		}
@@ -70,7 +71,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 	}
 
 	@Override
-	public boolean waitForResponse(String businessId, long timeoutMs) {
+	public boolean waitForResponse(final String businessId, final long timeoutMs) {
 		if (timeoutMs <= 0) {
 			throw new IllegalArgumentException(String.format("timeout devrait être strictement positif (%d)", timeoutMs));
 		}
@@ -90,7 +91,12 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			return false;
 		}
 		finally {
-			serviceTracing.end(start, "waitForResponse", businessId);
+			serviceTracing.end(start, "waitForResponse", new Object() {
+				@Override
+				public String toString() {
+					return String.format("businessId='%s', timeout=%dms", businessId, timeoutMs);
+				}
+			});
 		}
 	}
 

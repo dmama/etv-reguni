@@ -112,7 +112,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 	}
 
 	@Override
-	public EditiqueResultat getDocument(String nomDocument, long timeout) {
+	public EditiqueResultat getDocument(final String nomDocument, final long timeout) {
 
 		Assert.isTrue(timeout > 0);
 
@@ -139,7 +139,12 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 			return new EditiqueResultatTimeoutImpl(nomDocument);
 		}
 		finally {
-			serviceTracing.end(start, "getDocument", nomDocument);
+			serviceTracing.end(start, "getDocument", new Object() {
+				@Override
+				public String toString() {
+					return String.format("idDocument='%s', timeout=%dms", nomDocument, timeout);
+				}
+			});
 		}
 	}
 
@@ -150,7 +155,7 @@ public class EditiqueRetourImpressionStorageServiceImpl implements EditiqueRetou
 
 	@Override
 	public int getDocumentsPurges() {
-		return impressionsRecues.getNbPurgedDocuments();
+		return impressionsRecues.getNbPurgedElements();
 	}
 
 	@Override

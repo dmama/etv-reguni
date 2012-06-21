@@ -20,6 +20,10 @@ public class AsyncStorage<K, V> {
 	 */
 	protected final Map<K, DataHolder<V>> map = new HashMap<K, DataHolder<V>>();
 
+	/**
+	 * Container de la donnée à stocker
+	 * @param <V> type de la donnée à stocker
+	 */
 	protected static class DataHolder<V> {
 		public final V data;
 		protected DataHolder(@Nullable V data) {
@@ -27,6 +31,10 @@ public class AsyncStorage<K, V> {
 		}
 	}
 
+	/**
+	 * Classe abstraite de base des résultats renvoyés par la méthode {@link #get}
+	 * @param <K> le type de la clé de stockage
+	 */
 	public static abstract class RetrievalResult<K> {
 		public final K key;
     	public RetrievalResult(K key) {
@@ -34,12 +42,21 @@ public class AsyncStorage<K, V> {
 		}
 	}
 
+	/**
+	 * Valeur renvoyée par la méthode {@link #get} en cas de timeout
+	 * @param <K> le type de la clé de stockage
+	 */
 	public static final class RetrievalTimeout<K> extends RetrievalResult<K> {
 		public RetrievalTimeout(K key) {
 			super(key);
 		}
 	}
 
+	/**
+	 * Valeur renvoyée par la méthode {@link #get} en cas de retour positif
+	 * @param <K> le type de la clé de stockage
+	 * @param <V> le type de la valeur stockée
+	 */
 	public static final class RetrievalData<K, V> extends RetrievalResult<K> {
 		public final V data;
 		public RetrievalData(K key, V data) {
@@ -54,7 +71,7 @@ public class AsyncStorage<K, V> {
 	 * @param key clé de stockage
 	 * @param value valeur à stocker
 	 */
-	public void add(K key, @Nullable V value) {
+	public final void add(K key, @Nullable V value) {
 		synchronized (map) {
 			nbReceived.incrementAndGet();
 			map.put(key, buildDataHolder(value));
@@ -80,7 +97,7 @@ public class AsyncStorage<K, V> {
 	 * @throws InterruptedException en cas d'interruption du thread pendant l'attente
 	 */
 	@NotNull
-	public RetrievalResult<K> get(K key, long timeout, TimeUnit unit) throws InterruptedException {
+	public final RetrievalResult<K> get(K key, long timeout, TimeUnit unit) throws InterruptedException {
 		synchronized (map) {
 			final long tsMaxAttente = System.nanoTime() + unit.toNanos(timeout);
 			while (true) {
@@ -106,14 +123,14 @@ public class AsyncStorage<K, V> {
 	/**
 	 * @return Le nombre d'éléments entrés dans l'espace de stockage
 	 */
-	public int getNbReceived() {
+	public final int getNbReceived() {
 		return nbReceived.intValue();
 	}
 
 	/**
 	 * @return Le nombre d'éléments actuellement présents dans l'espace de stockage
 	 */
-	public int size() {
+	public final int size() {
 		synchronized (map) {
 			return map.size();
 		}

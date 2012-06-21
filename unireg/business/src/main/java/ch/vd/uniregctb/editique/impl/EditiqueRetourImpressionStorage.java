@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -102,11 +101,6 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 	private Date dateDernierePurgeEffective = null;
 
 	/**
-	 * Compteur du nombre de documents d'impression effectivement purgés par la tâche de nettoyage depuis le démarrage du service
-	 */
-	private final AtomicInteger purgedDocuments = new AtomicInteger(0);
-
-	/**
 	 * Constructeur
 	 * @param cleanupPeriodSeconds en secondes, la période de cleanup des documents reçus non réclamés
 	 */
@@ -120,17 +114,10 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 			@Override
 			protected void onPurge(String key, EditiqueResultatRecu value) {
 				LOGGER.warn(String.format("Cleanup du retour d'impression '%s' qui n'intéresse apparemment personne", key));
-				purgedDocuments.incrementAndGet();
 				dateDernierePurgeEffective = new Date();
+				super.onPurge(key, value);
 			}
 		};
-	}
-
-	/**
-	 * @return Le nombre de document purgés (reçus non réclamés depuis trop longtemps)
-	 */
-	public int getNbPurgedDocuments() {
-		return purgedDocuments.intValue();
 	}
 
 	/**
@@ -182,6 +169,10 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 		}
 	}
 
+	/**
+	 * @return une liste des triggers actuellement enregistrés
+	 * @see #delayedTriggers
+	 */
 	public Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres() {
 		synchronized (map) {
 			return new ArrayList<Pair<Long, RetourImpressionTrigger>>(delayedTriggers.values());
