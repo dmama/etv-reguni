@@ -105,11 +105,6 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 			}
 
 			@Override
-			public void setCleanupPeriod(int period) {
-				throw new NotImplementedException();
-			}
-
-			@Override
 			public int getDocumentsPurges() {
 				throw new NotImplementedException();
 			}

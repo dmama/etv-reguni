@@ -52,15 +52,6 @@ public class RetourImpressionJmxBeanImpl implements RetourImpressionJmxBean {
 
 	@Override
 	@ManagedAttribute
-	public void setTimeToLiveOnceReceived(int ttl) {
-		if (ttl < callerTimeout) {
-			throw new IllegalArgumentException("Value should not be lower than the local print timeout");
-		}
-		storageService.setCleanupPeriod(ttl);
-	}
-
-	@Override
-	@ManagedAttribute
 	public int getLocalPrintTimeout() {
 		return callerTimeout;
 	}

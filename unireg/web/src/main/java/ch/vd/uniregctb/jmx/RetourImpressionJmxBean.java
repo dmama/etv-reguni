@@ -15,9 +15,6 @@ public interface RetourImpressionJmxBean {
 	@ManagedAttribute(description = "Time-to-live (seconds) for a received-and-not-dispatched document")
 	int getTimeToLiveOnceReceived();
 
-	@ManagedAttribute(description = "Time-to-live (seconds) for a received-and-not-dispatched document")
-	void setTimeToLiveOnceReceived(int ttl);
-
 	@ManagedAttribute(description = "Requestor timeout for local printing")
 	int getLocalPrintTimeout();
 

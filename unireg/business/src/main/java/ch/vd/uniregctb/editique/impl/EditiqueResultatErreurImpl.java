@@ -5,22 +5,15 @@ import ch.vd.uniregctb.editique.EditiqueResultatErreur;
 public final class EditiqueResultatErreurImpl extends BaseEditiqueResultatImpl implements EditiqueResultatErreur {
 
 	private final String error;
-	private final long timestampReceived;
 
-	public EditiqueResultatErreurImpl(String idDocument, String error, long timestampReceived) {
+	public EditiqueResultatErreurImpl(String idDocument, String error) {
 		super(idDocument);
 		this.error = error;
-		this.timestampReceived = timestampReceived;
 	}
 
 	@Override
 	public String getError() {
 		return error;
-	}
-
-	@Override
-	public long getTimestampReceived() {
-		return timestampReceived;
 	}
 
 	@Override

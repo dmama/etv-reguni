@@ -6,8 +6,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
-import ch.vd.uniregctb.common.ASyncStorage;
-import ch.vd.uniregctb.common.ASyncStorageWithPeriodicCleanup;
+import ch.vd.uniregctb.common.AsyncStorage;
+import ch.vd.uniregctb.common.AsyncStorageWithPeriodicCleanup;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -31,10 +31,10 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 	/**
 	 * Implémentation locale de l'espace de stockage dans lequel les réponses sont emmagasinées
 	 */
-	private static class ResponseStorage extends ASyncStorageWithPeriodicCleanup<String, Object> {
+	private static class ResponseStorage extends AsyncStorageWithPeriodicCleanup<String, Object> {
 
 		private ResponseStorage(int cleanupPeriodSeconds) {
-			super(cleanupPeriodSeconds);
+			super(cleanupPeriodSeconds, "ResponseEFactureCleanup");
 		}
 
 		@Override
@@ -77,13 +77,13 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 
 		final long start = serviceTracing.start();
 		try {
-			final ASyncStorage.RetrievalResult<String, Object> result = storage.retrieve(businessId, timeoutMs, TimeUnit.MILLISECONDS);
-			if (result instanceof ASyncStorage.RetrievalTimeout) {
+			final AsyncStorage.RetrievalResult<String> result = storage.get(businessId, timeoutMs, TimeUnit.MILLISECONDS);
+			if (result instanceof AsyncStorage.RetrievalTimeout) {
 				if (LOGGER.isInfoEnabled()) {
 					LOGGER.info(String.format("Timeout atteint pendant l'attente de la réponse e-facture au message '%s'", businessId));
 				}
 			}
-			return (result instanceof ASyncStorage.RetrievalData);
+			return (result instanceof AsyncStorage.RetrievalData);
 		}
 		catch (InterruptedException e) {
 			// et bien tant pis !
@@ -101,7 +101,7 @@ public class EFactureResponseServiceImpl implements EFactureResponseService, Ini
 			throw new IllegalArgumentException("La valeur de cleanupPeriod doit être strictement positive.");
 		}
 		storage = new ResponseStorage(cleanupPeriod);
-		storage.start("ResponseEFactureCleanup");
+		storage.start();
 	}
 
 	@Override

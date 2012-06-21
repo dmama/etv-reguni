@@ -31,7 +31,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 	public void onTearDown() throws Exception {
 		service.destroy();
 		service = null;
-		
+
 		super.onTearDown();
 	}
 
@@ -50,11 +50,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 	}
 
 	private static EditiqueResultatRecu buildResultat(String idDocument) {
-		return buildResultat(idDocument, TimeHelper.getPreciseCurrentTimeMillis());
-	}
-
-	private static EditiqueResultatRecu buildResultat(String idDocument, long timestampReceived) {
-		return new EditiqueResultatDocumentImpl(idDocument, null, null, null, timestampReceived);
+		return new EditiqueResultatDocumentImpl(idDocument, null, null, null);
 	}
 
 	@Test(timeout = 1200)
@@ -269,15 +265,28 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		final String nomDocument = "Mon document qui ne m'attend plus";
 		final String nomDocumentVoyageurTemporel = "Time traveler";
+
 		{
 			final EditiqueResultatRecu resultat = buildResultat(nomDocument);
 			service.onArriveeRetourImpression(resultat);
-
-			// date de réception : 1.8s dans le futur !
-			// (afin de tester que seuls les vieux documents sont effacés)
-			final EditiqueResultatRecu timeTraveler = buildResultat(nomDocumentVoyageurTemporel, TimeHelper.getPreciseCurrentTimeMillis() + 1800L);
-			service.onArriveeRetourImpression(timeTraveler);
 		}
+
+		// date de réception : 1.8s dans le futur !
+		// (afin de tester que seuls les vieux documents sont effacés)
+		final Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1800L);
+					final EditiqueResultatRecu timeTraveler = buildResultat(nomDocumentVoyageurTemporel);
+					service.onArriveeRetourImpression(timeTraveler);
+				}
+				catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		thread.start();
 
 		// pendant ce temps-là, le cleanup doit relâcher l'un des documents arrivés plus haut
 		Thread.sleep(2050);
@@ -301,6 +310,8 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 			Assert.assertEquals(nomDocumentVoyageurTemporel, resultat.getIdDocument());
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
+
+		thread.join();
 	}
 
 	@Test

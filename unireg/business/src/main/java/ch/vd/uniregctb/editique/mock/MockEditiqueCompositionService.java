@@ -7,7 +7,6 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -31,7 +30,7 @@ public class MockEditiqueCompositionService implements EditiqueCompositionServic
 	}
 
 	private static EditiqueResultat dummyResultat() {
-		return new EditiqueResultatDocumentImpl("DUMMY", MimeTypeHelper.MIME_PLAINTEXT, null, "Ceci est un test".getBytes(), TimeHelper.getPreciseCurrentTimeMillis());
+		return new EditiqueResultatDocumentImpl("DUMMY", MimeTypeHelper.MIME_PLAINTEXT, null, "Ceci est un test".getBytes());
 	}
 
 	@Override

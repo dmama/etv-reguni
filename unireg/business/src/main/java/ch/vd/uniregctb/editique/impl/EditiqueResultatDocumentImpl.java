@@ -7,14 +7,12 @@ public final class EditiqueResultatDocumentImpl extends BaseEditiqueResultatImpl
 	private final String contentType;
 	private final String documentType;
 	private final byte[] content;
-	private final long timestampReceived;
 
-	public EditiqueResultatDocumentImpl(String idDocument, String contentType, String documentType, byte[] content, long timestampReceived) {
+	public EditiqueResultatDocumentImpl(String idDocument, String contentType, String documentType, byte[] content) {
 		super(idDocument);
 		this.contentType = contentType;
 		this.documentType = documentType;
 		this.content = content;
-		this.timestampReceived = timestampReceived;
 	}
 
 	@Override
@@ -33,12 +31,7 @@ public final class EditiqueResultatDocumentImpl extends BaseEditiqueResultatImpl
 	}
 
 	@Override
-	public long getTimestampReceived() {
-		return timestampReceived;
-	}
-
-	@Override
 	public String getToStringComplement() {
-		return String.format("contentType='%s', documentType='%s', timestampReceived=%d", contentType, documentType, timestampReceived);
+		return String.format("contentType='%s', documentType='%s'", contentType, documentType);
 	}
 }

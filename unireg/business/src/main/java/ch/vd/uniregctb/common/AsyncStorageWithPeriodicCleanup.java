@@ -7,10 +7,12 @@ import java.util.TimerTask;
 
 import org.jetbrains.annotations.Nullable;
 
-public class ASyncStorageWithPeriodicCleanup<K, V> extends ASyncStorage<K, V> {
+public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 
 	private Timer cleanupTimer;
-	private int cleanupPeriod;
+
+	private final int cleanupPeriod;
+	private final String cleanupThreadName;
 
 	public class CleanupTask extends TimerTask {
 
@@ -44,15 +46,16 @@ public class ASyncStorageWithPeriodicCleanup<K, V> extends ASyncStorage<K, V> {
 		}
 	}
 
-	public ASyncStorageWithPeriodicCleanup(int cleanupPeriodSeconds) {
+	public AsyncStorageWithPeriodicCleanup(int cleanupPeriodSeconds, String cleanupThreadName) {
 		this.cleanupPeriod = cleanupPeriodSeconds;
+		this.cleanupThreadName = cleanupThreadName;
 	}
 
 	protected static class CleanupDataHolder<V> extends DataHolder<V> {
 		final public long ts;
 		public CleanupDataHolder(@Nullable V data) {
 			super(data);
-			ts = TimeHelper.getPreciseCurrentTimeMillis();
+			this.ts = TimeHelper.getPreciseCurrentTimeMillis();
 		}
 	}
 
@@ -66,16 +69,15 @@ public class ASyncStorageWithPeriodicCleanup<K, V> extends ASyncStorage<K, V> {
 	}
 
 	/**
-	 * Démarre le thread de cleanup
-	 * @param threadName le nom du thread du timer utilisé
+	 * Démarre les threads annexes (cleanup)
 	 */
-	public void start(String threadName) {
-		cleanupTimer = new Timer(threadName);
+	public void start() {
+		cleanupTimer = new Timer(cleanupThreadName);
 		cleanupTimer.schedule(buildCleanupTask(), cleanupPeriod * 1000L, cleanupPeriod * 1000L);
 	}
 
 	/**
-	 * Arrête le thread de cleanup
+	 * Arrête les threads annexes (cleanup)
 	 */
 	public void stop() throws Exception {
 		cleanupTimer.cancel();

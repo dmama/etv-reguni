@@ -9,7 +9,6 @@ import org.junit.Test;
 
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.common.StreamUtils;
-import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -36,7 +35,7 @@ public class RetourImpressionToInboxTriggerTest extends WithoutSpringTest {
 	private static final String CONTENT = "Et oui c'est elle !";
 
 	private static EditiqueResultatRecu buildResultat(String nomDocument) {
-		return new EditiqueResultatDocumentImpl(nomDocument, MimeTypeHelper.MIME_PLAINTEXT, null, CONTENT.getBytes(), TimeHelper.getPreciseCurrentTimeMillis());
+		return new EditiqueResultatDocumentImpl(nomDocument, MimeTypeHelper.MIME_PLAINTEXT, null, CONTENT.getBytes());
 	}
 
 	@Test

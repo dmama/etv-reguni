@@ -50,13 +50,6 @@ public interface EditiqueRetourImpressionStorageService {
 	int getCleanupPeriod();
 
 	/**
-	 * Période du timer du cleanup (secondes) : à chaque tick, on va enlever de la map des impressions
-	 * reçues les données qui étaient déjà là au tick précédent
-	 * @param period la valeur, en secondes, de la nouvelle période de purge (doit être strictement positif)
-	 */
-	void setCleanupPeriod(int period);
-
-	/**
 	 * @return le nombre de documents purgés (= que personne n'a réclamé dans la période de cleanup) depuis le démarrage du service
 	 */
 	int getDocumentsPurges();

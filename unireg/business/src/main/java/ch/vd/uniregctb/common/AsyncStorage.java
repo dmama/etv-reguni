@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Classe de stockage avec accès multithread
  */
-public class ASyncStorage<K, V> {
+public class AsyncStorage<K, V> {
 
 	private final AtomicInteger nbReceived = new AtomicInteger(0);
 
@@ -27,20 +27,20 @@ public class ASyncStorage<K, V> {
 		}
 	}
 
-	public static abstract class RetrievalResult<K, V> {
+	public static abstract class RetrievalResult<K> {
 		public final K key;
     	public RetrievalResult(K key) {
 			this.key = key;
 		}
 	}
 
-	public static final class RetrievalTimeout<K, V> extends RetrievalResult<K, V> {
+	public static final class RetrievalTimeout<K> extends RetrievalResult<K> {
 		public RetrievalTimeout(K key) {
 			super(key);
 		}
 	}
 
-	public static final class RetrievalData<K, V> extends RetrievalResult<K, V> {
+	public static final class RetrievalData<K, V> extends RetrievalResult<K> {
 		public final V data;
 		public RetrievalData(K key, V data) {
 			super(key);
@@ -80,7 +80,7 @@ public class ASyncStorage<K, V> {
 	 * @throws InterruptedException en cas d'interruption du thread pendant l'attente
 	 */
 	@NotNull
-	public RetrievalResult<K, V> retrieve(K key, long timeout, TimeUnit unit) throws InterruptedException {
+	public RetrievalResult<K> get(K key, long timeout, TimeUnit unit) throws InterruptedException {
 		synchronized (map) {
 			final long tsMaxAttente = System.nanoTime() + unit.toNanos(timeout);
 			while (true) {
@@ -93,7 +93,7 @@ public class ASyncStorage<K, V> {
 				final long tempsRestant = tsMaxAttente - System.nanoTime();
 				if (tempsRestant <= 0) {
 					// fini -> le timeout a sonné !
-					return new RetrievalTimeout<K, V>(key);
+					return new RetrievalTimeout<K>(key);
 				}
 
 				final long millis = TimeUnit.NANOSECONDS.toMillis(tempsRestant);
@@ -103,7 +103,19 @@ public class ASyncStorage<K, V> {
 		}
 	}
 
+	/**
+	 * @return Le nombre d'éléments entrés dans l'espace de stockage
+	 */
 	public int getNbReceived() {
 		return nbReceived.intValue();
+	}
+
+	/**
+	 * @return Le nombre d'éléments actuellement présents dans l'espace de stockage
+	 */
+	public int size() {
+		synchronized (map) {
+			return map.size();
+		}
 	}
 }

@@ -5,17 +5,18 @@ import java.util.concurrent.TimeUnit;
 import junit.framework.Assert;
 import org.junit.Test;
 
-public class ASyncStorageWithPeriodicCleanupTest extends ASyncStorageTest<ASyncStorageWithPeriodicCleanup<String, String>> {
+public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPeriodicCleanup<String, String>> extends AsyncStorageTest<S> {
 
 	@Override
-	protected ASyncStorageWithPeriodicCleanup<String, String> buildStorage() {
-		return new ASyncStorageWithPeriodicCleanup<String, String>(1);   // 1 seconde
+	protected S buildStorage() {
+		//noinspection unchecked
+		return (S) new AsyncStorageWithPeriodicCleanup<String, String>(1, "CleanupThread");   // 1 seconde
 	}
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		service.start("CleanupThread");
+		service.start();
 	}
 
 	@Override
@@ -55,9 +56,9 @@ public class ASyncStorageWithPeriodicCleanupTest extends ASyncStorageTest<ASyncS
 		// le vieux document ne doit plus y être
 		{
 			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
-			final ASyncStorage.RetrievalResult<String, String> resultat = service.retrieve(key, 300, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> resultat = service.get(key, 300, TimeUnit.MILLISECONDS);
 			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
-			Assert.assertTrue(resultat instanceof ASyncStorage.RetrievalTimeout);
+			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalTimeout);
 			Assert.assertEquals(key, resultat.key);
 			Assert.assertTrue(tsFin - tsDebut >= 300);
 		}
@@ -65,9 +66,9 @@ public class ASyncStorageWithPeriodicCleanupTest extends ASyncStorageTest<ASyncS
 		// mais le nouveau, toujours
 		{
 			final long tsDebut = TimeHelper.getPreciseCurrentTimeMillis();
-			final ASyncStorage.RetrievalResult<String, String> resultat = service.retrieve(keyLate, 300, TimeUnit.MILLISECONDS);
+			final AsyncStorage.RetrievalResult<String> resultat = service.get(keyLate, 300, TimeUnit.MILLISECONDS);
 			final long tsFin = TimeHelper.getPreciseCurrentTimeMillis();
-			Assert.assertTrue(resultat instanceof ASyncStorage.RetrievalData);
+			Assert.assertTrue(resultat instanceof AsyncStorage.RetrievalData);
 			Assert.assertEquals(keyLate, resultat.key);
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}

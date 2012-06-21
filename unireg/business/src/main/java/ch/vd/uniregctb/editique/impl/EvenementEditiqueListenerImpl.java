@@ -12,7 +12,6 @@ import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
@@ -70,11 +69,10 @@ public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener im
 	private EditiqueResultatRecu createResultfromMessage(EsbMessage message) throws IOException {
 
 		final EditiqueResultatRecu resultat;
-		final long timestampReceived = TimeHelper.getPreciseCurrentTimeMillis();
 		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
 		final String error = message.getHeader(TypeMessagePropertiesNames.ERROR_MESSAGE_PROPERTY_NAME.toString());
 		if (StringUtils.isNotBlank(error)) {
-			resultat = new EditiqueResultatErreurImpl(idDocument, error, timestampReceived);
+			resultat = new EditiqueResultatErreurImpl(idDocument, error);
 		}
 		else {
 			final byte[] buffer = message.getAttachmentAsByteArray(DEFAULT_ATTACHEMENT_NAME);
@@ -82,7 +80,7 @@ public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener im
 			final String returnFormat = message.getHeader(TypeMessagePropertiesNames.RETURN_FORMAT_MESSAGE_PROPERTY_NAME.toString());
 			final String mimeType = mimeTypes.get(returnFormat);
 
-			resultat = new EditiqueResultatDocumentImpl(idDocument, mimeType, documentType, buffer, timestampReceived);
+			resultat = new EditiqueResultatDocumentImpl(idDocument, mimeType, documentType, buffer);
 		}
 
 		if (LOGGER.isTraceEnabled()) {
