@@ -24,17 +24,6 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
-
 	<!-- Service infra -->
 
 	<bean id="serviceInfraRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
@@ -48,29 +37,6 @@
 	<bean id="serviceInfrastructureTracing" class="ch.vd.unireg.interfaces.infra.ServiceInfrastructureTracing">
 		<property name="target" ref="serviceInfraRemote" />
 		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
-		<property name="target" ref="serviceInfrastructureTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceInfra" />
-		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
-
-	<!-- Bean remoteJndiConnection for Host-Interfaces EJBs -->
-	<bean id="ejbJndiTemplate" class="ch.vd.uniregctb.utils.UniregJndiTemplate">
-		<property name="environment">
-			<map>
-				<entry key="java.naming.factory.initial" value="${host-interfaces.factory}" />
-				<entry key="java.naming.provider.url" value="${extprop.host-interfaces.url}"/>
-				<entry key="java.naming.security.principal" value="${extprop.host-interfaces.username}" />
-				<entry key="java.naming.security.credentials" value="${extprop.host-interfaces.password}" />
-			</map>
-		</property>
 	</bean>
 
 	<!-- Gestion de la cohérence des données du cache centralisé -->

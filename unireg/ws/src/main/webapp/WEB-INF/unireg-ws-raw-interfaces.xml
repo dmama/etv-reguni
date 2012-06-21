@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Ce fichier définit les beans des services d'interface 'raw'; c'est-à-dire les services internes à Unireg qui offrent des interfaces minimales.
+	Ces services 'raw' sont utilisés par les services standards qui - eux - offrent des interfaces plus complètes. -->
+
+	<import resource="interfaces-${interfaces-mode}.xml"/>
+
+	<!-- Service civil -->
+
+	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
+		<property name="target" ref="serviceCivilServiceTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceCivil" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+		<property name="dataEventService" ref="dataEventService" />
+	</bean>
+
+	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
+
+	<!-- Service infra -->
+
+	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
+		<property name="target" ref="serviceInfrastructureTracing" />
+		<property name="cacheManager" ref="ehCacheManager" />
+		<property name="cacheName" value="serviceInfra" />
+		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
+		<property name="uniregCacheManager" ref="uniregCacheManager" />
+		<property name="statsService" ref="statsService" />
+	</bean>
+
+	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
+
+</beans>

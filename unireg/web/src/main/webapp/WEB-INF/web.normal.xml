@@ -20,7 +20,6 @@
 			classpath*:/unireg-business-evtcivil.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
 			classpath*:/unireg-business-jobs4webit.xml,
-			/WEB-INF/interfaces-${interfaces-mode}.xml,
 			/WEB-INF/unireg-web-*.xml
 		</param-value>
 		<!-- Pour permettre une analyse des perfs, -->

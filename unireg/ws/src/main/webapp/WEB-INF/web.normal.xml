@@ -16,7 +16,6 @@
 			classpath*:/unireg-business-essentials.xml;
 			classpath*:/unireg-business-interfaces.xml,
 			classpath*:/unireg-business-evtfiscal.xml,
-			/WEB-INF/interfaces-${interfaces-mode}.xml,
 			/WEB-INF/unireg-ws-*.xml
 		</param-value>
 	</context-param>

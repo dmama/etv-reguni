@@ -51,17 +51,6 @@
 		<property name="statsService" ref="statsService" />
 	</bean>
 
-	<bean id="serviceCivilServiceCache" class="ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache">
-		<property name="target" ref="serviceCivilServiceTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceCivil" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-		<property name="dataEventService" ref="dataEventService" />
-	</bean>
-
-	<alias alias="serviceCivilRaw" name="serviceCivilServiceCache"/>
-
 	<!-- Client fidor -->
 
 	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
@@ -91,17 +80,6 @@
 		<property name="target" ref="serviceInfrastructureMarshaller" />
 		<property name="statsService" ref="statsService" />
 	</bean>
-
-	<bean id="serviceInfrastructureCache" class="ch.vd.unireg.interfaces.infra.cache.ServiceInfrastructureCache">
-		<property name="target" ref="serviceInfrastructureTracing" />
-		<property name="cacheManager" ref="ehCacheManager" />
-		<property name="cacheName" value="serviceInfra" />
-		<property name="shortLivedCacheName" value="serviceInfraShortLived" />
-		<property name="uniregCacheManager" ref="uniregCacheManager" />
-		<property name="statsService" ref="statsService" />
-	</bean>
-
-	<alias alias="serviceInfrastructureRaw" name="serviceInfrastructureCache"/>
 
 
 	<!-- Bean client serviceInfrastructure -->

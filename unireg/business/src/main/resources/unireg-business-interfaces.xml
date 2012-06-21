@@ -2,6 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<!-- Ce fichier définit les beans des services d'interface 'standards'; c'est-à-dire les services internes à Unireg qui offrent
+	les interfaces les plus complètes disponibles (par rapport aux services 'raw' qui offrent des interfaces minimales). -->
+
 	<!-- Service Infrastructure -->
 	
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">

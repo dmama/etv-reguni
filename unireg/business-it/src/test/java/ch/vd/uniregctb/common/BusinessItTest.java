@@ -5,16 +5,14 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.test.context.ContextConfiguration;
 
-import ch.vd.unireg.common.InterfacesTestingConstants;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 @ContextConfiguration(locations = {
-		InterfacesTestingConstants.UNIREG_INTERFACES_CIVIL,
-		InterfacesTestingConstants.UNIREG_INTERFACES_INFRA,
-		BusinessTestingConstants.UNIREG_BUSINESS_INTERFACES,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
+		BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_CACHE,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_DATABASE,
-		BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
 		BusinessItTestingConstants.UNIREG_BUSINESSIT_CLIENT_WEBSERVICE
 })
 public abstract class BusinessItTest extends AbstractBusinessTest {

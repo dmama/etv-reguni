@@ -24,7 +24,6 @@ import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.common.InterfacesTestingConstants;
 import ch.vd.uniregctb.database.DatabaseService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
@@ -84,19 +83,19 @@ public abstract class BusinessItTestApplication {
 				CoreTestingConstants.UNIREG_CORE_SF,
 				CoreTestingConstants.UNIREG_CORE_UT_DATASOURCE,
 				CoreTestingConstants.UNIREG_CORE_UT_PROPERTIES,
-				InterfacesTestingConstants.UNIREG_INTERFACES_CIVIL,
-				InterfacesTestingConstants.UNIREG_INTERFACES_INFRA,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CACHE,
-				BusinessTestingConstants.UNIREG_BUSINESS_INTERFACES,
+				BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
 				BusinessTestingConstants.UNIREG_BUSINESS_ESSENTIALS,
 				BusinessTestingConstants.UNIREG_BUSINESS_SERVICES,
 				BusinessTestingConstants.UNIREG_BUSINESS_EVT_CIVIL,
 				BusinessTestingConstants.UNIREG_BUSINESS_EVT_FISCAL,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_SERVICES,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE,
-				BusinessTestingConstants.UNIREG_BUSINESS_UT_INTERFACES,
 				BusinessTestingConstants.UNIREG_BUSINESS_UT_EDITIQUE,
-				BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS
+				BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_INTERFACES,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_RAW_INTERFACES,
+				BusinessItTestingConstants.UNIREG_BUSINESSIT_EXT_INTERFACES
 		};
 
 		context = new ClassPathXmlApplicationContext(files);
@@ -158,7 +157,7 @@ public abstract class BusinessItTestApplication {
 	}
 
 	/**
-	 * Charge un fichier Dbunit dans la database préalablement vidée, le fichier doit être du format {@link #getProducerType()}.
+	 * Charge un fichier Dbunit dans la database préalablement vidée, le fichier doit être au format DBUnit.
 	 *
 	 * @param file
 	 *            le fichier à utiliser
