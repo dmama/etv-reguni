@@ -24,6 +24,8 @@ public interface EFactureService {
 	 * @param ctbId     le numéro de contribuable traité
 	 * @param typeDocument permet de determiner le type de document à envoyer au contribuable
 	 * @param dateDemande date à laquel le contribuable a fait sa demande d'inscription
+	 *
+	 * @return l'archivage id
 	 */
 	String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException;
 
@@ -37,7 +39,8 @@ public interface EFactureService {
 	DemandeValidationInscriptionDejaSoumise getDemandeInscritpionEnCoursDeTraitement(long ctbId);
 
 	/**
-	 * Identifie le contribuable avec son numero de contribualble et son numero AVS
+	 * Identifie le contribuable avec son numero de contribuable
+	 * et son numero AVS lors de la procédure d'inscription à la e-Facture
 	 *
 	 * @param ctbId le numero du contribualble a identifier
 	 * @param noAvs le numero AVS du contribuable a identifier
@@ -45,5 +48,23 @@ public interface EFactureService {
 	 * @return null si l'identification est ok (le numero de contribuable existe et le numero AVS match) sinon renvoie le type de refus pour e-facture
 	 */
 	@Nullable
-	TypeRefusEFacture identifieContribuable(long ctbId, String noAvs);
+	TypeRefusEFacture identifieContribuablePourInscription(long ctbId, String noAvs);
+
+	/**
+	 * Met à jour l'adresse e-mail du contribuable
+	 *
+	 * @param ctbId l'id du contribuable
+	 * @param email l'adresse e-mail
+	 */
+	void updateEmailContribuable(long ctbId, String email);
+
+	/**
+	 * Valide l'état du contribuable lors de la procédure d'inscription à la e-Facture
+	 *
+	 * @param ctbId l'id du contribuale a valider
+	 *
+	 * @return true si l'état est cohérent
+	 */
+	boolean valideEtatContribuablePourInscription(long ctbId);
+
 }

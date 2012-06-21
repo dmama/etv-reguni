@@ -29,13 +29,6 @@ public interface EFactureMessageSender {
 	void envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
-	 * Envoie un message à la e-facture qui annonce la reception d'une demande d'inscription
-	 * @param idDemande identifiant de la demande d'inscription acceptée
-	 * @throws EvenementEfactureException en cas de problème
-	 */
-	void envoieReceptionDemandeInscription(String idDemande) throws EvenementEfactureException;
-
-	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription
 	 * @param idDemande identifiant de la demande d'inscription acceptée
 	 * @throws EvenementEfactureException en cas de problème

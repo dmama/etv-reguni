@@ -5,6 +5,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
@@ -29,7 +30,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 				LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
 			}
 			else {
-				// TODO e-facture à faire
 				final DemandeValidationInscription inscription = (DemandeValidationInscription) event;
 				LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(inscription.getCtbId()), FormatNumeroHelper.formatNumAVS(inscription.getNoAvs()), RegDateHelper.dateToDisplayString(inscription.getDateDemande())));
 				try {
@@ -39,38 +39,32 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 						return;
 					}
 
-					// 3.1.3. Vérifier demandes en cours
+					// Vérification de la demandes en cours
 					if (eFactureService.getDemandeInscritpionEnCoursDeTraitement(inscription.getCtbId()) != null) {
 						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
 						return;
 					}
 
-					// 3.1.4. Identifier le contribuable
-					typeRefus = eFactureService.identifieContribuable(inscription.getCtbId(), inscription.getNoAvs());
+					// identifie le contribuable (no avs et no ctb doivent matché, le ctb doit avoir une adresse courrier)
+					typeRefus = eFactureService.identifieContribuablePourInscription(inscription.getCtbId(), inscription.getNoAvs());
 					if (typeRefus != null) {
-						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
+						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus);
 						return;
 					}
-					sender.envoieReceptionDemandeInscription(inscription.getIdDemande());
 
-					// 3.1.5. Stocker l’adresse de courrier électronique de la demande
+					//Stocke l’adresse de courrier électronique de la demande
+					eFactureService.updateEmailContribuable(inscription.getCtbId(), inscription.getEmail());
 
+					// valide l'etat du contribuable et envoye le courrier adéquat
+					if (eFactureService.valideEtatContribuablePourInscription(inscription.getCtbId())) {
+						String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, inscription.getDateDemande());
+						sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteEFacture.EN_ATTENTE_SIGNATURE, archivageId, false);
+					} else {
+						String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, inscription.getDateDemande());
+						sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteEFacture.EN_ATTENTE_CONTACT, archivageId, false);
+					}
 
-					// 3.1.6. Vérifier l’existence d’une adresse courrier
-
-					// 3.1.7. Vérifier l’historique e-facture
-
-					// 3.1.8. Vérifier de l’état du contribuable
-
-					// 3.1.9. Envoi des courriers
-
-					// 3.1.10. L’historique des états
-					   // ---> TODO Rien, si j'ai bien compris, l'historisation des états est géré par l'e-Facture
-
-					// 3.1.11. Archiver les documents de correspondance
-						// ---> On renvoie la clé d'archivage a e-facture qui la stocke
-
-				} catch (EvenementEfactureException e) {
+				} catch (Exception e) {
 					LOGGER.error(e.getMessage(), e);
 				}
 			}
