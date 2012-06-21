@@ -45,6 +45,10 @@
 			<td><fmt:message key="label.complement.email" />&nbsp;:</td>
 			<td><c:out value="${command.complement.adresseCourrierElectronique}"/></td>
 		</tr>
+		<tr class="<unireg:nextRowClass/>" >
+			<td><fmt:message key="label.complement.emailEFacture" />&nbsp;:</td>
+			<td><c:out value="${command.complement.adresseCourrierElectroniqueEFacture}"/></td>
+		</tr>
 	</table>
 </fieldset>
 <fieldset>

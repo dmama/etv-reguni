@@ -32,6 +32,8 @@ public class ComplementView {
 	private String numeroTelecopie;
 	private String adresseCourrierElectronique;
 
+    private String adresseCourrierElectroniqueEFacture;
+
 	private CompteBancaireView compteBancaire = new CompteBancaireView();
 	private List<CompteBancaireView> autresComptesBancaires = new ArrayList<CompteBancaireView>();
 
@@ -107,6 +109,7 @@ public class ComplementView {
 			this.numeroTelephonePrive = tiers.getNumeroTelephonePrive();
 			this.numeroTelephoneProfessionnel = tiers.getNumeroTelephoneProfessionnel();
 			this.adresseCourrierElectronique = tiers.getAdresseCourrierElectronique();
+			this.adresseCourrierElectroniqueEFacture = tiers.getAdresseCourrierElectroniqueEFacture();
 
 			// compte bancaire
 			final String iban = tiers.getNumeroCompteBancaire();
@@ -202,6 +205,14 @@ public class ComplementView {
 
 	public void setAdresseCourrierElectronique(String adresseCourrierElectronique) {
 		this.adresseCourrierElectronique = adresseCourrierElectronique;
+	}
+
+	public String getAdresseCourrierElectroniqueEFacture() {
+		return adresseCourrierElectroniqueEFacture;
+	}
+
+	public void setAdresseCourrierElectroniqueEFacture(String adresseCourrierElectroniqueEFacture) {
+		this.adresseCourrierElectroniqueEFacture = adresseCourrierElectroniqueEFacture;
 	}
 
 	/**

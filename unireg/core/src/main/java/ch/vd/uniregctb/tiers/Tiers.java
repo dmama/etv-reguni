@@ -1,6 +1,39 @@
 package ch.vd.uniregctb.tiers;
 
-import ch.vd.registre.base.date.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
+
+import org.apache.log4j.Logger;
+import org.hibernate.annotations.ForeignKey;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BusinessComparable;
@@ -12,14 +45,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import org.apache.log4j.Logger;
-import org.hibernate.annotations.ForeignKey;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
-import org.jetbrains.annotations.Nullable;
-
-import javax.persistence.*;
-import java.util.*;
 
 /**
  * Personne avec laquelle l'ACI entretien une relation, de nature fiscale ou autre. Cette
@@ -79,6 +104,11 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 *
 	 */
 	private Integer officeImpotId;
+
+	/**
+	 * Adresse de courrier éléctronique exclusive à l'e-facture
+	 */
+	private String adresseCourrierElectroniqueEFacture;
 
 	private Set<RapportEntreTiers> rapportsObjet;
 	private Set<RapportEntreTiers> rapportsSujet;
@@ -204,6 +234,15 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	public void setTitulaireCompteBancaire(String theTitulaireCompteBancaire) {
 		titulaireCompteBancaire = theTitulaireCompteBancaire;
+	}
+
+	@Column(name = "ADRESSE_EMAIL_EFACTURE", length = LengthConstants.TIERS_EMAIL)
+	public String getAdresseCourrierElectroniqueEFacture() {
+		return adresseCourrierElectroniqueEFacture;
+	}
+
+	public void setAdresseCourrierElectroniqueEFacture(String adresseCourrierElectroniqueEFacture) {
+		this.adresseCourrierElectroniqueEFacture = adresseCourrierElectroniqueEFacture;
 	}
 
 	@Transient
