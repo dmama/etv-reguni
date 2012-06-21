@@ -4,8 +4,6 @@ import junit.framework.Assert;
 import org.apache.commons.lang.mutable.MutableObject;
 import org.junit.Test;
 
-import ch.vd.registre.base.utils.NotImplementedException;
-import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -13,60 +11,11 @@ import ch.vd.uniregctb.editique.EditiqueResultatDocument;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueResultatTimeout;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
-import ch.vd.uniregctb.stats.LoadMonitor;
-import ch.vd.uniregctb.stats.ServiceStats;
-import ch.vd.uniregctb.stats.ServiceTracingInterface;
-import ch.vd.uniregctb.stats.StatsService;
+import ch.vd.uniregctb.stats.MockStatsService;
 
 public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTest {
 
 	private EditiqueRetourImpressionStorageServiceImpl service;
-
-	/**
-	 * Dummy class pour ne pas avoir besoin de tout spring pour juste du log...
-	 */
-	private static class DummyStatsService implements StatsService {
-
-		@Override
-		public void registerService(String serviceName, ServiceTracingInterface tracing) {
-			// celle-ci est censée être appelée dans le onSetup()
-		}
-
-		@Override
-		public void registerCache(String serviceName, UniregCacheInterface cache) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public void registerLoadMonitor(String serviceName, LoadMonitor monitor) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public void unregisterService(String serviceName) {
-			// celle-ci est censée être appelée dans le onTearDown()
-		}
-
-		@Override
-		public void unregisterCache(String serviceName) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public void unregisterLoadMonitor(String serviceName) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public ServiceStats getServiceStats(String serviceName) {
-			throw new NotImplementedException();
-		}
-
-		@Override
-		public String buildStats() {
-			throw new NotImplementedException();
-		}
-	}
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -74,7 +23,7 @@ public class EditiqueRetourImpressionStorageServiceTest extends WithoutSpringTes
 
 		service = new EditiqueRetourImpressionStorageServiceImpl();
 		service.setCleanupPeriod(1);    // 1 seconde
-		service.setStatsService(new DummyStatsService());
+		service.setStatsService(new MockStatsService());
 		service.afterPropertiesSet();
 	}
 

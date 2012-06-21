@@ -24,4 +24,9 @@
 
 	<alias alias="eFactureClient" name="eFactureClientTracing"/>
 
+	<bean id="eFactureResponseService" class="ch.vd.uniregctb.efacture.EFactureResponseServiceImpl">
+		<property name="cleanupPeriod" value="60"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
 </beans>

@@ -30,4 +30,23 @@
 		<property name="serviceReplyTo" value="${extprop.jms.queue.evtEfacture.input.reponse}" />
 	</bean>
 
+	<bean id="evenementEfactureResponseEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.evtEfacture.input.reponse}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="eFactureResponseListener" />
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
+	</bean>
+
+	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.efacture.EFactureResponseListener">
+		<property name="responseService" ref="eFactureResponseService"/>
+	</bean>
+
 </beans>
