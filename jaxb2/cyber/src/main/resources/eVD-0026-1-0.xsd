@@ -25,14 +25,14 @@
             </xs:documentation>
         </xs:annotation>
         <xs:sequence>
-            <xs:element name="reference" type="eVD-0026:referenceType">
+            <xs:element name="referenceId" type="eVD-0026:invoiceIdType">
                 <xs:annotation>
-                    <xs:documentation>Référence de la facture</xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="printDate" type="xs:date">
-                <xs:annotation>
-                    <xs:documentation>Date de présentation de la facture</xs:documentation>
+                    <xs:documentation>
+                        Numéro de la facture, utilisé comme identifiant métier par l'application cyberfact.
+                        La clé d'identification est formée de la combinaison de ce numéro de de l'identifiant de
+                        l'émetteur.
+                        L'application émettrice de facture est responsable de fournir un identifiant unique ici.
+                    </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="creationDate" type="xs:date">
@@ -42,7 +42,10 @@
             </xs:element>
             <xs:element name="title" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation>Titre de la facture</xs:documentation>
+                    <xs:documentation>
+                        Titre descriptif de la facture, n'apparaît pas dans le portail e-banking du destinataire.
+                        Facultatif, information à usage interne uniquement.
+                    </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
                     <xs:restriction base="xs:string">
@@ -134,8 +137,10 @@
             </xs:element>
             <xs:element name="fixAmount">
                 <xs:annotation>
-                    <xs:documentation>[Yes;No] case-sensitive. Indication whether amount is changeable upon payment
-                        (default:"Yes")
+                    <xs:documentation>
+                        Indique si le montant à payer peut être modifié par le destinataire.
+                        Yes = le montant à payer est fixe
+                        No  = le montant à payer est modifiable par le destinataire au moment d'effectuer le paiement
                     </xs:documentation>
                 </xs:annotation>
                 <xs:simpleType>
@@ -154,29 +159,6 @@
                         <xs:element name="instalment" type="eVD-0026:instalmentType" maxOccurs="12"/>
                     </xs:sequence>
                 </xs:complexType>
-            </xs:element>
-        </xs:sequence>
-    </xs:complexType>
-
-    <xs:complexType name="referenceType">
-        <xs:annotation>
-            <xs:documentation>Référence de la facture</xs:documentation>
-        </xs:annotation>
-        <xs:sequence>
-            <xs:element name="referenceId" type="eVD-0026:invoiceIdType">
-                <xs:annotation>
-                    <xs:documentation>
-                        Numéro de la facture, utilisé comme identifiant métier par l'application cyberfact.
-                        La clé d'identification est formée de la combinaison de ce numéro de de l'identifiant de
-                        l'émetteur.
-                        L'application émettrice de facture est responsable de fournir un identifiant unique ici.
-                    </xs:documentation>
-                </xs:annotation>
-            </xs:element>
-            <xs:element name="date" type="xs:date">
-                <xs:annotation>
-                    <xs:documentation>Date comptable de la facture</xs:documentation>
-                </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>

@@ -95,7 +95,7 @@
             <xs:element name="status" type="eVD-0025:payerStatusType"/>
             <xs:element name="providerId" type="eVD-0025:providerIdType" minOccurs="0"/>
             <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType" minOccurs="0"/>
-            <xs:element name="modeInscription" type="eVD-0025:registrationModeType" minOccurs="0"/>
+            <xs:element name="registrationMode" type="eVD-0025:registrationModeType" minOccurs="0"/>
             <xs:element name="emailAddress" type="eCH-0046:emailAddressType" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
@@ -112,6 +112,12 @@
                 <xs:sequence>
                     <xs:element name="historyOfSituations">
                         <xs:complexType>
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Cette liste est ordonnée chronologiquement, l'élément le plus récent vient en
+                                    dernier.
+                                </xs:documentation>
+                            </xs:annotation>
                             <xs:sequence>
                                 <xs:element name="situation" type="eVD-0025:payerSituationHistoryEntryType"
                                             minOccurs="0" maxOccurs="unbounded"/>
@@ -124,6 +130,7 @@
                                 <xs:documentation>
                                     Historique des demandes effectuées par ce destinataire.
                                     Chaque demande contient en outre l'historique des états de la demande.
+                                    Liste ordonnée chronologiquement, la demande la plus récente figure en dernier.
                                 </xs:documentation>
                             </xs:annotation>
                             <xs:sequence>
@@ -339,6 +346,11 @@
     <xs:complexType name="registrationRequestWithHistoryType">
         <xs:complexContent>
             <xs:extension base="eVD-0025:registrationRequestType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Cette liste est ordonnée chronologiquement, l'élément le plus récent vient en dernier.
+                    </xs:documentation>
+                </xs:annotation>
                 <xs:sequence>
                     <xs:element name="registrationRequestHistoryEntry"
                                 type="eVD-0025:registrationRequestHistoryEntryType" minOccurs="0"
@@ -352,9 +364,9 @@
         <xs:sequence>
             <xs:element name="date" type="xs:dateTime"/>
             <xs:element name="status" type="eVD-0025:registrationRequestStatusType"/>
-            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType"/>
-            <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType"/>
-            <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType"/>
+            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+            <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+            <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -572,7 +584,7 @@
         <xs:annotation>
             <xs:documentation>
                 Message envoyé au référentiel de validation des inscriptions (pour la fiscalité : Unireg)
-                pour initier la validation de la demande d'inscription recue du destinataire  (contribuable).
+                pour initier la validation de la demande d'inscription recue du destinataire (contribuable).
             </xs:documentation>
         </xs:annotation>
         <xs:complexType>
@@ -580,8 +592,10 @@
                 <xs:element name="registrationRequest" type="eVD-0025:registrationRequestType">
                     <xs:annotation>
                         <xs:documentation>
-                            Format du message de demande de validation d'inscription envoyé par l'application Cyberfact à Unireg.
-                            Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour l'ACI.
+                            Format du message de demande de validation d'inscription envoyé par l'application Cyberfact
+                            à Unireg.
+                            Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour
+                            l'ACI.
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
