@@ -3,6 +3,7 @@ package ch.vd.unireg.wsclient.efacture;
 import org.apache.cxf.jaxrs.client.WebClient;
 import org.apache.cxf.transport.http.HTTPConduit;
 
+import ch.vd.evd0025.v1.PayerSearchResult;
 import ch.vd.evd0025.v1.PayerWithHistory;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -34,7 +35,8 @@ public class EFactureClientImpl implements EFactureClient {
 		final WebClient wc = createWebClient(60000); // 1 minute
 		wc.path(historyPath);
 		wc.path(String.valueOf(ctbId));
-		return wc.get(PayerWithHistory.class);
+		PayerSearchResult payerSearchResult =  wc.get(PayerSearchResult.class);
+		return payerSearchResult.getPayerWithHistory();
 	}
 
 	private WebClient createWebClient(int receiveTimeout) {
