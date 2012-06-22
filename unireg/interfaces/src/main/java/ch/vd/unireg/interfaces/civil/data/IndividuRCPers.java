@@ -15,6 +15,7 @@ import java.util.Set;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.HistoryContact;
@@ -87,7 +88,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		final PersonIdentification identification = identity.getPersonIdentification();
 		final UpiPerson upiPerson = person.getUpiPerson();
 
-		this.prenom = identity.getCallName();
+		this.prenom = initPrenom(identity.getCallName(), identification.getFirstNames());
 		this.autresPrenoms = identification.getFirstNames();
 		this.nom = identification.getOfficialName();
 		this.nomNaissance = identity.getOriginalName();
@@ -239,6 +240,26 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 		return numeroRCE;
+	}
+
+	/**
+	 * [SIFISC-5365] Le prénom doit être issu du prénom usuel civil, sauf s'il n'y en a pas, auquel cas on doit prendre
+	 * le premier prénom de la liste des prénoms fournis
+	 * @param callName prénom usuel
+	 * @param firstNames tous les prénoms
+	 * @return le prénom à utiliser
+	 */
+	protected static String initPrenom(@Nullable String callName, String firstNames) {
+		if (StringUtils.isNotBlank(callName)) {
+			return callName;
+		}
+		else if (StringUtils.isNotBlank(firstNames)) {
+			final String[] list = StringUtils.trimToEmpty(firstNames).split("\\s");
+			if (list.length > 0) {
+				return list[0];
+			}
+		}
+		return null;
 	}
 
 	private static boolean initIsMasculin(PersonIdentification person) {
