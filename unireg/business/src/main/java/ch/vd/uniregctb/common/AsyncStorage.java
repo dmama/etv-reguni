@@ -4,9 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import ch.vd.registre.base.utils.Assert;
 
 /**
  * Classe de stockage avec accès multithread
@@ -16,9 +20,19 @@ public class AsyncStorage<K, V> {
 	private final AtomicInteger nbReceived = new AtomicInteger(0);
 
 	/**
+	 * Verrou qui permet d'accéder à la map
+	 */
+	private final ReentrantLock lock = new ReentrantLock();
+
+	/**
+	 * Condition levée quand tout le monde doit se réveiller parce qu'un nouveau document est arrivé
+	 */
+	private final Condition newDocument = lock.newCondition();
+
+	/**
 	 * Espace de stockage
 	 */
-	protected final Map<K, DataHolder<V>> map = new HashMap<K, DataHolder<V>>();
+	private final Map<K, DataHolder<V>> map = new HashMap<K, DataHolder<V>>();
 
 	/**
 	 * Container de la donnée à stocker
@@ -72,10 +86,14 @@ public class AsyncStorage<K, V> {
 	 * @param value valeur à stocker
 	 */
 	public final void add(K key, @Nullable V value) {
-		synchronized (map) {
+		lock.lock();
+		try {
 			nbReceived.incrementAndGet();
 			map.put(key, buildDataHolder(value));
-			map.notifyAll();
+			signalAll();
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
@@ -98,7 +116,8 @@ public class AsyncStorage<K, V> {
 	 */
 	@NotNull
 	public final RetrievalResult<K> get(K key, long timeout, TimeUnit unit) throws InterruptedException {
-		synchronized (map) {
+		lock.lock();
+		try {
 			final long tsMaxAttente = System.nanoTime() + unit.toNanos(timeout);
 			while (true) {
 				final DataHolder<V> value = map.remove(key);
@@ -113,10 +132,11 @@ public class AsyncStorage<K, V> {
 					return new RetrievalTimeout<K>(key);
 				}
 
-				final long millis = TimeUnit.NANOSECONDS.toMillis(tempsRestant);
-				final int nanos = (int) (tempsRestant - TimeUnit.MILLISECONDS.toNanos(millis));
-				map.wait(millis, nanos);
+				awaitNanos(tempsRestant);
 			}
+		}
+		finally {
+			lock.unlock();
 		}
 	}
 
@@ -131,8 +151,72 @@ public class AsyncStorage<K, V> {
 	 * @return Le nombre d'éléments actuellement présents dans l'espace de stockage
 	 */
 	public final int size() {
-		synchronized (map) {
+		lock.lock();
+		try {
 			return map.size();
 		}
+		finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * Interface du callback lors d'un appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.uniregctb.common.AsyncStorage.Action)}
+	 * @param <K> type de la clé de stockage
+	 * @param <V> type de la valeur de stockage
+	 * @param <T> type de la valeur retournée par l'action
+	 */
+	protected static interface Action<K, V, T> {
+
+		/**
+		 * Corps de l'action
+		 * @param entries Collection des éléments dans l'espace de stockage
+		 * @return Ce que l'action veut retourner (et qui servira de valeur de retour de l'appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.uniregctb.common.AsyncStorage.Action)}
+		 */
+		T execute(Iterable<Map.Entry<K, DataHolder<V>>> entries);
+	}
+
+	/**
+	 * Appelé pour faire une action alors que l'ensemble de l'espace de stockage ne peut pas être modifié (= environnement protégé)
+	 * @param action Callback pour l'action elle-même
+	 * @param <T> Type de retour de l'action
+	 * @return La valeur retournée par l'exécution de l'action
+	 */
+	protected final <T> T doInLockedEnvironment(Action<K, V, T> action) {
+		lock.lock();
+		try {
+			return action.execute(map.entrySet());
+		}
+		finally {
+			lock.unlock();
+		}
+	}
+
+	/**
+	 * Appelable depuis l'intérieur d'un "environnement protégé" pour attendre la levée du signal de réveil
+	 * @throws InterruptedException En cas d'interruption brutale de l'attente
+	 * @see #signalAll()
+	 */
+	protected final void await() throws InterruptedException {
+		Assert.isTrue(lock.isHeldByCurrentThread());
+		newDocument.await();
+	}
+
+	/**
+	 * Appelable depuis l'intérieur d'un "environnement protégé" pour attendre la levée du signal de réveil, mais pas plus longtemps que le timeout indiqué (en nanosecondes)
+	 * @throws InterruptedException En cas d'interruption brutale de l'attente
+	 * @see #signalAll()
+	 */
+	protected final void awaitNanos(long nanos) throws InterruptedException {
+		Assert.isTrue(lock.isHeldByCurrentThread());
+		newDocument.awaitNanos(nanos);
+	}
+
+	/**
+	 * Appelable depuis l'intérieur d'un "environnement protégé" pour lancer le signal de réveil des threads éventuellement en attente
+	 */
+	protected final void signalAll() {
+		Assert.isTrue(lock.isHeldByCurrentThread());
+		newDocument.signalAll();
 	}
 }

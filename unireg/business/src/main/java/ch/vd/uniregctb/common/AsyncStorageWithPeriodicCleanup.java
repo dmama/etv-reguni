@@ -6,9 +6,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
+
+	private static final Logger LOGGER = Logger.getLogger(AsyncStorageWithPeriodicCleanup.class);
 
 	/**
 	 * Timer utilisé pour le lancement régulier des tâches de cleanup
@@ -37,19 +40,28 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 
 		@Override
 		public final void run() {
-			synchronized (map) {
-				final Iterator<Map.Entry<K,DataHolder<V>>> iterator = map.entrySet().iterator();
-				final long now = TimeHelper.getPreciseCurrentTimeMillis();
-				final long lastAcceptedTimestamp = now - getMaximumAcceptedAge();
-				while (iterator.hasNext()) {
-					final Map.Entry<K, DataHolder<V>> entry = iterator.next();
-					final CleanupDataHolder<V> dataHolder = (CleanupDataHolder<V>) entry.getValue();
-					final long responseArrivalTs = dataHolder.ts;
-					if (responseArrivalTs < lastAcceptedTimestamp) {
-						onPurge(entry.getKey(), dataHolder.data);
-						iterator.remove();
+			try {
+				doInLockedEnvironment(new Action<K, V, Object>() {
+					@Override
+					public Object execute(Iterable<Map.Entry<K, DataHolder<V>>> entries) {
+						final Iterator<Map.Entry<K,DataHolder<V>>> iterator = entries.iterator();
+						final long now = TimeHelper.getPreciseCurrentTimeMillis();
+						final long lastAcceptedTimestamp = now - getMaximumAcceptedAge();
+						while (iterator.hasNext()) {
+							final Map.Entry<K, DataHolder<V>> entry = iterator.next();
+							final CleanupDataHolder<V> dataHolder = (CleanupDataHolder<V>) entry.getValue();
+							final long responseArrivalTs = dataHolder.ts;
+							if (responseArrivalTs < lastAcceptedTimestamp) {
+								onPurge(entry.getKey(), dataHolder.data);
+								iterator.remove();
+							}
+						}
+						return null;
 					}
-				}
+				});
+			}
+			catch (Exception e) {
+				LOGGER.warn("Exception envoyée par la tâche de cleanup", e);
 			}
 		}
 
