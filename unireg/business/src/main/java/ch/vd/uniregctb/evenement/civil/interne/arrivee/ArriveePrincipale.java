@@ -216,7 +216,7 @@ public class ArriveePrincipale extends Arrivee {
 
 				// seulement pour les PP qui ne sont pas en couple, car dans le cas des couples,
 				// un membre peut déjà être arrivé lorsque le second arrive
-				if (rapportMenage == null) {
+				if (rapportMenage == null && !isArriveeRedondantePourIndividuSeul()) { // [SIFISC-5466] si l'événement est redondant, il est correct de déjà avoir un for principal vaudois
 					final ForFiscalPrincipal forFP = pp.getForFiscalPrincipalAt(getDate());
 					if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu a déjà un for principal vaudois", pp.getNumero()));

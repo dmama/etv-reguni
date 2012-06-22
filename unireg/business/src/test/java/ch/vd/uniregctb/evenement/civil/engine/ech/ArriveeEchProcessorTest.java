@@ -100,7 +100,78 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
-	
+
+	/**
+	 * [SIFISC-5466] Vérifie qu'un événement d'arrivée redondant pour un contribuable célibataire est bien traité comme redondant.
+	 */
+	@Test(timeout = 10000L)
+	public void testArriveeCelibataireAvecRedondance() throws Exception {
+
+		final long noIndividu = 1057790L;
+		final RegDate dateArrivee = date(2011, 10, 1);
+
+		// la personne civil
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1987, 2, 4);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Jolias", "Virginie", false);
+
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS()));
+
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+			}
+		});
+
+		// Cette personne est déjà enregistrée dans la base
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// on s'assure que l'événement est détecté comme redondant
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
+				Assert.assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+				return null;
+			}
+		});
+	}
+
 	@Test(timeout = 10000L)
 	public void testArriveesCoupleAvecRedondance() throws Exception {
 
