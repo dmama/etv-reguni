@@ -11,7 +11,6 @@ import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import ch.ech.ech0044.v2.NamedPersonId;
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
@@ -38,6 +37,7 @@ import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -542,16 +542,16 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 
 	@Test
 	public void testInitPrenom() throws Exception {
-		Assert.assertNull(IndividuRCPers.initPrenom(null, null));
-		Assert.assertNull(IndividuRCPers.initPrenom("", ""));
-		Assert.assertNull(IndividuRCPers.initPrenom(" ", "  "));
-		Assert.assertEquals("Paul", IndividuRCPers.initPrenom("Paul", null));
-		Assert.assertEquals("Paul", IndividuRCPers.initPrenom("Paul", "Jacques Paul Henri"));
-		Assert.assertEquals("Paul", IndividuRCPers.initPrenom("Paul", "Jacques Paul Henri"));
-		Assert.assertEquals("Jacques", IndividuRCPers.initPrenom(null, "Jacques"));
-		Assert.assertEquals("Jacques", IndividuRCPers.initPrenom(null, "Jacques Paul Henri"));
-		Assert.assertEquals("Jacques", IndividuRCPers.initPrenom("  ", "Jacques Paul Henri"));
-		Assert.assertEquals("Jacques-Martin", IndividuRCPers.initPrenom(null, "Jacques-Martin Paul Henri"));
-		Assert.assertEquals("Jacques-Martin", IndividuRCPers.initPrenom(null, " Jacques-Martin Paul Henri"));
+		assertNull(IndividuRCPers.initPrenom(null, null));
+		assertNull(IndividuRCPers.initPrenom("", ""));
+		assertNull(IndividuRCPers.initPrenom(" ", "  "));
+		assertEquals("Paul", IndividuRCPers.initPrenom("Paul", null));
+		assertEquals("Paul", IndividuRCPers.initPrenom("Paul", "Jacques Paul Henri"));
+		assertEquals("Paul", IndividuRCPers.initPrenom("Paul", "Jacques Paul Henri"));
+		assertEquals("Jacques", IndividuRCPers.initPrenom(null, "Jacques"));
+		assertEquals("Jacques", IndividuRCPers.initPrenom(null, "Jacques Paul Henri"));
+		assertEquals("Jacques", IndividuRCPers.initPrenom("  ", "Jacques Paul Henri"));
+		assertEquals("Jacques-Martin", IndividuRCPers.initPrenom(null, "Jacques-Martin Paul Henri"));
+		assertEquals("Jacques-Martin", IndividuRCPers.initPrenom(null, " Jacques-Martin Paul Henri"));
 	}
 }
