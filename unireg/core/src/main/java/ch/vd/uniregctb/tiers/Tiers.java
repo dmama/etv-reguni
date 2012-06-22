@@ -320,7 +320,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 * @return l'adresse correspondante, ou nulle si aucune adresse ne correspond aux critères.
 	 */
 	@Transient
-	public AdresseTiers getAdresseActive(TypeAdresseTiers type, RegDate date) {
+	public AdresseTiers getAdresseActive(TypeAdresseTiers type, @Nullable RegDate date) {
 
 		Assert.notNull(type);
 

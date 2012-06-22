@@ -40,7 +40,7 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 					}
 
 					// Vérification de la demandes en cours
-					if (eFactureService.getDemandeInscritpionEnCoursDeTraitement(inscription.getCtbId()) != null) {
+					if (eFactureService.getDemandeInscriptionEnCoursDeTraitement(inscription.getCtbId()) != null) {
 						sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
 						return;
 					}

@@ -36,7 +36,7 @@ public interface EFactureService {
 	 * @return retrouve la demande d'inscription en cours de traitment pour un contribuable, null s'il n'y en a pas.
 	 */
 	@Nullable
-	DemandeValidationInscriptionDejaSoumise getDemandeInscritpionEnCoursDeTraitement(long ctbId);
+	DemandeValidationInscriptionDejaSoumise getDemandeInscriptionEnCoursDeTraitement(long ctbId);
 
 	/**
 	 * Identifie le contribuable avec son numero de contribuable

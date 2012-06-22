@@ -51,7 +51,7 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	@Nullable
-	public DemandeValidationInscriptionDejaSoumise getDemandeInscritpionEnCoursDeTraitement(long ctbId) {
+	public DemandeValidationInscriptionDejaSoumise getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
 		List<RegistrationRequestWithHistory> listRequests  = eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID).getHistoryOfRequests().getRequest();
 		for (RegistrationRequestWithHistory r : listRequests) {
 			final DemandeValidationInscriptionDejaSoumise demande = new DemandeValidationInscriptionDejaSoumise(r);
@@ -86,7 +86,7 @@ public class EFactureServiceImpl implements EFactureService {
 			return TypeRefusEFacture.NUMERO_CTB_INCOHERENT;
 		}
 
-		if (tiers.getAdresseActive(TypeAdresseTiers.COURRIER, RegDate.get()) == null) {
+		if (tiers.getAdresseActive(TypeAdresseTiers.COURRIER, null) == null) {
 			return TypeRefusEFacture.ADRESSE_COURRIER_INEXISTANTE;
 		}
 
