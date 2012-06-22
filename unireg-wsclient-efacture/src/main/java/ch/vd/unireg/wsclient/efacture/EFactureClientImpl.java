@@ -34,8 +34,12 @@ public class EFactureClientImpl implements EFactureClient {
 	public PayerWithHistory getHistory(long ctbId, String billerId) {
 		final WebClient wc = createWebClient(60000); // 1 minute
 		wc.path(historyPath);
+		wc.path(billerId);
 		wc.path(String.valueOf(ctbId));
 		PayerSearchResult payerSearchResult =  wc.get(PayerSearchResult.class);
+		if(payerSearchResult == null){
+			return null;
+		}
 		return payerSearchResult.getPayerWithHistory();
 	}
 
