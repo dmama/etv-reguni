@@ -20,7 +20,7 @@ import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
-public class AddressRequestHandler implements PartyRequestHandler<AddressRequest> {
+public class AddressRequestHandler implements RequestHandler<AddressRequest> {
 
 	private TiersDAO tiersDAO;
 	private AdresseService adresseService;
@@ -34,7 +34,7 @@ public class AddressRequestHandler implements PartyRequestHandler<AddressRequest
 	}
 
 	@Override
-	public PartyRequestHandlerResult handle(AddressRequest request) throws ServiceException {
+	public RequestHandlerResult handle(AddressRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -66,7 +66,7 @@ public class AddressRequestHandler implements PartyRequestHandler<AddressRequest
 			throw new ServiceException(new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.ADDRESSES.name(), null));
 		}
 
-		return new PartyRequestHandlerResult(response);
+		return new RequestHandlerResult(response);
 	}
 
 	@Override

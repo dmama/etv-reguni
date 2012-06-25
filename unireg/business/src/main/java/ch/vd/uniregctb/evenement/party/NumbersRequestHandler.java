@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.xml.ServiceException;
 
-public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest> {
+public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 
 	private TiersDAO tiersDAO;
 
@@ -30,7 +30,7 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 	}
 
 	@Override
-	public PartyRequestHandlerResult handle(NumbersRequest request) throws ServiceException {
+	public RequestHandlerResult handle(NumbersRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
@@ -54,7 +54,7 @@ public class NumbersRequestHandler implements PartyRequestHandler<NumbersRequest
 		response.setIncludeCancelled(request.isIncludeCancelled());
 		response.setIdsCount(ids.size());
 
-		final PartyRequestHandlerResult r = new PartyRequestHandlerResult(response);
+		final RequestHandlerResult r = new RequestHandlerResult(response);
 		r.addAttachment("ids", ids2byteArray(ids));
 		return r;
 	}

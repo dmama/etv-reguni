@@ -55,11 +55,11 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
-	private Map<Class<? extends Request>, PartyRequestHandler> handlers;
+	private Map<Class<? extends Request>, RequestHandler> handlers;
 	private Schema schemaCache;
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHandlers(Map<Class<? extends Request>, PartyRequestHandler> handlers) {
+	public void setHandlers(Map<Class<? extends Request>, RequestHandler> handlers) {
 		this.handlers = handlers;
 	}
 
@@ -90,14 +90,14 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 		// on traite la requête
-		PartyRequestHandlerResult result;
+		RequestHandlerResult result;
 		try {
 			result = handle(request);
 		}
 		catch (ServiceException e) {
 			final ExceptionResponse r = new ExceptionResponse();
 			r.setExceptionInfo(e.getInfo());
-			result = new PartyRequestHandlerResult(r);
+			result = new RequestHandlerResult(r);
 		}
 
 		// on répond
@@ -124,7 +124,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			final SchemaFactory sf = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 			sf.setResourceResolver(new ClasspathCatalogResolver());
 			final List<Source> sources = new ArrayList<Source>(handlers.size());
-			for (PartyRequestHandler handler : handlers.values()) {
+			for (RequestHandler handler : handlers.values()) {
 				final ClassPathResource resource = handler.getRequestXSD();
 				sources.add(new StreamSource(resource.getURL().toExternalForm()));
 			}
@@ -132,9 +132,9 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		}
 	}
 
-	protected PartyRequestHandlerResult handle(Request request) throws ServiceException {
+	protected RequestHandlerResult handle(Request request) throws ServiceException {
 
-		final PartyRequestHandler handler = handlers.get(request.getClass());
+		final RequestHandler handler = handlers.get(request.getClass());
 		if (handler == null) {
 			throw new IllegalArgumentException("Aucun handler connu pour la requête [" + request.getClass() + ']');
 		}
@@ -194,7 +194,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 	public void afterPropertiesSet() throws Exception {
 
 		final List<Resource> resources = new ArrayList<Resource>(handlers.size());
-		for (PartyRequestHandler handler : handlers.values()) {
+		for (RequestHandler handler : handlers.values()) {
 			final ClassPathResource resource = handler.getResponseXSD();
 			resources.add(resource);
 		}

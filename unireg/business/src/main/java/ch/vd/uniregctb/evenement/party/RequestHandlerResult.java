@@ -9,19 +9,19 @@ import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.EsbUrlDataHandler;
 import ch.vd.unireg.xml.event.party.v1.Response;
 
-public class PartyRequestHandlerResult {
+public class RequestHandlerResult {
 
 	private Response response;
 	private Map<String, EsbDataHandler> attachments = new HashMap<String, EsbDataHandler>();
 
-	public PartyRequestHandlerResult() {
+	public RequestHandlerResult() {
 	}
 
-	public PartyRequestHandlerResult(Response response) {
+	public RequestHandlerResult(Response response) {
 		this.response = response;
 	}
 
-	public PartyRequestHandlerResult(Response response, Map<String, EsbDataHandler> attachments) {
+	public RequestHandlerResult(Response response, Map<String, EsbDataHandler> attachments) {
 		this.response = response;
 		this.attachments = attachments;
 	}

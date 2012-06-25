@@ -8,7 +8,7 @@ import ch.vd.uniregctb.xml.ServiceException;
 /**
  * Handler de requêtes sur les données de tiers.
  */
-public interface PartyRequestHandler<T extends Request> {
+public interface RequestHandler<T extends Request> {
 	/**
 	 * Reçoit et répond à la requête.
 	 *
@@ -16,7 +16,7 @@ public interface PartyRequestHandler<T extends Request> {
 	 * @return le résultat du traitement, qui contient la réponse + les éventuels fichiers attachés
 	 * @throws ServiceException en cas d'impossibilité de répondre à la requête
 	 */
-	PartyRequestHandlerResult handle(T request) throws ServiceException;
+	RequestHandlerResult handle(T request) throws ServiceException;
 
 	ClassPathResource getRequestXSD();
 
