@@ -14,6 +14,7 @@ import ch.vd.evd0006.v1.Event;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 
+@SuppressWarnings("UnusedDeclaration")
 public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 //	private static final Logger LOGGER = Logger.getLogger(RcPersClientImpl.class);
@@ -90,7 +91,12 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			wc.query("date", RegDateHelper.dateToDisplayString(date));
 		}
 
-		return wc.get(ListOfPersons.class);
+		try {
+			return wc.get(ListOfPersons.class);
+		}
+		catch (ServerWebApplicationException e) {
+			throw new RcPersClientException(e);
+		}
 	}
 
 	@Override
@@ -120,7 +126,12 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			wc.query("date", RegDateHelper.dateToDisplayString(date));
 		}
 
-		return wc.get(ListOfPersons.class);
+		try {
+			return wc.get(ListOfPersons.class);
+		}
+		catch (ServerWebApplicationException e) {
+			throw new RcPersClientException(e);
+		}
 	}
 
 	@Override
@@ -149,7 +160,12 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 			wc.query("date", RegDateHelper.dateToDisplayString(date));
 		}
 
-		return wc.get(ListOfRelations.class);
+		try {
+			return wc.get(ListOfRelations.class);
+		}
+		catch (ServerWebApplicationException e) {
+			throw new RcPersClientException(e);
+		}
 	}
 
 	@Override
@@ -166,7 +182,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 				// la ressource n'existe pas
 				return null;
 			}
-			throw e;
+			throw new RcPersClientException(e);
 		}
 	}
 
@@ -194,7 +210,13 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 		addCriterion(wc, "otherNames", otherNames);
 		addCriterion(wc, "dateOfBirthFrom", birthDateFrom == null ? null : RegDateHelper.dateToDisplayString(birthDateFrom));
 		addCriterion(wc, "dateOfBirthTo", birthDateTo == null ? null : RegDateHelper.dateToDisplayString(birthDateTo));
-		return wc.get(ListOfFoundPersons.class);
+
+		try {
+			return wc.get(ListOfFoundPersons.class);
+		}
+		catch (ServerWebApplicationException e) {
+			throw new RcPersClientException(e);
+		}
 	}
 
 	private static void addCriterion(WebClient wc, String key, String value) {
