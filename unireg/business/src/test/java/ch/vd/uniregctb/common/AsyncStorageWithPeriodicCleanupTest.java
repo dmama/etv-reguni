@@ -50,6 +50,8 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 		});
 		thread.start();
 
+		Assert.assertEquals(0, service.getNbPurgedElements());
+
 		// pendant ce temps-là, le cleanup doit relâcher l'un des documents arrivés plus haut
 		Thread.sleep(2050);
 
@@ -73,7 +75,7 @@ public class AsyncStorageWithPeriodicCleanupTest<S extends AsyncStorageWithPerio
 			Assert.assertTrue(tsFin - tsDebut < 50);
 		}
 
+		Assert.assertEquals(1, service.getNbPurgedElements());
 		thread.join();
 	}
-
 }
