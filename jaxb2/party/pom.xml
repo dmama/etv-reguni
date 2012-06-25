@@ -72,7 +72,7 @@
 					<dependency>
 						<groupId>org.jvnet.jaxb2_commons</groupId>
 						<artifactId>jaxb2-namespace-prefix</artifactId>
-						<version>1.0</version>
+						<version>${namespace-prefix.version}</version>
 					</dependency>
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>

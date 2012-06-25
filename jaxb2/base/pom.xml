@@ -79,6 +79,7 @@
 		<copyright.year>2012</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
+		<namespace-prefix.version>1.0</namespace-prefix.version>
 	</properties>
 
 </project>
