@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -119,22 +118,13 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 			final TypeAutoriteFiscale autoriteFiscaleForPrincipal;
 			final ModeImposition modeImposition;
 			final MotifRattachement motifRattachement;
-			final Integer ofsCommuneForGestion;
 
 			final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, periode.getDateFin());
 			if (forGestion == null) {
 				throw new RuntimeException("Periode d'imposition " + periode + " sans for de gestion en fin de période ?");
 			}
 
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateDebut());
-			if (commune.isFraction()) {
-				final Commune communeFaitiere = infraService.getCommuneFaitiere(commune, forGestion.getDateDebut());
-				ofsCommuneForGestion = communeFaitiere.getNoOFSEtendu();
-			}
-			else {
-				ofsCommuneForGestion = commune.getNoOFSEtendu();
-			}
-
+			final Integer ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(forGestion.getNoOfsCommune(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forGestion.getDateDebut());
 			final ForFiscalRevenuFortune forRevenuFortune = forGestion.getSousjacent();
 			motifRattachement = forRevenuFortune.getMotifRattachement();
 			if (forRevenuFortune instanceof ForFiscalPrincipal) {

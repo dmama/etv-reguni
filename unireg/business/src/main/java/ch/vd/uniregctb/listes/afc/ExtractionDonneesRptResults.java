@@ -7,11 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -355,5 +358,29 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 			map.put(null, array[zeroPosition]);
 		}
 		return map;
+	}
+
+	/**
+	 * @param noOfs numéro OFS de l'entité
+	 * @param taf type d'autorité fiscale (= type de l'entité)
+	 * @param dateReference date de validité du numéro OFS donné
+	 * @return Le numéro OFS de la commune vaudoise principale, ou <code>null</code> s'il s'agit d'une commune HC ou d'un pays étranger
+	 */
+	@Nullable
+	protected Integer getNumeroOfsCommuneVaudoise(int noOfs, TypeAutoriteFiscale taf, RegDate dateReference) {
+
+		// hors du territoire cantonal -> vite vu !
+		if (taf != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			return null;
+		}
+
+		final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfs, dateReference);
+		if (commune != null && commune.isFraction()) {
+			final Commune faitiere = infraService.getCommuneFaitiere(commune, dateReference);
+			return faitiere.getNoOFSEtendu();
+		}
+		else {
+			return commune != null && commune.isVaudoise() ? commune.getNoOFSEtendu() : null;
+		}
 	}
 }

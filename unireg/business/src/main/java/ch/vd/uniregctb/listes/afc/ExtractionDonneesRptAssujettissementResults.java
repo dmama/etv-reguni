@@ -8,7 +8,6 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -83,23 +82,13 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 					// c'est toujours mieux que rien... cas du for SOURCE "inventé" par un for principal avec motif d'ouverture "CHGT_MODE_IMPOSITION"
 					final ForFiscalPrincipal ffpNonSource = a.getFors().principal;
 					motifRattachement = ffpNonSource.getMotifRattachement();
-					autoriteFiscaleForPrincipal = a.getFors().principal.getTypeAutoriteFiscale();
-					if (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						ofsCommuneForGestion = ffpNonSource.getNumeroOfsAutoriteFiscale();
-					}
-					else {
-						ofsCommuneForGestion = null;
-					}
+					autoriteFiscaleForPrincipal = ffpNonSource.getTypeAutoriteFiscale();
+					ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(ffpNonSource.getNumeroOfsAutoriteFiscale(), autoriteFiscaleForPrincipal, ffpNonSource.getDateDebut());
 				}
 				else {
 					motifRattachement = ffp.getMotifRattachement();     // on n'a pas encore les fors secondaires sources...
 					autoriteFiscaleForPrincipal = ffp.getTypeAutoriteFiscale();
-					if (autoriteFiscaleForPrincipal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						ofsCommuneForGestion = ffp.getNumeroOfsAutoriteFiscale();
-					}
-					else {
-						ofsCommuneForGestion = null;
-					}
+					ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(ffp.getNumeroOfsAutoriteFiscale(), autoriteFiscaleForPrincipal, ffp.getDateDebut());
 				}
 			}
 			else {
@@ -108,14 +97,7 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 					throw new RuntimeException("Assujettissement " + a + " non sourcier-pur sans for de gestion en fin d'assujettissement ?");
 				}
 
-				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateDebut());
-				if (commune.isFraction()) {
-					final Commune communeFaitiere = infraService.getCommuneFaitiere(commune, forGestion.getDateDebut());
-					ofsCommuneForGestion = communeFaitiere.getNoOFSEtendu();
-				}
-				else {
-					ofsCommuneForGestion = commune.getNoOFSEtendu();
-				}
+				ofsCommuneForGestion = getNumeroOfsCommuneVaudoise(forGestion.getNoOfsCommune(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, forGestion.getDateDebut());
 
 				final ForFiscalRevenuFortune forRevenuFortune = forGestion.getSousjacent();
 				motifRattachement = forRevenuFortune.getMotifRattachement();
