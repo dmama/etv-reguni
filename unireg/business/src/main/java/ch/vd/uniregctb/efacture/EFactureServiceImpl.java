@@ -15,6 +15,7 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -146,6 +147,15 @@ public class EFactureServiceImpl implements EFactureService {
 		}
 
 		return true;
+	}
+
+	public HistoriqueDestinataireWrapper getHistoriqueDestiantaire(long ctbId){
+
+		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID);
+		if(payerWithHistory == null){
+			return null;
+		}
+		return new HistoriqueDestinataireWrapper(payerWithHistory, ctbId);
 	}
 
 	@Override

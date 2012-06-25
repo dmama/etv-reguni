@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.manager.EfactureManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -33,6 +31,7 @@ public class EFactureController {
 	private static final String ID_DEMANDE = "idDemande";
 	private static final String DATE_DEMANDE = "dateDemande";
 	private EfactureManager efactureManager;
+
 
 	private static void checkDroitGestionaireEfacture() {
 		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
@@ -124,69 +123,10 @@ public class EFactureController {
 
 	@Nullable
 	private HistoriqueDestinataire buildHistoDestinataire(long ctbId) {
-
-		// TODO jde : ramolir un peu ce code...
-
-		// pour le moment, tous les numéros de contribuables pairs ont de la e-facture, les impairs non
-		if (ctbId % 2 == 1) {
-			return null;
-		}
-
-		// construction de la structure de base
-		final HistoriqueDestinataire destinataire = new HistoriqueDestinataire();
-		destinataire.setCtbId(ctbId);
-
-		// les états du destinataire lui-même
-		// un contribuable sur deux qui touche à la e-facture n'est pas encore inscrit
-		if (ctbId % 4 == 0) {
-			destinataire.setEtats(Arrays.asList(new EtatDestinataire(RegDate.get(2012, 9, 12), null, null, "Inscrit suspendu"),
-			                                    new EtatDestinataire(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", null, "En attente de confirmation"),
-			                                    new EtatDestinataire(RegDate.get(2012, 9, 23), null, null, "Inscrit")));
-		}
-		else {
-			destinataire.setEtats(Arrays.asList(new EtatDestinataire(RegDate.get(2012, 9, 12), null, null, "Inscrit suspendu"),
-			                                    new EtatDestinataire(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", null, "En attente de confirmation")));
-		}
-
-		// ses demandes et leurs états
-		final List<HistoriqueDemande> demandes = new ArrayList<HistoriqueDemande>();
-		{
-			final HistoriqueDemande demande = new HistoriqueDemande();
-			demande.setIdDemande("1");
-			demande.setDateDemande(RegDate.get(2012, 9, 11));
-
-			// un contribuable sur deux a une demande en attente de confirmation signature
-			if (ctbId % 4 == 0) {
-				demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 12), null, null, "Reçue", TypeEtatDemande.RECUE),
-				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", new ArchiveKey(TypeDocumentEditique.E_FACTURE_ATTENTE_SIGNATURE, "153677   lKDFG"), "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE),
-				                               new EtatDemande(RegDate.get(2012, 9, 25), null, null, "Acceptée", TypeEtatDemande.VALIDEE)));
-			}
-			else {
-				demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 12), null, null, "Reçue", TypeEtatDemande.RECUE),
-				                               new EtatDemande(RegDate.get(2012, 9, 13), "Demande de confirmation envoyée", new ArchiveKey(TypeDocumentEditique.E_FACTURE_ATTENTE_SIGNATURE, "153677   lKDFG"), "Validation en cours", TypeEtatDemande.EN_ATTENTE_SIGNATURE)));
-			}
-			demandes.add(demande);
-		}
-		{
-			final HistoriqueDemande demande = new HistoriqueDemande();
-			demande.setIdDemande("2");
-			demande.setDateDemande(RegDate.get(2012, 9, 13));
-			demande.setEtats(Arrays.asList(new EtatDemande(RegDate.get(2012, 9, 14), null, null, "Reçue", TypeEtatDemande.RECUE),
-			                               new EtatDemande(RegDate.get(2012, 9, 14), "Autre demande déjà en cours", null, "Refusée", TypeEtatDemande.REFUSEE)));
-			demandes.add(demande);
-		}
-		destinataire.setDemandes(demandes);
+		HistoriqueDestinataire historiqueDestinataire = efactureManager.getHistoriqueDestinataire(ctbId);
 
 
-		//
-		// !!! ne pas oublier d'inverser l'ordre chronologique des éléments !!!
-		//
-		destinataire.setEtats(revertList(destinataire.getEtats()));
-		destinataire.setDemandes(revertList(destinataire.getDemandes()));
-		for (HistoriqueDemande demande : destinataire.getDemandes()) {
-			demande.setEtats(revertList(demande.getEtats()));
-		}
-		return destinataire;
+		return historiqueDestinataire;
 	}
 
 	private static <T> List<T> revertList(List<T> source) {

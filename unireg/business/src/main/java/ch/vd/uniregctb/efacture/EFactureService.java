@@ -3,6 +3,7 @@ package ch.vd.uniregctb.efacture;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -63,8 +64,17 @@ public interface EFactureService {
 	 *
 	 * @param ctbId l'id du contribuale a valider
 	 *
-	 * @return true si l'état est cohérent
+	 * @return <code>true</code> si l'état est cohérent
 	 */
 	boolean valideEtatContribuablePourInscription(long ctbId);
+
+
+	/**Recupère l'historique des demandes pour un contribuable donné au format interne unireg
+	 *
+	 *
+	 * @param ctbId
+	 * @return l'historique complet des demandes d'un contribuables au format interne unireg
+	 */
+	HistoriqueDestinataireWrapper getHistoriqueDestiantaire(long ctbId);
 
 }
