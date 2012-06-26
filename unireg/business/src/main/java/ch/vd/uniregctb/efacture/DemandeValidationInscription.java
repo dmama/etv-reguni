@@ -4,8 +4,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.apache.commons.validator.EmailValidator;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.evd0025.v1.MapEntry;
@@ -119,15 +120,30 @@ public class DemandeValidationInscription extends EFactureEvent {
 				return TypeRefusEFacture.NUMERO_AVS_INVALIDE;
 			}
 			//Check Adresse de courrier électronique
-			if (!EmailValidator.getInstance().isValid(getEmail())) {
+			if (!EmailValidator.validate(getEmail())) {
 				return TypeRefusEFacture.EMAIL_INVALIDE;
 			}
 			//Check Date et heure de la demande
-			// TODO A DISCUTER: Les specs parlent d'heure de la demande or RegDate n'a pas d'heure
 			if (getDateDemande() == null) {
 				return TypeRefusEFacture.DATE_DEMANDE_ABSENTE;
 			}
 		}
 		return null;
+	}
+
+	private static class EmailValidator {
+
+		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+
+		private EmailValidator() {}
+
+		public static boolean validate(final String email){
+			if (email == null) {
+				return false;
+			}
+			final Matcher matcher = pattern.matcher(email);
+			return matcher.matches();
+		}
 	}
 }
