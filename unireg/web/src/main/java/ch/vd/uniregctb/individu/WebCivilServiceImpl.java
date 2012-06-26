@@ -49,7 +49,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	public IndividuView getIndividu(Long numeroIndividu) {
 		final Individu indSource = serviceCivilService.getIndividu(numeroIndividu, null);
 		if (indSource == null) {
-			throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant", new Object[] {Long.toString(numeroIndividu)},  WebContextUtils.getDefaultLocale()));
 		}
 
 		// Copie les données de l'individu
@@ -69,7 +69,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		catch (ObjectNotFoundException e) {
 			final IndividuApresEvenement indiv = serviceCivilService.getIndividuFromEvent(numeroEvenement);
 			if (indiv == null) {
-				throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+				throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant", new Object[] {Long.toString(numeroIndividu)},  WebContextUtils.getDefaultLocale()));
 			}
 			individuView = alimenteIndividuView(indiv.getIndividu());
 		}
