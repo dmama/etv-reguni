@@ -38,7 +38,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
-		HistoriqueDestinataireWrapper historiqueDestinataireWrapper = eFactureService.getHistoriqueDestiantaire(ctbId);
+		HistoriqueDestinataireWrapper historiqueDestinataireWrapper = eFactureService.getHistoriqueDestinataire(ctbId);
 		if(historiqueDestinataireWrapper == null){
 			return new HistoriqueDestinataire();
 		}

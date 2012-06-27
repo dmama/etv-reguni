@@ -37,12 +37,12 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		sender = createMock(EFactureMessageSender.class);
 		handler.setSender(sender);
 		inscription = createMock(DemandeValidationInscription.class);
-		expect(inscription.getCtbId()).andReturn(CTB_ID).anyTimes();
-		expect(inscription.getAction()).andReturn(DemandeValidationInscription.Action.INSCRIPTION).anyTimes();
-		expect(inscription.getNoAvs()).andReturn(NO_AVS).anyTimes();
-		expect(inscription.getDateDemande()).andReturn(DEMANDE_DATE).anyTimes();
-		expect(inscription.getEmail()).andReturn(EMAIL).anyTimes();
-		expect(inscription.getIdDemande()).andReturn(DEMANDE_ID).anyTimes();
+		expect(inscription.getCtbId()).andStubReturn(CTB_ID);
+		expect(inscription.getAction()).andStubReturn(DemandeValidationInscription.Action.INSCRIPTION);
+		expect(inscription.getNoAvs()).andStubReturn(NO_AVS);
+		expect(inscription.getDateDemande()).andStubReturn(DEMANDE_DATE);
+		expect(inscription.getEmail()).andStubReturn(EMAIL);
+		expect(inscription.getIdDemande()).andStubReturn(DEMANDE_ID);
 	}
 
 	@Override
@@ -52,11 +52,11 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 
 	@Test
 	public void testDemandeInscription_OK() throws Exception {
-		expect(inscription.performBasicValidation()).andReturn(null).once();
-		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null).once();
-		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null).once();
-		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(true).once();
-		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID).once();
+		expect(inscription.performBasicValidation()).andReturn(null);
+		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null);
+		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null);
+		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(true);
+		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID);
 		sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID,TypeAttenteEFacture.EN_ATTENTE_SIGNATURE, ARCHIVAGE_ID, false);
 		service.updateEmailContribuable(CTB_ID, EMAIL);
 		replay(inscription, sender, service);
@@ -66,12 +66,12 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 
 	@Test
 	public void testDemandeInscription_OK_MaisEtatIncoherent() throws Exception {
-		expect(inscription.performBasicValidation()).andReturn(null).once();
-		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null).once();
-		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null).once();
-		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(false).once();
-		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_CONTACT, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID).once();
-		sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID,TypeAttenteEFacture.EN_ATTENTE_CONTACT, ARCHIVAGE_ID, false);
+		expect(inscription.performBasicValidation()).andReturn(null);
+		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null);
+		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null);
+		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(false);
+		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_CONTACT, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID);
+		sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID, TypeAttenteEFacture.EN_ATTENTE_CONTACT, ARCHIVAGE_ID, false);
 		service.updateEmailContribuable(CTB_ID, EMAIL);
 		replay(inscription, sender, service);
 		handler.handle(inscription);
@@ -94,7 +94,7 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 	}
 
 	private void testDemandeInscription_EchecValidationBasique(TypeRefusEFacture typeRefus) throws Exception  {
-		expect(inscription.performBasicValidation()).andReturn(typeRefus).once();
+		expect(inscription.performBasicValidation()).andReturn(typeRefus);
 		sender.envoieRefusDemandeInscription(DEMANDE_ID, typeRefus);
 		replay(inscription, sender, service);
 		handler.handle(inscription);
@@ -103,8 +103,8 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 
 	@Test
 	public void testDemandeInscription_UneAutreDemandeEstDejaEnCoursDeTraitment() throws Exception {
-		expect(inscription.performBasicValidation()).andReturn(null).once();
-		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(createMock(DemandeValidationInscriptionDejaSoumise.class)).once();
+		expect(inscription.performBasicValidation()).andReturn(null);
+		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(createMock(DemandeValidationInscriptionAvecHistorique.class));
 		sender.envoieRefusDemandeInscription(DEMANDE_ID, TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
 		replay(inscription, sender, service);
 		handler.handle(inscription);
@@ -127,9 +127,9 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 	}
 
 	private void testDemandeInscription_EchecIdentification(TypeRefusEFacture typeRefus) throws Exception {
-		expect(inscription.performBasicValidation()).andReturn(null).once();
-		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null).once();
-		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(typeRefus).once();
+		expect(inscription.performBasicValidation()).andReturn(null);
+		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(null);
+		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(typeRefus);
 		sender.envoieRefusDemandeInscription(DEMANDE_ID, typeRefus);
 		replay(inscription, sender, service);
 		handler.handle(inscription);

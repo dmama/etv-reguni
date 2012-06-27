@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -37,7 +38,7 @@ public interface EFactureService {
 	 * @return retrouve la demande d'inscription en cours de traitment pour un contribuable, null s'il n'y en a pas.
 	 */
 	@Nullable
-	DemandeValidationInscriptionDejaSoumise getDemandeInscriptionEnCoursDeTraitement(long ctbId);
+	DemandeValidationInscriptionAvecHistorique getDemandeInscriptionEnCoursDeTraitement(long ctbId);
 
 	/**
 	 * Identifie le contribuable avec son numero de contribuable
@@ -49,7 +50,7 @@ public interface EFactureService {
 	 * @return null si l'identification est ok (le numero de contribuable existe et le numero AVS match) sinon renvoie le type de refus pour e-facture
 	 */
 	@Nullable
-	TypeRefusEFacture identifieContribuablePourInscription(long ctbId, String noAvs);
+	TypeRefusEFacture identifieContribuablePourInscription(long ctbId, String noAvs) throws AdresseException;
 
 	/**
 	 * Met à jour l'adresse e-mail du contribuable
@@ -72,10 +73,10 @@ public interface EFactureService {
 	/**Recupère l'historique des demandes pour un contribuable donné au format interne unireg
 	 *
 	 *
-	 * @param ctbId
+	 * @param ctbId l'id du contribuable
 	 * @return l'historique complet des demandes d'un contribuables au format interne unireg
 	 */
-	HistoriqueDestinataireWrapper getHistoriqueDestiantaire(long ctbId);
+	HistoriqueDestinataireWrapper getHistoriqueDestinataire(long ctbId);
 
 	/**
 	 * Demande la suspension d'un contribuable à la e-facture

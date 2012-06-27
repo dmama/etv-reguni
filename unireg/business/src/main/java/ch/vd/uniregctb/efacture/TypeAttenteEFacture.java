@@ -30,10 +30,10 @@ public enum TypeAttenteEFacture {
 			return PAS_EN_ATTENTE;
 		}
 		for(TypeAttenteEFacture t : TypeAttenteEFacture.values()) {
-			if (t.code.equals(code)) {
+			if (code.equals(t.code)) {
 				return t;
 			}
 		}
-		throw new IllegalArgumentException(code + "n'est pas un TypeAttenteEFacture valide");
+		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteEFacture valide");
 	}
 }

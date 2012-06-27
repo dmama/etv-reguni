@@ -6,6 +6,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
@@ -17,6 +18,9 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
+import ch.vd.uniregctb.adresse.AdresseException;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -26,12 +30,14 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class EFactureServiceImpl implements EFactureService {
 
+	public static final Logger LOGGER = Logger.getLogger(EFactureServiceImpl.class);
+
 	private TiersService tiersService;
+	private AdresseService adresseService;
 	private EditiqueCompositionService editiqueCompositionService;
 	private EFactureMessageSender eFactureMessageSender;
 	private EFactureClient eFactureClient;
@@ -52,10 +58,10 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	@Nullable
-	public DemandeValidationInscriptionDejaSoumise getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
+	public DemandeValidationInscriptionAvecHistorique getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
 		List<RegistrationRequestWithHistory> listRequests  = eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID).getHistoryOfRequests().getRequest();
 		for (RegistrationRequestWithHistory r : listRequests) {
-			final DemandeValidationInscriptionDejaSoumise demande = new DemandeValidationInscriptionDejaSoumise(r);
+			final DemandeValidationInscriptionAvecHistorique demande = new DemandeValidationInscriptionAvecHistorique(r);
 			if (demande.isEnCoursDeTraitement()) {
 				return demande;
 			}
@@ -65,7 +71,7 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	@Nullable
-	public TypeRefusEFacture identifieContribuablePourInscription(long ctbId, String strNoAvs) {
+	public TypeRefusEFacture identifieContribuablePourInscription(long ctbId, String strNoAvs) throws AdresseException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		if (tiers == null) {
 			return TypeRefusEFacture.NUMERO_CTB_INCOHERENT;
@@ -74,23 +80,21 @@ public class EFactureServiceImpl implements EFactureService {
 		_if: if (tiers instanceof MenageCommun) {
 			final MenageCommun menage = (MenageCommun)tiers;
 			for(PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
-				if (noAvs == AvsHelper.stringToLong(pp.getNumeroAssureSocial()) ) {
+				if (noAvs == AvsHelper.stringToLong(tiersService.getNumeroAssureSocial(pp))) {
 					break _if;
 				}
 			}
 			return TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT;
 		} else if (tiers instanceof PersonnePhysique) {
-			if (noAvs != AvsHelper.stringToLong(((PersonnePhysique)tiers).getNumeroAssureSocial()) ) {
+			if (noAvs != AvsHelper.stringToLong(tiersService.getNumeroAssureSocial((PersonnePhysique) tiers)) ) {
 				return TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT;
 			}
 		} else {
 			return TypeRefusEFacture.NUMERO_CTB_INCOHERENT;
 		}
-
-		if (tiers.getAdresseActive(TypeAdresseTiers.COURRIER, null) == null) {
+		if (adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false) == null) {
 			return TypeRefusEFacture.ADRESSE_COURRIER_INEXISTANTE;
 		}
-
 		return null;
 	}
 
@@ -149,7 +153,7 @@ public class EFactureServiceImpl implements EFactureService {
 		return true;
 	}
 
-	public HistoriqueDestinataireWrapper getHistoriqueDestiantaire(long ctbId){
+	public HistoriqueDestinataireWrapper getHistoriqueDestinataire(long ctbId){
 
 		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID);
 		if(payerWithHistory == null){
@@ -200,4 +204,9 @@ public class EFactureServiceImpl implements EFactureService {
 	public void seteFactureClient(EFactureClient eFactureClient) {
 		this.eFactureClient = eFactureClient;
 	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
 }
