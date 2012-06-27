@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import javax.persistence.Transient;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
@@ -47,4 +49,57 @@ public class HistoriqueDestinataireWrapper {
 	public void setCtbId(long ctbId) {
 		this.ctbId = ctbId;
 	}
+
+	public EtatDestinataireWrapper getDernierEtat() {
+
+		// tri par ordre croissant
+		final List<EtatDestinataireWrapper> etatsSorted = getEtatsSorted();
+		if (etatsSorted == null || etatsSorted.isEmpty()) {
+			return null;
+		}
+
+		// récupère le dernier état non-annulé (qui n'est pas un retour, donc)
+		for (int i = etatsSorted.size() - 1; i >= 0; --i) {
+			final EtatDestinataireWrapper e = etatsSorted.get(i);
+				return e;
+		}
+
+		return null;
+		//return etats.get(etats.size()-1);
+	}
+
+	@Transient
+	public List<EtatDestinataireWrapper> getEtatsSorted() {
+
+		if (etats == null) {
+			return null;
+		}
+
+		// tri par ordre croissant
+		final List<EtatDestinataireWrapper> list = new ArrayList<EtatDestinataireWrapper>(etats);
+		Collections.sort(list, new EtatDestinataireWrapper.Comparator());
+
+		return list;
+	}
+
+
+ public boolean isActivable(){
+	 final EtatDestinataireWrapper dernierEtat = getDernierEtat();
+	 if(dernierEtat !=null){
+		 return dernierEtat.getStatusDestinataire().isActivable();
+
+	 }
+	 return false;
+ }
+
+	public boolean isSuspendable(){
+		final EtatDestinataireWrapper dernierEtat = getDernierEtat();
+		if(dernierEtat !=null){
+			return dernierEtat.getStatusDestinataire().isSuspendable();
+
+		}
+		return false;
+	}
+
+
 }

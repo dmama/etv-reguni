@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import org.springframework.util.Assert;
+
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerStatus;
 import ch.vd.registre.base.date.RegDate;
@@ -22,6 +24,36 @@ public class EtatDestinataireWrapper {
 	}
 
 
+	public static class Comparator implements java.util.Comparator<EtatDestinataireWrapper> {
+
+		@Override
+		public int compare(EtatDestinataireWrapper o1, EtatDestinataireWrapper o2) {
+
+			final RegDate dateObtention1 = o1.getDateObtention();
+			final RegDate dateObtention2 = o2.getDateObtention();
+			Assert.notNull(dateObtention1);
+			Assert.notNull(dateObtention2);
+
+			if (dateObtention1 != dateObtention2) {
+				// cas normal
+				return dateObtention1.compareTo(dateObtention2);
+			}
+
+			// cas exceptionnel : deux états obtenu le même jour.
+			final TypeStatusDestinataire status1 = o1.getStatusDestinataire();
+			final TypeStatusDestinataire status2 = o2.getStatusDestinataire();
+			Assert.notNull(status1);
+			Assert.notNull(status2);
+
+			// l'ordre est simplement l'ordre logique de l'enum
+			if (status1 != status2) {
+				return status1.compareTo(status2);
+			}
+
+			return 0;
+		}
+	}
+
 	public String getChampLibre() {
 		return champLibre;
 	}
@@ -43,7 +75,11 @@ public class EtatDestinataireWrapper {
 	}
 
 	private TypeStatusDestinataire determineStatusDestinataire(PayerStatus status) {
-		switch (status){
+		if(status == null){
+			return null;
+
+		}
+		switch (status) {
 		case DESINSCRIT:
 			return TypeStatusDestinataire.DESINSCRIT;
 		case DESINSCRIT_SUSPENDU:
@@ -53,7 +89,7 @@ public class EtatDestinataireWrapper {
 		case INSCRIT_SUSPENDU:
 			return TypeStatusDestinataire.INSCRIT_SUSPENDU;
 		default:
-			throw new IllegalArgumentException("Le statut du destinataire suivant n'est pas reconnu "+ status);
+			throw new IllegalArgumentException("Le statut du destinataire suivant n'est pas reconnu " + status);
 
 		}
 	}

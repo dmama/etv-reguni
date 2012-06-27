@@ -15,4 +15,12 @@ public enum TypeStatusDestinataire {
 	public String getDescription() {
 		return description;
 	}
+
+	public boolean isActivable(){
+		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU ;
+	}
+
+	public boolean isSuspendable(){
+		return this == INSCRIT || this == DESINSCRIT;
+	}
 }

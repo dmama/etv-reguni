@@ -79,6 +79,8 @@ public class EfactureManagerImpl implements EfactureManager {
 
 		historiqueDestinataire.setEtats(revertList(historiqueDestinataire.getEtats()));
 		historiqueDestinataire.setDemandes(revertList(historiqueDestinataire.getDemandes()));
+		historiqueDestinataire.setActivable(historiqueDestinataireWrapper.isActivable());
+		historiqueDestinataire.setSuspendable(historiqueDestinataireWrapper.isSuspendable());
 		for (HistoriqueDemande demande : historiqueDestinataire.getDemandes()) {
 			demande.setEtats(revertList(demande.getEtats()));
 		}
@@ -90,7 +92,7 @@ public class EfactureManagerImpl implements EfactureManager {
 		final String motifObtention = etatDestinataireWrapper.getDescriptionRaison();
 		final String key = etatDestinataireWrapper.getChampLibre();
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etatDestinataireWrapper.getCodeRaison());
-		final String descriptionEtat = etatDestinataireWrapper.getStatusDestinataire().getDescription();
+		final String descriptionEtat = etatDestinataireWrapper.getStatusDestinataire()!=null? etatDestinataireWrapper.getStatusDestinataire().getDescription():null;
 		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
 		return new EtatDestinataire(dateObtention,motifObtention,archiveKey,descriptionEtat);
 	}
@@ -102,7 +104,7 @@ public class EfactureManagerImpl implements EfactureManager {
 		final String key = etatDemandeWrapper.getChampLibre();
 		final String descriptionEtat = etatDemandeWrapper.getStatusDemande().getDescription();
 		final TypeEtatDemande typeEtatDemande = determinerTypeEtatDemande(etatDemandeWrapper.getStatusDemande());
-		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
+		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
 
 		return new EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande);
 	}
