@@ -18,11 +18,11 @@ public class MockEFactureMessageSender implements EFactureMessageSender {
 
 	@Override
 	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
-
+		return "";
 	}
 
 	@Override
 	public String envoieActivationContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
-
+		return "";
 	}
 }
