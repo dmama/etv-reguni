@@ -37,16 +37,21 @@ public interface EFactureMessageSender {
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la suspension du contribuable
+	 *
+	 *
 	 * @param noCtb numéro du contribuable dont les activités e-facture doivent être suspendues
+	 * @param retourAttendu
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieSuspensionContribuable(long noCtb) throws EvenementEfactureException;
+	String envoieSuspensionContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'activation du contribuable
+	 *
 	 * @param noCtb numéro du contribuable dont les activités e-facture peuvent être activées
+	 * @param retourAttendu
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieActivationContribuable(long noCtb) throws EvenementEfactureException;
+	String envoieActivationContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException;
 
 }

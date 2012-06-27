@@ -77,4 +77,24 @@ public interface EFactureService {
 	 */
 	HistoriqueDestinataireWrapper getHistoriqueDestiantaire(long ctbId);
 
+	/**
+	 * Demande la suspension d'un contribuable à la e-facture
+	 *
+	 * @param ctbId id du contribuable à suspendre
+	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @return le business id du message demandant la suspension
+	 */
+	public String suspendreContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException;
+
+
+	/**
+	 * Demande l'activation d'un contribuable à la e-facture
+	 *
+	 * @param ctbId id du contribuable à activer
+	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @return le business id du message demandant l'activation
+	 */
+	public String activerContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException;
+
+
 }

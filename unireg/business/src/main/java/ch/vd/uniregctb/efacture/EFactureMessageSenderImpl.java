@@ -85,15 +85,15 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public void envoieSuspensionContribuable(long noCtb) throws EvenementEfactureException {
+	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
 		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
-		sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, null, null, false);
+		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, null, null, retourAttendu);
 	}
 
 	@Override
-	public void envoieActivationContribuable(long noCtb) throws EvenementEfactureException {
+	public String envoieActivationContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
 		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
-		sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, null, null, false);
+		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, null, null, retourAttendu);
 	}
 
 	private static interface CustomMarshaller {
@@ -124,7 +124,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 		}, serviceDestinationDemande);
 	}
 
-	private void sendMiseAJourDestinataire(final long noCtb, final PayerUpdateAction action,
+	private String sendMiseAJourDestinataire(final long noCtb, final PayerUpdateAction action,
 	                                       @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
 	                                       boolean retourAttendu) throws EvenementEfactureException {
 		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureEvent.ACI_BILLER_ID);
@@ -147,6 +147,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 				marshaller.marshal(msg, doc);
 			}
 		}, serviceDestinationDestinataire);
+		return businessId;
 	}
 
 	private void sendEvent(String businessId, boolean retourAttendu, CustomMarshaller customMarshaller, String serviceDestination) throws EvenementEfactureException {

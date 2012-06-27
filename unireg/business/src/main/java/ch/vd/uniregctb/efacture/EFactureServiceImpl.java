@@ -159,6 +159,16 @@ public class EFactureServiceImpl implements EFactureService {
 	}
 
 	@Override
+	public String suspendreContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieSuspensionContribuable(ctbId, retourAttendu);
+	}
+
+	@Override
+	public String activerContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieActivationContribuable(ctbId, retourAttendu);
+	}
+
+	@Override
 	public void notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		final TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, idArchivage, retourAttendu);
