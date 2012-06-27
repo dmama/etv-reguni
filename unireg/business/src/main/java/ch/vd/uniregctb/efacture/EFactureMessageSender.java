@@ -8,14 +8,17 @@ public interface EFactureMessageSender {
 	/**
 	 * Envoie un message à la e-facture qui annonce le refus d'une demande d'inscription
 	 *
+	 *
 	 * @param idDemande identifiant de la demande d'inscription refusée
 	 * @param typeRefusEFacture
+	 * @param retourAttendu
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture) throws EvenementEfactureException;
+	String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la mise en attente d'une demande d'inscription
+	 *
 	 *
 	 *
 	 *
@@ -26,14 +29,16 @@ public interface EFactureMessageSender {
 	 * @param retourAttendu vrai si on attend une réponse de la E-facture, false sinon
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription
+	 *
 	 * @param idDemande identifiant de la demande d'inscription acceptée
+	 * @param retourAttendu
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	void envoieAcceptationDemandeInscription(String idDemande) throws EvenementEfactureException;
+	String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la suspension du contribuable

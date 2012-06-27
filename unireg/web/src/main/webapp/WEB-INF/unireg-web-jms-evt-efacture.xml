@@ -45,7 +45,7 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
 	</bean>
 
-	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.efacture.EFactureResponseListener">
+	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.efacture.EFactureResponseListener" parent="esbMessageListener">
 		<property name="responseService" ref="eFactureResponseService"/>
 	</bean>
 

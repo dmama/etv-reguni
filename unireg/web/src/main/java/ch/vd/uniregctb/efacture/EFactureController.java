@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.efacture.manager.EfactureManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -70,54 +71,67 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
-	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) {
+	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) throws Exception{
 		checkDroitGestionaireEfacture();
-
+		final String businessId = efactureManager.suspendreContribuable(ctbId);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande de suspension a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
 		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/activate.do", method = RequestMethod.POST)
-	public String activate(@RequestParam(value = CTB, required = true) long ctbId) {
+	public String activate(@RequestParam(value = CTB, required = true) long ctbId) throws Exception{
 		checkDroitGestionaireEfacture();
 
-		// TODO jde à faire
+		final String businessId = efactureManager.activerContribuable(ctbId);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande d'activation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/validate.do", method = RequestMethod.POST)
-	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) {
+	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
 		checkDroitGestionaireEfacture();
-
-		// TODO jde à faire
+		final String businessId = efactureManager.accepterDemande(idDemande);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande de validation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/refuse.do", method = RequestMethod.POST)
-	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) {
+	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
 		checkDroitGestionaireEfacture();
-
-		// TODO jde à faire
+		final String businessId = efactureManager.refuserDemande(idDemande);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande de refus a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
 	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
-		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
+		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande de confirmation d'inscription a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
+		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
+
 		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
 
-		// TODO jde à faire
-		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
 	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
- 		efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
-		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
-
-		// TODO jde à faire
+		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
+		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+			Flash.warning("Votre demande de prise de contact a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
+		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 

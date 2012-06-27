@@ -35,20 +35,20 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 				TypeRefusEFacture typeRefus = inscription.performBasicValidation();
 				if (typeRefus != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus);
+					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, false);
 					return;
 				}
 
 				// Vérification de la demandes en cours
 				if (eFactureService.getDemandeInscriptionEnCoursDeTraitement(inscription.getCtbId()) != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT);
+					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT, false);
 					return;
 				}
 
 				// identifie le contribuable (no avs et no ctb doivent matché, le ctb doit avoir une adresse courrier)
 				typeRefus = eFactureService.identifieContribuablePourInscription(inscription.getCtbId(), inscription.getNoAvs());
 				if (typeRefus != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus);
+					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, false);
 					return;
 				}
 

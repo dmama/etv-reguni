@@ -2,18 +2,18 @@ package ch.vd.uniregctb.efacture;
 
 public class MockEFactureMessageSender implements EFactureMessageSender {
 	@Override
-	public void envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture) throws EvenementEfactureException {
-
+	public String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture, boolean retourAttendu) throws EvenementEfactureException {
+	return "";
 	}
 
 	@Override
-	public void envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
-
+	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+		return "";
 	}
 
 	@Override
-	public void envoieAcceptationDemandeInscription(String idDemande) throws EvenementEfactureException {
-
+	public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
+		return "";
 	}
 
 	@Override

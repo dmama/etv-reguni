@@ -5,6 +5,7 @@ public enum TypeEtatDemande {
 	EN_ATTENTE_CONTACT,
 	EN_ATTENTE_SIGNATURE,
 	REFUSEE,
+	IGNOREE,
 	VALIDEE;
 
 	public boolean isEnCours() {

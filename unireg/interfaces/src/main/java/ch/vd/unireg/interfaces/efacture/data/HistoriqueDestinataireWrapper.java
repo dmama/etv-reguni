@@ -1,8 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
-import javax.persistence.Transient;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
@@ -51,35 +49,11 @@ public class HistoriqueDestinataireWrapper {
 	}
 
 	public EtatDestinataireWrapper getDernierEtat() {
-
-		// tri par ordre croissant
-		final List<EtatDestinataireWrapper> etatsSorted = getEtatsSorted();
-		if (etatsSorted == null || etatsSorted.isEmpty()) {
-			return null;
+		//Les états nous sont toujours renvoyés par ordre chronologique croissant par le ws efacture
+		if(etats!=null && !etats.isEmpty()){
+			return etats.get(etats.size()-1);
 		}
-
-		// récupère le dernier état non-annulé (qui n'est pas un retour, donc)
-		for (int i = etatsSorted.size() - 1; i >= 0; --i) {
-			final EtatDestinataireWrapper e = etatsSorted.get(i);
-				return e;
-		}
-
 		return null;
-		//return etats.get(etats.size()-1);
-	}
-
-	@Transient
-	public List<EtatDestinataireWrapper> getEtatsSorted() {
-
-		if (etats == null) {
-			return null;
-		}
-
-		// tri par ordre croissant
-		final List<EtatDestinataireWrapper> list = new ArrayList<EtatDestinataireWrapper>(etats);
-		Collections.sort(list, new EtatDestinataireWrapper.Comparator());
-
-		return list;
 	}
 
 

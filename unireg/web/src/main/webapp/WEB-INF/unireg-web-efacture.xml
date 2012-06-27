@@ -8,6 +8,9 @@
 
 	<bean id="efactureManager" class="ch.vd.uniregctb.efacture.manager.EfactureManagerImpl">
 		<property name="eFactureService" ref="efactureService" />
+		<property name="eFactureResponseService" ref="eFactureResponseService" />
+		<property name="timeOutForReponse" value="${extprop.evtEfacture.reponse.wait}" />
+
 	</bean>
 
 	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">

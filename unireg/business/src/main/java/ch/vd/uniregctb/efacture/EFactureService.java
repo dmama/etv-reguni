@@ -18,7 +18,7 @@ public interface EFactureService {
 	 * @param retourAttendu vrai si un retour est attendu suite à la notification
 	 */
 
-	void notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Demande l'impression du document de demande de signature ou de demande de contact
@@ -97,5 +97,21 @@ public interface EFactureService {
 	 */
 	public String activerContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException;
 
+	/**Permet l'envoi d'un message d'acceptation pour une demande d'inscription
+	 *
+	 *
+	 * @param idDemande identifiant de la demande
+	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @return le business id du message demandant l'acceptation
+	 * @throws EvenementEfactureException
+	 */
+	public String accepterDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException;
 
+	/**
+	 * Permet l'envoi d'un message de refus pour une demande d'inscription
+	 * @param idDemande
+	 * @param retourAttendu
+	 * @return le business id du message demandant le refus
+	 */
+	String refuserDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException;
 }

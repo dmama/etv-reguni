@@ -15,6 +15,7 @@ import ch.vd.unireg.interfaces.efacture.data.TypeStatusDemande;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
+import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EtatDemande;
 import ch.vd.uniregctb.efacture.EtatDestinataire;
@@ -28,12 +29,15 @@ import ch.vd.uniregctb.type.TypeDocument;
 public class EfactureManagerImpl implements EfactureManager {
 
 	private EFactureService eFactureService;
+	private EFactureResponseService eFactureResponseService;
+
+	private long timeOutForReponse;
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
+	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
 		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
-		eFactureService.notifieMiseEnattenteInscription(idDemande, typeDocument, idArchivage, true);
+		return eFactureService.notifieMiseEnattenteInscription(idDemande, typeDocument, idArchivage, true);
 	}
 
 	@Override
@@ -46,6 +50,32 @@ public class EfactureManagerImpl implements EfactureManager {
 		return historiqueDestinataire;
 	}
 
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public String suspendreContribuable(long ctbId) throws EvenementEfactureException {
+		return eFactureService.suspendreContribuable(ctbId,true);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public String activerContribuable(long ctbId) throws EvenementEfactureException {
+		return eFactureService.activerContribuable(ctbId,true);
+	}
+
+	@Override
+	public boolean isReponseReçuDeEfacture(String businessId) {
+		return eFactureResponseService.waitForResponse(businessId,timeOutForReponse);
+	}
+
+	@Override
+	public String accepterDemande(String idDemande) throws EvenementEfactureException {
+		return eFactureService.accepterDemande(idDemande, true);
+	}
+
+	@Override
+	public String refuserDemande(String idDemande) throws EvenementEfactureException {
+		return eFactureService.refuserDemande(idDemande,true);
+	}
 
 
 	private HistoriqueDestinataire getHistoriqueDestinataireFromWrapper(HistoriqueDestinataireWrapper historiqueDestinataireWrapper) {
@@ -103,17 +133,36 @@ public class EfactureManagerImpl implements EfactureManager {
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etatDemandeWrapper.getCodeRaison());
 		final String key = etatDemandeWrapper.getChampLibre();
 		final String descriptionEtat = etatDemandeWrapper.getStatusDemande().getDescription();
-		final TypeEtatDemande typeEtatDemande = determinerTypeEtatDemande(etatDemandeWrapper.getStatusDemande());
+		final TypeEtatDemande typeEtatDemande = determinerTypeEtatDemande(etatDemandeWrapper.getStatusDemande(),etatDemandeWrapper.getCodeRaison());
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
 
 		return new EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande);
 	}
 
-	private TypeEtatDemande determinerTypeEtatDemande(TypeStatusDemande codeRaison) {
+	private TypeEtatDemande determinerTypeEtatDemande(TypeStatusDemande statusDemande,Integer codeRaison) {
+		switch (statusDemande){
+		 case A_TRAITE:
+			 return TypeEtatDemande.RECUE;
+		 case IGNOREE:
+			 return TypeEtatDemande.IGNOREE;
+		 case REFUSEE:
+			 return TypeEtatDemande.REFUSEE;
+		 case VALIDATION_EN_COURS:
+			 if(TypeAttenteEFacture.EN_ATTENTE_SIGNATURE.getCode() == codeRaison ){
+				 return TypeEtatDemande.EN_ATTENTE_SIGNATURE;
+			 }
+			 else if(TypeAttenteEFacture.EN_ATTENTE_CONTACT.getCode() == codeRaison ){
+				 return TypeEtatDemande.EN_ATTENTE_CONTACT;
+			 }
+			 break;
+
+		 case VALIDEE:
+			 return TypeEtatDemande.VALIDEE;
+		}
 		//TODO le type de demande ne match pas avec ce que renvoie le web service efacture
 		//A clarifier avant d epoursuivre l'implementation
-
-		return TypeEtatDemande.RECUE;  //To change body of created methods use File | Settings | File Templates.
+		//TODO C'est temporaire pour le testing, à supprimer lorsque l'on aura plus d'info sur les correspondances
+		return TypeEtatDemande.EN_ATTENTE_SIGNATURE;  //To change body of created methods use File | Settings | File Templates.
 	}
 
 	private TypeDocumentEditique determineTypeDocumentEditique(Integer codeRaison) {
@@ -144,5 +193,13 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
+	}
+
+	public void seteFactureResponseService(EFactureResponseService eFactureResponseService) {
+		this.eFactureResponseService = eFactureResponseService;
+	}
+
+	public void setTimeOutForReponse(long timeOutForReponse) {
+		this.timeOutForReponse = timeOutForReponse;
 	}
 }

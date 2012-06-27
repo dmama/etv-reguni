@@ -98,6 +98,7 @@
 				<value>classpath:unireg-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-common-1.xsd</value>
 				<value>classpath:event/di/evenementDeclarationImpot-output-1.xsd</value>
+				<value>classpath:eVD-0025-1-0.xsd</value>
 			</list>
 		</property>
 	</bean>

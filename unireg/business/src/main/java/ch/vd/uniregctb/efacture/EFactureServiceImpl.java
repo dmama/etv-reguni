@@ -173,9 +173,20 @@ public class EFactureServiceImpl implements EFactureService {
 	}
 
 	@Override
-	public void notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String accepterDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande,retourAttendu);
+	}
+
+	@Override
+	public String refuserDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
+		//TODO type de refus a determiner depuis le client
+		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande,TypeRefusEFacture.DATE_DEMANDE_ABSENTE,retourAttendu);
+	}
+
+	@Override
+	public String notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		final TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
-		eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, idArchivage, retourAttendu);
+		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, idArchivage, retourAttendu);
 	}
 
 	private TypeAttenteEFacture determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
