@@ -19,6 +19,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -114,10 +115,11 @@ public class EFactureServiceTest extends BusinessTest {
 		// Echantillon de Test :
 		//  - Mr Jacquier n'a pas d'adresse et ne doit pas pouvoir s'inscrire
 		//  - Mr Chollet a un test est doit pouvoir s'incrire a condition que l'on fournisse le bon numéro avs.
-		//  -
+		//  - Le ménage commun Sherley Bochuz & Stève Berclaz devrait pouvoir également s'incrire a condition que l'on fournisse le bon numéro avs.
 
-		final long noJacquier= 123456L, noChollet= 223456L;
-		final String noAvsAutre = "7565817249033", noAvsJacquier = "7562025802593", noAvsChollet = "7568700351431";
+		final long noJacquier= 123456L, noChollet= 223456L, noBochuz = 345667L, noBerclaz = 987734L ;
+		final String noAvsJacquier = "7562025802593", noAvsChollet = "7568700351431", noAvsBerclaz = "7565817249033", noAvsBochuz = "7567902948722";
+		final RegDate dateMariage = date(2002,3,4);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -127,6 +129,14 @@ public class EFactureServiceTest extends BusinessTest {
 				MockIndividu chollet = addIndividu(noChollet , date(1980, 1, 2), "Ignacio", "Chollet", true);
 				chollet.setNouveauNoAVS(noAvsChollet);
 				addAdresse(chollet, TypeAdresseCivil.COURRIER, MockRue.Moudon.LeBourg, null, date(1980, 1, 2), null);
+				MockIndividu bochuz = addIndividu(noBochuz, date(1980,1,2), "Sherley", "Bochuz", false);
+				addAdresse(bochuz, TypeAdresseCivil.COURRIER, MockRue.Bex.RouteDuBoet, null, date(1980, 1, 2), dateMariage.getOneDayBefore());
+				addAdresse(bochuz, TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateMariage, null);
+				bochuz.setNouveauNoAVS(noAvsBochuz);
+				MockIndividu berclaz = addIndividu(noBerclaz, date(1980,1,2), "Stève", "Berclaz", true);
+				berclaz.setNouveauNoAVS(noAvsBerclaz);
+				addAdresse(berclaz, TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, date(1980, 1, 2), null);
+				marieIndividus(berclaz,bochuz, dateMariage);
 			}
 		});
 
@@ -135,21 +145,26 @@ public class EFactureServiceTest extends BusinessTest {
 			public Long[] doInTransaction(TransactionStatus status) {
 				PersonnePhysique pp1 = addHabitant(noJacquier);
 				PersonnePhysique pp2 = addHabitant(noChollet);
-				return new Long[] {pp1.getNumero(), pp2.getNumero()};
+				PersonnePhysique pp3 = addHabitant(noBerclaz);
+				PersonnePhysique pp4 = addHabitant(noBochuz);
+				MenageCommun mc = addEnsembleTiersCouple(pp3,pp4, dateMariage, null).getMenage();
+				return new Long[] {pp1.getNumero(), pp2.getNumero(), mc.getNumero()};
 			}
 		});
 
-		final long idJacquier = ctbIds [0], idChollet = ctbIds [1];
-
+		final long idJacquier = ctbIds [0], idChollet = ctbIds [1], idMenageBerclaz = ctbIds[2];
 
 		doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					assertEquals(TypeRefusEFacture.NUMERO_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(56758 ,noAvsAutre));
+					assertEquals(TypeRefusEFacture.NUMERO_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(56758 ,noAvsBerclaz));
 					assertEquals(TypeRefusEFacture.ADRESSE_COURRIER_INEXISTANTE, efactureService.identifieContribuablePourInscription(idJacquier ,noAvsJacquier));
-					assertEquals(TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(idChollet ,noAvsAutre));
+					assertEquals(TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(idChollet ,noAvsBerclaz));
 					assertEquals(null, efactureService.identifieContribuablePourInscription(idChollet ,noAvsChollet));
+					assertEquals(TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(idMenageBerclaz ,noAvsChollet));
+					assertEquals(null, efactureService.identifieContribuablePourInscription(idMenageBerclaz ,noAvsBerclaz));
+					assertEquals(null, efactureService.identifieContribuablePourInscription(idMenageBerclaz ,noAvsBochuz));
 				}
 				catch (AdresseException e) {
 					throw new RuntimeException(e);
