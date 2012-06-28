@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema targetNamespace="http://evd.vd.ch/xmlns/eVD-0026/1"
            xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
            xmlns:eVD-0025="http://evd.vd.ch/xmlns/eVD-0025/1"
            xmlns:eVD-0026="http://evd.vd.ch/xmlns/eVD-0026/1"
            elementFormDefault="qualified"
@@ -13,6 +14,8 @@
         </xs:documentation>
     </xs:annotation>
 
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
     <xs:import namespace="http://evd.vd.ch/xmlns/eVD-0025/1"
                schemaLocation="http://evd.vd.ch/xmlns/eVD-0025/1/eVD-0025-1-0.xsd"/>
 
@@ -59,14 +62,24 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="senderParty" type="eVD-0025:billerWithAddressType">
+            <xs:element name="billerId" type="eVD-0025:billerIdType">
                 <xs:annotation>
-                    <xs:documentation>Emetteur</xs:documentation>
+                    <xs:documentation>Identification de l'émetteur</xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="receiverParty" type="eVD-0025:payerWithAddressType">
+            <xs:element name="billerAddress" type="eCH-0010:organisationMailAddressType" minOccurs="0">
                 <xs:annotation>
-                    <xs:documentation>Destinataire</xs:documentation>
+                    <xs:documentation>Adresse postale de l'émetteur, facultative</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="payerId" type="eVD-0025:payerIdType">
+                <xs:annotation>
+                    <xs:documentation>Identification du destinataire</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="payerAddress" type="eCH-0010:personMailAddressType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Adresse postale du destinataire, facultative</xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="emailNotification" type="xs:boolean" minOccurs="0">
@@ -185,13 +198,11 @@
     <xs:simpleType name="esrCustomerNumberType">
         <xs:annotation>
             <xs:documentation>
-                Numéro de compte postal
-                N [2]-[6]-[1] Orange inpayment slip (ESR) customer number of biller (e.g. "01-123456-1").
-                First two positions must be "01" for CHF or "03" for EUR
+                Numéro de compte postal, avec séparateur "-" p. ex. "01-999999-7"
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:token">
-            <xs:pattern value="\d{2}-\d{6}-\d{1}"/>
+            <xs:pattern value="\d{2}-\d{1,6}-\d{1}"/>
         </xs:restriction>
     </xs:simpleType>
 
@@ -232,7 +243,7 @@
             </xs:documentation>
         </xs:annotation>
         <xs:restriction base="xs:token">
-            <xs:maxLength value="32"/>
+            <xs:maxLength value="40"/>
         </xs:restriction>
     </xs:simpleType>
 
