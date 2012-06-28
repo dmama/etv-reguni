@@ -13,12 +13,13 @@ public interface EFactureService {
 	/**
 	 * Permet de notfier à l'E-facture que la demande est mise en attente
 	 * @param idDemande identifiant de la demande
-	 * @param typeDocument le type de document qui a été imprimée
+	 * @param typeAttenteEFacture
+	 * @param description la description de la mise en attente
 	 * @param idArchivage la clé d'archivage générée
 	 * @param retourAttendu vrai si un retour est attendu suite à la notification
 	 */
 
-	String notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String notifieMiseEnattenteInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Demande l'impression du document de demande de signature ou de demande de contact
@@ -81,37 +82,45 @@ public interface EFactureService {
 	/**
 	 * Demande la suspension d'un contribuable à la e-facture
 	 *
+	 *
 	 * @param ctbId id du contribuable à suspendre
 	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @param description
 	 * @return le business id du message demandant la suspension
 	 */
-	public String suspendreContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException;
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 
 	/**
 	 * Demande l'activation d'un contribuable à la e-facture
 	 *
+	 *
 	 * @param ctbId id du contribuable à activer
 	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @param description
 	 * @return le business id du message demandant l'activation
 	 */
-	public String activerContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException;
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 	/**Permet l'envoi d'un message d'acceptation pour une demande d'inscription
 	 *
 	 *
+	 *
 	 * @param idDemande identifiant de la demande
 	 * @param retourAttendu <code>True</code> si on veut que e-facture nous renvoie un accusé de reception <code>False</code> sinon
+	 * @param description
 	 * @return le business id du message demandant l'acceptation
 	 * @throws EvenementEfactureException
 	 */
-	public String accepterDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException;
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
 
 	/**
 	 * Permet l'envoi d'un message de refus pour une demande d'inscription
+	 *
 	 * @param idDemande
 	 * @param retourAttendu
+	 * @param description
 	 * @return le business id du message demandant le refus
 	 */
-	String refuserDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException;
+	String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
 }

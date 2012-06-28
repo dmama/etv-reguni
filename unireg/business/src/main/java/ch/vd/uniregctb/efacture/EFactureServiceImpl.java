@@ -163,30 +163,28 @@ public class EFactureServiceImpl implements EFactureService {
 	}
 
 	@Override
-	public String suspendreContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieSuspensionContribuable(ctbId, retourAttendu);
+	public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieSuspensionContribuable(ctbId, retourAttendu, description);
 	}
 
 	@Override
-	public String activerContribuable(long ctbId, boolean retourAttendu) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieActivationContribuable(ctbId, retourAttendu);
+	public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieActivationContribuable(ctbId, retourAttendu, description);
 	}
 
 	@Override
-	public String accepterDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande,retourAttendu);
+	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande,retourAttendu, description);
 	}
 
 	@Override
-	public String refuserDemande(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
-		//TODO type de refus a determiner depuis le client
-		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande,TypeRefusEFacture.DATE_DEMANDE_ABSENTE,retourAttendu);
+	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande,null, description, retourAttendu);
 	}
 
 	@Override
-	public String notifieMiseEnattenteInscription(String idDemande, TypeDocument typeDocument, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
-		final TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
-		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, idArchivage, retourAttendu);
+	public String notifieMiseEnattenteInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, description, idArchivage, retourAttendu);
 	}
 
 	private TypeAttenteEFacture determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {

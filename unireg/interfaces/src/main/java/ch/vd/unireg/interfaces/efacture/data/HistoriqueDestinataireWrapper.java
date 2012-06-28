@@ -60,7 +60,7 @@ public class HistoriqueDestinataireWrapper {
  public boolean isActivable(){
 	 final EtatDestinataireWrapper dernierEtat = getDernierEtat();
 	 if(dernierEtat !=null){
-		 return dernierEtat.getStatusDestinataire().isActivable();
+		 return dernierEtat.getEtatDestinataire().isActivable();
 
 	 }
 	 return false;
@@ -69,7 +69,7 @@ public class HistoriqueDestinataireWrapper {
 	public boolean isSuspendable(){
 		final EtatDestinataireWrapper dernierEtat = getDernierEtat();
 		if(dernierEtat !=null){
-			return dernierEtat.getStatusDestinataire().isSuspendable();
+			return dernierEtat.getEtatDestinataire().isSuspendable();
 
 		}
 		return false;

@@ -10,6 +10,8 @@
 		<property name="eFactureService" ref="efactureService" />
 		<property name="eFactureResponseService" ref="eFactureResponseService" />
 		<property name="timeOutForReponse" value="${extprop.evtEfacture.reponse.wait}" />
+		<property name="messageSource" ref="messageSource" />
+
 
 	</bean>
 

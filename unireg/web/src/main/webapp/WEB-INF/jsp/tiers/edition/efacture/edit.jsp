@@ -61,26 +61,26 @@
                     </display:column>
                 </display:table>
 
-                <c:set var="typeEtatDemandeEnCours" value="${demandeEnCours.etatCourant.type}"/>
-                <table border="0" style="display: ${typeEtatDemandeEnCours.validable || typeEtatDemandeEnCours.refusable || typeEtatDemandeEnCours.mettableEnAttenteSignature || typeEtatDemandeEnCours.mettableEnAttenteContact ? '' : 'none'};">
+                <c:set var="etatDemandeEnCours" value="${demandeEnCours.etatCourant}"/>
+                <table border="0" style="display: ${etatDemandeEnCours.validable || etatDemandeEnCours.refusable || etatDemandeEnCours.mettableEnAttenteSignature || etatDemandeEnCours.mettableEnAttenteContact ? '' : 'none'};">
                     <tr>
                         <td align="center">
-                            <c:if test="${typeEtatDemandeEnCours.validable}">
+                            <c:if test="${etatDemandeEnCours.validable}">
                                 &nbsp;
                                 <input id="suspend" type="button" value="<fmt:message key='label.efacture.bouton.valider'/>" onclick="EditEFacture.validate(${histo.ctbId}, ${demandeEnCours.idDemande});"/>
                                 &nbsp;
                             </c:if>
-                            <c:if test="${typeEtatDemandeEnCours.refusable}">
+                            <c:if test="${etatDemandeEnCours.refusable}">
                                 &nbsp;
                                 <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.refuser'/>" onclick="EditEFacture.refuse(${histo.ctbId}, ${demandeEnCours.idDemande});"/>
                                 &nbsp;
                             </c:if>
-                            <c:if test="${typeEtatDemandeEnCours.mettableEnAttenteSignature}">
+                            <c:if test="${etatDemandeEnCours.mettableEnAttenteSignature}">
                                 &nbsp;
                                 <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.attente.signature'/>" onclick="EditEFacture.waitForSignature(${histo.ctbId}, ${demandeEnCours.idDemande}, '<unireg:regdate regdate="${demandeEnCours.dateDemande}" />');"/>
                                 &nbsp;
                             </c:if>
-                            <c:if test="${typeEtatDemandeEnCours.mettableEnAttenteContact}">
+                            <c:if test="${etatDemandeEnCours.mettableEnAttenteContact}">
                                 &nbsp;
                                 <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.attente.contact'/>" onclick="EditEFacture.waitForContact(${histo.ctbId}, ${demandeEnCours.idDemande},  '<unireg:regdate regdate="${demandeEnCours.dateDemande}" />');"/>
                                 &nbsp;

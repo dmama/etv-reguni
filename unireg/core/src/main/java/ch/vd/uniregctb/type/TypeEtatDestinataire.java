@@ -1,6 +1,6 @@
-package ch.vd.unireg.interfaces.efacture.data;
+package ch.vd.uniregctb.type;
 
-public enum TypeStatusDestinataire {
+public enum TypeEtatDestinataire {
 	INSCRIT("Inscrit"),
 	INSCRIT_SUSPENDU("Inscrit suspendu"),
 	DESINSCRIT("Désinscrit"),
@@ -8,7 +8,7 @@ public enum TypeStatusDestinataire {
 
 	private String description;
 
-	private TypeStatusDestinataire(String description) {
+	private TypeEtatDestinataire(String description) {
 		this.description = description;
 	}
 

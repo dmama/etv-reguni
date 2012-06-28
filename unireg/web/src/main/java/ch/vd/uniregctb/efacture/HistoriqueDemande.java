@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.TypeEtatDemande;
 
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
@@ -51,22 +52,22 @@ public class HistoriqueDemande {
 	}
 
 	public boolean isValidable() {
-		final TypeEtatDemande type = getTypeEtatCourant();
-		return type != null && type.isValidable();
+		final EtatDemande etatCourant = getEtatCourant();
+		return etatCourant != null && etatCourant.isValidable();
 	}
 
 	public boolean isRefusable() {
-		final TypeEtatDemande type = getTypeEtatCourant();
-		return type != null && type.isRefusable();
+		final EtatDemande etatCourant = getEtatCourant();
+		return etatCourant != null && etatCourant.isRefusable();
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		final TypeEtatDemande type = getTypeEtatCourant();
-		return type != null && type.isMettableEnAttenteContact();
+		final EtatDemande etatCourant = getEtatCourant();
+		return etatCourant != null && etatCourant.isMettableEnAttenteContact();
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		final TypeEtatDemande type = getTypeEtatCourant();
-		return type != null && type.isMettableEnAttenteSignature();
+		final EtatDemande etatCourant = getEtatCourant();
+		return etatCourant != null && etatCourant.isMettableEnAttenteSignature();
 	}
 }

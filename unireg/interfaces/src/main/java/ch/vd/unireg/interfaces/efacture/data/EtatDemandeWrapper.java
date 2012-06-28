@@ -4,13 +4,15 @@ import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.type.TypeEtatDemande;
 
 public class EtatDemandeWrapper {
 	private String champLibre;
 	private RegDate date;
 	private Integer codeRaison;
 	private String descriptionRaison;
-	private TypeStatusDemande typeStatusDemande;
+	private TypeEtatDemande typeEtatDemande;
+
 
 
 	public EtatDemandeWrapper(RegistrationRequestHistoryEntry target) {
@@ -18,22 +20,22 @@ public class EtatDemandeWrapper {
 		this.date = XmlUtils.xmlcal2regdate(target.getDate());
 		this.codeRaison = target.getReasonCode();
 		this.descriptionRaison = target.getReasonDescription();
-		this.typeStatusDemande = determineStatusDemande(target.getStatus());
+		this.typeEtatDemande = determineStatusDemande(target.getStatus());
 
 	}
 
-	private TypeStatusDemande determineStatusDemande(RegistrationRequestStatus status) {
+	private TypeEtatDemande determineStatusDemande(RegistrationRequestStatus status) {
 		switch (status){
 		 case IGNOREE:
-			 return TypeStatusDemande.IGNOREE;
+			 return TypeEtatDemande.IGNOREE;
 		 case A_TRAITER:
-			 return TypeStatusDemande.A_TRAITE;
+			 return TypeEtatDemande.A_TRAITER;
 		 case REFUSEE:
-			 return TypeStatusDemande.REFUSEE;
+			 return TypeEtatDemande.REFUSEE;
 		 case VALIDATION_EN_COURS:
-			 return TypeStatusDemande.VALIDATION_EN_COURS;
+			 return TypeEtatDemande.VALIDATION_EN_COURS;
 		 case VALIDEE:
-			 return TypeStatusDemande.VALIDEE;
+			 return TypeEtatDemande.VALIDEE;
 		 default:
 			 throw new IllegalArgumentException("Le statut de demande suivant n'est pas reconnu "+ status);
 
@@ -56,7 +58,7 @@ public class EtatDemandeWrapper {
 		return descriptionRaison;
 	}
 
-	public TypeStatusDemande getStatusDemande() {
-		return typeStatusDemande;
+	public TypeEtatDemande getTypeEtatDemande() {
+		return typeEtatDemande;
 	}
 }

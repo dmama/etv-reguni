@@ -5,8 +5,8 @@ import org.jetbrains.annotations.Nullable;
 public enum TypeAttenteEFacture {
 
 	PAS_EN_ATTENTE (null, "Pas En Attente"),
-	EN_ATTENTE_CONTACT(1, "Mise en attente : l'assujettissement est incohérent avec la e-Facture"),
-	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation d'inscription");
+	EN_ATTENTE_CONTACT(1, "Mise en attente."),
+	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation.");
 
 	private final Integer code;
 	private final String description;
@@ -33,6 +33,11 @@ public enum TypeAttenteEFacture {
 			if (code.equals(t.code)) {
 				return t;
 			}
+		}
+		//TODO afin d'éviter que ca plante, on reçoit des nombres aléatoire de la efacture devrait être inutile après la mise en integration
+		if(code > 2){
+			return PAS_EN_ATTENTE;
+
 		}
 		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteEFacture valide");
 	}

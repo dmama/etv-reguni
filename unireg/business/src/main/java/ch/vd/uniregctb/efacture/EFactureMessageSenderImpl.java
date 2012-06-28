@@ -62,38 +62,30 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture, boolean retourAttendu) throws EvenementEfactureException {
-		// TODO e-facture à faire, il manque sans doute encore des paramètres pour expliquer le refus et la gestion de la demande de réponse
-		final String description = typeRefusEFacture.getDescription();
-		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, description, null, retourAttendu);
+	public String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture, String description, boolean retourAttendu) throws EvenementEfactureException {
+		final String desc= typeRefusEFacture == null? description:typeRefusEFacture.getDescription();
+		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, desc, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
-		// TODO e-facture à faire, il manque sans doute encore des paramètres pour qualifier la mise en attente
-		// TODO (il y en a deux types dans Unireg, un seul dans e-facture, seulement distingués par les champs annexe)
-		// TODO ainsi que la gestion de la demande de réponse
-		final String description = typeAttenteEFacture.getDescription();
+	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		final Integer code = typeAttenteEFacture.getCode();
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, code, description, idArchivage, retourAttendu);
 	}
 
 	@Override
-	public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu) throws EvenementEfactureException {
-		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
-		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDEE, null, null, null, retourAttendu);
+	public String envoieAcceptationDemandeInscription(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDEE, null,description, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
-		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
-		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, null, null, retourAttendu);
+	public String envoieSuspensionContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.SUSPENDRE, null, description, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieActivationContribuable(long noCtb, boolean retourAttendu) throws EvenementEfactureException {
-		// TODO e-facture finaliser l'éventuel texte libre (description) et la gestion de la demande de réponse
-		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, null, null, retourAttendu);
+	public String envoieActivationContribuable(long noCtb, boolean retourAttendu, String description) throws EvenementEfactureException {
+		return sendMiseAJourDestinataire(noCtb, PayerUpdateAction.LIBERER, null, description, null, retourAttendu);
 	}
 
 	private static interface CustomMarshaller {

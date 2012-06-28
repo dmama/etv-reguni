@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -11,7 +12,7 @@ import ch.vd.unireg.interfaces.efacture.data.EtatDemandeWrapper;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataireWrapper;
 import ch.vd.unireg.interfaces.efacture.data.HistoriqueDemandeWrapper;
 import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
-import ch.vd.unireg.interfaces.efacture.data.TypeStatusDemande;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
@@ -23,13 +24,15 @@ import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.efacture.HistoriqueDemande;
 import ch.vd.uniregctb.efacture.HistoriqueDestinataire;
 import ch.vd.uniregctb.efacture.TypeAttenteEFacture;
-import ch.vd.uniregctb.efacture.TypeEtatDemande;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDemande;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class EfactureManagerImpl implements EfactureManager {
 
 	private EFactureService eFactureService;
 	private EFactureResponseService eFactureResponseService;
+	private MessageSource messageSource;
 
 	private long timeOutForReponse;
 
@@ -37,7 +40,15 @@ public class EfactureManagerImpl implements EfactureManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException {
 		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
-		return eFactureService.notifieMiseEnattenteInscription(idDemande, typeDocument, idArchivage, true);
+		final TypeAttenteEFacture typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
+		final String messageAvecVisaUser = getMessageAvecVisaUser();
+		final String description = typeAttenteEFacture.getDescription()+" "+messageAvecVisaUser;
+		return eFactureService.notifieMiseEnattenteInscription(idDemande, typeAttenteEFacture, description, idArchivage, true);
+	}
+
+	private String getMessageAvecVisaUser() {
+		String user = AuthenticationHelper.getCurrentPrincipal();
+		return String.format("Traitement manuel par %s", user);
 	}
 
 	@Override
@@ -53,13 +64,15 @@ public class EfactureManagerImpl implements EfactureManager {
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String suspendreContribuable(long ctbId) throws EvenementEfactureException {
-		return eFactureService.suspendreContribuable(ctbId,true);
+		String description = getMessageAvecVisaUser();
+		return eFactureService.suspendreContribuable(ctbId,true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String activerContribuable(long ctbId) throws EvenementEfactureException {
-		return eFactureService.activerContribuable(ctbId,true);
+		String description = getMessageAvecVisaUser();
+		return eFactureService.activerContribuable(ctbId,true, description);
 	}
 
 	@Override
@@ -69,12 +82,14 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public String accepterDemande(String idDemande) throws EvenementEfactureException {
-		return eFactureService.accepterDemande(idDemande, true);
+		String description = getMessageAvecVisaUser();
+		return eFactureService.accepterDemande(idDemande, true, description);
 	}
 
 	@Override
 	public String refuserDemande(String idDemande) throws EvenementEfactureException {
-		return eFactureService.refuserDemande(idDemande,true);
+		String description = getMessageAvecVisaUser();
+		return eFactureService.refuserDemande(idDemande,true, description);
 	}
 
 
@@ -121,8 +136,10 @@ public class EfactureManagerImpl implements EfactureManager {
 		final RegDate dateObtention = etatDestinataireWrapper.getDateObtention();
 		final String motifObtention = etatDestinataireWrapper.getDescriptionRaison();
 		final String key = etatDestinataireWrapper.getChampLibre();
-		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etatDestinataireWrapper.getCodeRaison());
-		final String descriptionEtat = etatDestinataireWrapper.getStatusDestinataire()!=null? etatDestinataireWrapper.getStatusDestinataire().getDescription():null;
+		final TypeAttenteEFacture typeAttenteEFacture = TypeAttenteEFacture.valueOf(etatDestinataireWrapper.getCodeRaison());
+		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
+		final String label  = "label.efacture.etat.destinataire."+etatDestinataireWrapper.getEtatDestinataire();
+		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
 		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
 		return new EtatDestinataire(dateObtention,motifObtention,archiveKey,descriptionEtat);
 	}
@@ -130,50 +147,40 @@ public class EfactureManagerImpl implements EfactureManager {
 	private EtatDemande getEtatDemande(EtatDemandeWrapper etatDemandeWrapper) {
 		final RegDate dateObtention = etatDemandeWrapper.getDate();
 		final String motifObtention = etatDemandeWrapper.getDescriptionRaison();
-		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etatDemandeWrapper.getCodeRaison());
+		final TypeAttenteEFacture typeAttenteEFacture = TypeAttenteEFacture.valueOf(etatDemandeWrapper.getCodeRaison());
+
+		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
 		final String key = etatDemandeWrapper.getChampLibre();
-		final String descriptionEtat = etatDemandeWrapper.getStatusDemande().getDescription();
-		final TypeEtatDemande typeEtatDemande = determinerTypeEtatDemande(etatDemandeWrapper.getStatusDemande(),etatDemandeWrapper.getCodeRaison());
+		final String label  = "label.efacture.etat.demande."+etatDemandeWrapper.getTypeEtatDemande();
+		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
+
+		final TypeEtatDemande typeEtatDemande = etatDemandeWrapper.getTypeEtatDemande();
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
-
-		return new EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande);
+		return new EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
 	}
 
-	private TypeEtatDemande determinerTypeEtatDemande(TypeStatusDemande statusDemande,Integer codeRaison) {
-		switch (statusDemande){
-		 case A_TRAITE:
-			 return TypeEtatDemande.RECUE;
-		 case IGNOREE:
-			 return TypeEtatDemande.IGNOREE;
-		 case REFUSEE:
-			 return TypeEtatDemande.REFUSEE;
-		 case VALIDATION_EN_COURS:
-			 if(TypeAttenteEFacture.EN_ATTENTE_SIGNATURE.getCode() == codeRaison ){
-				 return TypeEtatDemande.EN_ATTENTE_SIGNATURE;
-			 }
-			 else if(TypeAttenteEFacture.EN_ATTENTE_CONTACT.getCode() == codeRaison ){
-				 return TypeEtatDemande.EN_ATTENTE_CONTACT;
-			 }
-			 break;
 
-		 case VALIDEE:
-			 return TypeEtatDemande.VALIDEE;
-		}
-		//TODO le type de demande ne match pas avec ce que renvoie le web service efacture
-		//A clarifier avant d epoursuivre l'implementation
-		//TODO C'est temporaire pour le testing, à supprimer lorsque l'on aura plus d'info sur les correspondances
-		return TypeEtatDemande.EN_ATTENTE_SIGNATURE;  //To change body of created methods use File | Settings | File Templates.
-	}
-
-	private TypeDocumentEditique determineTypeDocumentEditique(Integer codeRaison) {
-		if(codeRaison == TypeAttenteEFacture.EN_ATTENTE_CONTACT.getCode()){
+	private TypeDocumentEditique determineTypeDocumentEditique(TypeAttenteEFacture typeAttenteEFacture) {
+		if(typeAttenteEFacture == TypeAttenteEFacture.EN_ATTENTE_CONTACT){
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_CONTACT;
 		}
-		else if(codeRaison == TypeAttenteEFacture.EN_ATTENTE_SIGNATURE.getCode()){
+		else if(typeAttenteEFacture == TypeAttenteEFacture.EN_ATTENTE_SIGNATURE){
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_SIGNATURE;
 		}
 		return null;
 	}
+
+	private TypeAttenteEFacture determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
+		switch (typeDocument) {
+		case E_FACTURE_ATTENTE_CONTACT:
+			return TypeAttenteEFacture.EN_ATTENTE_CONTACT;
+		case E_FACTURE_ATTENTE_SIGNATURE:
+			return TypeAttenteEFacture.EN_ATTENTE_SIGNATURE;
+		default:
+			throw new IllegalArgumentException("Le type de document " + typeDocument.name() + " est inconnue");
+		}
+	}
+
 
 
 
@@ -191,6 +198,8 @@ public class EfactureManagerImpl implements EfactureManager {
 		}
 	}
 
+
+
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
 	}
@@ -201,5 +210,9 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	public void setTimeOutForReponse(long timeOutForReponse) {
 		this.timeOutForReponse = timeOutForReponse;
+	}
+
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
 	}
 }

@@ -4,19 +4,20 @@ import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.type.TypeEtatDestinataire;
 
 public class EtatDestinataireWrapper {
 	private String champLibre;
 	private RegDate dateObtention;
 	private String descriptionRaison;
 	private Integer codeRaison;
-	private TypeStatusDestinataire statusDestinataire;
+	private TypeEtatDestinataire etatDestinataire;
 
 	public EtatDestinataireWrapper(PayerSituationHistoryEntry payerSituationHistoryEntry) {
 		this.champLibre = payerSituationHistoryEntry.getCustomField();
 		this.dateObtention = XmlUtils.xmlcal2regdate(payerSituationHistoryEntry.getDate());
 		this.descriptionRaison = payerSituationHistoryEntry.getReasonDescription();
-		this.statusDestinataire = determineStatusDestinataire(payerSituationHistoryEntry.getStatus());
+		this.etatDestinataire = determineStatusDestinataire(payerSituationHistoryEntry.getStatus());
 		this.codeRaison = payerSituationHistoryEntry.getReasonCode();
 
 	}
@@ -33,28 +34,28 @@ public class EtatDestinataireWrapper {
 		return descriptionRaison;
 	}
 
-	public TypeStatusDestinataire getStatusDestinataire() {
-		return statusDestinataire;
+	public TypeEtatDestinataire getEtatDestinataire() {
+		return etatDestinataire;
 	}
 
 	public Integer getCodeRaison() {
 		return codeRaison;
 	}
 
-	private TypeStatusDestinataire determineStatusDestinataire(PayerStatus status) {
+	private TypeEtatDestinataire determineStatusDestinataire(PayerStatus status) {
 		if(status == null){
 			return null;
 
 		}
 		switch (status) {
 		case DESINSCRIT:
-			return TypeStatusDestinataire.DESINSCRIT;
+			return TypeEtatDestinataire.DESINSCRIT;
 		case DESINSCRIT_SUSPENDU:
-			return TypeStatusDestinataire.DESINSCRIT_SUSPENDU;
+			return TypeEtatDestinataire.DESINSCRIT_SUSPENDU;
 		case INSCRIT:
-			return TypeStatusDestinataire.INSCRIT;
+			return TypeEtatDestinataire.INSCRIT;
 		case INSCRIT_SUSPENDU:
-			return TypeStatusDestinataire.INSCRIT_SUSPENDU;
+			return TypeEtatDestinataire.INSCRIT_SUSPENDU;
 		default:
 			throw new IllegalArgumentException("Le statut du destinataire suivant n'est pas reconnu " + status);
 
