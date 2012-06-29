@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl</OriginalElement>
+  <nodes>
+    <node x="1090.9557692307692" y="2451.0">ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique</node>
+    <node x="2764.28125" y="1186.0">ch.vd.uniregctb.tiers.RepresentationLegale</node>
+    <node x="2798.455769230769" y="2409.0">ch.vd.uniregctb.tiers.IdentificationPersonne</node>
+    <node x="2748.987019230769" y="709.0">ch.vd.uniregctb.tiers.RapportEntreTiers</node>
+    <node x="932.4557692307692" y="2067.5">ch.vd.uniregctb.declaration.Periodicite</node>
+    <node x="599.9557692307692" y="1685.0">ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable</node>
+    <node x="1392.9557692307692" y="2430.0">ch.vd.uniregctb.tiers.SituationFamilleMenageCommun</node>
+    <node x="3195.28125" y="1154.5">ch.vd.uniregctb.tiers.RapportPrestationImposable</node>
+    <node x="2842.28125" y="1674.5">ch.vd.uniregctb.tiers.Tutelle</node>
+    <node x="2988.28125" y="1186.0">ch.vd.uniregctb.tiers.ContactImpotSource</node>
+    <node x="1363.5620192307692" y="462.5">ch.vd.uniregctb.declaration.EtatDeclaration</node>
+    <node x="1959.4557692307692" y="2088.5">ch.vd.uniregctb.tiers.Entreprise</node>
+    <node x="2114.28125" y="1081.0">ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire</node>
+    <node x="1752.4557692307692" y="2130.5">ch.vd.uniregctb.tiers.MenageCommun</node>
+    <node x="1761.9557692307692" y="1632.5">ch.vd.uniregctb.tiers.Contribuable</node>
+    <node x="1413.28125" y="976.0">ch.vd.uniregctb.tiers.Tiers</node>
+    <node x="1270.4557692307692" y="2067.5">ch.vd.uniregctb.tiers.SituationFamille</node>
+    <node x="2635.28125" y="1674.5">ch.vd.uniregctb.tiers.Curatelle</node>
+    <node x="1412.2620192307693" y="0.0">ch.vd.uniregctb.declaration.ModeleFeuilleDocument</node>
+    <node x="885.9557692307692" y="1538.0">ch.vd.uniregctb.tiers.DebiteurPrestationImposable</node>
+    <node x="2019.5620192307692" y="431.0">ch.vd.uniregctb.declaration.DelaiDeclaration</node>
+    <node x="3049.28125" y="1674.5">ch.vd.uniregctb.tiers.ConseilLegal</node>
+    <node x="2753.455769230769" y="1952.0">ch.vd.uniregctb.tiers.PersonnePhysique</node>
+    <node x="392.9557692307692" y="1685.0">ch.vd.uniregctb.tiers.ForFiscalSecondaire</node>
+    <node x="2166.455769230769" y="2109.5">ch.vd.uniregctb.tiers.AutreCommunaute</node>
+    <node x="1507.4557692307692" y="2120.0">ch.vd.uniregctb.tiers.Etablissement</node>
+    <node x="1775.28125" y="1175.5">ch.vd.uniregctb.declaration.DeclarationImpotSource</node>
+    <node x="1348.2620192307693" y="226.0">ch.vd.uniregctb.declaration.ModeleDocument</node>
+    <node x="1655.65625" y="667.0">ch.vd.uniregctb.declaration.Declaration</node>
+    <node x="1110.4870192307692" y="1207.0">ch.vd.uniregctb.tiers.ForFiscalAutreImpot</node>
+    <node x="287.0" y="1165.0">ch.vd.uniregctb.tiers.ForFiscalRevenuFortune</node>
+    <node x="0.0" y="1207.0">ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable</node>
+    <node x="102.95576923076919" y="1664.0">ch.vd.uniregctb.tiers.ForFiscalPrincipal</node>
+    <node x="2427.455769230769" y="2099.0">ch.vd.uniregctb.tiers.CollectiviteAdministrative</node>
+    <node x="1053.9870192307692" y="688.0">ch.vd.uniregctb.tiers.ForFiscal</node>
+    <node x="1586.5620192307692" y="452.0">ch.vd.uniregctb.declaration.PeriodeFiscale</node>
+    <node x="1773.2620192307693" y="205.0">ch.vd.uniregctb.declaration.ParametrePeriodeFiscale</node>
+    <node x="2470.28125" y="1175.5">ch.vd.uniregctb.tiers.RepresentationConventionnelle</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="ch.vd.uniregctb.tiers.RepresentationLegale" target="ch.vd.uniregctb.tiers.RapportEntreTiers">
+      <point x="0.0" y="-46.0" />
+      <point x="2866.28125" y="956.0" />
+      <point x="2842.487019230769" y="956.0" />
+      <point x="0.0" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Declaration" target="ch.vd.uniregctb.declaration.DelaiDeclaration">
+      <point x="69.25" y="-119.5" />
+      <point x="1863.40625" y="637.0" />
+      <point x="2075.3120192307692" y="637.0" />
+      <point x="-55.75" y="88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable" target="ch.vd.uniregctb.tiers.ForFiscalRevenuFortune">
+      <point x="0.0" y="-25.0" />
+      <point x="732.9557692307692" y="1518.0" />
+      <point x="534.5" y="1518.0" />
+      <point x="99.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.SituationFamillePersonnePhysique" target="ch.vd.uniregctb.tiers.SituationFamille">
+      <point x="0.0" y="-25.0" />
+      <point x="1231.9557692307692" y="2384.0" />
+      <point x="1324.7057692307692" y="2384.0" />
+      <point x="-54.25" y="88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.SituationFamilleMenageCommun" target="ch.vd.uniregctb.tiers.SituationFamille">
+      <point x="0.0" y="-46.0" />
+      <point x="1525.9557692307692" y="2384.0" />
+      <point x="1433.2057692307692" y="2384.0" />
+      <point x="54.25" y="88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Tiers" target="ch.vd.uniregctb.tiers.ForFiscal">
+      <point x="-136.79999999999995" y="-256.0" />
+      <point x="1447.48125" y="956.0" />
+      <point x="1263.9870192307692" y="956.0" />
+      <point x="60.0" y="98.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Contribuable" target="ch.vd.uniregctb.tiers.SituationFamille">
+      <point x="-117.1875" y="77.5" />
+      <point x="1832.2682692307692" y="1912.0" />
+      <point x="1433.2057692307692" y="1912.0" />
+      <point x="54.25" y="-88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Etablissement" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-35.5" />
+      <point x="1619.9557692307692" y="1922.0" />
+      <point x="1879.1432692307692" y="1922.0" />
+      <point x="-70.3125" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.RepresentationConventionnelle" target="ch.vd.uniregctb.tiers.RapportEntreTiers">
+      <point x="0.0" y="-56.5" />
+      <point x="2607.28125" y="956.0" />
+      <point x="2805.0870192307693" y="956.0" />
+      <point x="-37.39999999999998" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Periodicite" target="ch.vd.uniregctb.tiers.DebiteurPrestationImposable">
+      <point x="-106.0" y="-88.0" />
+      <point x="985.4557692307692" y="1932.0" />
+      <point x="954.4557692307692" y="1932.0" />
+      <point x="-137.0" y="172.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscalSecondaire" target="ch.vd.uniregctb.tiers.ForFiscalRevenuFortune">
+      <point x="0.0" y="-25.0" />
+      <point x="486.4557692307692" y="1518.0" />
+      <point x="435.5" y="1518.0" />
+      <point x="0.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscal" target="ch.vd.uniregctb.tiers.Tiers">
+      <point x="120.0" y="98.5" />
+      <point x="1323.9870192307692" y="946.0" />
+      <point x="1515.88125" y="946.0" />
+      <point x="-68.40000000000009" y="-256.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.DelaiDeclaration" target="ch.vd.uniregctb.declaration.Declaration">
+      <point x="55.75" y="88.0" />
+      <point x="2186.8120192307692" y="647.0" />
+      <point x="1909.5729166666665" y="647.0" />
+      <point x="115.41666666666666" y="-119.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Entreprise" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-67.0" />
+      <point x="2052.955769230769" y="1932.0" />
+      <point x="1972.8932692307692" y="1932.0" />
+      <point x="23.4375" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.DebiteurPrestationImposable" target="ch.vd.uniregctb.tiers.Tiers">
+      <point x="0.0" y="-172.0" />
+      <point x="1091.4557692307692" y="1518.0" />
+      <point x="1498.78125" y="1518.0" />
+      <point x="-85.5" y="256.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire" target="ch.vd.uniregctb.declaration.Declaration">
+      <point x="0.0" y="-151.0" />
+      <point x="2282.28125" y="926.0" />
+      <point x="1898.03125" y="926.0" />
+      <point x="103.875" y="119.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.ModeleDocument" target="ch.vd.uniregctb.declaration.PeriodeFiscale">
+      <point x="135.0" y="67.0" />
+      <point x="1685.7620192307693" y="406.0" />
+      <point x="1710.4620192307693" y="406.0" />
+      <point x="-82.60000000000002" y="-67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Tiers" target="ch.vd.uniregctb.declaration.Declaration">
+      <point x="0.0" y="-256.0" />
+      <point x="1584.28125" y="926.0" />
+      <point x="1690.28125" y="926.0" />
+      <point x="-103.875" y="119.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.AutreCommunaute" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-46.0" />
+      <point x="2286.955769230769" y="1922.0" />
+      <point x="2019.7682692307692" y="1922.0" />
+      <point x="70.3125" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.CollectiviteAdministrative" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-56.5" />
+      <point x="2580.455769230769" y="1912.0" />
+      <point x="2066.643269230769" y="1912.0" />
+      <point x="117.1875" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.ParametrePeriodeFiscale" target="ch.vd.uniregctb.declaration.PeriodeFiscale">
+      <point x="119.66666666666674" y="88.0" />
+      <point x="2072.428685897436" y="406.0" />
+      <point x="1958.2620192307693" y="406.0" />
+      <point x="165.2" y="-67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Tiers" target="ch.vd.uniregctb.tiers.RapportEntreTiers">
+      <point x="136.79999999999995" y="-256.0" />
+      <point x="1721.08125" y="946.0" />
+      <point x="2767.6870192307692" y="946.0" />
+      <point x="-74.79999999999995" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Curatelle" target="ch.vd.uniregctb.tiers.RepresentationLegale">
+      <point x="0.0" y="-35.5" />
+      <point x="2728.78125" y="1518.0" />
+      <point x="2798.28125" y="1518.0" />
+      <point x="-68.0" y="46.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.RapportPrestationImposable" target="ch.vd.uniregctb.tiers.RapportEntreTiers">
+      <point x="0.0" y="-77.5" />
+      <point x="3339.28125" y="946.0" />
+      <point x="2917.287019230769" y="946.0" />
+      <point x="74.80000000000007" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.ModeleFeuilleDocument" target="ch.vd.uniregctb.declaration.ModeleDocument">
+      <point x="69.25" y="77.5" />
+      <point x="1620.0120192307693" y="180.0" />
+      <point x="1652.0120192307693" y="180.0" />
+      <point x="101.25" y="-67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscalPrincipal" target="ch.vd.uniregctb.tiers.ForFiscalRevenuFortune">
+      <point x="0.0" y="-46.0" />
+      <point x="237.9557692307692" y="1518.0" />
+      <point x="336.5" y="1518.0" />
+      <point x="-99.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.EtatDeclaration" target="ch.vd.uniregctb.declaration.Declaration">
+      <point x="50.75" y="56.5" />
+      <point x="1515.8120192307692" y="627.0" />
+      <point x="1771.0729166666665" y="627.0" />
+      <point x="-23.083333333333314" y="-119.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.IdentificationPersonne" target="ch.vd.uniregctb.tiers.PersonnePhysique">
+      <point x="-76.25" y="-67.0" />
+      <point x="2874.705769230769" y="2384.0" />
+      <point x="2852.205769230769" y="2384.0" />
+      <point x="-98.75" y="203.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.PersonnePhysique" target="ch.vd.uniregctb.tiers.IdentificationPersonne">
+      <point x="98.75" y="203.5" />
+      <point x="3049.705769230769" y="2384.0" />
+      <point x="3027.205769230769" y="2384.0" />
+      <point x="76.25" y="-67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Declaration" target="ch.vd.uniregctb.declaration.PeriodeFiscale">
+      <point x="23.08333333333337" y="-119.5" />
+      <point x="1817.2395833333333" y="647.0" />
+      <point x="1793.0620192307692" y="647.0" />
+      <point x="0.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Declaration" target="ch.vd.uniregctb.declaration.EtatDeclaration">
+      <point x="-69.25" y="-119.5" />
+      <point x="1724.90625" y="637.0" />
+      <point x="1414.3120192307692" y="637.0" />
+      <point x="-50.75" y="56.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.PeriodeFiscale" target="ch.vd.uniregctb.declaration.ModeleDocument">
+      <point x="-165.20000000000005" y="-67.0" />
+      <point x="1627.8620192307694" y="406.0" />
+      <point x="1550.7620192307693" y="406.0" />
+      <point x="0.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.DebiteurPrestationImposable" target="ch.vd.uniregctb.declaration.Periodicite">
+      <point x="137.0" y="172.0" />
+      <point x="1228.4557692307692" y="1932.0" />
+      <point x="1197.4557692307692" y="1932.0" />
+      <point x="106.0" y="-88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.PeriodeFiscale" target="ch.vd.uniregctb.declaration.ParametrePeriodeFiscale">
+      <point x="82.6" y="-67.0" />
+      <point x="1875.6620192307694" y="406.0" />
+      <point x="1952.7620192307693" y="406.0" />
+      <point x="0.0" y="88.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Declaration" target="ch.vd.uniregctb.declaration.ModeleDocument">
+      <point x="-115.41666666666663" y="-119.5" />
+      <point x="1678.7395833333333" y="647.0" />
+      <point x="1353.0620192307692" y="647.0" />
+      <point x="1353.0620192307692" y="406.0" />
+      <point x="1415.7620192307693" y="406.0" />
+      <point x="-135.0" y="67.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.PersonnePhysique" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-203.5" />
+      <point x="2950.955769230769" y="1902.0" />
+      <point x="2113.518269230769" y="1902.0" />
+      <point x="164.0625" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ConseilLegal" target="ch.vd.uniregctb.tiers.RepresentationLegale">
+      <point x="0.0" y="-35.5" />
+      <point x="3154.78125" y="1508.0" />
+      <point x="2934.28125" y="1508.0" />
+      <point x="68.0" y="46.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Tutelle" target="ch.vd.uniregctb.tiers.RepresentationLegale">
+      <point x="0.0" y="-35.5" />
+      <point x="2935.78125" y="1518.0" />
+      <point x="2866.28125" y="1518.0" />
+      <point x="0.0" y="46.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.MenageCommun" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="0.0" y="-25.0" />
+      <point x="1845.9557692307692" y="1932.0" />
+      <point x="1926.0182692307692" y="1932.0" />
+      <point x="-23.4375" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.ModeleDocument" target="ch.vd.uniregctb.declaration.ModeleFeuilleDocument">
+      <point x="-101.25" y="-67.0" />
+      <point x="1449.5120192307693" y="180.0" />
+      <point x="1481.5120192307693" y="180.0" />
+      <point x="-69.25" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.Contribuable" target="ch.vd.uniregctb.tiers.Tiers">
+      <point x="0.0" y="-77.5" />
+      <point x="1949.4557692307692" y="1518.0" />
+      <point x="1669.78125" y="1518.0" />
+      <point x="85.5" y="256.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ContactImpotSource" target="ch.vd.uniregctb.tiers.RapportEntreTiers">
+      <point x="0.0" y="-46.0" />
+      <point x="3081.78125" y="956.0" />
+      <point x="2879.8870192307695" y="956.0" />
+      <point x="37.40000000000009" y="77.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable" target="ch.vd.uniregctb.tiers.ForFiscal">
+      <point x="0.0" y="-25.0" />
+      <point x="133.5" y="946.0" />
+      <point x="1083.9870192307692" y="946.0" />
+      <point x="-120.0" y="98.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscalAutreImpot" target="ch.vd.uniregctb.tiers.ForFiscal">
+      <point x="0.0" y="-25.0" />
+      <point x="0.0" y="98.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.DeclarationImpotSource" target="ch.vd.uniregctb.declaration.Declaration">
+      <point x="0.0" y="-56.5" />
+      <point x="1934.78125" y="936.0" />
+      <point x="1828.78125" y="936.0" />
+      <point x="34.625" y="119.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.declaration.Declaration" target="ch.vd.uniregctb.tiers.Tiers">
+      <point x="-34.625" y="119.5" />
+      <point x="1759.53125" y="936.0" />
+      <point x="1652.68125" y="936.0" />
+      <point x="68.40000000000009" y="-256.0" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.ForFiscalRevenuFortune" target="ch.vd.uniregctb.tiers.ForFiscal">
+      <point x="0.0" y="-67.0" />
+      <point x="435.5" y="956.0" />
+      <point x="1143.9870192307692" y="956.0" />
+      <point x="-60.0" y="98.5" />
+    </edge>
+    <edge source="ch.vd.uniregctb.tiers.SituationFamille" target="ch.vd.uniregctb.tiers.Contribuable">
+      <point x="-54.25" y="-88.0" />
+      <point x="1324.7057692307692" y="1902.0" />
+      <point x="1785.3932692307692" y="1902.0" />
+      <point x="-164.0625" y="77.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.2294186500195084" x="1742.2066326530612" y="1271.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
