@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -26,13 +26,13 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	}
 
 	@Override
-	public void handle(DemandeBrute event) throws Exception {
-		final DemandeBrute valid = (DemandeBrute) event;
-		if (valid.getAction() == DemandeBrute.Action.DESINSCRIPTION) {
+	public void handle(Demande event) throws Exception {
+		final Demande valid = (Demande) event;
+		if (valid.getAction() == Demande.Action.DESINSCRIPTION) {
 			LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
 		}
 		else {
-			final DemandeBrute inscription = (DemandeBrute) event;
+			final Demande inscription = (Demande) event;
 			LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(inscription.getCtbId()), FormatNumeroHelper.formatNumAVS(inscription.getNoAvs()), RegDateHelper.dateToDisplayString(inscription.getDateDemande())));
 
 			TypeRefusDemande typeRefus = inscription.performBasicValidation();

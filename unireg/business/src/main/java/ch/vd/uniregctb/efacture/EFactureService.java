@@ -3,8 +3,8 @@ package ch.vd.uniregctb.efacture;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeHistorisee;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireHistorise;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -47,7 +47,7 @@ public interface EFactureService {
 	 * @return retrouve la demande d'inscription en cours de traitment pour un contribuable, null s'il n'y en a pas.
 	 */
 	@Nullable
-	DemandeHistorisee getDemandeInscriptionEnCoursDeTraitement(long ctbId);
+	DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId);
 
 	/**
 	 * Identifie le contribuable avec son numero de contribuable
@@ -79,13 +79,13 @@ public interface EFactureService {
 	boolean valideEtatContribuablePourInscription(long ctbId);
 
 
-	/**Recupère l'historique des demandes pour un contribuable donné au format interne unireg
-	 *
+	/**
+	 * Recupère l'historique e-facture pour un contribuable
 	 *
 	 * @param ctbId l'id du contribuable
 	 * @return l'historique complet des demandes d'un contribuables au format interne unireg
 	 */
-	DestinataireHistorise getHistoriqueDestinataire(long ctbId);
+	DestinataireAvecHisto getAbonne(long ctbId);
 
 	/**
 	 * Demande la suspension d'un contribuable à la e-facture

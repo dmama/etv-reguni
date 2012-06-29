@@ -2,7 +2,7 @@ package ch.vd.uniregctb.efacture;
 
 import org.junit.Test;
 
-import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
@@ -10,9 +10,9 @@ import static ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class DemandeBruteTest extends WithoutSpringTest {
+public class DemandeTest extends WithoutSpringTest {
 
-	DemandeBrute demande;
+	Demande demande;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -75,8 +75,8 @@ public class DemandeBruteTest extends WithoutSpringTest {
 		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
 	}
 
-	private DemandeBruteBuilderForUnitTests nouvelleDemande() {
-		return new DemandeBruteBuilderForUnitTests();
+	private DemandeBuilderForUnitTests nouvelleDemande() {
+		return new DemandeBuilderForUnitTests();
 	}
 
 	private void assertPerformBasicValidationOK() {

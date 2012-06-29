@@ -83,18 +83,18 @@ public class EFactureServiceTest extends BusinessTest {
 		efactureService.seteFactureClient(mockEfactureClient);
 
 		RegistrationRequestWithHistory mockReturn1 =
-				new DemandeHistoriseeBuilderForUnitTests()
+				new DemandeAvecHistoBuilderForUnitTests()
 						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
 		RegistrationRequestWithHistory mockReturn2 =
-				new DemandeHistoriseeBuilderForUnitTests()
+				new DemandeAvecHistoBuilderForUnitTests()
 						.addHistoryEntry(RegDate.get(2012, 5, 26), RegistrationRequestStatus.REFUSEE, TypeAttenteDemande.PAS_EN_ATTENTE.getCode(), "","")
 						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
 		RegistrationRequestWithHistory mockReturn3 =
-				new DemandeHistoriseeBuilderForUnitTests()
+				new DemandeAvecHistoBuilderForUnitTests()
 						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.PAS_EN_ATTENTE.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 

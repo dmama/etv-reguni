@@ -7,12 +7,16 @@ import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 
-public class DestinataireHistorise {
+/**
+ * Representation interne UNIREG pour un Abonné e-Facture au {@link PayerWithHistory}
+ * du evd e-facture
+ */
+public class DestinataireAvecHisto {
 	private long ctbId;
-	private List<DemandeHistorisee> historiqueDemandes;
+	private List<DemandeAvecHisto> historiqueDemandes;
 	private List<EtatDestinataire> etats;
 
-	public List<DemandeHistorisee> getHistoriqueDemandes() {
+	public List<DemandeAvecHisto> getHistoriqueDemandes() {
 		return historiqueDemandes;
 	}
 
@@ -20,12 +24,12 @@ public class DestinataireHistorise {
 		return etats;
 	}
 
-	public DestinataireHistorise(PayerWithHistory payerWithHistory, long ctbId) {
+	public DestinataireAvecHisto(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
-		this.historiqueDemandes = new ArrayList<DemandeHistorisee>();
+		this.historiqueDemandes = new ArrayList<DemandeAvecHisto>();
 		PayerWithHistory.HistoryOfRequests historyOfRequests = payerWithHistory.getHistoryOfRequests();
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests.getRequest()) {
-			this.historiqueDemandes.add(new DemandeHistorisee(registrationRequestHistory));
+			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
 
 		}
 

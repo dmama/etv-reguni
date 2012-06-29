@@ -8,8 +8,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeHistorisee;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireHistorise;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
@@ -49,7 +49,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
-		DestinataireHistorise historiqueDestinataireWrapper = eFactureService.getHistoriqueDestinataire(ctbId);
+		DestinataireAvecHisto historiqueDestinataireWrapper = eFactureService.getAbonne(ctbId);
 		if(historiqueDestinataireWrapper == null){
 			return new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
 		}
@@ -88,12 +88,12 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 
-	private ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(DestinataireHistorise destinataire) {
+	private ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(DestinataireAvecHisto destinataire) {
 		final ch.vd.uniregctb.efacture.HistoriqueDestinataire historiqueDestinataire = new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
 		historiqueDestinataire.setCtbId(destinataire.getCtbId());
 		final List<ch.vd.uniregctb.efacture.HistoriqueDemande> demandes = new ArrayList<ch.vd.uniregctb.efacture.HistoriqueDemande>();
 		//On charge l'historique des demandes.
-		for (DemandeHistorisee historiqueDemandeWrapper : destinataire.getHistoriqueDemandes()) {
+		for (DemandeAvecHisto historiqueDemandeWrapper : destinataire.getHistoriqueDemandes()) {
 			ch.vd.uniregctb.efacture.HistoriqueDemande historiqueDemande  = new ch.vd.uniregctb.efacture.HistoriqueDemande();
 			historiqueDemande.setIdDemande(historiqueDemandeWrapper.getIdDemande());
 			historiqueDemande.setDateDemande(historiqueDemandeWrapper.getDateDemande());

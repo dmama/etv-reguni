@@ -16,7 +16,10 @@ import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
-public class DemandeBrute {
+/**
+ * Representation interne pour UNIREG de la classe {@link RegistrationRequest} de evd-25
+ */
+public class Demande {
 
 	private static final String AVS13 = "AVS13";
 
@@ -66,7 +69,7 @@ public class DemandeBrute {
 	private final Action action;
 	private final String noAvs;
 
-	public DemandeBrute(RegistrationRequest request) {
+	public Demande(RegistrationRequest request) {
 
 		this.idDemande = request.getId();
 		this.ctbId = Long.parseLong(request.getPayerBusinessId());
@@ -86,7 +89,7 @@ public class DemandeBrute {
 	 *
 	 */
 	public TypeRefusDemande performBasicValidation() {
-		if (getAction() == DemandeBrute.Action.INSCRIPTION) {
+		if (getAction() == Demande.Action.INSCRIPTION) {
 			//Check Numéro AVS à 13 chiffres
 			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
 				return TypeRefusDemande.NUMERO_AVS_INVALIDE;

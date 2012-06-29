@@ -19,6 +19,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -68,6 +70,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.type.TypeEtatDestinataire;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -84,6 +87,7 @@ public class MetierServiceImpl implements MetierService {
 	private GlobalTiersSearcher tiersSearcher;
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
+	private EFactureService eFactureService; // TODO spring injection
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -2487,6 +2491,15 @@ public class MetierServiceImpl implements MetierService {
 
 		cancelSituationFamillePP(lendemain, tiers);
 		reopenSituationFamille(date, menageCommun);
+	}
+
+	private void desinscrirDeLaEFacture(long ctbId) {
+		// TODO FRED
+		// Vérification du statue dans la e-facture
+		DestinataireAvecHisto list = eFactureService.getAbonne(ctbId);
+		if (list.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.INSCRIT) {
+
+		}
 	}
 
 	@Override

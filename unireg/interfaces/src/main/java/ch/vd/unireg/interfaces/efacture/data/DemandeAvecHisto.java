@@ -11,7 +11,7 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 /**
  * Representation Interne UNIREG de la classe {@link RegistrationRequestWithHistory} de l' eVD-25
  */
-public class DemandeHistorisee extends DemandeBrute {
+public class DemandeAvecHisto extends Demande {
 
 	private List<EtatDemande> historiqueEtats;
 
@@ -19,7 +19,7 @@ public class DemandeHistorisee extends DemandeBrute {
 		return historiqueEtats;
 	}
 
-	public DemandeHistorisee(RegistrationRequestWithHistory request) {
+	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
 		super(request);
 		this.historiqueEtats = new ArrayList<EtatDemande>();
 		for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {

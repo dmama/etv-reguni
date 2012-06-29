@@ -4,8 +4,8 @@ package ch.vd.uniregctb.efacture;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
-import ch.vd.unireg.interfaces.efacture.data.DemandeHistorisee;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
+import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -28,7 +28,7 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 
 
 	private EFactureEventHandlerImpl handler;
-	private DemandeBrute inscription;
+	private Demande inscription;
 	private EFactureService service;
 	private EFactureMessageSender sender;
 
@@ -40,9 +40,9 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		handler.seteFactureService(service);
 		sender = createMock(EFactureMessageSender.class);
 		handler.setSender(sender);
-		inscription = createMock(DemandeBrute.class);
+		inscription = createMock(Demande.class);
 		expect(inscription.getCtbId()).andStubReturn(CTB_ID);
-		expect(inscription.getAction()).andStubReturn(DemandeBrute.Action.INSCRIPTION);
+		expect(inscription.getAction()).andStubReturn(Demande.Action.INSCRIPTION);
 		expect(inscription.getNoAvs()).andStubReturn(NO_AVS);
 		expect(inscription.getDateDemande()).andStubReturn(DEMANDE_DATE);
 		expect(inscription.getEmail()).andStubReturn(EMAIL);
@@ -110,7 +110,7 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 	@Test
 	public void testDemandeInscription_UneAutreDemandeEstDejaEnCoursDeTraitment() throws Exception {
 		expect(inscription.performBasicValidation()).andReturn(null);
-		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(createMock(DemandeHistorisee.class));
+		expect(service.getDemandeInscriptionEnCoursDeTraitement(CTB_ID)).andReturn(createMock(DemandeAvecHisto.class));
 		expect(sender.envoieRefusDemandeInscription(DEMANDE_ID, TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT, null, false)).andReturn(null);
 		replay(inscription, sender, service);
 		handler.handle(inscription);

@@ -10,12 +10,11 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
-import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeHistorisee;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireHistorise;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
@@ -60,9 +59,9 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	@Nullable
-	public DemandeHistorisee getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
-		List<DemandeHistorisee> listDemandes = getHistoriqueDestinataire(ctbId).getHistoriqueDemandes();
-		for (DemandeHistorisee demande : listDemandes) {
+	public DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
+		List<DemandeAvecHisto> listDemandes = getAbonne(ctbId).getHistoriqueDemandes();
+		for (DemandeAvecHisto demande : listDemandes) {
 			if (demande.isEnCoursDeTraitement()) {
 				return demande;
 			}
@@ -115,7 +114,7 @@ public class EFactureServiceImpl implements EFactureService {
 			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas null");
 		}
 		// Verification de l'historique des situations
-		DestinataireHistorise histo = getHistoriqueDestinataire(ctbId);
+		DestinataireAvecHisto histo = getAbonne(ctbId);
 
 		if (histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
@@ -149,13 +148,13 @@ public class EFactureServiceImpl implements EFactureService {
 		return true;
 	}
 
-	public DestinataireHistorise getHistoriqueDestinataire(long ctbId){
+	public DestinataireAvecHisto getAbonne(long ctbId){
 
 		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
 		if(payerWithHistory == null){
 			return null;
 		}
-		return new DestinataireHistorise(payerWithHistory, ctbId);
+		return new DestinataireAvecHisto(payerWithHistory, ctbId);
 	}
 
 	@Override

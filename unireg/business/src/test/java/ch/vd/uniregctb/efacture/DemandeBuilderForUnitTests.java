@@ -9,11 +9,11 @@ import ch.vd.evd0025.v1.Provider;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
+import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.uniregctb.common.XmlUtils;
 
 @SuppressWarnings("UnusedDeclaration")
-class DemandeBruteBuilderForUnitTests {
+class DemandeBuilderForUnitTests {
 
 	// Les valeurs par défaut permettent une validation sans problème
 
@@ -29,8 +29,8 @@ class DemandeBruteBuilderForUnitTests {
 	private RegistrationMode registrationMode = RegistrationMode.STANDARD;
 	private String noAvs = "7565817249033";
 
-	DemandeBrute build () {
-		return new DemandeBrute(buildRegistrationRequest());
+	Demande build () {
+		return new Demande(buildRegistrationRequest());
 	}
 
 	RegistrationRequest buildRegistrationRequest () {
@@ -40,57 +40,57 @@ class DemandeBruteBuilderForUnitTests {
 				new Map(Collections.<MapEntry>singletonList(new MapEntry("AVS13", noAvs))));
 	}
 
-	DemandeBruteBuilderForUnitTests id(String id) {
+	DemandeBuilderForUnitTests id(String id) {
 		this.id = id;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setBillerId(String billerId) {
+	DemandeBuilderForUnitTests setBillerId(String billerId) {
 		this.billerId = billerId;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setProviderId(String providerId) {
+	DemandeBuilderForUnitTests setProviderId(String providerId) {
 		this.providerId = providerId;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setBusinessPayerId(String businessPayerId) {
+	DemandeBuilderForUnitTests setBusinessPayerId(String businessPayerId) {
 		this.businessPayerId = businessPayerId;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests seteBillAccountId(BigInteger eBillAccountId) {
+	DemandeBuilderForUnitTests seteBillAccountId(BigInteger eBillAccountId) {
 		this.eBillAccountId = eBillAccountId;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setLastName(String lastName) {
+	DemandeBuilderForUnitTests setLastName(String lastName) {
 		this.lastName = lastName;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setFirstName(String firstName) {
+	DemandeBuilderForUnitTests setFirstName(String firstName) {
 		this.firstName = firstName;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setDateDemande(RegDate dateDemande) {
+	DemandeBuilderForUnitTests setDateDemande(RegDate dateDemande) {
 		this.dateDemande = dateDemande;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setEmail(String email) {
+	DemandeBuilderForUnitTests setEmail(String email) {
 		this.email = email;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
+	DemandeBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
 		this.registrationMode = registrationMode;
 		return this;
 	}
 
-	DemandeBruteBuilderForUnitTests setNoAvs(String noAvs) {
+	DemandeBuilderForUnitTests setNoAvs(String noAvs) {
 		this.noAvs = noAvs;
 		return this;
 	}
