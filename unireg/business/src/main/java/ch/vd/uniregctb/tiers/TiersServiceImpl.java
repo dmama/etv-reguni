@@ -1848,13 +1848,13 @@ public class TiersServiceImpl implements TiersService {
             }
         }
 
-		if (LOGGER.isDebugEnabled()) {
+		if (LOGGER.isTraceEnabled()) {
 			final String message = "Personne physique n°" + personnePhysique.getNumero() + " / individu n°" + personnePhysique.getNumeroIndividu() + " :\n" +
 					"  - " + size(ind.getEnfants()) + " enfant(s)\n" +
 					"  - " + size(ind.getAdoptionsReconnaissances()) + " adoptés(s)\n" +
 					"  - " + size(ind.getParents()) + " parent(s)\n" +
 					" => total " + size(filiations) + " liens de filiation générés.";
-			LOGGER.debug(message);
+			LOGGER.trace(message);
 		}
 
         return filiations;
