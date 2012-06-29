@@ -60,7 +60,7 @@ public class EFactureServiceImpl implements EFactureService {
 	@Override
 	@Nullable
 	public DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
-		List<DemandeAvecHisto> listDemandes = getAbonne(ctbId).getHistoriqueDemandes();
+		List<DemandeAvecHisto> listDemandes = getDestinataireAvecSonHistorique(ctbId).getHistoriqueDemandes();
 		for (DemandeAvecHisto demande : listDemandes) {
 			if (demande.isEnCoursDeTraitement()) {
 				return demande;
@@ -114,7 +114,7 @@ public class EFactureServiceImpl implements EFactureService {
 			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas null");
 		}
 		// Verification de l'historique des situations
-		DestinataireAvecHisto histo = getAbonne(ctbId);
+		DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 
 		if (histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
@@ -148,7 +148,8 @@ public class EFactureServiceImpl implements EFactureService {
 		return true;
 	}
 
-	public DestinataireAvecHisto getAbonne(long ctbId){
+	@Override
+	public DestinataireAvecHisto getDestinataireAvecSonHistorique (long ctbId){
 
 		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
 		if(payerWithHistory == null){

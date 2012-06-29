@@ -33,6 +33,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1556,6 +1557,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			updateSituationFamilleSeparation(menage, date, etatCivilFamille);
+			desinscrirDeLaEFacture(menage.getId(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.getDescription(true));
 		}
 	}
 
@@ -2410,6 +2412,12 @@ public class MetierServiceImpl implements MetierService {
 		}
 
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
+		if (menageComplet != null && menageComplet.getMenage() != null) {
+			// TODO A discuter (fred)
+			// Comme je l'ai compris c'est le ménage qui est inscrit à la e-facture.
+			// ne devrait on pas dans ce cas reinscrire le survivant ???
+			desinscrirDeLaEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+		}
 	}
 
 	@Override
@@ -2493,12 +2501,18 @@ public class MetierServiceImpl implements MetierService {
 		reopenSituationFamille(date, menageCommun);
 	}
 
-	private void desinscrirDeLaEFacture(long ctbId) {
+	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
 		// TODO FRED
 		// Vérification du statue dans la e-facture
-		DestinataireAvecHisto list = eFactureService.getAbonne(ctbId);
-		if (list.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.INSCRIT) {
-
+		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
+		if (dest.getDernierEtat().getEtatDestinataire() != TypeEtatDestinataire.INSCRIT) {
+			return;
+		}
+		try {
+			eFactureService.suspendreContribuable(ctbId,false,descr);
+		}
+		catch (EvenementEfactureException e) {
+			throw new MetierServiceException(e.getMessage(),e);
 		}
 	}
 

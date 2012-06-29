@@ -85,7 +85,7 @@ public interface EFactureService {
 	 * @param ctbId l'id du contribuable
 	 * @return l'historique complet des demandes d'un contribuables au format interne unireg
 	 */
-	DestinataireAvecHisto getAbonne(long ctbId);
+	DestinataireAvecHisto getDestinataireAvecSonHistorique(long ctbId);
 
 	/**
 	 * Demande la suspension d'un contribuable à la e-facture

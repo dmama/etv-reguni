@@ -49,7 +49,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
-		DestinataireAvecHisto historiqueDestinataireWrapper = eFactureService.getAbonne(ctbId);
+		DestinataireAvecHisto historiqueDestinataireWrapper = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		if(historiqueDestinataireWrapper == null){
 			return new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
 		}
