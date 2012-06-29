@@ -7,34 +7,34 @@ import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 
-public class HistoriqueDestinataireWrapper {
+public class HistoriqueDestinataire {
 	private long ctbId;
-	private List<HistoriqueDemandeWrapper> historiqueDemandeWrapper;
-	private List<EtatDestinataireWrapper> etats;
+	private List<HistoriqueDemande> historiqueDemandeWrapper;
+	private List<EtatDestinataire> etats;
 
-	public List<HistoriqueDemandeWrapper> getHistoriqueDemandeWrapper() {
+	public List<HistoriqueDemande> getHistoriqueDemandeWrapper() {
 		return historiqueDemandeWrapper;
 	}
 
-	public List<EtatDestinataireWrapper> getEtats() {
+	public List<EtatDestinataire> getEtats() {
 		return etats;
 	}
 
-	public HistoriqueDestinataireWrapper(PayerWithHistory payerWithHistory, long ctbId) {
+	public HistoriqueDestinataire(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
-		this.historiqueDemandeWrapper = new ArrayList<HistoriqueDemandeWrapper>();
+		this.historiqueDemandeWrapper = new ArrayList<HistoriqueDemande>();
 		PayerWithHistory.HistoryOfRequests historyOfRequests = payerWithHistory.getHistoryOfRequests();
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests.getRequest()) {
-			this.historiqueDemandeWrapper.add(new HistoriqueDemandeWrapper(registrationRequestHistory));
+			this.historiqueDemandeWrapper.add(new HistoriqueDemande(registrationRequestHistory));
 
 		}
 
-		this.etats = new ArrayList<EtatDestinataireWrapper>();
+		this.etats = new ArrayList<EtatDestinataire>();
 
 		PayerWithHistory.HistoryOfSituations historyOfSituations = payerWithHistory.getHistoryOfSituations();
 		for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations.getSituation()){
 
-			this.etats.add(new EtatDestinataireWrapper(payerSituationHistoryEntry));
+			this.etats.add(new EtatDestinataire(payerSituationHistoryEntry));
 		}
 
 
@@ -48,7 +48,7 @@ public class HistoriqueDestinataireWrapper {
 		this.ctbId = ctbId;
 	}
 
-	public EtatDestinataireWrapper getDernierEtat() {
+	public EtatDestinataire getDernierEtat() {
 		//Les états nous sont toujours renvoyés par ordre chronologique croissant par le ws efacture
 		if(etats!=null && !etats.isEmpty()){
 			return etats.get(etats.size()-1);
@@ -58,7 +58,7 @@ public class HistoriqueDestinataireWrapper {
 
 
  public boolean isActivable(){
-	 final EtatDestinataireWrapper dernierEtat = getDernierEtat();
+	 final EtatDestinataire dernierEtat = getDernierEtat();
 	 if(dernierEtat !=null){
 		 return dernierEtat.getEtatDestinataire().isActivable();
 
@@ -67,7 +67,7 @@ public class HistoriqueDestinataireWrapper {
  }
 
 	public boolean isSuspendable(){
-		final EtatDestinataireWrapper dernierEtat = getDernierEtat();
+		final EtatDestinataire dernierEtat = getDernierEtat();
 		if(dernierEtat !=null){
 			return dernierEtat.getEtatDestinataire().isSuspendable();
 

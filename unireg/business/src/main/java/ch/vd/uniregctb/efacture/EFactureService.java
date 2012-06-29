@@ -3,7 +3,7 @@ package ch.vd.uniregctb.efacture;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataire;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -77,7 +77,7 @@ public interface EFactureService {
 	 * @param ctbId l'id du contribuable
 	 * @return l'historique complet des demandes d'un contribuables au format interne unireg
 	 */
-	HistoriqueDestinataireWrapper getHistoriqueDestinataire(long ctbId);
+	HistoriqueDestinataire getHistoriqueDestinataire(long ctbId);
 
 	/**
 	 * Demande la suspension d'un contribuable à la e-facture

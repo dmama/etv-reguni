@@ -6,7 +6,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.TypeEtatDemande;
 
-public class EtatDemandeWrapper {
+public class EtatDemande {
 	private String champLibre;
 	private RegDate date;
 	private Integer codeRaison;
@@ -15,7 +15,7 @@ public class EtatDemandeWrapper {
 
 
 
-	public EtatDemandeWrapper(RegistrationRequestHistoryEntry target) {
+	public EtatDemande(RegistrationRequestHistoryEntry target) {
 		this.champLibre = target.getCustomField();
 		this.date = XmlUtils.xmlcal2regdate(target.getDate());
 		this.codeRaison = target.getReasonCode();

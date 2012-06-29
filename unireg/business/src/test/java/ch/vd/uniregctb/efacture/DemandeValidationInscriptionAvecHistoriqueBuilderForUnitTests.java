@@ -10,7 +10,7 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
-public class DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests extends DemandeValidationInscriptionBuilderForUnitTests {
+class DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests extends DemandeValidationInscriptionBuilderForUnitTests {
 
 	private List<RegistrationRequestHistoryEntry> listHistoryEntry = new ArrayList<RegistrationRequestHistoryEntry>();
 

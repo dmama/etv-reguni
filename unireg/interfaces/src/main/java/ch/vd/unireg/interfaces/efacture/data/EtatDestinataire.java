@@ -6,14 +6,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.TypeEtatDestinataire;
 
-public class EtatDestinataireWrapper {
+public class EtatDestinataire {
 	private String champLibre;
 	private RegDate dateObtention;
 	private String descriptionRaison;
 	private Integer codeRaison;
 	private TypeEtatDestinataire etatDestinataire;
 
-	public EtatDestinataireWrapper(PayerSituationHistoryEntry payerSituationHistoryEntry) {
+	public EtatDestinataire(PayerSituationHistoryEntry payerSituationHistoryEntry) {
 		this.champLibre = payerSituationHistoryEntry.getCustomField();
 		this.dateObtention = XmlUtils.xmlcal2regdate(payerSituationHistoryEntry.getDate());
 		this.descriptionRaison = payerSituationHistoryEntry.getReasonDescription();

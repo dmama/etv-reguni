@@ -8,21 +8,17 @@ import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.EtatDemandeWrapper;
-import ch.vd.unireg.interfaces.efacture.data.EtatDestinataireWrapper;
-import ch.vd.unireg.interfaces.efacture.data.HistoriqueDemandeWrapper;
-import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
+import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDemande;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataire;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
-import ch.vd.uniregctb.efacture.EtatDemande;
-import ch.vd.uniregctb.efacture.EtatDestinataire;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.efacture.HistoriqueDemande;
-import ch.vd.uniregctb.efacture.HistoriqueDestinataire;
 import ch.vd.uniregctb.efacture.TypeAttenteEFacture;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDemande;
@@ -52,32 +48,31 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
-	public HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
-		HistoriqueDestinataireWrapper historiqueDestinataireWrapper = eFactureService.getHistoriqueDestinataire(ctbId);
+	public ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
+		HistoriqueDestinataire historiqueDestinataireWrapper = eFactureService.getHistoriqueDestinataire(ctbId);
 		if(historiqueDestinataireWrapper == null){
-			return new HistoriqueDestinataire();
+			return new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
 		}
-		final HistoriqueDestinataire historiqueDestinataire = getHistoriqueDestinataireFromWrapper(historiqueDestinataireWrapper);
-		return historiqueDestinataire;
+		return getHistoriqueDestinataireFromWrapper(historiqueDestinataireWrapper);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String suspendreContribuable(long ctbId) throws EvenementEfactureException {
 		String description = getMessageAvecVisaUser();
-		return eFactureService.suspendreContribuable(ctbId,true, description);
+		return eFactureService.suspendreContribuable(ctbId, true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String activerContribuable(long ctbId) throws EvenementEfactureException {
 		String description = getMessageAvecVisaUser();
-		return eFactureService.activerContribuable(ctbId,true, description);
+		return eFactureService.activerContribuable(ctbId, true, description);
 	}
 
 	@Override
 	public boolean isReponseReçuDeEfacture(String businessId) {
-		return eFactureResponseService.waitForResponse(businessId,timeOutForReponse);
+		return eFactureResponseService.waitForResponse(businessId, timeOutForReponse);
 	}
 
 	@Override
@@ -93,18 +88,18 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 
-	private HistoriqueDestinataire getHistoriqueDestinataireFromWrapper(HistoriqueDestinataireWrapper historiqueDestinataireWrapper) {
-		final HistoriqueDestinataire historiqueDestinataire = new HistoriqueDestinataire();
+	private ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataireFromWrapper(HistoriqueDestinataire historiqueDestinataireWrapper) {
+		final ch.vd.uniregctb.efacture.HistoriqueDestinataire historiqueDestinataire = new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
 		historiqueDestinataire.setCtbId(historiqueDestinataireWrapper.getCtbId());
-		final List<HistoriqueDemande> demandes = new ArrayList<HistoriqueDemande>();
+		final List<ch.vd.uniregctb.efacture.HistoriqueDemande> demandes = new ArrayList<ch.vd.uniregctb.efacture.HistoriqueDemande>();
 		//On charge l'historique des demandes.
-		for (HistoriqueDemandeWrapper historiqueDemandeWrapper : historiqueDestinataireWrapper.getHistoriqueDemandeWrapper()) {
-			HistoriqueDemande historiqueDemande  = new HistoriqueDemande();
+		for (HistoriqueDemande historiqueDemandeWrapper : historiqueDestinataireWrapper.getHistoriqueDemandeWrapper()) {
+			ch.vd.uniregctb.efacture.HistoriqueDemande historiqueDemande  = new ch.vd.uniregctb.efacture.HistoriqueDemande();
 			historiqueDemande.setIdDemande(historiqueDemandeWrapper.getId());
 			historiqueDemande.setDateDemande(historiqueDemandeWrapper.getDateInscription());
-			final List<EtatDemande>etatsDemande = new ArrayList<EtatDemande>();
-			for(EtatDemandeWrapper etatDemandeWrapper: historiqueDemandeWrapper.getHistoriqueEtatDemandeWrapper()){
-				EtatDemande etatDemande = getEtatDemande(etatDemandeWrapper);
+			final List<ch.vd.uniregctb.efacture.EtatDemande>etatsDemande = new ArrayList<ch.vd.uniregctb.efacture.EtatDemande>();
+			for(EtatDemande etatDemandeWrapper: historiqueDemandeWrapper.getHistoriqueEtatDemandeWrapper()){
+				ch.vd.uniregctb.efacture.EtatDemande etatDemande = getEtatDemande(etatDemandeWrapper);
 				etatsDemande.add(etatDemande);
 			}
 			historiqueDemande.setEtats(etatsDemande);
@@ -114,10 +109,10 @@ public class EfactureManagerImpl implements EfactureManager {
 		historiqueDestinataire.setDemandes(demandes);
 
 		//Chargement de l'historique des états du déstinataire
-		List<EtatDestinataireWrapper> etatsDestinataireWrapper = historiqueDestinataireWrapper.getEtats();
-		final List<EtatDestinataire> etats = new ArrayList<EtatDestinataire>();
-		for (EtatDestinataireWrapper etatDestinataireWrapper : etatsDestinataireWrapper) {
-			EtatDestinataire etatDestinataire = getEtatDestinataire(etatDestinataireWrapper);
+		List<EtatDestinataire> etatsDestinataireWrapper = historiqueDestinataireWrapper.getEtats();
+		final List<ch.vd.uniregctb.efacture.EtatDestinataire> etats = new ArrayList<ch.vd.uniregctb.efacture.EtatDestinataire>();
+		for (EtatDestinataire etatDestinataireWrapper : etatsDestinataireWrapper) {
+			ch.vd.uniregctb.efacture.EtatDestinataire etatDestinataire = getEtatDestinataire(etatDestinataireWrapper);
 			etats.add(etatDestinataire);
 		}
 		historiqueDestinataire.setEtats(etats);
@@ -126,13 +121,13 @@ public class EfactureManagerImpl implements EfactureManager {
 		historiqueDestinataire.setDemandes(revertList(historiqueDestinataire.getDemandes()));
 		historiqueDestinataire.setActivable(historiqueDestinataireWrapper.isActivable());
 		historiqueDestinataire.setSuspendable(historiqueDestinataireWrapper.isSuspendable());
-		for (HistoriqueDemande demande : historiqueDestinataire.getDemandes()) {
+		for (ch.vd.uniregctb.efacture.HistoriqueDemande demande : historiqueDestinataire.getDemandes()) {
 			demande.setEtats(revertList(demande.getEtats()));
 		}
 		return historiqueDestinataire;
 	}
 
-	private EtatDestinataire getEtatDestinataire(EtatDestinataireWrapper etatDestinataireWrapper) {
+	private ch.vd.uniregctb.efacture.EtatDestinataire getEtatDestinataire(EtatDestinataire etatDestinataireWrapper) {
 		final RegDate dateObtention = etatDestinataireWrapper.getDateObtention();
 		final String motifObtention = etatDestinataireWrapper.getDescriptionRaison();
 		final String key = etatDestinataireWrapper.getChampLibre();
@@ -141,10 +136,10 @@ public class EfactureManagerImpl implements EfactureManager {
 		final String label  = "label.efacture.etat.destinataire."+etatDestinataireWrapper.getEtatDestinataire();
 		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
 		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
-		return new EtatDestinataire(dateObtention,motifObtention,archiveKey,descriptionEtat);
+		return new ch.vd.uniregctb.efacture.EtatDestinataire(dateObtention,motifObtention,archiveKey,descriptionEtat);
 	}
 
-	private EtatDemande getEtatDemande(EtatDemandeWrapper etatDemandeWrapper) {
+	private ch.vd.uniregctb.efacture.EtatDemande getEtatDemande(EtatDemande etatDemandeWrapper) {
 		final RegDate dateObtention = etatDemandeWrapper.getDate();
 		final String motifObtention = etatDemandeWrapper.getDescriptionRaison();
 		final TypeAttenteEFacture typeAttenteEFacture = TypeAttenteEFacture.valueOf(etatDemandeWrapper.getCodeRaison());
@@ -156,7 +151,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 		final TypeEtatDemande typeEtatDemande = etatDemandeWrapper.getTypeEtatDemande();
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
-		return new EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
+		return new ch.vd.uniregctb.efacture.EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
 	}
 
 

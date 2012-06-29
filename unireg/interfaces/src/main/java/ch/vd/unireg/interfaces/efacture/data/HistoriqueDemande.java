@@ -8,19 +8,19 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
-public class HistoriqueDemandeWrapper {
+public class HistoriqueDemande {
 
 	private String id;
 	private RegDate dateInscription;
 	//TODO rajouter les autres attributs en cas de besoin
-	private List<EtatDemandeWrapper> historiqueEtatDemandeWrapper;
+	private List<EtatDemande> historiqueEtatDemandeWrapper;
 
 
 	public RegDate getDateInscription() {
 		return dateInscription;
 	}
 
-	public List<EtatDemandeWrapper> getHistoriqueEtatDemandeWrapper() {
+	public List<EtatDemande> getHistoriqueEtatDemandeWrapper() {
 		return historiqueEtatDemandeWrapper;
 	}
 
@@ -28,12 +28,12 @@ public class HistoriqueDemandeWrapper {
 		return id;
 	}
 
-	public HistoriqueDemandeWrapper(RegistrationRequestWithHistory registrationRequestWithHistory) {
-		this.historiqueEtatDemandeWrapper = new ArrayList<EtatDemandeWrapper>();
+	public HistoriqueDemande(RegistrationRequestWithHistory registrationRequestWithHistory) {
+		this.historiqueEtatDemandeWrapper = new ArrayList<EtatDemande>();
 		this.id = registrationRequestWithHistory.getId();
 		this.dateInscription = XmlUtils.xmlcal2regdate(registrationRequestWithHistory.getRegistrationDate());
 		for (RegistrationRequestHistoryEntry registrationRequestHistoryEntry : registrationRequestWithHistory.getRegistrationRequestHistoryEntry()) {
-			historiqueEtatDemandeWrapper.add(new EtatDemandeWrapper(registrationRequestHistoryEntry));
+			historiqueEtatDemandeWrapper.add(new EtatDemande(registrationRequestHistoryEntry));
 		}
 	}
 }

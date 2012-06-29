@@ -9,14 +9,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
-import ch.vd.evd0025.v1.PayerStatus;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataireWrapper;
+import ch.vd.unireg.interfaces.efacture.data.HistoriqueDestinataire;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -31,6 +29,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDestinataire;
 
 public class EFactureServiceImpl implements EFactureService {
 
@@ -102,7 +101,7 @@ public class EFactureServiceImpl implements EFactureService {
 	public void updateEmailContribuable(long ctbId, String email) {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		if (tiers == null) {
-			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et retourne non-null");
+			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas non-null");
 		}
 		tiers.setAdresseCourrierElectroniqueEFacture(email);
 	}
@@ -111,22 +110,17 @@ public class EFactureServiceImpl implements EFactureService {
 	public boolean valideEtatContribuablePourInscription(long ctbId) {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		if (tiers == null) {
-			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et retourne non null");
+			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas null");
 		}
-		// Verification de l'historique e-facture
-		PayerWithHistory payer = eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID);
-		if (payer != null && payer.getHistoryOfSituations() != null
-				&& payer.getHistoryOfSituations().getSituation() != null
-				&& payer.getHistoryOfSituations().getSituation().size() > 0
-		) {
-			PayerSituationHistoryEntry situation = payer.getHistoryOfSituations().getSituation().get(payer.getHistoryOfSituations().getSituation().size() - 1);
-			if (situation != null && situation.getStatus() == PayerStatus.DESINSCRIT_SUSPENDU) {
-				return false;
-			}
+		// Verification de l'historique des situations
+		HistoriqueDestinataire histo = getHistoriqueDestinataire(ctbId);
+
+		if (histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+			return false;
 		}
 
 		// Verification du for principal
-		ForFiscalPrincipal ffp = tiers.getForFiscalPrincipalAt(null);
+		ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
 		if (ffp == null) {
 			return false;
 		}
@@ -153,13 +147,13 @@ public class EFactureServiceImpl implements EFactureService {
 		return true;
 	}
 
-	public HistoriqueDestinataireWrapper getHistoriqueDestinataire(long ctbId){
+	public HistoriqueDestinataire getHistoriqueDestinataire(long ctbId){
 
 		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, EFactureEvent.ACI_BILLER_ID);
 		if(payerWithHistory == null){
 			return null;
 		}
-		return new HistoriqueDestinataireWrapper(payerWithHistory, ctbId);
+		return new HistoriqueDestinataire(payerWithHistory, ctbId);
 	}
 
 	@Override
@@ -174,12 +168,12 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	public String accepterDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande,retourAttendu, description);
+		return eFactureMessageSender.envoieAcceptationDemandeInscription(idDemande, retourAttendu, description);
 	}
 
 	@Override
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande,null, description, retourAttendu);
+		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande, null, description, retourAttendu);
 	}
 
 	@Override
