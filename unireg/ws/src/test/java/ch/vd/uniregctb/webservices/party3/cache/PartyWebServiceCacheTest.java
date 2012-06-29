@@ -693,6 +693,35 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-5508] Vérifie que la date de début d'activité (activityStartDate) est bien cachée correctement.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetPartyActivityStartDate() throws Exception {
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(new UserLogin("[PartyWebServiceCacheTest]", 21));
+		params.setPartyNumber(ids.eric.intValue());
+		params.getParts().add(PartyPart.TAX_RESIDENCES);
+
+		// 1. on demande le tiers une première fois
+		{
+			final Party party = cache.getParty(params);
+			assertNotNull(party);
+			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate());
+			assertNull(party.getActivityEndDate());
+		}
+
+		// 2. on demande le tiers une seconde fois
+		{
+			final Party party = cache.getParty(params);
+			assertNotNull(party);
+			assertEquals(new Date(1983, 4, 13), party.getActivityStartDate()); // [SIFISC-5508] cette date était nulle avant la correction du bug
+			assertNull(party.getActivityEndDate());
+		}
+	}
+
 	private GetPartyValue getCacheValue(long tiersNumber) {
 		GetPartyValue value = null;
 		final GetPartyKey key = new GetPartyKey(tiersNumber);

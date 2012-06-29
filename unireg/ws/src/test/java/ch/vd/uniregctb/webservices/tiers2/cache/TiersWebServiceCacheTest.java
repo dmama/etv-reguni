@@ -841,7 +841,36 @@ public class TiersWebServiceCacheTest extends WebserviceTest {
 			assertNull(getCacheValue(ids.madame, null));
 		}
 	}
-	
+
+	/**
+	 * [SIFISC-5508] Vérifie que la date de début d'activité est bien cachée correctement.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testGetTiersDateDebutActivite() throws Exception {
+
+		final GetTiers params = new GetTiers();
+		params.login = new UserLogin("[TiersWebServiceCacheTest]", 21);
+		params.tiersNumber = ids.eric;
+		params.parts = new HashSet<TiersPart>();
+
+		// 1. on demande le tiers une première fois
+		{
+			final Tiers tiers = cache.getTiers(params);
+			assertNotNull(tiers);
+			assertEquals(new Date(1983, 4, 13), tiers.dateDebutActivite);
+			assertNull(tiers.dateFinActivite);
+		}
+
+		// 2. on demande le tiers une seconde fois
+		{
+			final Tiers tiers = cache.getTiers(params);
+			assertNotNull(tiers);
+			assertEquals(new Date(1983, 4, 13), tiers.dateDebutActivite);
+			assertNull(tiers.dateFinActivite);
+		}
+	}
+
 	/**
 	 * [UNIREG-3288] Vérifie que les exceptions levées dans la méthode getBatchTiersHisto sont correctement gérées au niveau du cache.
 	 */

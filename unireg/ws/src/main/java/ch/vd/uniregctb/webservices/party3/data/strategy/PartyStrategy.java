@@ -346,7 +346,12 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 	private static void copyTaxResidences(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
-		/**
+
+		// [SIFISC-5508] n'oublions pas de copier les dates de début/fin d'activité.
+		to.setActivityStartDate(from.getActivityStartDate());
+		to.setActivityEndDate(from.getActivityEndDate());
+
+		/*
 		 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
 		 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
 		 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
