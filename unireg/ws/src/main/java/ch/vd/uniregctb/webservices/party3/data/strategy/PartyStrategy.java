@@ -129,149 +129,27 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (parts.contains(PartyPart.BANK_ACCOUNTS)) {
-			copyColl(to.getBankAccounts(), from.getBankAccounts());
+			copyBankAccounts(to, from);
 		}
 
 		if (parts.contains(PartyPart.ADDRESSES)) {
-			copyColl(to.getMailAddresses(), from.getMailAddresses());
-			copyColl(to.getRepresentationAddresses(), from.getRepresentationAddresses());
-			copyColl(to.getResidenceAddresses(), from.getResidenceAddresses());
-			copyColl(to.getDebtProsecutionAddresses(), from.getDebtProsecutionAddresses());
-			copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
+			copyAddresses(to, from);
 		}
 
-		final boolean wantRelations = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
-		final boolean wantChildren = parts.contains(PartyPart.CHILDREN);
-		final boolean wantParents = parts.contains(PartyPart.PARENTS);
-
-		if (wantRelations || wantChildren || wantParents) { // [SIFISC-2588]
-			if (mode == CopyMode.ADDITIVE) {
-				if ((wantRelations && wantChildren && wantParents)
-						|| to.getRelationsBetweenParties() == null || to.getRelationsBetweenParties().isEmpty()) {
-					// la source contient tout ou la destination ne contient rien => on copie tout
-					copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
-				}
-				else {
-					// autrement, on ajoute exclusivement ce qui a été demandé
-					for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
-						switch (relation.getType()) {
-						case CHILD:
-							if (wantChildren) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-							break;
-						case PARENT:
-							if (wantParents) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-							break;
-						default:
-							if (wantRelations) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-						}
-					}
-				}
-			}
-			else { // mode exclusif
-				if (wantRelations && wantChildren && wantParents) {
-					// la source contient tout (par définition) et on demande tout => on copie tout
-					copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
-				}
-				else {
-					// la source contient tout (par définition) et on demande une partie seulement => on copie ce qui a été demandé
-					to.getRelationsBetweenParties().clear();
-					for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
-						switch (relation.getType()) {
-						case CHILD:
-							if (wantChildren) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-							break;
-						case PARENT:
-							if (wantParents) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-							break;
-						default:
-							if (wantRelations) {
-								to.getRelationsBetweenParties().add(relation);
-							}
-						}
-					}
-				}
-			}
+		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES) || parts.contains(PartyPart.CHILDREN) || parts.contains(PartyPart.PARENTS)) { // [SIFISC-2588]
+			copyRelationsBetweenParties(to, from, parts, mode);
 		}
 
 		if ((parts.contains(PartyPart.TAX_RESIDENCES) || parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES))) {
-			/**
-			 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
-			 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
-			 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
-			 */
-			if (mode == CopyMode.ADDITIVE) {
-				if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES) || to.getMainTaxResidences() == null || to.getMainTaxResidences().isEmpty()) {
-					copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
-				}
-			}
-			else {
-				Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-				if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
-					copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
-				}
-				else {
-					// supprime les éventuels fors virtuels s'ils ne sont pas demandés
-					if (from.getMainTaxResidences() != null && !from.getMainTaxResidences().isEmpty()) {
-						to.getMainTaxResidences().clear();
-						for (TaxResidence f : from.getMainTaxResidences()) {
-							if (!f.isVirtual()) {
-								to.getMainTaxResidences().add(f);
-							}
-						}
-					}
-					else {
-						to.getMainTaxResidences().clear();
-					}
-				}
-
-			}
-			copyColl(to.getOtherTaxResidences(), from.getOtherTaxResidences());
+			copyTaxResidences(to, from, parts, mode);
 		}
 
 		if (parts.contains(PartyPart.MANAGING_TAX_RESIDENCES)) {
-			copyColl(to.getManagingTaxResidences(), from.getManagingTaxResidences());
+			copyManagingTaxResidences(to, from);
 		}
 
 		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES))) {
-			if (mode == CopyMode.ADDITIVE) {
-				// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
-				// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
-				if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
-					copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
-				}
-			}
-			else {
-				Assert.isEqual(CopyMode.EXCLUSIVE, mode);
-
-				if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-					// on veut les déclarations et leurs états => on copie tout
-					copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
-				}
-				else {
-					// supprime les éventuels états s'ils ne sont pas demandés
-					if (from.getTaxDeclarations() != null && !from.getTaxDeclarations().isEmpty()) {
-						deepCopyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
-						for (TaxDeclaration d : to.getTaxDeclarations()) {
-							if (d.getStatuses() != null) {
-								d.getStatuses().clear();
-							}
-						}
-					}
-					else {
-						to.getTaxDeclarations().clear();
-					}
-				}
-			}
+			copyTaxDeclarations(to, from, parts, mode);
 		}
 	}
 
@@ -290,6 +168,10 @@ public abstract class PartyStrategy<T extends Party> {
 		if (numero != null && !"".equals(numero) && context.ibanValidator.isValidIban(numero)) {
 			left.getBankAccounts().add(BankAccountBuilder.newBankAccount(tiers, context));
 		}
+	}
+
+	private static void copyBankAccounts(Party to, Party from) {
+		copyColl(to.getBankAccounts(), from.getBankAccounts());
 	}
 
 	private static void initAddresses(Party tiers, ch.vd.uniregctb.tiers.Tiers right, final Context context) throws WebServiceException {
@@ -330,6 +212,14 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
+	private static void copyAddresses(Party to, Party from) {
+		copyColl(to.getMailAddresses(), from.getMailAddresses());
+		copyColl(to.getRepresentationAddresses(), from.getRepresentationAddresses());
+		copyColl(to.getResidenceAddresses(), from.getResidenceAddresses());
+		copyColl(to.getDebtProsecutionAddresses(), from.getDebtProsecutionAddresses());
+		copyColl(to.getDebtProsecutionAddressesOfOtherParty(), from.getDebtProsecutionAddressesOfOtherParty());
+	}
+
 	private static void initRelationsBetweenParties(Party tiers, final Tiers right, Set<PartyPart> parts, Context context) {
 		if (parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES)) {
 			// Ajoute les rapports dont le tiers est le sujet
@@ -365,19 +255,83 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 	}
 
-	private static void initTaxResidences(Party tiers, ch.vd.uniregctb.tiers.Tiers right, final Set<PartyPart> parts, Context context) {
+	private static void copyRelationsBetweenParties(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+
+		final boolean wantRelations = parts.contains(PartyPart.RELATIONS_BETWEEN_PARTIES);
+		final boolean wantChildren = parts.contains(PartyPart.CHILDREN);
+		final boolean wantParents = parts.contains(PartyPart.PARENTS);
+
+		if (mode == CopyMode.ADDITIVE) {
+			if ((wantRelations && wantChildren && wantParents)
+					|| to.getRelationsBetweenParties() == null || to.getRelationsBetweenParties().isEmpty()) {
+				// la source contient tout ou la destination ne contient rien => on copie tout
+				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
+			}
+			else {
+				// autrement, on ajoute exclusivement ce qui a été demandé
+				for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
+					switch (relation.getType()) {
+					case CHILD:
+						if (wantChildren) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+						break;
+					case PARENT:
+						if (wantParents) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+						break;
+					default:
+						if (wantRelations) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+					}
+				}
+			}
+		}
+		else { // mode exclusif
+			if (wantRelations && wantChildren && wantParents) {
+				// la source contient tout (par définition) et on demande tout => on copie tout
+				copyColl(to.getRelationsBetweenParties(), from.getRelationsBetweenParties());
+			}
+			else {
+				// la source contient tout (par définition) et on demande une partie seulement => on copie ce qui a été demandé
+				to.getRelationsBetweenParties().clear();
+				for (RelationBetweenParties relation : from.getRelationsBetweenParties()) {
+					switch (relation.getType()) {
+					case CHILD:
+						if (wantChildren) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+						break;
+					case PARENT:
+						if (wantParents) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+						break;
+					default:
+						if (wantRelations) {
+							to.getRelationsBetweenParties().add(relation);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static void initTaxResidences(Party party, ch.vd.uniregctb.tiers.Tiers right, final Set<PartyPart> parts, Context context) {
 
 		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
-		tiers.setActivityStartDate(DataHelper.coreToWeb(right.getDateDebutActivite()));
-		tiers.setActivityEndDate(DataHelper.coreToWeb(right.getDateFinActivite()));
+		party.setActivityStartDate(DataHelper.coreToWeb(right.getDateDebutActivite()));
+		party.setActivityEndDate(DataHelper.coreToWeb(right.getDateFinActivite()));
 
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
 			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal
 					|| forFiscal instanceof ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable) {
-				tiers.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, false));
+				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, false));
 			}
 			else {
-				tiers.getOtherTaxResidences().add(TaxResidenceBuilder.newOtherTaxResidence(forFiscal, false));
+				party.getOtherTaxResidences().add(TaxResidenceBuilder.newOtherTaxResidence(forFiscal, false));
 			}
 		}
 
@@ -385,16 +339,55 @@ public abstract class PartyStrategy<T extends Party> {
 		if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
 			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(right, context.tiersDAO);
 			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
-				tiers.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
+				party.getMainTaxResidences().add(TaxResidenceBuilder.newMainTaxResidence(forFiscal, true));
 			}
-			Collections.sort(tiers.getMainTaxResidences(), new ForFiscalComparator());
+			Collections.sort(party.getMainTaxResidences(), new ForFiscalComparator());
 		}
+	}
+
+	private static void copyTaxResidences(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+		/**
+		 * [UNIREG-2587] Les fors fiscaux non-virtuels et les fors fiscaux virtuels représentent deux ensembles qui se recoupent.
+		 * Plus précisemment, les fors fiscaux non-virtuels sont entièrement contenus dans les fors fiscaux virtuels. En fonction
+		 * du mode de copie, il est donc nécessaire de compléter ou de filtrer les fors fiscaux.
+		 */
+		if (mode == CopyMode.ADDITIVE) {
+			if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES) || to.getMainTaxResidences() == null || to.getMainTaxResidences().isEmpty()) {
+				copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
+			}
+		}
+		else {
+			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+			if (parts.contains(PartyPart.VIRTUAL_TAX_RESIDENCES)) {
+				copyColl(to.getMainTaxResidences(), from.getMainTaxResidences());
+			}
+			else {
+				// supprime les éventuels fors virtuels s'ils ne sont pas demandés
+				if (from.getMainTaxResidences() != null && !from.getMainTaxResidences().isEmpty()) {
+					to.getMainTaxResidences().clear();
+					for (TaxResidence f : from.getMainTaxResidences()) {
+						if (!f.isVirtual()) {
+							to.getMainTaxResidences().add(f);
+						}
+					}
+				}
+				else {
+					to.getMainTaxResidences().clear();
+				}
+			}
+
+		}
+		copyColl(to.getOtherTaxResidences(), from.getOtherTaxResidences());
 	}
 
 	private static void initManagingTaxResidences(Party tiers, final ch.vd.uniregctb.tiers.Tiers right, Context context) {
 		for (ch.vd.uniregctb.tiers.ForGestion forGestion : context.tiersService.getForsGestionHisto(right)) {
 			tiers.getManagingTaxResidences().add(ManagingTaxResidenceBuilder.newManagingTaxResidence(forGestion));
 		}
+	}
+
+	private static void copyManagingTaxResidences(Party to, Party from) {
+		copyColl(to.getManagingTaxResidences(), from.getManagingTaxResidences());
 	}
 
 	private static void initTaxDeclarations(Party tiers, final ch.vd.uniregctb.tiers.Tiers right, Set<PartyPart> parts) {
@@ -404,6 +397,38 @@ public abstract class PartyStrategy<T extends Party> {
 			}
 			else if (declaration instanceof ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) {
 				tiers.getTaxDeclarations().add(TaxDeclarationBuilder.newOrdinaryTaxDeclaration((ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire) declaration, parts));
+			}
+		}
+	}
+
+	private static void copyTaxDeclarations(Party to, Party from, Set<PartyPart> parts, CopyMode mode) {
+		if (mode == CopyMode.ADDITIVE) {
+			// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
+			// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
+			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
+				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
+			}
+		}
+		else {
+			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
+
+			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
+				// on veut les déclarations et leurs états => on copie tout
+				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
+			}
+			else {
+				// supprime les éventuels états s'ils ne sont pas demandés
+				if (from.getTaxDeclarations() != null && !from.getTaxDeclarations().isEmpty()) {
+					deepCopyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
+					for (TaxDeclaration d : to.getTaxDeclarations()) {
+						if (d.getStatuses() != null) {
+							d.getStatuses().clear();
+						}
+					}
+				}
+				else {
+					to.getTaxDeclarations().clear();
+				}
 			}
 		}
 	}
