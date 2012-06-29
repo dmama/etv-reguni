@@ -22,6 +22,8 @@ import ch.vd.registre.base.utils.ThreadSafeSimpleDateFormat;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class EFactureMessageSenderImpl implements EFactureMessageSender {
@@ -62,13 +64,13 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture, String description, boolean retourAttendu) throws EvenementEfactureException {
+	public String envoieRefusDemandeInscription(String idDemande, TypeRefusDemande typeRefusEFacture, String description, boolean retourAttendu) throws EvenementEfactureException {
 		final String desc= typeRefusEFacture == null? description:typeRefusEFacture.getDescription();
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, desc, null, retourAttendu);
 	}
 
 	@Override
-	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		final Integer code = typeAttenteEFacture.getCode();
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, code, description, idArchivage, retourAttendu);
 	}
@@ -120,7 +122,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	private String sendMiseAJourDestinataire(final long noCtb, final PayerUpdateAction action,
 	                                       @Nullable final Integer code, @Nullable final String description, @Nullable final String custom,
 	                                       boolean retourAttendu) throws EvenementEfactureException {
-		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureEvent.ACI_BILLER_ID);
+		final PayerId payerId = new PayerId(String.valueOf(noCtb), EFactureService.ACI_BILLER_ID);
 		final String businessId = String.format("%d-%s-%s", noCtb, action.name(), SDF.format(DateHelper.getCurrentDate()));
 		sendEvent(businessId, retourAttendu, new CustomMarshaller() {
 			@Override

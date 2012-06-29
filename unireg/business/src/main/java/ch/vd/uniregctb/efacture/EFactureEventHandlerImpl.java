@@ -4,6 +4,9 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -23,51 +26,46 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	}
 
 	@Override
-	public void handle(EFactureEvent event) throws Exception {
-		if (event instanceof DemandeValidationInscription) {
-			final DemandeValidationInscription valid = (DemandeValidationInscription) event;
-			if (valid.getAction() == DemandeValidationInscription.Action.DESINSCRIPTION) {
-				LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
-			}
-			else {
-				final DemandeValidationInscription inscription = (DemandeValidationInscription) event;
-				LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(inscription.getCtbId()), FormatNumeroHelper.formatNumAVS(inscription.getNoAvs()), RegDateHelper.dateToDisplayString(inscription.getDateDemande())));
-
-				TypeRefusEFacture typeRefus = inscription.performBasicValidation();
-				if (typeRefus != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, null, false);
-					return;
-				}
-
-				// Vérification de la demandes en cours
-				if (eFactureService.getDemandeInscriptionEnCoursDeTraitement(inscription.getCtbId()) != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusEFacture.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT, null, false);
-					return;
-				}
-
-				// identifie le contribuable (no avs et no ctb doivent matché, le ctb doit avoir une adresse courrier)
-				typeRefus = eFactureService.identifieContribuablePourInscription(inscription.getCtbId(), inscription.getNoAvs());
-				if (typeRefus != null) {
-					sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, null, false);
-					return;
-				}
-
-				//Stocke l’adresse de courrier électronique de la demande
-				eFactureService.updateEmailContribuable(inscription.getCtbId(), inscription.getEmail());
-
-				// valide l'etat du contribuable et envoye le courrier adéquat
-				if (eFactureService.valideEtatContribuablePourInscription(inscription.getCtbId())) {
-					String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, inscription.getDateDemande());
-					sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteEFacture.EN_ATTENTE_SIGNATURE, TypeAttenteEFacture.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
-				} else {
-					String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, inscription.getDateDemande());
-					sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteEFacture.EN_ATTENTE_CONTACT, TypeAttenteEFacture.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
-				}
-
-			}
+	public void handle(DemandeBrute event) throws Exception {
+		final DemandeBrute valid = (DemandeBrute) event;
+		if (valid.getAction() == DemandeBrute.Action.DESINSCRIPTION) {
+			LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(valid.getCtbId()), RegDateHelper.dateToDisplayString(valid.getDateDemande())));
 		}
 		else {
-			throw new IllegalArgumentException("Type d'événement non supporté : " + event.getClass());
+			final DemandeBrute inscription = (DemandeBrute) event;
+			LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(inscription.getCtbId()), FormatNumeroHelper.formatNumAVS(inscription.getNoAvs()), RegDateHelper.dateToDisplayString(inscription.getDateDemande())));
+
+			TypeRefusDemande typeRefus = inscription.performBasicValidation();
+			if (typeRefus != null) {
+				sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, null, false);
+				return;
+			}
+
+			// Vérification de la demandes en cours
+			if (eFactureService.getDemandeInscriptionEnCoursDeTraitement(inscription.getCtbId()) != null) {
+				sender.envoieRefusDemandeInscription(inscription.getIdDemande(), TypeRefusDemande.AUTRE_DEMANDE_EN_COURS_DE_TRAITEMENT, null, false);
+				return;
+			}
+
+			// identifie le contribuable (no avs et no ctb doivent matché, le ctb doit avoir une adresse courrier)
+			typeRefus = eFactureService.identifieContribuablePourInscription(inscription.getCtbId(), inscription.getNoAvs());
+			if (typeRefus != null) {
+				sender.envoieRefusDemandeInscription(inscription.getIdDemande(), typeRefus, null, false);
+				return;
+			}
+
+			//Stocke l’adresse de courrier électronique de la demande
+			eFactureService.updateEmailContribuable(inscription.getCtbId(), inscription.getEmail());
+
+			// valide l'etat du contribuable et envoye le courrier adéquat
+			if (eFactureService.valideEtatContribuablePourInscription(inscription.getCtbId())) {
+				String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, inscription.getDateDemande());
+				sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_SIGNATURE, TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
+			} else {
+				String archivageId = eFactureService.imprimerDocumentEfacture(inscription.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, inscription.getDateDemande());
+				sender.envoieMiseEnAttenteDemandeInscription(inscription.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_CONTACT, TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
+			}
+
 		}
 	}
 

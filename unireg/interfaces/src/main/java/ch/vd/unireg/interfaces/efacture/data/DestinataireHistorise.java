@@ -7,25 +7,25 @@ import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 
-public class HistoriqueDestinataire {
+public class DestinataireHistorise {
 	private long ctbId;
-	private List<HistoriqueDemande> historiqueDemandeWrapper;
+	private List<DemandeHistorisee> historiqueDemandes;
 	private List<EtatDestinataire> etats;
 
-	public List<HistoriqueDemande> getHistoriqueDemandeWrapper() {
-		return historiqueDemandeWrapper;
+	public List<DemandeHistorisee> getHistoriqueDemandes() {
+		return historiqueDemandes;
 	}
 
 	public List<EtatDestinataire> getEtats() {
 		return etats;
 	}
 
-	public HistoriqueDestinataire(PayerWithHistory payerWithHistory, long ctbId) {
+	public DestinataireHistorise(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
-		this.historiqueDemandeWrapper = new ArrayList<HistoriqueDemande>();
+		this.historiqueDemandes = new ArrayList<DemandeHistorisee>();
 		PayerWithHistory.HistoryOfRequests historyOfRequests = payerWithHistory.getHistoryOfRequests();
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests.getRequest()) {
-			this.historiqueDemandeWrapper.add(new HistoriqueDemande(registrationRequestHistory));
+			this.historiqueDemandes.add(new DemandeHistorisee(registrationRequestHistory));
 
 		}
 
@@ -49,7 +49,7 @@ public class HistoriqueDestinataire {
 	}
 
 	public EtatDestinataire getDernierEtat() {
-		//Les états nous sont toujours renvoyés par ordre chronologique croissant par le ws efacture
+		//Les états nous sont toujours renvoyés dans l'ordre chronologique par le ws efacture
 		if(etats!=null && !etats.isEmpty()){
 			return etats.get(etats.size()-1);
 		}

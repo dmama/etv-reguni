@@ -9,15 +9,16 @@ import ch.vd.evd0025.v1.Provider;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
 import ch.vd.uniregctb.common.XmlUtils;
 
 @SuppressWarnings("UnusedDeclaration")
-class DemandeValidationInscriptionBuilderForUnitTests {
+class DemandeBruteBuilderForUnitTests {
 
 	// Les valeurs par défaut permettent une validation sans problème
 
 	private String id = "id";
-	private String billerId = EFactureEvent.ACI_BILLER_ID;
+	private String billerId = EFactureService.ACI_BILLER_ID;
 	private String providerId = "provider_id";
 	private String businessPayerId = "123456678";
 	private BigInteger eBillAccountId = BigInteger.valueOf(1234567890L);
@@ -28,8 +29,8 @@ class DemandeValidationInscriptionBuilderForUnitTests {
 	private RegistrationMode registrationMode = RegistrationMode.STANDARD;
 	private String noAvs = "7565817249033";
 
-	DemandeValidationInscription build () {
-		return new DemandeValidationInscription (buildRegistrationRequest());
+	DemandeBrute build () {
+		return new DemandeBrute(buildRegistrationRequest());
 	}
 
 	RegistrationRequest buildRegistrationRequest () {
@@ -39,57 +40,57 @@ class DemandeValidationInscriptionBuilderForUnitTests {
 				new Map(Collections.<MapEntry>singletonList(new MapEntry("AVS13", noAvs))));
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests id(String id) {
+	DemandeBruteBuilderForUnitTests id(String id) {
 		this.id = id;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setBillerId(String billerId) {
+	DemandeBruteBuilderForUnitTests setBillerId(String billerId) {
 		this.billerId = billerId;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setProviderId(String providerId) {
+	DemandeBruteBuilderForUnitTests setProviderId(String providerId) {
 		this.providerId = providerId;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setBusinessPayerId(String businessPayerId) {
+	DemandeBruteBuilderForUnitTests setBusinessPayerId(String businessPayerId) {
 		this.businessPayerId = businessPayerId;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests seteBillAccountId(BigInteger eBillAccountId) {
+	DemandeBruteBuilderForUnitTests seteBillAccountId(BigInteger eBillAccountId) {
 		this.eBillAccountId = eBillAccountId;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setLastName(String lastName) {
+	DemandeBruteBuilderForUnitTests setLastName(String lastName) {
 		this.lastName = lastName;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setFirstName(String firstName) {
+	DemandeBruteBuilderForUnitTests setFirstName(String firstName) {
 		this.firstName = firstName;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setDateDemande(RegDate dateDemande) {
+	DemandeBruteBuilderForUnitTests setDateDemande(RegDate dateDemande) {
 		this.dateDemande = dateDemande;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setEmail(String email) {
+	DemandeBruteBuilderForUnitTests setEmail(String email) {
 		this.email = email;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
+	DemandeBruteBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
 		this.registrationMode = registrationMode;
 		return this;
 	}
 
-	DemandeValidationInscriptionBuilderForUnitTests setNoAvs(String noAvs) {
+	DemandeBruteBuilderForUnitTests setNoAvs(String noAvs) {
 		this.noAvs = noAvs;
 		return this;
 	}

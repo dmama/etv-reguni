@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.interfaces.efacture.data;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,10 +14,9 @@ import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.XmlUtils;
 
-public class DemandeValidationInscription extends EFactureEvent {
+public class DemandeBrute {
 
 	private static final String AVS13 = "AVS13";
 
@@ -67,10 +66,7 @@ public class DemandeValidationInscription extends EFactureEvent {
 	private final Action action;
 	private final String noAvs;
 
-	public DemandeValidationInscription(RegistrationRequest request) {
-
-		// Si ce n'est pas à destination de l'ACI, qu'est-ce que cela fait ici ?
-		Assert.isEqual(EFactureEvent.ACI_BILLER_ID, request.getBillerId());
+	public DemandeBrute(RegistrationRequest request) {
 
 		this.idDemande = request.getId();
 		this.ctbId = Long.parseLong(request.getPayerBusinessId());
@@ -81,6 +77,46 @@ public class DemandeValidationInscription extends EFactureEvent {
 		final Map<String, String> map = buildAdditionalData(request);
 		this.noAvs = map.get(AVS13);
 
+	}
+
+	/**
+	 * Effectue les contrôles de cohérence de base pour l'objet
+	 *
+	 * @return le type de refus pour le contrôle en echec ou null si tout est ok
+	 *
+	 */
+	public TypeRefusDemande performBasicValidation() {
+		if (getAction() == DemandeBrute.Action.INSCRIPTION) {
+			//Check Numéro AVS à 13 chiffres
+			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
+				return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+			}
+			//Check Adresse de courrier électronique
+			if (!EmailValidator.validate(getEmail())) {
+				return TypeRefusDemande.EMAIL_INVALIDE;
+			}
+			//Check Date et heure de la demande
+			if (getDateDemande() == null) {
+				return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
+			}
+		}
+		return null;
+	}
+
+	private static class EmailValidator {
+
+		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
+
+		private EmailValidator() {}
+
+		public static boolean validate(final String email){
+			if (email == null) {
+				return false;
+			}
+			final Matcher matcher = pattern.matcher(email);
+			return matcher.matches();
+		}
 	}
 
 	public String getIdDemande() {
@@ -107,43 +143,5 @@ public class DemandeValidationInscription extends EFactureEvent {
 		return noAvs;
 	}
 
-	/**
-	 * Effectue les contrôles de cohérence de base pour l'objet
-	 *
-	 * @return le type de refus pour le contrôle en echec ou null si tout est ok
-	 *
-	 */
-	TypeRefusEFacture performBasicValidation() {
-		if (getAction() == Action.INSCRIPTION) {
-			//Check Numéro AVS à 13 chiffres
-			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
-				return TypeRefusEFacture.NUMERO_AVS_INVALIDE;
-			}
-			//Check Adresse de courrier électronique
-			if (!EmailValidator.validate(getEmail())) {
-				return TypeRefusEFacture.EMAIL_INVALIDE;
-			}
-			//Check Date et heure de la demande
-			if (getDateDemande() == null) {
-				return TypeRefusEFacture.DATE_DEMANDE_ABSENTE;
-			}
-		}
-		return null;
-	}
 
-	private static class EmailValidator {
-
-		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-		private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-
-		private EmailValidator() {}
-
-		public static boolean validate(final String email){
-			if (email == null) {
-				return false;
-			}
-			final Matcher matcher = pattern.matcher(email);
-			return matcher.matches();
-		}
-	}
 }

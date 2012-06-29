@@ -8,15 +8,16 @@ import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.DemandeHistorisee;
 import ch.vd.uniregctb.common.XmlUtils;
 
-class DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests extends DemandeValidationInscriptionBuilderForUnitTests {
+class DemandeHistoriseeBuilderForUnitTests extends DemandeBruteBuilderForUnitTests {
 
 	private List<RegistrationRequestHistoryEntry> listHistoryEntry = new ArrayList<RegistrationRequestHistoryEntry>();
 
 	@Override
-	DemandeValidationInscriptionAvecHistorique build() {
-		return new DemandeValidationInscriptionAvecHistorique(buildRegistrationRequestWithHistory());
+	DemandeHistorisee build() {
+		return new DemandeHistorisee(buildRegistrationRequestWithHistory());
 	}
 
 	RegistrationRequestWithHistory buildRegistrationRequestWithHistory () {
@@ -26,12 +27,12 @@ class DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests extends Dema
 				rr.getRegistrationDate(), rr.getRegistrationMode(), rr.getAdditionalData(),listHistoryEntry);
 	}
 
-	DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests addHistoryEntry(RegistrationRequestHistoryEntry entry) {
+	DemandeHistoriseeBuilderForUnitTests addHistoryEntry(RegistrationRequestHistoryEntry entry) {
 		listHistoryEntry.add(entry);
 		return this;
 	}
 
-	DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests addHistoryEntry(RegDate date, RegistrationRequestStatus status, Integer reasonCode, String description, String customField) {
+	DemandeHistoriseeBuilderForUnitTests addHistoryEntry(RegDate date, RegistrationRequestStatus status, Integer reasonCode, String description, String customField) {
 		addHistoryEntry(new RegistrationRequestHistoryEntry(XmlUtils.regdate2xmlcal(date), status, reasonCode, description, customField));
 		return this;
 	}

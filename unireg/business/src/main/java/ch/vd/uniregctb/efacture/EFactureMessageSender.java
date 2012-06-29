@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.efacture;
 
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
+
 /**
  * Interface du service bas-niveau d'envoi de messages à l'application e-facture
  */
@@ -15,7 +18,7 @@ public interface EFactureMessageSender {
 	 * @param description
 	 *@param retourAttendu  @throws EvenementEfactureException en cas de problème
 	 */
-	String envoieRefusDemandeInscription(String idDemande, TypeRefusEFacture typeRefusEFacture,String description, boolean retourAttendu) throws EvenementEfactureException;
+	String envoieRefusDemandeInscription(String idDemande, TypeRefusDemande typeRefusEFacture,String description, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la mise en attente d'une demande d'inscription
@@ -33,7 +36,7 @@ public interface EFactureMessageSender {
 	 * @param retourAttendu vrai si on attend une réponse de la E-facture, false sinon
 	 * @throws EvenementEfactureException en cas de problème
 	 */
-	String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteEFacture typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce l'acceptation d'une demande d'inscription

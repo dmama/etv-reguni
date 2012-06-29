@@ -1,8 +1,8 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.interfaces.efacture.data;
 
 import org.jetbrains.annotations.Nullable;
 
-public enum TypeAttenteEFacture {
+public enum TypeAttenteDemande {
 
 	PAS_EN_ATTENTE (null, "Pas En Attente"),
 	EN_ATTENTE_CONTACT(1, "Mise en attente."),
@@ -11,7 +11,7 @@ public enum TypeAttenteEFacture {
 	private final Integer code;
 	private final String description;
 
-	private TypeAttenteEFacture(Integer code, String motif) {
+	private TypeAttenteDemande(Integer code, String motif) {
 		this.code = code;
 		this.description = motif;
 	}
@@ -25,11 +25,11 @@ public enum TypeAttenteEFacture {
 		return code;
 	}
 
-	public static TypeAttenteEFacture valueOf (Integer code) {
+	public static TypeAttenteDemande valueOf (Integer code) {
 		if (code == null) {
 			return PAS_EN_ATTENTE;
 		}
-		for(TypeAttenteEFacture t : TypeAttenteEFacture.values()) {
+		for(TypeAttenteDemande t : TypeAttenteDemande.values()) {
 			if (code.equals(t.code)) {
 				return t;
 			}
@@ -39,6 +39,6 @@ public enum TypeAttenteEFacture {
 			return PAS_EN_ATTENTE;
 
 		}
-		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteEFacture valide");
+		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteDemande valide");
 	}
 }

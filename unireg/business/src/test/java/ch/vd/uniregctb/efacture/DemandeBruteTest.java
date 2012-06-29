@@ -2,15 +2,17 @@ package ch.vd.uniregctb.efacture;
 
 import org.junit.Test;
 
+import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
+import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
-import static ch.vd.uniregctb.efacture.TypeRefusEFacture.*;
+import static ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class DemandeValidationInscriptionTest extends WithoutSpringTest {
+public class DemandeBruteTest extends WithoutSpringTest {
 
-	DemandeValidationInscription demande;
+	DemandeBrute demande;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -73,15 +75,15 @@ public class DemandeValidationInscriptionTest extends WithoutSpringTest {
 		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
 	}
 
-	private DemandeValidationInscriptionBuilderForUnitTests nouvelleDemande() {
-		return new DemandeValidationInscriptionBuilderForUnitTests();
+	private DemandeBruteBuilderForUnitTests nouvelleDemande() {
+		return new DemandeBruteBuilderForUnitTests();
 	}
 
 	private void assertPerformBasicValidationOK() {
 		assertNull(demande.performBasicValidation());
 	}
 
-	private void assertPerformBasicValidationFailWith(TypeRefusEFacture typeRefusEFacture) {
+	private void assertPerformBasicValidationFailWith(TypeRefusDemande typeRefusEFacture) {
 		assertEquals(typeRefusEFacture, demande.performBasicValidation());
 	}
 

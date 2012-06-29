@@ -5,7 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.type.TypeEtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)

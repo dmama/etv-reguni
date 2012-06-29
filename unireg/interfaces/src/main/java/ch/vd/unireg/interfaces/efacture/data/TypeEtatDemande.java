@@ -1,5 +1,8 @@
-package ch.vd.uniregctb.type;
+package ch.vd.unireg.interfaces.efacture.data;
 
+/**
+ * Type relatif à la e-facture
+ */
 public enum TypeEtatDemande {
 	A_TRAITER,
 	EN_ATTENTE_CONTACT,

@@ -1,6 +1,6 @@
-package ch.vd.uniregctb.efacture;
+package ch.vd.unireg.interfaces.efacture.data;
 
-public enum TypeRefusEFacture {
+public enum TypeRefusDemande {
 
 	NUMERO_AVS_INVALIDE("Numéro AVS invalide"),
 	EMAIL_INVALIDE("Adresse de courrier électronique invalide"),
@@ -13,7 +13,7 @@ public enum TypeRefusEFacture {
 
 	private final String description;
 
-	private TypeRefusEFacture(String description) {
+	private TypeRefusDemande(String description) {
 		this.description = description;
 	}
 

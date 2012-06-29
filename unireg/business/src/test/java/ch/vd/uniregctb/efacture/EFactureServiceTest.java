@@ -20,6 +20,8 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -44,7 +46,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 
 
@@ -82,40 +83,31 @@ public class EFactureServiceTest extends BusinessTest {
 		efactureService.seteFactureClient(mockEfactureClient);
 
 		RegistrationRequestWithHistory mockReturn1 =
-				new DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests()
-						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteEFacture.EN_ATTENTE_CONTACT.getCode(), "", "")
+				new DemandeHistoriseeBuilderForUnitTests()
+						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
 		RegistrationRequestWithHistory mockReturn2 =
-				new DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests()
-						.addHistoryEntry(RegDate.get(2012, 5, 26), RegistrationRequestStatus.REFUSEE, TypeAttenteEFacture.PAS_EN_ATTENTE.getCode(), "","")
-						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteEFacture.EN_ATTENTE_CONTACT.getCode(), "", "")
+				new DemandeHistoriseeBuilderForUnitTests()
+						.addHistoryEntry(RegDate.get(2012, 5, 26), RegistrationRequestStatus.REFUSEE, TypeAttenteDemande.PAS_EN_ATTENTE.getCode(), "","")
+						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
 		RegistrationRequestWithHistory mockReturn3 =
-				new DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests()
-						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteEFacture.PAS_EN_ATTENTE.getCode(), "", "")
-						.buildRegistrationRequestWithHistory();
-
-		RegistrationRequestWithHistory mockReturn4 =
-				new DemandeValidationInscriptionAvecHistoriqueBuilderForUnitTests()
+				new DemandeHistoriseeBuilderForUnitTests()
+						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.PAS_EN_ATTENTE.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
 		expect(
 				mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
 					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn1)))
 					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn2)))
-					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn3)))
-					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn4)));
+					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn3)));
 		replay(mockEfactureClient);
 
 		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
 		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
 		assertNull("Aucune demande n'est en cours; getInscriptionEnCoursDeTraitement() doit renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
-		try {
-			efactureService.getDemandeInscriptionEnCoursDeTraitement(123);
-			fail("Une demande sans historique doit lever une exception");
-		} catch (IllegalArgumentException e) {}
 
 		verify(mockEfactureClient);
 	}
@@ -125,7 +117,7 @@ public class EFactureServiceTest extends BusinessTest {
 			@Nullable List<PayerSituationHistoryEntry> sitHistory,
 			@Nullable List<RegistrationRequestWithHistory> regHistory
 	) {
-		return new PayerWithHistory(new PayerId("business-Id", EFactureEvent.ACI_BILLER_ID),
+		return new PayerWithHistory(new PayerId("business-Id", EFactureService.ACI_BILLER_ID),
 				new PayerWithHistory.HistoryOfSituations(sitHistory),
 				new PayerWithHistory.HistoryOfRequests(regHistory));
 	}
@@ -139,11 +131,11 @@ public class EFactureServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				try {
-					assertEquals(TypeRefusEFacture.NUMERO_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(56758 ,NO_AVS_BERCLAZ));
-					assertEquals(TypeRefusEFacture.ADRESSE_COURRIER_INEXISTANTE, efactureService.identifieContribuablePourInscription(ts.idJacquier, NO_AVS_JACQUIER));
-					assertEquals(TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(ts.idChollet ,NO_AVS_BERCLAZ));
+					assertEquals(TypeRefusDemande.NUMERO_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(56758 ,NO_AVS_BERCLAZ));
+					assertEquals(TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE, efactureService.identifieContribuablePourInscription(ts.idJacquier, NO_AVS_JACQUIER));
+					assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(ts.idChollet ,NO_AVS_BERCLAZ));
 					assertEquals(null, efactureService.identifieContribuablePourInscription(ts.idChollet ,NO_AVS_CHOLLET));
-					assertEquals(TypeRefusEFacture.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(ts.idMenageBerclaz ,NO_AVS_CHOLLET));
+					assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT, efactureService.identifieContribuablePourInscription(ts.idMenageBerclaz ,NO_AVS_CHOLLET));
 					assertEquals(null, efactureService.identifieContribuablePourInscription(ts.idMenageBerclaz ,NO_AVS_BERCLAZ));
 					assertEquals(null, efactureService.identifieContribuablePourInscription(ts.idMenageBerclaz ,NO_AVS_BOCHUZ));
 				}
@@ -272,7 +264,7 @@ public class EFactureServiceTest extends BusinessTest {
 
 		private RegDate date = date(2012,6,1);
 		private PayerStatus status = PayerStatus.DESINSCRIT;
-		private String providerId = EFactureEvent.ACI_BILLER_ID;
+		private String providerId = EFactureService.ACI_BILLER_ID;
 		private BigInteger eBillAcountId = BigInteger.ZERO;
 		private RegistrationMode regMode = RegistrationMode.STANDARD;
 		private Integer reasonCode = null;

@@ -20,6 +20,7 @@ import ch.vd.evd0025.v1.RegistrationRequestValidationRequest;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.unireg.interfaces.efacture.data.DemandeBrute;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
@@ -69,9 +70,9 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 		final Unmarshaller u = context.createUnmarshaller();
 		u.setSchema(getRequestSchema());
 		final Object event = u.unmarshal(message.getBodyAsSource());
-		final EFactureEvent evt;
+		final DemandeBrute evt;
 		if (event instanceof RegistrationRequestValidationRequest) {
-			evt = new DemandeValidationInscription(((RegistrationRequestValidationRequest) event).getRegistrationRequest());
+			evt = new DemandeBrute(((RegistrationRequestValidationRequest) event).getRegistrationRequest());
 		}
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu : " + event.getClass());

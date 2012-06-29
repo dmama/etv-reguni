@@ -4,16 +4,17 @@ import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
-import ch.vd.uniregctb.type.TypeEtatDemande;
 
+/**
+ * Representation interne UNIREG de la classe {@link RegistrationRequestHistoryEntry} de l' eVD-25
+ */
 public class EtatDemande {
+
 	private String champLibre;
 	private RegDate date;
 	private Integer codeRaison;
 	private String descriptionRaison;
 	private TypeEtatDemande typeEtatDemande;
-
-
 
 	public EtatDemande(RegistrationRequestHistoryEntry target) {
 		this.champLibre = target.getCustomField();
@@ -21,7 +22,6 @@ public class EtatDemande {
 		this.codeRaison = target.getReasonCode();
 		this.descriptionRaison = target.getReasonDescription();
 		this.typeEtatDemande = determineStatusDemande(target.getStatus());
-
 	}
 
 	private TypeEtatDemande determineStatusDemande(RegistrationRequestStatus status) {
@@ -38,7 +38,6 @@ public class EtatDemande {
 			 return TypeEtatDemande.VALIDEE;
 		 default:
 			 throw new IllegalArgumentException("Le statut de demande suivant n'est pas reconnu "+ status);
-
 		}
 	}
 
