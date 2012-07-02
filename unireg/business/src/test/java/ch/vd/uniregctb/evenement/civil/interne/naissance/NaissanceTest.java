@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import junit.framework.Assert;
+import net.sf.ehcache.CacheManager;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -11,10 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
+import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
 import ch.vd.uniregctb.evenement.EvenementFiscalDAO;
 import ch.vd.uniregctb.evenement.EvenementFiscalNaissance;
@@ -30,6 +36,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 
 @SuppressWarnings({"JavaDoc"})
@@ -45,6 +52,8 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	private static final long NOUVEAU_NE_FIN_ANNEE = 123456L;
 
 	private EvenementFiscalDAO evenementFiscalDAO;
+	private CacheManager cacheManager;
+	private UniregCacheManager uniregCacheManager;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -52,6 +61,9 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 		evenementFiscalDAO = getBean(EvenementFiscalDAO.class, "evenementFiscalDAO");
+
+		cacheManager = getBean(CacheManager.class, "ehCacheManager");
+		uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
 	}
 
 	@Test
@@ -244,7 +256,7 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private Naissance createValidNaissance(Individu individu, boolean regpp) {
-		return new Naissance(individu, null, individu.getDateNaissance(), 4848, null, context, regpp);
+		return new Naissance(individu, individu.getDateNaissance(), 4848, context, regpp);
 	}
 
 	/**
@@ -332,4 +344,115 @@ public class NaissanceTest extends AbstractEvenementCivilInterneTest {
 			}
 		});
 	}
+
+	/**
+	 * [SIFISC-5521] On s'assure que les parents du nouveau-né sont rafraîchis dans le cache du service civil avant le traitement de l'événement.
+	 */
+	@Test
+	public void testHandleNaissanceEtEvictionParentsDuCache() throws Exception {
+
+		final long indPere = 1;
+		final long indMere = 2;
+		final long indFils = 3;
+
+		final RegDate dateNaissance = date(2010, 2, 8);
+
+		// On crée la situation de départ : le service civil est vide
+		final MockServiceCivil realService = new MockServiceCivil() {
+
+			@Override
+			protected void init() {
+			}
+
+			@Override
+			public void step1() {
+				// on crée toute la famille d'un coup
+				MockIndividu pere = addIndividu(indPere, date(1980, 1, 1), "Tord-boyaux", "Raoul", true);
+				MockIndividu mere = addIndividu(indMere, date(1980, 1, 1), "Tord-boyaux", "Josette", false);
+				marieIndividus(pere, mere, date(2005, 1, 1));
+
+				MockIndividu fils = addIndividu(indFils, dateNaissance, "Tord-boyaux", "Yvan", true);
+				fils.setParentsFromIndividus(Arrays.<Individu>asList(pere, mere));
+				pere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils));
+				mere.setEnfantsFromIndividus(Arrays.<Individu>asList(fils));
+			}
+		};
+
+		// On setup le service civil avec un cache
+		final ServiceCivilCache cache = new ServiceCivilCache();
+		cache.setTarget(realService);
+		cache.setCacheManager(cacheManager);
+		cache.setCacheName("serviceCivil");
+		cache.setUniregCacheManager(uniregCacheManager);
+		cache.setDataEventService(dataEventService);
+		cache.afterPropertiesSet();
+		cache.reset();
+		serviceCivil.setUp(cache);
+
+		// On s'assure que ni la mère ni le père n'existent à ce stade (et que leurs inexistance est bien enregistrée dans le cache)
+		assertNull(serviceCivil.getIndividu(indMere, dateNaissance, AttributeIndividu.ENFANTS));
+		assertNull(serviceCivil.getIndividu(indPere, dateNaissance, AttributeIndividu.ENFANTS));
+
+		// On créer l'arrivée des parents et la naissance de l'enfant (cas bizarre, mais on a vu des choses semblables en production)
+		realService.step1();
+
+		class Ids {
+			Long pere;
+			Long mere;
+			Long fils;
+		}
+		final Ids ids = new Ids();
+
+		// On crée le père et la mère
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pere = addHabitant(indPere);
+				ids.pere = pere.getId();
+				final PersonnePhysique mere = addHabitant(indMere);
+				ids.mere = mere.getId();
+				return null;
+			}
+		});
+
+		// On envoie l'événement de naissance
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Individu fils = serviceCivil.getIndividu(indFils, date(2010, 12, 31));
+				final Naissance naissance = createValidNaissance(fils, true);
+
+				final MessageCollector collector = buildMessageCollector();
+				naissance.validate(collector, collector);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+
+				final HandleStatus code = naissance.handle(collector);
+				assertEquals(HandleStatus.TRAITE, code);
+				assertFalse(collector.hasErreurs());
+				assertFalse(collector.hasWarnings());
+
+				ids.fils = tiersDAO.getNumeroPPByNumeroIndividu(indFils, false);
+				return null;
+			}
+		});
+
+
+		// On vérifie que la mère et le père sont trouvés dans le cache et qu'ils possèdent bien un enfant
+		assertParent(indPere, indFils, dateNaissance);
+		assertParent(indMere, indFils, dateNaissance);
+	}
+
+	private void assertParent(long indParent, long indFils, RegDate dateNaissance) {
+		final Individu parent = serviceCivil.getIndividu(indParent, null, AttributeIndividu.ENFANTS);
+		assertNotNull(parent);
+		final Collection<RelationVersIndividu> enfants = parent.getEnfants();
+		assertNotNull(enfants);
+		assertEquals(1, enfants.size());
+		final RelationVersIndividu enfant0 = enfants.iterator().next();
+		assertNotNull(enfant0);
+		assertEquals(dateNaissance, enfant0.getDateDebut());
+		assertEquals(indFils, enfant0.getNumeroAutreIndividu());
+	}
+
 }

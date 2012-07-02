@@ -92,6 +92,12 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 */
 	protected abstract void init();
 
+	/**
+	 * Cette méthode permet de modifier les données du service civil après sa création.
+	 */
+	public void step1() {
+	}
+
 	protected void setNationalite(MockIndividu ind, RegDate debut, @Nullable RegDate fin, MockPays pays) {
 		final ArrayList<Nationalite> nationalites = new ArrayList<Nationalite>();
 		final MockNationalite nati = new MockNationalite();

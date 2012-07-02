@@ -97,6 +97,12 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
+	public Set<Long> getNumerosIndividusParents(Long noIndividuPrincipal) {
+		assertTargetNotNull();
+		return service.getNumerosIndividusParents(noIndividuPrincipal);
+	}
+
+	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, RegDate date, AttributeIndividu... parties) {
 		assertTargetNotNull();
 		return service.getIndividus(nosIndividus, date, parties);

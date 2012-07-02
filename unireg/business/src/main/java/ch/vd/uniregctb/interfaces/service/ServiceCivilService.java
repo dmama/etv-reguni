@@ -124,6 +124,14 @@ public interface ServiceCivilService {
 	Set<Long> getNumerosIndividusConjoint(Long noIndividuPrincipal);
 
 	/**
+	 * Retourne l'ensemble des numéros d'individu des parents d'un individu donné.
+	 *
+	 * @param noIndividuPrincipal le numéro technique de l'individu dont on cherche les parents.
+	 * @return l'ensemble de numéros d'individus.
+	 */
+	Set<Long> getNumerosIndividusParents(Long noIndividuPrincipal);
+
+	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
 	 * <p/>
 	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.

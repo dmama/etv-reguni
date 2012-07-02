@@ -104,7 +104,7 @@ public abstract class EvenementCivilInterne {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected EvenementCivilInterne(Individu individu, Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
+	protected EvenementCivilInterne(Individu individu, @Nullable Individu conjoint, RegDate dateEvenement, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		this.context = context;
 
 		this.individuPrincipal = individu;

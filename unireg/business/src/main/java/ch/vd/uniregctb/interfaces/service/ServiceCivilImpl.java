@@ -218,6 +218,22 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
+	public Set<Long> getNumerosIndividusParents(Long noIndividuPrincipal) {
+		final Individu individu = getIndividu(noIndividuPrincipal, null, AttributeIndividu.PARENTS);
+		if (individu == null) {
+			return null;
+		}
+		final Set<Long> numeros = new HashSet<Long>();
+		final List<RelationVersIndividu> conjoints = individu.getParents();
+		if (conjoints != null) {
+			for (RelationVersIndividu conjoint : conjoints) {
+				numeros.add(conjoint.getNumeroAutreIndividu());
+			}
+		}
+		return numeros;
+	}
+
+	@Override
 	public String getNomPrenom(Individu individu) {
 		final String resultat;
 		final NomPrenom nomPrenom = getDecompositionNomPrenom(individu);

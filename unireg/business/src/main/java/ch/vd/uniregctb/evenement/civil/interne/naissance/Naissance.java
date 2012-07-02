@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.interne.naissance;
 
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -32,6 +31,7 @@ public class Naissance extends EvenementCivilInterne {
 	protected Naissance(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
 		this.okSiContribuableExiste = false;
+		refreshParentsCache(evenement.getNumeroIndividuPrincipal(), context); // [SIFISC-5521]
 	}
 
 	protected Naissance(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
@@ -40,15 +40,32 @@ public class Naissance extends EvenementCivilInterne {
 			evenement.setCommentaireTraitement("Le contribuable correspondant au nouveau-né existe déjà, seuls les événements à destination des applications fiscales ont été envoyés.");
 		}
 		this.okSiContribuableExiste = true;
+		refreshParentsCache(evenement.getNumeroIndividu(), context); // [SIFISC-5521]
 	}
 
 	/**
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Naissance(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, List<Individu> parents, EvenementCivilContext context, boolean regpp) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
+	protected Naissance(Individu individu, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context, boolean regpp) {
+		super(individu, null, date, numeroOfsCommuneAnnonce, context);
 		this.okSiContribuableExiste = !regpp;
+		refreshParentsCache(individu.getNoTechnique(), context); // [SIFISC-5521]
+	}
+
+	/**
+	 * Force le refraîchissement du cache du service civil pour les parents connus de l'individu spécifié.
+	 *
+	 * @param noInd   le numéro d'un individu
+	 * @param context le context d'exécution de l'événement civil.
+	 */
+	private void refreshParentsCache(long noInd, EvenementCivilContext context) {
+		final Set<Long> parents = context.getServiceCivil().getNumerosIndividusParents(noInd);
+		if (parents != null) {
+			for (Long noParent : parents) {
+				context.getDataEventService().onIndividuChange(noParent);
+			}
+		}
 	}
 
 	/* (non-Javadoc)
