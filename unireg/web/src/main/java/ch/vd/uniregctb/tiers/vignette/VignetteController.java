@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.Niveau;
 
 @Controller
 public class VignetteController {
@@ -70,7 +72,10 @@ public class VignetteController {
 		}
 
 		// contrôle effectué après le chargement du tiers pour éviter un exception s'il n'existe pas.
-		ControllerUtils.checkAccesDossierEnLecture(numero);
+		final Niveau acces = SecurityProvider.getDroitAcces(numero);
+		if (acces == null) {
+			return new VignetteView(String.format("Vous ne possédez pas les droits de visualisation sur le contribuable n°%s.", FormatNumeroHelper.numeroCTBToDisplay(numero)));
+		}
 
 		return new VignetteView(tiers, fillEnsemble, fillAdresses, fillRoles, fillUrlVers, fillActions, tiersService, adresseService, infraService, messageSource);
 	}

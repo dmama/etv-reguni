@@ -918,7 +918,15 @@ var Tiers = {
 		$.getJSON(url, function(tiers) {
 
 			var html = '';
-			if (tiers) {
+			if (tiers && tiers.accessDenied) {
+				// le tiers existe mais il est protégé
+				html += '<fieldset class="error"><legend><span>Contribuable protégé</span></legend>';
+				html += '<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>';
+				html += '<td style="padding: 1em;">' + StringUtils.escapeHTML(tiers.accessDenied) +'</td>';
+				html += '<td width="130 px"><img class="iepngfix" src="/fiscalite/unireg/web/images/tiers/protege.png"></td></tr>';
+				html += '</tbody></table></fieldset>';
+			}
+			else if (tiers) {
 				// construit la vignette
 				html += '<fieldset class="information"><legend><span>'+ StringUtils.escapeHTML(titre) + '</span></legend>';
 				html += '<input name="debugNatureTiers" type="hidden" value="' + tiers.nature + '"/>';

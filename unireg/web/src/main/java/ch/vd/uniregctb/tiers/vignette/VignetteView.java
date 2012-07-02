@@ -45,6 +45,7 @@ public class VignetteView {
 	private EnsembleTiersCoupleView ensemble;
 	private List<UrlVersView> urlsVers;
 	private List<ActionView> actions;
+	private String accessDenied;
 
 	public VignetteView(Tiers tiers, boolean fillEnsemble, boolean fillAdresses, boolean fillRoles, boolean fillUrlVers, boolean fillActions, TiersService tiersService,
 	                    AdresseService adresseService,
@@ -118,6 +119,10 @@ public class VignetteView {
 		}
 	}
 
+	public VignetteView(String accessDeniedMessage) {
+		this.accessDenied = accessDeniedMessage;
+	}
+
 	public long getNumero() {
 		return numero;
 	}
@@ -172,5 +177,12 @@ public class VignetteView {
 
 	public List<ActionView> getActions() {
 		return actions;
+	}
+
+	/**
+	 * @return un message d'erreur explicite si l'accès sur le tiers est refusé pour des raisons de droits d'accès insuffisants.
+	 */
+	public String getAccessDenied() {
+		return accessDenied;
 	}
 }
