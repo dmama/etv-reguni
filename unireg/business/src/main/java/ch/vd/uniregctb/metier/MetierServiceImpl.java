@@ -157,6 +157,10 @@ public class MetierServiceImpl implements MetierService {
 		this.validationService = validationService;
 	}
 
+	public void seteFactureService(EFactureService eFactureService) {
+		this.eFactureService = eFactureService;
+	}
+
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
 		for (RapportEntreTiers rapport : pp.getRapportsSujet()) {
 			if (!rapport.isAnnule() && TypeRapportEntreTiers.APPARTENANCE_MENAGE == rapport.getType() && rapport.getDateFin() == null) {
@@ -2413,10 +2417,10 @@ public class MetierServiceImpl implements MetierService {
 
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
 		if (menageComplet != null && menageComplet.getMenage() != null) {
-			// TODO A discuter (fred)
-			// Comme je l'ai compris c'est le ménage qui est inscrit à la e-facture.
-			// ne devrait on pas dans ce cas reinscrire le survivant ???
 			desinscrirDeLaEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+		}
+		if (defunt != null) {
+			desinscrirDeLaEFacture(defunt.getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
 		}
 	}
 
@@ -2502,10 +2506,9 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
-		// TODO FRED
 		// Vérification du statue dans la e-facture
 		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
-		if (dest.getDernierEtat().getEtatDestinataire() != TypeEtatDestinataire.INSCRIT) {
+		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getEtatDestinataire() != TypeEtatDestinataire.INSCRIT) {
 			return;
 		}
 		try {

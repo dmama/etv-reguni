@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 
@@ -18,7 +20,7 @@ public interface EFactureMessageSender {
 	 * @param description
 	 *@param retourAttendu  @throws EvenementEfactureException en cas de problème
 	 */
-	String envoieRefusDemandeInscription(String idDemande, TypeRefusDemande typeRefusEFacture,String description, boolean retourAttendu) throws EvenementEfactureException;
+	String envoieRefusDemandeInscription(String idDemande, @Nullable TypeRefusDemande typeRefusEFacture,String description, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Envoie un message à la e-facture qui annonce la mise en attente d'une demande d'inscription

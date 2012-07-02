@@ -77,6 +77,7 @@
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="validationService" ref="validationService" />
+		<property name="eFactureService" ref="efactureService" />
 	</bean>
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">

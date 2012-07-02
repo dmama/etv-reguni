@@ -3,7 +3,6 @@ package ch.vd.uniregctb.efacture;
 import javax.jms.JMSException;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -13,8 +12,8 @@ import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
@@ -60,10 +59,12 @@ public class EFactureServiceImpl implements EFactureService {
 	@Override
 	@Nullable
 	public DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
-		List<DemandeAvecHisto> listDemandes = getDestinataireAvecSonHistorique(ctbId).getHistoriqueDemandes();
-		for (DemandeAvecHisto demande : listDemandes) {
-			if (demande.isEnCoursDeTraitement()) {
-				return demande;
+		DestinataireAvecHisto dest = getDestinataireAvecSonHistorique(ctbId);
+		if (dest != null) {
+			for (DemandeAvecHisto demande : dest.getHistoriqueDemandes()) {
+				if (demande.isEnCoursDeTraitement()) {
+					return demande;
+				}
 			}
 		}
 		return null;
@@ -116,7 +117,7 @@ public class EFactureServiceImpl implements EFactureService {
 		// Verification de l'historique des situations
 		DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 
-		if (histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+		if (histo != null && histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
 		}
 
@@ -144,13 +145,12 @@ public class EFactureServiceImpl implements EFactureService {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
 	@Override
+	@Nullable
 	public DestinataireAvecHisto getDestinataireAvecSonHistorique (long ctbId){
-
 		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
 		if(payerWithHistory == null){
 			return null;
@@ -181,17 +181,6 @@ public class EFactureServiceImpl implements EFactureService {
 	@Override
 	public String notifieMiseEnattenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, description, idArchivage, retourAttendu);
-	}
-
-	private TypeAttenteDemande determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
-		switch (typeDocument) {
-		case E_FACTURE_ATTENTE_CONTACT:
-			return TypeAttenteDemande.EN_ATTENTE_CONTACT;
-		case E_FACTURE_ATTENTE_SIGNATURE:
-			return TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
-		default:
-			throw new IllegalArgumentException("Le type de document " + typeDocument.name() + " est inconnue");
-		}
 	}
 
 	public void setTiersService(TiersService tiersService) {
