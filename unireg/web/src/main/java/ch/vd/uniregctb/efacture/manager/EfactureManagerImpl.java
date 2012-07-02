@@ -8,8 +8,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
@@ -18,8 +18,12 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.efacture.ArchiveKey;
+import ch.vd.uniregctb.efacture.DemandeAvecHistoView;
+import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
+import ch.vd.uniregctb.efacture.EtatDemandeView;
+import ch.vd.uniregctb.efacture.EtatDestinataireView;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -48,12 +52,12 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
-	public ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(long ctbId) {
-		DestinataireAvecHisto historiqueDestinataireWrapper = eFactureService.getDestinataireAvecSonHistorique(ctbId);
-		if(historiqueDestinataireWrapper == null){
-			return new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
+	public DestinataireAvecHistoView getDestinataireAvecSonHistorique(long ctbId) {
+		DestinataireAvecHisto destinataire = eFactureService.getDestinataireAvecSonHistorique(ctbId);
+		if(destinataire == null){
+			return new DestinataireAvecHistoView();
 		}
-		return getHistoriqueDestinataire(historiqueDestinataireWrapper);
+		return buildDestinataireAvecHistoView(destinataire);
 	}
 
 	@Override
@@ -88,70 +92,67 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 
-	private ch.vd.uniregctb.efacture.HistoriqueDestinataire getHistoriqueDestinataire(DestinataireAvecHisto destinataire) {
-		final ch.vd.uniregctb.efacture.HistoriqueDestinataire historiqueDestinataire = new ch.vd.uniregctb.efacture.HistoriqueDestinataire();
-		historiqueDestinataire.setCtbId(destinataire.getCtbId());
-		final List<ch.vd.uniregctb.efacture.HistoriqueDemande> demandes = new ArrayList<ch.vd.uniregctb.efacture.HistoriqueDemande>();
+	private DestinataireAvecHistoView buildDestinataireAvecHistoView(DestinataireAvecHisto destinataire) {
+		final DestinataireAvecHistoView res = new DestinataireAvecHistoView();
+		res.setCtbId(destinataire.getCtbId());
+		res.setActivable(destinataire.isActivable());
+		res.setSuspendable(destinataire.isSuspendable());
+
 		//On charge l'historique des demandes.
-		for (DemandeAvecHisto historiqueDemandeWrapper : destinataire.getHistoriqueDemandes()) {
-			ch.vd.uniregctb.efacture.HistoriqueDemande historiqueDemande  = new ch.vd.uniregctb.efacture.HistoriqueDemande();
-			historiqueDemande.setIdDemande(historiqueDemandeWrapper.getIdDemande());
-			historiqueDemande.setDateDemande(historiqueDemandeWrapper.getDateDemande());
-			final List<ch.vd.uniregctb.efacture.EtatDemande>etatsDemande = new ArrayList<ch.vd.uniregctb.efacture.EtatDemande>();
-			for(EtatDemande etatDemandeWrapper: historiqueDemandeWrapper.getHistoriqueEtats()){
-				ch.vd.uniregctb.efacture.EtatDemande etatDemande = getEtatDemande(etatDemandeWrapper);
-				etatsDemande.add(etatDemande);
+		final int sizeDemandes = destinataire.getHistoriqueDemandes().size();
+		final List<DemandeAvecHistoView> demandes = new ArrayList<DemandeAvecHistoView>(sizeDemandes);
+		for (ListIterator<DemandeAvecHisto> it = destinataire.getHistoriqueDemandes().listIterator(sizeDemandes); it.hasPrevious(); ) {
+			DemandeAvecHisto demande = it.previous();
+			DemandeAvecHistoView view  = new DemandeAvecHistoView();
+			view.setIdDemande(demande.getIdDemande());
+			view.setDateDemande(demande.getDateDemande());
+			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
+			final List<EtatDemandeView> etatsDemande = new ArrayList<EtatDemandeView>(sizeEtatDemandes);
+			for(ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ){
+				EtatDemandeView etatView = getEtatDemande(jt.previous());
+				etatsDemande.add(etatView);
 			}
-			historiqueDemande.setEtats(etatsDemande);
-			demandes.add(historiqueDemande);
-
+			view.setEtats(etatsDemande);
+			demandes.add(view);
 		}
-		historiqueDestinataire.setDemandes(demandes);
+		res.setDemandes(demandes);
 
-		//Chargement de l'historique des états du déstinataire
-		List<EtatDestinataire> etatsDestinataireWrapper = destinataire.getEtats();
-		final List<ch.vd.uniregctb.efacture.EtatDestinataire> etats = new ArrayList<ch.vd.uniregctb.efacture.EtatDestinataire>();
-		for (EtatDestinataire etatDestinataireWrapper : etatsDestinataireWrapper) {
-			ch.vd.uniregctb.efacture.EtatDestinataire etatDestinataire = getEtatDestinataire(etatDestinataireWrapper);
-			etats.add(etatDestinataire);
+		//Chargement de l'historique des états du destinataire
+		final int sizeEtatDestinataire = destinataire.getEtats().size();
+		final List<EtatDestinataireView> etats = new ArrayList<EtatDestinataireView>(sizeEtatDestinataire);
+		for (ListIterator<EtatDestinataire> it = destinataire.getEtats().listIterator(sizeEtatDestinataire); it.hasPrevious(); ) {
+			etats.add(getEtatDestinataire(it.previous()));
 		}
-		historiqueDestinataire.setEtats(etats);
+		res.setEtats(etats);
 
-		historiqueDestinataire.setEtats(revertList(historiqueDestinataire.getEtats()));
-		historiqueDestinataire.setDemandes(revertList(historiqueDestinataire.getDemandes()));
-		historiqueDestinataire.setActivable(destinataire.isActivable());
-		historiqueDestinataire.setSuspendable(destinataire.isSuspendable());
-		for (ch.vd.uniregctb.efacture.HistoriqueDemande demande : historiqueDestinataire.getDemandes()) {
-			demande.setEtats(revertList(demande.getEtats()));
-		}
-		return historiqueDestinataire;
+		return res;
 	}
 
-	private ch.vd.uniregctb.efacture.EtatDestinataire getEtatDestinataire(EtatDestinataire etatDestinataireWrapper) {
-		final RegDate dateObtention = etatDestinataireWrapper.getDateObtention();
-		final String motifObtention = etatDestinataireWrapper.getDescriptionRaison();
-		final String key = etatDestinataireWrapper.getChampLibre();
-		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etatDestinataireWrapper.getCodeRaison());
+	private EtatDestinataireView getEtatDestinataire(EtatDestinataire etat) {
+		final RegDate dateObtention = etat.getDateObtention();
+		final String motifObtention = etat.getDescriptionRaison();
+		final String key = etat.getChampLibre();
+		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etat.getCodeRaison());
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
-		final String label  = "label.efacture.etat.destinataire."+etatDestinataireWrapper.getEtatDestinataire();
+		final String label  = "label.efacture.etat.destinataire."+ etat.getEtatDestinataire();
 		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
 		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
-		return new ch.vd.uniregctb.efacture.EtatDestinataire(dateObtention,motifObtention,archiveKey,descriptionEtat);
+		return new EtatDestinataireView(dateObtention,motifObtention,archiveKey,descriptionEtat);
 	}
 
-	private ch.vd.uniregctb.efacture.EtatDemande getEtatDemande(EtatDemande etatDemandeWrapper) {
-		final RegDate dateObtention = etatDemandeWrapper.getDate();
-		final String motifObtention = etatDemandeWrapper.getDescriptionRaison();
-		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etatDemandeWrapper.getCodeRaison());
+	private EtatDemandeView getEtatDemande(EtatDemande etat) {
+		final RegDate dateObtention = etat.getDate();
+		final String motifObtention = etat.getDescriptionRaison();
+		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etat.getCodeRaison());
 
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
-		final String key = etatDemandeWrapper.getChampLibre();
-		final String label  = "label.efacture.etat.demande."+etatDemandeWrapper.getTypeEtatDemande();
+		final String key = etat.getChampLibre();
+		final String label  = "label.efacture.etat.demande."+ etat.getTypeEtatDemande();
 		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
 
-		final TypeEtatDemande typeEtatDemande = etatDemandeWrapper.getTypeEtatDemande();
+		final TypeEtatDemande typeEtatDemande = etat.getTypeEtatDemande();
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
-		return new ch.vd.uniregctb.efacture.EtatDemande(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
+		return new EtatDemandeView(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
 	}
 
 
@@ -175,25 +176,6 @@ public class EfactureManagerImpl implements EfactureManager {
 			throw new IllegalArgumentException("Le type de document " + typeDocument.name() + " est inconnue");
 		}
 	}
-
-
-
-
-	private static <T> List<T> revertList(List<T> source) {
-		if (source == null || source.isEmpty()) {
-			return source;
-		}
-		else {
-			final List<T> dest = new ArrayList<T>(source.size());
-			final ListIterator<T> iterator = source.listIterator(source.size());
-			while (iterator.hasPrevious()) {
-				dest.add(iterator.previous());
-			}
-			return dest;
-		}
-	}
-
-
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;

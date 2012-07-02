@@ -4,14 +4,14 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 
-public class EtatDemande extends AbstractEtat {
+public class EtatDemandeView extends AbstractEtat {
 
 	private final String descriptionEtat;
 	private final TypeEtatDemande type;
 	private TypeAttenteDemande typeAttenteEFacture;
 
 
-	public EtatDemande(RegDate dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, TypeEtatDemande type, TypeAttenteDemande typeAttenteEFacture) {
+	public EtatDemandeView(RegDate dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, TypeEtatDemande type, TypeAttenteDemande typeAttenteEFacture) {
 		super(dateObtention, motifObtention, documentArchiveKey);
 		this.descriptionEtat = descriptionEtat;
 		this.type = type;

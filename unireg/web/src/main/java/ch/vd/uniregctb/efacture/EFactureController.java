@@ -1,9 +1,5 @@
 package ch.vd.uniregctb.efacture;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ListIterator;
-
 import org.jetbrains.annotations.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -47,7 +43,7 @@ public class EFactureController {
 	}
 	@ResponseBody
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
-	public HistoriqueDestinataire histo(@RequestParam(value = CTB, required = true) long ctbId) {
+	public DestinataireAvecHistoView histo(@RequestParam(value = CTB, required = true) long ctbId) {
 
 		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.GEST_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
@@ -61,7 +57,7 @@ public class EFactureController {
 
 		checkDroitGestionaireEfacture();
 
-		final HistoriqueDestinataire histo = buildHistoDestinataire(ctbId);
+		final DestinataireAvecHistoView histo = buildHistoDestinataire(ctbId);
 		if (histo == null) {
 			throw new ActionException("Le contribuable ne possède aucun état e-facture avec lequel il est possible d'interagir");
 		}
@@ -136,25 +132,8 @@ public class EFactureController {
 	}
 
 	@Nullable
-	private HistoriqueDestinataire buildHistoDestinataire(long ctbId) {
-		HistoriqueDestinataire historiqueDestinataire = efactureManager.getHistoriqueDestinataire(ctbId);
-
-
-		return historiqueDestinataire;
-	}
-
-	private static <T> List<T> revertList(List<T> source) {
-		if (source == null || source.isEmpty()) {
-			return source;
-		}
-		else {
-			final List<T> dest = new ArrayList<T>(source.size());
-			final ListIterator<T> iterator = source.listIterator(source.size());
-			while (iterator.hasPrevious()) {
-				dest.add(iterator.previous());
-			}
-			return dest;
-		}
+	private DestinataireAvecHistoView buildHistoDestinataire(long ctbId) {
+		return efactureManager.getDestinataireAvecSonHistorique(ctbId);
 	}
 
 	@RequestMapping(value = "/quittancement/show.do", method = RequestMethod.GET)

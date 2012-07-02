@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
-<jsp:useBean id="histo" scope="request" type="ch.vd.uniregctb.efacture.HistoriqueDestinataire"/>
+<jsp:useBean id="histo" scope="request" type="ch.vd.uniregctb.efacture.DestinataireAvecHistoView"/>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
     <tiles:put name="title">

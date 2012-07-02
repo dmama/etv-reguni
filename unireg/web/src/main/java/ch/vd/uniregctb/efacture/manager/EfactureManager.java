@@ -2,8 +2,8 @@ package ch.vd.uniregctb.efacture.manager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.editique.EditiqueException;
+import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.efacture.HistoriqueDestinataire;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public interface EfactureManager {
@@ -23,7 +23,7 @@ public interface EfactureManager {
 	 * @param ctbId numéro de contribuable du destinataire
 	 * @return l'historique du destinataire
 	 */
-	HistoriqueDestinataire getHistoriqueDestinataire(long ctbId);
+	DestinataireAvecHistoView getDestinataireAvecSonHistorique(long ctbId);
 
 	/**Demande la suspension d'un contribuable
 	 *

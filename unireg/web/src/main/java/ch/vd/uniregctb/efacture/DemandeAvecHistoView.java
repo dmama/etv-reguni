@@ -10,11 +10,11 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
  */
-public class HistoriqueDemande {
+public class DemandeAvecHistoView {
 
 	private String idDemande;
 	private RegDate dateDemande;
-	private List<EtatDemande> etats;
+	private List<EtatDemandeView> etats;
 
 	public String getIdDemande() {
 		return idDemande;
@@ -24,11 +24,11 @@ public class HistoriqueDemande {
 		this.idDemande = idDemande;
 	}
 
-	public List<EtatDemande> getEtats() {
+	public List<EtatDemandeView> getEtats() {
 		return etats;
 	}
 
-	public void setEtats(List<EtatDemande> etats) {
+	public void setEtats(List<EtatDemandeView> etats) {
 		this.etats = etats;
 	}
 
@@ -41,33 +41,33 @@ public class HistoriqueDemande {
 	}
 
 	@Nullable
-	public EtatDemande getEtatCourant() {
+	public EtatDemandeView getEtatCourant() {
 		return etats != null && etats.size() > 0 ? etats.get(0) : null;
 	}
 
 	@Nullable
 	private TypeEtatDemande getTypeEtatCourant() {
-		final EtatDemande etatCourant = getEtatCourant();
+		final EtatDemandeView etatCourant = getEtatCourant();
 		return etatCourant != null ? etatCourant.getType() : null;
 	}
 
 	public boolean isValidable() {
-		final EtatDemande etatCourant = getEtatCourant();
+		final EtatDemandeView etatCourant = getEtatCourant();
 		return etatCourant != null && etatCourant.isValidable();
 	}
 
 	public boolean isRefusable() {
-		final EtatDemande etatCourant = getEtatCourant();
+		final EtatDemandeView etatCourant = getEtatCourant();
 		return etatCourant != null && etatCourant.isRefusable();
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		final EtatDemande etatCourant = getEtatCourant();
+		final EtatDemandeView etatCourant = getEtatCourant();
 		return etatCourant != null && etatCourant.isMettableEnAttenteContact();
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		final EtatDemande etatCourant = getEtatCourant();
+		final EtatDemandeView etatCourant = getEtatCourant();
 		return etatCourant != null && etatCourant.isMettableEnAttenteSignature();
 	}
 }

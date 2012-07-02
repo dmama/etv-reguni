@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
  */
-public class HistoriqueDestinataire {
+public class DestinataireAvecHistoView {
 
 	private long ctbId;
-	private List<EtatDestinataire> etats;
-	private List<HistoriqueDemande> demandes;
+	private List<EtatDestinataireView> etats;
+	private List<DemandeAvecHistoView> demandes;
 	private boolean suspendable;
 	private boolean activable;
 
@@ -23,19 +23,19 @@ public class HistoriqueDestinataire {
 		this.ctbId = ctbId;
 	}
 
-	public List<EtatDestinataire> getEtats() {
+	public List<EtatDestinataireView> getEtats() {
 		return etats;
 	}
 
-	public void setEtats(List<EtatDestinataire> etats) {
+	public void setEtats(List<EtatDestinataireView> etats) {
 		this.etats = etats;
 	}
 
-	public List<HistoriqueDemande> getDemandes() {
+	public List<DemandeAvecHistoView> getDemandes() {
 		return demandes;
 	}
 
-	public void setDemandes(List<HistoriqueDemande> demandes) {
+	public void setDemandes(List<DemandeAvecHistoView> demandes) {
 		this.demandes = demandes;
 	}
 
@@ -56,14 +56,14 @@ public class HistoriqueDestinataire {
 	}
 
 	@Nullable
-	public HistoriqueDemande getDemandeEnCours() {
+	public DemandeAvecHistoView getDemandeEnCours() {
 		if (demandes == null) {
 			return null;
 		}
 		else {
-			HistoriqueDemande enCours = null;
-			for (HistoriqueDemande candidate : demandes) {
-				final EtatDemande etatCourant = candidate.getEtatCourant();
+			DemandeAvecHistoView enCours = null;
+			for (DemandeAvecHistoView candidate : demandes) {
+				final EtatDemandeView etatCourant = candidate.getEtatCourant();
 				if (etatCourant != null && etatCourant.getType().isEnCours()) {
 					enCours = candidate;
 					break;
