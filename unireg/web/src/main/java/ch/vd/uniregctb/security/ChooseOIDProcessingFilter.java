@@ -18,6 +18,7 @@ import org.springframework.web.filter.GenericFilterBean;
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.URLHelper;
+import ch.vd.uniregctb.interfaces.service.ServiceSecuriteException;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 
 /**
@@ -45,7 +46,14 @@ public class ChooseOIDProcessingFilter extends GenericFilterBean {
 				throw new IllegalArgumentException();
 			}
 
-			final List<CollectiviteAdministrative> collectivites = serviceSecurite.getCollectivitesUtilisateur(username);
+			final List<CollectiviteAdministrative> collectivites;
+			try {
+				collectivites = serviceSecurite.getCollectivitesUtilisateur(username);
+			}
+			catch (ServiceSecuriteException e) {
+				LOGGER.error(e, e);
+				throw e;
+			}
 			if (collectivites == null || collectivites.isEmpty()) {
 				throw new AuthenticationFailedException("L'utilisateur " + username + " ne possède aucune collectivité.");
 			}
