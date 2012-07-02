@@ -35,18 +35,18 @@ public class EtatDemande extends AbstractEtat {
 	}
 
 	public boolean isRefusable() {
-		final  boolean EN_ATTENTE_CONTACT =this.type == TypeEtatDemande.VALIDATION_EN_COURS && this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_CONTACT ;
-		final  boolean EN_ATTENTE_SIGNATURE = this.type == TypeEtatDemande.VALIDATION_EN_COURS && this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
-		return this.type == TypeEtatDemande.A_TRAITER || EN_ATTENTE_CONTACT ||EN_ATTENTE_SIGNATURE;
+		final boolean EN_ATTENTE_CONTACT = (this.type == TypeEtatDemande.VALIDATION_EN_COURS) && (this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_CONTACT);
+		final boolean EN_ATTENTE_SIGNATURE = (this.type == TypeEtatDemande.VALIDATION_EN_COURS) && (this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_SIGNATURE);
+		return this.type == TypeEtatDemande.VALIDATION_EN_COURS || EN_ATTENTE_CONTACT || EN_ATTENTE_SIGNATURE;
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		final  boolean EN_ATTENTE_SIGNATURE = this.type == TypeEtatDemande.VALIDATION_EN_COURS && this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
-		return this.type == TypeEtatDemande.A_TRAITER || EN_ATTENTE_SIGNATURE;
+		final boolean EN_ATTENTE_SIGNATURE = (this.type == TypeEtatDemande.VALIDATION_EN_COURS) && (this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_SIGNATURE);
+		return this.type == TypeEtatDemande.VALIDATION_EN_COURS || EN_ATTENTE_SIGNATURE;
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		final  boolean EN_ATTENTE_CONTACT =this.type == TypeEtatDemande.VALIDATION_EN_COURS && this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_CONTACT ;
-		return this.type == TypeEtatDemande.A_TRAITER || EN_ATTENTE_CONTACT;
+		final boolean EN_ATTENTE_CONTACT = (this.type == TypeEtatDemande.VALIDATION_EN_COURS) && (this.typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_CONTACT);
+		return this.type == TypeEtatDemande.VALIDATION_EN_COURS || EN_ATTENTE_CONTACT;
 	}
 }
