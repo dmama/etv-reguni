@@ -28,5 +28,6 @@
 	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionSommationDIHelper" />
 	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
 	<bean id="impressionConfirmationDelaiHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionConfirmationDelaiHelper" />
+	<bean id="efactureService" class="ch.vd.uniregctb.efacture.MockEFactureService"/>
 
 </beans>
