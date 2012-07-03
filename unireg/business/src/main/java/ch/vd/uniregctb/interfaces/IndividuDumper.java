@@ -368,10 +368,7 @@ public abstract class IndividuDumper {
 
 		StringBuilder s = new StringBuilder();
 		s.append("RelationVersIndividu{\n");
-		if (!ignoreBugs) {
-			// TODO (rcpers) les dates de débuts vers les enfants ne sont plus renseignées (voir SIREF-2004)
-			s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
-		}
+		s.append(tab(depth + 1)).append("dateDebut=").append(rel.getDateDebut()).append(", \n");
 		s.append(tab(depth + 1)).append("dateFin=").append(rel.getDateFin()).append(", \n");
 		s.append(tab(depth + 1)).append("numeroAutreIndividu=").append(rel.getNumeroAutreIndividu()).append(", \n");
 		s.append(tab(depth)).append("}");

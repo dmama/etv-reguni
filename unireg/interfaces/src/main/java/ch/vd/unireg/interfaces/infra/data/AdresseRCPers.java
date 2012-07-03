@@ -93,7 +93,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = initNoOfsPays(addressInfo.getCountry(), infraService);
 		this.rue = addressInfo.getStreet();
-		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
+		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
 		this.typeAdresse = TypeAdresseCivil.COURRIER;
 		this.noOfsCommuneAdresse = null;
 		this.egid = null; // les adresses courrier ne possèdent pas d'egid/ewid, par définition
@@ -119,7 +119,7 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.numeroPostalComplementaire = addressInfo.getSwissZipCodeAddOn();
 		this.noOfsPays = ServiceInfrastructureRaw.noOfsSuisse; // par définition, RcPers ne retourne que des adresses de domicile dans le canton de Vaud, donc en Suisse.
 		this.rue = addressInfo.getStreet();
-		this.titre = addressInfo.getAddressLine1(); // TODO (msi) que faire d'addressLine2 ?
+		this.titre = addressInfo.getAddressLine1(); // TODO (rcpers) que faire d'addressLine2 ?
 		this.typeAdresse = initTypeAdresseResidence(residence);
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
