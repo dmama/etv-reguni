@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
@@ -62,4 +63,14 @@ public interface EfactureManager {
 	 * @throws EvenementEfactureException
 	 */
 	String refuserDemande(String idDemande) throws EvenementEfactureException;;
+
+	/**
+	 * Quittance le contribuable
+	 *
+	 * @param noCtb le numéro du contribuable à quittancer
+	 * @return ok si le quittancement s'est déroulé correctement
+	 */
+	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
+
+	String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb);
 }

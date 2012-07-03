@@ -12,8 +12,10 @@ import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -89,6 +91,29 @@ public class EfactureManagerImpl implements EfactureManager {
 	public String refuserDemande(String idDemande) throws EvenementEfactureException {
 		String description = getMessageAvecVisaUser();
 		return eFactureService.refuserDemande(idDemande,true, description);
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@Override
+	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+		return eFactureService.quittancer(noCtb);
+	}
+
+	@Override
+	public String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb) {
+		if (resultatQuittancement.isOk()) {
+			if (resultatQuittancement.getType() == TypeResultatQuittancement.DEJA_INSCRIT) {
+				return TypeResultatQuittancement.DEJA_INSCRIT.getDescription(noCtb);
+			} else {
+				if (eFactureResponseService.waitForResponse(resultatQuittancement.getIdDemande(), 3000)) {
+					return TypeResultatQuittancement.QUITTANCEMENT_OK.getDescription(noCtb);
+				} else {
+					return TypeResultatQuittancement.QUITTANCEMENT_EN_COURS.getDescription(noCtb);
+				}
+			}
+		} else {
+			return resultatQuittancement.getDescription(noCtb);
+		}
 	}
 
 

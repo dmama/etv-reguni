@@ -3,8 +3,9 @@ package ch.vd.uniregctb.efacture;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -132,4 +133,13 @@ public interface EFactureService {
 	 */
 	String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException;
 
+	/**
+	 * Quittance l'inscription e-facture pour un contribuable
+	 *
+	 *
+	 * @param noCtb contribuable à quittancer
+	 * @return null si le quittancement est ok
+	 * @throws EvenementEfactureException
+	 */
+	ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException;
 }

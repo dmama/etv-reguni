@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
@@ -64,4 +65,10 @@ public class MockEFactureService implements EFactureService {
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return "";
 	}
+
+	@Override
+	public ResultatQuittancement quittancer(Long noCtb) {
+		return null;
+	}
+
 }

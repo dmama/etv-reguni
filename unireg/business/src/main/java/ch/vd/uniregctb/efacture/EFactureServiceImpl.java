@@ -12,6 +12,9 @@ import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
+import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
@@ -20,6 +23,7 @@ import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -176,6 +180,26 @@ public class EFactureServiceImpl implements EFactureService {
 	@Override
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande, null, description, retourAttendu);
+	}
+
+	@Override
+	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
+		Tiers tiers = tiersService.getTiers(noCtb);
+		if (tiers == null) {
+			return new ResultatQuittancement(TypeResultatQuittancement.CONTRIBUABLE_INEXISTANT);
+		}
+		PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
+		if (payerWithHistory == null) {
+			return new ResultatQuittancement(TypeResultatQuittancement.ETAT_EFACTURE_INCOHERENT);
+		}
+		DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
+		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
+			if (dem != null && dem.getDernierEtat() != null && dem.getDernierEtat().getTypeEtatDemande() == TypeEtatDemande.VALIDATION_EN_COURS) {
+				String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, "Traitement manuel par " + AuthenticationHelper.getCurrentPrincipal());
+				return new ResultatQuittancement(TypeResultatQuittancement.QUITTANCEMENT_OK);
+			}
+		}
+		return new ResultatQuittancement(TypeResultatQuittancement.AUCUNE_DEMANDE_EN_COURS_DE_VALIDATION);
 	}
 
 	@Override

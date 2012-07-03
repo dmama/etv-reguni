@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.efacture.manager.EfactureManager;
@@ -145,9 +146,13 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/quittancement/beep.do", method = RequestMethod.POST)
-	public String doQuittancement(@RequestParam(value = "noctb") Long noCtb) {
-		// TODO e-facture... quittancer la réception du document signé après quelques vérifications
-		// TODO e-facture on peut par exemple prévoir un affichage systématique flash vert si tout va bien ou rouge en cas de souci
+	public String doQuittancement(@RequestParam(value = "noctb") Long noCtb) throws Exception{
+		ResultatQuittancement resultatQuittancement = efactureManager.quittancer(noCtb);
+		if (resultatQuittancement.isOk()) {
+			Flash.message(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
+		} else {
+			Flash.error(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
+		}
 		return "redirect:/efacture/quittancement/show.do";
 	}
 
