@@ -36,16 +36,19 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesUtilisateur(final String visaOperateur) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivitesUtilisateur(visaOperateur);
+			final List<CollectiviteAdministrative> list = target.getCollectivitesUtilisateur(visaOperateur);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesUtilisateur", new Object() {
+			tracing.end(time, t, "getCollectivitesUtilisateur", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("visaOperateur=%s", visaOperateur);
@@ -57,16 +60,19 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	@Override
 	public List<ProfilOperateur> getListeOperateursPourFonctionCollectivite(final String codeFonction, final int noCollectivite) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
+			final List<ProfilOperateur> list = target.getListeOperateursPourFonctionCollectivite(codeFonction, noCollectivite);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getListeOperateursPourFonctionCollectivite", new Object() {
+			tracing.end(time, t, "getListeOperateursPourFonctionCollectivite", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("codeFonction=%s, noCollectivite=%d", codeFonction, noCollectivite);
@@ -141,16 +147,19 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	@Override
 	public List<Operateur> getUtilisateurs(final List<EnumTypeCollectivite> typesCollectivite) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getUtilisateurs(typesCollectivite);
+			final List<Operateur> list = target.getUtilisateurs(typesCollectivite);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getUtilisateurs", new Object() {
+			tracing.end(time, t, "getUtilisateurs", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("typesCollectivites=%s", ServiceTracing.toString(typesCollectivite));

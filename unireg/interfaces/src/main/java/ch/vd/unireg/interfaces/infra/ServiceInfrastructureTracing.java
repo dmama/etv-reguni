@@ -45,9 +45,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getAllCantons();
+			final List<Canton> list = target.getAllCantons();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -58,7 +61,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getAllCantons", null);
+			tracing.end(time, t, "getAllCantons", items, null);
 		}
 	}
 
@@ -90,9 +93,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivitesAdministratives();
+			final List<CollectiviteAdministrative> list = target.getCollectivitesAdministratives();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -103,16 +109,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministratives", null);
+			tracing.end(time, t, "getCollectivitesAdministratives", items, null);
 		}
 	}
 
 	@Override
 	public List<CollectiviteAdministrative> getCollectivitesAdministratives(final List<EnumTypeCollectivite> typesCollectivite) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getCollectivitesAdministratives(typesCollectivite);
+			final List<CollectiviteAdministrative> list = target.getCollectivitesAdministratives(typesCollectivite);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -123,7 +132,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCollectivitesAdministratives", new Object() {
+			tracing.end(time, t, "getCollectivitesAdministratives", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("typesCollectivite=%s", ServiceTracing.toString(typesCollectivite));
@@ -185,9 +194,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Commune> getCommuneHistoByNumeroOfs(final int noOfsCommune) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getCommuneHistoByNumeroOfs(noOfsCommune);
+			final List<Commune> list = target.getCommuneHistoByNumeroOfs(noOfsCommune);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -198,7 +210,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommuneHistoByNumeroOfs", new Object() {
+			tracing.end(time, t, "getCommuneHistoByNumeroOfs", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noOfsCommune=%d", noOfsCommune);
@@ -210,9 +222,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Commune> getCommunes() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getCommunes();
+			final List<Commune> list = target.getCommunes();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -223,16 +238,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getCommunes", null);
+			tracing.end(time, t, "getCommunes", items, null);
 		}
 	}
 
 	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getListeCommunes(canton);
+			final List<Commune> list = target.getListeCommunes(canton);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -243,7 +261,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getListeCommunes", new Object() {
+			tracing.end(time, t, "getListeCommunes", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
@@ -255,9 +273,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Commune> getListeFractionsCommunes() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getListeFractionsCommunes();
+			final List<Commune> list = target.getListeFractionsCommunes();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -268,7 +289,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getListeFractionsCommunes", null);
+			tracing.end(time, t, "getListeFractionsCommunes", items, null);
 		}
 	}
 
@@ -300,9 +321,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Localite> getLocalites() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getLocalites();
+			final List<Localite> list = target.getLocalites();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -313,7 +337,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getLocalites", null);
+			tracing.end(time, t, "getLocalites", items, null);
 		}
 	}
 
@@ -345,9 +369,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<OfficeImpot> getOfficesImpot() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getOfficesImpot();
+			final List<OfficeImpot> list = target.getOfficesImpot();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -358,16 +385,19 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOfficesImpot", null);
+			tracing.end(time, t, "getOfficesImpot", items, null);
 		}
 	}
 
 	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getPays();
+			final List<Pays> list = target.getPays();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -378,7 +408,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPays", null);
+			tracing.end(time, t, "getPays", items, null);
 		}
 	}
 
@@ -460,9 +490,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Rue> getRues(final Localite localite) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getRues(localite);
+			final List<Rue> list = target.getRues(localite);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -473,7 +506,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRues", new Object() {
+			tracing.end(time, t, "getRues", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("localite=%s", localite != null ? localite.getNoOrdre() : null);
@@ -485,9 +518,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Rue> getRues(final Canton canton) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getRues(canton);
+			final List<Rue> list = target.getRues(canton);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -498,7 +534,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRues", new Object() {
+			tracing.end(time, t, "getRues", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("canton=%s", canton != null ? canton.getSigleOFS() : null);
@@ -535,9 +571,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<InstitutionFinanciere> getInstitutionsFinancieres(final String noClearing) throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getInstitutionsFinancieres(noClearing);
+			final List<InstitutionFinanciere> list = target.getInstitutionsFinancieres(noClearing);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -548,7 +587,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getInstitutionsFinancieres", new Object() {
+			tracing.end(time, t, "getInstitutionsFinancieres", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noClearing=%s", noClearing);
@@ -599,9 +638,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<TypeRegimeFiscal> getTypesRegimesFiscaux() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getTypesRegimesFiscaux();
+			final List<TypeRegimeFiscal> list = target.getTypesRegimesFiscaux();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -612,7 +654,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getTypesRegimesFiscaux", null);
+			tracing.end(time, t, "getTypesRegimesFiscaux", items, null);
 		}
 	}
 
@@ -644,9 +686,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<TypeEtatPM> getTypesEtatsPM() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getTypesEtatsPM();
+			final List<TypeEtatPM> list = target.getTypesEtatsPM();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -657,7 +702,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getTypesEtatsPM", null);
+			tracing.end(time, t, "getTypesEtatsPM", items, null);
 		}
 	}
 
@@ -739,9 +784,12 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getTousLesLogiciels();
+			final List<Logiciel> list = target.getTousLesLogiciels();
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (ServiceInfrastructureException e) {
 			t = e;
@@ -752,7 +800,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getTousLesLogiciels", null);
+			tracing.end(time, t, "getTousLesLogiciels", items, null);
 		}
 	}
 }
