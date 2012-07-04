@@ -12,13 +12,14 @@ import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
-import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -34,7 +35,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDestinataire;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 
 public class EFactureServiceImpl implements EFactureService {
 
@@ -121,7 +122,7 @@ public class EFactureServiceImpl implements EFactureService {
 		// Verification de l'historique des situations
 		DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 
-		if (histo != null && histo.getDernierEtat() != null && histo.getDernierEtat().getEtatDestinataire() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+		if (histo != null && histo.getDernierEtat() != null && histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
 		}
 
@@ -193,10 +194,14 @@ public class EFactureServiceImpl implements EFactureService {
 			return new ResultatQuittancement(TypeResultatQuittancement.ETAT_EFACTURE_INCOHERENT);
 		}
 		DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
+		if (destinataireAvecHisto.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
+			return new ResultatQuittancement(TypeResultatQuittancement.DEJA_INSCRIT);
+		}
 		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
-			if (dem != null && dem.getDernierEtat() != null && dem.getDernierEtat().getTypeEtatDemande() == TypeEtatDemande.VALIDATION_EN_COURS) {
+			final EtatDemande dernierEtat = dem.getDernierEtat();
+			if (dernierEtat != null && dernierEtat.getType() == TypeEtatDemande.EN_ATTENTE_SIGNATURE) {
 				String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, "Traitement manuel par " + AuthenticationHelper.getCurrentPrincipal());
-				return new ResultatQuittancement(TypeResultatQuittancement.QUITTANCEMENT_OK);
+				return new ResultatQuittancement(businessId, TypeResultatQuittancement.QUITTANCEMENT_EN_COURS);
 			}
 		}
 		return new ResultatQuittancement(TypeResultatQuittancement.AUCUNE_DEMANDE_EN_COURS_DE_VALIDATION);

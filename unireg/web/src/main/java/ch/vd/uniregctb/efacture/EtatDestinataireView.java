@@ -2,7 +2,7 @@ package ch.vd.uniregctb.efacture;
 
 import ch.vd.registre.base.date.RegDate;
 
-public class EtatDestinataireView extends AbstractEtat {
+public class EtatDestinataireView extends AbstractEtatView {
 
 	private final String descriptionEtat;
 

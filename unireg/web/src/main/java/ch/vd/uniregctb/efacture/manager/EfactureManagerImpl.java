@@ -105,7 +105,7 @@ public class EfactureManagerImpl implements EfactureManager {
 			if (resultatQuittancement.getType() == TypeResultatQuittancement.DEJA_INSCRIT) {
 				return TypeResultatQuittancement.DEJA_INSCRIT.getDescription(noCtb);
 			} else {
-				if (eFactureResponseService.waitForResponse(resultatQuittancement.getIdDemande(), 3000)) {
+				if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
 					return TypeResultatQuittancement.QUITTANCEMENT_OK.getDescription(noCtb);
 				} else {
 					return TypeResultatQuittancement.QUITTANCEMENT_EN_COURS.getDescription(noCtb);
@@ -154,44 +154,36 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	private EtatDestinataireView getEtatDestinataire(EtatDestinataire etat) {
-		final RegDate dateObtention = etat.getDateObtention();
-		final String motifObtention = etat.getDescriptionRaison();
-		final String key = etat.getChampLibre();
-		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etat.getCodeRaison());
-		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
-		final String label  = "label.efacture.etat.destinataire."+ etat.getEtatDestinataire();
-		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
-		final ArchiveKey archiveKey = new ArchiveKey(typeDocumentEditique,key);
-		return new EtatDestinataireView(dateObtention,motifObtention,archiveKey,descriptionEtat);
+		return new EtatDestinataireView(
+				etat.getDateObtention(),
+				etat.getDescriptionRaison(),
+				null, // pas de document relatif au destinataire, prévu dans un futur proche
+				messageSource.getMessage("label.efacture.etat.destinataire."+ etat.getType(), null, WebContextUtils.getDefaultLocale()));
 	}
 
 	private EtatDemandeView getEtatDemande(EtatDemande etat) {
-		final RegDate dateObtention = etat.getDate();
-		final String motifObtention = etat.getDescriptionRaison();
-		final TypeAttenteDemande typeAttenteEFacture = TypeAttenteDemande.valueOf(etat.getCodeRaison());
-
-		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(typeAttenteEFacture);
+		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etat.getType());
+		final String descriptionEtat = messageSource.getMessage(
+				"label.efacture.etat.demande."+ etat.getType(),
+				null,
+				WebContextUtils.getDefaultLocale());
 		final String key = etat.getChampLibre();
-		final String label  = "label.efacture.etat.demande."+ etat.getTypeEtatDemande();
-		final String descriptionEtat = messageSource.getMessage(label,null, WebContextUtils.getDefaultLocale());
-
-		final TypeEtatDemande typeEtatDemande = etat.getTypeEtatDemande();
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
-		return new EtatDemandeView(dateObtention,motifObtention,archiveKey,descriptionEtat,typeEtatDemande, typeAttenteEFacture);
+		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(),archiveKey,descriptionEtat,etat.getType());
 	}
 
 
-	private TypeDocumentEditique determineTypeDocumentEditique(TypeAttenteDemande typeAttenteEFacture) {
-		if(typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_CONTACT){
+	private static TypeDocumentEditique determineTypeDocumentEditique(TypeEtatDemande typeEtat) {
+		if(typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_CONTACT){
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_CONTACT;
 		}
-		else if(typeAttenteEFacture == TypeAttenteDemande.EN_ATTENTE_SIGNATURE){
+		else if(typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_SIGNATURE){
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_SIGNATURE;
 		}
 		return null;
 	}
 
-	private TypeAttenteDemande determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
+	private static TypeAttenteDemande determineTypeAttenteEfacture(TypeDocument typeDocument) throws IllegalArgumentException {
 		switch (typeDocument) {
 		case E_FACTURE_ATTENTE_CONTACT:
 			return TypeAttenteDemande.EN_ATTENTE_CONTACT;

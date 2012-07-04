@@ -1,7 +1,6 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
-import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
@@ -14,31 +13,14 @@ public class EtatDemande {
 	private RegDate date;
 	private Integer codeRaison;
 	private String descriptionRaison;
-	private TypeEtatDemande typeEtatDemande;
+	private TypeEtatDemande type;
 
 	public EtatDemande(RegistrationRequestHistoryEntry target) {
 		this.champLibre = target.getCustomField();
 		this.date = XmlUtils.xmlcal2regdate(target.getDate());
 		this.codeRaison = target.getReasonCode();
 		this.descriptionRaison = target.getReasonDescription();
-		this.typeEtatDemande = determineStatusDemande(target.getStatus());
-	}
-
-	private TypeEtatDemande determineStatusDemande(RegistrationRequestStatus status) {
-		switch (status){
-		 case IGNOREE:
-			 return TypeEtatDemande.IGNOREE;
-		 case A_TRAITER:
-			 return TypeEtatDemande.A_TRAITER;
-		 case REFUSEE:
-			 return TypeEtatDemande.REFUSEE;
-		 case VALIDATION_EN_COURS:
-			 return TypeEtatDemande.VALIDATION_EN_COURS;
-		 case VALIDEE:
-			 return TypeEtatDemande.VALIDEE;
-		 default:
-			 throw new IllegalArgumentException("Le statut de demande suivant n'est pas reconnu "+ status);
-		}
+		this.type = TypeEtatDemande.valueOf(target.getStatus(), TypeAttenteDemande.valueOf(target.getReasonCode()));
 	}
 
 	public String getChampLibre() {
@@ -57,7 +39,7 @@ public class EtatDemande {
 		return descriptionRaison;
 	}
 
-	public TypeEtatDemande getTypeEtatDemande() {
-		return typeEtatDemande;
+	public TypeEtatDemande getType() {
+		return type;
 	}
 }

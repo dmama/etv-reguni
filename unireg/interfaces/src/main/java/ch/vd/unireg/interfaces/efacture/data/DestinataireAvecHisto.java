@@ -64,7 +64,7 @@ public class DestinataireAvecHisto {
  public boolean isActivable(){
 	 final EtatDestinataire dernierEtat = getDernierEtat();
 	 if(dernierEtat !=null){
-		 return dernierEtat.getEtatDestinataire().isActivable();
+		 return dernierEtat.getType().isActivable();
 
 	 }
 	 return false;
@@ -73,7 +73,7 @@ public class DestinataireAvecHisto {
 	public boolean isSuspendable(){
 		final EtatDestinataire dernierEtat = getDernierEtat();
 		if(dernierEtat !=null){
-			return dernierEtat.getEtatDestinataire().isSuspendable();
+			return dernierEtat.getType().isSuspendable();
 
 		}
 		return false;

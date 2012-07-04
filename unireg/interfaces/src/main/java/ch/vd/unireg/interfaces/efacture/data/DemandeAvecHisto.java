@@ -1,12 +1,15 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
+
+import static ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande.*;
 
 /**
  * Representation Interne UNIREG de la classe {@link RegistrationRequestWithHistory} de l' eVD-25
@@ -51,8 +54,6 @@ public class DemandeAvecHisto extends Demande {
 	 */
 	public boolean isEnCoursDeTraitement () {
 		final EtatDemande dernierEtat = getDernierEtat();
-		return dernierEtat != null
-				&& dernierEtat.getTypeEtatDemande() == TypeEtatDemande.VALIDATION_EN_COURS
-				&& TypeAttenteDemande.valueOf(dernierEtat.getCodeRaison()) != TypeAttenteDemande.PAS_EN_ATTENTE;
+		return dernierEtat != null	&& EnumSet.of(EN_ATTENTE_CONTACT, EN_ATTENTE_SIGNATURE).contains(dernierEtat.getType());
 	}
 }

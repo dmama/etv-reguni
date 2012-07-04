@@ -71,7 +71,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.uniregctb.type.TypeEtatDestinataire;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.validation.ValidationService;
 
@@ -2508,7 +2508,7 @@ public class MetierServiceImpl implements MetierService {
 	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
 		// Vérification du statue dans la e-facture
 		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
-		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getEtatDestinataire() != TypeEtatDestinataire.INSCRIT) {
+		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
 			return;
 		}
 		try {
