@@ -262,8 +262,8 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	@Override
 	public void onIndividuChange(long numero) {
 
-		if (LOGGER.isDebugEnabled()) {
-			LOGGER.debug("Eviction des données cachées pour l'individu n° " + numero);
+		if (LOGGER.isInfoEnabled()) {
+			LOGGER.info("Eviction des données cachées pour l'individu n° " + numero);
 		}
 		cache.removeAll(numero);
 	}
