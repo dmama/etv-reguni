@@ -14,10 +14,10 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.EtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
@@ -35,7 +35,6 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 
 public class EFactureServiceImpl implements EFactureService {
 
@@ -63,11 +62,11 @@ public class EFactureServiceImpl implements EFactureService {
 
 	@Override
 	@Nullable
-	public DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
+	public DemandeAvecHisto getDemandeEnAttente(long ctbId) {
 		DestinataireAvecHisto dest = getDestinataireAvecSonHistorique(ctbId);
 		if (dest != null) {
 			for (DemandeAvecHisto demande : dest.getHistoriqueDemandes()) {
-				if (demande.isEnCoursDeTraitement()) {
+				if (demande.isEnAttente()) {
 					return demande;
 				}
 			}
@@ -198,8 +197,7 @@ public class EFactureServiceImpl implements EFactureService {
 			return new ResultatQuittancement(TypeResultatQuittancement.DEJA_INSCRIT);
 		}
 		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
-			final EtatDemande dernierEtat = dem.getDernierEtat();
-			if (dernierEtat != null && dernierEtat.getType() == TypeEtatDemande.EN_ATTENTE_SIGNATURE) {
+			if (dem.getDernierEtat().getType() == TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE) {
 				String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, "Traitement manuel par " + AuthenticationHelper.getCurrentPrincipal());
 				return new ResultatQuittancement(businessId, TypeResultatQuittancement.QUITTANCEMENT_EN_COURS);
 			}

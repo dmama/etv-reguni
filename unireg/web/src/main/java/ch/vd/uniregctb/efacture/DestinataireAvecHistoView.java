@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.efacture;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jetbrains.annotations.Nullable;
@@ -7,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
  */
+@SuppressWarnings("UnusedDeclaration")
 public class DestinataireAvecHistoView {
 
 	private long ctbId;
@@ -28,7 +30,10 @@ public class DestinataireAvecHistoView {
 	}
 
 	public void setEtats(List<EtatDestinataireView> etats) {
-		this.etats = etats;
+		if (etats == null || etats.isEmpty()) {
+		   throw new IllegalArgumentException("etats ne peut être ni null ni vide");
+		}
+		this.etats = new ArrayList<EtatDestinataireView>(etats);
 	}
 
 	public List<DemandeAvecHistoView> getDemandes() {
@@ -36,7 +41,10 @@ public class DestinataireAvecHistoView {
 	}
 
 	public void setDemandes(List<DemandeAvecHistoView> demandes) {
-		this.demandes = demandes;
+		if (demandes == null || demandes.isEmpty()) {
+			throw new IllegalArgumentException("demandes ne peut être ni null ni vide");
+		}
+		this.demandes = new ArrayList<DemandeAvecHistoView>(demandes);
 	}
 
 	public boolean isSuspendable() {
@@ -57,19 +65,13 @@ public class DestinataireAvecHistoView {
 
 	@Nullable
 	public DemandeAvecHistoView getDemandeEnCours() {
-		if (demandes == null) {
-			return null;
-		}
-		else {
-			DemandeAvecHistoView enCours = null;
-			for (DemandeAvecHistoView candidate : demandes) {
-				final EtatDemandeView etatCourant = candidate.getEtatCourant();
-				if (etatCourant != null && etatCourant.getType().isEnCours()) {
-					enCours = candidate;
-					break;
-				}
+		DemandeAvecHistoView enCours = null;
+		for (DemandeAvecHistoView candidate : demandes) {
+			if (candidate.getEtatCourant().getType().isEnCours()) {
+				enCours = candidate;
+				break;
 			}
-			return enCours;
 		}
+		return enCours;
 	}
 }

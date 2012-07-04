@@ -1,5 +1,7 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.util.EnumSet;
+
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 
 /**
@@ -8,8 +10,8 @@ import ch.vd.evd0025.v1.RegistrationRequestStatus;
 public enum TypeEtatDemande {
 	A_TRAITER (TypeAttenteDemande.PAS_EN_ATTENTE),
 	VALIDATION_EN_COURS (TypeAttenteDemande.PAS_EN_ATTENTE),
-	EN_ATTENTE_CONTACT (TypeAttenteDemande.EN_ATTENTE_CONTACT), // état interne unireg qui n'a pas d'équivalent e-facture
-	EN_ATTENTE_SIGNATURE (TypeAttenteDemande.EN_ATTENTE_SIGNATURE), // état interne unireg qui n'a pas d'équivalent e-facture
+	VALIDATION_EN_COURS_EN_ATTENTE_CONTACT(TypeAttenteDemande.EN_ATTENTE_CONTACT), // état interne unireg qui n'a pas d'équivalent e-facture
+	VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE(TypeAttenteDemande.EN_ATTENTE_SIGNATURE), // état interne unireg qui n'a pas d'équivalent e-facture
 	REFUSEE (TypeAttenteDemande.PAS_EN_ATTENTE),
 	IGNOREE (TypeAttenteDemande.PAS_EN_ATTENTE),
 	VALIDEE (TypeAttenteDemande.PAS_EN_ATTENTE);
@@ -25,24 +27,48 @@ public enum TypeEtatDemande {
 		return typeAttente;
 	}
 
+	public boolean isEnAttente() {
+		return EnumSet.of(
+				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
+				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE
+		).contains(this);
+	}
+
 	public boolean isEnCours() {
-		return this == EN_ATTENTE_CONTACT || this == EN_ATTENTE_SIGNATURE || this == VALIDATION_EN_COURS;
+		return EnumSet.of(
+				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
+				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
+				VALIDATION_EN_COURS
+		).contains(this);
 	}
 
 	public boolean isValidable() {
-		return this == EN_ATTENTE_SIGNATURE;
+		return this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE;
 	}
 
 	public boolean isRefusable() {
-		return this == A_TRAITER || this == EN_ATTENTE_CONTACT || this == EN_ATTENTE_SIGNATURE || this == VALIDATION_EN_COURS;
+		return EnumSet.of(
+				A_TRAITER,
+				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
+				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
+				VALIDATION_EN_COURS
+		).contains(this);
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		return this == A_TRAITER || this == EN_ATTENTE_SIGNATURE || this == VALIDATION_EN_COURS;
+		return EnumSet.of(
+				A_TRAITER,
+				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
+				VALIDATION_EN_COURS
+		).contains(this);
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		return this == A_TRAITER || this == EN_ATTENTE_CONTACT || this == VALIDATION_EN_COURS;
+		return EnumSet.of(
+			A_TRAITER,
+			VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
+			VALIDATION_EN_COURS
+		).contains(this);
 	}
 
 	public static TypeEtatDemande valueOf (RegistrationRequestStatus status, TypeAttenteDemande typeAttente ) {
@@ -57,9 +83,9 @@ public enum TypeEtatDemande {
 			if (typeAttente == TypeAttenteDemande.PAS_EN_ATTENTE) {
 				return TypeEtatDemande.VALIDATION_EN_COURS;
 			} else if (typeAttente == TypeAttenteDemande.EN_ATTENTE_SIGNATURE) {
-				return EN_ATTENTE_SIGNATURE;
+				return VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE;
 			} else if (typeAttente == TypeAttenteDemande.EN_ATTENTE_CONTACT) {
-				return EN_ATTENTE_CONTACT;
+				return VALIDATION_EN_COURS_EN_ATTENTE_CONTACT;
 			}
 			throw new AssertionError("Impossible d'atterrir ici, tout les valeurs possibles de l'enum TypeAttenteDemande sont traités en amont !");
 		case VALIDEE:

@@ -3,6 +3,8 @@ package ch.vd.uniregctb.efacture;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0025.v1.RegistrationRequest;
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
@@ -32,7 +34,7 @@ class DemandeAvecHistoBuilderForUnitTests extends DemandeBuilderForUnitTests {
 		return this;
 	}
 
-	DemandeAvecHistoBuilderForUnitTests addHistoryEntry(RegDate date, RegistrationRequestStatus status, Integer reasonCode, String description, String customField) {
+	DemandeAvecHistoBuilderForUnitTests addHistoryEntry(RegDate date, RegistrationRequestStatus status, @Nullable Integer reasonCode, String description, String customField) {
 		addHistoryEntry(new RegistrationRequestHistoryEntry(XmlUtils.regdate2xmlcal(date), status, reasonCode, description, customField));
 		return this;
 	}

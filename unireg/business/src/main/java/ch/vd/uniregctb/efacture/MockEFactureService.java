@@ -23,7 +23,7 @@ public class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public DemandeAvecHisto getDemandeInscriptionEnCoursDeTraitement(long ctbId) {
+	public DemandeAvecHisto getDemandeEnAttente(long ctbId) {
 		return null;
 	}
 

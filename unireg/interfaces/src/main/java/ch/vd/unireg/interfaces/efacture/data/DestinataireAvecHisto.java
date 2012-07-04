@@ -27,56 +27,38 @@ public class DestinataireAvecHisto {
 	public DestinataireAvecHisto(PayerWithHistory payerWithHistory, long ctbId) {
 		this.ctbId = ctbId;
 		this.historiqueDemandes = new ArrayList<DemandeAvecHisto>();
-		PayerWithHistory.HistoryOfRequests historyOfRequests = payerWithHistory.getHistoryOfRequests();
-		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests.getRequest()) {
-			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
-
+		List<RegistrationRequestWithHistory> historyOfRequests = payerWithHistory.getHistoryOfRequests().getRequest();
+		if (historyOfRequests.isEmpty()) {
+			throw new IllegalArgumentException("Un PayerWithHistory doit avoir au moins une RegistrationRequestWithHistory");
 		}
-
+		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests) {
+			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
+		}
 		this.etats = new ArrayList<EtatDestinataire>();
-
-		PayerWithHistory.HistoryOfSituations historyOfSituations = payerWithHistory.getHistoryOfSituations();
-		for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations.getSituation()){
-
+		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
+		if (historyOfSituations.isEmpty()) {
+			throw new IllegalArgumentException("Un PayerWithHistory doit au mins avoir une PayerSituationHistoryEntry");
+		}
+		for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){
 			this.etats.add(new EtatDestinataire(payerSituationHistoryEntry));
 		}
-
-
 	}
 
 	public long getCtbId() {
 		return ctbId;
 	}
 
-	public void setCtbId(long ctbId) {
-		this.ctbId = ctbId;
-	}
-
 	public EtatDestinataire getDernierEtat() {
-		//Les états nous sont toujours renvoyés dans l'ordre chronologique par le ws efacture
-		if(etats!=null && !etats.isEmpty()){
-			return etats.get(etats.size()-1);
-		}
-		return null;
+		return etats.get(etats.size()-1);
 	}
 
 
- public boolean isActivable(){
-	 final EtatDestinataire dernierEtat = getDernierEtat();
-	 if(dernierEtat !=null){
-		 return dernierEtat.getType().isActivable();
-
-	 }
-	 return false;
- }
+    public boolean isActivable(){
+		 return getDernierEtat().getType().isActivable();
+	}
 
 	public boolean isSuspendable(){
-		final EtatDestinataire dernierEtat = getDernierEtat();
-		if(dernierEtat !=null){
-			return dernierEtat.getType().isSuspendable();
-
-		}
-		return false;
+		return getDernierEtat().getType().isSuspendable();
 	}
 
 

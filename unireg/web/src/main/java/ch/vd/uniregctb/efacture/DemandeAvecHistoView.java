@@ -1,8 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
+import java.util.ArrayList;
 import java.util.List;
-
-import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
@@ -10,6 +9,8 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
  */
+
+@SuppressWarnings("UnusedDeclaration")
 public class DemandeAvecHistoView {
 
 	private String idDemande;
@@ -29,7 +30,10 @@ public class DemandeAvecHistoView {
 	}
 
 	public void setEtats(List<EtatDemandeView> etats) {
-		this.etats = etats;
+		if (etats == null || etats.isEmpty()) {
+			throw new IllegalArgumentException("etats ne peut être ni null ni vide");
+		}
+		this.etats = new ArrayList<EtatDemandeView>(etats);
 	}
 
 	public RegDate getDateDemande() {
@@ -40,34 +44,27 @@ public class DemandeAvecHistoView {
 		this.dateDemande = dateDemande;
 	}
 
-	@Nullable
 	public EtatDemandeView getEtatCourant() {
-		return etats != null && etats.size() > 0 ? etats.get(0) : null;
+		return etats.get(0);
 	}
 
-	@Nullable
 	private TypeEtatDemande getTypeEtatCourant() {
-		final EtatDemandeView etatCourant = getEtatCourant();
-		return etatCourant != null ? etatCourant.getType() : null;
+		return getEtatCourant().getType();
 	}
 
 	public boolean isValidable() {
-		final EtatDemandeView etatCourant = getEtatCourant();
-		return etatCourant != null && etatCourant.isValidable();
+		return getEtatCourant().isValidable();
 	}
 
 	public boolean isRefusable() {
-		final EtatDemandeView etatCourant = getEtatCourant();
-		return etatCourant != null && etatCourant.isRefusable();
+		return getEtatCourant().isRefusable();
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		final EtatDemandeView etatCourant = getEtatCourant();
-		return etatCourant != null && etatCourant.isMettableEnAttenteContact();
+		return getEtatCourant().isMettableEnAttenteContact();
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		final EtatDemandeView etatCourant = getEtatCourant();
-		return etatCourant != null && etatCourant.isMettableEnAttenteSignature();
+		return getEtatCourant().isMettableEnAttenteSignature();
 	}
 }

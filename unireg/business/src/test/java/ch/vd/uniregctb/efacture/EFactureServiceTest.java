@@ -98,16 +98,18 @@ public class EFactureServiceTest extends BusinessTest {
 						.addHistoryEntry(RegDate.get(2012, 6, 26), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.PAS_EN_ATTENTE.getCode(), "", "")
 						.buildRegistrationRequestWithHistory();
 
+		List<PayerSituationHistoryEntry> dummyHistoryOfSituation = Collections.singletonList(new PayerSituationHistoryEntryBuilder().build());
+
 		expect(
 				mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
-					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn1)))
-					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn2)))
-					.andReturn(buildPayerWithHistory(null, Collections.singletonList(mockReturn3)));
+					.andReturn(buildPayerWithHistory(dummyHistoryOfSituation, Collections.singletonList(mockReturn1)))
+					.andReturn(buildPayerWithHistory(dummyHistoryOfSituation, Collections.singletonList(mockReturn2)))
+					.andReturn(buildPayerWithHistory(dummyHistoryOfSituation, Collections.singletonList(mockReturn3)));
 		replay(mockEfactureClient);
 
-		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
-		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
-		assertNull("Aucune demande n'est en cours; getInscriptionEnCoursDeTraitement() doit renvoyer null", efactureService.getDemandeInscriptionEnCoursDeTraitement(123));
+		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeEnAttente(123));
+		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeEnAttente(123));
+		assertNull("Aucune demande n'est en cours; getInscriptionEnCoursDeTraitement() doit renvoyer null", efactureService.getDemandeEnAttente(123));
 
 		verify(mockEfactureClient);
 	}
@@ -152,13 +154,17 @@ public class EFactureServiceTest extends BusinessTest {
 
 		mockEfactureClient = EasyMock.createMock(EFactureClient.class);
 		efactureService.seteFactureClient(mockEfactureClient);
+		List<RegistrationRequestWithHistory> dummyHistoryOfRequest = Collections.singletonList(
+				new DemandeAvecHistoBuilderForUnitTests()
+						.addHistoryEntry(date(2012, 1, 1), RegistrationRequestStatus.A_TRAITER, null, "", "")
+						.buildRegistrationRequestWithHistory());
 		expect(
 				mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
 				// 1er appel au mock renvoye une situation ou le contribuable a un DESINSCRIT_SUSPENDU
 				.andReturn(buildPayerWithHistory(Collections.singletonList(
-						new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT_SUSPENDU).build()), null))
+						new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT_SUSPENDU).build()), dummyHistoryOfRequest))
 				// appels suivants au mock renvoye une situation ou le contribuable a un statut DESINSCRIT
-				.andStubReturn(buildPayerWithHistory(Collections.singletonList(new PayerSituationHistoryEntryBuilder().build()), null));
+				.andStubReturn(buildPayerWithHistory(Collections.singletonList(new PayerSituationHistoryEntryBuilder().build()), dummyHistoryOfRequest));
 		replay(mockEfactureClient);
 
 		final TestSamples ts = new TestSamples();
@@ -260,9 +266,10 @@ public class EFactureServiceTest extends BusinessTest {
 		}
 	}
 
-	private class PayerSituationHistoryEntryBuilder {
+	@SuppressWarnings("UnusedDeclaration")
+	private static class PayerSituationHistoryEntryBuilder {
 
-		private RegDate date = date(2012,6,1);
+		private RegDate date = date(2012, 6, 1);
 		private PayerStatus status = PayerStatus.DESINSCRIT;
 		private String providerId = EFactureService.ACI_BILLER_ID;
 		private BigInteger eBillAcountId = BigInteger.ZERO;
