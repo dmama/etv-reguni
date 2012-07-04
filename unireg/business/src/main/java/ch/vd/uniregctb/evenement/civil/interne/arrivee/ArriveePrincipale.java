@@ -192,16 +192,21 @@ public class ArriveePrincipale extends Arrivee {
 		validateArriveeAdressePrincipale(erreurs, warnings);
 		validateForPrincipal(erreurs);
 
-		/*
-		 * On vérifie que si les individus sont inconnus dans la base fiscale, ils ne possèdent pas d'adresse dans le registre civil avant
-		 * leur date d'arrivée
-		 */
-		if (isDansLeCanton(ancienneCommune)) {
-			final PersonnePhysique habitant = getPrincipalPP();
-			if (habitant == null) {
+		// On vérifie que l'individu arrive de hors-canton ou hors-Suisse s'il est inconnu dans Unireg, autrement il y a un problème de cohérence.
+		final PersonnePhysique habitant = getPrincipalPP();
+		if (habitant == null) {
+			if (isDansLeCanton(ancienneCommune)) {
 				final String message = "L'individu est inconnu dans registre fiscal mais possédait déjà une adresse dans le " +
 						"registre civil avant son arrivée (incohérence entre les deux registres)";
 				erreurs.addErreur(message);
+			}
+			else {
+				// [SIFISC-5286] on vérifie aussi la localisation précédente, si l'information est présente
+				final Localisation localisationPrecedente = nouvelleAdresse.getLocalisationPrecedente();
+				if (localisationPrecedente != null && localisationPrecedente.getType() == LocalisationType.CANTON_VD) {
+					final String message = "L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)";
+					erreurs.addErreur(message);
+				}
 			}
 		}
 	}

@@ -64,7 +64,6 @@ public abstract class Mouvement extends EvenementCivilInterneAvecAdresses {
 	 * Permet de faire les verifications standards sur les adresses et les
 	 * individus en cas de départ ou d'arrivée
 	 *
-	 * @param target
 	 * @param regroupementObligatoire en cas où le regroupement de deux membres d'un couple est obligatoire pour le movement
 	 * @param erreurs
 	 * @param warnings

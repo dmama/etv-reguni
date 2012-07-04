@@ -96,7 +96,7 @@ public abstract class Arrivee extends Mouvement {
 		 */
         final Individu indiv = getIndividu();
         if (indiv == null) {
-            erreurs.addErreur("individu requis pour traiter un décès");
+            erreurs.addErreur("individu requis pour traiter une arrivée");
             return;
         }
         if (indiv.getDateDeces() != null) {

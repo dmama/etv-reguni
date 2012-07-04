@@ -802,7 +802,61 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+	/**
+	 * [SIFISC-5286] Vérifie que l'arrivée dans une commune vaudoise avec une localisation précédente vaudoise (mais pas d'adresse correspondante) sur pour individu inconnu dans Unireg lève bien une erreur.
+	 */
+	@Test
+	public void testHandleArriveeIndividuInconnuAvecLocalisationPrecedenteDansCommuneVaudoise() throws Exception {
 
+		final Long noInd = 324543L;
+		final RegDate dateArrivee = date(2000, 1, 1);
 
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu ind = addIndividu(noInd, date(1965, 3, 12), "Bolomey", "Brian", true);
+				addNationalite(ind, MockPays.Suisse, date(1965, 3, 12), null);
+				MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Nyon.getNoOFS()));
+			}
+		});
 
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noInd);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noInd);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+				Assert.assertEquals("L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)",
+						erreur.getMessage());
+				return null;
+			}
+		});
+	}
 }
