@@ -60,16 +60,19 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	@Override
 	public List<Individu> getIndividus(final Collection<Long> nosIndividus, @Nullable final RegDate date, final AttributeIndividu... parties) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getIndividus(nosIndividus, date, parties);
+			final List<Individu> list = target.getIndividus(nosIndividus, date, parties);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividus", nosIndividus.size(), new Object() {
+			tracing.end(time, t, "getIndividus", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));

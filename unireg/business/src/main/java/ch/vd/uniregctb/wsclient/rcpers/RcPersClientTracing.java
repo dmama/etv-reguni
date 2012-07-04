@@ -36,16 +36,19 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	@Override
 	public ListOfPersons getPersons(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getPersons(ids, date, withHistory);
+			final ListOfPersons list = target.getPersons(ids, date, withHistory);
+			items = list == null ? 0 : list.getNumberOfResults().intValue();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersons", ids.size(), new Object() {
+			tracing.end(time, t, "getPersons", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);
@@ -57,16 +60,19 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	@Override
 	public ListOfPersons getPersonsBySocialsNumbers(final Collection<String> numbers, final RegDate date, final boolean withHistory) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getPersonsBySocialsNumbers(numbers, date, withHistory);
+			final ListOfPersons list = target.getPersonsBySocialsNumbers(numbers, date, withHistory);
+			items = list == null ? 0 : list.getNumberOfResults().intValue();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonsBySocialsNumbers", numbers.size(), new Object() {
+			tracing.end(time, t, "getPersonsBySocialsNumbers", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("numbers=%s, date=%s, withHistory=%s", ServiceTracing.toString(numbers), ServiceTracing.toString(date), withHistory);
@@ -78,16 +84,19 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	@Override
 	public ListOfRelations getRelations(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getRelations(ids, date, withHistory);
+			final ListOfRelations list = target.getRelations(ids, date, withHistory);
+			items = list == null ? 0 : list.getNumberOfResults().intValue();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getRelations", ids.size(), new Object() {
+			tracing.end(time, t, "getRelations", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, date=%s, withHistory=%s", ServiceTracing.toString(ids), ServiceTracing.toString(date), withHistory);

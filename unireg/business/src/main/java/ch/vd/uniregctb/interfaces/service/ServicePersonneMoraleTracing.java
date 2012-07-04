@@ -87,16 +87,19 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public List<PersonneMorale> getPersonnesMorales(final List<Long> ids, final PartPM... parts) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getPersonnesMorales(ids, parts);
+			final List<PersonneMorale> list = target.getPersonnesMorales(ids, parts);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonnesMorales", ids.size(), new Object() {
+			tracing.end(time, t, "getPersonnesMorales", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s, parts=%s", ServiceTracing.toString(ids), ServiceTracing.toString(parts));
@@ -129,16 +132,19 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public List<Etablissement> getEtablissements(final List<Long> ids) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getEtablissements(ids);
+			final List<Etablissement> list = target.getEtablissements(ids);
+			items = list == null ? 0 : list.size();
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getEtablissements", ids.size(), new Object() {
+			tracing.end(time, t, "getEtablissements", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("ids=%s", ServiceTracing.toString(ids));
@@ -196,7 +202,7 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 		final long time = tracing.start();
 		try {
 			final List<EvenementPM> list = target.findEvenements(numeroEntreprise, code, minDate, maxDate);
-			items = list.size();
+			items = list == null ? 0 : list.size();
 			return list;
 		}
 		catch (RuntimeException e) {
