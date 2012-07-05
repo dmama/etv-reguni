@@ -177,11 +177,16 @@
 				else {
 					dateFermeture = '<unireg:regdate regdate="${command.regDateFermeture}" />'
 				}
-				
 
 				var f = $('#formFor').get(0);
 				var noOfsAut = f.numeroForFiscalCommune.value + f.numeroForFiscalCommuneHorsCanton.value + f.numeroForFiscalPays.value;
 				noOfsAut = noOfsAut.replace(/[^\d]/g, "");
+
+				if (StringUtils.isBlank(noOfsAut)) {
+					// [SIFISC-5265] pas de commune valable, on laisse tomber l'affichage des actions
+					$('#actions_column').hide();
+					return;
+				}
 
 				var idFor = ${command.id};
 				var queryString = 'idFor=' + idFor + '&startDate=' + dateOuverture + '&startReason=' + motifsOuverture +
