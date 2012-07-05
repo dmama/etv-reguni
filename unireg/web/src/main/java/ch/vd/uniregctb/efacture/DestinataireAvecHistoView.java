@@ -66,10 +66,12 @@ public class DestinataireAvecHistoView {
 	@Nullable
 	public DemandeAvecHistoView getDemandeEnCours() {
 		DemandeAvecHistoView enCours = null;
-		for (DemandeAvecHistoView candidate : demandes) {
-			if (candidate.getEtatCourant().getType().isEnCours()) {
-				enCours = candidate;
-				break;
+		if (demandes != null) {
+			for (DemandeAvecHistoView candidate : demandes) {
+				if (candidate.getEtatCourant().getType().isEnCours()) {
+					enCours = candidate;
+					break;
+				}
 			}
 		}
 		return enCours;
