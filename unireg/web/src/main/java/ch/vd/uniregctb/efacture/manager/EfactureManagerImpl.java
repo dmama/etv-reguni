@@ -49,30 +49,27 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	private String getMessageAvecVisaUser() {
-		String user = AuthenticationHelper.getCurrentPrincipal();
+		final String user = AuthenticationHelper.getCurrentPrincipal();
 		return String.format("Traitement manuel par %s", user);
 	}
 
 	@Override
 	public DestinataireAvecHistoView getDestinataireAvecSonHistorique(long ctbId) {
-		DestinataireAvecHisto destinataire = eFactureService.getDestinataireAvecSonHistorique(ctbId);
-		if(destinataire == null){
-			return new DestinataireAvecHistoView();
-		}
-		return buildDestinataireAvecHistoView(destinataire);
+		final DestinataireAvecHisto destinataire = eFactureService.getDestinataireAvecSonHistorique(ctbId);
+		return destinataire != null ? buildDestinataireAvecHistoView(destinataire) : null;
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String suspendreContribuable(long ctbId) throws EvenementEfactureException {
-		String description = getMessageAvecVisaUser();
+		final String description = getMessageAvecVisaUser();
 		return eFactureService.suspendreContribuable(ctbId, true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public String activerContribuable(long ctbId) throws EvenementEfactureException {
-		String description = getMessageAvecVisaUser();
+		final String description = getMessageAvecVisaUser();
 		return eFactureService.activerContribuable(ctbId, true, description);
 	}
 
@@ -83,13 +80,13 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public String accepterDemande(String idDemande) throws EvenementEfactureException {
-		String description = getMessageAvecVisaUser();
+		final String description = getMessageAvecVisaUser();
 		return eFactureService.accepterDemande(idDemande, true, description);
 	}
 
 	@Override
 	public String refuserDemande(String idDemande) throws EvenementEfactureException {
-		String description = getMessageAvecVisaUser();
+		final String description = getMessageAvecVisaUser();
 		return eFactureService.refuserDemande(idDemande,true, description);
 	}
 
@@ -127,14 +124,14 @@ public class EfactureManagerImpl implements EfactureManager {
 		final int sizeDemandes = destinataire.getHistoriqueDemandes().size();
 		final List<DemandeAvecHistoView> demandes = new ArrayList<DemandeAvecHistoView>(sizeDemandes);
 		for (ListIterator<DemandeAvecHisto> it = destinataire.getHistoriqueDemandes().listIterator(sizeDemandes); it.hasPrevious(); ) {
-			DemandeAvecHisto demande = it.previous();
-			DemandeAvecHistoView view  = new DemandeAvecHistoView();
+			final DemandeAvecHisto demande = it.previous();
+			final DemandeAvecHistoView view  = new DemandeAvecHistoView();
 			view.setIdDemande(demande.getIdDemande());
 			view.setDateDemande(demande.getDateDemande());
 			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
 			final List<EtatDemandeView> etatsDemande = new ArrayList<EtatDemandeView>(sizeEtatDemandes);
 			for(ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ){
-				EtatDemandeView etatView = getEtatDemande(jt.previous());
+				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
 			}
 			view.setEtats(etatsDemande);
