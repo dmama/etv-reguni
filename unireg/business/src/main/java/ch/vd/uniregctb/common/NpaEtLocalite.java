@@ -7,8 +7,6 @@ import org.apache.commons.lang.StringUtils;
  */
 public class NpaEtLocalite {
 
-	public static final NpaEtLocalite VIDE = new NpaEtLocalite(null, null);
-
 	private final String npa;
 	private final String localite;
 
