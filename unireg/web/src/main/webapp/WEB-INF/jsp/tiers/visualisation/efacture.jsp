@@ -46,7 +46,7 @@
         },
 
         /**
-         * Error handler qui affiche le message d'erreur ajax dans une boîte de dialogue modale.
+         * Error handler qui affiche le message d'erreur ajax dans l'onglet e-Facture
          */
         errorHandlerHisto: function(xhr, ajaxOptions, thrownError) {
             var html = '<span class="error">Impossible d\'obtenir l\'historique des états e-Facture du contribuable :<br/><br/>' +
