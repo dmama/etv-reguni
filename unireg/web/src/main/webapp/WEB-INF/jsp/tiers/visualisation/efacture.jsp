@@ -41,8 +41,18 @@
                 }
                 $('#efactureDiv').html(html);
             }, 'json')
-            .error(Ajax.popupErrorHandler);
+            .error(eFacture.errorHandlerHisto);
             return false;
+        },
+
+        /**
+         * Error handler qui affiche le message d'erreur ajax dans une boîte de dialogue modale.
+         */
+        errorHandlerHisto: function(xhr, ajaxOptions, thrownError) {
+            var html = '<span class="error">Impossible d\'obtenir l\'historique des états e-Facture du contribuable :<br/><br/>' +
+                       '&nbsp;&nbsp;&nbsp;&nbsp;<i>' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) +') : ' +
+                       StringUtils.escapeHTML(xhr.responseText) + '</i></span>';
+            $('#efactureDiv').html(html);
         },
 
         buildHistoriqueDestinataire: function(etats) {
