@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -119,9 +120,15 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void test() {
+	public void testGetMessageQuittancement() {
+		expect(eFactureResponseService.waitForResponse(eq("BUSINESS_ID"), anyLong())).andReturn(false).andReturn(true);
 		replayAll();
-		//eFactureManager.
+		String msg = eFactureManager.getMessageQuittancement(ResultatQuittancement.enCours("BUSINESS_ID"), NO_CTB);
+		assertContains("en cours", msg);
+		assertContains(Long.toString(NO_CTB), msg);
+		msg = eFactureManager.getMessageQuittancement(ResultatQuittancement.enCours("BUSINESS_ID"), NO_CTB);
+		assertContains("OK", msg);
+		assertContains(Long.toString(NO_CTB), msg);
 	}
 
 
