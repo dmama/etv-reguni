@@ -158,10 +158,18 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	private EtatDemandeView getEtatDemande(EtatDemande etat) {
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etat.getType());
-		final String descriptionEtat = messageSource.getMessage(
+		String descriptionEtat = messageSource.getMessage(
 				"label.efacture.etat.demande."+ etat.getType(),
 				null,
 				WebContextUtils.getDefaultLocale());
+		// TODO A supprimer à terme
+		// Utile pour l'instant car les données de tests e-facture non pas les descriptions adéquates
+		// pour differencier les differents "sous-états" de validation en cours
+		if ("true".equals(System.getProperty("debug-efacture"))) {
+				if (etat.getType().isEnAttente()) {
+					descriptionEtat += " " + etat.getType().name();
+				}
+		}
 		final String key = etat.getChampLibre();
 		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
 		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(),archiveKey,descriptionEtat,etat.getType());

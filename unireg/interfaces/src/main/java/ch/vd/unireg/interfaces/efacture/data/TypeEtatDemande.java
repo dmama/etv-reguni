@@ -41,21 +41,18 @@ public enum TypeEtatDemande {
 	}
 
 	public boolean isRefusable() {
-		return  this == A_TRAITER ||
-				this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+		return  this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
 				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
 				this == VALIDATION_EN_COURS;
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		return  this == A_TRAITER ||
-				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
+		return  this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
 				this == VALIDATION_EN_COURS;
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		return  this == A_TRAITER ||
-				this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+		return  this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
 				this == VALIDATION_EN_COURS;
 	}
 
