@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,7 +16,6 @@ import ch.vd.unireg.interfaces.efacture.data.EtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
@@ -54,6 +54,7 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
+	@Nullable
 	public DestinataireAvecHistoView getDestinataireAvecSonHistorique(long ctbId) {
 		final DestinataireAvecHisto destinataire = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		return destinataire != null ? buildDestinataireAvecHistoView(destinataire) : null;
@@ -98,19 +99,16 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	public String getMessageQuittancement(ResultatQuittancement resultatQuittancement, long noCtb) {
+		// Note: d'un point de vue logique on pourrait simplifier avec un seul 'if' mais on evite
+		//       d'appeler waitForResponse() pour rien (3 secondes de délai si le resultat n'est pas ok)
 		if (resultatQuittancement.isOk()) {
-			if (resultatQuittancement.getType() == TypeResultatQuittancement.DEJA_INSCRIT) {
-				return TypeResultatQuittancement.DEJA_INSCRIT.getDescription(noCtb);
-			} else {
-				if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
-					return TypeResultatQuittancement.QUITTANCEMENT_OK.getDescription(noCtb);
-				} else {
-					return TypeResultatQuittancement.QUITTANCEMENT_EN_COURS.getDescription(noCtb);
-				}
+			if (resultatQuittancement.equals(ResultatQuittancement.dejaInscrit())) {
+				return ResultatQuittancement.dejaInscrit().getDescription(noCtb);
+			} else if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
+				return ResultatQuittancement.ok(resultatQuittancement).getDescription(noCtb);
 			}
-		} else {
-			return resultatQuittancement.getDescription(noCtb);
 		}
+		return resultatQuittancement.getDescription(noCtb);
 	}
 
 

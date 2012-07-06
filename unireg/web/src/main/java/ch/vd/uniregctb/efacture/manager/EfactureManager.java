@@ -15,7 +15,9 @@ public interface EfactureManager {
 	 * @param ctbId     le numéro de contribuable traité
 	 * @param typeDocument permet de determiner le type de document à envoyer au contribuable
 	 * @param idDemande l'id de la demande à traiter
-	 * @param dateDemande
+	 * @param dateDemande la date
+	 *
+	 * @return business id du message jms
 	 */
 	String envoyerDocumentAvecNotificationEFacture(long ctbId, TypeDocument typeDocument, String idDemande, RegDate dateDemande) throws EditiqueException, EvenementEfactureException;
 
@@ -28,7 +30,7 @@ public interface EfactureManager {
 
 	/**Demande la suspension d'un contribuable
 	 *
-	 * @param ctbId
+	 * @param ctbId le numéro de contribuable
 	 * @return l'identifant du message demandant la suspension
 	 */
 	String suspendreContribuable(long ctbId) throws EvenementEfactureException;
@@ -36,15 +38,16 @@ public interface EfactureManager {
 
 	/**Demande l'activation d'un contribuable
 	 *
-	 * @param ctbId
+	 * @param ctbId le numéro de contribuable
 	 * @return l'identifant du message demandant l'activation
 	 */
 	String activerContribuable(long ctbId) throws EvenementEfactureException;
 
 	/**Retourne indique si on a reçu une réponse concernant le message dont le business id est passé en parametre
 	 *
+	 * @param businessId le business id du message pour lequel on attend un réponse
 	 *
-	 * @param businessId@return <code>true</code> si on a reçu une réponse, <code>false</code> sinon.
+	 * @return <code>true</code> si on a reçu une réponse, <code>false</code> sinon.
 	 */
 	boolean isReponseReçuDeEfacture(String businessId);
 
@@ -58,11 +61,11 @@ public interface EfactureManager {
 
 	/**
 	 * permet de demander un refus d'inscription
-	 * @param idDemande
+	 * @param idDemande id de la demande
 	 * @return business id de la demande de refus
 	 * @throws EvenementEfactureException
 	 */
-	String refuserDemande(String idDemande) throws EvenementEfactureException;;
+	String refuserDemande(String idDemande) throws EvenementEfactureException;
 
 	/**
 	 * Quittance le contribuable

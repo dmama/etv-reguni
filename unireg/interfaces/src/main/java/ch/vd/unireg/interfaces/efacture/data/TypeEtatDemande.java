@@ -1,7 +1,5 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
-import java.util.EnumSet;
-
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 
 /**
@@ -28,18 +26,14 @@ public enum TypeEtatDemande {
 	}
 
 	public boolean isEnAttente() {
-		return EnumSet.of(
-				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
-				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE
-		).contains(this);
+		return  this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE;
 	}
 
 	public boolean isEnCours() {
-		return EnumSet.of(
-				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
-				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
-				VALIDATION_EN_COURS
-		).contains(this);
+		return  this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
+				this == VALIDATION_EN_COURS;
 	}
 
 	public boolean isValidable() {
@@ -47,28 +41,22 @@ public enum TypeEtatDemande {
 	}
 
 	public boolean isRefusable() {
-		return EnumSet.of(
-				A_TRAITER,
-				VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
-				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
-				VALIDATION_EN_COURS
-		).contains(this);
+		return  this == A_TRAITER ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
+				this == VALIDATION_EN_COURS;
 	}
 
 	public boolean isMettableEnAttenteContact() {
-		return EnumSet.of(
-				A_TRAITER,
-				VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE,
-				VALIDATION_EN_COURS
-		).contains(this);
+		return  this == A_TRAITER ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE ||
+				this == VALIDATION_EN_COURS;
 	}
 
 	public boolean isMettableEnAttenteSignature() {
-		return EnumSet.of(
-			A_TRAITER,
-			VALIDATION_EN_COURS_EN_ATTENTE_CONTACT,
-			VALIDATION_EN_COURS
-		).contains(this);
+		return  this == A_TRAITER ||
+				this == VALIDATION_EN_COURS_EN_ATTENTE_CONTACT ||
+				this == VALIDATION_EN_COURS;
 	}
 
 	public static TypeEtatDemande valueOf (RegistrationRequestStatus status, TypeAttenteDemande typeAttente ) {

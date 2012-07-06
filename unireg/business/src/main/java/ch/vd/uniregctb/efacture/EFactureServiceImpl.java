@@ -19,7 +19,6 @@ import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeResultatQuittancement;
 import ch.vd.unireg.wsclient.efacture.EFactureClient;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -121,7 +120,7 @@ public class EFactureServiceImpl implements EFactureService {
 		// Verification de l'historique des situations
 		DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 
-		if (histo != null && histo.getDernierEtat() != null && histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
+		if (histo != null && histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
 		}
 
@@ -186,23 +185,26 @@ public class EFactureServiceImpl implements EFactureService {
 	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
 		Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {
-			return new ResultatQuittancement(TypeResultatQuittancement.CONTRIBUABLE_INEXISTANT);
+			return ResultatQuittancement.contribuableInexistant();
+		}
+		if (!valideEtatContribuablePourInscription(noCtb)) {
+			return ResultatQuittancement.etatFiscalIncoherent();
 		}
 		PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
 		if (payerWithHistory == null) {
-			return new ResultatQuittancement(TypeResultatQuittancement.ETAT_EFACTURE_INCOHERENT);
+			return ResultatQuittancement.etatEfactureIncoherent();
 		}
 		DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
 		if (destinataireAvecHisto.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
-			return new ResultatQuittancement(TypeResultatQuittancement.DEJA_INSCRIT);
+			return ResultatQuittancement.dejaInscrit();
 		}
 		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
 			if (dem.getDernierEtat().getType() == TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE) {
 				String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, "Traitement manuel par " + AuthenticationHelper.getCurrentPrincipal());
-				return new ResultatQuittancement(businessId, TypeResultatQuittancement.QUITTANCEMENT_EN_COURS);
+				return ResultatQuittancement.enCours(businessId);
 			}
 		}
-		return new ResultatQuittancement(TypeResultatQuittancement.AUCUNE_DEMANDE_EN_COURS_DE_VALIDATION);
+		return ResultatQuittancement.aucuneDemandeEnAttenteDeSignature();
 	}
 
 	@Override
