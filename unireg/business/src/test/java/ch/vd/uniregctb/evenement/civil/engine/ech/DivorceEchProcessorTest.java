@@ -18,6 +18,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -299,6 +300,56 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				assertDivorce(noMonsieur, dateMariage, dateDivorce);
+				assertDivorce(noMadame, dateMariage, dateDivorce);
+				return null;
+			}
+		});
+	}
+
+
+	@Test
+	public void testDivorceConjointNonHabitant() throws Exception {
+
+		final long noMadame = 46215611L;
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateDivorce = date(2008, 11, 23);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu madame = addIndividu(noMadame, date(1974, 8, 1), "Lisette", "Bouton", false);
+				addNationalite(madame, MockPays.France, date(1974, 8, 1), null);
+				addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Chamblon.RueDesUttins, null, date(1974, 8, 1), null);
+				marieIndividu(madame, dateMariage);
+				divorceIndividu(madame, dateDivorce);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addNonHabitant("Crispus","Santacorpus",date(1923, 2, 12), Sexe.MASCULIN);
+				monsieur.setNumeroOfsNationalite(MockPays.Suisse.getNoOfsEtatSouverain());
+				final PersonnePhysique madame = addHabitant(noMadame);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(monsieur, madame, dateMariage, null);
+				addForPrincipal(ensemble.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long divorceId = genereEvenementDivorce(454563456L, noMadame, dateDivorce);
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMadame);
+
+		// on vérifie que le ménage-commun a bien été divorcé dans le fiscal
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(divorceId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 				assertDivorce(noMadame, dateMariage, dateDivorce);
 				return null;
 			}

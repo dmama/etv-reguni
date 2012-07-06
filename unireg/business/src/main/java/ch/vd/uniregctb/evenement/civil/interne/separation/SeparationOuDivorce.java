@@ -238,7 +238,12 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		// Récupération du ménage du tiers
 		final MenageCommun menageCommun = menageComplet.getMenage();
 		// état civil pour traitement
-		final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(menageComplet.getPrincipal().getNumeroIndividu(), dateEvt);
+		Long numeroIndividu = menageComplet.getPrincipal().getNumeroIndividu();
+		//[SIFISC-5524] Le principal du couple peut être un non habitant sans numéro d'individu, dans ce cas on prend le numéro du conjoint
+		if (numeroIndividu ==null){
+			numeroIndividu = principal.getNumeroIndividu();
+		}
+		final EtatCivil etatCivil = getService().getServiceCivilService().getEtatCivilActif(numeroIndividu, dateEvt);
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		// traitement de la séparation
 		try {
