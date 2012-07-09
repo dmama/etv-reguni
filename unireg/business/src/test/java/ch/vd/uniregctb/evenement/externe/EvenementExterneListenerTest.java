@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.externe;
 
+import java.math.BigInteger;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -7,10 +9,13 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.util.Assert;
 
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
+import ch.vd.fiscalite.taxation.evtQuittanceListeV1.OrigineType;
 import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
+import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -38,14 +43,13 @@ public class EvenementExterneListenerTest extends BusinessTest {
 
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
-	private EvenementExterneService service;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		evenementExterneDAO = getBean(EvenementExterneDAO.class, "evenementExterneDAO");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		service = getBean(EvenementExterneService.class, "evenementExterneService");
+		final EvenementExterneService service = getBean(EvenementExterneService.class, "evenementExterneService");
 
 		listener = new EvenementExterneListenerImpl();
 		listener.setHandler(service);
@@ -545,17 +549,49 @@ public class EvenementExterneListenerTest extends BusinessTest {
 	}
 
 	private String createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
+		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 	
 	private String createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
+		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
 	}
 
 	private String createMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = service.createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LC, debutPeriode, finPeriode, dateEvenement);
+		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LC, debutPeriode, finPeriode, dateEvenement);
 		return doc.xmlText();
+	}
+
+	private static EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
+	                                                              RegDate dateFin, RegDate dateEvenement) {
+
+		Assert.notNull(quitancement, "le type de quittancement est obligation");
+		Assert.notNull(numeroCtb, "Le numero du débiteur est obligatoire");
+		Assert.notNull(dateDebut, "la date du début du récapitulatif est obligatoire");
+		// Assert.assertNotNull(dateFin);
+
+		final EvtQuittanceListeDocument doc = EvtQuittanceListeDocument.Factory.newInstance();
+		final EvtQuittanceListeDocument.EvtQuittanceListe evenement = doc.addNewEvtQuittanceListe();
+		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe identification = evenement.addNewIdentificationListe();
+		identification.setNumeroDebiteur(numeroCtb.intValue());
+		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe.PeriodeDeclaration periodeDeclaration = identification.addNewPeriodeDeclaration();
+		final Calendar datedebutC = DateUtils.calendar(dateDebut.asJavaDate());
+		periodeDeclaration.setDateDebut(datedebutC);
+		if (dateFin != null) {
+			final Calendar dateFinC = DateUtils.calendar(dateFin.asJavaDate());
+			periodeDeclaration.setDateFin(dateFinC);
+		}
+		identification.setPeriodeDeclaration(periodeDeclaration);
+		identification.setTypeListe(listeType);
+		identification.setNumeroSequence(new BigInteger("1"));
+		evenement.setIdentificationListe(identification);
+		evenement.setTypeEvtQuittance(quitancement);
+		evenement.setOrigineListe(OrigineType.ELECTRONIQUE);
+		Assert.notNull(dateEvenement, "la date de quittancement du récapitulatif est obligatoire");
+		evenement.setTimestampEvtQuittance(DateUtils.calendar(dateEvenement.asJavaDate()));
+		doc.setEvtQuittanceListe(evenement);
+
+		return doc;
 	}
 }
