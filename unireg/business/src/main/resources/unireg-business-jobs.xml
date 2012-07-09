@@ -416,6 +416,13 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 	</bean>
 
+	<bean id="insertEmployeurFictifEmpAciJob" parent="schedulerJob" class="ch.vd.uniregctb.database.InsertEmployeurFictifEmpAciJob">
+		<constructor-arg value="709" />
+		<constructor-arg value="Insérer en base l'employeur fictif pour EmpACI"/>
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>
