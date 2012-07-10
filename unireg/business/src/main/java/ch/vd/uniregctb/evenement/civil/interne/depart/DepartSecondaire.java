@@ -70,6 +70,12 @@ public class DepartSecondaire extends Depart {
 		}
 
 		this.nouvelleCommune = findNouvelleCommuneByLocalisation(this.nouvelleLocalisation, context, dateDepart);
+		//SIFISC-4912 Pour les evenements ech,les départs secondaires vaudois sont ignorés
+		if (isDepartVaudois()) {
+			final String message = String.format("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence %s est toujours dans le canton.",
+					nouvelleCommune.getNomMinuscule());
+			event.setCommentaireTraitement(message);
+		}
 	}
 
 	@Override

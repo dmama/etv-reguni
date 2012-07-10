@@ -927,4 +927,77 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			cache.destroy();
 		}
 	}
+
+	//Test le cas d'un depart vaudois en secondaire avec une destination en secondaire
+	@Test
+	public void testDepartResidenceSecondaireVersSecondaire() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate depart = date(2011, 10, 31);
+		final RegDate arrivee = date(2003, 1, 1);
+
+		// le p'tit nouveau
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1967, 4, 23);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
+
+
+				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Echallens.getNoOFS()));
+				final MockAdresse adresseVaudoiseSuivante = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, depart.getOneDayAfter(), null);
+				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique luis = addHabitant(noIndividu);
+				return null;
+			}
+		});
+
+		// événement d'arrivée
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(depart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				return null;
+			}
+		});
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence Echallens est toujours dans le canton.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
 }
