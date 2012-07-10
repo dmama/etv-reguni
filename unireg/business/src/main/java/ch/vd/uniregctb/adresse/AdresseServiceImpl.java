@@ -820,7 +820,28 @@ public class AdresseServiceImpl implements AdresseService {
 		}
 	}
 
+	public static RueEtNumero buildRueEtNumero(Adresse adresse) {
+		final String rue = adresse.getRue();
+		if (notEmpty(rue)) {
+			return new RueEtNumero(rue, adresse.getNumero());
+		}
+		else {
+			return null;
+		}
+	}
+
 	public static NpaEtLocalite buildNpaEtLocalite(AdresseGenerique adresse) {
+		final String npa = StringUtils.trimToNull(adresse.getNumeroPostal());
+		final String localite = StringUtils.trimToNull(adresse.getLocalite());
+		if (npa == null && localite == null) {
+			return null;
+		}
+		else {
+			return new NpaEtLocalite(npa, localite);
+		}
+	}
+
+	public static NpaEtLocalite buildNpaEtLocalite(Adresse adresse) {
 		final String npa = StringUtils.trimToNull(adresse.getNumeroPostal());
 		final String localite = StringUtils.trimToNull(adresse.getLocalite());
 		if (npa == null && localite == null) {

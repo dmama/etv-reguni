@@ -22,7 +22,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
-import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseGenerique.SourceType;
@@ -90,6 +89,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
+import ch.vd.uniregctb.tiers.view.AdresseCivilView;
+import ch.vd.uniregctb.tiers.view.AdresseCivilViewComparator;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.AdresseViewComparator;
 import ch.vd.uniregctb.tiers.view.ComplementView;
@@ -903,10 +904,10 @@ public class TiersManager implements MessageSourceAware {
 	 * @throws ch.vd.uniregctb.common.DonneesCivilesException
 	 *          si une adresse possède des données incohérentes (date de fin avant date de début, par exemple)
 	 */
-	public List<AdresseView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
+	public List<AdresseCivilView> getAdressesHistoriquesCiviles(Tiers tiers, boolean adressesHistoCiviles) throws DonneesCivilesException {
 
 		final Long noIndividu = tiersService.extractNumeroIndividuPrincipal(tiers);
-		List<AdresseView> adresses = new ArrayList<AdresseView>();
+		final List<AdresseCivilView> adresses = new ArrayList<AdresseCivilView>();
 		if (noIndividu != null) {
 			if (adressesHistoCiviles) {
 				final AdressesCivilesHistoriques adressesCivilesHisto = serviceCivilService.getAdressesHisto(noIndividu, false);
@@ -928,7 +929,7 @@ public class TiersManager implements MessageSourceAware {
 			}
 		}
 
-		Collections.sort(adresses, new AdresseViewComparator());
+		Collections.sort(adresses, new AdresseCivilViewComparator());
 		return adresses;
 	}
 
@@ -1047,7 +1048,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 	}
 
-	public void fillAdressesHistoCivilesView(List<AdresseView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type) throws DonneesCivilesException {
+	public void fillAdressesHistoCivilesView(List<AdresseCivilView> adressesView, AdressesCivilesHistoriques adressesCivilesHisto, TypeAdresseCivil type) throws DonneesCivilesException {
 		final List<Adresse> adresses = adressesCivilesHisto.ofType(type);
 		if (adresses == null) {
 			// rien à faire
@@ -1055,15 +1056,14 @@ public class TiersManager implements MessageSourceAware {
 		}
 
 		for (Adresse adresse : adresses) {
-			AdresseView adresseView = createAdresseView(adresse, type);
-			adressesView.add(adresseView);
+			adressesView.add(new AdresseCivilView(adresse, type));
 		}
 	}
 
 	/**
 	 * Remplir la collection des adressesView avec l'adresse civile du type spécifié.
 	 */
-	protected void fillAdressesCivilesView(List<AdresseView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type) throws DonneesCivilesException {
+	protected void fillAdressesCivilesView(List<AdresseCivilView> adressesView, final AdressesCivilesActives adressesCiviles, TypeAdresseCivil type) throws DonneesCivilesException {
 
 		if (TypeAdresseCivil.SECONDAIRE == type) {
 			List<Adresse> addressesSecondaires = adressesCiviles.secondaires;
@@ -1072,8 +1072,7 @@ public class TiersManager implements MessageSourceAware {
 				return;
 			}
 			for (Adresse addressesSecondaire : addressesSecondaires) {
-				final AdresseView adresseView = createAdresseView(addressesSecondaire, type);
-				adressesView.add(adresseView);
+				adressesView.add(new AdresseCivilView(addressesSecondaire, type));
 			}
 
 		}
@@ -1084,10 +1083,8 @@ public class TiersManager implements MessageSourceAware {
 				return;
 			}
 
-			final AdresseView adresseView = createAdresseView(adresse, type);
-			adressesView.add(adresseView);
+			adressesView.add(new AdresseCivilView(adresse, type));
 		}
-
 	}
 
 	/**
@@ -1126,21 +1123,6 @@ public class TiersManager implements MessageSourceAware {
 			adresseView.setNpaCasePostale(adresse.getCasePostale().getNpa());
 		}
 
-		return adresseView;
-	}
-
-	/**
-	 * Crée une adresse view à partir d'une adresse civile
-	 *
-	 * @param adresse une adresse civile
-	 * @param type    le type d'adresse civile
-	 * @return une adresse view
-	 * @throws DonneesCivilesException si l'adresse civile est incohérente
-	 */
-	public AdresseView createAdresseView(Adresse adresse, TypeAdresseCivil type) throws DonneesCivilesException {
-		AdresseGenerique adrGen = new AdresseCivileAdapter(adresse, (Tiers) null, false, getServiceInfrastructureService());
-		AdresseView adresseView = createAdresseView(adrGen, null);
-		adresseView.setUsageCivil(type);
 		return adresseView;
 	}
 

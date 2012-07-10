@@ -12,30 +12,17 @@
 						<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-						<fmt:formatDate value="${adresseCivile.dateDebut}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${adresseCivile.dateDebut}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-						<fmt:formatDate value="${adresseCivile.dateFin}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${adresseCivile.dateFin}"/>
 					</display:column>
-					<display:column sortable="true" titleKey="label.adresse.complement">
-						<c:out value="${adresseCivile.complements}"/>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.rueCasePostale">
-						<c:out value="${adresseCivile.rue}"/>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.localite">
-						<c:out value="${adresseCivile.localite}"/>
-					</display:column>
+					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
+					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
+					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
 						<c:if test="${adresseCivile.paysOFS != null }">
 							<unireg:infra entityId="${adresseCivile.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
-						</c:if>
-					</display:column>
-					<display:column style="action">
-						<c:if test="${page == 'visu' }">
-							<c:if test="${adresseCivile.id != null}">
-								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivile.id}"/>
-							</c:if>
 						</c:if>
 					</display:column>
 					<display:setProperty name="paging.banner.all_items_found" value=""/>
@@ -54,30 +41,17 @@
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
-						<fmt:formatDate value="${adresseCivileConjoint.dateDebut}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
-						<fmt:formatDate value="${adresseCivileConjoint.dateFin}" pattern="dd.MM.yyyy"/>
+						<unireg:regdate regdate="${adresseCivileConjoint.dateFin}"/>
 					</display:column>
-					<display:column sortable="true" titleKey="label.adresse.complement">
-						<c:out value="${adresseCivileConjoint.complements}"/>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.rueCasePostale">
-						<c:out value="${adresseCivileConjoint.rue}"/>
-					</display:column>
-					<display:column sortable ="true" titleKey="label.localite">
-						<c:out value="${adresseCivileConjoint.localite}"/>
-					</display:column>
+					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
+					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
+					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
 						<c:if test="${adresseCivileConjoint.paysOFS != null }">
 							<unireg:infra entityId="${adresseCivileConjoint.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
-						</c:if>
-					</display:column>
-					<display:column style="action">
-						<c:if test="${page == 'visu' }">
-							<c:if test="${adresseCivileConjoint.id != null}">
-								<unireg:consulterLog entityNature="AdresseTiers" entityId="${adresseCivileConjoint.id}"/>
-							</c:if>
 						</c:if>
 					</display:column>
 					<display:setProperty name="paging.banner.all_items_found" value=""/>

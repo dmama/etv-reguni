@@ -17,6 +17,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.view.AdresseCivilView;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -101,11 +102,10 @@ public class TiersVisuManagerTest extends WebTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdressesCivilesPrincipalHC() throws Exception {
+
 	    serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-
-
 				MockIndividu zotan = addIndividu(185386, RegDate.get(1974, 3, 22), "Zotan", "Mitev", true);
 				MockIndividu marie = addIndividu(185387, RegDate.get(1974, 3, 22), "Marie-Claude", "Wolf", false);
 				addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(2009, 9, 1), null);
@@ -113,12 +113,8 @@ public class TiersVisuManagerTest extends WebTest {
 				addAdresse(zotan, TypeAdresseCivil.COURRIER, null, null,null,null,null, MockPays.PaysInconnu, RegDate.get(2009, 12, 18), null);
 				addAdresse(zotan, TypeAdresseCivil.PRINCIPALE, null, null,null,null,null, MockPays.PaysInconnu, RegDate.get(2009, 12, 18), null);
 			   	marieIndividus(zotan, marie, date(2004, 5, 1));
-
 			}
 		});
-
-
-
 
 		final class Numeros {
 			long numeroContribuablePrincipal;
@@ -149,8 +145,8 @@ public class TiersVisuManagerTest extends WebTest {
 		WebParamPagination webParamPagination = new WebParamPagination(1, 10, "logCreationDate", true);
 		TiersVisuView view = tiersVisuManager.getView(numeros.numeroContribuableMenage, true, true, true, false, webParamPagination);
 		List<AdresseView> adressesMenage = view.getHistoriqueAdresses();
-		List<AdresseView> adressesZotan = view.getHistoriqueAdressesCiviles();
-		List<AdresseView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
+		List<AdresseCivilView> adressesZotan = view.getHistoriqueAdressesCiviles();
+		List<AdresseCivilView> adressesMarie = view.getHistoriqueAdressesCivilesConjoint();
 
 		/*
 		 * 2 * courrier
@@ -158,10 +154,8 @@ public class TiersVisuManagerTest extends WebTest {
 		 * 2 * poursuite (1 défaut)
 		 */
 		assertEquals(2, adressesZotan.size());
-		assertEquals(date(2009,12,18), RegDate.get(adressesZotan.get(0).getDateDebut()));
+		assertEquals(date(2009, 12, 18), adressesZotan.get(0).getDateDebut());
 		assertNull(adressesZotan.get(0).getLocalite());
-
-
 	}
 
 	public TiersVisuManager getTiersVisuManager() {

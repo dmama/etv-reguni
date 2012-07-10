@@ -47,10 +47,10 @@ public class TiersView {
 
 	private List<AdresseView> historiqueAdresses;
 
-	private List<AdresseView> historiqueAdressesCiviles;
+	private List<AdresseCivilView> historiqueAdressesCiviles;
 	private String exceptionAdresseCiviles;
 
-	private List<AdresseView> historiqueAdressesCivilesConjoint;
+	private List<AdresseCivilView> historiqueAdressesCivilesConjoint;
 	private String exceptionAdresseCivilesConjoint;
 
 	private List<AdresseView> adressesEnErreur;
@@ -365,11 +365,11 @@ public class TiersView {
 		this.addContactISAllowed = addContactISAllowed;
 	}
 
-	public void setHistoriqueAdressesCiviles(List<AdresseView> historiqueAdressesCiviles) {
+	public void setHistoriqueAdressesCiviles(List<AdresseCivilView> historiqueAdressesCiviles) {
 		this.historiqueAdressesCiviles = historiqueAdressesCiviles;
 	}
 
-	public List<AdresseView> getHistoriqueAdressesCiviles() {
+	public List<AdresseCivilView> getHistoriqueAdressesCiviles() {
 		return historiqueAdressesCiviles;
 	}
 
@@ -381,11 +381,11 @@ public class TiersView {
 		this.exceptionAdresseCiviles = exceptionAdresseCiviles;
 	}
 
-	public void setHistoriqueAdressesCivilesConjoint(List<AdresseView> historiqueAdressesCivilesConjoint) {
+	public void setHistoriqueAdressesCivilesConjoint(List<AdresseCivilView> historiqueAdressesCivilesConjoint) {
 		this.historiqueAdressesCivilesConjoint = historiqueAdressesCivilesConjoint;
 	}
 
-	public List<AdresseView> getHistoriqueAdressesCivilesConjoint() {
+	public List<AdresseCivilView> getHistoriqueAdressesCivilesConjoint() {
 		return historiqueAdressesCivilesConjoint;
 	}
 

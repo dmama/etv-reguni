@@ -164,7 +164,7 @@ public class AdresseCivileAdapter extends AdresseAdapter {
 	 * @param adresse l'adresse civil dont on veut obtenir le complément
 	 * @return le complément; ou <b>null</b> si ce dernier n'est pas renseigné
 	 */
-	private String extractComplement(Adresse adresse) {
+	public static String extractComplement(Adresse adresse) {
 		final String titre = adresse.getTitre();
 		if (titre == null) {
 			return null;
