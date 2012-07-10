@@ -19,9 +19,6 @@ public class DemandeAvecHisto extends Demande {
 
 	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
 		super(request);
-		if (request.getRegistrationRequestHistoryEntry().isEmpty()) {
-			throw new IllegalArgumentException("Une RegistrationRequestWithHistory doit au moins avoir une RegistrationRequestHistoryEntry");
-		}
 		this.historiqueEtats = new ArrayList<EtatDemande>();
 		for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
 			historiqueEtats.add(new EtatDemande(entry));
@@ -31,6 +28,7 @@ public class DemandeAvecHisto extends Demande {
 
 	public EtatDemande getDernierEtat() {
 		//Les états nous sont toujours renvoyés dans l'ordre chronologique par le ws efacture
+		// TODO en attente du nouvel xsd, l'état courant sera directement sur l'objet RegistrationRequestWithHistory
 		return historiqueEtats.get(historiqueEtats.size()-1);
 	}
 

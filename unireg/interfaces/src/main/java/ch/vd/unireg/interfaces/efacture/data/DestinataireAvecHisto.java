@@ -28,17 +28,11 @@ public class DestinataireAvecHisto {
 		this.ctbId = ctbId;
 		this.historiqueDemandes = new ArrayList<DemandeAvecHisto>();
 		List<RegistrationRequestWithHistory> historyOfRequests = payerWithHistory.getHistoryOfRequests().getRequest();
-		if (historyOfRequests.isEmpty()) {
-			throw new IllegalArgumentException("Un PayerWithHistory doit avoir au moins une RegistrationRequestWithHistory");
-		}
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests) {
 			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
 		}
 		this.etats = new ArrayList<EtatDestinataire>();
 		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
-		if (historyOfSituations.isEmpty()) {
-			throw new IllegalArgumentException("Un PayerWithHistory doit au mins avoir une PayerSituationHistoryEntry");
-		}
 		for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){
 			this.etats.add(new EtatDestinataire(payerSituationHistoryEntry));
 		}
@@ -49,6 +43,7 @@ public class DestinataireAvecHisto {
 	}
 
 	public EtatDestinataire getDernierEtat() {
+		// TODO en attente du nouvel xsd, l'état courant sera directement sur l'objet PayerWithHistory
 		return etats.get(etats.size()-1);
 	}
 
