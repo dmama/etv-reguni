@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.util.Date;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
@@ -9,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.manager.MouvementVisuManager;
@@ -131,8 +130,8 @@ public class MouvementVisuController implements MessageSourceAware {
 			return view.getDestinationEnvoi() == null ? "" : view.getDestinationEnvoi();
 		}
 
-		public Date getDateExecution() {
-			return view.getDateExecution();
+		public String getDateExecution() {
+			return DateHelper.dateTimeToDisplayString(view.getDateExecution());
 		}
 
 		public String getExecutant() {

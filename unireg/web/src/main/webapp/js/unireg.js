@@ -379,9 +379,6 @@ var Dialog = {
 		$.getJSON(App.curl("/tiers/mouvement.do?idMvt=") + id + "&" + new Date().getTime(), function(mvt) {
 			if (mvt) {
 
-				var dateExecution = new Date(mvt.dateExecution);
-				var strDateExecution = 'Le ' + dateExecution.toLocaleDateString().replace (/ /g, "") + ' à ' + dateExecution.toLocaleTimeString();
-
 				var html =
 				'<fieldset class="information">' +
 					'<legend><span>Caractéristiques du mouvement du dossier</span></legend>' +
@@ -396,7 +393,7 @@ var Dialog = {
 							'<td width="25%">Exécutant&nbsp;:</td>' +
 							'<td width="25%">' +mvt.executant + '</td>' +
 							'<td width="25%">Date / Heure exécution&nbsp;:</td>' +
-							'<td width="25%">' + strDateExecution  + '</td>' +
+							'<td width="25%">' + mvt.dateExecution  + '</td>' +
 						'</tr>' +
 						'<tr class="odd" >' +
 							'<td width="25%">Collectivité administrative&nbsp;:</td>' +
