@@ -88,7 +88,9 @@ public class MetierServiceImpl implements MetierService {
 	private GlobalTiersSearcher tiersSearcher;
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
-	private EFactureService eFactureService; // TODO spring injection
+	private EFactureService eFactureService;
+
+	private boolean enableEFacture;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -159,6 +161,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
+	}
+
+	public void setEnableEFacture(boolean enableEFacture) {
+		this.enableEFacture = enableEFacture;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -2506,6 +2512,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
+		if (!enableEFacture) return;
 		// Vérification du statue dans la e-facture
 		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
