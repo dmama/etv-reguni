@@ -8,6 +8,7 @@
 		<property name="testMode" value="true" />
 		<property name="standalone" value="false" />
 		<property name="serviceCivilSource" value="${testprop.service.civil.source}" />
+		<property name="efactureEnable" value="false" />
 	</bean>
 
 </beans>

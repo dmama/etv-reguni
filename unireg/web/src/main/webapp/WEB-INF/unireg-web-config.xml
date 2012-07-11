@@ -7,6 +7,7 @@
 		<property name="standalone" value="${unireg.standalone}" />
 		<property name="environnement" value="${extprop.environnement}"/>
 		<property name="serviceCivilSource" value="${extprop.service.civil.source}" />
+		<property name="efactureEnable" value="${extprop.efacture.enabled}" />
 	</bean>
 
 </beans>

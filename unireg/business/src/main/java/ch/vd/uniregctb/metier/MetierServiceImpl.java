@@ -73,6 +73,7 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
+import ch.vd.uniregctb.utils.UniregModeHelper;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class MetierServiceImpl implements MetierService {
@@ -89,8 +90,6 @@ public class MetierServiceImpl implements MetierService {
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
 	private EFactureService eFactureService;
-
-	private boolean enableEFacture;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -161,10 +160,6 @@ public class MetierServiceImpl implements MetierService {
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
-	}
-
-	public void setEnableEFacture(boolean enableEFacture) {
-		this.enableEFacture = enableEFacture;
 	}
 
 	private void checkRapportsMenage(PersonnePhysique pp, RegDate dateMariage, ValidationResults results) {
@@ -2512,7 +2507,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
-		if (!enableEFacture) return;
+		if (!UniregModeHelper.isEfactureEnable()) return;
 		// Vérification du statue dans la e-facture
 		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
