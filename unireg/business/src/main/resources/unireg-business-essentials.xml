@@ -78,7 +78,7 @@
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="eFactureService" ref="efactureService" />
-		<property name="enableEFacture" value="${extprop.efacture.enabled}" />
+		<property name="enableEFacture" value="false" />
 	</bean>
 
 	<bean id="adresseService" class="ch.vd.uniregctb.adresse.AdresseServiceImpl">
