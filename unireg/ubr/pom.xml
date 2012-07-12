@@ -11,7 +11,7 @@
 	<packaging>jar</packaging>
 
 	<!-- BEGIN_LVERSION -->
-	<version>5.1-SNAPSHOT</version>
+	<version>5.2-SNAPSHOT</version>
 	<!-- END_LVERSION -->
 
 	<name>Unireg - Unireg Batch Runner</name>

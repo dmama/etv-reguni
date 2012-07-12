@@ -78,7 +78,7 @@
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-web-5.1-SNAPSHOT.war</source>
+			<source>target/uniregctb-web-5.2-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
 			<destName>unireg-web.war</destName>
