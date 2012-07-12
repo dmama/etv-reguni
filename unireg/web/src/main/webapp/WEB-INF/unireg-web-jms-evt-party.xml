@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:util="http://www.springframework.org/schema/util"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.evenement.party.PartyRequestListener" parent="esbMessageListener">
+		<property name="handlers">
+			<util:map>
+				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
+		<property name="resourceAdapter" ref="jmsResourceAdapter"/>
+		<property name="activationSpec">
+			<bean class="org.apache.activemq.ra.ActiveMQActivationSpec">
+				<property name="destination" value="${extprop.jms.queue.party.service}"/>
+				<property name="destinationType" value="javax.jms.Queue"/>
+				<property name="maxSessions" value="1"/>
+				<property name="maxMessagesPerSessions" value="1"/>
+			</bean>
+		</property>
+		<property name="messageListener" ref="partyRequestListener" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="autoStartup" value="${extprop.jms.queue.party.service.enabled}" />
+	</bean>
+
+	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="numberRequestHandler" class="ch.vd.uniregctb.evenement.party.NumbersRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
+</beans>

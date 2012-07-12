@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+  <table name="PERIODE_FISCALE">
+    <column>LOG_MDATE</column>
+    <column>ID</column>
+    <column>ANNEE</column>
+    <row>
+      <value>2008-01-01</value>
+      <value>1</value>
+      <value>2005</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>2</value>
+      <value>2006</value>
+    </row>
+    <row>
+      <value>2008-01-01</value>
+      <value>3</value>
+      <value>2007</value>
+    </row>
+  </table>
+</dataset>

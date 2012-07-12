@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>ch.vd.uniregctb</groupId>
+	<artifactId>unireg-jaxb2</artifactId>
+	<!-- BEGIN_LVERSION -->
+	<version>1.4-SNAPSHOT</version>
+	<!-- END_LVERSION -->
+	<packaging>pom</packaging>
+
+	<name>Unireg - Beans JAXB2</name>
+	<description>Base du projet des XSDs et beans Jaxb2 du projet Unireg</description>
+
+	<modules>
+		<module>../common</module>
+		<module>../ech</module>
+		<module>../party</module>
+		<module>../events</module>
+		<module>../rcpers</module>
+		<module>../cyber</module>
+	</modules>
+
+	<dependencies>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.xml.bind</groupId>
+			<artifactId>jaxb-xjc</artifactId>
+			<version>2.1.13</version>
+		</dependency>
+	</dependencies>
+	
+	<build>
+		<defaultGoal>install</defaultGoal>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.0.2</version>
+				<configuration>
+					<encoding>UTF-8</encoding>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.4.2</version>
+				<configuration>
+					<argLine>${surefire.argline}</argLine>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	
+	<distributionManagement>
+		<repository>
+			<id>nexus.releases</id>
+			<name>Nexus releases</name>
+			<url>${nexus.url.releases}</url>
+		</repository>
+		<snapshotRepository>
+			<id>nexus.snapshots</id>
+			<name>Nexus snaphots</name>
+			<url>${nexus.url.snapshots}</url>
+			<!-- évite d'ajouter un timestamp à chaque déploiement : nécessaire pour avoir les sources synchrones avec un jar snapshot -->
+			<uniqueVersion>false</uniqueVersion>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<properties>
+		<!-- Application settings -->
+		<copyright.year>2012</copyright.year>
+		<amp.genericCore>true</amp.genericCore>
+		<amp.fullSource>false</amp.fullSource>
+		<namespace-prefix.version>1.1</namespace-prefix.version>
+	</properties>
+
+</project>

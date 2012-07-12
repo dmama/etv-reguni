@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
+	<demande>
+		<demande>
+			<messageId>1234</messageId>
+			<emetteurId>IdentificationContribuableTest</emetteurId>
+			<typeMessage>CYBER_EFACTURE</typeMessage>
+			<periodeFiscale>2012</periodeFiscale>
+			<prioriteEmetteur>false</prioriteEmetteur>
+			<prioriteUtilisateur>2</prioriteUtilisateur>
+			<modeIdentification>SANS_MANUEL</modeIdentification>
+		</demande>
+		<personne>
+			<NAVS13>7569613127861</NAVS13>
+		</personne>
+	</demande>
+</identificationCTB>

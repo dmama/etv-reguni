@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.3 - 25 avril 2012 - ajouté le booléen 'fake' sur les adresses -->
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.0beta5 - 28 octobre 2011 - ajouté les ewid et egid sur les adresses -->
+<!-- v1.0beta1 - 1 septembre 2011 - remplacé eCH-0010-4-0f.xsd par eCH-0010-4-0.xsd -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/address/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1" xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4" schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd" />
+
+	<xs:simpleType name="tariffZoneType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le type d'affranchissement demandé par la poste pour envoyer un courrier à une adresse.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SWITZERLAND">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour la suisse.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="EUROPE">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour l'europe (hors Suisse).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="OTHER_COUNTRIES">
+				<xs:annotation>
+					<xs:documentation>Affranchissement pour le reste du monde (hors Europe et Suisse).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:complexType name="addressType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Contient les informations d'une adresse valide pendant une période déterminée.
+						Cette adresse est décomposé en trois parties : le destinataire, la destination et l'adresse complète formattée pour six lignes (selon les recommandations de la poste suisse).
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de l'adresse. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de l'adresse. Si l'adresse est toujours active, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="organisation" type="address:organisationMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est une organisation.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="person" type="address:personMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est une personne physique.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="couple" type="address:coupleMailAddressInfoType">
+					<xs:annotation>
+						<xs:appinfo>
+							<jxb:property>
+								<jxb:javadoc>Les informations détaillées sur le destinataire de l'adresse si celui-ci est un ménage-commun.</jxb:javadoc>
+							</jxb:property>
+						</xs:appinfo>
+					</xs:annotation>
+				</xs:element>
+			</xs:choice>
+			<xs:element name="addressInformation" type="address:addressInformationType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Les informations détaillées sur la destination de l'adresse.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="formattedAddress" type="address:formattedAddressType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>L'adresse formattée sur six lignes.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="type" type="address:addressTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le type de l'adresse.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="fake" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Indique s'il s'agit d'une adresse "artificielle"; c'est-à-dire, dans le cas d'un contribuable qui ne possède aucun adresse, d'une adresse créée de toutes
+								pièces dans le seul but d'exposer les prénoms/noms et les salutations/formule de politesse. Ainsi, pour déterminer si un contribuable possède ou non des adresses, les
+								adresses "artificielles" doivent être ignorées.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="addressOtherPartyType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Spécialisation de l'adresse d'envoi pour les adresses de type 'autre tiers' (= lorsque le contribuable possède un représentant autre que lui-même spécifié dans le cas
+						des poursuites).
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="base" type="address:addressType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Les informations de base de l'adresse 'autre tiers'.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="otherPartyType" type="address:otherPartyAddressTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>la raison pour laquelle il y a une adresse 'autre tiers'.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="addressInformationType">
+		<xs:complexContent>
+			<xs:extension base="eCH-0010:addressInformationType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="complementaryInformation" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le complément d'adresse. Par exemple : "chez Huguette Bolomey" ou "c/o Famille Bertholey".
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="careOf" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le 'pour adresse'.
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="countryName" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le pays en toutes lettres (non-renseigné sur les adresses suisse). Exemples : "France", "Albanie", "Japon".
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="streetId" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>[Technique] numéro technique de la rue.
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="countryId" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>[Technique] numéro OFS du pays.
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tariffZone" type="address:tariffZoneType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le type d'affranchissement demandé par la poste pour envoyer un courrier à cette adresse.
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="egid" type="address:EGIDType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>[Technique] Le numéro de bâtiment suisse. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses domiciles elle
+										n'est pas connue dans tous les cas).
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="ewid" type="address:EWIDType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>[Technique] Le numéro d'appartement dans le bâtiment. Cette information n'est disponible que sur les adresses domiciles (et même sur les adresses
+										domiciles elle n'est pas connue dans tous les cas).
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="formattedAddressType">
+		<xs:sequence>
+			<xs:element name="line1" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La première ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="line2" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La deuxième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="line3" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La troisième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="line4" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La quatrième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="line5" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La cinquième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="line6" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La sixième ligne d'adresse à utiliser impérativement pour tout envoi de courrier par la poste. Cette ligne n'est pas forcément renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="personMailAddressInfoType">
+		<xs:complexContent>
+			<xs:extension base="eCH-0010:personMailAddressInfoType">
+				<xs:sequence>
+					<xs:element name="salutation" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les salutations selon les us et coutumes de l'ACI. Exemples : 'Monsieur', 'Madame', 'Aux héritiers de', ...
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="formalGreeting" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur',
+										'Madame', 'Madame, Monsieur', ...
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="coupleMailAddressInfoType">
+		<xs:sequence>
+			<xs:element minOccurs="0" name="salutation" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Les salutations selon les us et coutumes de l'ACI. Exemples : 'Monsieur', 'Madame', 'Aux héritiers de', ...
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="formalGreeting" type="xs:string">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur',
+								'Madame',
+								'Madame, Monsieur', ...
+								Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une adresse
+								qui serait utilisée pour envoyer du courrier par le poste !
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="names" type="address:personNameType" minOccurs="0" maxOccurs="2" />
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="organisationMailAddressInfoType">
+		<xs:complexContent>
+			<xs:extension base="eCH-0010:organisationMailAddressInfoType">
+				<xs:sequence>
+					<xs:element minOccurs="0" name="formalGreeting" type="xs:string">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>La formule d'appel stricte. C'est-à-dire les salutations mais sans formule spéciale propre à l'ACI (pas de 'Aux héritiers de'). Exemples : 'Monsieur',
+										'Madame', 'Madame, Monsieur', ...
+										Attention ! Cette donnée est exposée pour permettre un affichage spécialisé dans les applications fiscales. Elle ne doit pas être utilisé pour reconstruire une
+										adresse qui serait utilisée pour envoyer du courrier par le poste !
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="personNameType">
+		<xs:sequence>
+			<xs:element name="firstName" type="eCH-0010:firstNameType" minOccurs="0" />
+			<xs:element name="lastName" type="eCH-0010:lastNameType" />
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="otherPartyAddressTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>La source d'une adresse de poursuite 'autre tiers'.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="SPECIFIC">
+				<xs:annotation>
+					<xs:documentation>Adresse spécifique du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATIVE">
+				<xs:annotation>
+					<xs:documentation>Adresse du mandataire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WELFARE_ADVOCATE">
+				<xs:annotation>
+					<xs:documentation>Adresse du curateur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_ADVISER">
+				<xs:annotation>
+					<xs:documentation>Adresse du conseiller légal.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="GUARDIAN">
+				<xs:annotation>
+					<xs:documentation>Adresse du tuteur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="addressTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Le type d'une adresse de tiers.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MAIL">
+				<xs:annotation>
+					<xs:documentation>L'adresse courier.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBT_PROSECUTION">
+				<xs:annotation>
+					<xs:documentation>L'adresse de poursuite.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATION">
+				<xs:annotation>
+					<xs:documentation>L'adresse de représentation.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RESIDENCE">
+				<xs:annotation>
+					<xs:documentation>L'adresse de domicile.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBT_PROSECUTION_OF_OTHER_PARTY">
+				<xs:annotation>
+					<xs:documentation>L'adresse de poursuiter 'autre tiers'.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EGIDType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="999999999" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="EWIDType">
+		<xs:restriction base="xs:unsignedInt">
+			<xs:minInclusive value="1" />
+			<xs:maxInclusive value="999" />
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zciedt (Etat de Vaud) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1" targetNamespace="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+	<xs:element name="evtQuittanceListe">
+		<xs:annotation>
+			<xs:documentation>Evénement provenant du Impot Source à l'intégration d'une liste</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="timestampEvtQuittance" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>date (timestamp) de quittancement ou d'annulation de quittance</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="typeEvtQuittance" type="QuittanceType">
+					<xs:annotation>
+						<xs:documentation>Enum indiquant le quittancement ou l'annulation du quittancement de la liste</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="origineListe" type="OrigineType">
+					<xs:annotation>
+						<xs:documentation>Electronique ou papier</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="identificationListe">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="typeListe" type="ListeType">
+								<xs:annotation>
+									<xs:documentation>LR ou LC</xs:documentation>
+								</xs:annotation>
+							</xs:element>
+							<xs:element name="numeroSequence">
+								<xs:annotation>
+									<xs:documentation>LR = 1 et LC >= 1</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="xs:positiveInteger">
+										<xs:minInclusive value="1"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="numeroDebiteur">
+								<xs:annotation>
+									<xs:documentation>Entre 1000000 et 1999999</xs:documentation>
+								</xs:annotation>
+								<xs:simpleType>
+									<xs:restriction base="NumDebiteurType">
+										<xs:maxInclusive value="1999999"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="periodeDeclaration">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="dateDebut" type="xs:date">
+											<xs:annotation>
+												<xs:documentation>date debut periode de declaration</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="dateFin" type="xs:date">
+											<xs:annotation>
+												<xs:documentation>date fin periode de declaration</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="NumDebiteurType">
+		<xs:restriction base="xs:positiveInteger">
+			<xs:minInclusive value="1000000"/>
+			<xs:maxInclusive value="9999999"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ListeType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="LR"/>
+			<xs:enumeration value="LC"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="QuittanceType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="QUITTANCEMENT"/>
+			<xs:enumeration value="ANNULATION"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="OrigineType">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="PAPIER"/>
+			<xs:enumeration value="ELECTRONIQUE"/>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

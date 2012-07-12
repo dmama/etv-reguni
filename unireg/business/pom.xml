@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<!-- POM for Business -->
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<artifactId>uniregctb-business</artifactId>
+	<packaging>jar</packaging>
+
+	<parent>
+		<groupId>ch.vd.uniregctb</groupId>
+		<artifactId>uniregctb</artifactId>
+		<!-- BEGIN_LVERSION -->
+		<version>5.1-SNAPSHOT</version>
+		<!-- END_LVERSION -->
+		<relativePath>../base/pom.xml</relativePath>
+	</parent>
+
+	<name>Unireg - Business</name>
+	<description>UniregCTB, Le registre unifie de l'Etat de Vaud - Business</description>
+
+	<dependencies>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-core</artifactId>
+			<version>${pom.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-core</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-interfaces</artifactId>
+			<version>${pom.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-interfaces</artifactId>
+			<version>${pom.parent.version}</version>
+			<type>test-jar</type>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>web-screenshot</artifactId>
+			<version>2.0.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.host-interfaces</groupId>
+			<artifactId>host-interfaces-client</artifactId>
+			<version>${host-interfaces.version-long}</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>uniregctb-bvrplus</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>${pom.parent.groupId}</groupId>
+			<artifactId>unireg-wsclient-fidor</artifactId>
+			<version>2.3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-wsclient-rcpers</artifactId>
+			<version>2.3-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-events</artifactId>
+			<version>1.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-jaxb2-cyber</artifactId>
+			<version>1.4-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.uniregctb</groupId>
+			<artifactId>unireg-wsclient-efacture</artifactId>
+			<version>1.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<artifactId>jaxb2-catalog-resolver</artifactId>
+			<groupId>ch.vd.uniregctb</groupId>
+			<version>1.0.4</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.registre</groupId>
+			<artifactId>shared-jmx</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.editique</groupId>
+			<artifactId>editique-client</artifactId>
+			<version>4.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.vd.technical.esb</groupId>
+			<artifactId>EsbClient</artifactId>
+			<version>3.2.6</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>1.8.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers</artifactId>
+			<version>${lucene.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-jxpath</groupId>
+					<artifactId>commons-jxpath</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>javax.ejb</groupId>
+			<artifactId>ejb</artifactId>
+			<version>2.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.jms</groupId>
+			<artifactId>jms</artifactId>
+			<version>1.1</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>stax</groupId>
+			<artifactId>stax</artifactId>
+			<version>1.2.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+			<version>2.7.1</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>2.1</version>
+		</dependency>
+	</dependencies>
+
+	<!-- Build plugins and sources -->
+	<build>
+		<!-- Build plugins -->
+		<plugins>
+
+			<!-- Ce plugin permet de packager les classes de src/test/java dans leur propre jar de testing -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.2</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Generate UML graph -->
+			<!--
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>site</phase>
+						<configuration>
+							<tasks>
+								<ant target="all" />
+							</tasks>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+		</plugins>
+
+		<!-- Build resources -->
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*.xml</include>
+					<include>**/*.properties</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.properties</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>${basedir}/target/generated-resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<testResources>
+			<testResource>
+				<directory>src/test/resources</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/*</include>
+				</includes>
+			</testResource>
+		</testResources>
+	</build>
+</project>
+

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
+	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
+	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.MockEvenementCivilSender" />
+	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
+	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender"/>
+	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
+
+	<!-- Bean client interfacesService MOCK -->
+	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService"/>
+	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
+		<property name="rawService" ref="serviceInfrastructureServiceHost" />
+	</bean>
+
+	<!-- Bean client ServiceCivil MOCK -->
+	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil" />
+	<alias alias="serviceCivilService" name="serviceCivilServiceMarshaller"/>
+
+	<!-- Bean client ServicePM MOCK -->
+	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />
+
+	<bean id="serviceSecuriteServiceHost" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite"  />
+	<alias alias="serviceSecuriteService" name="serviceSecuriteServiceHost"/>
+
+	<!-- Mock service BVR -->
+	<bean id="bvrPlusClient" class="ch.vd.uniregctb.webservice.sipf.MockBVRPlusClient"/>
+
+	<!-- Mock des différents checkers -->
+	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
+	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
+	<bean id="serviceSecuriteChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
+	<bean id="serviceBVRChecker" class="ch.vd.uniregctb.checker.MockServiceChecker"/>
+
+</beans>

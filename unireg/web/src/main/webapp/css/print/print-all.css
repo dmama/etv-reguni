@@ -1,0 +1,806 @@
+/* Ce fichier est l'aggrégat de tous les fichiers *.css du répertoire /print */
+
+/* ------ common.css --------*/
+
+ /* Change text colour to black (useful for light text on a dark background) */
+* {
+	color: #000;
+	float: none !important;
+}
+
+/* Improve colour contrast of links */
+a:link, a:visited {
+	color: #781351
+}
+
+#sommaire,
+#footer,
+#canton,
+#departement,
+#tabnav,
+#header,
+#content .outils,
+div #tabs,
+form#command,
+table.display_table div,
+#timeline,
+fieldset.information table.display_table form input,
+a.modif,
+.ui-tabs-nav, .ui-tabs-hide,
+.staticTip {
+	display:none;
+}
+
+.noprint {
+	display:none;
+}
+
+legend {
+	background-color: #fc0;
+}
+
+.display table {
+	border: 1px solid #666;
+	width: 80%;
+	margin: 20px 0 20px 0;
+}
+
+.display th, .displayTable  td {
+	padding: 2px 4px 2px 4px !important;
+	text-align: left;
+	vertical-align: top;
+}
+
+thead tr {
+	border-bottom: 10px;
+}
+
+th {
+	background-color: #DDD;
+	border-bottom: 2px solid #CDCDCD;
+}
+
+
+.display td a, .display td a:visited, .display td a:link,
+.display th a, .displayTable th a:visited {
+	color: black;
+}
+
+.display th a:hover {
+	text-decoration: underline;
+	color: black;
+}
+
+.display th.sorted a,.displayTable  th.sortable a {
+	background-position: right;
+	display: block;
+	width: 100%;
+}
+
+
+
+.display tr.odd {
+	background-color: #fff
+}
+
+fieldset, fieldset.information {
+	padding: 0.5em;
+	page-break-inside: avoid;
+}
+
+
+/* ------ displaytag.css --------*/
+
+th.sortable {
+	cursor: pointer;
+	background-repeat: no-repeat;
+	background-image: url(arrow_off.png);
+	background-position: right;
+	padding-top: 0;
+	padding-right: 20px;
+	padding-bottom: 1px;
+	padding-left: 4px;
+	color: #336CA6;
+}
+
+th.sortable:hover {
+	color: #A66C33;
+	text-decoration: none;
+}
+
+th.sorted {
+	background-repeat: no-repeat;
+	background-position: right;
+}
+
+th.order1 {
+	background-image: url(arrow_down.png);
+}
+
+th.order2 {
+	background-image: url(arrow_up.png);
+}
+
+tr.odd {
+
+}
+
+tr.even {
+	background-color: #eff3fe;
+}
+
+tr.strike td {
+	text-decoration:line-through;
+}
+
+tr.horscanton {
+	color: blue;
+	font-weight: bold;
+}
+
+.pagebanner {
+	display: block;
+	clear: both;
+}
+
+.pagelinks {
+
+}
+
+.exportlinks {
+	color: #999999;
+}
+
+.exportlinks a {
+	color: #999999;
+}
+
+.export {
+	padding: 0 4px 1px 20px;
+	display: inline;
+	cursor: pointer;
+	background-repeat: no-repeat;
+}
+
+.excel {
+	background-image: url(excel.png);
+}
+
+.pdf {
+	background-image: url(pdf.png);
+}
+
+.json {
+	visibility: hidden;
+}
+
+
+/* ------ layout.css --------*/
+
+.help {
+	border: 1px dashed black;
+	background-color: #c5dbef;
+	color: black;
+
+}
+
+.mandatory label {
+	font-weight: bold;
+	color: red;
+	clear: none;
+	display: inline;
+}
+
+.field-separator label {
+	font-weight: bold;
+	vertical-align: bottom;
+	clear: none;
+	display: inline;
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	/* Add the following line for use with DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" documents */
+	/* We should use
+	 * DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+	 * but as the Apache server configuration is not W3C compliant, we have to use an load fashioned
+     * See Didier Luthi for more details about Apache Server configuration */
+	font: normal 11px Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+}
+
+html {
+
+}
+
+body {
+	margin: 0;
+	padding: 0;
+	font: normal 11px Arial, Helvetica, Geneva, Swiss, SunSans-Regular;
+	color: #000000;
+	text-align: left;
+	background-color: #FFFFFF;
+}
+
+a:link,a:visited {
+	color: #336CA6;
+	text-decoration: none;
+}
+
+a:hover,a:active {
+	color: #A66C33;
+	text-decoration: underline;
+}
+
+h1 {
+	font-weight: bold;
+	font-size: 16pt;
+}
+
+h2 {
+	color: #FF5400;
+	font-size: 14pt;
+}
+
+h3 {
+	color: #FF5400;
+	font-size: 12pt;
+}
+
+p {
+	text-align: justify;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+table {
+	width: 100%;
+	border-spacing: 0px;
+}
+
+tr {
+	height: 16px;
+}
+
+th {
+	background-color: #E3F2E9;
+	font-weight: bold;
+	text-align: left;
+}
+
+th.number {
+	text-align: right;
+}
+
+th.date {
+	text-align: right;
+}
+
+th.code {
+	text-align: center;
+}
+
+td {
+	vertical-align: top;
+}
+
+td.align-left {
+	text-align: left;
+}
+
+td.number {
+	text-align: right;
+}
+
+td.date {
+	text-align: right;
+}
+
+td.code {
+	text-align: center;
+}
+
+.navigation-back {
+	text-align: left;
+	float: left;
+	display: inline;
+}
+
+.navigation-forward {
+	text-align: right;
+	float: right;
+	display: inline;
+}
+
+.navigation-action {
+	text-align: center;
+}
+
+fieldset {
+	margin-top: 10px;
+	margin-left: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+	border: 1px solid #cdcdcd;
+}
+
+fieldset legend {
+	border: 1px solid #cdcdcd;
+	width: auto;
+	margin-left: 10px;
+	padding: 2px 20px 2px 20px;
+	font-weight: bold;
+}
+
+select {
+	min-width: 146px;
+}
+
+.select-with-errors {
+	background-color: #f26b6b;
+}
+
+.input-with-errors {
+	background-color: #f26b6b;
+}
+
+input.numero-ofs,input.numero-npa,input.numero-rue {
+	width: 30px;
+	display: inline;
+}
+
+input.numero-complement-npa,input.canton {
+	width: 20px;
+	display: inline;
+}
+
+.erreur {
+	color: red;
+	clear: left;
+}
+
+/*******************************************************************
+ * End of Global layout                                            *
+ ******************************************************************/
+#container {
+}
+
+#canton {
+	display:none;
+}
+
+#canton label {
+	display: none;
+}
+
+#departement {
+	display:none;
+}
+
+#departement label {
+	display:none;
+}
+
+#application {
+	display:none;
+}
+
+#application label {
+	display:none;
+}
+
+#sommaire {
+	display:none;
+}
+
+#sommaire ul {
+	display:none;
+}
+
+#sommaire li {
+	display:none;
+}
+
+#outils {
+	display:none;
+}
+
+#outils h3 {
+	display:none;
+}
+
+#outils ul {
+	display:none;
+}
+
+#outils li {
+	display:none;
+}
+
+#erreur {
+	font-weight: bold;
+	color: #FF0000;
+	display: inline;
+}
+/*******************************************************************
+ * End of Global layout                                            *
+ ******************************************************************/
+
+/* ------ tab.css --------*/
+
+#tabs {
+	display:none;
+}
+
+#tabs ul {
+}
+
+#tabs li {
+}
+
+#tabnav {
+}
+
+#tabnav ul {
+}
+
+#tabnav li {
+}
+
+#tabnav a {
+}
+
+#tabnav li.tab-with-errors {
+}
+
+#tabnav li.tab-with-errors a {
+}
+
+#tabnav a {
+}
+
+#tabnav a:hover {
+}
+
+#tabnav .current,#tabnav .tab-with-errors {
+}
+
+#tabnav li.current a {
+}
+
+#tabnav li:hover,#tabnav li:hover a {
+}
+
+#tabnav li:hover a {
+}
+
+#tabnav-enable { /*	float:right;*/
+}
+
+#tabnav-disable { /*	float:right;*/
+}
+
+/* ------ tools.css --------*/
+
+a.add,
+a.copy,
+a.detail,
+a.consult,
+a.historique,
+a.download,
+a.edit,
+a.delete,
+a.selectionner,
+a.correction,
+a.notes,
+a.replay,
+a.pdf,
+a.calendar {
+	background-position: left top;
+	background-repeat: no-repeat;
+	text-decoration: none;
+	padding-left:16px;
+	padding-bottom:2px;
+	overflow:hidden;
+}
+
+a.add:hover,
+a.copy:hover,
+a.detail:hover,
+a.consult:hover,
+a.historique:hover,
+a.download:hover,
+a.edit:hover,
+a.delete:hover,
+a.selectionner:hover,
+a.correction:hover,
+a.notes:hover,
+a.replay:hover,
+a.pdf:hover,
+a.calendar:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
+}
+
+a.add:hover span,
+a.copy:hover span,
+a.detail:hover span,
+a.consult:hover span,
+a.historique:hover span,
+a.download:hover span,
+a.edit:hover span,
+a.delete:hover span,
+a.selectionner:hover span,
+a.correction:hover span,
+a.notes:hover span,
+a.replay:hover span,
+a.pdf:hover span,
+a.calendar:hover span {
+	display: block;
+	position: absolute;
+	top: 2em;
+	left: 1em;
+	background: #ffffe0;
+	text-align: center;
+	color: black;
+	padding: 2px;
+}
+
+span.add,
+span.copy,
+span.delete,
+span.correction,
+span.detail,
+span.consult,
+span.historique,
+span.download,
+span.delete,
+span.selectionner,
+span.edit,
+span.notes,
+span.replay,
+span.pdf,
+span.calendar {
+	display: none;
+}
+
+
+a.calendar {
+	background-image: url(calendar_off.gif);
+}
+a.calendar:hover {
+	background-image: url(calendar_on.gif);
+}
+
+
+a.add {
+	background-image: url(add_button_off.gif);
+}
+
+a.add:hover {
+	background-image: url(add_button_on.gif);
+}
+
+a.copy {
+	background-image: url(copy_button_off.gif);
+}
+
+a.copy:hover {
+	background-image: url(copy_button_on.gif);
+}
+
+.correctionOrigine {
+	font-style: italic;
+	font-size: 8pt;
+}
+
+a.correction {
+	background-image: url(correction_off.gif);
+}
+
+a.correction:hover {
+	background-image: url(correction_on.gif);
+}
+
+a.detail {
+	background-image: url(detail_off.gif);
+}
+
+a.detail:hover {
+	background-image: url(detail_on.gif);
+}
+
+a.consult {
+	background-image: url(consult_off.gif);
+}
+
+a.consult:hover {
+	background-image: url(consult_on.gif);
+}
+
+a.historique {
+	background-image: url(historique_off.gif);
+	float: right;
+}
+
+a.historique:hover {
+	background-image: url(historique_on.gif);
+}
+
+a.download {
+	background-image: url(download_off.gif);
+}
+
+a.download:hover {
+	background-image: url(download_on.gif);
+}
+
+a.delete {
+	background-image: url(delete_off.gif);
+	float:right;
+}
+a.delete:hover {
+	background-image: url(delete_on.gif);
+}
+legend a.delete:hover {
+	background-repeat: no-repeat;
+	z-index: 500;
+	text-decoration: none;
+}
+
+a.selectionner {
+	background-image: url(selectionner_on.gif);
+}
+a.selectionner:hover {
+	background-image: url(selectionner_on.gif);
+}
+
+a.edit {
+	background-image: url(edit_off.gif);
+}
+a.edit:hover {
+	background-image: url(edit_on.gif);
+}
+
+a.notes {
+	background-image: url(notes_button_off.gif);
+}
+a.notes:hover {
+	background: url(notes_button_on.gif);
+}
+
+a.replay {
+	background-image: url(replay_button_off.gif);
+}
+a.replay:hover {
+	background-image: url(replay_button_on.gif);
+}
+
+/* ------ unireg.css --------*/
+
+a.filename {
+	display: inline;
+	float: left;
+}
+
+legend span {
+	display: inline;
+	float: left;
+}
+
+legend span.delete {
+	display: none;
+	color: #00FF00;
+}
+
+legend a.delete {
+	display: inline;
+	float: left;
+}
+
+.complements, .civil, .fiscal, .tiers, .menage, entreprises{
+	border: 1px solid #bcbcbc;
+	padding: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	margin-top: -11px;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	display: block;
+	float: left;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	width: 100%;
+}
+
+.adresse, .for_fiscal, .prestations_imposables, .autres_roles, .categorie, .situation_famille {
+	border: 1px solid #bcbcbc;
+	padding: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	margin-top: -11px;
+	margin-right: 0px;
+	margin-bottom: 10px;
+	margin-left: 0px;
+	display: block;
+	float: left;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	width: 100%;
+}
+
+.individu, .imposition, .entreprise
+	{
+	border: 1px solid #cdcdcd;
+	padding: 10px;
+	margin: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	display: inherit;
+	float: left;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+}
+
+.individu tr.even,.adresse tr.even,.information tr.even, .imposition tr.even, .prestations_imposables tr.even, .for_fiscal tr.even, .categorie tr.even, .situation_famille tr.even, .autres_roles tr.even, .entreprise tr.even {
+	background-color: #ddd;
+}
+
+.individu tr.odd,.adresse tr.odd,.information tr.odd, .imposition tr.odd, .prestations_imposables tr.odd, .for_fiscal tr.odd, .categorie tr.odd, .situation_famille tr.odd, .autres_roles tr.odd, .entreprise tr.odd {
+}
+
+.supprimer {
+	position: relative;
+	width: auto;
+	float: right;
+	bottom: 38px;
+	left: 11px;
+	background-color: #EFEFEF;
+	z-index: 2;
+	background-image: url(delete_on.gif);
+	background-repeat: no-repeat;
+	background-position: right center;
+	padding-top: 5px;
+	padding-right: 20px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	border-top-width: thin;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #000000;
+	border-right-color: #000000;
+	border-bottom-color: #EFEFEF;
+	border-left-color: #000000;
+}
+
+.groupes-evenement {
+	display: table;
+	clear: both;
+}
+
+.groupe-evenement {
+	border: 1px solid #cdcdcd;
+	padding: 10px;
+	margin: 10px;
+	position: relative;
+	z-index: 1;
+	display: inline;
+	float: left;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+	width: 21%;
+	position: relative;
+	height: 110px;
+}
+
+/* ------ XXX.css --------*/

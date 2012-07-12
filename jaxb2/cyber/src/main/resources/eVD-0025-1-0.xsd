@@ -1,0 +1,753 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://evd.vd.ch/xmlns/eVD-0025/1"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
+           xmlns:eCH-0044="http://www.ech.ch/xmlns/eCH-0044/2"
+           xmlns:eCH-0046="http://www.ech.ch/xmlns/eCH-0046/2"
+           xmlns:eVD-0025="http://evd.vd.ch/xmlns/eVD-0025/1"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+    <xs:annotation>
+        <xs:documentation>
+            E-facture / Destinataires
+            Schéma décrivant les types utilisés pour les échanges relatifs aux destinataires de E-facture,
+            c'est à dire les débiteurs à qui des factures électroniques peuvent être adressées.
+            Pour les factures, voir eVD-0026.
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/2"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd"/>
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0046/2"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0046/2/eCH-0046-2-1.xsd"/>
+
+    <xs:complexType name="payerType">
+        <xs:annotation>
+            <xs:documentation>
+                Un destinataire de facture (payer) est une personne physique (peut être un contribuable couple)
+                à qui l'ACV adresse des factures.
+                Ce type de base se limite à l'identification du destinataire, qui sera étendue selon les besoins
+                Voir les types destinataireAvecEtatType, destinataireAvecAdresseType.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="payerId" type="eVD-0025:payerIdType"/>
+            <xs:element name="payerStatus" type="eVD-0025:payerStatusType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="listOfPayersType">
+        <xs:annotation>
+            <xs:documentation>
+                Liste de destinataires ne contenant que les identifiants des destinataires recherchés.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="payer" type="eVD-0025:payerIdType" minOccurs="0"
+                        maxOccurs="unbounded">
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="payerWithAddressType">
+        <xs:annotation>
+            <xs:documentation>
+                Un destinataire avec son adresse postale.
+                Cette adresse est obligatoire pour l'émission d'une facture chez PostFinance.
+                Il se peut néanmoins que l'adresse ne soit pas visible pour le destinataire (dans portail e-banking),
+                et par conséquent elle ne jouerait aucun rôle (l'adresse véritable est dans le documument PDF de la
+                facture).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="eVD-0025:payerType">
+                <xs:sequence>
+                    <xs:element name="address" type="eCH-0010:personMailAddressType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="payerWithSituationType">
+        <xs:annotation>
+            <xs:documentation>
+                Un destinataire avec sa situation actuelle.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="eVD-0025:payerType">
+                <xs:sequence>
+                    <xs:element name="situation" type="eVD-0025:payerSituationType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="payerSituationType">
+        <xs:annotation>
+            <xs:documentation>
+                Données décrivant la situation d'inscription d'un destinataire. Ces données peuvent changer au cours du
+                temps et sont historisées.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="status" type="eVD-0025:payerStatusType"/>
+            <xs:element name="providerId" type="eVD-0025:providerIdType" minOccurs="0"/>
+            <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType" minOccurs="0"/>
+            <xs:element name="registrationMode" type="eVD-0025:registrationModeType" minOccurs="0"/>
+            <xs:element name="emailAddress" type="eCH-0046:emailAddressType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="payerWithHistoryType">
+        <xs:annotation>
+            <xs:documentation>
+                Contient un destinataire ainsi que l'historique de ses états
+                et des demandes qu'il a effectuées.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexContent>
+            <xs:extension base="eVD-0025:payerType">
+                <xs:sequence>
+                    <xs:element name="historyOfSituations">
+                        <xs:complexType>
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Cette liste est ordonnée chronologiquement, l'élément le plus récent vient en
+                                    dernier.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:sequence>
+                                <xs:element name="situation" type="eVD-0025:payerSituationHistoryEntryType"
+                                            minOccurs="0" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                    <xs:element name="historyOfRequests">
+                        <xs:complexType>
+                            <xs:annotation>
+                                <xs:documentation>
+                                    Historique des demandes effectuées par ce destinataire.
+                                    Chaque demande contient en outre l'historique des états de la demande.
+                                    Liste ordonnée chronologiquement, la demande la plus récente figure en dernier.
+                                </xs:documentation>
+                            </xs:annotation>
+                            <xs:sequence>
+                                <xs:element name="request" type="eVD-0025:registrationRequestWithHistoryType"
+                                            minOccurs="0" maxOccurs="unbounded"/>
+                            </xs:sequence>
+                        </xs:complexType>
+                    </xs:element>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="payerSituationHistoryEntryType">
+        <xs:sequence>
+            <xs:element name="date" type="xs:dateTime"/>
+            <xs:element name="status" type="eVD-0025:payerStatusType"/>
+            <xs:element name="providerId" type="eVD-0025:providerIdType" minOccurs="0"/>
+            <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType" minOccurs="0"/>
+            <xs:element name="registrationMode" type="eVD-0025:registrationModeType" minOccurs="0"/>
+            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+            <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+            <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="payerIdType">
+        <xs:annotation>
+            <xs:documentation>
+                Clé composée servant à l'identification des destinataires.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="businessId" type="eVD-0025:payerBusinessIdType"/>
+            <xs:element name="billerId" type="eVD-0025:billerIdType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="payerBusinessIdType">
+        <xs:annotation>
+            <xs:documentation>
+                Type utilisé pour représenter l'identifiant métier d'un destinataire par l'application émettrice de
+                factures.
+                P. ex. pour la fiscalité: numéro de contribuable.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="payerStatusType">
+        <xs:annotation>
+            <xs:documentation>
+                Indique l'état de l'inscription d'un destinataire.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="INSCRIT">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire est inscrit auprès d'un partenaire e-facture,
+                        il est prêt à recevoir des factures électroniques.
+                        (anciennement: "ACTIF")
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="DESINSCRIT">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire est connu mais ne possède pas d'inscription,
+                        soit parce qu'il s'est désinscrit auprès d'un partenaire ou que sa demande d'inscription est en
+                        cours de validation.
+                        Il ne peut pas recevoir de factures électroniques jusqu'à ce que sa demande d'inscription soit
+                        validée.
+                        (anciennement: "INACTIF")
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="INSCRIT_SUSPENDU">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire a été suspendu par l'ACV.
+                        Il ne peut pas recevoir de factures électroniques jusqu'à ce qu'il soit libéré.
+                        (anciennement: "SUSPENDU")
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="DESINSCRIT_SUSPENDU">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire a été suspendu par l'ACV et il est désinscrit.
+                        Il ne peut pas recevoir de factures électroniques jusqu'à ce qu'il se soit réinscrit
+                        et qu'il soit libéré par l'ACV.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="eBillAccountIdType">
+        <xs:annotation>
+            <xs:documentation>
+                Type utilisé pour le numéro d'adhérent e-facture (EBillAccountID) utilisé par les partenaires pour
+                identifier les destinataires (17 chiffres).
+                Pour le format, voir ybInvoice_V1.2.6.xsd
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:unsignedLong">
+            <xs:pattern value="((4101)|(4110)|(4130)|(4150))\d{13}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="registrationRequestType">
+        <xs:annotation>
+            <xs:documentation>
+                Demande d'inscription ou de désinscription faite par un destinataire par le biais de son e-banking.
+                Ces demandes sont obtenues par l'interrogation des web services des partenaires.
+                La demande doit être validée pour aboutir à l'état INSCRIT du destinataire dans le référentiel
+                e-facture.
+                Ce type contient les données immuables d'une demande.
+                Pour décrire l'état actuel d'une demande et son historique, on utilise le type
+                registrationRequestWithHistoryType.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="id" type="eVD-0025:registrationRequestIdType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Identifiant unique de la demande.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="billerId" type="eVD-0025:billerIdType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Emetteur de factures auquel s'adresse la demande d'inscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="provider" type="eVD-0025:providerType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Partenaire e-facture par lequel la demande d'inscription est parvenue.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="payerBusinessId" type="eVD-0025:payerBusinessIdType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Identifiant métier du destinataire. N'a de sens que en combinaison avec l'émetteur.
+                        P. ex. no. contribuable pour ACI.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="eBillAccountId" type="eVD-0025:eBillAccountIdType"/>
+            <xs:element name="lastName" type="eCH-0044:baseNameType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Nom fourni par le formulaire d'inscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="firstName" type="eCH-0044:baseNameType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Prénom fourni par le formulaire d'inscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="email" type="eCH-0046:emailAddressType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Adresse e-mail fournie par le formulaire d'inscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="registrationDate" type="xs:dateTime">
+                <xs:annotation>
+                    <xs:documentation>
+                        Date de la demande effectuée par le destinataire,
+                        ou date de l'interrogation du web service partenaire qui a initié la création de la demande.
+                        Cette date est immuable.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="registrationMode" type="eVD-0025:registrationModeType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indique s'il s'agit d'une inscription (directe ou standard) ou d'une désinscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="registrationStatus" type="eVD-0025:registrationRequestStatusType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indique l'état courant de la demande d'inscription. Correspond, si présente à l'état
+                        de la dernière entrée de l'historique de la demande d'inscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="additionalData" type="eVD-0025:mapType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Dictionnaire contenant les information complémentaires demandées au destinataire dans le
+                        formulaire d'inscription.
+                        La définition de ces données est spécifique à l'émetteur, c'est pourquoi on utilise ici un type
+                        de dictionnaire générique (Strings).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="registrationRequestIdType">
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="36"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="registrationRequestWithHistoryType">
+        <xs:complexContent>
+            <xs:extension base="eVD-0025:registrationRequestType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Cette liste est ordonnée chronologiquement, l'élément le plus récent vient en dernier.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:sequence>
+                    <xs:element name="registrationRequestHistoryEntry"
+                                type="eVD-0025:registrationRequestHistoryEntryType" minOccurs="0"
+                                maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="registrationRequestHistoryEntryType">
+        <xs:sequence>
+            <xs:element name="date" type="xs:dateTime"/>
+            <xs:element name="status" type="eVD-0025:registrationRequestStatusType"/>
+            <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+            <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+            <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="registrationRequestStatusType">
+        <xs:annotation>
+            <xs:documentation>
+                Indique l'état d'une demande d'inscription/désinscription d'un destinataire.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="A_TRAITER">
+                <xs:annotation>
+                    <xs:documentation>
+                        Nouvelle demande reçue, le traitement n'a pas encore commencé.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="VALIDATION_EN_COURS">
+                <xs:annotation>
+                    <xs:documentation>
+                        Traitement en cours, en attente de réponse du service de validation.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="VALIDEE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Traitement terminé, la demande a été acceptée.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="IGNOREE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Traitement terminé, la demande a été ignorée (effet nul, cause doublon).
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="REFUSEE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Traitement terminé, la demande a échoué.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="registrationModeType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="STANDARD">
+                <xs:annotation>
+                    <xs:documentation>
+                        Inscription standard:
+                        Le destinataire a initié la demande d'inscription dans son portail e-banking.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="DIRECT">
+                <xs:annotation>
+                    <xs:documentation>
+                        Inscription directe:
+                        Le portail e-banking a proposé au destinataire de s'inscrire lorsque celui-ci effectuait un
+                        paiement pour cet émetteur.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="UNREGISTER">
+                <xs:annotation>
+                    <xs:documentation>
+                        Le destinataire a demandé à se désinscrire.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="reasonCodeType">
+        <xs:annotation>
+            <xs:documentation>
+                Code numérique pour caractériser le motif de changement d'état. La sémantique est définie par les
+                applications métier.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:int"/>
+    </xs:simpleType>
+
+    <xs:simpleType name="reasonDescriptionType">
+        <xs:annotation>
+            <xs:documentation>
+                Description en texte libre du motif de changement d'état.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:maxLength value="255"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="historyEntryCustomFieldType">
+        <xs:annotation>
+            <xs:documentation>
+                Permet aux applications métier de stocker une donnée complémentaire,
+                comme par exemple la clé d'archivage d'un document PDF.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:normalizedString">
+            <xs:maxLength value="40"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="billerType">
+        <xs:sequence>
+            <xs:element name="id" type="eVD-0025:billerIdType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="billerIdType">
+        <xs:annotation>
+            <xs:documentation>
+                Type utilisé pour identifier un émetteur de factures (une application de l'ACV).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="billerWithAddressType">
+        <xs:complexContent>
+            <xs:extension base="eVD-0025:billerType">
+                <xs:sequence>
+                    <xs:element name="address" type="eCH-0010:organisationMailAddressType"/>
+                </xs:sequence>
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:complexType name="providerType">
+        <xs:annotation>
+            <xs:documentation>
+                Partenaires e-facture, c'est à dire les fournisseurs externes tels que PostFinance, SIX-Paynet
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="id" type="eVD-0025:providerIdType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="providerIdType">
+        <xs:restriction base="xs:token">
+            <xs:minLength value="1"/>
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="mapType">
+        <xs:annotation>
+            <xs:documentation>
+                <![CDATA[ Type de dictionnaire qui peut se convertir en type java Map<String, String> ]]>
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="entry" type="eVD-0025:mapEntryType"
+                        minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="mapEntryType">
+        <xs:attribute name="key" type="eVD-0025:mapEntryKeyType"/>
+        <xs:attribute name="value" type="eVD-0025:mapEntryValueType"/>
+    </xs:complexType>
+
+    <xs:simpleType name="mapEntryKeyType">
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="20"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="mapEntryValueType">
+        <xs:restriction base="xs:string">
+            <xs:maxLength value="80"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="payerUpdateActionType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="SUSPENDRE">
+                <xs:annotation>
+                    <xs:documentation>
+                        Fait passer le destinataire de INSCRIT à INSCRIT_SUSPENDU ou de DESINSCRIT à
+                        DESINSCRIT_SUSPENDU.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="LIBERER">
+                <xs:annotation>
+                    <xs:documentation>
+                        Fait passer le destinataire de INSCRIT_SUSPENDU à INSCRIT ou de DESINSCRIT_SUSPENDU à
+                        DESINSCRIT.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- ...................................................................................... -->
+    <!--            Root elements                                                               -->
+    <!--                                                                                        -->
+    <!-- On n'utilise que des types anonymes pour les éléments racine pour faire plaisir à JAXB -->
+    <!-- ...................................................................................... -->
+
+    <!-- ...... Demandes d'inscription des destintataires; validation et mise à jour  .................... -->
+
+    <xs:element name="registrationRequestValidationRequest">
+        <xs:annotation>
+            <xs:documentation>
+                Message envoyé au référentiel de validation des inscriptions (pour la fiscalité : Unireg)
+                pour initier la validation de la demande d'inscription recue du destinataire (contribuable).
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registrationRequest" type="eVD-0025:registrationRequestType">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Format du message de demande de validation d'inscription envoyé par l'application Cyberfact
+                            à Unireg.
+                            Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour
+                            l'ACI.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updateRegistrationRequest">
+        <xs:annotation>
+            <xs:documentation>
+                Format du message de mise à jour d'une demande d'inscription envoyé par Unireg à l'application
+                Cyberfact.
+                Concerne l'inscription des contribuables (personnes physiques) au service e-facture pour l'ACI.
+
+                Si le message ESB de requête contient un 'serviceReplyTo',
+                lorsque l'état de la demande d'inscription est mis à jour,
+                un message de réponse vide est renvoyé à cette destination avec le businessCorrelationId correspondant
+                au businessId de la requête.
+                L'application cliente peut alors demander le nouvel historique de la demande d'inscription.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="registrationRequestId" type="eVD-0025:registrationRequestIdType"/>
+                <xs:element name="status" type="eVD-0025:registrationRequestStatusType"/>
+                <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+                <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+                <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ...... Interrogation du registre des destinataires  .................... -->
+
+    <xs:element name="searchPayerById">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    Cette requête permet de rechercher un destinataire par son identifiant.
+                    La réponse sera de type payerWithSituationType.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="payerId" type="eVD-0025:payerIdType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="searchPayersByStatus">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    Cette requête permet d'obtenir la liste des destinatires dans un état donné,
+                    par exemple tous les destinataires inscrits (actifs).
+                    La réponse sera de type eVD-0025:listOfPayersType.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="status" type="eVD-0025:payerStatusType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="payerSearchResult">
+        <xs:complexType>
+            <xs:choice>
+                <xs:element name="payerWithSituation" type="eVD-0025:payerWithSituationType"/>
+                <xs:element name="payerWithHistory" type="eVD-0025:payerWithHistoryType"/>
+                <xs:element name="listOfPayers" type="eVD-0025:listOfPayersType"/>
+                <xs:element name="payerRequestError">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="code">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:token">
+                                        <xs:maxLength value="20"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="message">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:normalizedString">
+                                        <xs:maxLength value="1000"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:choice>
+        </xs:complexType>
+    </xs:element>
+
+    <!-- ...... Changement de situation des destinataires (message de mise à jour et événement de notification................... -->
+
+    <xs:element name="payerSituationChangeEvent">
+        <xs:annotation>
+            <xs:documentation>
+                Changement d'état tel que inscription, désinscription, notifié par cyberfact aux applications concernées
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="date" type="xs:dateTime">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Date à laquelle le changement d'état est effectif dans le référentiel de cyberfact.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="payer" type="eVD-0025:payerWithSituationType">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Le destinataire avec son nouvel état.
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="updatePayer">
+        <xs:annotation>
+            <xs:documentation>
+                Schéma XML pour les messages de suspension / libération des destinataires.
+
+                Si le message ESB de requête contient un 'serviceReplyTo',
+                lorsque l'état du destinataire est mis à jour,
+                un message de réponse vide est renvoyé à cette destination avec le businessCorrelationId correspondant
+                au businessId de la requête.
+                L'application cliente peut alors demander le nouvel historique du destinataire.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="payerId" type="eVD-0025:payerIdType"/>
+                <xs:element name="payerUpdateAction" type="eVD-0025:payerUpdateActionType"/>
+                <xs:element name="reasonCode" type="eVD-0025:reasonCodeType" minOccurs="0"/>
+                <xs:element name="reasonDescription" type="eVD-0025:reasonDescriptionType" minOccurs="0"/>
+                <xs:element name="customField" type="eVD-0025:historyEntryCustomFieldType" minOccurs="0"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+
+</xs:schema>

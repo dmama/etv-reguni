@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.3 - 7 juin 2012 - déplacé les ids retournés dans un attachment raft -->
+<!-- v1.3-SNAPSHOT - 26 avril 2012 - première version -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/numbers-response/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/numbers-response/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:response="http://www.vd.ch/fiscalite/unireg/event/party/response/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+
+	<xs:complexType name="numbersResponseType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Réponse de la requête de demande de tous les numéros de tiers.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="response:responseType">
+				<xs:sequence>
+					<xs:element name="timestamp" type="xs:date" >
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le moment précis où la requête en base a débuté.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="types" type="party:partyTypeType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le ou les types de tiers demandés, ou null si tous les numéros de tous les tiers ont été demandés.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="includeCancelled" type="xs:boolean">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Vrai si la réponse inclut les tiers annulés; faux si seuls les tiers non-annulés sont inclus.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="idsCount" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le nombre de numéros des tiers trouvés. Les numéros eux-mêmes sont transmis par fichier attaché dans raft (voir l'url transmise dans le champs
+'attachment_ids' de la méta-information associée au message XML). Le format du fichier est simple : chaque numéro de tiers est retourné sur une ligne séparée (l'encoding est UTF-8).
+&lt;p/&gt;
+&lt;b&gt;Exemple :&lt;/b&gt; Le code java suivant permet de récupérer et parser les ids retournés :
+&lt;pre&gt;
+	private static List&amp;lt;Integer&amp;gt; parseIds(EsbMessage message) throws Exception {
+		final InputStream idsAsStream = message.getAttachmentAsStream(&amp;quot;ids&amp;quot;);
+		if (idsAsStream == null) {
+			return Collections.emptyList();
+		}
+
+		final List&amp;lt;Integer&amp;gt; ids = new ArrayList&amp;lt;Integer&amp;gt;();
+		final Scanner scanner = new Scanner(idsAsStream, &amp;quot;UTF-8&amp;quot;);
+		try {
+			while (scanner.hasNext()) {
+				ids.add(Integer.parseInt(scanner.next()));
+			}
+		}
+		finally {
+			scanner.close();
+		}
+		return ids;
+	}
+&lt;/pre&gt;
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

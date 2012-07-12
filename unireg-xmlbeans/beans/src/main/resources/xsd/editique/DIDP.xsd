@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Etat de Vaud (Etat de Vaud) -->
+<!--Version  0.0.1  - 14.01.09 : JVO - Spécifications DI DP-->
+<!--Version  0.0.2  - 28.01.09 : JVO - Séance de validation Perroset-->
+<!--Version  0.1.0  - 09.12.09 : JVO - Di 2009-->
+<!--Version 0.1.1  - 26.01.10 : JVO - New Logique XSD-->
+<!--Version 0.1.2  - 16.11.10 : BNM - Factorisé les éléments communs au DI avec adresse de retour-->		
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DIRetourCivil.xsd"/>
+	<xs:element name="DIDP">
+		<!-- Description du schema pour l'impression d'une DI dépense -->
+		<xs:complexType>
+			<xs:complexContent>
+				<xs:extension base="DIRetourCivil">
+					<xs:sequence>
+						<xs:element name="Annexes">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="Annexe_270" type="typEntierPositif">
+										<xs:annotation>
+											<xs:documentation>270 = DI – Dépence avec le nombre de doc 1àN</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:extension>
+			</xs:complexContent>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

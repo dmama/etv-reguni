@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="applicationChecker" class="ch.vd.unireg.app.ApplicationChecker">
+		<property name="version" value="${pom.version}" />
+		<property name="serviceCivilChecker" ref="serviceCivilChecker" />
+		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
+	</bean>
+
+	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
+		<property name="serviceCivilRaw" ref="serviceCivilServiceTracing" />
+	</bean>
+
+	<bean id="serviceInfraChecker" class="ch.vd.uniregctb.checker.ServiceInfraChecker">
+		<property name="serviceInfraRaw" ref="serviceInfrastructureTracing" />
+	</bean>
+
+</beans>

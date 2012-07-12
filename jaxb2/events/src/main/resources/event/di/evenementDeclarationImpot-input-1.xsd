@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/di/input/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/di/input/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/event/di/common/1">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-common-1.xsd" />
+
+	<xs:element name="quittancement" type="quittancementDeclarationImpotType" />
+
+	<xs:complexType name="evenementDeclarationImpotInputType" abstract="true">
+		<xs:annotation>
+			<xs:documentation>Evénement reçu par Unireg concernant une déclaration d'impôt ordinaire.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="context" type="common:evenementDeclarationImpotContextType">
+				<xs:annotation>
+					<xs:documentation>Le context de l'événement.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="quittancementDeclarationImpotType">
+		<xs:annotation>
+			<xs:documentation>Evénement reçu par Unireg lors du quittancement d'une déclaration impôt ordinaire électronique.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="evenementDeclarationImpotInputType">
+				<xs:sequence>
+					<xs:element name="source" type="xs:string">
+						<xs:annotation>
+							<xs:documentation>Le nom de l'application qui a émis l'événement (pour l'audit).</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

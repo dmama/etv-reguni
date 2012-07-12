@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="efactureController" class="ch.vd.uniregctb.efacture.EFactureController">
+		<property name="efactureManager" ref="efactureManager" />
+	</bean>
+
+	<bean id="efactureManager" class="ch.vd.uniregctb.efacture.manager.EfactureManagerImpl">
+		<property name="eFactureService" ref="efactureService" />
+		<property name="eFactureResponseService" ref="eFactureResponseService" />
+		<property name="timeOutForReponse" value="${extprop.evtEfacture.reponse.wait}" />
+		<property name="messageSource" ref="messageSource" />
+	</bean>
+
+	<bean id="eFactureClientRaw" class="ch.vd.unireg.wsclient.efacture.EFactureClientImpl">
+		<property name="baseUrl" value="${extprop.webservice.efacture.url}" />
+		<property name="username" value="${extprop.webservice.efacture.username}" />
+		<property name="password" value="${extprop.webservice.efacture.password}" />
+		<property name="historyPath" value="${extprop.webservice.efacture.historyPath}" />
+	</bean>
+
+	<bean id="eFactureClientTracing" class="ch.vd.uniregctb.wsclient.efacture.EFactureClientTracing">
+		<property name="target" ref="eFactureClientRaw"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+	<alias alias="eFactureClient" name="eFactureClientTracing"/>
+
+	<bean id="eFactureResponseService" class="ch.vd.uniregctb.efacture.EFactureResponseServiceImpl">
+		<property name="cleanupPeriod" value="60"/>
+		<property name="statsService" ref="statsService"/>
+	</bean>
+
+</beans>

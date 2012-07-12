@@ -1,0 +1,112 @@
+# Ce fichier contient les propriétés utilisées par les tests d'Unireg
+
+#
+# Configuration DB d'Unireg
+#
+testprop.jdbc.profile=oracle
+testprop.jdbc.username=<username here>
+testprop.jdbc.password=unireg
+
+# Oracle
+testprop.oracle.jdbc.username=${testprop.jdbc.username}
+testprop.oracle.jdbc.password=${testprop.jdbc.password}
+testprop.oracle.jdbc.server=grominet
+testprop.oracle.jdbc.port=1521
+testprop.oracle.jdbc.instance=ORCL
+testprop.oracle.jdbc.url=jdbc:oracle:thin:@${testprop.oracle.jdbc.server}:${testprop.oracle.jdbc.port}:${testprop.oracle.jdbc.instance}
+
+# Postgresql
+testprop.postgresql.jdbc.username=${testprop.jdbc.username}
+testprop.postgresql.jdbc.password=${testprop.jdbc.password}
+testprop.postgresql.jdbc.server=localhost
+testprop.postgresql.jdbc.port=5432
+testprop.postgresql.jdbc.instance=${testprop.jdbc.username}
+testprop.postgresql.jdbc.url=jdbc:postgresql://${testprop.postgresql.jdbc.server}/${testprop.postgresql.jdbc.instance}
+
+# Hsql
+#testprop.hsql.jdbc.username=${testprop.jdbc.username}
+#testprop.hsql.jdbc.password=${testprop.jdbc.password}
+#testprop.hsql.jdbc.server=mem
+#testprop.hsql.jdbc.port=
+#testprop.hsql.jdbc.instance=aname
+#testprop.hsql.jdbc.url=jdbc:hsqldb:${testprop.hsql.jdbc.server}:${testprop.hsql.jdbc.instance}
+
+# CEDM/CIIA1 (Devel)
+testprop.host-interfaces.url=t3://ssv0213v:51330
+testprop.host-interfaces.username=
+testprop.host-interfaces.password=
+
+# CJVZ/CIIV1 (Validation)
+#testprop.host-interfaces.url=t3://ssv0214v:31330
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+
+# CFTZ/CIIT1 (Formation)
+#testprop.host-interfaces.url=t3://solve61v:63252
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+
+# CMDZ/CIIA2 (Preproduction)
+#testprop.host-interfaces.url=t3://solve61v:63226
+#testprop.host-interfaces.username=
+#testprop.host-interfaces.password=
+
+#
+# Configuration de l'ESB
+#
+
+testprop.esb.jms.url=failover:(tcp://spip:50900)
+testprop.esb.jms.username=smx
+testprop.esb.jms.password=smx
+testprop.esb.raft.store=http://raft-in.etat-de-vaud.ch/raft-fs/store
+
+# Queues JMS
+testprop.jms.queue.evtCedi=unireg.test.retourDi-${testprop.jdbc.username}
+testprop.jms.queue.evtExterne=unireg.test.evtExterne-${testprop.jdbc.username}
+testprop.jms.queue.evtFiscal=unireg.test.publierEvtRegFiscal-${testprop.jdbc.username}
+testprop.jms.queue.editique.input=unireg.test.retourImpression-${testprop.jdbc.username}
+testprop.jms.queue.ident.ctb.input=unireg.test.identificationCtb.input-${testprop.jdbc.username}
+testprop.jms.queue.ident.ctb.output=unireg.test.identificationCtb.output-${testprop.jdbc.username}
+testprop.jms.queue.pm.event.input=unireg.test.evtRegPM-${testprop.jdbc.username}
+testprop.jms.queue.evtIAM=unireg.test.evtInfoDebiteur-${testprop.jdbc.username}
+testprop.jms.queue.party.service=unireg.test.partyService-${testprop.jdbc.username}
+testprop.jms.queue.evtDeclaration=unireg.test.evtDeclaration-${testprop.jdbc.username}
+testprop.jms.queue.evtCivilEch=unireg.test.evtRegCivilEch-${testprop.jdbc.username}
+
+#
+# Configuration d'Unireg
+#
+
+# Type de service civil (regpp ou rcpers)
+testprop.service.civil.source=rcpers
+
+# Hibernate
+testprop.hibernate.hbm2ddl.mode=update
+
+# Misc
+testprop.unireg.deploymenturl=/unireg/web
+testprop.uniregws.deploymenturl=/unireg/ws
+testprop.indexer.globalIndexPath=/projets/tmp/unireg-index-unittests
+testprop.documents.repository=/projets/tmp/unireg-documents-unittests
+#testprop.indexer.globalIndexPath=c:\projets\tmp\unireg-index-unittests
+#testprop.documents.repository=c:\projets\tmp\unireg-documents-unittests
+
+# SIPF BVR Plus WebService
+testprop.webservice.sipf.bvrplus.url=http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlusImpl
+testprop.webservice.sipf.bvrplus.username=
+testprop.webservice.sipf.bvrplus.password=
+
+# Fidor WebService
+testprop.webservice.fidor.url=http://rp-ws-va.etat-de-vaud.ch/fiscalite/int-fidor/ws/v2
+testprop.webservice.fidor.username=gvd0unireg
+testprop.webservice.fidor.password=Welc0me_
+
+# RCPers WebService
+testprop.webservice.rcpers.url=http://rp-ws-va.etat-de-vaud.ch/registres/int-rcpers/west/ws/v3
+testprop.webservice.rcpers.username=gvd0unireg
+testprop.webservice.rcpers.password=Welc0me_
+testprop.webservice.rcpers.peoplePath=persons/ct.vd.rcpers
+testprop.webservice.rcpers.peopleBySocialNumberPath=persons/ch.vn
+testprop.webservice.rcpers.relationsPath=relations/ct.vd.rcpers
+testprop.webservice.rcpers.eventPath=event
+testprop.webservice.rcpers.searchPath=search

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://evd.vd.ch/xmlns/eVD-0026/1"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:eCH-0010="http://www.ech.ch/xmlns/eCH-0010/4"
+           xmlns:eVD-0025="http://evd.vd.ch/xmlns/eVD-0025/1"
+           xmlns:eVD-0026="http://evd.vd.ch/xmlns/eVD-0026/1"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+    <xs:annotation>
+        <xs:documentation>
+            E-facture / Factures
+            Schéma décrivant les types utilisés pour les échanges relatifs aux factures de E-facture.
+        </xs:documentation>
+    </xs:annotation>
+
+    <xs:import namespace="http://www.ech.ch/xmlns/eCH-0010/4"
+               schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd"/>
+    <xs:import namespace="http://evd.vd.ch/xmlns/eVD-0025/1"
+               schemaLocation="http://evd.vd.ch/xmlns/eVD-0025/1/eVD-0025-1-0.xsd"/>
+
+
+    <xs:complexType name="headerType">
+        <xs:annotation>
+            <xs:documentation>
+                Entête de la facture permettant de décrire l'émetteur,
+                le destinataire de la facture ainsi que les références de base de la facture.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="referenceId" type="eVD-0026:invoiceIdType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Numéro de la facture, utilisé comme identifiant métier par l'application cyberfact.
+                        La clé d'identification est formée de la combinaison de ce numéro de de l'identifiant de
+                        l'émetteur.
+                        L'application émettrice de facture est responsable de fournir un identifiant unique ici.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="creationDate" type="xs:date">
+                <xs:annotation>
+                    <xs:documentation>Date de création de la facture</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="title" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Titre descriptif de la facture, n'apparaît pas dans le portail e-banking du destinataire.
+                        Facultatif, information à usage interne uniquement.
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:maxLength value="120"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="paymentKind" type="eVD-0026:paymentKindType">
+                <xs:annotation>
+                    <xs:documentation>Type de facture (Facture ou Note de crédit). OTHER = pour info, rien à payer.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="billerId" type="eVD-0025:billerIdType">
+                <xs:annotation>
+                    <xs:documentation>Identification de l'émetteur</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="billerAddress" type="eCH-0010:organisationMailAddressType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Adresse postale de l'émetteur, facultative</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="payerId" type="eVD-0025:payerIdType">
+                <xs:annotation>
+                    <xs:documentation>Identification du destinataire</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="payerAddress" type="eCH-0010:personMailAddressType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Adresse postale du destinataire, facultative</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="emailNotification" type="xs:boolean" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indique si l'application e-facture doit notifier le destinataire par e-mail
+                        lorsqu'une facture est émise.
+                        Optionnel. Valeur par défaut = false.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="paymentKindType">
+        <xs:restriction base="xs:token">
+            <xs:enumeration value="ESR">
+                <xs:annotation>
+                    <xs:documentation>Facture ordinaire: montant à payer positif</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="CREDIT">
+                <xs:annotation>
+                    <xs:documentation>Note de crédit: facture à montant négatif ou nul</xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+            <xs:enumeration value="OTHER">
+                <xs:annotation>
+                    <xs:documentation>
+                        Facture pour info:
+                        le montant peut être positif ou nul, mais il ne doit pas être payé. Pas de BVR
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:enumeration>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="paymentDataType">
+        <xs:annotation>
+            <xs:documentation>Données de paiement de la facture</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="esrCustomerNumber" type="eVD-0026:esrCustomerNumberType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Numéro du compte postal vers lequel le paiement doit être effectué.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="amountToPay" type="eVD-0026:moneyAmountType">
+                <xs:annotation>
+                    <xs:documentation>Montant total (TTC) à payer</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="paymentDueDate" type="xs:date">
+                <xs:annotation>
+                    <xs:documentation>Date d'échance du paiement de la facture</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="esrReferenceNumber" type="eVD-0026:esrReferenceNumberType" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        Numéro de référence BVR de la facture.
+                        Obligatoire si paymentType = ESR
+                        Facultatif si facture négative (lettre de crédit) ou montant zéro.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="fixAmount">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indique si le montant à payer peut être modifié par le destinataire.
+                        Yes = le montant à payer est fixe
+                        No  = le montant à payer est modifiable par le destinataire au moment d'effectuer le paiement
+                    </xs:documentation>
+                </xs:annotation>
+                <xs:simpleType>
+                    <xs:restriction base="xs:token">
+                        <xs:enumeration value="Yes"/>
+                        <xs:enumeration value="No"/>
+                    </xs:restriction>
+                </xs:simpleType>
+            </xs:element>
+            <xs:element name="instalments" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>Ensemble des acomptes</xs:documentation>
+                </xs:annotation>
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="instalment" type="eVD-0026:instalmentType" maxOccurs="12"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="instalmentType">
+        <xs:annotation>
+            <xs:documentation>Type des acomptes</xs:documentation>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="instalmentAmount" type="eVD-0026:moneyAmountType">
+                <xs:annotation>
+                    <xs:documentation>Montant de l'acompte</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="instalmentPaymentDueDate" type="xs:date">
+                <xs:annotation>
+                    <xs:documentation>Date d'échéance du paiement de l'acompte</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="esrReferenceNumber" type="eVD-0026:esrReferenceNumberType"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:simpleType name="esrCustomerNumberType">
+        <xs:annotation>
+            <xs:documentation>
+                Numéro de compte postal, avec séparateur "-" p. ex. "01-999999-7"
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:pattern value="\d{2}-\d{1,6}-\d{1}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="esrReferenceNumberType">
+        <xs:annotation>
+            <xs:documentation>N [27] Reference number of orange inpayment slip (ESR)</xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:pattern value="\d{0,27}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="amountType">
+        <xs:restriction base="xs:decimal">
+            <xs:fractionDigits value="2"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="moneyAmountType">
+        <xs:simpleContent>
+            <xs:extension base="eVD-0026:amountType">
+                <xs:attribute name="currency" default="CHF">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:token">
+                            <xs:enumeration value="CHF"/>
+                            <xs:enumeration value="EUR"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:attribute>
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+
+    <xs:simpleType name="invoiceIdType">
+        <xs:annotation>
+            <xs:documentation>
+                Numéro de la facture, utilisé comme identifiant unique, fourni par l'application métier.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:token">
+            <xs:maxLength value="40"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="invoice">
+        <xs:complexType>
+            <xs:annotation>
+                <xs:documentation>
+                    L'élément racine contenant la facture complète au format "pivot"
+                    Le document PDF de la facture est livré en attachement au message ESB (RAFT) et ne figure pas
+                    dans le XML pivot.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:sequence>
+                <xs:element name="header" type="eVD-0026:headerType">
+                    <xs:annotation>
+                        <xs:documentation>
+                            Entête de la facture permettant de décrire l'entreprise émettrice, le destinataire de la
+                            facture ainsi que les références de base de la facture
+                        </xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+                <xs:element name="paymentData" type="eVD-0026:paymentDataType">
+                    <xs:annotation>
+                        <xs:documentation>Données de paiement de la facture</xs:documentation>
+                    </xs:annotation>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>
