@@ -34,6 +34,7 @@
         </xs:annotation>
         <xs:sequence>
             <xs:element name="payerId" type="eVD-0025:payerIdType"/>
+            <xs:element name="payerStatus" type="eVD-0025:payerStatusType" />
         </xs:sequence>
     </xs:complexType>
 
@@ -321,6 +322,14 @@
                 <xs:annotation>
                     <xs:documentation>
                         Indique s'il s'agit d'une inscription (directe ou standard) ou d'une désinscription.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="registrationStatus" type="eVD-0025:registrationRequestStatusType">
+                <xs:annotation>
+                    <xs:documentation>
+                        Indique l'état courant de la demande d'inscription. Correspond, si présente à l'état
+                        de la dernière entrée de l'historique de la demande d'inscription.
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
