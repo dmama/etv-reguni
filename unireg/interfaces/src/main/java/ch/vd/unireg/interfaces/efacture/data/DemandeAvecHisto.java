@@ -22,9 +22,11 @@ public class DemandeAvecHisto extends Demande {
 
 		this.historiqueEtats = new ArrayList<EtatDemande>();
 		if (request.getRegistrationRequestHistoryEntry() == null || request.getRegistrationRequestHistoryEntry().isEmpty()) {
-			historiqueEtats.add(
-					EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), TypeAttenteDemande.PAS_EN_ATTENTE))
-			);
+			if (request.getRegistrationStatus() == null) {
+				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.IGNOREE));
+			} else {
+				historiqueEtats.add( EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), TypeAttenteDemande.PAS_EN_ATTENTE)));
+			}
 		} else {
 			for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
 				historiqueEtats.add(new EtatDemande(entry));

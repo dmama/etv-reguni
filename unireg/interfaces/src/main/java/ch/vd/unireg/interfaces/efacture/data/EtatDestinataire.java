@@ -19,8 +19,8 @@ public class EtatDestinataire {
 		this.type = type;
 		this.dateObtention = RegDate.getEarlyDate();
 		this.codeRaison = null;
-		this.descriptionRaison ="";
-		this.champLibre = "ATTENTION: le service E-facture ne renvoie aucun historique des états du destinataire, cette donnée est générée par UNIREG";
+		this.descriptionRaison = "ATTENTION: le service E-facture ne renvoie aucun historique des états du destinataire, cette donnée est générée par UNIREG";
+		this.champLibre ="";
 	}
 
 	public EtatDestinataire(PayerSituationHistoryEntry payerSituationHistoryEntry) {

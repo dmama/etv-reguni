@@ -27,9 +27,6 @@ public enum TypeEtatDestinataire {
 	}
 
 	public static TypeEtatDestinataire valueOf (PayerStatus status) {
-		if(status == null){
-			return null;
-		}
 		switch (status) {
 		case DESINSCRIT:
 			return TypeEtatDestinataire.DESINSCRIT;

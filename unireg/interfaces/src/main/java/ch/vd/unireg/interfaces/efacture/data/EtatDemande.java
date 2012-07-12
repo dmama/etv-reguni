@@ -23,8 +23,8 @@ public class EtatDemande {
 		this.type = type;
 		this.date = RegDate.getEarlyDate();
 		this.codeRaison = null;
-		this.descriptionRaison ="";
-		this.champLibre = "ATTENTION: le service E-facture ne renvoie aucun historique des états de cette demande, cette donnée est générée par UNIREG";
+		this.descriptionRaison = "ATTENTION: le service E-facture ne renvoie aucun historique des états de cette demande, cette donnée est générée par UNIREG";
+		this.champLibre = "";
 	}
 
 	public EtatDemande(RegistrationRequestHistoryEntry target) {

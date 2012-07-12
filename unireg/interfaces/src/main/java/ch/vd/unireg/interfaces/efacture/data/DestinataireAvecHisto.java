@@ -34,6 +34,9 @@ public class DestinataireAvecHisto {
 		this.historiquesEtats = new ArrayList<EtatDestinataire>();
 		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
 		if (historyOfSituations == null || historyOfSituations.isEmpty()) {
+			if (payerWithHistory.getPayerStatus() == null) {
+				throw new NullPointerException("Le statut du destinataire ne doit pas être null");
+			}
 			this.historiquesEtats.add(EtatDestinataire.newEtatDestinataireFactice(TypeEtatDestinataire.valueOf(payerWithHistory.getPayerStatus())));
 		} else {
 			for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){

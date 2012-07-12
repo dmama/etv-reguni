@@ -41,9 +41,6 @@ public class DestinataireAvecHistoView {
 	}
 
 	public void setDemandes(List<DemandeAvecHistoView> demandes) {
-		if (demandes == null || demandes.isEmpty()) {
-			throw new IllegalArgumentException("demandes ne peut être ni null ni vide");
-		}
 		this.demandes = new ArrayList<DemandeAvecHistoView>(demandes);
 	}
 
