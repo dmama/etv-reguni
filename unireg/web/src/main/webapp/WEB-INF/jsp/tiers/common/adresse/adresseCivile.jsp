@@ -11,11 +11,17 @@
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
 					</display:column>
+					<display:column sortable ="false" titleKey="label.provenance">
+						<unireg:localisation localisation="${adresseCivile.localisationPrecedente}" showVD="false"/>
+					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${adresseCivile.dateDebut}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
 						<unireg:regdate regdate="${adresseCivile.dateFin}"/>
+					</display:column>
+					<display:column sortable ="false" titleKey="label.destination">
+						<unireg:localisation localisation="${adresseCivile.localisationSuivante}" showVD="false"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
@@ -40,11 +46,17 @@
 					<display:column  sortable ="true" titleKey="label.utilisationAdresse" class="usage">
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
 					</display:column>
+					<display:column sortable ="false" titleKey="label.provenance">
+						<unireg:localisation localisation="${adresseCivileConjoint.localisationPrecedente}" showVD="false"/>
+					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.fin" sortProperty="dateFin">
 						<unireg:regdate regdate="${adresseCivileConjoint.dateFin}"/>
+					</display:column>
+					<display:column sortable ="false" titleKey="label.destination">
+						<unireg:localisation localisation="${adresseCivileConjoint.localisationSuivante}" showVD="false"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
@@ -62,5 +74,11 @@
 				<p><fmt:message key="error.generic.adresse.civile"/><span class="error">&nbsp;<c:out value="${command.exceptionAdresseCivilesConjoint}"/></span></p>
 			</c:if>
 		</c:when>
-	</c:choose>	
+	</c:choose>
+
+	<script>
+		$(function() {
+			Tooltips.activate_static_tooltips($('#adresseCivile, #adresseCivileConjoint'));
+		});
+	</script>
 </c:if>

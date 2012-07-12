@@ -66,6 +66,13 @@ public class AdresseRCPers implements Adresse, Serializable {
 		return new AdresseRCPers(address, null, null, infraService);
 	}
 
+	private static AdresseRCPers get(AddressInformation addressInfo, ServiceInfrastructureRaw infraService) {
+		if (addressInfo == null) {
+			return null;
+		}
+		return new AdresseRCPers(addressInfo, null, null, infraService);
+	}
+
 	public static AdresseRCPers get(Residence residence, @Nullable Residence next, ServiceInfrastructureRaw infraService) {
 		if (residence == null) {
 			return null;
@@ -78,8 +85,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 	}
 
 	public AdresseRCPers(MailAddress address, RegDate dateDebut, RegDate dateFin, ServiceInfrastructureRaw infraService) {
-		final AddressInformation addressInfo = address.getAddressInformation();
+		this(address.getAddressInformation(), dateDebut, dateFin, infraService);
+	}
 
+	private AdresseRCPers(AddressInformation addressInfo, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, ServiceInfrastructureRaw infraService) {
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 		DateRangeHelper.assertValidRange(this.dateDebut, this.dateFin, ServiceCivilException.class);
@@ -126,6 +135,28 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
 		this.localisationPrecedente = initLocalisation(residence.getComesFrom(), infraService);
 		this.localisationSuivante = initLocalisation(residence.getGoesTo(), infraService);
+	}
+
+	private AdresseRCPers(String localite, int noOfsPays) {
+		this.dateDebut = null;
+		this.dateFin = null;
+		this.casePostale = null;
+		this.localite = localite;
+		this.numero = null;
+		this.numeroAppartement = null;
+		this.numeroTechniqueRue = null;
+		this.numeroOrdrePostal = 0;
+		this.numeroPostal = null;
+		this.numeroPostalComplementaire = null;
+		this.noOfsPays = noOfsPays;
+		this.rue = null;
+		this.titre = null;
+		this.typeAdresse = TypeAdresseCivil.COURRIER;
+		this.noOfsCommuneAdresse = null;
+		this.egid = null;
+		this.ewid = null;
+		this.localisationPrecedente = null;
+		this.localisationSuivante = null;
 	}
 
 	/**
@@ -179,8 +210,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 			return null;
 		}
 
+		Adresse adresseCourrier = AdresseRCPers.get(location.getMailAddress(), infraService);
+
 		if (location.getUnknown() != null) {
-			return new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu);
+			return new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, adresseCourrier);
 		}
 
 		final Destination.ForeignCountry foreignCountry = location.getForeignCountry();
@@ -191,16 +224,22 @@ public class AdresseRCPers implements Adresse, Serializable {
 			// si c'est le cas, passer à l'état souverain (c'est ce qui nous intéresse pour les fors)
 			final Pays pays = infraService.getPays(countryId);
 			final int ofsEtatSouverain = pays != null ? pays.getNoOfsEtatSouverain() : ServiceInfrastructureRaw.noPaysInconnu;
-			return new Localisation(LocalisationType.HORS_SUISSE, ofsEtatSouverain);
+
+			if (adresseCourrier == null && StringUtils.isNotBlank(foreignCountry.getTown())) {
+				// on essaie très fort de mettre quelque chose dans l'adresse
+				adresseCourrier = new AdresseRCPers(foreignCountry.getTown(), ofsEtatSouverain);
+			}
+
+			return new Localisation(LocalisationType.HORS_SUISSE, ofsEtatSouverain, adresseCourrier);
 		}
 
 		final SwissMunicipality swissTown = location.getSwissTown();
 		if (swissTown != null) {
 			if (swissTown.getCantonAbbreviation() == CantonAbbreviation.VD) {
-				return new Localisation(LocalisationType.CANTON_VD, swissTown.getMunicipalityId());
+				return new Localisation(LocalisationType.CANTON_VD, swissTown.getMunicipalityId(), adresseCourrier);
 			}
 			else {
-				return new Localisation(LocalisationType.HORS_CANTON, swissTown.getMunicipalityId());
+				return new Localisation(LocalisationType.HORS_CANTON, swissTown.getMunicipalityId(), adresseCourrier);
 			}
 		}
 

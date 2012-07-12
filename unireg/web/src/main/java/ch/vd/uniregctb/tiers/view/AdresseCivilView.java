@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.uniregctb.adresse.AdresseCivileAdapter;
 import ch.vd.uniregctb.adresse.AdresseServiceImpl;
 import ch.vd.uniregctb.common.NpaEtLocalite;
@@ -20,6 +21,8 @@ public class AdresseCivilView implements DateRange {
 	private String rue;
 	private String localite;
 	private Integer paysOFS;
+	private LocalisationView localisationPrecedente;
+	private LocalisationView localisationSuivante;
 
 	public AdresseCivilView(Adresse adresse, TypeAdresseCivil type) {
 		this.usageCivil = type;
@@ -29,6 +32,12 @@ public class AdresseCivilView implements DateRange {
 		this.rue = extractRue(adresse);
 		this.localite = extractLocalite(adresse);
 		this.paysOFS = adresse.getNoOfsPays();
+		this.localisationPrecedente = extractLocalisation(adresse.getLocalisationPrecedente());
+		this.localisationSuivante = extractLocalisation(adresse.getLocalisationSuivante());
+	}
+
+	private static LocalisationView extractLocalisation(Localisation localisation) {
+		return localisation == null ? null : new LocalisationView(localisation);
 	}
 
 	private static String extractLocalite(Adresse adresse) {
@@ -102,5 +111,13 @@ public class AdresseCivilView implements DateRange {
 
 	public void setPaysOFS(Integer paysOFS) {
 		this.paysOFS = paysOFS;
+	}
+
+	public LocalisationView getLocalisationPrecedente() {
+		return localisationPrecedente;
+	}
+
+	public LocalisationView getLocalisationSuivante() {
+		return localisationSuivante;
 	}
 }

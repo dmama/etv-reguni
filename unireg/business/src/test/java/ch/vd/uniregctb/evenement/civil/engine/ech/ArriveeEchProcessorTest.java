@@ -57,7 +57,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Zorro", "Alessandro", true);
 
 				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
-				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS()));
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS(), null));
 
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
@@ -118,7 +118,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Jolias", "Virginie", false);
 
 				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateArrivee, null);
-				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS()));
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS(), null));
 
 				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
 			}
@@ -193,10 +193,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				marieIndividus(lui, elle, dateMariage);
 				
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
-				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 				
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
 
@@ -313,10 +313,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				marieIndividus(lui, elle, dateMariage);
 
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
-				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
 
@@ -434,10 +434,10 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				marieIndividus(lui, elle, dateMariage);
 
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
-				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 			}
 		});
 
@@ -562,25 +562,25 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				marieIndividus(lui, elle, dateMariage);
 
 				final MockAdresse adrAvantDepartLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateDepart);
-				adrAvantDepartLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrAvantDepartLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrFranceLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE,null, null,null,null,null,MockPays.France, dateDepart.getOneDayAfter(), dateArriveeLui.getOneDayBefore());
-				adrFranceLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
-				adrFranceLui.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
+				adrFranceLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+				adrFranceLui.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
-				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 
 				final MockAdresse adrAvantDepartElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateMariage, dateDepart);
-				adrAvantDepartElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrAvantDepartElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 				final MockAdresse adrFranceElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE,null, null,null,null,null,MockPays.France, dateDepart.getOneDayAfter(), dateArriveeElle.addMonths(-1));
-				adrFranceElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
-				adrFranceElle.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
+				adrFranceElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+				adrFranceElle.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 
 			}
 		});
@@ -708,7 +708,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Zorro", "Alessandro", true);
 
 				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
-				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, null));
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, null, null));
 
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
@@ -817,7 +817,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				MockIndividu ind = addIndividu(noInd, date(1965, 3, 12), "Bolomey", "Brian", true);
 				addNationalite(ind, MockPays.Suisse, date(1965, 3, 12), null);
 				MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateArrivee, null);
-				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Nyon.getNoOFS()));
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Nyon.getNoOFS(), null));
 			}
 		});
 

@@ -214,6 +214,25 @@
 	</tag>
 
 	<tag>
+		<name>localisation</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagLocalisation</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche une localisation</description>
+		<attribute>
+			<name>localisation</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>la localistation à afficher</description>
+		</attribute>
+		<attribute>
+			<name>showVD</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>vrai si les localisation vaudoises doivent être affichées.</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>nextRowClass</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagNextRowClass</tag-class>
 		<body-content>JSP</body-content>

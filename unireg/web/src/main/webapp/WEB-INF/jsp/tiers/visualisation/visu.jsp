@@ -295,8 +295,8 @@
 				Histo.toggleRowsIsHisto('situationFamille','isSFHisto', 5);
 				Histo.toggleRowsIsHisto('dossierApparente','isRapportHisto', 2);
 				Histo.toggleRowsIsHisto('adresse','isAdrHisto',2);
-				Histo.toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',2);
-				Histo.toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',2);
+				Histo.toggleRowsIsHisto('adresseCivile','isAdrHistoCiviles',3);
+				Histo.toggleRowsIsHisto('adresseCivileConjoint','isAdrHistoCivilesConjoint',3);
 		</script>
 	</c:if>
 	<c:if test="${command.natureTiers == 'DebiteurPrestationImposable'}">

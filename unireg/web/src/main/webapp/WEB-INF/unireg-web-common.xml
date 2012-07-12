@@ -116,6 +116,10 @@
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
+	<bean id="jspTagLocaliation" class="ch.vd.uniregctb.taglibs.JspTagLocalisation">
+		<property name="service" ref="serviceInfrastructureService" />
+	</bean>
+
 	<bean id="jspTagRaccourci" class="ch.vd.uniregctb.taglibs.JspTagRaccourci">
 	</bean>
 

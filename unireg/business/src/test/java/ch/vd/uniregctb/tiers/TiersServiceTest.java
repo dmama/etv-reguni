@@ -5575,7 +5575,7 @@ public class TiersServiceTest extends BusinessTest {
 				addNationalite(individu, MockPays.France, dateNaissance, null);
 
 				final MockAdresse adresseVD = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDebutForMixteVaudois, dateFinResidenceVD);
-				adresseVD.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS()));
+				adresseVD.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
 				addAdresse(individu, TypeAdresseCivil.COURRIER, "Rue des champs", "42", 74000, null, "Annecy", MockPays.France, dateDebutResidenceHS, null);
 			}
 		});

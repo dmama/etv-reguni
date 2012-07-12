@@ -57,7 +57,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS(), null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -198,7 +198,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,MockPays.PaysInconnu.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,MockPays.PaysInconnu.getNoOFS(), null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -273,7 +273,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,null));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE,null, null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -350,7 +350,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Zurich.getNoOFS(), null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -540,7 +540,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -602,7 +602,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -745,7 +745,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Lausanne.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Lausanne.getNoOFS(), null));
 				final MockAdresse nouvelleAdresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, depart.getOneDayAfter(), null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
@@ -849,10 +849,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				public void modifyIndividu(MockIndividu individu) {
 					final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
 					oldAddress.setDateFinValidite(dateDepart);
-					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFSEtendu()));
+					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFSEtendu(), null));
 
 					final MockAdresse newAddress = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
-					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFSEtendu()));
+					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFSEtendu(), null));
 					individu.getAdresses().add(newAddress);
 				}
 			});
@@ -945,7 +945,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
-				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Echallens.getNoOFS()));
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Echallens.getNoOFS(), null));
 				final MockAdresse adresseVaudoiseSuivante = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, depart.getOneDayAfter(), null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}

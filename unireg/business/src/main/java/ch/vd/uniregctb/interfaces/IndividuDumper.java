@@ -519,6 +519,7 @@ public abstract class IndividuDumper {
 		s.append("Localisation{\n");
 		s.append(tab(depth + 1)).append("noOfs=").append(loc.getNoOfs()).append(", \n");
 		s.append(tab(depth + 1)).append("type=").append(loc.getType()).append(", \n");
+		s.append(tab(depth + 1)).append("adresseCourrier=").append(dumpAdresse(loc.getAdresseCourrier(), false, depth + 1)).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();

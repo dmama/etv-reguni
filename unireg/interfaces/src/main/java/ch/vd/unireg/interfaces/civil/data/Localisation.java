@@ -5,21 +5,23 @@ import java.io.Serializable;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays).
+ * Détermine un lieu civil avec un certain niveau de précision (au niveau de la commune ou du pays) et - éventuellement - une adresse courrier.
  */
 public class Localisation implements Serializable {
 
-	private static final long serialVersionUID = 3692017738468930175L;
+	private static final long serialVersionUID = 2685740788096283313L;
 
 	private LocalisationType type;
 	private Integer noOfs;
+	private Adresse adresseCourrier;
 
 	public Localisation() {
 	}
 
-	public Localisation(LocalisationType type, Integer noOfs) {
+	public Localisation(LocalisationType type, Integer noOfs, @Nullable Adresse adresseCourrier) {
 		this.type = type;
 		this.noOfs = noOfs;
+		this.adresseCourrier = adresseCourrier;
 	}
 
 	/**
@@ -43,5 +45,16 @@ public class Localisation implements Serializable {
 
 	public void setNoOfs(Integer noOfs) {
 		this.noOfs = noOfs;
+	}
+
+	/**
+	 * @return l'adresse courrier si elle est connue.
+	 */
+	public Adresse getAdresseCourrier() {
+		return adresseCourrier;
+	}
+
+	public void setAdresseCourrier(Adresse adresseCourrier) {
+		this.adresseCourrier = adresseCourrier;
 	}
 }

@@ -144,7 +144,6 @@ public abstract class Depart extends Mouvement {
 	 *
 	 * @param date           la date de référence
 	 * @param pp             une personne physique
-	 * @param demenagementVD <b>vrai</b> s'il s'agit d'un déménagement entre commune vaudoise; <b>false</b> autrement.
 	 * @return le contribuable concerné par le déménagement
 	 */
 	private Contribuable findContribuable(RegDate date, PersonnePhysique pp) {
@@ -181,8 +180,6 @@ public abstract class Depart extends Mouvement {
 	/**
 	 * calcule le motif de fermeture du for fiscal
 	 *
-	 * @param nouvelleAdresse adresse du contribuable après son départ
-	 * @param nouvelleCommune commune du contribuable après son départ, si applicable
 	 * @return le motif de fermeture
 	 */
 	protected MotifFor findMotifFermetureFor() {
@@ -283,7 +280,6 @@ public abstract class Depart extends Mouvement {
 	 *
 	 * @param adresse
 	 * @param commune
-	 * @param depart  un événement de départ
 	 * @param erreurs
 	 */
 	protected void validateCoherenceAdresse(Adresse adresse, Commune commune, EvenementCivilErreurCollector erreurs) {
@@ -423,7 +419,7 @@ public abstract class Depart extends Mouvement {
 		final Localisation nextLocalisation;
 		if (getNouvelleCommune() == null) {
 			if (nouvelleAdresse != null && nouvelleAdresse.getNoOfsPays() != null && nouvelleAdresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
-				nextLocalisation = new Localisation(LocalisationType.HORS_SUISSE, nouvelleAdresse.getNoOfsPays());
+				nextLocalisation = new Localisation(LocalisationType.HORS_SUISSE, nouvelleAdresse.getNoOfsPays(), null);
 			}
 			else {
 				nextLocalisation = null;
