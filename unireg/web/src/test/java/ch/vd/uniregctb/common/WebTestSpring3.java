@@ -34,7 +34,6 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(locations = {
 		"classpath:WEB-INF/unireg-web-common.xml",
 		"classpath:WEB-INF/unireg-web-remoting.xml",
-		"classpath:WEB-INF/unireg-web-config.xml",
 		"classpath:WEB-INF/unireg-web-tiers.xml",
 		"classpath:WEB-INF/unireg-web-admin.xml",
 		"classpath:WEB-INF/unireg-web-evenements.xml",
@@ -56,6 +55,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:WEB-INF/unireg-web-activation.xml",
 		"classpath:WEB-INF/unireg-web-identification.xml",
 		"classpath:WEB-INF/unireg-web-supergra.xml",
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
 		WebTestingConstants.UNIREG_WEBUT_SERVICES,
 		WebTestingConstants.UNIREG_WEBUT_SECURITY,
 		WebTestingConstants.UNIREG_WEBUT_ULRMAPPING
