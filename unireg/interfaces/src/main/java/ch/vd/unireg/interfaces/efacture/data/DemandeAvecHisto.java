@@ -19,17 +19,21 @@ public class DemandeAvecHisto extends Demande {
 
 	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
 		super(request);
-		this.historiqueEtats = new ArrayList<EtatDemande>();
-		for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
-			historiqueEtats.add(new EtatDemande(entry));
-		}
 
+		this.historiqueEtats = new ArrayList<EtatDemande>();
+		if (request.getRegistrationRequestHistoryEntry() == null || request.getRegistrationRequestHistoryEntry().isEmpty()) {
+			historiqueEtats.add(
+					EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), TypeAttenteDemande.PAS_EN_ATTENTE))
+			);
+		} else {
+			for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
+				historiqueEtats.add(new EtatDemande(entry));
+			}
+		}
 	}
 
 	public EtatDemande getDernierEtat() {
-		//Les états nous sont toujours renvoyés dans l'ordre chronologique par le ws efacture
-		// TODO en attente du nouvel xsd, l'état courant sera directement sur l'objet RegistrationRequestWithHistory
-		return historiqueEtats.get(historiqueEtats.size()-1);
+		return historiqueEtats.get(historiqueEtats.size() - 1);
 	}
 
 	/**

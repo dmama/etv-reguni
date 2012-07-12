@@ -14,14 +14,14 @@ import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
 public class DestinataireAvecHisto {
 	private long ctbId;
 	private List<DemandeAvecHisto> historiqueDemandes;
-	private List<EtatDestinataire> etats;
+	private List<EtatDestinataire> historiquesEtats;
 
 	public List<DemandeAvecHisto> getHistoriqueDemandes() {
 		return historiqueDemandes;
 	}
 
-	public List<EtatDestinataire> getEtats() {
-		return etats;
+	public List<EtatDestinataire> getHistoriquesEtats() {
+		return historiquesEtats;
 	}
 
 	public DestinataireAvecHisto(PayerWithHistory payerWithHistory, long ctbId) {
@@ -31,10 +31,14 @@ public class DestinataireAvecHisto {
 		for (RegistrationRequestWithHistory registrationRequestHistory : historyOfRequests) {
 			this.historiqueDemandes.add(new DemandeAvecHisto(registrationRequestHistory));
 		}
-		this.etats = new ArrayList<EtatDestinataire>();
+		this.historiquesEtats = new ArrayList<EtatDestinataire>();
 		List<PayerSituationHistoryEntry> historyOfSituations = payerWithHistory.getHistoryOfSituations().getSituation();
-		for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){
-			this.etats.add(new EtatDestinataire(payerSituationHistoryEntry));
+		if (historyOfSituations == null || historyOfSituations.isEmpty()) {
+			this.historiquesEtats.add(EtatDestinataire.newEtatDestinataireFactice(TypeEtatDestinataire.valueOf(payerWithHistory.getPayerStatus())));
+		} else {
+			for(PayerSituationHistoryEntry payerSituationHistoryEntry: historyOfSituations){
+				this.historiquesEtats.add(new EtatDestinataire(payerSituationHistoryEntry));
+			}
 		}
 	}
 
@@ -43,8 +47,7 @@ public class DestinataireAvecHisto {
 	}
 
 	public EtatDestinataire getDernierEtat() {
-		// TODO en attente du nouvel xsd, l'état courant sera directement sur l'objet PayerWithHistory
-		return etats.get(etats.size()-1);
+		return historiquesEtats.get(historiquesEtats.size() - 1);
 	}
 
 

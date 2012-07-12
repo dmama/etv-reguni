@@ -26,7 +26,7 @@ class DemandeAvecHistoBuilderForUnitTests extends DemandeBuilderForUnitTests {
 		RegistrationRequest rr = super.buildRegistrationRequest();
 		return new RegistrationRequestWithHistory(rr.getId(), rr.getBillerId(), rr.getProvider(),
 				rr.getPayerBusinessId(), rr.getEBillAccountId(), rr.getLastName(), rr.getFirstName(), rr.getEmail(),
-				rr.getRegistrationDate(), rr.getRegistrationMode(), rr.getAdditionalData(),listHistoryEntry);
+				rr.getRegistrationDate(), rr.getRegistrationMode(),rr.getRegistrationStatus(), rr.getAdditionalData(),listHistoryEntry);
 	}
 
 	DemandeAvecHistoBuilderForUnitTests addHistoryEntry(RegistrationRequestHistoryEntry entry) {

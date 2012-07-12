@@ -58,7 +58,6 @@ public class EFactureServiceTest extends BusinessTest {
 	private static final String BUSINESS_ID = "BUSINESS-ID";
 	private EFactureServiceImpl efactureService;
 
-	private static final List<PayerSituationHistoryEntry> DUMMY_HISTORY_OF_SITUATION = Collections.singletonList(new PayerSituationHistoryEntryBuilder().build());
 	private static final List<RegistrationRequestWithHistory> DUMMY_HISTORY_OF_REQUEST = Collections.singletonList(
 			new DemandeAvecHistoBuilderForUnitTests()
 					.addHistoryEntry(date(2012, 1, 1), RegistrationRequestStatus.A_TRAITER, null, "", "")
@@ -78,26 +77,26 @@ public class EFactureServiceTest extends BusinessTest {
 
 		expect(mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
 				// 1er appel au client eFacture renvoie un contribuable inscrit
-				.andReturn(buildPayerWithHistory(
+				.andReturn(buildPayerWithHistory(PayerStatus.INSCRIT,
 						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.INSCRIT).build()),DUMMY_HISTORY_OF_REQUEST)).times(2)
 				// 2eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande en attente de signature
-				.andReturn(buildPayerWithHistory(
+				.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,
 					Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
 					Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
 						.addHistoryEntry(date(2012,6,1),RegistrationRequestStatus.VALIDATION_EN_COURS,TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getCode(),"","").buildRegistrationRequestWithHistory()))).times(2)
 				// 3eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande en attente de contact
-				.andReturn(buildPayerWithHistory(
+				.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,
 						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
 						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
 								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDATION_EN_COURS, TypeAttenteDemande.EN_ATTENTE_CONTACT.getCode(), "", "")
 								.buildRegistrationRequestWithHistory()))).times(2)
 				// 4eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande validée
-				.andReturn(buildPayerWithHistory(
+				.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,
 						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
 						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
 								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.VALIDEE, null, "", "").buildRegistrationRequestWithHistory()))).times(2)
 				// 5eme appel au client eFacture renvoie un contribualble avec la situation DESINSCRIT avec une demande refusée
-				.andReturn(buildPayerWithHistory(
+				.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,
 						Collections.singletonList(new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT).build()),
 						Collections.singletonList(new DemandeAvecHistoBuilderForUnitTests()
 								.addHistoryEntry(date(2012, 6, 1), RegistrationRequestStatus.REFUSEE, null, "", "").buildRegistrationRequestWithHistory()))).times(2)
@@ -174,9 +173,9 @@ public class EFactureServiceTest extends BusinessTest {
 
 		expect(
 				mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
-					.andReturn(buildPayerWithHistory(DUMMY_HISTORY_OF_SITUATION, Collections.singletonList(mockReturn1)))
-					.andReturn(buildPayerWithHistory(DUMMY_HISTORY_OF_SITUATION, Collections.singletonList(mockReturn2)))
-					.andReturn(buildPayerWithHistory(DUMMY_HISTORY_OF_SITUATION, Collections.singletonList(mockReturn3)));
+					.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT, null, Collections.singletonList(mockReturn1)))
+					.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,null, Collections.singletonList(mockReturn2)))
+					.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT,null, Collections.singletonList(mockReturn3)));
 		replay(mockEfactureClient);
 
 		assertNotNull("Une demande est déjà en cours; getInscriptionEnCoursDeTraitement() ne doit pas renvoyer null", efactureService.getDemandeEnAttente(123));
@@ -188,10 +187,12 @@ public class EFactureServiceTest extends BusinessTest {
 
 
 	private PayerWithHistory buildPayerWithHistory(
+			PayerStatus status,
 			@Nullable List<PayerSituationHistoryEntry> sitHistory,
 			@Nullable List<RegistrationRequestWithHistory> regHistory
 	) {
 		return new PayerWithHistory(new PayerId("business-Id", EFactureService.ACI_BILLER_ID),
+				status,
 				new PayerWithHistory.HistoryOfSituations(sitHistory),
 				new PayerWithHistory.HistoryOfRequests(regHistory));
 	}
@@ -229,10 +230,10 @@ public class EFactureServiceTest extends BusinessTest {
 		expect(
 				mockEfactureClient.getHistory(anyLong(), anyObject(String.class)))
 				// 1er appel au mock renvoye une situation ou le contribuable a un DESINSCRIT_SUSPENDU
-				.andReturn(buildPayerWithHistory(Collections.singletonList(
+				.andReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT_SUSPENDU, Collections.singletonList(
 						new PayerSituationHistoryEntryBuilder().setStatus(PayerStatus.DESINSCRIT_SUSPENDU).build()), DUMMY_HISTORY_OF_REQUEST))
 				// appels suivants au mock renvoye une situation ou le contribuable a un statut DESINSCRIT
-				.andStubReturn(buildPayerWithHistory(Collections.singletonList(new PayerSituationHistoryEntryBuilder().build()), DUMMY_HISTORY_OF_REQUEST));
+				.andStubReturn(buildPayerWithHistory(PayerStatus.DESINSCRIT, Collections.singletonList(new PayerSituationHistoryEntryBuilder().build()), DUMMY_HISTORY_OF_REQUEST));
 		replay(mockEfactureClient);
 
 		final TestSamples ts = new TestSamples();

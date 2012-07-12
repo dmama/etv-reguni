@@ -3,7 +3,6 @@ package ch.vd.uniregctb.efacture;
 import javax.jms.JMSException;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -111,6 +110,16 @@ public class EFactureServiceImpl implements EFactureService {
 		tiers.setAdresseCourrierElectroniqueEFacture(email);
 	}
 
+	private static final EnumSet<ModeImposition> MODE_IMPOSITIONS_AUTORISES = EnumSet.of(
+			ModeImposition.ORDINAIRE,
+			ModeImposition.MIXTE_137_1,
+			ModeImposition.MIXTE_137_2,
+			ModeImposition.DEPENSE);
+
+	private static final EnumSet<MotifFor> MOTIF_FORS_INTERDITS = EnumSet.of(
+			MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+			MotifFor.VEUVAGE_DECES);
+
 	@Override
 	public boolean valideEtatContribuablePourInscription(long ctbId) {
 		final Tiers tiers = tiersService.getTiers(ctbId);
@@ -130,21 +139,13 @@ public class EFactureServiceImpl implements EFactureService {
 			return false;
 		}
 
-		final Set<ModeImposition> modesAutorises = EnumSet.of(
-				ModeImposition.ORDINAIRE,
-				ModeImposition.MIXTE_137_1,
-				ModeImposition.MIXTE_137_2,
-				ModeImposition.DEPENSE);
-		if (!modesAutorises.contains(ffp.getModeImposition())) {
+		if (!MODE_IMPOSITIONS_AUTORISES.contains(ffp.getModeImposition())) {
 			return false;
 		}
 
 		if (ffp.getDateFin() != null) {
-			final Set<MotifFor> motifsInterdits = EnumSet.of(
-					MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
-					MotifFor.VEUVAGE_DECES);
 
-			if (motifsInterdits.contains(ffp.getMotifFermeture())) {
+			if (MOTIF_FORS_INTERDITS.contains(ffp.getMotifFermeture())) {
 				return false;
 			}
 		}

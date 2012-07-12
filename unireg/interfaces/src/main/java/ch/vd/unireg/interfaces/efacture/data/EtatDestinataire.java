@@ -11,6 +11,18 @@ public class EtatDestinataire {
 	private Integer codeRaison;
 	private TypeEtatDestinataire type;
 
+	public static EtatDestinataire newEtatDestinataireFactice (TypeEtatDestinataire type) {
+		return new EtatDestinataire (type);
+	}
+
+	private EtatDestinataire (TypeEtatDestinataire type) {
+		this.type = type;
+		this.dateObtention = RegDate.getEarlyDate();
+		this.codeRaison = null;
+		this.descriptionRaison ="";
+		this.champLibre = "ATTENTION: le service E-facture ne renvoie aucun historique des états du destinataire, cette donnée est générée par UNIREG";
+	}
+
 	public EtatDestinataire(PayerSituationHistoryEntry payerSituationHistoryEntry) {
 		this.champLibre = payerSituationHistoryEntry.getCustomField();
 		this.dateObtention = XmlUtils.xmlcal2regdate(payerSituationHistoryEntry.getDate());

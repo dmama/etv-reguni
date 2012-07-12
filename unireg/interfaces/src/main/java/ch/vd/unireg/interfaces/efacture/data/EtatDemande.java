@@ -15,6 +15,18 @@ public class EtatDemande {
 	private String descriptionRaison;
 	private TypeEtatDemande type;
 
+	public static EtatDemande newEtatDemandeFactice (TypeEtatDemande type) {
+		return new EtatDemande(type);
+	}
+
+	private EtatDemande (TypeEtatDemande type) {
+		this.type = type;
+		this.date = RegDate.getEarlyDate();
+		this.codeRaison = null;
+		this.descriptionRaison ="";
+		this.champLibre = "ATTENTION: le service E-facture ne renvoie aucun historique des états de cette demande, cette donnée est générée par UNIREG";
+	}
+
 	public EtatDemande(RegistrationRequestHistoryEntry target) {
 		this.champLibre = target.getCustomField();
 		this.date = XmlUtils.xmlcal2regdate(target.getDate());

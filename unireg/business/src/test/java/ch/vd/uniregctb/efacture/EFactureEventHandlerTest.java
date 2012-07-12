@@ -142,6 +142,4 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		verify(inscription, sender, service);
 	}
 
-
-
 }

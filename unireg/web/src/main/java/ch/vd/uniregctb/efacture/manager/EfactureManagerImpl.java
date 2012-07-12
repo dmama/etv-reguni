@@ -138,9 +138,9 @@ public class EfactureManagerImpl implements EfactureManager {
 		res.setDemandes(demandes);
 
 		//Chargement de l'historique des états du destinataire
-		final int sizeEtatDestinataire = destinataire.getEtats().size();
+		final int sizeEtatDestinataire = destinataire.getHistoriquesEtats().size();
 		final List<EtatDestinataireView> etats = new ArrayList<EtatDestinataireView>(sizeEtatDestinataire);
-		for (ListIterator<EtatDestinataire> it = destinataire.getEtats().listIterator(sizeEtatDestinataire); it.hasPrevious(); ) {
+		for (ListIterator<EtatDestinataire> it = destinataire.getHistoriquesEtats().listIterator(sizeEtatDestinataire); it.hasPrevious(); ) {
 			etats.add(getEtatDestinataire(it.previous()));
 		}
 		res.setEtats(etats);

@@ -8,6 +8,7 @@ import ch.vd.evd0025.v1.MapEntry;
 import ch.vd.evd0025.v1.Provider;
 import ch.vd.evd0025.v1.RegistrationMode;
 import ch.vd.evd0025.v1.RegistrationRequest;
+import ch.vd.evd0025.v1.RegistrationRequestStatus;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -28,6 +29,7 @@ class DemandeBuilderForUnitTests {
 	private String email = "leon@lepaon.com";
 	private RegistrationMode registrationMode = RegistrationMode.STANDARD;
 	private String noAvs = "7565817249033";
+	private RegistrationRequestStatus status = RegistrationRequestStatus.VALIDATION_EN_COURS;
 
 	Demande build () {
 		return new Demande(buildRegistrationRequest());
@@ -37,7 +39,7 @@ class DemandeBuilderForUnitTests {
 		return new RegistrationRequest(
 				id, billerId, new Provider(providerId), businessPayerId, eBillAccountId,
 				lastName, firstName, email, XmlUtils.regdate2xmlcal(dateDemande), registrationMode,
-				new Map(Collections.<MapEntry>singletonList(new MapEntry("AVS13", noAvs))));
+				status, new Map(Collections.<MapEntry>singletonList(new MapEntry("AVS13", noAvs))));
 	}
 
 	DemandeBuilderForUnitTests id(String id) {
@@ -87,6 +89,11 @@ class DemandeBuilderForUnitTests {
 
 	DemandeBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
 		this.registrationMode = registrationMode;
+		return this;
+	}
+
+	DemandeBuilderForUnitTests setStatus(RegistrationRequestStatus status) {
+		this.status= status;
 		return this;
 	}
 
