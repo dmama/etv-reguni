@@ -7,6 +7,8 @@ if [ -z "$REPORT" -o -z "$EXCLUDE" ]; then
         exit 1
 fi
 
+export JAVA_HOME=/usr/lib/jvm/java-6-sun
+
 echo "==> cleaning up workspace..."
 rm -rf csv_orig
 rm -rf csv_utf8
