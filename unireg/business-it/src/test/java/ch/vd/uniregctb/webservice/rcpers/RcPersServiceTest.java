@@ -87,16 +87,16 @@ public class RcPersServiceTest {
 		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
 	}
 
-	@Test(timeout = 5000)
+	@Test
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Event event = client.getEvent(1679985851L);
+		final Event event = client.getEvent(1645418472L);
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
-		assertNotNull("La personne associée à l'événement n°1679985851 est nulle !", p);
-		assertEquals(1056751L, IndividuRCPers.getNoIndividu(p));
+		assertNotNull("La personne associée à l'événement n°1645418472 est nulle !", p);
+		assertEquals(1081928L, IndividuRCPers.getNoIndividu(p));
 	}
 
 	private RcPersClientImpl buildClient() throws Exception {
