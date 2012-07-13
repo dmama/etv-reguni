@@ -1,6 +1,13 @@
 #!/bin/sh
 
-echo "==> cleanup workspace..."
+REPORT=$1
+EXCLUDE=$2
+if [ -z "$REPORT" -o -z "$EXCLUDE" ]; then
+        echo "Syntax : $(basename "$0") <role_report.pdf> <ctb_ids_to_filter.csv>" >&2
+        exit 1
+fi
+
+echo "==> cleaning up workspace..."
 rm -rf csv_orig
 rm -rf csv_utf8
 rm -rf csv_filtered
@@ -11,7 +18,7 @@ mkdir -p csv_filtered
 mkdir -p tmp
 
 echo "==> extracting CSV files from report..."
-./unireg_rapport_csv.sh $1 -command extract -outputdir csv_orig
+./unireg_rapport_csv.sh $REPORT -command extract -outputdir csv_orig
 
 # converti les fichiers en UTF-8
 echo "==> converting CSV files to UTF-8..."
@@ -30,13 +37,13 @@ sed -i -s ':a;N;$!ba;s/"[^"]*\n[^"]*"/,/g' csv_utf8/*.csv
 
 # crée les scripts sed des contribuables à ignorer (splittés par lot de 1'000 numéro pour des raisons de perfs)
 echo "==> building filtering scripts..."
-(cd tmp && split -l 1000 ../$2 script_) # split fichiers de 1'000 numéros
+(cd tmp && split -l 1000 ../$EXCLUDE script_) # split fichiers de 1'000 numéros
 sed -i -s ':a;N;$!ba;s/\n/|/g' tmp/* # remplacement des retours de ligne par des |
 sed -i -s 's!^!/!' tmp/* # syntaxe de delete de line sed (voir http://en.kioskea.net/faq/1451-sed-delete-one-or-more-lines-from-a-file)
 sed -i -s 's!$!/d!' tmp/*
 
 # supprime toutes les lignes des fichiers csv qui correspondent aux contribuables à ignorer
-echo "==> removing unwanted taxpayer from CSV files..."
+echo "==> removing unwanted CTBs from CSV files..."
 cp csv_utf8/*.csv csv_filtered
 for pattern in `ls -1 tmp/*`; 
 do
@@ -47,18 +54,18 @@ done
 
 echo "==> building stats..."
 
-ctb_traites=0
+ctb_inscrits=0
 ctb_ignores=`cat csv_filtered/contribuables_ignores.csv | wc -l`
 ctb_en_erreur=`cat csv_filtered/contribuables_en_erreur.csv | wc -l`
 
 for file in `ls -1 csv_filtered/*_role_pp_*.csv`; 
 do
-  ctb_traites=$((ctb_traites + `cat $file | wc -l`))
+  ctb_inscrits=$((ctb_inscrits + `cat $file | wc -l`))
 done
 
 echo ""
 echo "-- Résumé général --"
-echo "Nombre de contribuables traités :" $ctb_traites
+echo "Nombre de contribuables inscrits :" $ctb_inscrits
 echo "Nombre de contribuables ignorés :" $ctb_ignores
 echo "Nombre de contribuables en erreur :" $ctb_en_erreur
 echo ""
