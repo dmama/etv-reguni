@@ -87,7 +87,7 @@ public class RcPersServiceTest {
 		assertEquals("476232", histo1.getLocalPersonId().getPersonId());
 	}
 
-	@Test
+	@Test(timeout = 5000)
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
