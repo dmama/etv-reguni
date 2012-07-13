@@ -52,11 +52,6 @@ public class RapportCsvExtractorApp {
 			System.exit(1);
 		}
 
-		if (!command.equals("list") && (csvfiles == null || csvfiles.length == 0)) {
-			System.err.println("Le nom du ou des fichiers csv à extraire doit être spécifié. Utiliser l'option '-help' pour plus d'information.");
-			System.exit(1);
-		}
-
 		if (!command.equals("list") && outputdir == null) {
 			System.err.println("Le répertoire de destination des extractions doit être spécifié. Utiliser l'option '-help' pour plus d'information.");
 			System.exit(1);
@@ -119,14 +114,14 @@ public class RapportCsvExtractorApp {
 				}
 			}
 
-			final Set<String> cvsAExtraire = new HashSet<String>(Arrays.asList(cvsfiles));
+			final Set<String> cvsAExtraire = (cvsfiles == null || cvsfiles.length == 0 ? null : new HashSet<String>(Arrays.asList(cvsfiles)));
 			final MutableInt index = new MutableInt(0);
 			boucleSurFichiers(PRStream.class, reader, new Traitement<PRStream>() {
 				@Override
 				public void traite(PRStream element) {
 					if (PdfName.EMBEDDEDFILE.equals(element.get(PdfName.TYPE))) {
 						final String nomFichierExtrait = noms.get(index.intValue()).toString();
-						if (cvsAExtraire.contains(nomFichierExtrait)) {
+						if (cvsAExtraire == null || cvsAExtraire.contains(nomFichierExtrait)) {
 							try {
 								final byte[] content = PdfReader.getStreamBytes(element);
 								final File file = new File(outputdirFile, nomFichierExtrait);
@@ -200,7 +195,7 @@ public class RapportCsvExtractorApp {
 			final Option outputdir = OptionBuilder.withArgName("outputdir").hasArg().withDescription(
 					"répertoire de sortie des fichiers cvs extraits du rapport").create("outputdir");
 			final Option csvfiles = OptionBuilder.withArgName("toto.csv [titi.csv ...]").hasArgs().withDescription(
-					"noms des fichiers csv à extraire du rapport").create("csvfiles");
+					"noms des fichiers csv à extraire du rapport (ne pas renseigner le paramètre pour extraire tous les fichiers)").create("csvfiles");
 
 			final Options options = new Options();
 			options.addOption(help);
