@@ -20,6 +20,10 @@ do
   iconv -f ISO-8859-1 -t UTF-8 csv_orig/$file > csv_utf8/$file;
 done
 
+# supprime les lignes d'entête
+echo "==> deleting headers from CSV files..."
+sed -i -s 1d csv_utf8/*.csv
+
 # supprime les retours de lignes dans la colonne 'adresse courrier' parce que ça empêche du faire du grep correctement
 echo "==> deleting multilines fields from CSV files..."
 sed -i -s ':a;N;$!ba;s/"[^"]*\n[^"]*"/,/g' csv_utf8/*.csv
@@ -40,4 +44,54 @@ do
   sed -i -s -r -f $pattern csv_filtered/*.csv
 done
 
+
+echo "==> building stats..."
+
+ctb_traites=0
+ctb_ignores=`cat csv_filtered/contribuables_ignores.csv | wc -l`
+ctb_en_erreur=`cat csv_filtered/contribuables_en_erreur.csv | wc -l`
+
+for file in `ls -1 csv_filtered/*_role_pp_*.csv`; 
+do
+  ctb_traites=$((ctb_traites + `cat $file | wc -l`))
+done
+
+echo ""
+echo "-- Résumé général --"
+echo "Nombre de contribuables traités :" $ctb_traites
+echo "Nombre de contribuables ignorés :" $ctb_ignores
+echo "Nombre de contribuables en erreur :" $ctb_en_erreur
+echo ""
+
+lausanne_total=0
+lausanne_ordinaire=0
+lausanne_depense=0
+lausanne_hc=0
+lausanne_hs=0
+lausanne_source=0
+lausanne_nonass=0
+
+for file in `ls -1 csv_filtered/5586_*.csv`; 
+do
+  lausanne_total=$((lausanne_total + `cat $file | wc -l`));
+  lausanne_ordinaire=$((lausanne_ordinaire + `grep -c 'ordinaire' $file`))
+  lausanne_depense=$((lausanne_depense + `grep -c 'dépense' $file`))
+  lausanne_hc=$((lausanne_hc + `grep -c 'hors canton' $file`))
+  lausanne_hs=$((lausanne_hs + `grep -c 'hors Suisse' $file`))
+  lausanne_source=$((lausanne_source + `grep -c 'source' $file`))
+  lausanne_nonass=$((lausanne_nonass + `grep -c 'Non assujetti' $file`))
+done
+
+echo "-- Pour la commune de Lausanne --"
+echo "Nombre de contribuables total :" $lausanne_total
+echo "Nombre de contribuables ordinaires :" $lausanne_ordinaire
+echo "Nombre de contribuables à la dépense :" $lausanne_depense
+echo "Nombre de contribuables hors-canton :" $lausanne_hc
+echo "Nombre de contribuables hors-Suisse :" $lausanne_hs
+echo "Nombre de contribuables à la source :" $lausanne_source
+echo "Nombre de contribuables dont l'assujettissement n'est pas poursuivi :" $lausanne_nonass
+
+
+echo ""
 echo "==> Done."
+
