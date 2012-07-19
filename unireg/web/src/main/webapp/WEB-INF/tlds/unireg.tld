@@ -420,6 +420,13 @@
 	</tag>
 
 	<tag>
+		<name>ifEfacture</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagIfEfacture</tag-class>
+		<body-content>JSP</body-content>
+		<description>Permet d'afficher du contenu uniquement si le mode E-Facture est actif</description>
+	</tag>
+
+	<tag>
 		<name>dateOffset</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagDateOffset</tag-class>
 		<body-content>JSP</body-content>

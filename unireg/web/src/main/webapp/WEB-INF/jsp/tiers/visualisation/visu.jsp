@@ -113,13 +113,15 @@
 					</authz:authorize>
 				</c:if>
 
-                <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-                    <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
-                        <li id="efactureTab">
-                            <a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
-                        </li>
-                    </authz:authorize>
-                </c:if>
+				<unireg:ifEfacture>
+					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+						<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
+	                        <li id="efactureTab">
+	                            <a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
+	                        </li>
+		                </authz:authorize>
+					</c:if>
+				</unireg:ifEfacture>
 
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="remarqueTab">
@@ -190,13 +192,15 @@
 				</authz:authorize>
 			</c:if>
 
-            <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-                <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
-                    <div id="tabContent_efactureTab" class="visuTiers">
-                        <jsp:include page="efacture.jsp"/>
-                    </div>
-                </authz:authorize>
-            </c:if>
+			<unireg:ifEfacture>
+	            <c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+	                <authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
+	                    <div id="tabContent_efactureTab" class="visuTiers">
+	                        <jsp:include page="efacture.jsp"/>
+	                    </div>
+	                </authz:authorize>
+	            </c:if>
+			</unireg:ifEfacture>
 
             <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 				<div id="tabContent_remarqueTab" class="visuTiers">
