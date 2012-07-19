@@ -138,6 +138,14 @@ public class AuthenticationHelper {
 		return principal;
 	}
 
+	public static String getCurrentPrincipalOrSystem() {
+		Authentication auth = getAuthentication();
+		if (auth == null) {
+			return SYSTEM_USER;
+		}
+		return getCurrentPrincipal();
+	}
+
 	private static UniregSecurityDetails getDetails() {
 		AbstractAuthenticationToken auth = getAuthentication();
 		if (auth == null) {
