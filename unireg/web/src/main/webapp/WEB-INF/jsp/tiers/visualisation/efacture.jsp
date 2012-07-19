@@ -12,7 +12,6 @@
 	});
 
     var eFacture = {
-
         refreshTable: function() {
             // get the data
             $.get('<c:url value="/efacture/histo.do?ctb=${command.tiersGeneral.numero}"/>' + '&' + new Date().getTime(), function(destinataire) {
