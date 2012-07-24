@@ -5,6 +5,7 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
@@ -76,6 +77,17 @@ public abstract class AnnulationSeparationOuDivorce extends EvenementCivilIntern
 		// Vérification de la cohérence
 		if (!menageComplet.estComposeDe(principal, conjoint)) {
 			throw new EvenementCivilException("Les tiers composant le tiers ménage trouvé ne correspondent pas avec les individus unis dans le civil");
+		}
+
+		// [SIFISC-5771] Vérification de la cohérence des états civils (les deux conjoints doivent avoir le même !)
+		final Individu individu = getIndividu();
+		if (individuConjoint != null && individu != null) {
+			final EtatCivil ecConjoint = individuConjoint.getEtatCivil(getDate());
+			final EtatCivil ecPrincipal = individu.getEtatCivil(getDate());
+			if (ecConjoint.getTypeEtatCivil() != ecPrincipal.getTypeEtatCivil()) {
+				throw new EvenementCivilException(String.format("Les états civils des deux conjoints (%d : %s, %d : %s) ne sont pas cohérents pour une annulation de séparation/divorce",
+				                                                individu.getNoTechnique(), ecPrincipal.getTypeEtatCivil(), individuConjoint.getNoTechnique(), ecConjoint.getTypeEtatCivil()));
+			}
 		}
 	}
 
