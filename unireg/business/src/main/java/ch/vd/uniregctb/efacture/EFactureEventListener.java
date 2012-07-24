@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0025.v1.ObjectFactory;
@@ -35,9 +36,14 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 	private Schema schemaCache;
 
 	private EFactureEventHandler handler;
+	private HibernateTemplate hibernateTemplate;
 
 	public void setHandler(EFactureEventHandler handler) {
 		this.handler = handler;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -61,6 +67,8 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 			throw e;
 		}
 		finally {
+			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal
+										// (sinon NullPointerException dans ModificationLogInterceptor)
 			AuthenticationHelper.popPrincipal();
 		}
 	}
