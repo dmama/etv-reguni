@@ -970,13 +970,16 @@ public class AdresseServiceImpl implements AdresseService {
 			final Entreprise entreprise = (Entreprise) tiers;
 			final AdressesPMHisto adressesPM = getAdressesPMHisto(entreprise);
 
-			final List<AdresseGenerique> courriers = initAdressesPMHisto(entreprise, adressesPM.courriers, adressesPM.sieges);
-			final List<AdresseGenerique> sieges = initAdressesPMHisto(entreprise, adressesPM.sieges, adressesPM.courriers);
+			// [SIFISC-5622] Parfois, une PM n'a pas d'adresse...
+			if (adressesPM != null) {
+				final List<AdresseGenerique> courriers = initAdressesPMHisto(entreprise, adressesPM.courriers, adressesPM.sieges);
+				final List<AdresseGenerique> sieges = initAdressesPMHisto(entreprise, adressesPM.sieges, adressesPM.courriers);
 
-			adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-			adresses.domicile.addCouche(AdresseCouche.CIVILE, sieges, null, null);
-			adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
-			adresses.poursuite.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+				adresses.courrier.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+				adresses.domicile.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+				adresses.representation.addCouche(AdresseCouche.CIVILE, courriers, null, null);
+				adresses.poursuite.addCouche(AdresseCouche.CIVILE, sieges, null, null);
+			}
 		}
 		else {
 			final AdressesCivilesHisto adressesCiviles = getAdressesCivilesHisto(tiers, strict);
