@@ -40,7 +40,7 @@ public class ResultatQuittancement {
 		return ETAT_EFACTURE_INCOHERENT;
 	}
 
-	public static ResultatQuittancement etatFiscalIncoherent () {
+	public static ResultatQuittancement etatFiscalIncoherent() {
 		return ETAT_FISCAL_INCOHERENT;
 	}
 
