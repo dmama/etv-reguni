@@ -56,19 +56,20 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 			final String businessId = message.getBusinessId();
 			LOGGER.info(String.format("Arrivée de l'événement de e-Facture '%s'", businessId));
 			onMessage(message, EsbMessageHelper.extractCustomHeaders(message));
+			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
 		}
 		catch (XmlException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
 			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
+			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
+			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
 			throw e;
 		}
 		finally {
-			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal
-										// (sinon NullPointerException dans ModificationLogInterceptor)
 			AuthenticationHelper.popPrincipal();
 		}
 	}
