@@ -132,18 +132,8 @@ public class AuthenticationHelper {
 			throw new IllegalArgumentException("L'authentification ne peut pas être nulle");
 		}
 		PrincipalSid sid = new PrincipalSid(auth);
-		String principal = sid.getPrincipal();
 
-		// LOGGER.info("Principal: "+principal);
-		return principal;
-	}
-
-	public static String getCurrentPrincipalOrSystem() {
-		Authentication auth = getAuthentication();
-		if (auth == null) {
-			return SYSTEM_USER;
-		}
-		return getCurrentPrincipal();
+		return sid.getPrincipal();
 	}
 
 	private static UniregSecurityDetails getDetails() {

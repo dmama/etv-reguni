@@ -4,6 +4,7 @@
 
 	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.efacture.EFactureEventListener" parent="esbMessageListener">
 		<property name="handler" ref="efactureEventHandler"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<bean id="evenementEfactureEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

@@ -52,7 +52,7 @@ public class ModificationLogInterceptor implements ModificationSubInterceptor, I
 
 		boolean modified = false;
 
-		final String user = AuthenticationHelper.getCurrentPrincipalOrSystem();
+		final String user = AuthenticationHelper.getCurrentPrincipal();
 
 		if (previousState == null) {
 			modified = assignValue("logCreationUser", propertyNames, currentState, user);
