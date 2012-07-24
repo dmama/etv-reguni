@@ -31,9 +31,4 @@ public class AnnulationSeparation extends AnnulationSeparationOuDivorce {
 	protected AnnulationSeparation(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, EvenementCivilContext context) {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, context);
 	}
-
-	@Override
-	protected boolean forceRefreshCacheConjoint() {
-		return true;
-	}
 }
