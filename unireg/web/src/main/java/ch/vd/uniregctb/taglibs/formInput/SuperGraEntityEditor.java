@@ -27,7 +27,7 @@ class SuperGraEntityEditor implements Editor {
 		else {
 			// on ignore tous les caractères non-numériques
 			value = value.replaceAll("[^\\d]", "");
-			entityId = Long.parseLong(value);
+			entityId = value.isEmpty() ? null : Long.parseLong(value);      // un null en base peut se transformer en chaine vide en html et en "boum" si on n'y prend pas garde
 		}
 
 		if (type == null) {
