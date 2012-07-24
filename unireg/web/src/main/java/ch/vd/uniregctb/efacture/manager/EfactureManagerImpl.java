@@ -75,7 +75,7 @@ public class EfactureManagerImpl implements EfactureManager {
 	}
 
 	@Override
-	public boolean isReponseReçuDeEfacture(String businessId) {
+	public boolean isReponseRecueDeEfacture(String businessId) {
 		return eFactureResponseService.waitForResponse(businessId, timeOutForReponse);
 	}
 
