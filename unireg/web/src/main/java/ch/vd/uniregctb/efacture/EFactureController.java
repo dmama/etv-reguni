@@ -30,10 +30,21 @@ public class EFactureController {
 	private static final String DATE_DEMANDE = "dateDemande";
 	private EfactureManager efactureManager;
 
+	private static void checkDroitVisuEfacture() {
+		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.GEST_EFACTURE)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
+		}
+	}
 
 	private static void checkDroitGestionaireEfacture() {
 		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour interagir avec les états e-facture d'un contribuable");
+		}
+	}
+
+	private static void checkDroitQuittanceurEnSerie() {
+		if (!SecurityProvider.isAnyGranted(Role.GEST_QUIT_EFACTURE)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours de confirmation d'inscription e-Facture");
 		}
 	}
 
@@ -42,22 +53,17 @@ public class EFactureController {
 	protected void initBinder(WebDataBinder binder) {
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, true));
 	}
+
 	@ResponseBody
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
 	public DestinataireAvecHistoView histo(@RequestParam(value = CTB, required = true) long ctbId) {
-
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.GEST_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
-		}
-
+		checkDroitVisuEfacture();
 		return buildHistoDestinataire(ctbId);
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	public String edit(Model model, @RequestParam(value = CTB, required = true) long ctbId) {
-
 		checkDroitGestionaireEfacture();
-
 		final DestinataireAvecHistoView histo = buildHistoDestinataire(ctbId);
 		if (histo == null) {
 			throw new ActionException("Le contribuable ne possède aucun état e-facture avec lequel il est possible d'interagir");
@@ -68,22 +74,20 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
-	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) throws Exception{
+	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
 		checkDroitGestionaireEfacture();
 		final String businessId = efactureManager.suspendreContribuable(ctbId);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de suspension a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
-		// TODO jde à faire
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/activate.do", method = RequestMethod.POST)
-	public String activate(@RequestParam(value = CTB, required = true) long ctbId) throws Exception{
+	public String activate(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
 		checkDroitGestionaireEfacture();
-
 		final String businessId = efactureManager.activerContribuable(ctbId);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande d'activation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
@@ -93,7 +97,7 @@ public class EFactureController {
 	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
 		checkDroitGestionaireEfacture();
 		final String businessId = efactureManager.accepterDemande(idDemande);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de validation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
@@ -103,30 +107,29 @@ public class EFactureController {
 	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
 		checkDroitGestionaireEfacture();
 		final String businessId = efactureManager.refuserDemande(idDemande);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de refus a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
 	}
 
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
-	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
+	                               @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
 		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de confirmation d'inscription a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
-
-		//TODO BNM message flash pour confirmer l'envoi + envoi d'info à E-facture
-
 	}
 
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
-	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande, @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
+	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
+	                             @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
 		checkDroitGestionaireEfacture();
 		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
-		if(!efactureManager.isReponseReçuDeEfacture(businessId)){
+		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de prise de contact a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
 		return String.format("redirect:/tiers/visu.do?id=%d", ctbId);
@@ -139,18 +142,18 @@ public class EFactureController {
 
 	@RequestMapping(value = "/quittancement/show.do", method = RequestMethod.GET)
 	public String showQuittancementForm() {
-		if (!SecurityProvider.isAnyGranted(Role.GEST_QUIT_EFACTURE)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours de confirmation d'inscription e-Facture");
-		}
+		checkDroitQuittanceurEnSerie();
 		return "efacture/form";
 	}
 
 	@RequestMapping(value = "/quittancement/beep.do", method = RequestMethod.POST)
-	public String doQuittancement(@RequestParam(value = "noctb") Long noCtb) throws Exception{
-		ResultatQuittancement resultatQuittancement = efactureManager.quittancer(noCtb);
+	public String doQuittancement(@RequestParam(value = "noctb", required = true) Long noCtb) throws Exception {
+		checkDroitQuittanceurEnSerie();
+		final ResultatQuittancement resultatQuittancement = efactureManager.quittancer(noCtb);
 		if (resultatQuittancement.isOk()) {
 			Flash.message(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
-		} else {
+		}
+		else {
 			Flash.error(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
 		}
 		return "redirect:/efacture/quittancement/show.do";

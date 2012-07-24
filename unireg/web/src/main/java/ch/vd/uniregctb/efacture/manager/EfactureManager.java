@@ -49,7 +49,7 @@ public interface EfactureManager {
 	 *
 	 * @return <code>true</code> si on a reçu une réponse, <code>false</code> sinon.
 	 */
-	boolean isReponseReçuDeEfacture(String businessId);
+	boolean isReponseRecueDeEfacture(String businessId);
 
 	/**
 	 * Permet de demander la validation de l'inscription
