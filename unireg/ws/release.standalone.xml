@@ -38,7 +38,7 @@
 	<files>
 		<file>
 			<!-- BEGIN_LVERSION -->
-			<source>target/uniregctb-ws-5.1.1.war</source>
+			<source>target/uniregctb-ws-5.1.2-SNAPSHOT.war</source>
 			<!-- END_LVERSION -->
 			<outputDirectory>deployment</outputDirectory>
 			<destName>unireg-ws.war</destName>
