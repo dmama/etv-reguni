@@ -28,6 +28,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		queue = new EvenementCivilNotificationQueueImpl(0);
 		queue.setEvtCivilService(evtCivilService);
 		buildProcessor(translator, false);
+		processor.afterPropertiesSet();
 		processor.start();
 	}
 
@@ -37,7 +38,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		super.onTearDown();
 	}
 	
-	protected void buildProcessor(EvenementCivilEchTranslator translator, boolean restart) {
+	protected void buildProcessor(EvenementCivilEchTranslator translator, boolean restart) throws Exception {
 		final EvenementCivilEchProcessorImpl proc = new EvenementCivilEchProcessorImpl();
 		proc.setEvtCivilDAO(evtCivilDAO);
 		proc.setNotificationQueue(queue);
@@ -52,6 +53,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 		}
 		processor = proc;
 		if (restart) {
+			processor.afterPropertiesSet();
 			processor.start();
 		}
 	}
