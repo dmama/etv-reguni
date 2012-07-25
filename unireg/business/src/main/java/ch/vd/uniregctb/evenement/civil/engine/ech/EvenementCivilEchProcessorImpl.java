@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -41,7 +42,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 /**
  * Classe de processing des événements civils reçus de RCPers (événements e-CH)
  */
-public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcessor, SmartLifecycle {
+public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcessor, EvenementCivilEchInternalProcessor, SmartLifecycle, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchProcessorImpl.class);
 	private static final Logger EVT_INTERNE_LOGGER = Logger.getLogger(EvenementCivilInterne.class);
@@ -55,6 +56,8 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	private GlobalTiersIndexer indexer;
 	private TiersService tiersService;
 	private ServiceCivilService serviceCivil;
+
+	private List<ErrorPostProcessingStrategy> postProcessingStrategies;
 
 	private Processor processor;
 	private final Map<Long, Listener> listeners = new LinkedHashMap<Long, Listener>();      // pour les tests, c'est pratique de conserver l'ordre (pour le reste, cela ne fait pas de mal...)
@@ -256,7 +259,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * @param pointer indicateur de la position de l'événement civil cible dans la liste des événements
 	 * @return <code>true</code> si tout s'est bien passé, <code>false</code> si l'un au moins des événements a terminé en erreur
 	 */
-	protected boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
+	public boolean processEventAndDoPostProcessingOnError(EvenementCivilEchBasicInfo evt, List<EvenementCivilEchBasicInfo> evts, int pointer) {
 		serviceCivil.setIndividuLogging(EVT_INTERNE_LOGGER.isTraceEnabled());
 		AuthenticationHelper.pushPrincipal(String.format("EvtCivil-%d", evt.getId()));
 		try {
@@ -354,45 +357,41 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	 * restant de la liste de l'état "A_TRAITER" en "EN_ATTENTE"
 	 * @param remainingEvents descriptif des événements dans la queue
 	 */
-	private void errorPostProcessing(final List<EvenementCivilEchBasicInfo> remainingEvents) {
+	@SuppressWarnings("unchecked")
+	private void errorPostProcessing(List<EvenementCivilEchBasicInfo> remainingEvents) {
 		if (remainingEvents != null && remainingEvents.size() > 0) {
-			final List<EvenementCivilEchBasicInfo> pourIndexation = doInNewTransaction(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
-				@Override
-				public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
-					final List<EvenementCivilEchBasicInfo> pourIndexation = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
-					for (EvenementCivilEchBasicInfo info : remainingEvents) {
-						if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {
-							final EvenementCivilEch evt = evtCivilDAO.get(info.getId());
-							if (evt.getEtat() == EtatEvenementCivil.A_TRAITER) {        // re-test pour vérifier que l'information dans le descripteur est toujours à jour
-								if (translator.isIndexationOnly(evt)) {
-									pourIndexation.add(info);
-								}
-								else {
-									evt.setEtat(EtatEvenementCivil.EN_ATTENTE);
-									Audit.info(evt.getId(), String.format("Mise en attente de l'événement %d", evt.getId()));
-								}
-							}
+
+			// itération sur toutes les stratégies dans l'ordre d'insertion
+			List<EvenementCivilEchBasicInfo> currentlyRemaining = remainingEvents;
+			for (final ErrorPostProcessingStrategy strategy : postProcessingStrategies) {
+
+				// phase de collecte
+				final ErrorPostProcessingStrategy.CustomDataHolder dataHolder = new ErrorPostProcessingStrategy.CustomDataHolder();
+				if (strategy.needsTransactionOnCollectPhase()) {
+					final List<EvenementCivilEchBasicInfo> toAnalyse = currentlyRemaining;
+					currentlyRemaining = doInNewTransaction(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+						@Override
+						public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+							return strategy.doCollectPhase(toAnalyse, dataHolder);
 						}
-					}
-					return pourIndexation;
+					});
 				}
-			});
-			
-			// on a mis tout le monde en attente, maintenant on va essayer de traiter les cas pour lesquels en gros seule une réindexation est nécessaire
-			if (pourIndexation.size() > 0) {
-				int pointer = 0;
-				try {
-					LOGGER.info("Lancement du traitement des événements d'indexation pure restants");
-					for (EvenementCivilEchBasicInfo info : pourIndexation) {
-						if (!processEventAndDoPostProcessingOnError(info, pourIndexation, pointer)) {
-							// si on reviens avec <code>false</code>, c'est qu'on a essayé de re-traiter les suivants aussi
-							break;
+				else {
+					currentlyRemaining = strategy.doCollectPhase(currentlyRemaining, dataHolder);
+				}
+
+				// phase de finalisation
+				if (strategy.needsTransactionOnFinalizePhase()) {
+					doInNewTransaction(new TransactionCallback<Object>() {
+						@Override
+						public Object doInTransaction(TransactionStatus status) {
+							strategy.doFinalizePhase(dataHolder.member);
+							return null;
 						}
-						++ pointer;
-					}
+					});
 				}
-				catch (Exception e) {
-					LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", pourIndexation.get(pointer).getId()), e);
+				else {
+					strategy.doFinalizePhase(dataHolder.member);
 				}
 			}
 		}
@@ -532,5 +531,12 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	@Override
 	public int getPhase() {
 		return Integer.MAX_VALUE;   // as late as possible during starting process
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		postProcessingStrategies = new ArrayList<ErrorPostProcessingStrategy>();
+		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtCivilDAO, translator, this));
+		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO));
 	}
 }
