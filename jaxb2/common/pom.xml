@@ -11,7 +11,7 @@
 		<groupId>ch.vd.uniregctb</groupId>
 		<artifactId>unireg-jaxb2</artifactId>
 		<!-- BEGIN_LVERSION -->
-		<version>1.4-SNAPSHOT</version>
+		<version>1.4</version>
 		<!-- END_LVERSION -->
 		<relativePath>../base/pom.xml</relativePath>
 	</parent>
