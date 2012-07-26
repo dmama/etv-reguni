@@ -178,7 +178,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 				servicePM.getPersonnesMorales(idsPM, PartPM.ADRESSES, PartPM.FORS_FISCAUX, PartPM.ASSUJETTISSEMENTS); // chauffe le cache
 
 				long nanosecondes = System.nanoTime() - start;
-				LOGGER.info("=> Récupéré " + idsPM.size() + " PMs en " + (nanosecondes / 1000000000L) + "s.");
+				LOGGER.info("=> Récupéré " + idsPM.size() + " PMs en " + (nanosecondes / 1000000L) + "ms.");
 			}
 			catch (Exception e) {
 				LOGGER.error("Impossible de précharger le lot de PMs [" + idsPM + "]. On continue un par un pour ce lot.", e);
@@ -207,7 +207,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 				serviceCivilService.getIndividus(numerosIndividus, null, parties); // chauffe le cache
 
 				long nanosecondes = System.nanoTime() - start;
-				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000000L) + "s.");
+				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000L) + "ms.");
 			}
 			catch (Exception e) {
 				LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue un par un pour ce lot.", e);
