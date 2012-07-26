@@ -13,7 +13,7 @@ public class JspTagIfEfacture extends TagSupport {
 
 	@Override
 	public int doStartTag() throws JspTagException {
-		if (UniregModeHelper.isEfactureEnable()) {
+		if (UniregModeHelper.isEfactureEnabled()) {
 			return Tag.EVAL_BODY_INCLUDE;
 		}
 

@@ -15,7 +15,7 @@ public class UniregModeHelper implements InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(UniregModeHelper.class);
 
-	private static boolean efactureEnable = false;
+	private static boolean efactureEnabled = false;
 	private static boolean testMode = false;
 	private static boolean standalone = false;
 	private static String environnement;
@@ -24,8 +24,8 @@ public class UniregModeHelper implements InitializingBean {
 	/**
 	 * @return true si la efacture est activée
 	 */
-	public static boolean isEfactureEnable () {
-		return efactureEnable;
+	public static boolean isEfactureEnabled() {
+		return efactureEnabled;
 	}
 
 	/**
@@ -67,13 +67,12 @@ public class UniregModeHelper implements InitializingBean {
 		UniregModeHelper.environnement = environnement;
 	}
 
-	public void setEfactureEnable(boolean enabled) {
-		UniregModeHelper.efactureEnable = enabled;
+	public void setEfactureEnabled(boolean enabled) {
+		UniregModeHelper.efactureEnabled = enabled;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		LOGGER.info(String.format("MODE E-FACTURE %s", efactureEnable ? "ON" : "OFF"));
 		if (DateConstants.TIME_OFFSET != 0) {
 			if (testMode) {
 				LOGGER.warn("+---------------------------------------------------------------------------------------+");
