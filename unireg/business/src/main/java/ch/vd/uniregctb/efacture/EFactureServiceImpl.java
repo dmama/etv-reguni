@@ -6,6 +6,7 @@ import java.util.EnumSet;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.avs.AvsHelper;
@@ -33,8 +34,9 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.utils.UniregModeHelper;
 
-public class EFactureServiceImpl implements EFactureService {
+public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
 	public static final Logger LOGGER = Logger.getLogger(EFactureServiceImpl.class);
 
@@ -43,7 +45,6 @@ public class EFactureServiceImpl implements EFactureService {
 	private EditiqueCompositionService editiqueCompositionService;
 	private EFactureMessageSender eFactureMessageSender;
 	private EFactureClient eFactureClient;
-
 
 	@Override
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
@@ -233,4 +234,14 @@ public class EFactureServiceImpl implements EFactureService {
 		this.adresseService = adresseService;
 	}
 
+	public void setUniregModeHelper(UniregModeHelper helper) {
+		// rien à faire, les méthodes sont de toute façon statiques sur cet objet, qui n'a été introduit ici que pour forcer la dépendance,
+		// de telle sorte que lors de l'appel à la méthode afterPropertiesSet(), on soit sûr que le mode est dans un état complètement configuré
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// tout ça pour ne logguer cette information que dans les web-app où elle a un sens (qu'est ce que cela veut dire dans NEXUS ou WS ?)
+		LOGGER.info(String.format("MODE E-FACTURE %s", UniregModeHelper.isEfactureEnabled() ? "ON" : "OFF"));
+	}
 }

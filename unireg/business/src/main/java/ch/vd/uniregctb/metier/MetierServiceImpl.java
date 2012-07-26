@@ -20,6 +20,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -71,7 +72,6 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.UniregModeHelper;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -1562,7 +1562,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			updateSituationFamilleSeparation(menage, date, etatCivilFamille);
-			desinscrirDeLaEFacture(menage.getId(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.getDescription(true));
+			desinscrireDeLaEFacture(menage.getId(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.getDescription(true));
 		}
 	}
 
@@ -2418,10 +2418,10 @@ public class MetierServiceImpl implements MetierService {
 
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
 		if (menageComplet != null && menageComplet.getMenage() != null) {
-			desinscrirDeLaEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+			desinscrireDeLaEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
 		}
 		if (defunt != null) {
-			desinscrirDeLaEFacture(defunt.getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+			desinscrireDeLaEFacture(defunt.getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
 		}
 	}
 
@@ -2506,15 +2506,18 @@ public class MetierServiceImpl implements MetierService {
 		reopenSituationFamille(date, menageCommun);
 	}
 
-	private void desinscrirDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
-		if (!UniregModeHelper.isEfactureEnable()) return;
-		// Vérification du statue dans la e-facture
-		DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
+	private void desinscrireDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
+		if (!UniregModeHelper.isEfactureEnabled()) {
+			return;
+		}
+
+		// Vérification du statut dans la e-facture
+		final DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
 		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
 			return;
 		}
 		try {
-			eFactureService.suspendreContribuable(ctbId,false,descr);
+			eFactureService.suspendreContribuable(ctbId, false, descr);
 		}
 		catch (EvenementEfactureException e) {
 			throw new MetierServiceException(e.getMessage(),e);
@@ -2523,7 +2526,7 @@ public class MetierServiceImpl implements MetierService {
 
 	@Override
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
+		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
 
