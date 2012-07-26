@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -14,12 +15,12 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
  * charge à la stratégie de collecter les éléments nécessaire à son traitement (à placer dans le paramètre <b>customData</b>).
  * <p/>
  * Ensuite, c'est la méthode {@link #doFinalizePhase(Object)} qui sera appelée en repassant l'objet constitué dans le premier appel.
- * @param <T> type de la donnée partagée entre les phase de collection et de finalisation
+ * @param <T> type de la donnée partagée entre les phase de collecte et de finalisation
  */
 public interface ErrorPostProcessingStrategy<T> {
 
 	/**
-	 * Structure de donnée passée lors de la phase de collection pour permettre l'utilisation de paramètre <i>out</i>.
+	 * Structure de donnée passée lors de la phase de collecte pour permettre l'utilisation de paramètre <i>out</i>.
 	 * @param <T> type de la donnée stockée
 	 */
 	public static final class CustomDataHolder<T> {
@@ -39,6 +40,7 @@ public interface ErrorPostProcessingStrategy<T> {
 	 * @param customData porte de sortie pour une donnée à faire passer en phase de finalisation
 	 * @return une liste contenant les événements non-traités par cette stratégie (ils seront pris en compte par les stratégies suivantes)
 	 */
+	@NotNull
 	List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, CustomDataHolder<T> customData);
 
 	/**
@@ -48,7 +50,7 @@ public interface ErrorPostProcessingStrategy<T> {
 
 	/**
 	 * Appelé dans la phase de finalisation
-	 * @param customData donnée fournie par la phase de collection
+	 * @param customData donnée fournie par la phase de collecte
 	 */
 	void doFinalizePhase(T customData);
 

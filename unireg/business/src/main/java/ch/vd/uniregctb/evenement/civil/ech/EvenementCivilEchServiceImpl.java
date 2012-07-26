@@ -132,8 +132,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		if (evts != null && evts.size() > 0) {
 			final List<EvenementCivilEchBasicInfo> liste = new ArrayList<EvenementCivilEchBasicInfo>(evts.size());
 			for (EvenementCivilEch evt : evts) {
-				final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(evt.getId(), noIndividu, evt.getEtat(), evt.getType(), evt.getAction(),
-						evt.getRefMessageId(), evt.getDateEvenement());
+				final EvenementCivilEchBasicInfo info = new EvenementCivilEchBasicInfo(evt);
 				liste.add(info);
 			}
 			return liste;

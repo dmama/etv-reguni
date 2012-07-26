@@ -3,6 +3,8 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -22,6 +24,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 		return true;
 	}
 
+	@NotNull
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, CustomDataHolder<Object> customData) {
 		final List<EvenementCivilEchBasicInfo> remaining = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());

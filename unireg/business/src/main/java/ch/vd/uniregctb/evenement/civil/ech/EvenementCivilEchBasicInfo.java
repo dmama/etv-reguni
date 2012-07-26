@@ -42,6 +42,10 @@ public final class EvenementCivilEchBasicInfo implements Serializable {
 		}
 	}
 
+	public EvenementCivilEchBasicInfo(EvenementCivilEch evt) {
+		this(evt.getId(), evt.getNumeroIndividu(), evt.getEtat(), evt.getType(), evt.getAction(), evt.getRefMessageId(), evt.getDateEvenement());
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
