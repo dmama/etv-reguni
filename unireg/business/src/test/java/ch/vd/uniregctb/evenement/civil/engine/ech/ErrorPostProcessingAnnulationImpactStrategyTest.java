@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -17,9 +18,11 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfoComparator;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTest {
 
@@ -616,6 +619,8 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		// résultats ?
 		Assert.assertNotNull(remaining);
 		Assert.assertEquals(2, remaining.size());       // donc a priori un traitement a bien eu lieu
+		Assert.assertEquals(TypeEvenementCivilEch.DEPART, remaining.get(0).getType());
+		Assert.assertEquals(TypeEvenementCivilEch.DEPART, remaining.get(1).getType());
 
 		// vérifions quand-même l'état en base !
 		// nous allons faire deux fois la même vérification... factorisons...
@@ -737,5 +742,105 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// nouvelle vérification de l'état en base
 		check.run();
+	}
+
+	@Test
+	public void testEffacementErreursAvecMarquageRedondant() throws Exception {
+
+		final long noIndividu = 2784262L;
+		final long idEvt = 4367L;
+		final long idEvtAnnulation = 436724L;
+		final long idEvtDeces = 45L;
+		final RegDate date = RegDate.get();
+
+		// création d'événements liés en erreur avec annulation
+		final List<EvenementCivilEchBasicInfo> infos = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch init = buildEvent(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, noIndividu, idEvt, null, date, EtatEvenementCivil.EN_ERREUR);
+				final EvenementCivilEchErreur erreurInit = new EvenementCivilEchErreur();
+				erreurInit.setMessage("Erreur divorce");
+				erreurInit.setType(TypeEvenementErreur.ERROR);
+				init.setErreurs(new HashSet<EvenementCivilEchErreur>(Arrays.asList(erreurInit)));
+
+				final EvenementCivilEch annulation = buildEvent(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.ANNULATION, noIndividu, idEvtAnnulation, idEvt, date, EtatEvenementCivil.EN_ATTENTE);
+				final EvenementCivilEch deces = buildEvent(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON, noIndividu, idEvtDeces, null, date, EtatEvenementCivil.EN_ERREUR);
+				final EvenementCivilEchErreur erreurDeces = new EvenementCivilEchErreur();
+				erreurDeces.setMessage("Erreur décès");
+				erreurDeces.setType(TypeEvenementErreur.ERROR);
+				deces.setErreurs(new HashSet<EvenementCivilEchErreur>(Arrays.asList(erreurDeces)));
+
+				return Arrays.asList(new EvenementCivilEchBasicInfo(init), new EvenementCivilEchBasicInfo(annulation), new EvenementCivilEchBasicInfo(deces));
+			}
+		});
+
+		// lancement de la phase de collecte
+		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
+		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
+			@Override
+			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
+				return strategy.doCollectPhase(infos.subList(1, infos.size()), cdh);    // on ne passe pas l'événement initial en erreur à la stratégie c'est une stratégie de post-traitement de cette erreur
+			}
+		});
+
+		// résultats ?
+		Assert.assertNotNull(remaining);
+		Assert.assertEquals(1, remaining.size());       // donc a priori un traitement a eu lieu
+		Assert.assertEquals("Evénement de décès", infos.get(2), remaining.get(0));
+
+		// vérifions quand-même l'état en base (on ne vérfie que les erreurs ici, le reste est vérifié dans un autre test)!
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// événement mis redondant -> les erreurs doivent avoir été enlevées
+				{
+					final EvenementCivilEch evt = dao.get(idEvt);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+					Assert.assertNotNull(evt.getErreurs());
+					Assert.assertEquals(0, evt.getErreurs().size());
+				}
+				// événement toujours en erreur -> on a touché à rien
+				{
+					final EvenementCivilEch evt = dao.get(idEvtDeces);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+					Assert.assertNotNull(evt.getErreurs());
+					Assert.assertEquals(1, evt.getErreurs().size());
+					Assert.assertEquals("Erreur décès", evt.getErreurs().iterator().next().getMessage());
+				}
+				return null;
+			}
+		});
+
+		// reste à vérifier que la phase de finalisation ne casse rien
+		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
+		strategy.doFinalizePhase(cdh.member);
+
+		// nouvelle vérification de l'état en base (on ne vérfie que les erreurs ici, le reste est vérifié dans un autre test)!
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				// événement mis redondant -> les erreurs doivent avoir été enlevées
+				{
+					final EvenementCivilEch evt = dao.get(idEvt);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+					Assert.assertNotNull(evt.getErreurs());
+					Assert.assertEquals(0, evt.getErreurs().size());
+				}
+				// événement toujours en erreur -> on a touché à rien
+				{
+					final EvenementCivilEch evt = dao.get(idEvtDeces);
+					Assert.assertNotNull(evt);
+					Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+					Assert.assertNotNull(evt.getErreurs());
+					Assert.assertEquals(1, evt.getErreurs().size());
+					Assert.assertEquals("Erreur décès", evt.getErreurs().iterator().next().getMessage());
+				}
+				return null;
+			}
+		});
 	}
 }

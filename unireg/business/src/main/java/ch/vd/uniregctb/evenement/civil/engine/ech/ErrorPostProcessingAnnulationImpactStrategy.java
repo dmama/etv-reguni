@@ -81,6 +81,7 @@ public class ErrorPostProcessingAnnulationImpactStrategy implements ErrorPostPro
 									// surtout faire cette construction AVANT de changer les valeurs dans l'événement (sinon le removeAll plus bas ne retrouve pas ses petits) !!!
 									final EvenementCivilEchBasicInfo infoEvt = new EvenementCivilEchBasicInfo(evt);
 
+									evt.getErreurs().clear();
 									evt.setDateTraitement(DateHelper.getCurrentDate());
 									evt.setEtat(EtatEvenementCivil.REDONDANT);
 									evt.setCommentaireTraitement(COMMENTAIRE);
