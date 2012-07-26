@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -29,6 +30,7 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 		return true;
 	}
 
+	@NotNull
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents,
 	                                                       CustomDataHolder<List<EvenementCivilEchBasicInfo>> customData) {

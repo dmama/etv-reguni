@@ -537,6 +537,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 	public void afterPropertiesSet() throws Exception {
 		postProcessingStrategies = new ArrayList<ErrorPostProcessingStrategy>();
 		postProcessingStrategies.add(new ErrorPostProcessingIndexationPureStrategy(evtCivilDAO, translator, this));
+//		postProcessingStrategies.add(new ErrorPostProcessingAnnulationImpactStrategy(evtCivilDAO));     // on ne sait pas encore si on active cette stratégie...
 		postProcessingStrategies.add(new ErrorPostProcessingMiseEnAttenteStrategy(evtCivilDAO));
 	}
 }
