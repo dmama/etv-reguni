@@ -42,6 +42,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		translator.setServiceInfrastructureService(serviceInfra);
 		translator.setTiersDAO(tiersDAO);
 		translator.setTiersService(tiersService);
+		translator.setParameters(getBean(EvenementCivilEchStrategyParameters.class, "evenementCivilEchStrategyParameters"));
 		translator.afterPropertiesSet();
 	}
 
@@ -52,7 +53,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 			if (!typesIgnores.contains(type)) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {
 					final EvenementCivilEchTranslatorImpl.EventTypeKey key = new EvenementCivilEchTranslatorImpl.EventTypeKey(type, action);
-					final EvenementCivilEchTranslationStrategy strategy = EvenementCivilEchTranslatorImpl.getStrategyFromMap(key);
+					final EvenementCivilEchTranslationStrategy strategy = translator.getStrategyFromMap(key);
 					Assert.assertNotNull(String.format("Pas de stratégie pour la combinaison %s/%s", type, action), strategy);
 				}
 			}

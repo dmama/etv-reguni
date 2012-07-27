@@ -35,7 +35,7 @@ import ch.vd.uniregctb.evenement.civil.interne.correction.identification.Correct
 import ch.vd.uniregctb.evenement.civil.interne.correction.identification.CorrectionIdentificationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.depart.DepartTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.divorce.DivorceTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.MariageTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.naissance.NaissanceTranslationStrategy;
@@ -108,7 +108,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		}
 	}
 
-	private static final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
+	private EvenementCivilEchStrategyParameters parameters;
+	private Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies;
 
 	/**
 	 * Stratégie par défaut tant que certains traitements ne sont pas encore implémentés
@@ -160,7 +161,9 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		}
 	};
 
-	static {
+	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(EvenementCivilEchStrategyParameters params) {
+
+		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
@@ -209,7 +212,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ArriveeTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION), new AnnulationArriveeTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DepartTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DepartEchTranslationStrategy(params.getDecalageMaxPourDepart()));
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEMENAGEMENT_DANS_COMMUNE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DemenagementTranslationStrategy());
@@ -290,6 +293,8 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 		// pour les tests uniquement
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new TestingTranslationStrategy());
+
+		return strategies;
 	}
 
 	private ServiceCivilService serviceCivilService;
@@ -335,22 +340,14 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	}
 
 	@Nullable
-	protected static EvenementCivilEchTranslationStrategy getStrategyFromMap(EventTypeKey key) {
+	protected final EvenementCivilEchTranslationStrategy getStrategyFromMap(EventTypeKey key) {
 		return strategies.get(key);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		final ServiceCivilService serviceCivil = serviceCivilService;
-		final ServiceInfrastructureService serviceInfra = serviceInfrastructureService;
-		final DataEventService dataEventService1 = dataEventService;
-		final TiersService tiersService1 = tiersService;
-		final GlobalTiersIndexer indexer1 = indexer;
-		final MetierService metierService1 = metierService;
-		final TiersDAO tiersDAO1 = tiersDAO;
-		final AdresseService adresseService1 = adresseService;
-		final EvenementFiscalService evenementFiscalService1 = evenementFiscalService;
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService1, tiersService1, indexer1, metierService1, tiersDAO1, adresseService1, evenementFiscalService1);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		strategies = buildStrategies(parameters);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -396,5 +393,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setParameters(EvenementCivilEchStrategyParameters parameters) {
+		this.parameters = parameters;
 	}
 }

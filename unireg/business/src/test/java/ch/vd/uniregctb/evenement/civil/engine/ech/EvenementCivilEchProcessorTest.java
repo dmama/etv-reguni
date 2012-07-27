@@ -11,8 +11,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -24,8 +22,6 @@ import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.testing.Testing;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -401,21 +397,13 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 			}
 		};
 
-		final EvenementCivilEchTranslatorImplOverride translator = new EvenementCivilEchTranslatorImplOverride();
-		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
-		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
-		translator.setIndexer(globalTiersIndexer);
-		translator.setMetierService(getBean(MetierService.class, "metierService"));
-		translator.setServiceCivilService(serviceCivil);
-		translator.setServiceInfrastructureService(serviceInfra);
-		translator.setTiersDAO(tiersDAO);
-		translator.setTiersService(tiersService);
-		translator.afterPropertiesSet();
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
+			}
+		});
 
-		translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.PREMIERE_LIVRAISON, strategy);
-		buildProcessor(translator, true);
-		
 		// construction de l'événement en base
 		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override

@@ -53,12 +53,11 @@ public class DepartSecondaire extends Depart {
 		this.nouvelleLocalisation =  computeNouvelleLocalisation(adresseSecondaire);
 	}
 
-	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
-		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
-		this.ancienneAdresse = anciennesAdresses.secondaire;
+		this.ancienneAdresse = ancienneAdresse;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 

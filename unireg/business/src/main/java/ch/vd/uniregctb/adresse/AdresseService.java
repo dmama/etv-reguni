@@ -102,6 +102,16 @@ public interface AdresseService {
 	public AdressesCivilesHisto getAdressesCivilesHisto(Tiers tiers, boolean strict) throws AdresseException;
 
 	/**
+	 * Retourne l'historique des adresses civiles de l'individu spécifié. Ou <b>null</b> s'il n'en possède pas. Elle sont extraites du registre civil.
+	 *
+	 * @param numeroIndividu l'identifiant de l'individu civil dont on cherche les adresses
+	 * @param strict si <b>faux</b> essaie de résoudre silencieusement les problèmes détectés durant le traitement; autrement lève une exception.
+	 * @return l'historique des adresses civiles de l'individu spécifié.
+	 * @throws AdresseException en cas de problème dans le traitement
+	 */
+	public AdressesCivilesHisto getAdressesCivilesHisto(long numeroIndividu, boolean strict) throws AdresseException;
+
+	/**
 	 * Retourne l'adresse 'représentation' du représentant du tiers spécifié.
 	 *
 	 * @param tiers  le tiers dont on recherche l'adresse du représentant

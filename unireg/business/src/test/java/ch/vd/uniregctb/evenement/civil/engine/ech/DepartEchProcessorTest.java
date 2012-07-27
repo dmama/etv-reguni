@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -996,6 +997,357 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 				Assert.assertEquals("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence Echallens est toujours dans le canton.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartPrincipalAvecDateFinAdresseDifferenteSansDecalageAdmis() throws Exception {
+
+		final long noIndividu = 467425267L;
+		final RegDate dateArrivee = date(2000, 1, 1);
+		final RegDate dateFinAdresse = date(2012, 5, 31);
+		final RegDate dateEvtDepart = dateFinAdresse.addDays(1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 9, 17), "Clette", "Lara", false);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateArrivee, dateFinAdresse);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateEvtDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(0));     // aucun décalage accepté
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement de l'événement (ignoré car départ vaudois)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine à la date de l'événement.", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartPrincipalAvecDateFinAdresseDifferenteMaisAcceptable() throws Exception {
+
+		final long noIndividu = 467425267L;
+		final RegDate dateArrivee = date(2000, 1, 1);
+		final RegDate dateFinAdresse = date(2012, 5, 31);
+		final RegDate dateEvtDepart = dateFinAdresse.addDays(1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 9, 17), "Clette", "Lara", false);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateArrivee, dateFinAdresse);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateEvtDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement de l'événement (ignoré car départ vaudois)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartPrincipalAvecDateFinAdresseTropDifferente() throws Exception {
+
+		final long noIndividu = 467425267L;
+		final RegDate dateArrivee = date(2000, 1, 1);
+		final RegDate dateFinAdresse = date(2012, 5, 31);
+		final RegDate dateEvtDepart = dateFinAdresse.addDays(2);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 9, 17), "Clette", "Lara", false);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeLaGare, null, dateArrivee, dateFinAdresse);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateEvtDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement de l'événement (ignoré car départ vaudois)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine 1 jour ou moins avant la date de l'événement.", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartSecondaireAvecDateFinAdresseDifferenteMaisAcceptable() throws Exception {
+		final long noIndividu = 467425267L;
+		final RegDate dateArrivee = date(2000, 1, 1);
+		final RegDate dateFinAdresse = date(2012, 5, 31);
+		final RegDate dateEvtDepart = dateFinAdresse.addDays(1);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 9, 17), "Clette", "Lara", false);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeLaGare, null, dateArrivee, dateFinAdresse);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateEvtDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement de l'événement (ignoré car départ vaudois)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testDepartSecondaireAvecDateFinAdresseTropDifferente() throws Exception {
+		final long noIndividu = 467425267L;
+		final RegDate dateArrivee = date(2000, 1, 1);
+		final RegDate dateFinAdresse = date(2012, 5, 31);
+		final RegDate dateEvtDepart = dateFinAdresse.addDays(2);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1974, 9, 17), "Clette", "Lara", false);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeLaGare, null, dateArrivee, dateFinAdresse);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateEvtDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON, new DepartEchTranslationStrategy(1));     // 1 jour de décalage accepté
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement de l'événement (ignoré car départ vaudois)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertNotNull(erreur);
+				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine 1 jour ou moins avant la date de l'événement.", erreur.getMessage());
 				return null;
 			}
 		});
