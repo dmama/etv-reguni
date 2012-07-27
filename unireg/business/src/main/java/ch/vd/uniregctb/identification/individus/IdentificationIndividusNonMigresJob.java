@@ -20,6 +20,7 @@ import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.evd0001.v3.Person;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.registre.civil.model.EnumAttributeIndividu;
 import ch.vd.registre.civil.service.ServiceCivil;
 import ch.vd.registre.common.service.RegistreException;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
@@ -34,6 +35,8 @@ import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
+import ch.vd.uniregctb.scheduler.JobParam;
+import ch.vd.uniregctb.scheduler.JobParamBoolean;
 
 public class IdentificationIndividusNonMigresJob extends JobDefinition implements InitializingBean {
 
@@ -41,6 +44,8 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 
 	private static final String NAME = "IdentificationIndividusNonMigres";
 	private static final String CATEGORIE = "Stats";
+	private static final String PARAM_MIGRATION_NH = "MigrationNH";
+	private static final EnumAttributeIndividu[] ATTRIBUTE_INDIVIDUS = new EnumAttributeIndividu[]{EnumAttributeIndividu.ADRESSES, EnumAttributeIndividu.PERMIS, EnumAttributeIndividu.NATIONALITE};
 
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
@@ -50,7 +55,10 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 	private RapportService rapportService;
 	private ServiceInfrastructureRaw infraService;
 
+	private boolean migrationNH;
+
 	private final List<StrategieIdentification> strategies = new ArrayList<StrategieIdentification>();
+
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -90,6 +98,12 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 
 	public IdentificationIndividusNonMigresJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
+		final JobParam param = new JobParam();
+		param.setDescription("Générer la liste des contribuables à migrer en Non-Habitant");
+		param.setName(PARAM_MIGRATION_NH);
+		param.setMandatory(true);
+		param.setType(new JobParamBoolean());
+		addParameterDefinition(param, Boolean.FALSE);
 	}
 
 	private static class Ids {
@@ -107,9 +121,14 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 
 		final StatusManager statusManager = getStatusManager();
 		statusManager.setMessage("Recherche des personnes physiques non-indexées...");
+		// final List<Ids> ids = getIdsDebug();
 		final List<Ids> ids = getIds();
 
-		final IdentificationIndividusNonMigresResults results = new IdentificationIndividusNonMigresResults(RegDate.get(), ids.size());
+		migrationNH = getBooleanValue(params, PARAM_MIGRATION_NH);
+
+		final IdentificationIndividusNonMigresResults results;
+		results = new IdentificationIndividusNonMigresResults(RegDate.get(), ids.size(), migrationNH);
+
 		for (int i = 0, idsSize = ids.size(); i < idsSize; i++) {
 			final Ids id = ids.get(i);
 			if (statusManager.interrupted()) {
@@ -146,7 +165,13 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 			return;
 		}
 
-		final IdentificationIndividu identRegPP = new IdentificationIndividu(indRegPP);
+		final IdentificationIndividu identRegPP;
+		if (migrationNH) {
+			identRegPP = new IdentificationIndividuMigrationNH(indRegPP);
+		} else {
+			identRegPP = new IdentificationIndividu(indRegPP);
+		}
+
 		if (StringUtils.isBlank(identRegPP.nom)) {
 			results.addError(id.ctbId, identRegPP, IdentificationIndividusNonMigresResults.ErreurType.INDIVIDU_REGPP_NOM_VIDE);
 			return;
@@ -218,7 +243,12 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 		// copié-collé de la méthode ServiceCivilHostInterfaces.getIndividu() adaptée pour les circonstances (et parce qu'on veut un accès direct au service)
 
 		try {
-			ch.vd.registre.civil.model.Individu ind = regppClient.getIndividu(noInd, 2400);
+			ch.vd.registre.civil.model.Individu ind;
+			if (migrationNH) {
+				ind = regppClient.getIndividu(noInd, 2400, ATTRIBUTE_INDIVIDUS);
+			} else {
+				ind = regppClient.getIndividu(noInd, 2400);
+			}
 			return IndividuImpl.get(ind, null);
 		}
 		catch (RemoteException e) {
@@ -255,6 +285,51 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 		return individu;
 	}
 
+	private List<Ids> getIdsDebug() {
+
+		final List<Ids> ids = new ArrayList<Ids>();
+
+		// identifié 1 tiers
+		ids.add(new Ids(10040161,771090));
+		ids.add(new Ids(10130406,140789));
+		ids.add(new Ids(10141458,158619));
+		ids.add(new Ids(10141481,158652));
+		ids.add(new Ids(10140694,157391));
+		ids.add(new Ids(10140715,157431));
+		ids.add(new Ids(10151175,174418));
+		ids.add(new Ids(10150952,174042));
+		ids.add(new Ids(10130763,141320));
+
+		// identifiés, plusieurs tiers
+		ids.add(new Ids(10240133,323500));
+
+		// identifiés, sans tiers
+		ids.add(new Ids(10290654,406971));
+
+		// non identifies
+		ids.add(new Ids(10141031,158013));
+		ids.add(new Ids(10117276,913936));
+		ids.add(new Ids(10124419,130883));
+		ids.add(new Ids(10118285,917271));
+		ids.add(new Ids(10125050,131955));
+		ids.add(new Ids(10053706,840973));
+		ids.add(new Ids(10041804,349348));
+		ids.add(new Ids(10076570,849796));
+		ids.add(new Ids(10128237,137299));
+		ids.add(new Ids(10171312,207499));
+		ids.add(new Ids(10171313,207500));
+		ids.add(new Ids(10171315,207502));
+		ids.add(new Ids(10149026,170503));
+		ids.add(new Ids(10158635,186604));
+		ids.add(new Ids(10057099,820658));
+		ids.add(new Ids(10056998,819975));
+		ids.add(new Ids(10171617,207970));
+		ids.add(new Ids(10172201,208870));
+
+		return ids;
+
+	}
+
 	/**
 	 * @return les numéros de tiers des personnes physiques qui possèdent un numéro d'individu et qui ne sont pas indexées.
 	 */
@@ -289,4 +364,15 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 
 		return ids;
 	}
+
+	private static class RegppAdresseRetriever implements AdresseRetriever {
+		@Override
+		public String retrieve(long noIndiv) {
+			return "<default>";
+		}
+	}
+
 }
+
+
+

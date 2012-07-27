@@ -112,7 +112,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testIsReponseReçuDeEfacture() {
+	public void testIsReponseRecueDeEfacture() {
 		expect(eFactureResponseService.waitForResponse(eq("BUSINESS_ID"), anyLong())).andReturn(true).andReturn(false);
 		replayAll();
 		assertTrue(eFactureManager.isReponseRecueDeEfacture("BUSINESS_ID"));

@@ -1,9 +1,11 @@
 package ch.vd.uniregctb.identification.individus;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.JobResults;
 
 public class IdentificationIndividusNonMigresResults {
@@ -125,6 +127,50 @@ public class IdentificationIndividusNonMigresResults {
 		}
 	}
 
+	public static class EnVueDeMigrationNH {
+
+		public final long noCtb;
+		public final IdentificationIndividuMigrationNH identiteRegPP;
+		public final String remarque;
+
+		public EnVueDeMigrationNH (NonIdentifie nonIdentifie) {
+			this.noCtb = nonIdentifie.noCtb;
+			this.identiteRegPP= (IdentificationIndividuMigrationNH) nonIdentifie.identiteRegPP;
+
+			StringBuilder rmq = new StringBuilder("Habitant RegPP non migré dans Rcpers, il n'a pas été possible de l'identifier.");
+			if (nonIdentifie.raison == NonIdentificationType.PLUSIEURS_INDIVIDUS_RCPERS ) {
+				rmq.append("Il pourrait cependant correspondre aux individus: ");
+				rmq.append(nonIdentifie.details.substring(nonIdentifie.details.indexOf('[') + 1, nonIdentifie.details.lastIndexOf(']')));
+			}
+
+			this.remarque = rmq.toString();
+		}
+
+		public EnVueDeMigrationNH (Identifie identifie) {
+			this.noCtb = identifie.noCtb;
+			this.identiteRegPP = (IdentificationIndividuMigrationNH) identifie.identiteRegPP;
+			StringBuilder rmq = new StringBuilder(String.format(
+					"Habitant RegPP non migré dans Rcpers, identifié comme pouvant être l'individu %s grâce à son %s. ",
+					this.identiteRegPP.noInd,
+					identifie.strategie));
+			if (identifie.tiersDejaLies.isEmpty()) {
+				rmq.append("Aucun tiers n'est lié à cet individu.");
+			} else if (identifie.tiersDejaLies.size() == 1) {
+				rmq.append(String.format("Potentiellement un doublon du tiers %s", FormatNumeroHelper.numeroCTBToDisplay(noCtb)));
+			} else {
+				rmq.append("Potentiellement un doublon, voir les tiers ");
+				for (Iterator<Long> it = identifie.tiersDejaLies.iterator(); it.hasNext(); ) {
+					rmq.append(it.next());
+					if (it.hasNext()) {
+						rmq.append(", ");
+					}
+				}
+				rmq.append(" liés à cet individu");
+			}
+			this.remarque = rmq.toString();
+		}
+	}
+
 	public final long startTime = System.currentTimeMillis();
 	public long endTime = 0;
 
@@ -137,23 +183,40 @@ public class IdentificationIndividusNonMigresResults {
 	public final List<NonIdentifie> nonIdentifies = new ArrayList<NonIdentifie>();
 	public final List<Ignore> ignores = new ArrayList<Ignore>();
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
-	public boolean interrompu;
+	public final List<EnVueDeMigrationNH> enVueDeMigrationNH = new ArrayList<EnVueDeMigrationNH>();
 
-	public IdentificationIndividusNonMigresResults(RegDate dateTraitement, int nbCtbsTotal) {
+	public boolean interrompu;
+	final private boolean migrationNH;
+
+	public IdentificationIndividusNonMigresResults(RegDate dateTraitement, int nbCtbsTotal, boolean migrationNH) {
 		this.dateTraitement = dateTraitement;
 		this.nbCtbsTotal = nbCtbsTotal;
-	}
+		this.migrationNH = migrationNH;
 
+	}
 	public void addIdentifie(Long noCtb, IdentificationIndividu identiteRegPP, IdentificationIndividu identiteRcPers, String strategie, String remarque, List<Long> tiersDejaLies) {
-		identifies.add(new Identifie(noCtb, identiteRegPP, identiteRcPers, strategie, remarque, tiersDejaLies));
+		final Identifie i = new Identifie(noCtb, identiteRegPP, identiteRcPers, strategie, remarque, tiersDejaLies);
+		identifies.add(i);
+		if (migrationNH) {
+			enVueDeMigrationNH.add(new EnVueDeMigrationNH(i));
+		}
 	}
 
 	public void addNonIdentifie(long noCtb, IdentificationIndividu identRegPP, NonIdentificationType raison) {
-		nonIdentifies.add(new NonIdentifie(noCtb, identRegPP, raison, null));
+		final NonIdentifie ni = new NonIdentifie(noCtb, identRegPP, raison, null);
+		nonIdentifies.add(ni);
+		if (migrationNH) {
+			enVueDeMigrationNH.add(new EnVueDeMigrationNH(ni));
+		}
+
 	}
 
 	public void addNonIdentifie(long noCtb, IdentificationIndividu identRegPP, NonIdentificationType raison, String details) {
-		nonIdentifies.add(new NonIdentifie(noCtb, identRegPP, raison, details));
+		final NonIdentifie ni = new NonIdentifie(noCtb, identRegPP, raison, details);
+		nonIdentifies.add(ni);
+		if (migrationNH) {
+			enVueDeMigrationNH.add(new EnVueDeMigrationNH(ni));
+		}
 	}
 
 	public void addIgnore(long noCtb, IdentificationIndividu identiteRegPP, IdentificationIndividu identiteRcPers, IgnoreType raison) {
@@ -180,3 +243,8 @@ public class IdentificationIndividusNonMigresResults {
 		this.endTime = System.currentTimeMillis();
 	}
 }
+
+interface AdresseRetriever {
+	String retrieve (long noIndiv);
+}
+
