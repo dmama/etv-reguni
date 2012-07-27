@@ -56,4 +56,8 @@
 
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>
 
+	<bean id="evenementCivilEchStrategyParameters" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchStrategyParametersImpl">
+		<property name="decalageMaxPourDepart" value="0"/>
+	</bean>
+
 </beans>

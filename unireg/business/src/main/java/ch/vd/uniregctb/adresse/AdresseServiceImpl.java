@@ -1589,7 +1589,7 @@ public class AdresseServiceImpl implements AdresseService {
 		return adressesCiviles;
 	}
 
-	private AdressesCivilesHisto getAdressesCivilesHisto(long numeroIndividu, boolean strict) throws AdresseException {
+	public AdressesCivilesHisto getAdressesCivilesHisto(long numeroIndividu, boolean strict) throws AdresseException {
 		try {
 			final AdressesCivilesHistoriques adressesHisto = serviceCivilService.getAdressesHisto(numeroIndividu, strict);
 			if (adressesHisto == null) {

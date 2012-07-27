@@ -45,7 +45,7 @@ import ch.vd.uniregctb.evenement.civil.interne.changement.permis.CorrectionPermi
 import ch.vd.uniregctb.evenement.civil.interne.changement.sexe.ChangementSexeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.depart.DepartTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.depart.DepartRegppTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.divorce.DivorceTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.fin.nationalite.FinNationaliteTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.fin.permis.FinPermisTranslationStrategy;
@@ -113,8 +113,8 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		strategies.put(TypeEvenementCivil.CORREC_PERMIS, new CorrectionPermisTranslationStrategy());
 		strategies.put(TypeEvenementCivil.DECES, new DecesTranslationStrategy());
 		strategies.put(TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, new DemenagementTranslationStrategy());
-		strategies.put(TypeEvenementCivil.DEPART_COMMUNE, new DepartTranslationStrategy());
-		strategies.put(TypeEvenementCivil.DEPART_SECONDAIRE, new DepartTranslationStrategy());
+		strategies.put(TypeEvenementCivil.DEPART_COMMUNE, new DepartRegppTranslationStrategy());
+		strategies.put(TypeEvenementCivil.DEPART_SECONDAIRE, new DepartRegppTranslationStrategy());
 		strategies.put(TypeEvenementCivil.DIVORCE, new DivorceTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ETAT_COMPLET, new DeclarationEtatCompletIndividuECH99TranslationStrategy());
 		strategies.put(TypeEvenementCivil.EVENEMENT_TESTING, new TestingTranslationStrategy());

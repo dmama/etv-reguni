@@ -36,6 +36,7 @@
 		<property name="adresseService" ref="adresseService"/>
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
+		<property name="parameters" ref="evenementCivilEchStrategyParameters" />
 	</bean>
 
 	<bean id="evtCivilEchService" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchServiceImpl">

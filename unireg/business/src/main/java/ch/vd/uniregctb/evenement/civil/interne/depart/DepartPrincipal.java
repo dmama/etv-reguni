@@ -65,13 +65,11 @@ public class DepartPrincipal extends Depart {
 
 	}
 
-	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
-		final AdressesCiviles anciennesAdresses = getAdresses(context, dateDepart);
-
-		this.ancienneAdresse = anciennesAdresses.principale;
+		this.ancienneAdresse = ancienneAdresse;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 
@@ -106,8 +104,6 @@ public class DepartPrincipal extends Depart {
 		}
 
 		verifierMouvementIndividu(this, false, erreurs, warnings);
-
-
 	}
 
 	@Override
@@ -121,8 +117,6 @@ public class DepartPrincipal extends Depart {
 
 		Audit.info(getNumeroEvenement(), "Validation de la nouvelle adresse principale");
 		validateCoherenceAdresse(ancienneAdresse, ancienneCommune, erreurs);
-
-
 	}
 
 

@@ -2,10 +2,13 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import org.apache.commons.lang.mutable.MutableBoolean;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
+import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.metier.MetierService;
 
 public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTest {
 	
@@ -56,6 +59,27 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 			processor.afterPropertiesSet();
 			processor.start();
 		}
+	}
+
+	protected static interface StrategyOverridingCallback {
+		void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator);
+	}
+
+	protected void buildStrategyOverridingTranslatorAndProcessor(boolean restart, StrategyOverridingCallback callback) throws Exception {
+		final EvenementCivilEchTranslatorImplOverride translator = new EvenementCivilEchTranslatorImplOverride();
+		translator.setAdresseService(getBean(AdresseService.class, "adresseService"));
+		translator.setDataEventService(getBean(DataEventService.class, "dataEventService"));
+		translator.setEvenementFiscalService(getBean(EvenementFiscalService.class, "evenementFiscalService"));
+		translator.setIndexer(globalTiersIndexer);
+		translator.setMetierService(getBean(MetierService.class, "metierService"));
+		translator.setServiceCivilService(serviceCivil);
+		translator.setServiceInfrastructureService(serviceInfra);
+		translator.setTiersDAO(tiersDAO);
+		translator.setTiersService(tiersService);
+		translator.setParameters(getBean(EvenementCivilEchStrategyParameters.class, "evenementCivilEchStrategyParameters"));
+		translator.afterPropertiesSet();
+		callback.overrideStrategies(translator);
+		buildProcessor(translator, restart);
 	}
 
 	protected void traiterEvenements(final long noIndividu) throws InterruptedException {
