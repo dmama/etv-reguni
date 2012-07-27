@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -85,6 +86,8 @@ public class ErrorPostProcessingAnnulationImpactStrategy implements ErrorPostPro
 									evt.setDateTraitement(DateHelper.getCurrentDate());
 									evt.setEtat(EtatEvenementCivil.REDONDANT);
 									evt.setCommentaireTraitement(COMMENTAIRE);
+
+									Audit.info(evt.getId(), String.format("Marquage de l'événement %d (%s/%s) comme redondant (groupe d'événements annulés avant d'avoir été traités)", evt.getId(), evt.getType(), evt.getAction()));
 
 									traites.add(infoEvt);
 								}
