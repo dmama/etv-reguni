@@ -19,8 +19,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
-import ch.vd.unireg.interfaces.efacture.data.TypeEtatDestinataire;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -1562,7 +1560,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 
 			updateSituationFamilleSeparation(menage, date, etatCivilFamille);
-			desinscrireDeLaEFacture(menage.getId(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.getDescription(true));
+			desactiverEFacture(menage.getId(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT.getDescription(false));
 		}
 	}
 
@@ -2418,10 +2416,10 @@ public class MetierServiceImpl implements MetierService {
 
 		doUpdateSituationFamilleDeces(defunt, veuf, menageComplet != null ? menageComplet.getMenage() : null, date);
 		if (menageComplet != null && menageComplet.getMenage() != null) {
-			desinscrireDeLaEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+			desactiverEFacture(menageComplet.getMenage().getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
 		}
 		if (defunt != null) {
-			desinscrireDeLaEFacture(defunt.getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
+			desactiverEFacture(defunt.getId(), MotifFor.VEUVAGE_DECES.getDescription(false));
 		}
 	}
 
@@ -2506,16 +2504,16 @@ public class MetierServiceImpl implements MetierService {
 		reopenSituationFamille(date, menageCommun);
 	}
 
-	private void desinscrireDeLaEFacture(long ctbId, String descr) throws MetierServiceException {
+	private void desactiverEFacture(long ctbId, String descr) throws MetierServiceException {
 		if (!UniregModeHelper.isEfactureEnabled()) {
 			return;
 		}
 
-		// Vérification du statut dans la e-facture
-		final DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
-		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
-			return;
-		}
+		// [SIFISC-5791] On abandonne (au moins provisoirement) la vérification du statut dans la e-facture
+//		final DestinataireAvecHisto dest = eFactureService.getDestinataireAvecSonHistorique(ctbId);
+//		if (dest == null || dest.getDernierEtat() == null || dest.getDernierEtat().getType() != TypeEtatDestinataire.INSCRIT) {
+//			return;
+//		}
 		try {
 			eFactureService.suspendreContribuable(ctbId, false, descr);
 		}
