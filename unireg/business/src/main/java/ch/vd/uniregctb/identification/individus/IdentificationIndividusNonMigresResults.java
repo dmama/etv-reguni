@@ -151,12 +151,12 @@ public class IdentificationIndividusNonMigresResults {
 			this.identiteRegPP = (IdentificationIndividuMigrationNH) identifie.identiteRegPP;
 			StringBuilder rmq = new StringBuilder(String.format(
 					"Habitant RegPP non migré dans Rcpers, identifié comme pouvant être l'individu %s grâce à son %s. ",
-					this.identiteRegPP.noInd,
+					identifie.identiteRcPers.noInd,
 					identifie.strategie));
 			if (identifie.tiersDejaLies.isEmpty()) {
 				rmq.append("Aucun tiers n'est lié à cet individu.");
 			} else if (identifie.tiersDejaLies.size() == 1) {
-				rmq.append(String.format("Potentiellement un doublon du tiers %s", FormatNumeroHelper.numeroCTBToDisplay(noCtb)));
+				rmq.append(String.format("Potentiellement un doublon du tiers %s", FormatNumeroHelper.numeroCTBToDisplay(identifie.tiersDejaLies.iterator().next())));
 			} else {
 				rmq.append("Potentiellement un doublon, voir les tiers ");
 				for (Iterator<Long> it = identifie.tiersDejaLies.iterator(); it.hasNext(); ) {
@@ -242,9 +242,5 @@ public class IdentificationIndividusNonMigresResults {
 	public void end() {
 		this.endTime = System.currentTimeMillis();
 	}
-}
-
-interface AdresseRetriever {
-	String retrieve (long noIndiv);
 }
 

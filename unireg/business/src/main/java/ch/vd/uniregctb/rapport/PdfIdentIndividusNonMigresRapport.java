@@ -241,8 +241,7 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 		if (ident == null || ident.adresse == null) {
 			return b.append(COMMA).append(COMMA).append(COMMA).append(COMMA)
 					.append(COMMA).append(COMMA).append(COMMA).append(COMMA)
-					.append(COMMA).append(COMMA).append(COMMA).append(COMMA)
-					.append(COMMA);
+					.append(COMMA).append(COMMA).append(COMMA);
 		} else {
 			appendValueAndComma(b, ident.adresse.type);
 			appendValueAndComma(b, ident.adresse.dateDebut != null ? ident.adresse.dateDebut.index() : null);

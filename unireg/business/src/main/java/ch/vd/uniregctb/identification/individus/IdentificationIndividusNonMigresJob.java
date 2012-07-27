@@ -361,17 +361,8 @@ public class IdentificationIndividusNonMigresJob extends JobDefinition implement
 				ids.add(key);
 			}
 		}
-
 		return ids;
 	}
-
-	private static class RegppAdresseRetriever implements AdresseRetriever {
-		@Override
-		public String retrieve(long noIndiv) {
-			return "<default>";
-		}
-	}
-
 }
 
 

@@ -88,9 +88,13 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 				if (result.getDateFin() != null && adresse.getDateFin() == null) {
 					result = adresse;
 				} else if (result.getDateFin() == null && adresse.getDateFin() == null) {
-					result = result.getDateDebut().isAfter(adresse.getDateDebut()) ? result : adresse;
+					if (result.getDateDebut() == null || (adresse.getDateDebut() != null && result.getDateDebut().isBefore(adresse.getDateDebut()))) {
+						result = adresse;
+					}
 				}  else if (result.getDateFin() != null && adresse.getDateFin() != null) {
-					result = result.getDateDebut().isAfter(adresse.getDateDebut()) ? result : adresse;
+					if (result.getDateDebut() == null || (adresse.getDateDebut() != null && result.getDateDebut().isBefore(adresse.getDateDebut()))) {
+						result = adresse;
+					}
 				}
 			}
 		}
