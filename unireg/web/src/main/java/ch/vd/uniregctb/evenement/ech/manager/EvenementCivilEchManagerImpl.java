@@ -24,6 +24,7 @@ import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRecherche
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 
 public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl implements EvenementCivilEchManager {
 
@@ -175,8 +176,8 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		final EvenementCivilEchElementListeRechercheView view = new EvenementCivilEchElementListeRechercheView(evt);
 		if (evt.getNumeroIndividu() != null) {
 			final long numeroIndividu = evt.getNumeroIndividu();
-			final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 			try {
+				final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
 				if (personnePhysique != null) {
 					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
 					if (couple != null && couple.getMenage() != null) {
@@ -186,7 +187,12 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 						view.setNumeroCTB(personnePhysique.getNumero());
 					}
 				}
-
+			}
+			catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+				LOGGER.warn("Impossible de trouver le contribuable associé à l'individu " + evt.getNumeroIndividu(), e);
+				view.setNumeroCTB(null);
+			}
+			try {
 				final String nom = adresseService.getNomCourrier(numeroIndividu);
 				view.setNom(nom);
 			}
