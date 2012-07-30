@@ -84,9 +84,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testEvenementsSansType() throws Exception {
 
@@ -131,9 +128,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 		});
 	}
 
-	/**
-	 * @param tiers
-	 */
 	@Test
 	public void testEvenementsSansIndividuPrincipal() throws Exception {
 
@@ -1106,6 +1100,116 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
 					assertNotNull(evt);
 					assertEquals(EtatEvenementCivil.FORCE, evt.getEtat());
+
+					return null;
+				}
+			});
+		}
+		finally {
+			serviceCivil.tearDown();
+			cache.destroy();
+		}
+	}
+
+	/**
+	 * [SIFISC-5806] lors du traitement du batch de relance des événements civils, ce serait bien de rafraîchir le cache des individus concernés
+	 */
+	@Test
+	public void testRafraichissementCacheEvtCivilsDansBatchDeRelance() throws Exception {
+
+		final long noIndividu = 14563435356783512L;
+		final long evtId = 12456234125L;
+
+		/*
+		 * Préparation
+		 */
+
+		final CacheManager cacheManager = getBean(CacheManager.class, "ehCacheManager");
+		assertNotNull(cacheManager);
+
+		final DataEventService dataEventService = getBean(DataEventService.class, "dataEventService");
+		assertNotNull(dataEventService);
+
+		final UniregCacheManager uniregCacheManager = getBean(UniregCacheManager.class, "uniregCacheManager");
+		assertNotNull(uniregCacheManager);
+
+		// Initialisation du service civil avec un cache
+		final ServiceCivilCache cache = new ServiceCivilCache();
+		cache.setCacheManager(cacheManager);
+		cache.setCacheName("serviceCivil");
+		cache.setUniregCacheManager(uniregCacheManager);
+		cache.setDataEventService(dataEventService);
+		cache.afterPropertiesSet();
+		cache.reset();
+		try {
+			serviceCivil.setUp(cache);
+
+			// mise en place civile
+			cache.setTarget(new DefaultMockServiceCivil() {
+				@Override
+				protected void init() {
+					addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfredo", true);
+				}
+			});
+
+			// mise en place fiscale, remplissage du cache du service civil sur l'individu
+			final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = addHabitant(noIndividu);
+					assertEquals("Alfredo Hitchcock", tiersService.getNomPrenom(pp));
+					return pp.getNumero();
+				}
+			});
+
+			// modification dans le service civil, mais pas de notification
+			doModificationIndividu(noIndividu, new IndividuModification() {
+				@Override
+				public void modifyIndividu(MockIndividu individu) {
+					individu.setPrenom("Alfred");        // sans le "o"
+				}
+			});
+
+			// création d'un événement en erreur
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilRegPP evt = new EvenementCivilRegPP();
+					evt.setId(evtId);
+					evt.setType(TypeEvenementCivil.CHGT_CORREC_NOM_PRENOM);
+					evt.setDateEvenement(date(2009, 1, 1));
+					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+					evt.setNumeroIndividuPrincipal(noIndividu);
+					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+					evenementCivilRegPPDAO.save(evt);
+					return null;
+				}
+			});
+
+			// vérification que le nom contenu dans le cache du service civil est toujours celui qui est pris en compte
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+					final String prenomNom = tiersService.getNomPrenom(pp);
+					assertEquals("Alfredo Hitchcock", prenomNom);
+					return null;
+				}
+			});
+
+			traiteEvenements();
+
+			// vérification que le cache du service civil a bien été rafraîchi
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+					final String prenomNom = tiersService.getNomPrenom(pp);
+					assertEquals("Alfred Hitchcock", prenomNom);
+
+					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 					return null;
 				}
