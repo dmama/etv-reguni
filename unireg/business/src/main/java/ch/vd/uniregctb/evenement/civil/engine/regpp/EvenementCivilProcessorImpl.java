@@ -73,7 +73,11 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 			}
 		});
 
-		traiteEvenements(ids, false, false, status);
+		// [SIFISC-5806] quand on retraite les événements en erreur (batch hebdomadaire), il faut quand-même invalider
+		// le cache car il est tout à fait possible que les données récupérées à la réception de l'événement aient été tronquées
+		// (notamment pour les adresses qui commenceraient dans le futur de la date de réception) et que cette limitation
+		// n'ait plus lieu d'être maintenant...
+		traiteEvenements(ids, false, true, status);
 	}
 
 	@Override
