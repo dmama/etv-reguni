@@ -2,9 +2,12 @@ package ch.vd.uniregctb.evenement.common.view;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
@@ -13,7 +16,7 @@ import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 abstract public class EvenementCivilDetailView implements Serializable {
 
-	private static final long serialVersionUID = 4028277444251199898L;
+	private static final long serialVersionUID = -8937634691213707549L;
 
 	private Long evtId;
 	private EtatEvenementCivil evtEtat;
@@ -26,7 +29,7 @@ abstract public class EvenementCivilDetailView implements Serializable {
 	private String individuError;
 	private AdresseEnvoi adresse;
 	private List<TiersAssocieView> tiersAssocies = new ArrayList<TiersAssocieView>();
-	private List<String> erreursTiersAssocies = new ArrayList<String>();
+	private Set<String> erreursTiersAssocies = new LinkedHashSet<String>();     // pour éviter les doublons mais conserver l'ordre d'insertion
 
 	@SuppressWarnings("unused")
 	public Long getEvtId() {
@@ -92,8 +95,8 @@ abstract public class EvenementCivilDetailView implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	public List<String> getErreursTiersAssocies() {
-		return Collections.unmodifiableList(erreursTiersAssocies);
+	public Collection<String> getErreursTiersAssocies() {
+		return Collections.unmodifiableCollection(erreursTiersAssocies);
 	}
 
 	public void addErreursTiersAssocies(String message) {
