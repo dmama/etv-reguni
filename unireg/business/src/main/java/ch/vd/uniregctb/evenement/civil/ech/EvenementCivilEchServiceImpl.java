@@ -16,7 +16,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -180,26 +179,22 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
     }
 
     @Override
-    @Transactional(readOnly = true)
     public EvenementCivilEch get(Long id) {
         return evenementCivilEchDAO.get(id);
     }
 
 
     @Override
-    @Transactional(readOnly = true)
     public List<EvenementCivilEch> find(EvenementCivilCriteria<TypeEvenementCivilEch> criterion, ParamPagination pagination) {
         return evenementCivilEchDAO.find(criterion, pagination);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public int count(EvenementCivilCriteria<TypeEvenementCivilEch> criterion) {
         return evenementCivilEchDAO.count(criterion);
     }
 
     @Override
-    @Transactional
     public void forceEvenement(Long id) {
         EvenementCivilEch evt = evenementCivilEchDAO.get(id);
         if (evt==null) {

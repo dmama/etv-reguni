@@ -31,10 +31,15 @@
             <td width="25%"><fmt:formatDate value="${command.evtDateTraitement}" pattern="dd.MM.yyyy HH:mm:ss"/></td>
         </tr>
         <tr class="<unireg:nextRowClass/>">
+            <td width="25%"><fmt:message key="label.action.evenement"/> :</td>
+            <td width="25%">
+                <fmt:message key="option.action.evenement.ech.${command.evtAction}"/>
+                <c:if test="${command.refEvtId != null}">
+                    <a href="visu.do?id=<c:out value='${command.refEvtId}'/>" class="extlink">&nbsp;</a>
+                </c:if>
+            </td>
             <td width="25%"><fmt:message key="label.etat.evenement"/> :</td>
             <td width="25%"><fmt:message key="option.etat.evenement.${command.evtEtat}"/></td>
-            <td width="25%"><fmt:message key="label.action.evenement"/> :</td>
-            <td width="25%"><fmt:message key="option.action.evenement.ech.${command.evtAction}"/></td>
         </tr>
         <tr class="<unireg:nextRowClass/>">
             <td width="25%"><fmt:message key="label.commentaire.traitement"/> :</td>

@@ -83,6 +83,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 
 
 	@Override
+	@Transactional
 	public boolean recycleEvenementCivil(Long id) throws EvenementCivilException {
 		EvenementCivilEch evt = evenementService.get(id);
 		if (evt==null) {
@@ -132,6 +133,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
     }
 
     @Override
+    @Transactional
 	public void forceEvenement(Long id) {
         evenementService.forceEvenement(id);
 	}
@@ -160,6 +162,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public int count(EvenementCivilEchCriteriaView bean) {
 		if (bean.isModeLotEvenement()) {
 			return evenementService.buildLotEvenementsCivils(bean.getNumeroIndividu()).size();
@@ -228,6 +231,13 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		target.setEvtEtat(source.getEtat());
 		target.setEvtId(source.getId());
 		target.setEvtType(source.getType());
+		if (source.getRefMessageId() != null) {
+			// l'événement référencé peut exister dans la base... ou pas (cas des corrections des événements créés pendant la migration RCPers, par exemple)
+			final EvenementCivilEch ref = evenementService.get(source.getRefMessageId());
+			if (ref != null) {
+				target.setRefEvtId(ref.getId());
+			}
+		}
 		for (EvenementCivilEchErreur err : source.getErreurs() ) {
 			target.addEvtErreur(new ErreurEvenementCivilView(err.getMessage(), err.getCallstack()));
 		}

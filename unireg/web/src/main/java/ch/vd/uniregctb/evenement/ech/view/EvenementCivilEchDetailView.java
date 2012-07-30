@@ -17,6 +17,7 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	private TypeEvenementCivilEch evtType;
 	private ActionEvenementCivilEch evtAction;
+	private Long refEvtId;
 	private boolean recyclable;
 	private EvenementCivilEchBasicInfo evtPrioritaire;
 	private int totalAutresEvenementsAssocies;
@@ -74,5 +75,14 @@ public class EvenementCivilEchDetailView extends EvenementCivilDetailView implem
 
 	public void setEvtAction(ActionEvenementCivilEch evtAction) {
 		this.evtAction = evtAction;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public Long getRefEvtId() {
+		return refEvtId;
+	}
+
+	public void setRefEvtId(Long refEvtId) {
+		this.refEvtId = refEvtId;
 	}
 }
