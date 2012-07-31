@@ -71,7 +71,7 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 
 	@Override
 	public String envoieMiseEnAttenteDemandeInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
-		final Integer code = typeAttenteEFacture.getCode();
+		final int code = typeAttenteEFacture.getCode();
 		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.VALIDATION_EN_COURS, code, description, idArchivage, retourAttendu);
 	}
 

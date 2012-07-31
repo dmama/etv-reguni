@@ -7,10 +7,10 @@ public enum TypeAttenteDemande {
 	EN_ATTENTE_CONTACT(1, "Mise en attente."),
 	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation.");
 
-	private final Integer code;
+	private final int code;
 	private final String description;
 
-	private TypeAttenteDemande(Integer code, String motif) {
+	private TypeAttenteDemande(int code, String motif) {
 		this.code = code;
 		this.description = motif;
 	}
@@ -19,23 +19,22 @@ public enum TypeAttenteDemande {
 		return description;
 	}
 
-	@Nullable
-	public Integer getCode() {
+	public int getCode() {
 		return code;
 	}
 
 	@Nullable
-	public static TypeAttenteDemande valueOf (Integer code) {
+	public static TypeAttenteDemande valueOf(@Nullable Integer code) {
 		if (code == null) {
 			return null;
 		}
 		for(TypeAttenteDemande t : TypeAttenteDemande.values()) {
-			if (code.equals(t.code)) {
+			if (code == t.code) {
 				return t;
 			}
 		}
-		//TODO afin d'éviter que ca plante, on reçoit des nombres aléatoire de la efacture devrait être inutile après la mise en integration
-		if(code > 2) {
+		//TODO afin d'éviter que ca plante, on reçoit des nombres aléatoires de la efacture ; devrait être inutile après la mise en integration
+		if (code > 2) {
 			return null;
 		}
 		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteDemande valide");
