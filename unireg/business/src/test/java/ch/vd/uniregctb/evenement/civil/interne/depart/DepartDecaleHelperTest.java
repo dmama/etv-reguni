@@ -25,6 +25,11 @@ public class DepartDecaleHelperTest extends WithoutSpringTest {
 
 	@Test
 	public void testAucuneAdresse() throws Exception {
+		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 0, null));
+		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 1, null));
+		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 10, null));
+		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 100, null));
+
 		final AdressesCivilesHisto adressesVides = new AdressesCivilesHisto();
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 0, adressesVides));
 		Assert.assertNull(DepartDecaleHelper.getAdresseResidenceTerminee(RegDate.get(), 1, adressesVides));
