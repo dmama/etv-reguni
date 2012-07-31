@@ -11,6 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.identification.individus.IdentificationIndividu;
+import ch.vd.uniregctb.identification.individus.IdentificationIndividuMigrationNH;
 import ch.vd.uniregctb.identification.individus.IdentificationIndividusNonMigresResults;
 
 public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
@@ -85,8 +86,59 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
+		// Liste des individus en vue de migration NH
+		{
+			final String filename = "migration_nh.csv";
+			final String contenu = buildContenuMigrationNH(results.enVueDeMigrationNH, status, filename);
+			final String titre = "Liste des individus à migrer en Non-Habitant";
+			final String listVide = "(aucun)";
+			addListeDetaillee(writer, titre, listVide, filename, contenu);
+		}
+
+
 		close();
 		status.setMessage("Génération du rapport terminée.");
+	}
+
+	private String buildContenuMigrationNH(List<IdentificationIndividusNonMigresResults.EnVueDeMigrationNH> enVueDeMigrationNH, StatusManager status, String filename) {
+		return CsvHelper.asCsvFile(enVueDeMigrationNH, filename, status, new CsvHelper.FileFiller<IdentificationIndividusNonMigresResults.EnVueDeMigrationNH>() {
+			@Override
+			public void fillHeader(CsvHelper.LineFiller b) {
+				appendValueAndComma(b, "NO_TIERS");
+				appendValueAndComma(b, "PRENOM");
+				appendValueAndComma(b, "NOM");
+				appendValueAndComma(b, "DATE_NAISSANCE");
+				appendValueAndComma(b, "DATE_DECES");
+				appendValueAndComma(b, "NO_AVS13");
+				appendValueAndComma(b, "SEXE");
+				appendValueAndComma(b, "CAT_ETRANGER");
+				appendValueAndComma(b, "DATE_DEBUT_VALID_AUTORIS");
+				appendValueAndComma(b, "NO_OFS_NATIONALITE");
+				fillAdresseLineHeader(b);
+				appendValueAndComma(b, "ETAT_CIVIL_TYPE");
+				appendValueAndComma(b, "ETAT_CIVIL_DATE_DEBUT");
+				appendValueAndComma(b, "REMARQUE");
+			}
+			@Override
+			public boolean fillLine(CsvHelper.LineFiller b, IdentificationIndividusNonMigresResults.EnVueDeMigrationNH data) {
+				appendValueAndComma(b, data.noCtb);
+				appendValueAndComma(b, data.identiteRegPP.prenom);
+				appendValueAndComma(b, data.identiteRegPP.nom);
+				appendValueAndComma(b, data.identiteRegPP.dateNaissance != null ? data.identiteRegPP.dateNaissance.index() : null);
+				appendValueAndComma(b, data.identiteRegPP.dateDeces != null ? data.identiteRegPP.dateDeces.index() : null);
+				appendValueAndComma(b, data.identiteRegPP.noAVS13);
+				appendValueAndComma(b, data.identiteRegPP.sexe);
+				appendValueAndComma(b, data.identiteRegPP.categorieEtranger);
+				appendValueAndComma(b, data.identiteRegPP.dateDebutValiditeAutorisation != null ? data.identiteRegPP.dateDebutValiditeAutorisation.index() : null);
+				appendValueAndComma(b, data.identiteRegPP.numeroOfsNationalite);
+				fillAdresseLine(b, data.identiteRegPP);
+				appendValueAndComma(b, data.identiteRegPP.typeEtatCivil);
+				appendValueAndComma(b, data.identiteRegPP.dateDebutEtatCivil != null ? data.identiteRegPP.dateDebutEtatCivil.index() : null);
+				appendValueAndComma(b, data.remarque);
+				return true;
+			}
+
+		});
 	}
 
 	private String buildContenuIdentifies(List<IdentificationIndividusNonMigresResults.Identifie> traites, StatusManager status, String filename) {
@@ -158,7 +210,7 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 
 	private static CsvHelper.LineFiller fillIdentificationLine(CsvHelper.LineFiller b, IdentificationIndividu ident) {
 		if (ident == null) {
-			return b.append(COMMA).append(COMMA).append(COMMA).append(COMMA);
+			return b.append(COMMA).append(COMMA).append(COMMA).append(COMMA).append(COMMA);
 		}
 		else {
 			appendValueAndComma(b, ident.noInd);
@@ -166,6 +218,42 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 			appendValueAndComma(b, ident.nom);
 			appendValueAndComma(b, ident.dateNaissance);
 			appendValueAndComma(b, ident.noAVS13);
+			return b;
+		}
+	}
+
+	private static void fillAdresseLineHeader(CsvHelper.LineFiller b) {
+		appendValueAndComma(b, "ADRESSE_TYPE");
+		appendValueAndComma(b, "ADRESSE_DATE_DEBUT");
+		appendValueAndComma(b, "ADRESSE_NO_OFS_PAYS");
+		appendValueAndComma(b, "ADRESSE_NPA_CASE_POSTALE");
+		appendValueAndComma(b, "ADRESSE_NO_APPARTEMENT");
+		appendValueAndComma(b, "ADRESSE_NO_CASE_POSTALE");
+		appendValueAndComma(b, "ADRESSE_NO_ORDRE_POSTAL");
+		appendValueAndComma(b, "ADRESSE_NO_POSTAL");
+		appendValueAndComma(b, "ADRESSE_NO_RUE");
+		appendValueAndComma(b, "ADRESSE_RUE");
+		appendValueAndComma(b, "ADRESSE_TEXTE_CASE_POSTALE");
+	}
+
+
+	private static CsvHelper.LineFiller fillAdresseLine(CsvHelper.LineFiller b, IdentificationIndividuMigrationNH ident) {
+		if (ident == null || ident.adresse == null) {
+			return b.append(COMMA).append(COMMA).append(COMMA).append(COMMA)
+					.append(COMMA).append(COMMA).append(COMMA).append(COMMA)
+					.append(COMMA).append(COMMA).append(COMMA);
+		} else {
+			appendValueAndComma(b, ident.adresse.type);
+			appendValueAndComma(b, ident.adresse.dateDebut != null ? ident.adresse.dateDebut.index() : null);
+			appendValueAndComma(b, ident.adresse.noOfsPays);
+			appendValueAndComma(b, ident.adresse.npaCasePostale);
+			appendValueAndComma(b, ident.adresse.numeroAppartement);
+			appendValueAndComma(b, ident.adresse.numeroCasePostale);
+			appendValueAndComma(b, ident.adresse.numeroOrdrePostal);
+			appendValueAndComma(b, ident.adresse.numeroPostal);
+			appendValueAndComma(b, ident.adresse.numeroRue);
+			appendValueAndComma(b, ident.adresse.rue);
+			appendValueAndComma(b, ident.adresse.texteCasePostale);
 			return b;
 		}
 	}
