@@ -6,7 +6,7 @@
 
 <#list tiers as t>
 -----------------------------------
--- Migration du tiers ${t.NO_TIERS}
+-- Migration du tiers ${t.NO_TIERS} (ancien individu ${t.NO_IND_REGPP})
 -----------------------------------
 update tiers set
 	numero_individu = null,
@@ -33,14 +33,16 @@ insert into remarque (
 	log_muser, -- '${USER}'
 	texte,     -- '${t.REMARQUE}'
 	tiers_id   -- ${t.NO_TIERS}
-) values (
+)
+select
 	hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	'${t.REMARQUE}',
-	${t.NO_TIERS});
+	${t.NO_TIERS}
+from dual;
 
 <#if t.ADRESSE_TYPE?trim != "">
 insert into adresse_tiers (
@@ -63,7 +65,8 @@ insert into adresse_tiers (
 	numero_rue,              -- <@NumOrNull t.ADRESSE_NO_RUE/>
 	tiers_id,                -- ${t.NO_TIERS},
 	npa_case_postale         -- <@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>
-) values (
+)
+select
 	'${t.ADRESSE_TYPE}',
 	hibernate_sequence.nextval,
 	0,
@@ -71,7 +74,7 @@ insert into adresse_tiers (
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut.pour l'insant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'COURRIER',
 	<@StrOrNull t.ADRESSE_NO_APPARTEMENT />,
 	<@NumOrNull t.ADRESSE_NO_CASE_POSTALE />,
@@ -82,7 +85,8 @@ insert into adresse_tiers (
 	<@NumOrNull t.ADRESSE_NO_ORDRE_POSTAL />,
 	<@NumOrNull t.ADRESSE_NO_RUE/>,
 	${t.NO_TIERS},
-	<@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>);
+	<@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>
+from dual;
 </#if>
 
 <#if t.ETAT_CIVIL_TYPE?trim != "" >
@@ -97,17 +101,65 @@ insert into situation_famille (
 	etat_civil,             -- '${t.ETAT_CIVIL_TYPE}'
 	nombre_enfants,         -- 0
 	ctb_id                  -- ${t.NO_TIERS}
-) values (
+)
+select
 	'SituationFamille',
 	hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut.pour l'insant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'${t.ETAT_CIVIL_TYPE}',
 	0,
-	${t.NO_TIERS});
+	${t.NO_TIERS}
+from dual;
+</#if>
+
+<#if t.NO_AVS11?trim != "">
+insert into identification_personne (
+	id,					-- hibernate_sequence.nextval
+	log_cdate,			-- CURRENT_TIMESTAMP
+	log_cuser,			-- '${USER}'
+	log_mdate,			-- CURRENT_TIMESTAMP
+	log_muser,			-- '${USER}'
+	categorie,			-- 'CH_AHV_AVS'
+	identifiant,		-- '${t.NO_AVS11}'
+	non_habitant_id		-- ${t.NO_TIERS}
+)
+select
+	hibernate_sequence.nextval,
+	CURRENT_TIMESTAMP,
+	'${USER}',
+	CURRENT_TIMESTAMP,
+	'${USER}',
+	'CH_AHV_AVS',
+	'${t.NO_AVS11}',
+	${t.NO_TIERS}
+from dual;
+</#if>
+
+<#if t.NO_RCE?trim != "">
+insert into identification_personne (
+	id,					-- hibernate_sequence.nextval
+	log_cdate,			-- CURRENT_TIMESTAMP
+	log_cuser,			-- '${USER}'
+	log_mdate,			-- CURRENT_TIMESTAMP
+	log_muser,			-- '${USER}'
+	categorie,			-- 'CH_ZAR_RCE'
+	identifiant,		-- '${t.NO_RCE}'
+	non_habitant_id		-- ${t.NO_TIERS}
+)
+select
+	hibernate_sequence.nextval,
+	CURRENT_TIMESTAMP,
+	'${USER}',
+	CURRENT_TIMESTAMP,
+	'${USER}',
+	'CH_ZAR_RCE',
+	'${t.NO_RCE}',
+	${t.NO_TIERS}
+from dual;
 </#if>
 
 </#list>

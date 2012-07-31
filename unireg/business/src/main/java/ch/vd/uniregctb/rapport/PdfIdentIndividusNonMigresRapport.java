@@ -87,10 +87,10 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 		}
 
 		// Liste des individus en vue de migration NH
-		{
+		if (results.migrationNH) {
 			final String filename = "migration_nh.csv";
 			final String contenu = buildContenuMigrationNH(results.enVueDeMigrationNH, status, filename);
-			final String titre = "Liste des individus à migrer en Non-Habitant";
+			final String titre = "Liste des personnes physiques à migrer en non-habitants sans lien avec le civil";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
@@ -105,11 +105,14 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 			@Override
 			public void fillHeader(CsvHelper.LineFiller b) {
 				appendValueAndComma(b, "NO_TIERS");
+				appendValueAndComma(b, "NO_IND_REGPP");
 				appendValueAndComma(b, "PRENOM");
 				appendValueAndComma(b, "NOM");
 				appendValueAndComma(b, "DATE_NAISSANCE");
 				appendValueAndComma(b, "DATE_DECES");
 				appendValueAndComma(b, "NO_AVS13");
+				appendValueAndComma(b, "NO_AVS11");
+				appendValueAndComma(b, "NO_RCE");
 				appendValueAndComma(b, "SEXE");
 				appendValueAndComma(b, "CAT_ETRANGER");
 				appendValueAndComma(b, "DATE_DEBUT_VALID_AUTORIS");
@@ -122,11 +125,14 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, IdentificationIndividusNonMigresResults.EnVueDeMigrationNH data) {
 				appendValueAndComma(b, data.noCtb);
+				appendValueAndComma(b, data.identiteRegPP.noInd);
 				appendValueAndComma(b, data.identiteRegPP.prenom);
 				appendValueAndComma(b, data.identiteRegPP.nom);
 				appendValueAndComma(b, data.identiteRegPP.dateNaissance != null ? data.identiteRegPP.dateNaissance.index() : null);
 				appendValueAndComma(b, data.identiteRegPP.dateDeces != null ? data.identiteRegPP.dateDeces.index() : null);
 				appendValueAndComma(b, data.identiteRegPP.noAVS13);
+				appendValueAndComma(b, data.identiteRegPP.noAVS11);
+				appendValueAndComma(b, data.identiteRegPP.noRce);
 				appendValueAndComma(b, data.identiteRegPP.sexe);
 				appendValueAndComma(b, data.identiteRegPP.categorieEtranger);
 				appendValueAndComma(b, data.identiteRegPP.dateDebutValiditeAutorisation != null ? data.identiteRegPP.dateDebutValiditeAutorisation.index() : null);
