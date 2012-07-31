@@ -15,11 +15,11 @@ public class EtatDemande {
 	private String descriptionRaison;
 	private TypeEtatDemande type;
 
-	public static EtatDemande newEtatDemandeFactice (TypeEtatDemande type) {
+	public static EtatDemande newEtatDemandeFactice(TypeEtatDemande type) {
 		return new EtatDemande(type);
 	}
 
-	private EtatDemande (TypeEtatDemande type) {
+	private EtatDemande(TypeEtatDemande type) {
 		this.type = type;
 		this.date = RegDate.getEarlyDate();
 		this.codeRaison = null;

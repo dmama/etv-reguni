@@ -4,7 +4,6 @@ import org.jetbrains.annotations.Nullable;
 
 public enum TypeAttenteDemande {
 
-	PAS_EN_ATTENTE (null, "Pas En Attente"),
 	EN_ATTENTE_CONTACT(1, "Mise en attente."),
 	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation.");
 
@@ -25,9 +24,10 @@ public enum TypeAttenteDemande {
 		return code;
 	}
 
+	@Nullable
 	public static TypeAttenteDemande valueOf (Integer code) {
 		if (code == null) {
-			return PAS_EN_ATTENTE;
+			return null;
 		}
 		for(TypeAttenteDemande t : TypeAttenteDemande.values()) {
 			if (code.equals(t.code)) {
@@ -35,9 +35,8 @@ public enum TypeAttenteDemande {
 			}
 		}
 		//TODO afin d'éviter que ca plante, on reçoit des nombres aléatoire de la efacture devrait être inutile après la mise en integration
-		if(code > 2){
-			return PAS_EN_ATTENTE;
-
+		if(code > 2) {
+			return null;
 		}
 		throw new IllegalArgumentException(code + " n'est pas un TypeAttenteDemande valide");
 	}

@@ -1,26 +1,28 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.evd0025.v1.RegistrationRequestStatus;
 
 /**
  * Type relatif à la e-facture
  */
 public enum TypeEtatDemande {
-	A_TRAITER (TypeAttenteDemande.PAS_EN_ATTENTE),
-	VALIDATION_EN_COURS (TypeAttenteDemande.PAS_EN_ATTENTE),
+	A_TRAITER(null),
+	VALIDATION_EN_COURS(null),
 	VALIDATION_EN_COURS_EN_ATTENTE_CONTACT(TypeAttenteDemande.EN_ATTENTE_CONTACT), // état interne unireg qui n'a pas d'équivalent e-facture
 	VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE(TypeAttenteDemande.EN_ATTENTE_SIGNATURE), // état interne unireg qui n'a pas d'équivalent e-facture
-	REFUSEE (TypeAttenteDemande.PAS_EN_ATTENTE),
-	IGNOREE (TypeAttenteDemande.PAS_EN_ATTENTE),
-	VALIDEE (TypeAttenteDemande.PAS_EN_ATTENTE);
-
+	REFUSEE(null),
+	IGNOREE(null),
+	VALIDEE(null);
 
 	private TypeAttenteDemande typeAttente;
 
-	TypeEtatDemande(TypeAttenteDemande type) {
+	private TypeEtatDemande(@Nullable TypeAttenteDemande type) {
 		this.typeAttente = type;
 	}
 
+	@Nullable
 	public TypeAttenteDemande getTypeAttente() {
 		return typeAttente;
 	}
@@ -56,7 +58,7 @@ public enum TypeEtatDemande {
 				this == VALIDATION_EN_COURS;
 	}
 
-	public static TypeEtatDemande valueOf (RegistrationRequestStatus status, TypeAttenteDemande typeAttente ) {
+	public static TypeEtatDemande valueOf (RegistrationRequestStatus status, @Nullable TypeAttenteDemande typeAttente) {
 		switch (status){
 		case IGNOREE:
 			return TypeEtatDemande.IGNOREE;
@@ -65,7 +67,7 @@ public enum TypeEtatDemande {
 		case REFUSEE:
 			return TypeEtatDemande.REFUSEE;
 		case VALIDATION_EN_COURS:
-			if (typeAttente == TypeAttenteDemande.PAS_EN_ATTENTE) {
+			if (typeAttente == null) {
 				return TypeEtatDemande.VALIDATION_EN_COURS;
 			} else if (typeAttente == TypeAttenteDemande.EN_ATTENTE_SIGNATURE) {
 				return VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE;

@@ -44,7 +44,7 @@ public class EfactureManagerImpl implements EfactureManager {
 		final String idArchivage = eFactureService.imprimerDocumentEfacture(ctbId, typeDocument, dateDemande);
 		final TypeAttenteDemande typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		final String messageAvecVisaUser = getMessageAvecVisaUser();
-		final String description = typeAttenteEFacture.getDescription()+" "+messageAvecVisaUser;
+		final String description = String.format("%s %s", typeAttenteEFacture.getDescription(), messageAvecVisaUser);
 		return eFactureService.notifieMiseEnattenteInscription(idDemande, typeAttenteEFacture, description, idArchivage, true);
 	}
 
@@ -177,10 +177,10 @@ public class EfactureManagerImpl implements EfactureManager {
 
 
 	private static TypeDocumentEditique determineTypeDocumentEditique(TypeEtatDemande typeEtat) {
-		if(typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_CONTACT){
+		if (typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_CONTACT) {
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_CONTACT;
 		}
-		else if(typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_SIGNATURE){
+		else if (typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_SIGNATURE) {
 			return TypeDocumentEditique.E_FACTURE_ATTENTE_SIGNATURE;
 		}
 		return null;

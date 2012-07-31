@@ -25,7 +25,7 @@ public class DemandeAvecHisto extends Demande {
 			if (request.getRegistrationStatus() == null) {
 				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.IGNOREE));
 			} else {
-				historiqueEtats.add( EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), TypeAttenteDemande.PAS_EN_ATTENTE)));
+				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), null)));
 			}
 		} else {
 			for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
