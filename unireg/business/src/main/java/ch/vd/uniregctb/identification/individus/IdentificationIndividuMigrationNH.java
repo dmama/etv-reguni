@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TexteCasePostale;
 
@@ -21,6 +22,8 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 	public final Integer numeroOfsNationalite;
 	public final TypeEtatCivil typeEtatCivil;
 	public final RegDate dateDebutEtatCivil;
+	public final String noAVS11;
+	public final String noRce;
 
 	public IdentificationIndividuMigrationNH(Individu individu) {
 		super(individu);
@@ -77,6 +80,8 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 			this.typeEtatCivil = null;
 		}
 
+		this.noAVS11 = individu.getNoAVS11();
+		this.noRce = individu.getNumeroRCE();
 	}
 
 	private ch.vd.unireg.interfaces.civil.data.Adresse trouveLaBonneAdresse(Collection<ch.vd.unireg.interfaces.civil.data.Adresse> adresses) {
@@ -104,8 +109,6 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 
 
 	public static class Adresse {
-
-		private static final Integer NO_OFS_SUISSE = 8100;
 
 		public final Integer npaCasePostale;
 		public final Integer numeroCasePostale;
@@ -136,7 +139,7 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 			this.numeroPostal = adresse.getNumeroPostal();
 			this.numeroRue = adresse.getNumeroRue();
 			this.rue = adresse.getRue();
-			if (NO_OFS_SUISSE.equals(noOfsPays)) {
+			if (noOfsPays == null || noOfsPays == ServiceInfrastructureService.noOfsSuisse) {
 				this.type = "AdresseSuisse";
 			} else {
 				this.type = "AdresseEtrangere";

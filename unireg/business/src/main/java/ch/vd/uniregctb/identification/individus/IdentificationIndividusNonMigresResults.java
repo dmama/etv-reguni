@@ -186,7 +186,7 @@ public class IdentificationIndividusNonMigresResults {
 	public final List<EnVueDeMigrationNH> enVueDeMigrationNH = new ArrayList<EnVueDeMigrationNH>();
 
 	public boolean interrompu;
-	final private boolean migrationNH;
+	final public boolean migrationNH;
 
 	public IdentificationIndividusNonMigresResults(RegDate dateTraitement, int nbCtbsTotal, boolean migrationNH) {
 		this.dateTraitement = dateTraitement;
