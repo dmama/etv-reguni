@@ -63,8 +63,8 @@ insert into adresse_tiers (
 	numero_postal_localite,  -- <@StrOrNull t.ADRESSE_NO_POSTAL />
 	numero_ordre_poste,      -- <@NumOrNull t.ADRESSE_NO_ORDRE_POSTAL />
 	numero_rue,              -- <@NumOrNull t.ADRESSE_NO_RUE/>
-	tiers_id,                -- ${t.NO_TIERS},
-	npa_case_postale         -- <@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>
+	npa_case_postale,        -- <@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>
+	tiers_id                 -- ${t.NO_TIERS},
 )
 select
 	'${t.ADRESSE_TYPE}',
@@ -84,8 +84,8 @@ select
 	<@StrOrNull t.ADRESSE_NO_POSTAL />,
 	<@NumOrNull t.ADRESSE_NO_ORDRE_POSTAL />,
 	<@NumOrNull t.ADRESSE_NO_RUE/>,
-	${t.NO_TIERS},
-	<@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>
+	<@NumOrNull t.ADRESSE_NPA_CASE_POSTALE/>,
+	${t.NO_TIERS}
 from dual;
 </#if>
 
