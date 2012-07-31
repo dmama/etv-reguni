@@ -8,7 +8,7 @@ public enum TypeEtatDestinataire {
 	DESINSCRIT("Désinscrit"),
 	DESINSCRIT_SUSPENDU("Désinscrit suspendu");
 
-	private String description;
+	private final String description;
 
 	private TypeEtatDestinataire(String description) {
 		this.description = description;

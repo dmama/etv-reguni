@@ -14,10 +14,9 @@ public enum TypeEtatDemande {
 	IGNOREE (TypeAttenteDemande.PAS_EN_ATTENTE),
 	VALIDEE (TypeAttenteDemande.PAS_EN_ATTENTE);
 
+	private final TypeAttenteDemande typeAttente;
 
-	private TypeAttenteDemande typeAttente;
-
-	TypeEtatDemande(TypeAttenteDemande type) {
+	private TypeEtatDemande(TypeAttenteDemande type) {
 		this.typeAttente = type;
 	}
 
