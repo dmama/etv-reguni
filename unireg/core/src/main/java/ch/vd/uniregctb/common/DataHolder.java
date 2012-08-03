@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.common;
 
-import org.jetbrains.annotations.Nullable;
-
 /**
  * Classe simple qui contient une donnée.
  * 
@@ -14,16 +12,15 @@ public class DataHolder<T> {
 	public DataHolder() {
 	}
 
-	public DataHolder(@Nullable T data) {
+	public DataHolder(T data) {
 		this.data = data;
 	}
 
-	@Nullable
 	public T get() {
 		return data;
 	}
 
-	public void set(@Nullable T data) {
+	public void set(T data) {
 		this.data = data;
 	}
 }
