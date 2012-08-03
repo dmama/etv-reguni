@@ -5,12 +5,14 @@ import java.io.Serializable;
 import ch.ech.ech0011.v5.Nationality;
 
 import ch.vd.evd0001.v3.Person;
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class NationaliteRCPers implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = 6509480818877738587L;
+	private static final long serialVersionUID = -6746367590570055398L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
@@ -52,13 +54,18 @@ public class NationaliteRCPers implements Nationalite, Serializable {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
+	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override

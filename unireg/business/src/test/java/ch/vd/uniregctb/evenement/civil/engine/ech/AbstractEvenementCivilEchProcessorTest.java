@@ -30,14 +30,23 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		queue = new EvenementCivilNotificationQueueImpl(0);
 		queue.setEvtCivilService(evtCivilService);
-		buildProcessor(translator, false);
-		processor.afterPropertiesSet();
-		processor.start();
+		if (buildProcessorOnSetup()) {
+			buildProcessor(translator, false);
+			processor.afterPropertiesSet();
+			processor.start();
+		}
+	}
+
+	protected boolean buildProcessorOnSetup() {
+		return true;
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		processor.stop();
+		if (processor != null) {
+			processor.stop();
+			processor = null;
+		}
 		super.onTearDown();
 	}
 	

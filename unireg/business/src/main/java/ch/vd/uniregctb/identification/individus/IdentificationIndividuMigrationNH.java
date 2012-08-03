@@ -54,7 +54,7 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 		if (nationalites != null) {
 			Pays pays = null;
 			for (Nationalite nationalite : nationalites) {
-				if (nationalite.getDateFinValidite() == null) {
+				if (nationalite.getDateFin() == null) {
 					if (pays == null) {
 						pays = nationalite.getPays();
 					} else if (!pays.isSuisse()) {

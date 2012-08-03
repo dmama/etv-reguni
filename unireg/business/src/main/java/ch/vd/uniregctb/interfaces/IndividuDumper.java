@@ -273,8 +273,8 @@ public abstract class IndividuDumper {
 		StringBuilder s = new StringBuilder();
 		s.append("Nationalite{\n");
 		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("dateDebut=").append(nationalite.getDateDebutValidite()).append(", \n");
-			s.append(tab(depth + 1)).append("dateFin=").append(nationalite.getDateFinValidite()).append(", \n");
+			s.append(tab(depth + 1)).append("dateDebut=").append(nationalite.getDateDebut()).append(", \n");
+			s.append(tab(depth + 1)).append("dateFin=").append(nationalite.getDateFin()).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("pays=").append(dumpPays(nationalite.getPays(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth)).append("}");

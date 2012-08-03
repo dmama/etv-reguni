@@ -2,13 +2,15 @@ package ch.vd.unireg.interfaces.civil.data;
 
 import java.io.Serializable;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
 
 public class NationaliteImpl implements Nationalite, Serializable {
 
-	private static final long serialVersionUID = 1926357251819602282L;
-	
+	private static final long serialVersionUID = -6860695089410911036L;
+
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
 	private final Pays pays;
@@ -27,18 +29,22 @@ public class NationaliteImpl implements Nationalite, Serializable {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public RegDate getDateDebut() {
 		return dateDebut;
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
+	public RegDate getDateFin() {
 		return dateFin;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 
 	@Override
 	public Pays getPays() {
 		return pays;
 	}
-
 }

@@ -44,7 +44,7 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 		// il faut mettre à jour la nationalité chez nous
 		if (pp != null && !pp.isHabitantVD()) {
 			for (Nationalite nationalite : getIndividu().getNationalites()) {
-				if (getDate().equals(nationalite.getDateDebutValidite())) {
+				if (getDate().equals(nationalite.getDateDebut())) {
 					pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
 					Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
 							getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), nationalite.getPays().getNomMinuscule()));
