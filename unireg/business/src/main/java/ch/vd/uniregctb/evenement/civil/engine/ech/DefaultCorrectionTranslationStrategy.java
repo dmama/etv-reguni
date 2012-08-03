@@ -88,7 +88,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 			}
 
-			Audit.info(event.getId(), "Evenement de correction sans impact fiscal -> ré-indexation seule.");
+			Audit.info(event.getId(), "Evénement de correction sans impact fiscal -> ré-indexation seule.");
 		}
 		else {
 			// il y a des différences... on ne peut rien faire automatiquement -> traitement manuel.
