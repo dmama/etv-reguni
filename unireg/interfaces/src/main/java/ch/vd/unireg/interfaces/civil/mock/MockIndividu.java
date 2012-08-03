@@ -396,7 +396,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
 		@Override
 		public boolean keep(Nationalite element, RegDate date) {
-			return element.getDateDebutValidite() == null || element.getDateDebutValidite().isBeforeOrEqual(date);
+			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
 		}
 	};
 	private static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {

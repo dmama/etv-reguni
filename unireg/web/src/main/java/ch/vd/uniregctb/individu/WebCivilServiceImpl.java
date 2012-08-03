@@ -189,7 +189,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		if (nationalites != null && !nationalites.isEmpty()) {
 			final StringBuilder b = new StringBuilder();
 			for (Nationalite nationalite : nationalites) {
-				if (nationalite.getDateFinValidite() == null) {
+				if (nationalite.getDateFin() == null) {
 					if (b.length() > 0) {
 						b.append(", ");
 					}

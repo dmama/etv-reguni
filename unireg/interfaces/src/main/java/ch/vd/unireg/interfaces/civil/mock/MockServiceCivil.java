@@ -163,7 +163,11 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		final List<Nationalite> nationalites = new ArrayList<Nationalite>();
 		individu.setNationalites(nationalites);
 
+		// Conjoints
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
+
+		// Parents
+		individu.setParents(new ArrayList<RelationVersIndividu>());
 
 		// Permis
 		individu.setPermis(new MockPermisList(numero));

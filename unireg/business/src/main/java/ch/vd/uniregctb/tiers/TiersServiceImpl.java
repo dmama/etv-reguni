@@ -319,7 +319,7 @@ public class TiersServiceImpl implements TiersService {
         if (nationalites != null) {
             Pays pays = null;
             for (Nationalite nationalite : nationalites) {
-                if (nationalite.getDateFinValidite() == null) {
+                if (nationalite.getDateFin() == null) {
                     if (pays == null) {
                         pays = nationalite.getPays();
                     } else if (!pays.isSuisse()) {
@@ -618,10 +618,10 @@ public class TiersServiceImpl implements TiersService {
         if (individu.getNationalites() != null) {
             final Collection<Nationalite> nationalites = individu.getNationalites();
             for (Nationalite nationalite : nationalites) {
-                if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST)) {
-                    if ((nationalite.getDateFinValidite() == null) && (nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)) {
+                if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST)) {
+                    if ((nationalite.getDateFin() == null) && (nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)) {
                         nationaliteSuisse = true;
-                    } else if ((nationalite.getDateFinValidite() == null) && (nationalite.getPays().getNoOFS() != ServiceInfrastructureService.noOfsSuisse)) {
+                    } else if ((nationalite.getDateFin() == null) && (nationalite.getPays().getNoOFS() != ServiceInfrastructureService.noOfsSuisse)) {
                         nationalitesEtrangeres = true;
                     }
                 }
@@ -697,8 +697,8 @@ public class TiersServiceImpl implements TiersService {
             final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date);
             if (nationalites != null && !nationalites.isEmpty()) {
                 for (Nationalite nationalite : nationalites) {
-                    if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
-                            (nationalite.getDateFinValidite() == null || nationalite.getDateFinValidite().isAfterOrEqual(date)) &&
+                    if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST) &&
+                            (nationalite.getDateFin() == null || nationalite.getDateFin().isAfterOrEqual(date)) &&
                             nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)
                         return true;
                 }
@@ -735,8 +735,8 @@ public class TiersServiceImpl implements TiersService {
             throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + individu.getNoTechnique());
         }
         for (Nationalite nationalite : nationalites) {
-            if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebutValidite(), date, NullDateBehavior.EARLIEST) &&
-                    (nationalite.getDateFinValidite() == null || nationalite.getDateFinValidite().isAfterOrEqual(date))
+            if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST) &&
+                    (nationalite.getDateFin() == null || nationalite.getDateFin().isAfterOrEqual(date))
                     && (nationalite.getPays().isSuisse())) {
                 return true;
             }

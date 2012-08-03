@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.civil.mock;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 
@@ -20,7 +22,7 @@ public class MockNationalite implements Nationalite {
 	}
 
 	@Override
-	public RegDate getDateDebutValidite() {
+	public RegDate getDateDebut() {
 		return dateDebutValidite;
 	}
 
@@ -29,12 +31,17 @@ public class MockNationalite implements Nationalite {
 	}
 
 	@Override
-	public RegDate getDateFinValidite() {
+	public RegDate getDateFin() {
 		return dateFinValidite;
 	}
 
 	public void setDateFinValidite(RegDate dateFinValidite) {
 		this.dateFinValidite = dateFinValidite;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebutValidite, dateFinValidite, NullDateBehavior.LATEST);
 	}
 
 	@Override
@@ -45,5 +52,4 @@ public class MockNationalite implements Nationalite {
 	public void setPays(Pays pays) {
 		this.pays = pays;
 	}
-
 }
