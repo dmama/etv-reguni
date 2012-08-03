@@ -63,17 +63,25 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			throw new IllegalArgumentException("Stratégie applicable aux seuls événements civils de correction.");
 		}
 
+		final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
+
 		// on va comparer les individus avant et après correction,
-		final Long idEvtOriginel = event.getRefMessageId();
+		final Long idEvtOriginel;
+		if (event.getRefMessageId() != null) {
+			idEvtOriginel = event.getRefMessageId();
+		}
+		else {
+			idEvtOriginel = correction.getIdEvenementRef();
+			event.setRefMessageId(idEvtOriginel);       // contournement du bug SIREF-2590 (l'id de référence n'était pas présent dans l'événement initial)
+		}
 		if (idEvtOriginel == null) {
 			throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
 		}
 
 		final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
-		final IndividuApresEvenement corrige = serviceCivil.getIndividuFromEvent(event.getId());
 		final DataHolder<String> message = new DataHolder<String>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
-		if (sansDifferenceFiscalementImportante(originel, corrige, message)) {
+		if (sansDifferenceFiscalementImportante(originel, correction, message)) {
 			strategieApplicable = INDEXATION_PURE;
 			if (StringUtils.isBlank(message.get())) {
 				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
@@ -104,10 +112,10 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		return false;
 	}
 
-	private boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	private boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement correction, @NotNull DataHolder<String> msg) {
 
 		// si un des individus manque, alors il y a forcément des différences importantes
-		if (originel == null || corrige == null || originel.getIndividu() == null || corrige.getIndividu() == null) {
+		if (originel == null || correction == null || originel.getIndividu() == null || correction.getIndividu() == null) {
 			msg.set("individu");
 			return false;
 		}
@@ -116,7 +124,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		boolean sans = true;
 		for (IndividuComparisonStrategy strategy : comparisonStrategies) {
 			final DataHolder<String> localMsg = new DataHolder<String>();
-			sans = strategy.sansDifferenceFiscalementImportante(originel, corrige, localMsg) && sans;
+			sans = strategy.sansDifferenceFiscalementImportante(originel, correction, localMsg) && sans;
 			if (StringUtils.isNotBlank(localMsg.get())) {
 				if (b.length() > 0) {
 					b.append(SEPARATEUR);

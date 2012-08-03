@@ -610,4 +610,63 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testContournementBugSiref2590() throws Exception {
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final RegDate dateEvtOrig = RegDate.get();
+		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
+				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albertine", false);
+				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+			}
+		});
+
+		// construction de l'événement de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvtCorrection);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(null);      // <-- c'est bien le problème...
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Evénement ignoré car sans impact fiscal.", evt.getCommentaireTraitement());
+				return null;
+			}
+		});
+	}
 }
