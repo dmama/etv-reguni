@@ -35,17 +35,6 @@ public class AsyncStorage<K, V> {
 	private final Map<K, DataHolder<V>> map = new HashMap<K, DataHolder<V>>();
 
 	/**
-	 * Container de la donnée à stocker
-	 * @param <V> type de la donnée à stocker
-	 */
-	protected static class DataHolder<V> {
-		public final V data;
-		protected DataHolder(@Nullable V data) {
-			this.data = data;
-		}
-	}
-
-	/**
 	 * Classe abstraite de base des résultats renvoyés par la méthode {@link #get}
 	 * @param <K> le type de la clé de stockage
 	 */
@@ -123,7 +112,7 @@ public class AsyncStorage<K, V> {
 				final DataHolder<V> value = map.remove(key);
 				if (value != null) {
 					// fini -> on revient avec la valeur
-					return new RetrievalData<K, V>(key, value.data);
+					return new RetrievalData<K, V>(key, value.get());
 				}
 
 				final long tempsRestant = tsMaxAttente - System.nanoTime();

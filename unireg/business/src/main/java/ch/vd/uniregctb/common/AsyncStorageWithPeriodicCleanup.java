@@ -52,7 +52,7 @@ public class AsyncStorageWithPeriodicCleanup<K, V> extends AsyncStorage<K, V> {
 							final CleanupDataHolder<V> dataHolder = (CleanupDataHolder<V>) entry.getValue();
 							final long responseArrivalTs = dataHolder.ts;
 							if (responseArrivalTs < lastAcceptedTimestamp) {
-								onPurge(entry.getKey(), dataHolder.data);
+								onPurge(entry.getKey(), dataHolder.get());
 								iterator.remove();
 							}
 						}

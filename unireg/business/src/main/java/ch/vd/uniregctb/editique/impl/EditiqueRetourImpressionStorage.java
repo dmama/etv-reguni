@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.uniregctb.common.AsyncStorageWithPeriodicCleanup;
+import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.common.TimeHelper;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.RetourImpressionTrigger;
@@ -54,12 +55,12 @@ public class EditiqueRetourImpressionStorage extends AsyncStorageWithPeriodicCle
 										if (LOGGER.isDebugEnabled()) {
 											final long now = System.nanoTime();
 											final String duration = TimeHelper.formatDuree(TimeUnit.NANOSECONDS.toMillis(now - trigger.getFirst()));
-											LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", dh.data.getIdDocument(), duration));
+											LOGGER.debug(String.format("Exécution du trigger enregistré pour le document '%s' il y a %s", dh.get().getIdDocument(), duration));
 										}
-										trigger.getSecond().trigger(dh.data);
+										trigger.getSecond().trigger(dh.get());
 									}
 									catch (Throwable e) {
-										LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", dh.data.getIdDocument()), e);
+										LOGGER.error(String.format("Exception levée lors du traitement du document '%s' par le trigger associé", dh.get().getIdDocument()), e);
 									}
 								}
 							}

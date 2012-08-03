@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfoComparator;
@@ -68,7 +69,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -98,7 +99,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne fait effectivement rien non plus
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -137,7 +138,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -168,7 +169,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne fait effectivement rien non plus
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -208,7 +209,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -238,7 +239,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne fait effectivement rien non plus
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -276,7 +277,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -305,7 +306,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -345,7 +346,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -381,7 +382,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -428,7 +429,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -457,7 +458,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -498,7 +499,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -527,7 +528,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -608,7 +609,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -738,7 +739,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base
 		check.run();
@@ -776,7 +777,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// lancement de la phase de collecte
 		Assert.assertTrue(strategy.needsTransactionOnCollectPhase());
-		final ErrorPostProcessingStrategy.CustomDataHolder<Object> cdh = new ErrorPostProcessingStrategy.CustomDataHolder<Object>();
+		final DataHolder<Object> cdh = new DataHolder<Object>();
 		final List<EvenementCivilEchBasicInfo> remaining = doInNewTransactionAndSession(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
 			@Override
 			public List<EvenementCivilEchBasicInfo> doInTransaction(TransactionStatus status) {
@@ -816,7 +817,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 
 		// reste à vérifier que la phase de finalisation ne casse rien
 		Assert.assertFalse(strategy.needsTransactionOnFinalizePhase());
-		strategy.doFinalizePhase(cdh.member);
+		strategy.doFinalizePhase(cdh.get());
 
 		// nouvelle vérification de l'état en base (on ne vérfie que les erreurs ici, le reste est vérifié dans un autre test)!
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
