@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
@@ -86,6 +87,8 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			if (StringUtils.isBlank(message.get())) {
 				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 			}
+
+			Audit.info(event.getId(), "Evenement de correction sans impact fiscal -> ré-indexation seule.");
 		}
 		else {
 			// il y a des différences... on ne peut rien faire automatiquement -> traitement manuel.
