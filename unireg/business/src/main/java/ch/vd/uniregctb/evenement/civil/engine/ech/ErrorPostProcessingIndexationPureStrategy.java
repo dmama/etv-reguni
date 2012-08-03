@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 
+import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
@@ -33,7 +34,7 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 	@NotNull
 	@Override
 	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents,
-	                                                       CustomDataHolder<List<EvenementCivilEchBasicInfo>> customData) {
+	                                                       DataHolder<List<EvenementCivilEchBasicInfo>> customData) {
 		final List<EvenementCivilEchBasicInfo> traites = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
 		final List<EvenementCivilEchBasicInfo> nonTraites = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
@@ -48,7 +49,7 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 			}
 		}
 
-		customData.member = traites;
+		customData.set(traites);
 		return nonTraites;
 	}
 

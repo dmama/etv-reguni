@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -42,7 +43,7 @@ public class ErrorPostProcessingAnnulationImpactStrategy implements ErrorPostPro
 
 	@NotNull
 	@Override
-	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, CustomDataHolder<Object> customData) {
+	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, DataHolder<Object> customData) {
 		final List<EvenementCivilEchBasicInfo> remain = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents);
 		final List<EvenementCivilEchBasicInfo> traites = new LinkedList<EvenementCivilEchBasicInfo>();
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
