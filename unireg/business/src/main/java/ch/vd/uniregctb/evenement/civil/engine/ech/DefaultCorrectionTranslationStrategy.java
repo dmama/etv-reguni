@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -80,15 +81,11 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		}
 
 		final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
-		final DataHolder<String> message = new DataHolder<String>();
+		final List<String> champsModifies = new LinkedList<String>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
-		if (sansDifferenceFiscalementImportante(originel, correction, message)) {
+		if (sansDifferenceFiscalementImportante(originel, correction, champsModifies)) {
 			strategieApplicable = INDEXATION_PURE;
-			if (StringUtils.isBlank(message.get())) {
-				event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
-			}
-
-			Audit.info(event.getId(), "Evénement de correction sans impact fiscal -> ré-indexation seule.");
+			event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 		}
 		else {
 			// il y a des différences... on ne peut rien faire automatiquement -> traitement manuel.
@@ -96,18 +93,34 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		}
 
 		// éventuelle explication sur la différence blocante observée
-		if (StringUtils.isNotBlank(message.get())) {
+		if (champsModifies.size() > 0) {
 			final String commentaire;
-			if (message.get().contains(SEPARATEUR)) {
-				commentaire = String.format("Les éléments suivants ont été modifiés par la correction : %s.", message.get());
+			if (champsModifies.size() > 1) {
+				commentaire = String.format("Les éléments suivants ont été modifiés par la correction : %s.", toString(champsModifies));
 			}
 			else {
-				commentaire = String.format("L'élément suivant a été modifié par la correction : %s.", message.get());
+				commentaire = String.format("L'élément suivant a été modifié par la correction : %s.", champsModifies.get(0));
 			}
 			event.setCommentaireTraitement(commentaire);
 		}
 
+		// un peu de log pour pouvoir suivre après coup ce qui s'est passé
+		if (StringUtils.isNotBlank(event.getCommentaireTraitement())) {
+			Audit.info(event.getId(), event.getCommentaireTraitement());
+		}
+
 		return strategieApplicable.create(event, context, options);
+	}
+
+	private static String toString(List<String> champsModifies) {
+		final StringBuilder b = new StringBuilder();
+		for (String s : champsModifies) {
+			if (b.length() > 0) {
+				b.append(SEPARATEUR);
+			}
+			b.append(s);
+		}
+		return b.toString();
 	}
 
 	@Override
@@ -115,27 +128,22 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		return false;
 	}
 
-	private boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement correction, @NotNull DataHolder<String> msg) {
+	private boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement correction, @NotNull List<String> champsModifies) {
 
 		// si un des individus manque, alors il y a forcément des différences importantes
 		if (originel == null || correction == null || originel.getIndividu() == null || correction.getIndividu() == null) {
-			msg.set("individu");
+			champsModifies.add("individu");
 			return false;
 		}
 
-		final StringBuilder b = new StringBuilder();
 		boolean sans = true;
 		for (IndividuComparisonStrategy strategy : comparisonStrategies) {
-			final DataHolder<String> localMsg = new DataHolder<String>();
-			sans = strategy.sansDifferenceFiscalementImportante(originel, correction, localMsg) && sans;
-			if (StringUtils.isNotBlank(localMsg.get())) {
-				if (b.length() > 0) {
-					b.append(SEPARATEUR);
-				}
-				b.append(localMsg.get());
+			final DataHolder<String> champ = new DataHolder<String>();
+			sans = strategy.sansDifferenceFiscalementImportante(originel, correction, champ) && sans;
+			if (StringUtils.isNotBlank(champ.get())) {
+				champsModifies.add(champ.get());
 			}
 		}
-		msg.set(b.length() > 0 ? b.toString() : null);
 		return sans;
 	}
 }
