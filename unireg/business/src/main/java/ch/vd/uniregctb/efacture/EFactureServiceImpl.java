@@ -4,6 +4,7 @@ import javax.jms.JMSException;
 import java.util.Date;
 import java.util.EnumSet;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
@@ -50,7 +51,6 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	public String imprimerDocumentEfacture(Long ctbId, TypeDocument typeDocument, RegDate dateDemande) throws EditiqueException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		final Date dateTraitement = DateHelper.getCurrentDate();
-
 		try {
 			return editiqueCompositionService.imprimeDocumentEfacture(tiers, typeDocument, dateTraitement, dateDemande);
 		}
@@ -62,7 +62,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	@Override
 	@Nullable
 	public DemandeAvecHisto getDemandeEnAttente(long ctbId) {
-		DestinataireAvecHisto dest = getDestinataireAvecSonHistorique(ctbId);
+		final DestinataireAvecHisto dest = getDestinataireAvecSonHistorique(ctbId);
 		if (dest != null) {
 			for (DemandeAvecHisto demande : dest.getHistoriqueDemandes()) {
 				if (demande.isEnAttente()) {
@@ -80,22 +80,39 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		if (tiers == null) {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
-		final long noAvs = AvsHelper.stringToLong(strNoAvs);
-		_if: if (tiers instanceof MenageCommun) {
+
+		final long noAvs;
+		try {
+			noAvs = AvsHelper.stringToLong(strNoAvs);
+		}
+		catch (IllegalArgumentException e) {
+			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+		}
+
+		if (tiers instanceof MenageCommun) {
+			boolean found = false;
 			final MenageCommun menage = (MenageCommun)tiers;
-			for(PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
-				if (noAvs == AvsHelper.stringToLong(tiersService.getNumeroAssureSocial(pp))) {
-					break _if;
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
+				final String avs = tiersService.getNumeroAssureSocial(pp);
+				if (StringUtils.isNotBlank(avs) && noAvs == AvsHelper.stringToLong(avs)) {
+					found = true;
+					break;
 				}
 			}
-			return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
-		} else if (tiers instanceof PersonnePhysique) {
-			if (noAvs != AvsHelper.stringToLong(tiersService.getNumeroAssureSocial((PersonnePhysique) tiers)) ) {
+			if (!found) {
 				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
 			}
-		} else {
+		}
+		else if (tiers instanceof PersonnePhysique) {
+			final String avs = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
+			if (StringUtils.isBlank(avs) || noAvs != AvsHelper.stringToLong(avs)) {
+				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
+			}
+		}
+		else {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
+
 		if (adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false) == null) {
 			return TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE;
 		}
@@ -154,9 +171,9 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
 	@Override
 	@Nullable
-	public DestinataireAvecHisto getDestinataireAvecSonHistorique (long ctbId){
-		PayerWithHistory payerWithHistory =eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
-		if(payerWithHistory == null){
+	public DestinataireAvecHisto getDestinataireAvecSonHistorique(long ctbId) {
+		final PayerWithHistory payerWithHistory = eFactureClient.getHistory(ctbId, ACI_BILLER_ID);
+		if (payerWithHistory == null) {
 			return null;
 		}
 		return new DestinataireAvecHisto(payerWithHistory, ctbId);
