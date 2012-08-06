@@ -19,6 +19,7 @@ import org.springframework.ui.Model;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
+import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
@@ -311,7 +312,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
 
-		final TreeMap<String, String> allEmetteur = new TreeMap<String, String>();
+		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
+		final Map<String, String> allEmetteur = new TreeMap<String, String>(new StringComparator(false, false, false, null));
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<String> emetteurs = template.execute(new TransactionCallback<List<String>>() {
@@ -323,7 +325,6 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				else {
 					return identCtbDAO.getEmetteursIdEtatsNonTraites();
 				}
-
 			}
 		});
 
