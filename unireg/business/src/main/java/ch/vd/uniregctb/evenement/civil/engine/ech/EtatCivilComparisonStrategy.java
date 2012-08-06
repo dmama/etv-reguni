@@ -19,7 +19,7 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	    // -> on peut se baser sur l'état civil "courant"
 	    final EtatCivil ecOriginel = originel.getIndividu().getEtatCivilCourant();
 	    final EtatCivil ecCorrige = corrige.getIndividu().getEtatCivilCourant();
-	    if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(ecOriginel, ecCorrige) || ecOriginel.getTypeEtatCivil() != ecCorrige.getTypeEtatCivil()) {
+	    if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(ecOriginel, ecCorrige) || (ecOriginel != ecCorrige && ecOriginel.getTypeEtatCivil() != ecCorrige.getTypeEtatCivil())) {
 		    msg.set(ATTRIBUT);
 		    return false;
 	    }
