@@ -571,4 +571,22 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
 	}
+
+	/**
+	 * NPE au cas où deux adresses de résidence (par exemple de type différent) dans la même commune
+	 * le code d'initialisation des adresses en mode "non-historique" (on en a vu en TE...)
+	 */
+	@Test
+	public void testInitAvecPlusieursResidencesDeTypesDifferentsSurLaMemeCommune() throws Exception {
+		final RegDate arrivalPrn = date(2007, 11, 4);
+		final RegDate arrivalSec = date(2007, 11, 6);
+		final List<Residence> residences = new ArrayList<Residence>();
+		final Residence prn = newResidencePrincipale(arrivalPrn, null, null, MockRue.Lausanne.AvenueDeBeaulieu);
+		final Residence sec = newResidenceSecondaire(arrivalSec, null, null, MockRue.Lausanne.AvenueDeLaGare);
+		residences.add(prn);
+		residences.add(sec);
+		final Collection<Adresse> adresses = IndividuRCPers.initAdresses(null, null, residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+	}
 }
