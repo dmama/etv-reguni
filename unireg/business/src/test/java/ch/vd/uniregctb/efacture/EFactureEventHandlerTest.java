@@ -76,7 +76,7 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null);
 		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(false);
 		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_CONTACT, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID);
-		final String description = TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription();
+		final String description = TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription();
 		expect(sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID, TypeAttenteDemande.EN_ATTENTE_CONTACT, description, ARCHIVAGE_ID, false)).andReturn(null);
 		service.updateEmailContribuable(CTB_ID, EMAIL);
 		replay(inscription, sender, service);
