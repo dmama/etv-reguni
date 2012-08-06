@@ -212,4 +212,35 @@ public class EtatCivilComparisonStrategyTest extends BusinessTest {
 		Assert.assertFalse(sans);
 		Assert.assertEquals("état civil", dh.get());
 	}
+
+	@Test
+	public void testSansAucunEtatCivil() throws Exception {
+		final long noIndividu = 367315L;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);
+				individu.getEtatsCivils().clear();
+				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+
+				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
+				individuCorrige.getEtatsCivils().clear();
+				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
+			}
+		});
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
 }
