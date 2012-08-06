@@ -37,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseRCPers;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
@@ -352,15 +353,20 @@ public class IndividuRCPers implements Individu, Serializable {
 					}
 				});
 
-				// on crée les adresses au format Unireg
-				final List<AdresseRCPers> res = new ArrayList<AdresseRCPers>();
-				for (int i = 0, residenceSize = list.size(); i < residenceSize; i++) {
-					final Residence r = list.get(i);
-					final Residence next = i + 1 < residenceSize ? list.get(i + 1) : null;
-					res.add(AdresseRCPers.get(r, next, infraService)); // va calculer une date de fin si nécessaire
-				}
+				// Attention, il ne faut pas non plus, dans une même commune, mélanger les adresses de différents types !
+				final Map<TypeAdresseCivil, List<Residence>> parType = splitParType(list);
+				for (List<Residence> listeTypee : parType.values()) {
 
-				adresses.addAll(res);
+					// on crée les adresses au format Unireg
+					final List<AdresseRCPers> res = new ArrayList<AdresseRCPers>();
+					for (int i = 0, residenceSize = listeTypee.size(); i < residenceSize; i++) {
+						final Residence r = listeTypee.get(i);
+						final Residence next = i + 1 < residenceSize ? listeTypee.get(i + 1) : null;
+						res.add(AdresseRCPers.get(r, next, infraService)); // va calculer une date de fin si nécessaire
+					}
+
+					adresses.addAll(res);
+				}
 			}
 		}
 
@@ -382,6 +388,20 @@ public class IndividuRCPers implements Individu, Serializable {
 			list.add(r);
 		}
 
+		return map;
+	}
+
+	private static Map<TypeAdresseCivil, List<Residence>> splitParType(List<Residence> residence) {
+		final Map<TypeAdresseCivil, List<Residence>> map = new HashMap<TypeAdresseCivil, List<Residence>>(TypeAdresseCivil.values().length);
+		for (Residence r : residence) {
+			final TypeAdresseCivil type = AdresseRCPers.getTypeAdresseResidence(r);
+			List<Residence> list = map.get(type);
+			if (list == null) {
+				list = new ArrayList<Residence>();
+				map.put(type, list);
+			}
+			list.add(r);
+		}
 		return map;
 	}
 
