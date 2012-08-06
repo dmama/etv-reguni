@@ -127,7 +127,7 @@ public class EFactureManagerTest extends WithoutSpringTest {
 		assertContains("en cours", msg);
 		assertContains(Long.toString(NO_CTB), msg);
 		msg = eFactureManager.getMessageQuittancement(ResultatQuittancement.enCours("BUSINESS_ID"), NO_CTB);
-		assertContains("OK", msg);
+		assertContains("maintenant inscrit", msg);
 		assertContains(Long.toString(NO_CTB), msg);
 	}
 
