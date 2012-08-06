@@ -28,11 +28,12 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	@Override
 	public void handle(Demande demande) throws Exception {
 		if (demande.getAction() == Demande.Action.DESINSCRIPTION) {
-			LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(demande.getCtbId()), RegDateHelper.dateToDisplayString(demande.getDateDemande())));
+			LOGGER.info(String.format("Reçu demande de désinscription e-Facture du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(demande.getCtbId()),
+			                          RegDateHelper.dateToDisplayString(demande.getDateDemande())));
 		}
 		else {
-			LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(demande.getCtbId()), FormatNumeroHelper.formatNumAVS(
-					demande.getNoAvs()), RegDateHelper.dateToDisplayString(demande.getDateDemande())));
+			LOGGER.info(String.format("Reçu demande d'inscription e-Facture du contribuable %s/%s au %s", FormatNumeroHelper.numeroCTBToDisplay(demande.getCtbId()),
+			                          FormatNumeroHelper.formatNumAVS(demande.getNoAvs()), RegDateHelper.dateToDisplayString(demande.getDateDemande())));
 
 			TypeRefusDemande typeRefus = demande.performBasicValidation();
 			if (typeRefus != null) {
@@ -62,9 +63,8 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_SIGNATURE, TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
 			} else {
 				String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, demande.getDateDemande());
-				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_CONTACT, TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
+				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_CONTACT, TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription(), archivageId, false);
 			}
-
 		}
 	}
 

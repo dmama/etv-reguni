@@ -50,7 +50,7 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	private String getMessageAvecVisaUser() {
 		final String user = AuthenticationHelper.getCurrentPrincipal();
-		return String.format("Traitement manuel par %s", user);
+		return String.format("Traitement manuel par %s.", user);
 	}
 
 	@Override
