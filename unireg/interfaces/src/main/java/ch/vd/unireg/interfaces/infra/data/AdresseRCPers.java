@@ -290,6 +290,10 @@ public class AdresseRCPers implements Adresse, Serializable {
 		throw new IllegalArgumentException("L'adresse de résidence ne possède pas de type défini !");
 	}
 
+	public static TypeAdresseCivil getTypeAdresseResidence(Residence residence) {
+		return initTypeAdresseResidence(residence);
+	}
+
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;
