@@ -127,15 +127,15 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		if (tiers == null) {
 			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas null");
 		}
-		// Verification de l'historique des situations
-		DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 
+		// Verification de l'historique des situations
+		final DestinataireAvecHisto histo = getDestinataireAvecSonHistorique(ctbId);
 		if (histo != null && histo.getDernierEtat().getType() == TypeEtatDestinataire.DESINSCRIT_SUSPENDU) {
 			return false;
 		}
 
 		// Verification du for principal
-		ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
+		final ForFiscalPrincipal ffp = tiers.getDernierForFiscalPrincipal();
 		if (ffp == null) {
 			return false;
 		}
@@ -145,7 +145,6 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		}
 
 		if (ffp.getDateFin() != null) {
-
 			if (MOTIF_FORS_INTERDITS.contains(ffp.getMotifFermeture())) {
 				return false;
 			}
@@ -185,24 +184,24 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
 	@Override
 	public ResultatQuittancement quittancer(Long noCtb) throws EvenementEfactureException {
-		Tiers tiers = tiersService.getTiers(noCtb);
+		final Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {
 			return ResultatQuittancement.contribuableInexistant();
 		}
 		if (!valideEtatContribuablePourInscription(noCtb)) {
 			return ResultatQuittancement.etatFiscalIncoherent();
 		}
-		PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
+		final PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
 		if (payerWithHistory == null) {
 			return ResultatQuittancement.etatEfactureIncoherent();
 		}
-		DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
+		final DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
 		if (destinataireAvecHisto.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
 			return ResultatQuittancement.dejaInscrit();
 		}
 		for (DemandeAvecHisto dem : destinataireAvecHisto.getHistoriqueDemandes()) {
 			if (dem.getDernierEtat().getType() == TypeEtatDemande.VALIDATION_EN_COURS_EN_ATTENTE_SIGNATURE) {
-				String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, "Traitement manuel par " + AuthenticationHelper.getCurrentPrincipal());
+				final String businessId = eFactureMessageSender.envoieAcceptationDemandeInscription(dem.getIdDemande(), true, String.format("Traitement manuel par %s.", AuthenticationHelper.getCurrentPrincipal()));
 				return ResultatQuittancement.enCours(businessId);
 			}
 		}
