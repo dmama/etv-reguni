@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
-<!-- v1.1-SNAPSHOT - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
+<!-- v1.4 - 25 juin 2012 - ajouté le type 'partyPartType' -->
+<!-- v1.2 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.1 - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/party/1" elementFormDefault="qualified"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
@@ -510,6 +511,129 @@
 			<xs:enumeration value="CORPORATION">
 				<xs:annotation>
 					<xs:documentation>Une personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="partyPartType">
+		<xs:annotation>
+			<xs:appinfo>
+				<typesafeEnumClass>
+					<jxb:javadoc>Les différents collections (= parties) qui peuvent être renseignées sur un tiers.</jxb:javadoc>
+				</typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ADDRESSES">
+				<xs:annotation>
+					<xs:documentation>Les adresses du tiers</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_RESIDENCES">
+				<xs:annotation>
+					<xs:documentation>Les fors fiscaux du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="VIRTUAL_TAX_RESIDENCES">
+				<xs:annotation>
+					<xs:documentation>Les fors fiscaux virtuels du tiers (les fors fiscaux non-virtuels sont aussi retournés).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="MANAGING_TAX_RESIDENCES">
+				<xs:annotation>
+					<xs:documentation>Les fors de gestion du tiers</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOUSEHOLD_MEMBERS">
+				<xs:annotation>
+					<xs:documentation>Les composants du ménage.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_LIABILITIES">
+				<xs:annotation>
+					<xs:documentation>L'assujettissement complet du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SIMPLIFIED_TAX_LIABILITIES">
+				<xs:annotation>
+					<xs:documentation>Une vue simplifiée de l'assujettissement du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAXATION_PERIODS">
+				<xs:annotation>
+					<xs:documentation>Les périodes d'imposition du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="RELATIONS_BETWEEN_PARTIES">
+				<xs:annotation>
+					<xs:documentation>Les rapports-entre-tiers du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="FAMILY_STATUSES">
+				<xs:annotation>
+					<xs:documentation>Les situations de famille du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_DECLARATIONS">
+				<xs:annotation>
+					<xs:documentation>Les déclarations du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_DECLARATIONS_STATUSES">
+				<xs:annotation>
+					<xs:documentation>Renseigne les états des déclarations. Attention ! L'utilisation de cette part est fortement déconseillée car elle dégrade très fortement les performances (=
+						implique une requête supplémentaire dans la base de données pour chaque déclaration de chaque tiers).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="BANK_ACCOUNTS">
+				<xs:annotation>
+					<xs:documentation>Les comptes bancaire du tiers.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_SEATS">
+				<xs:annotation>
+					<xs:documentation>Les sièges de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_FORMS">
+				<xs:annotation>
+					<xs:documentation>Les formes juridiques de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CAPITALS">
+				<xs:annotation>
+					<xs:documentation>Les capitaux de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_SYSTEMS">
+				<xs:annotation>
+					<xs:documentation>Les régimes fiscaux de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CORPORATION_STATUSES">
+				<xs:annotation>
+					<xs:documentation>Les états de la personne morale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="DEBTOR_PERIODICITIES">
+				<xs:annotation>
+					<xs:documentation>Les périodicités du débiteur.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="IMMOVABLE_PROPERTIES">
+				<xs:annotation>
+					<xs:documentation>Les immeubles du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHILDREN">
+				<xs:annotation>
+					<xs:documentation>Les enfants (naturels et adoptés) du contribuable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARENTS">
+				<xs:annotation>
+					<xs:documentation>Les parents (naturels et par adoption) du contribuable.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
 		</xs:restriction>
