@@ -10,6 +10,8 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-response-1.xsd" uri="event/party/numbers-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" uri="event/party/request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/response-1.xsd" uri="event/party/response-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd" uri="event/party/party-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd" uri="event/party/party-response-1.xsd"/>
 
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/party" catalog="../../../../party/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />

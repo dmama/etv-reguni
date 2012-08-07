@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.ech.ech0044.v2.DatePartiallyKnown;
-import ch.ech.ech0044.v2.NamedPersonId;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
@@ -46,7 +45,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
@@ -369,6 +367,10 @@ public class DataHelper {
 		return results;
 	}
 
+	public static Set<Parts> xmlToCore(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
+		return ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, TiersDAO tiersDAO) {
 
@@ -420,31 +422,66 @@ public class DataHelper {
 		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
-	public static Set<PartyPart> toSet(List<PartyPart> parts) {
-		return new HashSet<PartyPart>(parts);
+	public static Set<ch.vd.unireg.xml.party.v1.PartyPart> webToXML(Collection<PartyPart> parts) {
+		final HashSet<ch.vd.unireg.xml.party.v1.PartyPart> set = new HashSet<ch.vd.unireg.xml.party.v1.PartyPart>();
+		for (PartyPart part : parts) {
+			set.add(webToXML(part));
+		}
+		return set;
 	}
 
-	public static String salutations2MrMrs(String salutations) {
-		if (FormulePolitesse.MADAME.salutations().equals(salutations)) {
-			return "1";
-		}
-		if (FormulePolitesse.MONSIEUR.salutations().equals(salutations)) {
-			return "2";
-		}
-		else {
+	public static ch.vd.unireg.xml.party.v1.PartyPart webToXML(PartyPart part) {
+		if (part == null) {
 			return null;
 		}
-	}
-
-	public static List<NamedPersonId> deepClone(List<NamedPersonId> list) {
-		if (list == null) {
-			return null;
+		switch (part) {
+		case ADDRESSES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.ADDRESSES;
+		case BANK_ACCOUNTS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.BANK_ACCOUNTS;
+		case CAPITALS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.CAPITALS;
+		case CHILDREN:
+			return ch.vd.unireg.xml.party.v1.PartyPart.CHILDREN;
+		case CORPORATION_STATUSES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.CORPORATION_STATUSES;
+		case DEBTOR_PERIODICITIES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.DEBTOR_PERIODICITIES;
+		case FAMILY_STATUSES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.FAMILY_STATUSES;
+		case HOUSEHOLD_MEMBERS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.HOUSEHOLD_MEMBERS;
+		case IMMOVABLE_PROPERTIES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.IMMOVABLE_PROPERTIES;
+		case LEGAL_FORMS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.LEGAL_FORMS;
+		case LEGAL_SEATS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.LEGAL_SEATS;
+		case MANAGING_TAX_RESIDENCES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.MANAGING_TAX_RESIDENCES;
+		case PARENTS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.PARENTS;
+		case RELATIONS_BETWEEN_PARTIES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.RELATIONS_BETWEEN_PARTIES;
+		case SIMPLIFIED_TAX_LIABILITIES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.SIMPLIFIED_TAX_LIABILITIES;
+		case TAX_DECLARATIONS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_DECLARATIONS;
+		case TAX_DECLARATIONS_STATUSES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_DECLARATIONS_STATUSES;
+		case TAX_LIABILITIES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_LIABILITIES;
+		case TAX_RESIDENCES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_RESIDENCES;
+		case TAX_SYSTEMS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_SYSTEMS;
+		case TAXATION_PERIODS:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAXATION_PERIODS;
+		case VIRTUAL_TAX_RESIDENCES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.VIRTUAL_TAX_RESIDENCES;
+		default:
+			throw new IllegalArgumentException("Type de part inconnue = [" + part + "]");
 		}
-		final List<NamedPersonId> otherPersonId = new ArrayList<NamedPersonId>(list.size());
-		for (NamedPersonId namedPersonId : list) {
-			otherPersonId.add(new NamedPersonId(namedPersonId.getPersonIdCategory(), namedPersonId.getPersonId()));
-		}
-		return otherPersonId;
 	}
 
 	public static DatePartiallyKnown clone(DatePartiallyKnown right) {

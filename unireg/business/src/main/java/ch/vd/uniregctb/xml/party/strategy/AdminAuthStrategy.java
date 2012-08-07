@@ -1,25 +1,25 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
-import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.uniregctb.xml.ServiceException;
 
 public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority> {
 
 	private static final Logger LOGGER = Logger.getLogger(AdminAuthStrategy.class);
 
 	@Override
-	public AdministrativeAuthority newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	public AdministrativeAuthority newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final AdministrativeAuthority aa = new AdministrativeAuthority();
 		initBase(aa, right, context);
 		initParts(aa, right, parts, context);
@@ -35,7 +35,7 @@ public class AdminAuthStrategy extends TaxPayerStrategy<AdministrativeAuthority>
 	}
 
 	@Override
-	protected void initBase(AdministrativeAuthority to, Tiers from, Context context) throws WebServiceException {
+	protected void initBase(AdministrativeAuthority to, Tiers from, Context context) throws ServiceException {
 		super.initBase(to, from, context);
 
 		final CollectiviteAdministrative coladm = (CollectiviteAdministrative) from;

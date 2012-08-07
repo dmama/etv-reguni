@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.util.List;
+
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.event.party.v1.Request;
@@ -20,5 +22,5 @@ public interface RequestHandler<T extends Request> {
 
 	ClassPathResource getRequestXSD();
 
-	ClassPathResource getResponseXSD();
+	List<ClassPathResource> getResponseXSD();
 }

@@ -12,6 +12,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.webservices.party3.EnumTest;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.party.TaxDeclarationBuilder;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNull;

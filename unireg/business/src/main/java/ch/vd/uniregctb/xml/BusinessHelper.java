@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.uniregctb.xml;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
@@ -21,7 +21,7 @@ import ch.vd.uniregctb.tiers.RapportEntreTiers;
 public class BusinessHelper {
 
 	private static final Logger LOGGER = Logger.getLogger(BusinessHelper.class);
-	
+
 	/**
 	 * @return retourne la raison sociale du débiteur spécifié.
 	 */

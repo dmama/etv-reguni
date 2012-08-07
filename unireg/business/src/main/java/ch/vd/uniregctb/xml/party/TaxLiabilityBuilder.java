@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,8 +14,8 @@ import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
 import ch.vd.unireg.xml.party.taxresidence.v1.SwissDiplomat;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.Withholding;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
 
 public abstract class TaxLiabilityBuilder {
 
@@ -142,13 +142,13 @@ public abstract class TaxLiabilityBuilder {
 
 	private static void fillWithholding(Withholding left, ch.vd.uniregctb.metier.assujettissement.Sourcier right) {
 		fillTaxLiability(left, right);
-		left.setTaxationAuthority(EnumHelper.coreToWeb(right.getTypeAutoriteFiscale()));
+		left.setTaxationAuthority(EnumHelper.coreToXML(right.getTypeAutoriteFiscale()));
 	}
 
 	private static void fillTaxLiability(TaxLiability left, ch.vd.uniregctb.metier.assujettissement.Assujettissement right) {
-		left.setDateFrom(DataHelper.coreToWeb(right.getDateDebut()));
-		left.setDateTo(DataHelper.coreToWeb(right.getDateFin()));
-		left.setStartReason(EnumHelper.coreToWeb(right.getMotifFractDebut()));
-		left.setEndReason(EnumHelper.coreToWeb(right.getMotifFractFin()));
+		left.setDateFrom(DataHelper.coreToXML(right.getDateDebut()));
+		left.setDateTo(DataHelper.coreToXML(right.getDateFin()));
+		left.setStartReason(EnumHelper.coreToXML(right.getMotifFractDebut()));
+		left.setEndReason(EnumHelper.coreToXML(right.getMotifFractFin()));
 	}
 }

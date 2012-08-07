@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxPeriod;
 

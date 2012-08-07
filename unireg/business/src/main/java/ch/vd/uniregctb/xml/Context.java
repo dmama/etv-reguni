@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.impl;
+package ch.vd.uniregctb.xml;
 
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;

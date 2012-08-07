@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.party;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -75,7 +78,7 @@ public class AddressRequestHandler implements RequestHandler<AddressRequest> {
 	}
 
 	@Override
-	public ClassPathResource getResponseXSD() {
-		return new ClassPathResource("event/party/address-response-1.xsd");
+	public List<ClassPathResource> getResponseXSD() {
+		return Arrays.asList(new ClassPathResource("event/party/address-response-1.xsd"));
 	}
 }

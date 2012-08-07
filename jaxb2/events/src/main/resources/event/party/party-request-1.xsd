@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.4 - 23 juin 2012 - Version initiale -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/party/party-request/1" elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/party/party-request/1" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
+		   xmlns:request="http://www.vd.ch/fiscalite/unireg/event/party/request/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/request-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/party/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd" />
+
+	<xs:complexType name="partyRequestType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Requête qui permet de demander à Unireg l'historique d'un tiers.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="request:requestType">
+				<xs:sequence>
+					<xs:element name="partyNumber" type="common:partyNumberType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'id du tiers dont on obtenir les informations historiques.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="parts" type="party:partyPartType" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Les parties à renseigner sur le tiers retourné.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>

@@ -1,16 +1,16 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
+import ch.vd.uniregctb.xml.DataHelper;
 
 public class SimplifiedTaxLiabilityBuilder {
 	public static SimplifiedTaxLiability newSimplifiedTaxLiability(ch.vd.uniregctb.metier.assujettissement.Assujettissement assujettissement, SimplifiedTaxLiabilityType type) {
 		final SimplifiedTaxLiability a = new SimplifiedTaxLiability();
-		a.setDateFrom(DataHelper.coreToWeb(assujettissement.getDateDebut()));
-		a.setDateTo(DataHelper.coreToWeb(assujettissement.getDateFin()));
+		a.setDateFrom(DataHelper.coreToXML(assujettissement.getDateDebut()));
+		a.setDateTo(DataHelper.coreToXML(assujettissement.getDateFin()));
 		a.setType(type);
 		return a;
 	}
@@ -51,7 +51,7 @@ public class SimplifiedTaxLiabilityBuilder {
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
 		if (result != null && result.getDateTo() != null) {
 			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.webToCore(result.getDateTo());
+			final RegDate dateFin = DataHelper.xmlToCore(result.getDateTo());
 			if (dateFin.isAfter(aujourdhui)) {
 				result.setDateTo(null);
 			}
@@ -95,7 +95,7 @@ public class SimplifiedTaxLiabilityBuilder {
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
 		if (result != null && result.getDateTo() != null) {
 			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = DataHelper.webToCore(result.getDateTo());
+			final RegDate dateFin = DataHelper.xmlToCore(result.getDateTo());
 			if (dateFin.isAfter(aujourdhui)) {
 				result.setDateTo(null);
 			}

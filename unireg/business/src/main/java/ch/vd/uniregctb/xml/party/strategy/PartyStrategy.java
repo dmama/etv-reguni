@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.Collections;
 import java.util.List;
@@ -8,8 +8,6 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
@@ -18,18 +16,20 @@ import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.v1.Party;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.webservices.party3.data.BankAccountBuilder;
-import ch.vd.uniregctb.webservices.party3.data.ManagingTaxResidenceBuilder;
-import ch.vd.uniregctb.webservices.party3.data.RelationBetweenPartiesBuilder;
-import ch.vd.uniregctb.webservices.party3.data.TaxDeclarationBuilder;
-import ch.vd.uniregctb.webservices.party3.data.TaxResidenceBuilder;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
-import ch.vd.uniregctb.webservices.party3.impl.ForFiscalComparator;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.BankAccountBuilder;
+import ch.vd.uniregctb.xml.party.ForFiscalComparator;
+import ch.vd.uniregctb.xml.party.ManagingTaxResidenceBuilder;
+import ch.vd.uniregctb.xml.party.RelationBetweenPartiesBuilder;
+import ch.vd.uniregctb.xml.party.TaxDeclarationBuilder;
+import ch.vd.uniregctb.xml.party.TaxResidenceBuilder;
 
 public abstract class PartyStrategy<T extends Party> {
 
@@ -42,9 +42,9 @@ public abstract class PartyStrategy<T extends Party> {
 	 * @param parts   les parts à renseigner
 	 * @param context le context de création
 	 * @return un nouveau tiers
-	 * @throws ch.vd.unireg.webservices.party3.WebServiceException en cas de problème
+	 * @throws ch.vd.uniregctb.xml.ServiceException en cas de problème
 	 */
-	public abstract T newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException;
+	public abstract T newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException;
 
 	/**
 	 * Retourne une copie du tiers spécifié en copiant uniquement les parts spécifiées.
@@ -66,17 +66,17 @@ public abstract class PartyStrategy<T extends Party> {
 		copyParts(to, from, parts, CopyMode.ADDITIVE);
 	}
 
-	protected void initBase(T to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws WebServiceException {
+	protected void initBase(T to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws ServiceException {
 		to.setNumber(from.getNumero().intValue());
 		to.setComplementaryName(from.getComplementNom());
-		to.setCancellationDate(DataHelper.coreToWeb(from.getAnnulationDate()));
+		to.setCancellationDate(DataHelper.coreToXML(from.getAnnulationDate()));
 		to.setContactPerson(from.getPersonneContact());
 		to.setPrivatePhoneNumber(from.getNumeroTelephonePrive());
 		to.setBusinessPhoneNumber(from.getNumeroTelephoneProfessionnel());
 		to.setMobilePhoneNumber(from.getNumeroTelephonePortable());
 		to.setFaxNumber(from.getNumeroTelecopie());
 		to.setEmailAddress(from.getAdresseCourrierElectronique());
-		to.setAutomaticReimbursementBlocked(DataHelper.coreToWeb(from.getBlocageRemboursementAutomatique()));
+		to.setAutomaticReimbursementBlocked(DataHelper.coreToXML(from.getBlocageRemboursementAutomatique()));
 		to.setInactiveDebtor(from.isDebiteurInactif());
 	}
 
@@ -95,7 +95,7 @@ public abstract class PartyStrategy<T extends Party> {
 	}
 
 
-	protected void initParts(T left, ch.vd.uniregctb.tiers.Tiers tiers, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	protected void initParts(T left, ch.vd.uniregctb.tiers.Tiers tiers, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 
 		if (parts != null && parts.contains(PartyPart.BANK_ACCOUNTS)) {
 			initBankAccounts(left, context, tiers);
@@ -174,7 +174,7 @@ public abstract class PartyStrategy<T extends Party> {
 		copyColl(to.getBankAccounts(), from.getBankAccounts());
 	}
 
-	private static void initAddresses(Party tiers, ch.vd.uniregctb.tiers.Tiers right, final Context context) throws WebServiceException {
+	private static void initAddresses(Party tiers, ch.vd.uniregctb.tiers.Tiers right, final Context context) throws ServiceException {
 		ch.vd.uniregctb.adresse.AdressesEnvoiHisto adresses;
 		try {
 			adresses = context.adresseService.getAdressesEnvoiHisto(right, false);
@@ -185,27 +185,27 @@ public abstract class PartyStrategy<T extends Party> {
 		}
 
 		if (adresses != null) {
-			final List<Address> adressesCourrier = DataHelper.coreToWeb(adresses.courrier, null, AddressType.MAIL);
+			final List<Address> adressesCourrier = DataHelper.coreToXML(adresses.courrier, null, AddressType.MAIL);
 			if (adressesCourrier != null) {
 				tiers.getMailAddresses().addAll(adressesCourrier);
 			}
 
-			final List<Address> adressesRepresentation = DataHelper.coreToWeb(adresses.representation, null, AddressType.REPRESENTATION);
+			final List<Address> adressesRepresentation = DataHelper.coreToXML(adresses.representation, null, AddressType.REPRESENTATION);
 			if (adressesRepresentation != null) {
 				tiers.getRepresentationAddresses().addAll(adressesRepresentation);
 			}
 
-			final List<Address> adressesDomicile = DataHelper.coreToWeb(adresses.domicile, null, AddressType.RESIDENCE);
+			final List<Address> adressesDomicile = DataHelper.coreToXML(adresses.domicile, null, AddressType.RESIDENCE);
 			if (adressesDomicile != null) {
 				tiers.getResidenceAddresses().addAll(adressesDomicile);
 			}
 
-			final List<Address> adressesPoursuite = DataHelper.coreToWeb(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
+			final List<Address> adressesPoursuite = DataHelper.coreToXML(adresses.poursuite, null, AddressType.DEBT_PROSECUTION);
 			if (adressesPoursuite != null) {
 				tiers.getDebtProsecutionAddresses().addAll(adressesPoursuite);
 			}
 
-			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToWebAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
+			final List<AddressOtherParty> adresseAutreTiers = DataHelper.coreToXMLAT(adresses.poursuiteAutreTiers, null, AddressType.DEBT_PROSECUTION_OF_OTHER_PARTY);
 			if (adresseAutreTiers != null) {
 				tiers.getDebtProsecutionAddressesOfOtherParty().addAll(adresseAutreTiers);
 			}
@@ -322,8 +322,8 @@ public abstract class PartyStrategy<T extends Party> {
 	private static void initTaxResidences(Party party, ch.vd.uniregctb.tiers.Tiers right, final Set<PartyPart> parts, Context context) {
 
 		// le calcul de ces dates nécessite d'accéder aux fors fiscaux, initialisé ici pour des raisons de performances.
-		party.setActivityStartDate(DataHelper.coreToWeb(right.getDateDebutActivite()));
-		party.setActivityEndDate(DataHelper.coreToWeb(right.getDateFinActivite()));
+		party.setActivityStartDate(DataHelper.coreToXML(right.getDateDebutActivite()));
+		party.setActivityEndDate(DataHelper.coreToXML(right.getDateFinActivite()));
 
 		for (ch.vd.uniregctb.tiers.ForFiscal forFiscal : right.getForsFiscauxSorted()) {
 			if (forFiscal instanceof ch.vd.uniregctb.tiers.ForFiscalPrincipal

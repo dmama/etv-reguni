@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.List;
 import java.util.Set;
@@ -8,31 +8,31 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationPeriod;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.webservices.party3.data.FamilyStatusBuilder;
-import ch.vd.uniregctb.webservices.party3.data.ImmovablePropertyBuilder;
-import ch.vd.uniregctb.webservices.party3.data.SimplifiedTaxLiabilityBuilder;
-import ch.vd.uniregctb.webservices.party3.data.TaxLiabilityBuilder;
-import ch.vd.uniregctb.webservices.party3.data.TaxationPeriodBuilder;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.FamilyStatusBuilder;
+import ch.vd.uniregctb.xml.party.ImmovablePropertyBuilder;
+import ch.vd.uniregctb.xml.party.SimplifiedTaxLiabilityBuilder;
+import ch.vd.uniregctb.xml.party.TaxLiabilityBuilder;
+import ch.vd.uniregctb.xml.party.TaxationPeriodBuilder;
 
 public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy<T> {
 
 	private static final Logger LOGGER = Logger.getLogger(TaxPayerStrategy.class);
 
 	@Override
-	protected void initParts(T to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	protected void initParts(T to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) from;
@@ -88,7 +88,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 		}
 	}
 
-	private static void initTaxLiabilities(Taxpayer left, Contribuable right, Set<PartyPart> parts, Context context) throws WebServiceException {
+	private static void initTaxLiabilities(Taxpayer left, Contribuable right, Set<PartyPart> parts, Context context) throws ServiceException {
 		/*
 		 * Note: il est nécessaire de calculer l'assujettissement sur TOUTE la période de validité du contribuable pour obtenir un résultat
 		 * correct avec le collate.
@@ -120,7 +120,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 	}
 
 	private static void initTaxationPeriods(Taxpayer left, ch.vd.uniregctb.tiers.Contribuable contribuable, Context context)
-			throws WebServiceException {
+			throws ServiceException {
 
 		// [UNIREG-913] On n'expose pas les périodes fiscales avant la première période définie dans les paramètres
 		final int premierePeriodeFiscale = context.parametreService.getPremierePeriodeFiscale();
@@ -144,7 +144,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 			// [UNIREG-910] la période d'imposition courante est laissée ouverte
 			if (derniere != null && derniere.getDateTo() != null) {
 				final RegDate aujourdhui = RegDate.get();
-				final RegDate dateFin = DataHelper.webToCore(derniere.getDateTo());
+				final RegDate dateFin = DataHelper.xmlToCore(derniere.getDateTo());
 				if (dateFin.isAfter(aujourdhui)) {
 					derniere.setDateTo(null);
 				}
@@ -153,7 +153,7 @@ public abstract class TaxPayerStrategy<T extends Taxpayer> extends PartyStrategy
 	}
 
 	// [SIFISC-2588] ajout de la part immeuble
-	private static void initImmovableProperties(Taxpayer left, Contribuable contribuable) throws WebServiceException {
+	private static void initImmovableProperties(Taxpayer left, Contribuable contribuable) throws ServiceException {
 
 		final Set<Immeuble> immeubles = contribuable.getImmeubles();
 		for (Immeuble immeuble : immeubles) {

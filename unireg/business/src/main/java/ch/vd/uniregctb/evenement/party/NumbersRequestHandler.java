@@ -117,7 +117,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 	}
 
 	@Override
-	public ClassPathResource getResponseXSD() {
-		return new ClassPathResource("event/party/numbers-response-1.xsd");
+	public List<ClassPathResource> getResponseXSD() {
+		return Arrays.asList(new ClassPathResource("event/party/numbers-response-1.xsd"));
 	}
 }

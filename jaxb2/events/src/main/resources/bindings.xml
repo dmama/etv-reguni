@@ -178,6 +178,24 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="event/party/party-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.party.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-partreq-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/party-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.party.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-party-partres-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-common-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.event.di.common.v1" />

@@ -5,6 +5,7 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
+import ch.vd.uniregctb.xml.ServiceException;
 
 public class ExceptionHelper {
 
@@ -47,5 +48,9 @@ public class ExceptionHelper {
 		final String message = exception.getMessage();
 		info.setMessage(message);
 		return new WebServiceException(message, info);
+	}
+
+	public static WebServiceException newException(ServiceException e) {
+		return new WebServiceException(e.getMessage(), e.getInfo());
 	}
 }

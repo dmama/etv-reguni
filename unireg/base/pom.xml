@@ -616,7 +616,7 @@
 		<lucene.version>3.0.1</lucene.version>
 		<activemq.version>5.5.1-fuse-01-20</activemq.version>
 		<jencks.version>2.2</jencks.version>
-		<wsparty3.version>3.3</wsparty3.version>
+		<wsparty3.version>3.4-SNAPSHOT</wsparty3.version>
 
 		<!-- Testing dependency versions -->
 		<junit.version>4.8.1</junit.version>

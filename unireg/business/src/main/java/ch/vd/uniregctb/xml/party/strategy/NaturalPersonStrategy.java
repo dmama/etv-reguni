@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.Set;
 
@@ -12,25 +12,26 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
-import ch.vd.uniregctb.webservices.party3.impl.ExceptionHelper;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.uniregctb.xml.ExceptionHelper;
+import ch.vd.uniregctb.xml.ServiceException;
 
 public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private static final Logger LOGGER = Logger.getLogger(NaturalPersonStrategy.class);
 	private static final String CH_AHV = "CH.AHV"; // voir spécification eCH-0044
 	private static final String CH_ZAR = "CH.ZAR";
+	private static final String VD_UNIREG = "VD.UNIREG";
 
 	@Override
-	public NaturalPerson newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	public NaturalPerson newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final NaturalPerson pp = new NaturalPerson();
 		initBase(pp, right, context);
 		initParts(pp, right, parts, context);
@@ -46,15 +47,15 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 	}
 
 	@Override
-	protected void initBase(NaturalPerson to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws WebServiceException {
+	protected void initBase(NaturalPerson to, ch.vd.uniregctb.tiers.Tiers from, Context context) throws ServiceException {
 		super.initBase(to, from, context);
 
 		final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) from;
 		if (!personne.isHabitantVD()) {
 			to.setIdentification(newPersonIdentification(personne));
-			to.setDateOfBirth(DataHelper.coreToWeb(personne.getDateNaissance()));
-			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces()));
-			to.setCategory(EnumHelper.coreToWeb(personne.getCategorieEtranger()));
+			to.setDateOfBirth(DataHelper.coreToXML(personne.getDateNaissance()));
+			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces()));
+			to.setCategory(EnumHelper.coreToXML(personne.getCategorieEtranger()));
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
@@ -66,16 +67,16 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.UNKNOWN_INDIVIDUAL);
 			}
 
-			to.setIdentification(newPersonIdentification(individu));
-			to.setDateOfBirth(DataHelper.coreToWeb(individu.getDateNaissance()));
-			to.setDateOfDeath(DataHelper.coreToWeb(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
+			to.setIdentification(newPersonIdentification(individu, personne.getNumero()));
+			to.setDateOfBirth(DataHelper.coreToXML(individu.getDateNaissance()));
+			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
 			final Permis permis = individu.getPermis().getPermisActif(null);
 			if (permis == null) {
 				to.setCategory(NaturalPersonCategory.SWISS);
 			}
 			else {
-				to.setCategory(EnumHelper.coreToWeb(permis.getTypePermis()));
+				to.setCategory(EnumHelper.coreToXML(permis.getTypePermis()));
 			}
 		}
 	}
@@ -91,6 +92,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 	private static PersonIdentification newPersonIdentification(ch.vd.uniregctb.tiers.PersonnePhysique personne) {
 		final PersonIdentification identification = new PersonIdentification();
+		identification.setLocalPersonId(new NamedPersonId(VD_UNIREG, String.valueOf(personne.getNumero())));
 		identification.setOfficialName(personne.getNom());
 		identification.setFirstName(personne.getPrenom());
 		identification.setSex(EchHelper.sexeToEch44(personne.getSexe()));
@@ -117,8 +119,9 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		return id;
 	}
 
-	private static PersonIdentification newPersonIdentification(Individu individu) {
+	private static PersonIdentification newPersonIdentification(Individu individu, long numero) {
 		final PersonIdentification identification = new PersonIdentification();
+		identification.setLocalPersonId(new NamedPersonId(VD_UNIREG, String.valueOf(numero)));
 		identification.setOfficialName(individu.getNom());
 		identification.setFirstName(individu.getPrenom());
 		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));

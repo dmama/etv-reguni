@@ -1,25 +1,25 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.Debtor;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.webservices.party3.data.DebtorPeriodicityBuilder;
-import ch.vd.uniregctb.webservices.party3.impl.BusinessHelper;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.BusinessHelper;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.DebtorPeriodicityBuilder;
 
 public class DebtorStrategy extends PartyStrategy<Debtor> {
 
 	@Override
-	public Debtor newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	public Debtor newFrom(Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final Debtor debiteur = new Debtor();
 		initBase(debiteur, right, context);
 		initParts(debiteur, right, parts, context);
@@ -35,15 +35,15 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	@Override
-	protected void initBase(Debtor to, Tiers from, Context context) throws WebServiceException {
+	protected void initBase(Debtor to, Tiers from, Context context) throws ServiceException {
 		super.initBase(to, from, context);
 
 		final DebiteurPrestationImposable debiteur =(DebiteurPrestationImposable) from;
 		to.setName(BusinessHelper.getDebtorName(debiteur, null, context.adresseService));
-		to.setCategory(EnumHelper.coreToWeb(debiteur.getCategorieImpotSource()));
-		to.setCommunicationMode(EnumHelper.coreToWeb(debiteur.getModeCommunication()));
-		to.setWithoutReminder(DataHelper.coreToWeb(debiteur.getSansRappel()));
-		to.setWithoutWithholdingTaxDeclaration(DataHelper.coreToWeb(debiteur.getSansListeRecapitulative()));
+		to.setCategory(EnumHelper.coreToXML(debiteur.getCategorieImpotSource()));
+		to.setCommunicationMode(EnumHelper.coreToXML(debiteur.getModeCommunication()));
+		to.setWithoutReminder(DataHelper.coreToXML(debiteur.getSansRappel()));
+		to.setWithoutWithholdingTaxDeclaration(DataHelper.coreToXML(debiteur.getSansListeRecapitulative()));
 		final Long contribuableId = debiteur.getContribuableId();
 		to.setAssociatedTaxpayerNumber(contribuableId == null ? null : contribuableId.intValue());
 		if (to.getCommunicationMode() == CommunicationMode.UPLOAD) {
@@ -64,7 +64,7 @@ public class DebtorStrategy extends PartyStrategy<Debtor> {
 	}
 
 	@Override
-	protected void initParts(Debtor to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	protected void initParts(Debtor to, Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final DebiteurPrestationImposable debiteur =(DebiteurPrestationImposable) from;

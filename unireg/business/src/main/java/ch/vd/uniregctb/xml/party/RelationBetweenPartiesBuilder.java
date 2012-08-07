@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -6,24 +6,24 @@ import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
 
 public class RelationBetweenPartiesBuilder {
 	public static RelationBetweenParties newRelationBetweenParties(ch.vd.uniregctb.tiers.RapportEntreTiers rapport, Long autreTiersNumero) {
 		final RelationBetweenParties r = new RelationBetweenParties();
-		r.setType(EnumHelper.coreToWeb(rapport.getType()));
-		r.setDateFrom(DataHelper.coreToWeb(rapport.getDateDebut()));
-		r.setDateTo(DataHelper.coreToWeb(rapport.getDateFin()));
-		r.setCancellationDate(DataHelper.coreToWeb(rapport.getAnnulationDate()));
+		r.setType(EnumHelper.coreToXML(rapport.getType()));
+		r.setDateFrom(DataHelper.coreToXML(rapport.getDateDebut()));
+		r.setDateTo(DataHelper.coreToXML(rapport.getDateFin()));
+		r.setCancellationDate(DataHelper.coreToXML(rapport.getAnnulationDate()));
 		r.setOtherPartyNumber(autreTiersNumero.intValue());
 
 		if (rapport instanceof ch.vd.uniregctb.tiers.RapportPrestationImposable) {
 			final ch.vd.uniregctb.tiers.RapportPrestationImposable rpi = (ch.vd.uniregctb.tiers.RapportPrestationImposable) rapport;
 
-			r.setActivityType(EnumHelper.coreToWeb(rpi.getTypeActivite()));
+			r.setActivityType(EnumHelper.coreToXML(rpi.getTypeActivite()));
 			r.setActivityRate(rpi.getTauxActivite());
-			r.setEndDateOfLastTaxableItem(DataHelper.coreToWeb(rpi.getFinDernierElementImposable()));
+			r.setEndDateOfLastTaxableItem(DataHelper.coreToXML(rpi.getFinDernierElementImposable()));
 		}
 
 		// [UNIREG-2662] ajout de l'attribut extensionExecutionForcee
@@ -45,8 +45,8 @@ public class RelationBetweenPartiesBuilder {
 		if (autrePersonnePhysique != null) {
 			r = new RelationBetweenParties();
 			r.setType(filiation.getType() == RapportFiliation.Type.ENFANT ? RelationBetweenPartiesType.CHILD : RelationBetweenPartiesType.PARENT);
-			r.setDateFrom(DataHelper.coreToWeb(filiation.getDateDebut()));
-			r.setDateTo(DataHelper.coreToWeb(filiation.getDateFin()));
+			r.setDateFrom(DataHelper.coreToXML(filiation.getDateDebut()));
+			r.setDateTo(DataHelper.coreToXML(filiation.getDateFin()));
 			r.setOtherPartyNumber(autrePersonnePhysique.getNumero().intValue());
 		}
 		else {

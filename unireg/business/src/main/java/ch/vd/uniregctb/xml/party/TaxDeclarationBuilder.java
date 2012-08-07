@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,15 +7,14 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
-import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
-import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
-import ch.vd.uniregctb.webservices.tiers2.data.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.xml.DataHelper;
+import ch.vd.uniregctb.xml.EnumHelper;
 
 public class TaxDeclarationBuilder {
 
@@ -26,7 +25,7 @@ public class TaxDeclarationBuilder {
 		fillTaxDeclarationParts(d, declaration, parts);
 
 		d.setSequenceNumber(Long.valueOf(declaration.getNumero()));
-		d.setDocumentType(EnumHelper.coreToWeb(declaration.getTypeDeclaration()));
+		d.setDocumentType(EnumHelper.coreToXML(declaration.getTypeDeclaration()));
 
 		final Integer numeroOfsForGestion = declaration.getNumeroOfsForGestion();
 		if (numeroOfsForGestion == null) {
@@ -50,16 +49,16 @@ public class TaxDeclarationBuilder {
 		final WithholdingTaxDeclaration d = new WithholdingTaxDeclaration();
 		fillTaxDeclarationBase(d, declaration);
 		fillTaxDeclarationParts(d, declaration, parts);
-		d.setPeriodicity(EnumHelper.coreToWeb(declaration.getPeriodicite()));
-		d.setCommunicationMode(EnumHelper.coreToWeb(declaration.getModeCommunication()));
+		d.setPeriodicity(EnumHelper.coreToXML(declaration.getPeriodicite()));
+		d.setCommunicationMode(EnumHelper.coreToXML(declaration.getModeCommunication()));
 		return d;
 	}
 
 	private static void fillTaxDeclarationBase(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration) {
 		d.setId(declaration.getId()); // [SIFISC-2392]
-		d.setDateFrom(DataHelper.coreToWeb(declaration.getDateDebut()));
-		d.setDateTo(DataHelper.coreToWeb(declaration.getDateFin()));
-		d.setCancellationDate(DataHelper.coreToWeb(declaration.getAnnulationDate()));
+		d.setDateFrom(DataHelper.coreToXML(declaration.getDateDebut()));
+		d.setDateTo(DataHelper.coreToXML(declaration.getDateFin()));
+		d.setCancellationDate(DataHelper.coreToXML(declaration.getAnnulationDate()));
 		d.setTaxPeriod(TaxPeriodBuilder.newTaxPeriod(declaration.getPeriode()));
 	}
 
@@ -73,9 +72,9 @@ public class TaxDeclarationBuilder {
 
 	public static TaxDeclarationStatus newTaxDeclarationStatus(ch.vd.uniregctb.declaration.EtatDeclaration etat) {
 		final TaxDeclarationStatus e = new TaxDeclarationStatus();
-		e.setType(EnumHelper.coreToWeb(etat.getEtat()));
-		e.setDateFrom(DataHelper.coreToWeb(getAdjustedStatusDateFrom(etat)));
-		e.setCancellationDate(DataHelper.coreToWeb(etat.getAnnulationDate()));
+		e.setType(EnumHelper.coreToXML(etat.getEtat()));
+		e.setDateFrom(DataHelper.coreToXML(getAdjustedStatusDateFrom(etat)));
+		e.setCancellationDate(DataHelper.coreToXML(etat.getAnnulationDate()));
 		return e;
 	}
 
@@ -83,7 +82,7 @@ public class TaxDeclarationBuilder {
 	 * [UNIREG-3407] Pour les états de sommation, c'est la date de l'envoi du courrier qu'il faut renvoyer
 	 *
 	 * @param etatDeclaration etat de la déclaration
-	 * @return valeur de la date à mettre dans le champ {@link ch.vd.uniregctb.webservices.party3.EtatDeclaration#dateObtention}
+	 * @return valeur de la date à mettre dans le champ {@link TaxDeclarationStatus#dateFrom}
 	 */
 	private static RegDate getAdjustedStatusDateFrom(ch.vd.uniregctb.declaration.EtatDeclaration etatDeclaration) {
 		final RegDate date;

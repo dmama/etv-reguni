@@ -1,20 +1,20 @@
-package ch.vd.uniregctb.webservices.party3.data.strategy;
+package ch.vd.uniregctb.xml.party.strategy;
 
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.unireg.webservices.party3.PartyPart;
-import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.webservices.party3.data.PartyBuilder;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.PartyBuilder;
 
 public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 
 	@Override
-	public CommonHousehold newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	public CommonHousehold newFrom(ch.vd.uniregctb.tiers.Tiers right, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		final CommonHousehold menage = new CommonHousehold();
 		initBase(menage, right, context);
 		initParts(menage, right, parts, context);
@@ -30,7 +30,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	}
 
 	@Override
-	protected void initParts(CommonHousehold to, ch.vd.uniregctb.tiers.Tiers from, @Nullable Set<PartyPart> parts, Context context) throws WebServiceException {
+	protected void initParts(CommonHousehold to, ch.vd.uniregctb.tiers.Tiers from, @Nullable Set<PartyPart> parts, Context context) throws ServiceException {
 		super.initParts(to, from, parts, context);
 
 		final ch.vd.uniregctb.tiers.MenageCommun menage = (ch.vd.uniregctb.tiers.MenageCommun) from;
@@ -49,7 +49,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		}
 	}
 
-	private static void initMembers(CommonHousehold left, ch.vd.uniregctb.tiers.MenageCommun menageCommun, Context context) throws WebServiceException {
+	private static void initMembers(CommonHousehold left, ch.vd.uniregctb.tiers.MenageCommun menageCommun, Context context) throws ServiceException {
 		EnsembleTiersCouple ensemble = context.tiersService.getEnsembleTiersCouple(menageCommun, null);
 		final ch.vd.uniregctb.tiers.PersonnePhysique principal = ensemble.getPrincipal();
 		if (principal != null) {

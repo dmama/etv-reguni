@@ -195,8 +195,8 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 
 		final List<Resource> resources = new ArrayList<Resource>(handlers.size());
 		for (RequestHandler handler : handlers.values()) {
-			final ClassPathResource resource = handler.getResponseXSD();
-			resources.add(resource);
+			final List<ClassPathResource> resource = handler.getResponseXSD();
+			resources.addAll(resource);
 		}
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();

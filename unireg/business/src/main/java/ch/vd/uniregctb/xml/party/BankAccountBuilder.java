@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservices.party3.data;
+package ch.vd.uniregctb.xml.party;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.BankAccount;
-import ch.vd.uniregctb.webservices.party3.impl.Context;
+import ch.vd.uniregctb.xml.Context;
 
 public class BankAccountBuilder {
 	public static BankAccount newBankAccount(ch.vd.uniregctb.tiers.Tiers tiers, Context context) {

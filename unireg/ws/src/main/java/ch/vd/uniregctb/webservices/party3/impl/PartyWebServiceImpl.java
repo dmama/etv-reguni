@@ -37,7 +37,6 @@ import ch.vd.unireg.webservices.party3.GetPartyTypeRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesResponse;
 import ch.vd.unireg.webservices.party3.PartyNumberList;
-import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsRequest;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
@@ -88,8 +87,11 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party3.data.BatchPartyBuilder;
 import ch.vd.uniregctb.webservices.party3.data.DebtorInfoBuilder;
-import ch.vd.uniregctb.webservices.party3.data.PartyBuilder;
 import ch.vd.uniregctb.webservices.party3.exception.TaxDeclarationAcknowledgeError;
+import ch.vd.uniregctb.xml.BusinessHelper;
+import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.ServiceException;
+import ch.vd.uniregctb.xml.party.PartyBuilder;
 
 public class PartyWebServiceImpl implements PartyWebService {
 
@@ -243,7 +245,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			}
 
 			final Party data;
-			final Set<PartyPart> parts = DataHelper.toSet(params.getParts());
+			final Set<ch.vd.unireg.xml.party.v1.PartyPart> parts = DataHelper.webToXML(params.getParts());
 			if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
 				final ch.vd.uniregctb.tiers.PersonnePhysique personne = (ch.vd.uniregctb.tiers.PersonnePhysique) tiers;
 				BusinessHelper.warmIndividus(personne, parts, context);
@@ -276,6 +278,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 			LOGGER.error(e, e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
+		catch (ServiceException e) {
+			throw ExceptionHelper.newException(e);
+		}
 	}
 
 	/**
@@ -295,9 +300,9 @@ public class PartyWebServiceImpl implements PartyWebService {
 				throw ExceptionHelper.newBusinessException(message, BusinessExceptionCode.INVALID_REQUEST);
 			}
 
-			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.toSet(params.getParts()), new MapCallback() {
+			final Map<Long, Object> results = mapParties(toLongSet(partyNumbers), null, DataHelper.webToXML(params.getParts()), new MapCallback() {
 				@Override
-				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<PartyPart> parts, RegDate date, Context context) {
+				public Object map(ch.vd.uniregctb.tiers.Tiers tiers, Set<ch.vd.unireg.xml.party.v1.PartyPart> parts, RegDate date, Context context) {
 					try {
 						final Party t;
 						if (tiers instanceof ch.vd.uniregctb.tiers.PersonnePhysique) {
@@ -325,8 +330,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 						}
 						return t;
 					}
-					catch (WebServiceException e) {
-						return e;
+					catch (ServiceException e) {
+						return ExceptionHelper.newException(e);
 					}
 					catch (RuntimeException e) {
 						LOGGER.error(e, e);
@@ -364,7 +369,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 *         l'exception elle-même.
 	 */
 	@SuppressWarnings({"unchecked"})
-	private Map<Long, Object> mapParties(Set<Long> partyNumbers, @Nullable RegDate date, Set<PartyPart> parts, MapCallback callback) {
+	private Map<Long, Object> mapParties(Set<Long> partyNumbers, @Nullable RegDate date, Set<ch.vd.unireg.xml.party.v1.PartyPart> parts, MapCallback callback) {
 
 		final Set<Long> allIds = trim(partyNumbers);
 
@@ -485,8 +490,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 * @param parts les parties du web-service
 	 * @return les parties de la couche business.
 	 */
-	protected static Set<Parts> webToCoreWithForsFiscaux(Set<PartyPart> parts) {
-		Set<Parts> coreParts = DataHelper.webToCore(parts);
+	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
+		Set<Parts> coreParts = DataHelper.xmlToCore(parts);
 		if (coreParts == null) {
 			coreParts = new HashSet<Parts>();
 		}

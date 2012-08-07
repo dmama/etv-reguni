@@ -19,9 +19,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
-import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.xml.Context;
 
 /**
  * Ce thread reçoit une liste d'ids de tiers à charger de la base et à retourner sous forme des tiers du web-service.
@@ -98,7 +99,7 @@ public class MappingThread implements Runnable {
 		LOGGER.trace("Chargement des tiers - start");
 		long start = System.nanoTime();
 
-		final Set<TiersDAO.Parts> coreParts = PartyWebServiceImpl.webToCoreWithForsFiscaux(parts);
+		final Set<TiersDAO.Parts> coreParts = PartyWebServiceImpl.xmlToCoreWithForsFiscaux(parts);
 
 		final Set<Long> idsFull;
 		if (coreParts.contains(TiersDAO.Parts.RAPPORTS_ENTRE_TIERS)) {
