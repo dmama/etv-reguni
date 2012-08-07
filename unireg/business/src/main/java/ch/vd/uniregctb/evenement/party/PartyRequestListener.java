@@ -35,10 +35,12 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.technical.esb.util.EsbDataHandler;
+import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
@@ -73,7 +75,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			onMessage(message);
 		}
 		catch (Exception e) {
-			// toutes les erreurs levées ici sont des erreurs transientes ou de validation du XML
+			// toutes les erreurs levées ici sont des bugs
 			LOGGER.error(e, e);
 			throw e;
 		}
@@ -101,7 +103,13 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		}
 
 		// on répond
-		answer(result.getResponse(), result.getAttachments(), message);
+		try {
+			answer(result.getResponse(), result.getAttachments(), message);
+		}
+		catch (ESBValidationException e) {
+			LOGGER.error(e, e);
+			answerValidationException(e, result.getAttachments(), message);
+		}
 	}
 
 	private Request parse(Source message) throws JAXBException, SAXException, IOException {
@@ -143,7 +151,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		return handler.handle(request);
 	}
 
-	private void answer(Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) {
+	private void answer(Response response, Map<String, EsbDataHandler> attachments, EsbMessage query) throws ESBValidationException {
 
 		try {
 			final JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
@@ -179,11 +187,23 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 
 			esbTemplate.send(m);
 		}
+		catch (ESBValidationException e) {
+			throw e;
+		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
 	}
+
+	private void answerValidationException(ESBValidationException exception, Map<String, EsbDataHandler> attachments, EsbMessage message) throws ESBValidationException {
+
+		final ExceptionResponse er = new ExceptionResponse();
+		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), "INVALID_RESPONSE", null)); // TODO (msi) utiliser l'enum BusinessExceptionCode quand il sera à jour
+
+		answer(er, attachments, message);
+	}
+
 
 	@Override
 	public int getNombreMessagesRecus() {

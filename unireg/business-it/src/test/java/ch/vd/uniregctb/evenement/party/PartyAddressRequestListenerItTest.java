@@ -22,6 +22,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.ESBXMLValidator;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -31,6 +32,7 @@ import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.AddressInformation;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
@@ -302,6 +304,50 @@ public class PartyAddressRequestListenerItTest extends BusinessItTest {
 
 		final String foundHeaderValue = answer.getHeader(headerName);
 		assertEquals(headerValue, foundHeaderValue);
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testAddressRequestKO() throws Exception {
+
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		pushSecurityProvider(provider);
+
+		// créé une personne physique avec une adresse au Kosovo qui ne possède pas de code iso et qui provoque une erreur de validation de l'adresse eCH-0010-4.
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Drago", "Mcic", date(1950, 3, 14), Sexe.MASCULIN);
+				addAdresseEtrangere(pp, TypeAdresseTiers.DOMICILE, date(1950, 3, 1), null, null, null, MockPays.Kosovo);
+				return pp.getNumero();
+			}
+		});
+
+		final AddressRequest request = new AddressRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setPartyNumber(id.intValue());
+		request.getTypes().add(AddressType.RESIDENCE);
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(INPUT_QUEUE, requestToString(request), OUTPUT_QUEUE);
+				return null;
+			}
+		});
+
+		// [SIFISC-5249] On s'assure que le service JMS :
+		//  - retourne une réponse
+		//  - que cette réponse est une erreur métier dû au code iso manquant du Kosovo
+		try {
+			getResponse(OUTPUT_QUEUE);
+		}
+		catch (ServiceException e) {
+			final ServiceExceptionInfo info = e.getInfo();
+			assertInstanceOf(BusinessExceptionInfo.class, e.getInfo());
+			assertContains("Invalid content was found starting with element 'address-1:countryName'", info.getMessage());
+		}
 	}
 
 	private EsbMessage buildTextMessage(String queueName, String texte, String replyTo) throws Exception {

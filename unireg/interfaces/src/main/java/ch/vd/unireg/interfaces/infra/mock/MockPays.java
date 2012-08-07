@@ -24,6 +24,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	public static final MockPays EtatsUnis = new MockPays(8439, "Etats-Unis", "US", "US", "USA");
 	public static final MockPays Japon = new MockPays(8515, "Japon", "JP", "JP", "JPN");
 	public static final MockPays CoreeSud = new MockPays(8539, "Corée (Sud)", "KR", "KR", "KOR");
+	public static final MockPays Kosovo = new MockPays(8256, "Kosovo", null, null, null);
 
 	//
 	// les territoires
