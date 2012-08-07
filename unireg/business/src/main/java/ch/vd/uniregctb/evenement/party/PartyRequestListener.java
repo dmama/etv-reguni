@@ -40,6 +40,7 @@ import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -75,7 +76,7 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			onMessage(message);
 		}
 		catch (Exception e) {
-			// toutes les erreurs levées ici sont des bugs
+			// toutes les erreurs levées ici sont des erreurs transientes ou des bugs
 			LOGGER.error(e, e);
 			throw e;
 		}
@@ -199,11 +200,10 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 	private void answerValidationException(ESBValidationException exception, Map<String, EsbDataHandler> attachments, EsbMessage message) throws ESBValidationException {
 
 		final ExceptionResponse er = new ExceptionResponse();
-		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), "INVALID_RESPONSE", null)); // TODO (msi) utiliser l'enum BusinessExceptionCode quand il sera à jour
+		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.INVALID_RESPONSE.name(), null));
 
 		answer(er, attachments, message);
 	}
-
 
 	@Override
 	public int getNombreMessagesRecus() {

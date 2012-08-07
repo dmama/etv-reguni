@@ -31,6 +31,7 @@ import ch.vd.unireg.xml.event.party.address.v1.AddressResponse;
 import ch.vd.unireg.xml.event.party.v1.ExceptionResponse;
 import ch.vd.unireg.xml.event.party.v1.ObjectFactory;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.ServiceExceptionInfo;
 import ch.vd.unireg.xml.party.address.v1.Address;
@@ -345,7 +346,8 @@ public class PartyAddressRequestListenerItTest extends BusinessItTest {
 		}
 		catch (ServiceException e) {
 			final ServiceExceptionInfo info = e.getInfo();
-			assertInstanceOf(BusinessExceptionInfo.class, e.getInfo());
+			assertInstanceOf(BusinessExceptionInfo.class, info);
+			assertEquals(BusinessExceptionCode.INVALID_RESPONSE.name(), ((BusinessExceptionInfo) info).getCode());
 			assertContains("Invalid content was found starting with element 'address-1:countryName'", info.getMessage());
 		}
 	}

@@ -177,6 +177,11 @@
 					<xs:documentation>L'opération de quittancement a provoqué une erreur (explicitée dans la réponse de quittancement elle-même).</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="INVALID_RESPONSE">
+				<xs:annotation>
+					<xs:documentation>Le message de réponse n'est pas valide (d'un point-de-vue XML) et ne peut pas être retouré.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
 
