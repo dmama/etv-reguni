@@ -209,7 +209,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		}
 		final PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);
 		if (payerWithHistory == null) {
-			return ResultatQuittancement.etatEfactureIncoherent();
+			return ResultatQuittancement.aucuneDemandeEnAttenteDeSignature();
 		}
 		final DestinataireAvecHisto destinataireAvecHisto = new DestinataireAvecHisto(payerWithHistory, noCtb);
 		if (destinataireAvecHisto.getDernierEtat().getType() == TypeEtatDestinataire.INSCRIT) {
