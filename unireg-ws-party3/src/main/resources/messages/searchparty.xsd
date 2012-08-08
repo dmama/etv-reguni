@@ -132,6 +132,15 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
+					<xs:element minOccurs="0" name="oldWithholdingNumber" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Critère de recherche sur l'ancien numéro de sourcier.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
