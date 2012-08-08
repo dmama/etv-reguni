@@ -9,12 +9,29 @@ import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 public class RcPersClientException extends RuntimeException {
 
 	/**
+	 * Ce lien est transient : comme ça, dans le log de l'application avant éventuelle sérialisation, on le voit,
+	 * mais il n'est pas transmis plus loin (au travers d'un appel SpringRemoting, par exemple)
+	 */
+	private final transient Throwable cause;
+
+	/**
 	 * Construit une exception spécifique avec un message clair et concis à partir d'une ServerWebApplicationException (qui expose la réponse complète dans son message).
 	 *
 	 * @param e une exception
 	 */
 	public RcPersClientException(ServerWebApplicationException e) {
-		super(buildShortMessage(e));
+		this(buildShortMessage(e), e);
+	}
+
+	/**
+	 * Méthode utilisée dans les tests pour vérifier le comportement de la cause transiente sans avoir à
+	 * s'emm...er avec la construction d'une exception CXF valide
+	 * @param shortMessage le message qui restera
+	 * @param cause la cause de l'exception, que l'on ne transmettra pas plus loin en cas de sérialisation
+	 */
+	protected RcPersClientException(String shortMessage, Throwable cause) {
+		super(shortMessage);
+		this.cause = cause;
 	}
 
 	private static String buildShortMessage(ServerWebApplicationException e) {
@@ -40,5 +57,10 @@ public class RcPersClientException extends RuntimeException {
 		}
 
 		return null;
+	}
+
+	@Override
+	public Throwable getCause() {
+		return cause != null ? cause : super.getCause();
 	}
 }

@@ -1,8 +1,14 @@
 package ch.vd.unireg.wsclient.rcpers;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 public class RcPersClientExceptionTest {
@@ -23,5 +29,48 @@ public class RcPersClientExceptionTest {
 				"request due to maintenance downtime or capacity\n" +
 				"problems. Please try again later.</p>\n" +
 				"</body></html>\n"));
+	}
+
+	@Test
+	public void testTransientCause() throws Exception {
+		final RcPersClientException e;
+		try {
+			throw new IllegalAccessException("Boum!");
+		}
+		catch (IllegalAccessException iae) {
+			e = new RcPersClientException("Badaboum!", iae);
+		}
+
+		assertNotNull(e.getCause());
+		assertEquals("Boum!", e.getCause().getMessage());
+		assertEquals("Badaboum!", e.getMessage());
+
+		// sérialisation
+		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		final ObjectOutputStream out = new ObjectOutputStream(baos);
+		try {
+			out.writeObject(e);
+		}
+		finally {
+			out.close();
+		}
+
+		// dé-sérialisation
+		final ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+		final ObjectInputStream in = new ObjectInputStream(bais);
+		final Object deserialized;
+		try {
+			deserialized = in.readObject();
+		}
+		finally {
+			in.close();
+		}
+
+		assertNotNull(deserialized);
+		assertEquals(RcPersClientException.class, deserialized.getClass());
+
+		final RcPersClientException exception = (RcPersClientException) deserialized;
+		assertNull(exception.getCause());
+		assertEquals("Badaboum!", exception.getMessage());
 	}
 }
