@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 public enum TypeAttenteDemande {
 
 	EN_ATTENTE_CONTACT(1, "Mise en attente."),
-	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation.");
+	EN_ATTENTE_SIGNATURE(2, "En attente de confirmation d'inscription.");
 
 	private final int code;
 	private final String description;
