@@ -111,7 +111,7 @@ public class EFactureServiceTest extends BusinessTest {
 		efactureService.seteFactureMessageSender(eFactureMessageSender);
 
 		replay(mockEfactureClient, eFactureMessageSender);
-
+		//TODO Ajouter le test pour le cas ou le ctb n'a aucun historique e-facture
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
