@@ -707,6 +707,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		case E_FACTURE:
 			soumettreMessageEfacture(message);
 			break;
+
+		case EMPACI:
+			soumettreMessageEmpaci(message);
+			break;
 		default:
 			traiterException(message, new IllegalArgumentException("Type de demande inconnue"));
 		}
@@ -733,6 +737,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	}
 
+
+	private void soumettreMessageEmpaci(IdentificationContribuable message) {
+
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement EMPACI.");
+		soumettreMessage(message);
+
+	}
 
 	//Methode à spécialiser pour les differentes types de demande dans l'avenir. Pour l'instant elle est
 	// utilisée pour traiter tout type de messages

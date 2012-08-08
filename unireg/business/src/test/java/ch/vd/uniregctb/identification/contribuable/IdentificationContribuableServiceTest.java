@@ -1501,6 +1501,60 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+	@Test
+	public void testHandleDemande_EMPACI_MANUEL_AVEC_ACK() throws Exception {
+
+		// création d'un contribuable
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Laurent", "LeRoux", date(1970, 4, 3), Sexe.FEMININ);
+				addForPrincipal(zora, RegDate.get(2009, 3, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return zora.getNumero();
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final IdentificationContribuable message = createDemandeEMPACI("Zouzou", "Leroux", Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Laurent n'est pas trouvé
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.A_TRAITER_MANUELLEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(0), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				Assert.assertTrue(reponse.isEnAttenteIdentifManuel());
+
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+
+	}
 
 	@Test
 	public void testHandleDemande_E_FACTURE_SANS_MANUEL() throws Exception {
@@ -2391,6 +2445,15 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return createDemandeNCS(personne, mode);
 	}
 
+	private static IdentificationContribuable createDemandeEMPACI(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
+
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setPrenoms(prenoms);
+		personne.setNom(nom);
+
+		return createDemandeEMPACI(personne, mode);
+	}
+
 	private static IdentificationContribuable createDemandeE_Facture(final String navs13) {
 
 		final CriteresPersonne personne = new CriteresPersonne();
@@ -2478,6 +2541,30 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setPeriodeFiscale(2010);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.NCS);
+
+		final IdentificationContribuable message = new IdentificationContribuable();
+		message.setHeader(header);
+		message.setDemande(demande);
+
+		return message;
+	}
+
+	private static IdentificationContribuable createDemandeEMPACI(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessId("123456");
+		header.setBusinessUser("Test");
+		header.setReplyTo("Test");
+
+		final Demande demande = new Demande();
+		demande.setEmetteurId("empaciTao");
+		demande.setMessageId("2222");
+		demande.setPrioriteEmetteur(PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setModeIdentification(modeIdentification);
+		demande.setTypeMessage("LISTE_IS");
+		demande.setDate(DateHelper.getCurrentDate());
+		demande.setPeriodeFiscale(2010);
+		demande.setPersonne(personne);
+		demande.setTypeDemande(TypeDemande.EMPACI);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

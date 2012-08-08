@@ -36,7 +36,7 @@ public abstract class XmlEntityAdapter {
 
 	public static final String TYPE_MESSAGE_NCS = "CS_EMPLOYEUR";
 	public static final String TYPE_MESSAGE_EFACTURE = "CYBER_EFACTURE";
-
+	public static final String TYPE_MESSAGE_LISTE_IS = "LISTE_IS";
 	private static final Logger LOGGER = Logger.getLogger(XmlEntityAdapter.class);
 
 	public static IdentificationCTBDocument entity2xml(IdentificationContribuable message) {
@@ -234,6 +234,9 @@ public abstract class XmlEntityAdapter {
 		}
 		else if (TYPE_MESSAGE_EFACTURE.equals(xml.getDemande().getTypeMessage())) {
 			entity.setTypeDemande(TypeDemande.E_FACTURE);
+		}
+		else if (TYPE_MESSAGE_LISTE_IS.equals(xml.getDemande().getTypeMessage())) {
+			entity.setTypeDemande(TypeDemande.EMPACI);
 		}
 		else {
 			entity.setTypeDemande(TypeDemande.MELDEWESEN);

@@ -555,6 +555,39 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationEMPACI_LISTE_IS() throws Exception {
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+
+		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
+			public void handleDemande(IdentificationContribuable message) {
+				messages.add(message);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_EMPACI_LISTE_IS_alfred_hitchcock.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		final Map<String, String> customAttributes = new HashMap<String, String>();
+		final String url = "";
+		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+		// On attend le message
+		while (messages.isEmpty()) {
+			Thread.sleep(100);
+		}
+		assertEquals(1, messages.size());
+
+		final IdentificationContribuable m = messages.get(0);
+		assertNotNull(m);
+		assertEquals(TypeDemande.EMPACI, m.getDemande().getTypeDemande());
+	}
+
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationE_Facture() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 
