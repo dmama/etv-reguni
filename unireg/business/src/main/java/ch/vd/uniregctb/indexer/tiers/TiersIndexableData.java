@@ -21,6 +21,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String NATURE_JURIDIQUE = "S_NATURE_JURIDIQUE"; // (PP ou PM)
 	public static final String DATE_NAISSANCE = "S_DATE_NAISSANCE";
 	public static final String NUMERO_ASSURE_SOCIAL = "S_NUMERO_ASSURE_SOCIAL";
+	public static final String ANCIEN_NUMERO_SOURCIER = "S_ANCIEN_NUMERO_SOURCIER";
 	public static final String ANNULE = "S_ANNULE";
 	public static final String DEBITEUR_INACTIF = "S_DEBITEUR_INACTIF";
 	public static final String CATEGORIE_DEBITEUR_IS = "S_CATEGORIE_DEBITEUR_IS";
@@ -57,6 +58,7 @@ public class TiersIndexableData extends IndexableData {
 	private String localiteEtPays;
 	private String natureJuridique;
 	private String numeroAssureSocial;
+	private String ancienNumeroSourcier;
 	private String categorieDebiteurIs;
 	private String modeImposition;
 	private String noSymic;
@@ -103,6 +105,7 @@ public class TiersIndexableData extends IndexableData {
 		addAnalyzedValue(d, TiersIndexableData.LOCALITE_PAYS, localiteEtPays);
 		addNotAnalyzedValue(d, TiersIndexableData.NATURE_JURIDIQUE, natureJuridique);
 		addAnalyzedValue(d, TiersIndexableData.NUMERO_ASSURE_SOCIAL, numeroAssureSocial);
+		addNotAnalyzedValue(d, TiersIndexableData.ANCIEN_NUMERO_SOURCIER, ancienNumeroSourcier);
 		addNotAnalyzedValue(d, TiersIndexableData.CATEGORIE_DEBITEUR_IS, categorieDebiteurIs);
 		addNotAnalyzedValue(d, TiersIndexableData.MODE_IMPOSITION, modeImposition);
 		addNotAnalyzedValue(d, TiersIndexableData.NO_SYMIC, noSymic);
@@ -111,7 +114,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, dateNaissance, forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, categorieDebiteurIs, noSymic);
+		addToutValues(d, numeros, nomRaison, autresNom, dateNaissance, forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -277,6 +280,14 @@ public class TiersIndexableData extends IndexableData {
 
 	public void addNumeroAssureSocial(String numeroAssureSocial) {
 		this.numeroAssureSocial = add(this.numeroAssureSocial, numeroAssureSocial);
+	}
+
+	public String getAncienNumeroSourcier() {
+		return ancienNumeroSourcier;
+	}
+
+	public void setAncienNumeroSourcier(String ancienNumeroSourcier) {
+		this.ancienNumeroSourcier = ancienNumeroSourcier;
 	}
 
 	public String getCategorieDebiteurIs() {

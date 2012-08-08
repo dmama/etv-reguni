@@ -320,6 +320,14 @@ public class QueryConstructor {
 		}
 	}
 
+	private static void addAncienNumeroSourcier(BooleanQuery fullQuery, TiersCriteria criteria) throws IndexerException {
+
+		if (criteria.getAncienNumeroSourcier() != null) { // [SIFISC-5846]
+			final Query q = new TermQuery(new Term(TiersIndexableData.ANCIEN_NUMERO_SOURCIER, criteria.getAncienNumeroSourcier().toString()));
+			fullQuery.add(q, must);
+		}
+	}
+
 	private void addCategorieDebiteurIs(BooleanQuery fullQuery) throws IndexerException {
 
 		if (criteria.getCategorieDebiteurIs() != null) {
@@ -361,6 +369,7 @@ public class QueryConstructor {
 			addDebiteurInactif(fullQuery, criteria);
 			addModeImposition(fullQuery);
 			addNumeroSymic(fullQuery);
+			addAncienNumeroSourcier(fullQuery, criteria);
 			addCategorieDebiteurIs(fullQuery);
 			addTiersActif(fullQuery, criteria);
 		}

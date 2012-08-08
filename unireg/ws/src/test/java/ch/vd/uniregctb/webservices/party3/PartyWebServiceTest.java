@@ -1018,8 +1018,6 @@ public class PartyWebServiceTest extends WebserviceTest {
 			long diId;
 		}
 
-		final int annee = 2009;
-
 		final Ids ids = doInNewTransactionAndSessionWithoutValidation(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
@@ -1493,5 +1491,76 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals("Les Péchauds", formattedAddress0.getLine3());
 		assertEquals("1432 Gressy", formattedAddress0.getLine4());
 		assertNull(formattedAddress0.getLine5());
+	}
+
+	/**
+	 * [SIFISC-5846] Vérifie qu'il est possible de recherche quelqu'un à partir de son ancien numéro de sourcier.
+	 */
+	@Test
+	public void testSearchPartyByOldWithholdingNumber() throws Exception {
+
+		setWantIndexation(true);
+
+		class Ids {
+			long marcel;
+			long jules;
+		}
+		final Ids ids = new Ids();
+
+		setWantIndexation(true);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				marcel.setAncienNumeroSourcier(333111L);
+				ids.marcel = marcel.getId();
+
+				final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
+				ids.jules = jules.getId();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// numéro connu
+		{
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setOldWithholdingNumber(333111);
+
+			final SearchPartyResponse list = service.searchParty(params);
+			assertNotNull(list);
+			assertEquals(1, list.getItems().size());
+
+			final PartyInfo info = list.getItems().get(0);
+			assertEquals(ids.marcel, info.getNumber());
+		}
+
+		// numéro inconnu
+		{
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setOldWithholdingNumber(111333);
+
+			final SearchPartyResponse list = service.searchParty(params);
+			assertNotNull(list);
+			assertEquals(0, list.getItems().size());
+		}
+
+		// pas de critère sur le numéro
+		{
+			final SearchPartyRequest params = new SearchPartyRequest();
+			params.setLogin(login);
+			params.setContactName("Jules");
+
+			final SearchPartyResponse list = service.searchParty(params);
+			assertNotNull(list);
+			assertEquals(1, list.getItems().size());
+
+			final PartyInfo info = list.getItems().get(0);
+			assertEquals(ids.jules, info.getNumber());
+		}
 	}
 }

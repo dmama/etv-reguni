@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;
@@ -40,6 +41,7 @@ public class TiersIndexedData implements Serializable {
 	private final boolean debiteurInactif;
 	private final Boolean dansLeCanton;
 	private final Integer noOfsCommuneDomicile;
+	private final Long ancienNumeroSourcier;
 
 	public TiersIndexedData(Document doc) {
 		tiersType = getDocValue(LuceneHelper.F_DOCSUBTYPE, doc);
@@ -62,6 +64,7 @@ public class TiersIndexedData implements Serializable {
 		categorieImpotSource = getDocValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc);
 		annule = Constants.OUI.equals(getDocValue(TiersIndexableData.ANNULE, doc));
 		debiteurInactif = Constants.OUI.equals(getDocValue(TiersIndexableData.DEBITEUR_INACTIF, doc));
+		ancienNumeroSourcier = getLongValue(TiersIndexableData.ANCIEN_NUMERO_SOURCIER, doc);
 
 		final String estDansLeCanton = getDocValue(TiersIndexableData.DOMICILE_VD, doc);
 		if (estDansLeCanton == null || "".equals(estDansLeCanton)) {
@@ -196,6 +199,10 @@ public class TiersIndexedData implements Serializable {
 		return noOfsCommuneDomicile;
 	}
 
+	public Long getAncienNumeroSourcier() {
+		return ancienNumeroSourcier;
+	}
+
 	/**
 	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
 	 *
@@ -210,5 +217,20 @@ public class TiersIndexedData implements Serializable {
 			str = "";
 		}
 		return str;
+	}
+
+	/**
+	 * Renvoie la valeur dans le document Lucene Ou chaine vide si non trouvé Ne renvoie jamais NULL
+	 *
+	 * @param key      la clé sous laquelle est stocké la valeur
+	 * @param document le document Lucene
+	 * @return la valeur du document Lucene
+	 */
+	private static Long getLongValue(String key, Document document) {
+		String str = document.get(key);
+		if (str == null || StringUtils.isBlank(str)) {
+			return null;
+		}
+		return Long.valueOf(str);
 	}
 }

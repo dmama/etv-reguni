@@ -165,7 +165,6 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 */
 	private String noSymic;
 
-
 	/**
 	 * Origine I107
 	 */
@@ -190,6 +189,8 @@ public class TiersCriteria implements Serializable, TiersFilter {
 	 * Vrai si le tiers est actif, c'est-à-dire qu'il possède un for principal ouvert à la date d'indexation.
 	 */
 	private Boolean tiersActif;
+
+	private Long ancienNumeroSourcier;
 
 	private static class SerializableDate implements Serializable {
 
@@ -239,7 +240,8 @@ public class TiersCriteria implements Serializable, TiersFilter {
 				&& (formeJuridique == null || "".equals(formeJuridique))
 				&& (modeImposition == null)
 				&& (categorieDebiteurIs == null)
-				&& (tiersActif == null);
+				&& (tiersActif == null)
+				&& (ancienNumeroSourcier == null);
 	}
 
 	/**
@@ -421,9 +423,6 @@ public class TiersCriteria implements Serializable, TiersFilter {
 		return typeVisualisation;
 	}
 
-	/**
-	 * @param typeRechercheForFiscal the typeRechercheForFiscal to set
-	 */
 	public void setTypeVisualisation(TypeVisualisation typeVisualisation) {
 		this.typeVisualisation = typeVisualisation;
 	}
@@ -521,5 +520,13 @@ public class TiersCriteria implements Serializable, TiersFilter {
 
 	public void setTiersActif(Boolean tiersActif) {
 		this.tiersActif = tiersActif;
+	}
+
+	public Long getAncienNumeroSourcier() {
+		return ancienNumeroSourcier;
+	}
+
+	public void setAncienNumeroSourcier(Long ancienNumeroSourcier) {
+		this.ancienNumeroSourcier = ancienNumeroSourcier;
 	}
 }

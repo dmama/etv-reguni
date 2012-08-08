@@ -800,4 +800,67 @@ public class GlobalTiersSearcherTest extends BusinessTest {
 		}
 	}
 
+	/**
+	 * [SIFISC-5846] Vérifie qu'il est possible de recherche quelqu'un à partir de son ancien numéro de sourcier.
+	 */
+	@Test
+	public void testRechercheParAncienNumeroDeSourcier() throws Exception {
+
+		class Ids {
+			long marcel;
+			long jules;
+		}
+		final Ids ids = new Ids();
+
+		setWantIndexation(true);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				marcel.setAncienNumeroSourcier(333111L);
+				ids.marcel = marcel.getId();
+
+				final PersonnePhysique jules = addNonHabitant("Jules", "Espol", date(1936, 8, 22), Sexe.MASCULIN);
+				ids.jules = jules.getId();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		// numéro connu
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setAncienNumeroSourcier(333111L);
+
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final TiersIndexedData d = list.get(0);
+			assertEquals(ids.marcel, d.getNumero().longValue());
+		}
+
+		// numéro inconnu
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setAncienNumeroSourcier(111333L);
+
+			assertEmpty(globalTiersSearcher.search(criteria));
+		}
+
+		// pas de critère sur le numéro
+		{
+			final TiersCriteria criteria = new TiersCriteria();
+			criteria.setNomRaison("Jules");
+
+			final List<TiersIndexedData> list = globalTiersSearcher.search(criteria);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+
+			final TiersIndexedData d = list.get(0);
+			assertEquals(ids.jules, d.getNumero().longValue());
+		}
+	}
 }

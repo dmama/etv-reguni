@@ -163,6 +163,10 @@ public class DataHelper {
 
 			coreCriteria.setTiersActif(criteria.isActiveParty());
 
+			if (criteria.getOldWithholdingNumber() != null) { // [SIFISC-5846]
+				coreCriteria.setAncienNumeroSourcier(criteria.getOldWithholdingNumber().longValue());
+			}
+
 			list.add(coreCriteria);
 		}
 		else {
