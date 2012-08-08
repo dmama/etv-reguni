@@ -243,19 +243,19 @@ public class EFactureServiceTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				assertFalse("la situation de Mr Cholet dans e-facture est a l'état desinscrit-suspendu, son état n'est pas valide ",
-						efactureService.valideEtatContribuablePourInscription(ts.idChollet));
-				assertTrue("la situation du ménage Berclaz est desinscrit et leur fors ouverts, son état est valide ", efactureService.valideEtatContribuablePourInscription(ts.idMenageBerclaz));
-				assertFalse("Mr Jacquier n'a pas de for principal, son état n'est pas valide", efactureService.valideEtatContribuablePourInscription(ts.idJacquier));
+						efactureService.valideEtatFiscalContribuablePourInscription(ts.idChollet));
+				assertTrue("la situation du ménage Berclaz est desinscrit et leur fors ouverts, son état est valide ", efactureService.valideEtatFiscalContribuablePourInscription(ts.idMenageBerclaz));
+				assertFalse("Mr Jacquier n'a pas de for principal, son état n'est pas valide", efactureService.valideEtatFiscalContribuablePourInscription(ts.idJacquier));
 				assertFalse("Mme Dessources est à la source et ne doit pas pouvoir s'inscrire",
-						efactureService.valideEtatContribuablePourInscription(ts.idDessources));
+						efactureService.valideEtatFiscalContribuablePourInscription(ts.idDessources));
 				assertTrue("Mr Plutat n'habite plus le canton de VD mais devrait pouvoir tout de meme s'inscrire",
-						efactureService.valideEtatContribuablePourInscription(ts.idPlulat));
+						efactureService.valideEtatFiscalContribuablePourInscription(ts.idPlulat));
 
 				PersonnePhysique ctbJacquier = (PersonnePhysique) tiersService.getTiers(ts.idJacquier);
 				// Correction d'une erreur honteuse, mr Jacquier a bien evidement un for principal a Lausanne !
 				// mais  il est mort, du coup ça ne valide pas :(
 				addForPrincipal(ctbJacquier, date(1998, 2, 1), MotifFor.MAJORITE, date(2012,1,1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				assertFalse("Mr Jacquier est décédé, son état est invalide ", efactureService.valideEtatContribuablePourInscription(ts.idJacquier));
+				assertFalse("Mr Jacquier est décédé, son état est invalide ", efactureService.valideEtatFiscalContribuablePourInscription(ts.idJacquier));
 				return null;
 			}
 		});
