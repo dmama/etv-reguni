@@ -59,7 +59,7 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		expect(inscription.performBasicValidation()).andReturn(null);
 		expect(service.getDemandeEnAttente(CTB_ID)).andReturn(null);
 		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null);
-		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(true);
+		expect(service.valideEtatFiscalContribuablePourInscription(CTB_ID)).andReturn(true);
 		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID);
 		final String description = TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription();
 		expect(sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID, TypeAttenteDemande.EN_ATTENTE_SIGNATURE, description, ARCHIVAGE_ID, false)).andReturn(null);
@@ -74,9 +74,9 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 		expect(inscription.performBasicValidation()).andReturn(null);
 		expect(service.getDemandeEnAttente(CTB_ID)).andReturn(null);
 		expect(service.identifieContribuablePourInscription(CTB_ID, NO_AVS)).andReturn(null);
-		expect(service.valideEtatContribuablePourInscription(CTB_ID)).andReturn(false);
+		expect(service.valideEtatFiscalContribuablePourInscription(CTB_ID)).andReturn(false);
 		expect(service.imprimerDocumentEfacture(CTB_ID, TypeDocument.E_FACTURE_ATTENTE_CONTACT, DEMANDE_DATE)).andReturn(ARCHIVAGE_ID);
-		final String description = TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription();
+		final String description = String.format("%s Assujettissement incohérent avec la e-facture.", TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription());
 		expect(sender.envoieMiseEnAttenteDemandeInscription(DEMANDE_ID, TypeAttenteDemande.EN_ATTENTE_CONTACT, description, ARCHIVAGE_ID, false)).andReturn(null);
 		service.updateEmailContribuable(CTB_ID, EMAIL);
 		replay(inscription, sender, service);

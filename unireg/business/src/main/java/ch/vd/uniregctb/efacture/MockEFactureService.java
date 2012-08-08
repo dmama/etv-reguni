@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.efacture;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.DemandeAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
+import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -37,7 +37,7 @@ public class MockEFactureService implements EFactureService {
 	}
 
 	@Override
-	public boolean valideEtatContribuablePourInscription(long ctbId) {
+	public boolean valideEtatFiscalContribuablePourInscription(long ctbId) {
 		return false;
 	}
 

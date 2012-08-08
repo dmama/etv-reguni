@@ -74,10 +74,9 @@ public interface EFactureService {
 	 * Valide l'état du contribuable lors de la procédure d'inscription à la e-Facture
 	 *
 	 * @param ctbId l'id du contribuale a valider
-	 *
-	 * @return <code>true</code> si l'état est cohérent
+	 * @return <code>true</code> si l'état fiscal (= assujettissement, en gros) est cohérent
 	 */
-	boolean valideEtatContribuablePourInscription(long ctbId);
+	boolean valideEtatFiscalContribuablePourInscription(long ctbId);
 
 
 	/**

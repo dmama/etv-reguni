@@ -139,7 +139,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 			MotifFor.VEUVAGE_DECES);
 
 	@Override
-	public boolean valideEtatContribuablePourInscription(long ctbId) {
+	public boolean valideEtatFiscalContribuablePourInscription(long ctbId) {
 		final Tiers tiers = tiersService.getTiers(ctbId);
 		if (tiers == null) {
 			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas null");
@@ -157,15 +157,14 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 			return false;
 		}
 
+		if (ffp.getDateFin() != null && MOTIF_FORS_INTERDITS.contains(ffp.getMotifFermeture())) {
+			return false;
+		}
+
 		if (!MODE_IMPOSITIONS_AUTORISES.contains(ffp.getModeImposition())) {
 			return false;
 		}
 
-		if (ffp.getDateFin() != null) {
-			if (MOTIF_FORS_INTERDITS.contains(ffp.getMotifFermeture())) {
-				return false;
-			}
-		}
 		return true;
 	}
 
@@ -205,7 +204,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		if (tiers == null) {
 			return ResultatQuittancement.contribuableInexistant();
 		}
-		if (!valideEtatContribuablePourInscription(noCtb)) {
+		if (!valideEtatFiscalContribuablePourInscription(noCtb)) {
 			return ResultatQuittancement.etatFiscalIncoherent();
 		}
 		final PayerWithHistory payerWithHistory = eFactureClient.getHistory(noCtb,EFactureService.ACI_BILLER_ID);

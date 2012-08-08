@@ -58,12 +58,14 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 			eFactureService.updateEmailContribuable(demande.getCtbId(), demande.getEmail());
 
 			// valide l'etat du contribuable et envoye le courrier adéquat
-			if (eFactureService.valideEtatContribuablePourInscription(demande.getCtbId())) {
-				String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, demande.getDateDemande());
+			if (eFactureService.valideEtatFiscalContribuablePourInscription(demande.getCtbId())) {
+				final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, demande.getDateDemande());
 				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_SIGNATURE, TypeAttenteDemande.EN_ATTENTE_SIGNATURE.getDescription(), archivageId, false);
-			} else {
-				String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, demande.getDateDemande());
-				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_CONTACT, TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription(), archivageId, false);
+			}
+			else {
+				final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, demande.getDateDemande());
+				final String description = String.format("%s Assujettissement incohérent avec la e-facture.", TypeAttenteDemande.EN_ATTENTE_CONTACT.getDescription());
+				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), TypeAttenteDemande.EN_ATTENTE_CONTACT, description, archivageId, false);
 			}
 		}
 	}
