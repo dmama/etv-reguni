@@ -9,7 +9,9 @@
 	<groupId>ch.vd.uniregctb</groupId>
 	<artifactId>unireg-ws-party3</artifactId>
 	<packaging>jar</packaging>
-	<version>3.4-SNAPSHOT</version> <!-- Attention ! Aussi changer la version dans le fichier PartyService3.wsdl + dans la config du plugin javadoc ! -->
+	<!-- BEGIN_LVERSION -->
+	<version>3.4-SNAPSHOT</version> <!-- Attention ! Changer cette version en utilisant le script change_version.pl dans le répertoire /unireg -->
+	<!-- END_LVERSION -->
 
 	<name>Unireg - WS Party v3</name>
 	<description>Unireg - classes Java pour le web-service Party v3 de Unireg</description>
@@ -163,6 +165,7 @@
 								<property name="plugin_classpath" refid="maven.plugin.classpath"/>
 								<echo message="==> compile_classpath: ${compile_classpath}"/>
 
+								<!-- BEGIN_LVERSION -->
 								<javadoc access="public"
 									additionalparam="-encoding 'utf-8' -charset 'utf-8'"
 									author="true"
@@ -183,6 +186,7 @@
 							    		<exclude name="**/ObjectFactory.java"/>
 								    </fileset>
 								</javadoc>
+								<!-- END_LVERSION -->
 							</tasks>
 						</configuration>
 					</execution>
