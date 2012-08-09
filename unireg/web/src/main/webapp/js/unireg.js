@@ -1882,6 +1882,8 @@ var Ajax = {
 		alert("Désolé ! Une erreur est survenue et l'action demandée n'a pas pu être effectuée.\n\n" +
 			"Veuillez réessayer plus tard, s'il-vous-plaît.\n\n" +
 			"Si le problème persiste, merci de communiquer à votre administrateur le message suivant :\n\n" +
+			"\t Date : " + new Date() + "\n\n" +
+			"\t URL : " + this.url + "\n\n" +
 			"\t" + thrownError + ' (' +  xhr.status +') : '+ xhr.responseText);
     },
 
