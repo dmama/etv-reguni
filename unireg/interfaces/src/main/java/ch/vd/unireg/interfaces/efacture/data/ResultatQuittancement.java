@@ -6,7 +6,6 @@ public class ResultatQuittancement {
 
 	private static final ResultatQuittancement DEJA_INSCRIT = new ResultatQuittancement(TypeResultatQuittancement.DEJA_INSCRIT);
 	private static final ResultatQuittancement CONTRIBUABLE_INEXISTANT = new ResultatQuittancement(TypeResultatQuittancement.CONTRIBUABLE_INEXISTANT);
-	private static final ResultatQuittancement ETAT_EFACTURE_INCOHERENT  = new ResultatQuittancement(TypeResultatQuittancement.ETAT_EFACTURE_INCOHERENT);
 	private static final ResultatQuittancement ETAT_FISCAL_INCOHERENT = new ResultatQuittancement(TypeResultatQuittancement.ETAT_FISCAL_INCOHERENT);
 	private static final ResultatQuittancement AUCUNE_DEMANDE_EN_ATTENTE_SIGNATURE = new ResultatQuittancement(TypeResultatQuittancement.AUCUNE_DEMANDE_EN_ATTENTE_SIGNATURE);
 
@@ -34,10 +33,6 @@ public class ResultatQuittancement {
 
 	public static ResultatQuittancement contribuableInexistant() {
 		return CONTRIBUABLE_INEXISTANT;
-	}
-
-	public static ResultatQuittancement etatEfactureIncoherent() {
-		return ETAT_EFACTURE_INCOHERENT;
 	}
 
 	public static ResultatQuittancement etatFiscalIncoherent() {
