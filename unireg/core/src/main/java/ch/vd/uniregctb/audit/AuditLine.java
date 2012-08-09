@@ -5,13 +5,11 @@ package ch.vd.uniregctb.audit;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Date;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
 
@@ -52,10 +50,7 @@ public class AuditLine {
 		this.documentId = documentId;
 	}
 
-	// TODO (msi) comprendre pourquoi il est nécessaire de spécifier la séquence hibernate explicitement pour que les tests tournent avec hsql
 	@Id
-	@GeneratedValue(generator = "hibernateSequence")
-	@GenericGenerator(name = "hibernateSequence", strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator")
 	public Long getId() {
 		return id;
 	}

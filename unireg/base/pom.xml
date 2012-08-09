@@ -513,21 +513,6 @@
 				</dependency>
 			</dependencies>
 		</profile>
-		<profile>
-			<id>hsql</id>
-			<dependencies>
-				<dependency>
-					<groupId>hsqldb</groupId>
-					<artifactId>hsqldb</artifactId>
-					<version>${hsql.version}</version>
-				</dependency>
-			</dependencies>
-			<properties>
-				<hsql.jdbc.driverClassName>org.hsqldb.jdbcDriver</hsql.jdbc.driverClassName>
-				<hsql.hibernate.dialect>ch.vd.uniregctb.hibernate.dialect.HSQLDialectForBoolean</hsql.hibernate.dialect>
-				<hsql.hibernate.query.substitutions/>
-			</properties>
-		</profile>
 
 		<!-- =================== Environnement profiles -->
 		
@@ -625,7 +610,6 @@
 		<slf4j.version>1.6.1</slf4j.version>
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.3</cobertura.version>
-		<hsql.version>1.8.0.7</hsql.version>
 
 		<!-- Database settings -->
 		<oracle.version>11.2.0.1.0</oracle.version>

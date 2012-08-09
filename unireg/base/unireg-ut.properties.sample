@@ -23,14 +23,6 @@ testprop.postgresql.jdbc.port=5432
 testprop.postgresql.jdbc.instance=${testprop.jdbc.username}
 testprop.postgresql.jdbc.url=jdbc:postgresql://${testprop.postgresql.jdbc.server}/${testprop.postgresql.jdbc.instance}
 
-# Hsql
-#testprop.hsql.jdbc.username=${testprop.jdbc.username}
-#testprop.hsql.jdbc.password=${testprop.jdbc.password}
-#testprop.hsql.jdbc.server=mem
-#testprop.hsql.jdbc.port=
-#testprop.hsql.jdbc.instance=aname
-#testprop.hsql.jdbc.url=jdbc:hsqldb:${testprop.hsql.jdbc.server}:${testprop.hsql.jdbc.instance}
-
 # CEDM/CIIA1 (Devel)
 testprop.host-interfaces.url=t3://ssv0213v:51330
 testprop.host-interfaces.username=
