@@ -77,11 +77,6 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 			throw new RuntimeException("Le délai doit être après la date du jour.");
 		}
 
-		// TODO (msi) vérifier le droit Role.DI_DELAI_PP
-		// if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
-		// throw new AccessDeniedException("Vous ne possédez pas les droits pour ajouter des délais sur les DIs.");
-		// }
-
 		final RegDate dateTraitement = getDateTraitement(params);
 		final List<Long> ids = extractIdsFromCSV(idsFile);
 		final int annee = delai.year() - 1; // la période fiscale est déduite du délai, un peu étrange mais c'est comme ça...
@@ -91,7 +86,7 @@ public class DemandeDelaiCollectiveJob extends JobDefinition {
 		final DemandeDelaiCollectiveRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);
-		Audit.success("La demande de délai colletive a été traitée.", rapport);
+		Audit.success("La demande de délai collective a été traitée.", rapport);
 	}
 
 	@Override
