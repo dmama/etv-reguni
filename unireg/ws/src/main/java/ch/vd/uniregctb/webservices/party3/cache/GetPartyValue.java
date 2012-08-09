@@ -16,7 +16,7 @@ class GetPartyValue extends CacheValueWithParts<Party, PartyPart> {
 
 	@Override
 	protected void copyParts(Set<PartyPart> parts, Party from, Party to) {
-		PartyBuilder.copyParts(to, from, DataHelper.webToXML(parts)); // TODO (msi) essayer de fusionner les deux enums Parts au niveau XML, pour éviter d'avoir à les traduires à chaque appel
+		PartyBuilder.copyParts(to, from, DataHelper.webToXML(parts));
 	}
 
 	@Override
