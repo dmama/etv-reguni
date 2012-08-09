@@ -1,0 +1,4 @@
+Cleanup à faire pour une éventuelle version 4 du web-service
+------------------------------------------------------------
+
+ - Supprimer le type 'partyPartType' du fichier 'searchparty.xsd' et le remplacer par le même type défini dans le fichier 'unireg-party-1.xsd'.
