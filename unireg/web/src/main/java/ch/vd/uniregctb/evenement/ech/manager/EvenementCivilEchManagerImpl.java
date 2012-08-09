@@ -180,22 +180,8 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 		if (evt.getNumeroIndividu() != null) {
 			final long numeroIndividu = evt.getNumeroIndividu();
 			try {
-				final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(numeroIndividu);
-				if (personnePhysique != null) {
-					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
-					if (couple != null && couple.getMenage() != null) {
-						view.setNumeroCTB(couple.getMenage().getNumero());
-					}
-					else {
-						view.setNumeroCTB(personnePhysique.getNumero());
-					}
-				}
-			}
-			catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
-				LOGGER.warn("Impossible de trouver le contribuable associé à l'individu " + evt.getNumeroIndividu(), e);
-				view.setNumeroCTB(null);
-			}
-			try {
+				view.setNumeroCTB(getNumeroCtbPourNoIndividu(numeroIndividu));
+
 				final String nom = adresseService.getNomCourrier(numeroIndividu);
 				view.setNom(nom);
 			}
@@ -209,6 +195,26 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 			}
 		}
 		return view;
+	}
+
+	private Long getNumeroCtbPourNoIndividu(long noIndividu) throws IndividuNotFoundException {
+		Long noCtb = null;
+		try {
+			final PersonnePhysique personnePhysique = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+			if (personnePhysique != null) {
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(personnePhysique, null);
+				if (couple != null && couple.getMenage() != null) {
+					noCtb = couple.getMenage().getNumero();
+				}
+				else {
+					noCtb = personnePhysique.getNumero();
+				}
+			}
+		}
+		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+			LOGGER.warn("Impossible de trouver le contribuable associé à l'individu " + noIndividu, e);
+		}
+		return noCtb;
 	}
 
 	private void retrieveEvenementAssocie(Long numeroIndividu, EvenementCivilEchDetailView evtView) {
