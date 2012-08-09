@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -107,6 +108,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public List<TiersInfo> searchTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchTiers") SearchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -120,23 +122,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -150,6 +156,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public Tiers.Type getTiersType(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersType") GetTiersType params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -167,23 +174,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -197,6 +208,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public Tiers getTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiers") GetTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -215,23 +227,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -245,6 +261,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public TiersHisto getTiersPeriode(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersPeriode") GetTiersPeriode params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -263,23 +280,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -293,6 +314,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public TiersHisto getTiersHisto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetTiersHisto") GetTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -311,23 +333,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -338,6 +364,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public BatchTiers getBatchTiers(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiers") GetBatchTiers params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -381,23 +408,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -408,6 +439,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public BatchTiersHisto getBatchTiersHisto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetBatchTiersHisto") GetBatchTiersHisto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -451,23 +483,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -481,6 +517,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public void setTiersBlocRembAuto(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SetTiersBlocRembAuto") SetTiersBlocRembAuto params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -495,23 +532,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logWriteAccess(params, end - start);
+			logWriteAccess(params, end - start, t);
 		}
 	}
 
@@ -525,6 +566,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public List<EvenementPM> searchEvenementsPM(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "SearchEvenementsPM") SearchEvenementsPM params)
 			throws BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -539,23 +581,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -566,6 +612,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public DebiteurInfo getDebiteurInfo(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetDebiteurInfo") GetDebiteurInfo params) throws
 			BusinessException, AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -584,23 +631,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -611,6 +662,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public List<ReponseQuittancementDeclaration> quittancerDeclarations(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "QuittancerDeclarations") QuittancerDeclarations params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -632,23 +684,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logWriteAccess(params, end - start);
+			logWriteAccess(params, end - start, t);
 		}
 	}
 
@@ -656,6 +712,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	public List<TiersId> getListeCtbModifies(
 			@WebParam(targetNamespace = "http://www.vd.ch/uniregctb/webservices/tiers2", partName = "params", name = "GetListeCtbModifies") GetListeCtbModifies params) throws BusinessException,
 			AccessDeniedException, TechnicalException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.login);
@@ -669,23 +726,27 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		catch (BusinessException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (AccessDeniedException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (TechnicalException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw new TechnicalException(e);
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -1000,13 +1061,15 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 *
 	 * @param params   les paramètres de l'appel
 	 * @param duration la durée de l'appel en nano-secondes
+	 * @param t l'éventuelle exception lancée dans l'appel
 	 */
-	private void logReadAccess(Object params, long duration) {
+	private void logReadAccess(Object params, long duration, Throwable t) {
 		if (READ_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
+			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// getLoad()+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 
@@ -1015,13 +1078,15 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 *
 	 * @param params   les paramètres de l'appel
 	 * @param duration la durée de l'appel en nano-secondes
+	 * @param t l'éventuelle exception lancée dans l'appel
 	 */
-	private void logWriteAccess(Object params, long duration) {
+	private void logWriteAccess(Object params, long duration, Throwable t) {
 		if (WRITE_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
+			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 

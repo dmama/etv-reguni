@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.transport.http.AbstractHTTPDestination;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
@@ -92,6 +93,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public SearchPartyResponse searchParty(SearchPartyRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -105,15 +107,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -122,6 +126,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public PartyType getPartyType(GetPartyTypeRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -139,15 +144,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -156,6 +163,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public Party getParty(GetPartyRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -174,20 +182,23 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
 	@Override
 	public BatchParty getBatchParty(GetBatchPartyRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -242,21 +253,24 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
 	@Override
 	public GetTaxOfficesResponse getTaxOffices(@WebParam(partName = "getTaxOfficesRequest", name = "getTaxOfficesRequest",
 			targetNamespace = "http://www.vd.ch/fiscalite/unireg/webservices/party3") GetTaxOfficesRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -270,20 +284,23 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
 	@Override
 	public void setAutomaticReimbursementBlocking(SetAutomaticReimbursementBlockingRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -298,15 +315,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logWriteAccess(params, end - start);
+			logWriteAccess(params, end - start, t);
 		}
 	}
 
@@ -315,6 +334,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 */
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -329,20 +349,23 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
 	@Override
 	public DebtorInfo getDebtorInfo(GetDebtorInfoRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -361,20 +384,23 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -396,15 +422,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logWriteAccess(params, end - start);
+			logWriteAccess(params, end - start, t);
 		}
 	}
 
@@ -415,6 +443,7 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 
 	@Override
 	public PartyNumberList getModifiedTaxpayers(GetModifiedTaxpayersRequest params) throws WebServiceException {
+		Throwable t = null;
 		final long start = loadMeter.start(params);
 		try {
 			login(params.getLogin());
@@ -428,15 +457,17 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 		}
 		catch (WebServiceException e) {
 			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
 			throw e;
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
 			throw ExceptionHelper.newTechnicalException(e.getMessage());
 		}
 		finally {
 			final long end = loadMeter.end();
-			logReadAccess(params, end - start);
+			logReadAccess(params, end - start, t);
 		}
 	}
 
@@ -662,13 +693,15 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 *
 	 * @param params   les paramètres de l'appel
 	 * @param duration la durée de l'appel en nano-secondes
+	 * @param t l'éventuelle exception lancée par l'appel
 	 */
-	private void logReadAccess(Object params, long duration) {
+	private void logReadAccess(Object params, long duration, Throwable t) {
 		if (READ_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
+			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
+			READ_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 
@@ -677,13 +710,15 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 	 *
 	 * @param params   les paramètres de l'appel
 	 * @param duration la durée de l'appel en nano-secondes
+	 * @param t l'éventuelle exception lancée par l'appel
 	 */
-	private void logWriteAccess(Object params, long duration) {
+	private void logWriteAccess(Object params, long duration, Throwable t) {
 		if (WRITE_ACCESS.isInfoEnabled()) {
 			final String user = getBasicAuthenticationUser();
+			final String exceptionString = (t == null ? StringUtils.EMPTY : String.format(", %s thrown", t.getClass()));
 
 			// appelsEnCours+1 : +1 car le logout a déjà été fait quand on arrive ici et l'appel courant a donc été décompté
-			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1));
+			WRITE_ACCESS.info(String.format("[%s] (%d ms) %s load=%d%s", user, TimeUnit.NANOSECONDS.toMillis(duration), params.toString(), loadMeter.getLoad() + 1, exceptionString));
 		}
 	}
 
