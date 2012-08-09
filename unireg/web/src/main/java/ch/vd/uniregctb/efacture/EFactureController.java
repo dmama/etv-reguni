@@ -150,11 +150,12 @@ public class EFactureController {
 	public String doQuittancement(@RequestParam(value = "noctb", required = true) Long noCtb) throws Exception {
 		checkDroitQuittanceurEnSerie();
 		final ResultatQuittancement resultatQuittancement = efactureManager.quittancer(noCtb);
+		final String messageQuittancement = efactureManager.getMessageQuittancement(resultatQuittancement, noCtb);
 		if (resultatQuittancement.isOk()) {
-			Flash.message(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
+			Flash.message(messageQuittancement);
 		}
 		else {
-			Flash.error(efactureManager.getMessageQuittancement(resultatQuittancement, noCtb));
+			Flash.error(messageQuittancement);
 		}
 		return "redirect:/efacture/quittancement/show.do";
 	}
