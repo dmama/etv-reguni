@@ -12,14 +12,11 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.uniregctb.common.DataHolder;
-import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Comparateur d'individu basé sur les adresses de résidence (tant principales que secondaires) de l'individu
  */
-public class AdresseResidenceComparisonStrategy implements IndividuComparisonStrategy {
-
-	private static final String ATTRIBUT = "adresse de résidence";
+public abstract class AdresseResidenceComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new IndividuComparisonHelper.DefaultComparator<LocalisationType>(true);
 
@@ -84,11 +81,15 @@ public class AdresseResidenceComparisonStrategy implements IndividuComparisonStr
 		}
 	};
 
-	private static List<Adresse> extractAdressesResidence(Collection<Adresse> src) {
+	/**
+	 * @param src les adresses d'un individu
+	 * @return la liste des adresses de résidence à considérer pour cette stratégie
+	 */
+	private List<Adresse> extractAdressesResidence(Collection<Adresse> src) {
 		final List<Adresse> res = new ArrayList<Adresse>();
 		if (src != null && src.size() > 0) {
 			for (Adresse adr : src) {
-				if (adr.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE || adr.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
+				if (isTakenIntoAccount(adr)) {
 					res.add(adr);
 				}
 			}
@@ -101,9 +102,20 @@ public class AdresseResidenceComparisonStrategy implements IndividuComparisonStr
 		final List<Adresse> resOriginelles = extractAdressesResidence(originel.getIndividu().getAdresses());
 		final List<Adresse> resCorrigees = extractAdressesResidence(corrige.getIndividu().getAdresses());
 		if (!IndividuComparisonHelper.areContentsEqual(resOriginelles, resCorrigees, ADRESSE_COMPARATOR, ADRESSE_EQUALATOR)) {
-			msg.set(ATTRIBUT);
+			msg.set(getAttribute());
 			return false;
 		}
 		return true;
 	}
+
+	/**
+	 * @param adresse une adresse de l'individu
+	 * @return <code>true</code> si elle doit être prise en compte, <code>false</code> sinon
+	 */
+	protected abstract boolean isTakenIntoAccount(Adresse adresse);
+
+	/**
+	 * @return le nom de l'attribut à afficher dans les rapports d'erreur
+	 */
+	protected abstract String getAttribute();
 }
