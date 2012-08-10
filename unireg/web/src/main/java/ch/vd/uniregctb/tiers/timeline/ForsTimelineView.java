@@ -11,11 +11,11 @@ import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 
 /**
- * Form backing object pour la page de visualisation de l'historique des fors fiscaux et assujettissements d'un contribuable
+ * Données pour la page de visualisation de l'historique des fors fiscaux et assujettissements d'un contribuable
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class TiersTimelineView {
+public class ForsTimelineView {
 
 	// paramètres du formulaire
 	private Long tiersId = null;

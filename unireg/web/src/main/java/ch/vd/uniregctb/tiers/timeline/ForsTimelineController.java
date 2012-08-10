@@ -33,7 +33,7 @@ import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.timeline.TiersTimelineView.Table;
+import ch.vd.uniregctb.tiers.timeline.ForsTimelineView.Table;
 
 /**
  * Contrôleur pour l'affichage de l'historique des fors fiscaux et des assujettissements d'un contribuable
@@ -41,9 +41,9 @@ import ch.vd.uniregctb.tiers.timeline.TiersTimelineView.Table;
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 @Controller
-public class TiersTimelineController {
+public class ForsTimelineController {
 
-	private final Logger LOGGER = Logger.getLogger(TiersTimelineController.class);
+	private final Logger LOGGER = Logger.getLogger(ForsTimelineController.class);
 
 	public final static String ID_PARAMETER = "id";
 	public final static String FOR_PRINT = "print";
@@ -56,7 +56,7 @@ public class TiersTimelineController {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 
-	@RequestMapping(value = "/tiers/timeline.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav,
 	                    @RequestParam(ID_PARAMETER) Long id,
@@ -64,7 +64,7 @@ public class TiersTimelineController {
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		final TiersTimelineView bean = new TiersTimelineView();
+		final ForsTimelineView bean = new ForsTimelineView();
 		ControllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
 
@@ -87,9 +87,9 @@ public class TiersTimelineController {
 	}
 
 	/**
-	 * Remplit les structures de données nécessaire à l'affichage de l'historique du tiers
+	 * Remplit les structures de données nécessaire à l'affichage de l'historique des fors d'un tiers
 	 */
-	private void fillTimeline(TiersTimelineView bean) {
+	private void fillTimeline(ForsTimelineView bean) {
 
 		Long id = bean.getTiersId();
 		if (id == null) {

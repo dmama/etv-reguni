@@ -67,7 +67,7 @@
 		<property name="manager" ref="tiersVisuManager" />
 	</bean>
 
-	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.TiersTimelineController">
+	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.ForsTimelineController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />

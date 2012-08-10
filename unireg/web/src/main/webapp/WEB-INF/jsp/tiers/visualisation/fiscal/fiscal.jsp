@@ -20,7 +20,7 @@
 
 			<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
 				<td id="timeline" align="right">
-					<a href='<c:url value="/tiers/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
+					<a href='<c:url value="/fors/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
 				</td>
 			</authz:authorize>
 
