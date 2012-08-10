@@ -47,12 +47,84 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testMemeNationalite() throws Exception {
+	public void testMemeNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
 		final Pays pays = MockPays.Liechtenstein;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testMemeNationaliteSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.Suisse;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testMemeNationaliteApatride() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.Apatridie;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testMemeNationalitePaysInconnu() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.PaysInconnu;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
@@ -92,7 +164,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testPaysDifferents() throws Exception {
+	public void testPaysEtrangersDifferents() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
@@ -112,18 +184,243 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 
 		final DataHolder<String> dh = new DataHolder<String>();
 		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testApatrideVersPaysEtranger() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.Apatridie;
+		final Pays pays2 = MockPays.Espagne;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
 		Assert.assertFalse(sans);
 		Assert.assertEquals("nationalité", dh.get());
 	}
 
 	@Test
-	public void testDatesDebutDifferentes() throws Exception {
+	public void testApatrideVersPaysInconnu() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.Apatridie;
+		final Pays pays2 = MockPays.PaysInconnu;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testApatrideVersSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.Apatridie;
+		final Pays pays2 = MockPays.Suisse;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testPaysInconnuVersPaysEtranger() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.PaysInconnu;
+		final Pays pays2 = MockPays.Espagne;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testPaysInconnuVersApatride() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.PaysInconnu;
+		final Pays pays2 = MockPays.Apatridie;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testPaysInconnuVersSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.PaysInconnu;
+		final Pays pays2 = MockPays.Suisse;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testPaysEtrangerVersSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.France;
+		final Pays pays2 = MockPays.Suisse;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testSuisseVersPaysEtranger() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 1, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays1 = MockPays.Suisse;
+		final Pays pays2 = MockPays.Allemagne;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testDatesDifferentesSurPaysEtranger() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut1 = date(2000, 1, 1);
 		final RegDate debut2 = date(2000, 2, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final Pays pays = MockPays.EtatsUnis;
+		final Pays pays = MockPays.France;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), pays, noEvt2, new DateRangeHelper.Range(debut2, null), pays);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testDatesDebutDifferentesSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut1 = date(2000, 1, 1);
+		final RegDate debut2 = date(2000, 2, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.Suisse;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
@@ -142,13 +439,13 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testDatesFinDifferentes() throws Exception {
+	public void testDatesFinDifferentesSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
 		final RegDate fin1 = date(2012, 8, 3);
 		final RegDate fin2 = null;
-		final Pays pays = MockPays.Danemark;
+		final Pays pays = MockPays.Suisse;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
@@ -167,7 +464,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testApparition() throws Exception {
+	public void testApparitionSeuleNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
@@ -191,12 +488,60 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testDisparition() throws Exception {
+	public void testApparitionSeuleNationaliteSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 2, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.Suisse;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testDisparitionSeuleNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
 		final RegDate fin = date(2012, 8, 3);
 		final Pays pays = MockPays.Danemark;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, null, null);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertFalse(sans);
+		Assert.assertEquals("nationalité", dh.get());
+	}
+
+	@Test
+	public void testDisparitionSeuleNationaliteSuisse() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 2, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final Pays pays = MockPays.Suisse;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
