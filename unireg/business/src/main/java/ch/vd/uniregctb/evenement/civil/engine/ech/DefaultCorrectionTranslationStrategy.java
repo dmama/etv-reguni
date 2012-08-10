@@ -40,14 +40,16 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 
 	private static List<IndividuComparisonStrategy> buildStrategies() {
 		// d'après la spécification, les éléments suivants doivent être comparés :
+		// - sexe
 		// - date de naissance
 		// - date de décès
 		// - relations (filiations ou conjoints)
 		// - état civil
-		// - nationalité
+		// - nationalités
 		// - permis de séjour
 		// - adresses de résidence (principale ou secondaire : date et EGID)
 		final List<IndividuComparisonStrategy> strategies = new ArrayList<IndividuComparisonStrategy>();
+		strategies.add(new SexeComparisonStrategy());
 		strategies.add(new DateNaissanceComparisonStrategy());
 		strategies.add(new DateDecesComparisonStrategy());
 		strategies.add(new RelationsComparisonStrategy());
