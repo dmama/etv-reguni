@@ -66,7 +66,8 @@ public abstract class XmlUtils {
 			return RegDate.get(year, month);
 		}
 		else {
-			return RegDate.get(year, month, day);
+			final Date date = xmlcal2date(cal);
+			return RegDate.get(date);
 		}
 	}
 
@@ -91,7 +92,9 @@ public abstract class XmlUtils {
 		if (date == null) {
 			return null;
 		}
-		return getDataTypeFactory().newXMLGregorianCalendar(new GregorianCalendar());
+		final GregorianCalendar cal = new GregorianCalendar();
+		cal.setTime(date);
+		return getDataTypeFactory().newXMLGregorianCalendar(cal);
 	}
 
 	private static DatatypeFactory getDataTypeFactory() {
