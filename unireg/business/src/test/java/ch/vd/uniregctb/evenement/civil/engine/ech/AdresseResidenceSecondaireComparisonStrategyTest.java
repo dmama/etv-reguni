@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
+import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -28,7 +29,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		strategy = new AdresseResidenceSecondaireComparisonStrategy();
+		strategy = new AdresseResidenceSecondaireComparisonStrategy(serviceInfra);
 	}
 
 	private static interface AddressBuilder {
@@ -36,7 +37,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 	}
 
 	private static Adresse buildAdresse(TypeAdresseCivil type, String numero, Integer egid, DateRange range, Localisation localisationPrecedente, Localisation localisationSuivante) {
-		final MockAdresse adr = new MockAdresse("Rue du bignou", numero, "1040", "Villars-le-Terroir");
+		final MockAdresse adr = new MockAdresse("Rue du bignou", numero, "1096", "Villette");
 		adr.setTypeAdresse(type);
 		adr.setEgid(egid);
 		if (range != null) {
@@ -233,8 +234,8 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid1 = 1273854;
-		final int egid2 = 2367435;
+		final int egid1 = MockBatiment.Villette.BatimentCheminDeCreuxBechet.getEgid();
+		final int egid2 = 1;
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -265,11 +266,47 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 	}
 
 	@Test
+	public void testAdresseSecondaireEgidSansChangementDeCommune() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final int egid1 = MockBatiment.Villette.BatimentCheminDeCreuxBechet.getEgid();
+		final int egid2 = MockBatiment.Villette.BatimentCheminDesGranges.getEgid();
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", egid1, range, precedente, suivante));
+			           }
+		           }, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", egid2, range, precedente, suivante));
+			           }
+		           }
+		);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
 	public void testAdresseSecondaireApparitionEgid() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -304,7 +341,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 2367435;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -339,7 +376,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2000, 4, 12), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
@@ -375,7 +412,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 2, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
@@ -411,7 +448,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null);
@@ -447,7 +484,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -483,7 +520,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
@@ -519,7 +556,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -555,7 +592,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -590,7 +627,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -625,7 +662,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -660,7 +697,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
-		final int egid = 1273854;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);

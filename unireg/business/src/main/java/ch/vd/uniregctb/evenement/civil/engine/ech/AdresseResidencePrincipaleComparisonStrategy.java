@@ -1,11 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseResidencePrincipaleComparisonStrategy extends AdresseResidenceComparisonStrategy {
 
 	private static final String ATTRIBUT = "adresse de résidence principale";
+
+	public AdresseResidencePrincipaleComparisonStrategy(ServiceInfrastructureService infraService) {
+		super(infraService);
+	}
 
 	@Override
 	protected String getAttribute() {

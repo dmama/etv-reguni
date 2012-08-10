@@ -6,12 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.uniregctb.common.DataHolder;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
  * Comparateur d'individu basé sur les adresses de résidence (tant principales que secondaires) de l'individu
@@ -38,14 +40,14 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
-	private static final Comparator<Adresse> ADRESSE_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Adresse>(true) {
+	private final Comparator<Adresse> ADRESSE_COMPARATOR = new IndividuComparisonHelper.NullableComparator<Adresse>(true) {
 		@Override
 		protected int compareNonNull(@NotNull Adresse o1, @NotNull Adresse o2) {
 			int comparison = Integer.signum(o1.getTypeAdresse().ordinal() - o2.getTypeAdresse().ordinal());
 			if (comparison == 0) {
 				comparison = IndividuComparisonHelper.RANGE_COMPARATOR.compare(o1, o2);
 				if (comparison == 0) {
-					comparison = IndividuComparisonHelper.INTEGER_COMPARATOR.compare(o1.getEgid(), o2.getEgid());
+					comparison = IndividuComparisonHelper.INTEGER_COMPARATOR.compare(getNoOfsCommune(o1), getNoOfsCommune(o2));
 					if (comparison == 0) {
 						comparison = LOCALISATION_COMPARATOR.compare(o1.getLocalisationPrecedente(), o2.getLocalisationPrecedente());
 						if (comparison == 0) {
@@ -59,7 +61,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
-	private static final IndividuComparisonHelper.Equalator<Adresse> ADRESSE_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Adresse>() {
+	private final IndividuComparisonHelper.Equalator<Adresse> ADRESSE_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Adresse>() {
 		@Override
 		protected boolean areNonNullEqual(@NotNull Adresse o1, @NotNull Adresse o2) {
 			if (o1.getTypeAdresse() != o2.getTypeAdresse()) {
@@ -68,7 +70,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 			if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2) ) {
 				return false;
 			}
-			if (!IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(o1.getEgid(), o2.getEgid())) {
+			if (!IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(getNoOfsCommune(o1), getNoOfsCommune(o2))) {
 				return false;
 			}
 			if (!LOCALISATION_EQUALATOR.areEqual(o1.getLocalisationPrecedente(), o2.getLocalisationPrecedente())) {
@@ -80,6 +82,12 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 			return true;
 		}
 	};
+
+	private final ServiceInfrastructureService infraService;
+
+	public AdresseResidenceComparisonStrategy(ServiceInfrastructureService infraService) {
+		this.infraService = infraService;
+	}
 
 	/**
 	 * @param src les adresses d'un individu
@@ -95,6 +103,18 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 			}
 		}
 		return res;
+	}
+
+	@Nullable
+	private Integer getNoOfsCommune(Adresse adr) {
+		if (adr.getEgid() != null) {
+			// on passe par l'EGID si on en a un
+			return infraService.getNoOfsCommuneByEgid(adr.getEgid(), adr.getDateDebut());
+		}
+		else {
+			// sinon l'adresse fournit peut-être aussi l'information
+			return adr.getNoOfsCommuneAdresse();
+		}
 	}
 
 	@Override
