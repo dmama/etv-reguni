@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.cache.ServiceCivilCache;
@@ -520,7 +519,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		// changement du sexe dans le registre civil
 		final MockIndividu individu = mockServiceCivil.getIndividu(34567L);
-		individu.setSexeMasculin(true);
+		individu.setSexe(Sexe.MASCULIN);
 
 		saveEvenement(9106L, TypeEvenementCivil.CHGT_SEXE, RegDate.get(2007, 10, 25), 34567L, null, MockCommune.Cossonay
 				.getNoOFS(), EtatEvenementCivil.A_TRAITER);
@@ -540,11 +539,11 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 				// Nouvelle recherche
 				List<TiersIndexedData> lTiers = searcher.search(criteria);
-				Assert.isTrue(lTiers.size() == 1, "L'indexation n'a pas fonctionné");
+				assertEquals("L'indexation n'a pas fonctionné", 1, lTiers.size());
 
 				// on verifie que le changement a bien été effectué
 				Individu indi = serviceCivil.getIndividu(34567L, RegDate.get());
-				Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
+				assertEquals("le nouveau sexe n'a pas été indexé", Sexe.MASCULIN, indi.getSexe());
 
 				// PersonnePhysique tiers = tiersDAO.getHabitantByNumeroIndividu(983254L);
 				// assertNotNull(tiers);

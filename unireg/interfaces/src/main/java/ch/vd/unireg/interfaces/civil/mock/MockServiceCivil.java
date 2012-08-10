@@ -45,6 +45,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypePermis;
@@ -115,6 +116,23 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * @param dateNaissance date de naissance du nouvel individu
 	 * @param nom           nom (de famille) du nouvel individu
 	 * @param prenom        prénom du nouvel individu
+	 * @param sexe          sexe de l'individu
+	 * @return un {@link MockIndividu}
+	 */
+	protected MockIndividu addIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, @Nullable Sexe sexe) {
+		final MockIndividu individu = createIndividu(numero, dateNaissance, nom, prenom, sexe);
+		add(individu);
+		return individu;
+	}
+
+	/**
+	 * Ajoute un invidu à la map des individus.
+	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #addIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.uniregctb.type.Sexe)}
+	 *
+	 * @param numero        numéro d'individu à utiliser
+	 * @param dateNaissance date de naissance du nouvel individu
+	 * @param nom           nom (de famille) du nouvel individu
+	 * @param prenom        prénom du nouvel individu
 	 * @param isMasculin    <code>true</code> pour un homme, <code>false</code> pour une femme
 	 * @return un {@link MockIndividu}
 	 */
@@ -131,14 +149,14 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * @param dateNaissance date de naissance du nouvel individu
 	 * @param nom           nom (de famille) du nouvel individu
 	 * @param prenom        prénom du nouvel individu
-	 * @param isMasculin    <code>true</code> pour un homme, <code>false</code> pour une femme
+	 * @param sexe          sexe de l'individu
 	 * @return un {@link MockIndividu}
 	 */
-	protected MockIndividu createIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
+	protected MockIndividu createIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, @Nullable Sexe sexe) {
 		final MockIndividu individu = new MockIndividu();
 		individu.setNoTechnique(numero);
 		individu.setDateNaissance(dateNaissance);
-		individu.setSexeMasculin(isMasculin);
+		individu.setSexe(sexe);
 		individu.setPrenom(prenom);
 		individu.setNom(nom);
 
@@ -173,6 +191,21 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		individu.setPermis(new MockPermisList(numero));
 
 		return individu;
+	}
+
+	/**
+	 * Crée un invidu (sans l'ajouter à la map des individus).
+	 * <p/><b>Préférer l'utilisation de la méthode homonyme qui n'assume pas que le sexe est connu</b> : {@link #createIndividu(long, ch.vd.registre.base.date.RegDate, String, String, ch.vd.uniregctb.type.Sexe)}
+	 *
+	 * @param numero        numéro d'individu à utiliser
+	 * @param dateNaissance date de naissance du nouvel individu
+	 * @param nom           nom (de famille) du nouvel individu
+	 * @param prenom        prénom du nouvel individu
+	 * @param isMasculin    <code>true</code> pour un homme, <code>false</code> pour une femme
+	 * @return un {@link MockIndividu}
+	 */
+	protected MockIndividu createIndividu(long numero, @Nullable RegDate dateNaissance, String nom, String prenom, boolean isMasculin) {
+		return createIndividu(numero, dateNaissance, nom, prenom, isMasculin ? Sexe.MASCULIN : Sexe.FEMININ);
 	}
 
 	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type) {
@@ -362,7 +395,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 */
 	public static void marieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateMariage) {
 
-		final TypeEtatCivil etatCivil = (individu.isSexeMasculin() == conjoint.isSexeMasculin() ? TypeEtatCivil.PACS : TypeEtatCivil.MARIE);
+		final TypeEtatCivil etatCivil = (individu.getSexe() == conjoint.getSexe() ? TypeEtatCivil.PACS : TypeEtatCivil.MARIE);
 
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, etatCivil);

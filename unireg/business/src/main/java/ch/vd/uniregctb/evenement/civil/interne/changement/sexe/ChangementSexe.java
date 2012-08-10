@@ -15,7 +15,6 @@ import ch.vd.uniregctb.evenement.civil.interne.HandleStatus;
 import ch.vd.uniregctb.evenement.civil.interne.changement.ChangementBase;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.type.Sexe;
 
 public class ChangementSexe extends ChangementBase {
 
@@ -53,7 +52,7 @@ public class ChangementSexe extends ChangementBase {
 			// pour les non-habitants, il faut recharger les données, non?
 			// quelles sont les données à recharger ? sexe !
 			final Individu individu = context.getTiersService().getIndividu(pp);
-			pp.setSexe(individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
+			pp.setSexe(individu.getSexe());
 		}
 
 		return super.handle(warnings);

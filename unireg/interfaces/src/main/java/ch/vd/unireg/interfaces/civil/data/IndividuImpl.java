@@ -19,10 +19,11 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.civil.model.HistoriqueIndividu;
 import ch.vd.uniregctb.common.StringHelper;
+import ch.vd.uniregctb.type.Sexe;
 
 public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializable {
 
-	private static final long serialVersionUID = 8413284544809242695L;
+	private static final long serialVersionUID = -8895740741299638169L;
 
 	private final long noTechnique;
 	private final String prenom;
@@ -32,7 +33,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	private final String noAVS11;
 	private final String nouveauNoAVS;
 	private final String numeroRCE;
-	private final boolean isMasculin;
+	private final Sexe sexe;
 	private Collection<AdoptionReconnaissance> adoptions;
 	private final RegDate deces;
 	private final RegDate naissance;
@@ -74,7 +75,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.noTechnique = target.getNoTechnique();
 		this.nouveauNoAVS = initNouveauNoAVS(target.getNouveauNoAVS());
 		this.numeroRCE = initNumeroRCE(target.getNumeroRCE());
-		this.isMasculin = target.isSexeMasculin();
+		this.sexe = target.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ;
 		this.adoptions = initAdoptions(target.getAdoptionsReconnaissances(), upTo);
 		this.deces = RegDate.get(target.getDateDeces());
 		this.naissance = RegDate.get(target.getDateNaissance());
@@ -105,7 +106,7 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		this.noAVS11 = individuWrapper.getNoAVS11();
 		this.nouveauNoAVS = individuWrapper.nouveauNoAVS;
 		this.numeroRCE = individuWrapper.numeroRCE;
-		this.isMasculin = individuWrapper.isMasculin;
+		this.sexe = individuWrapper.sexe;
 		this.deces = individuWrapper.deces;
 		this.naissance = individuWrapper.naissance;
 		this.dateArriveeVD = individuWrapper.dateArriveeVD;
@@ -436,8 +437,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	@Override
-	public boolean isSexeMasculin() {
-		return isMasculin;
+	public Sexe getSexe() {
+		return sexe;
 	}
 
 	@Override

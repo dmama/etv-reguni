@@ -28,7 +28,7 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 	public IdentificationIndividuMigrationNH(Individu individu) {
 		super(individu);
 		this.dateDeces = individu.getDateDeces();
-		this.sexe = individu.isSexeMasculin() ? "MASCULIN" : "FEMININ";
+		this.sexe = individu.getSexe() == null ? null : individu.getSexe().name();
 
 		//permis
 		if (individu.getPermis() != null && individu.getPermis().getPermisActif(null) != null) {

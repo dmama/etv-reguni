@@ -28,6 +28,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -98,7 +99,7 @@ public abstract class IndividuDumper {
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
 		}
-		s.append(tab(depth + 1)).append("noAvs11=").append(dumpAVS11(individu.getNoAVS11(), validateAVS, individu.getDateNaissance(), individu.isSexeMasculin())).append(", \n");
+		s.append(tab(depth + 1)).append("noAvs11=").append(dumpAVS11(individu.getNoAVS11(), validateAVS, individu.getDateNaissance(), individu.getSexe() == Sexe.MASCULIN)).append(", \n");
 		s.append(tab(depth + 1)).append("noTechnique=").append(individu.getNoTechnique()).append(", \n");
 		s.append(tab(depth + 1)).append("nom=").append(dumpString(individu.getNom())).append(", \n");
 		s.append(tab(depth + 1)).append("nomNaissance=").append(dumpString(individu.getNomNaissance())).append(", \n");
@@ -108,7 +109,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("parents=").append(dumpRelationsVersIndividus(individu.getParents(), false, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
-		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.isSexeMasculin())).append(", \n");
+		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.getSexe())).append(", \n");
 		if (!ignoreSpecific) {
 			s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1, ignoreSpecific, ignoreBugs, validateAVS)).append(", \n");
 		}
@@ -617,8 +618,8 @@ public abstract class IndividuDumper {
 		return "\"" + s + "\"";
 	}
 
-	private static String dumpSexe(boolean sexeMasculin) {
-		return sexeMasculin ? "MASCULIN" : "FEMININ";
+	private static String dumpSexe(Sexe sexe) {
+		return sexe != null ? sexe.name() : "null";
 	}
 
 	private static String dumpString(String s) {

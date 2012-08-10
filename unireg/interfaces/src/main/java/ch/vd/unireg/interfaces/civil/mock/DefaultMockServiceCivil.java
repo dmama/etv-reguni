@@ -12,6 +12,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
@@ -33,19 +34,19 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 	 */
 	@Override
 	protected void init() {
-		MockIndividu momo = addIndividu(54321, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-		MockIndividu pierre = addIndividu(12345, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
-		MockIndividu bea = addIndividu(23456, RegDate.get(1963, 8, 20), "Duval", "Béatrice", false);
-		MockIndividu julie = addIndividu(6789, RegDate.get(1977, 4, 19), "Goux", "Julie", false);
-		MockIndividu sophie = addIndividu(34567, RegDate.get(1964, 4, 8), "Dupuis", "Sophie", false);
-		MockIndividu david = addIndividu(45678, RegDate.get(1964, 1, 23), "Dagobert", "David", true);
-		MockIndividu julien = addIndividu(56789, RegDate.get(1966, 11, 2), "Martin", "Julien", true);
-		MockIndividu leon = addIndividu(78912, RegDate.get(1953, 11, 2), "Dupont", "Léon", true);
-		MockIndividu helene = addIndividu(89123, RegDate.get(1963, 8, 20), "Duval", "Hélène", false);
-		MockIndividu victor = addIndividu(263343, RegDate.get(1956, 5, 12), "Duplat", "Victor", true);
-		addIndividu(123456, RegDate.get(2006, 12, 25), "Petit", "Jésus", true);
-		addIndividu(983254, RegDate.get(2005, 3, 30), "Petit", "Enfant", true);
-		addIndividu(611836, RegDate.get(1953, 10, 14), "Perroset", "Francis", true); // pour que l'InfoController retourne OK en mode Norentes
+		MockIndividu momo = addIndividu(54321, RegDate.get(1961, 3, 12), "Durant", "Maurice", Sexe.MASCULIN);
+		MockIndividu pierre = addIndividu(12345, RegDate.get(1953, 11, 2), "Dupont", "Pierre", Sexe.MASCULIN);
+		MockIndividu bea = addIndividu(23456, RegDate.get(1963, 8, 20), "Duval", "Béatrice", Sexe.FEMININ);
+		MockIndividu julie = addIndividu(6789, RegDate.get(1977, 4, 19), "Goux", "Julie", Sexe.FEMININ);
+		MockIndividu sophie = addIndividu(34567, RegDate.get(1964, 4, 8), "Dupuis", "Sophie", Sexe.FEMININ);
+		MockIndividu david = addIndividu(45678, RegDate.get(1964, 1, 23), "Dagobert", "David", Sexe.MASCULIN);
+		MockIndividu julien = addIndividu(56789, RegDate.get(1966, 11, 2), "Martin", "Julien", Sexe.MASCULIN);
+		MockIndividu leon = addIndividu(78912, RegDate.get(1953, 11, 2), "Dupont", "Léon", Sexe.MASCULIN);
+		MockIndividu helene = addIndividu(89123, RegDate.get(1963, 8, 20), "Duval", "Hélène", Sexe.FEMININ);
+		MockIndividu victor = addIndividu(263343, RegDate.get(1956, 5, 12), "Duplat", "Victor", Sexe.MASCULIN);
+		addIndividu(123456, RegDate.get(2006, 12, 25), "Petit", "Jésus", Sexe.MASCULIN);
+		addIndividu(983254, RegDate.get(2005, 3, 30), "Petit", "Enfant", Sexe.MASCULIN);
+		addIndividu(611836, RegDate.get(1953, 10, 14), "Perroset", "Francis", Sexe.MASCULIN); // pour que l'InfoController retourne OK en mode Norentes
 
 		addDefaultAdressesTo(momo);
 		addDefaultAdressesTo(pierre);
@@ -90,14 +91,14 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addNationalite(victor, MockPays.Espagne, RegDate.get(1956, 5, 12), null);
 
 		// Individus du fichier tiers basic
-		addDefaultAdressesTo(addIndividu(320073, RegDate.get(1950, 1, 1), "Fuchs", "Philippe", true));
-		addDefaultAdressesTo(addIndividu(325740, RegDate.get(1950, 1, 1), "Fuchs", "Nathalie", false));
-		addDefaultAdressesTo(addIndividu(327706, RegDate.get(1950, 1, 1), "Lyah", "Emery", true));
-		addDefaultAdressesTo(addIndividu(674417, RegDate.get(1950, 1, 1), "Decloux", "Pascaline", true));
-		addDefaultAdressesTo(addIndividu(333905, RegDate.get(1950, 1, 1), "Schmid", "Christine", false));
-		addDefaultAdressesTo(addIndividu(333908, RegDate.get(1950, 1, 1), "Schmid", "Laurent", true));
-		addDefaultAdressesTo(addIndividu(333911, RegDate.get(1950, 1, 1), "Schmid", "Valentin", true));
-		addDefaultAdressesTo(addIndividu(325631, RegDate.get(1950, 1, 1), "Emery", "Jean-Christophe", true));
+		addDefaultAdressesTo(addIndividu(320073, RegDate.get(1950, 1, 1), "Fuchs", "Philippe", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(325740, RegDate.get(1950, 1, 1), "Fuchs", "Nathalie", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(327706, RegDate.get(1950, 1, 1), "Lyah", "Emery", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(674417, RegDate.get(1950, 1, 1), "Decloux", "Pascaline", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(333905, RegDate.get(1950, 1, 1), "Schmid", "Christine", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(333908, RegDate.get(1950, 1, 1), "Schmid", "Laurent", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(333911, RegDate.get(1950, 1, 1), "Schmid", "Valentin", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(325631, RegDate.get(1950, 1, 1), "Emery", "Jean-Christophe", Sexe.MASCULIN));
 	}
 
 	protected void addDefaultAdressesTo(MockIndividu individu) {

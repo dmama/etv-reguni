@@ -41,7 +41,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -2916940998537867946L;
+	private static final long serialVersionUID = -7813406058433917119L;
 
 	private static final String EST_CONJOINT = "1";
 	private static final String EST_PARTENAIRE_ENREGISTRE = "2";
@@ -58,7 +58,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private String noAVS11;
 	private String nouveauNoAVS;
 	private String numeroRCE;
-	private boolean isMasculin;
+	private Sexe sexe;
 	private RegDate deces;
 	private RegDate naissance;
 	private RegDate dateArriveeVD;
@@ -98,7 +98,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.nouveauNoAVS = EchHelper.avs13FromEch(upiPerson.getVn());
 		}
 		this.numeroRCE = initNumeroRCE(identification.getOtherPersonId());
-		this.isMasculin = initIsMasculin(identification);
+		this.sexe = EchHelper.sexeFromEch44(identification.getSex());
 		this.deces = XmlUtils.xmlcal2regdate(person.getDateOfDeath());
 		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
@@ -158,7 +158,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.noAVS11 = right.getNoAVS11();
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
-		this.isMasculin = right.isMasculin;
+		this.sexe = right.sexe;
 		this.deces = right.deces;
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
@@ -261,11 +261,6 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 		return null;
-	}
-
-	private static boolean initIsMasculin(PersonIdentification person) {
-		final Sexe sexe = EchHelper.sexeFromEch44(person.getSex());
-		return (sexe != Sexe.FEMININ);
 	}
 
 	private static List<Nationalite> initNationalites(Person person, ServiceInfrastructureRaw infraService) {
@@ -626,8 +621,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public boolean isSexeMasculin() {
-		return isMasculin;
+	public Sexe getSexe() {
+		return sexe;
 	}
 
 	@Override

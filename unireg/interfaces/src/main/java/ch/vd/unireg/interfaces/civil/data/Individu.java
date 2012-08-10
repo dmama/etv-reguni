@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.type.Sexe;
 
 public interface Individu extends EntiteCivile {
 
@@ -110,9 +111,9 @@ public interface Individu extends EntiteCivile {
 	List<Nationalite> getNationalites();
 
 	/**
-	 * @return <code>true</code> si l'individu est de sexe masculin.
+	 * @return le sexe de l'individu
 	 */
-	boolean isSexeMasculin();
+	Sexe getSexe();
 
 	/**
 	 * @return les origines de l'individu étendu.
