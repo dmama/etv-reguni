@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 
 /**
@@ -33,12 +34,12 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	private final ServiceCivilService serviceCivil;
 	private final List<IndividuComparisonStrategy> comparisonStrategies;
 
-	public DefaultCorrectionTranslationStrategy(ServiceCivilService serviceCivil) {
+	public DefaultCorrectionTranslationStrategy(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceCivil = serviceCivil;
-		this.comparisonStrategies = buildStrategies();
+		this.comparisonStrategies = buildStrategies(serviceInfrastructureService);
 	}
 
-	private static List<IndividuComparisonStrategy> buildStrategies() {
+	private static List<IndividuComparisonStrategy> buildStrategies(ServiceInfrastructureService serviceInfrastructureService) {
 		// d'après la spécification, les éléments suivants doivent être comparés :
 		// - sexe
 		// - date de naissance
@@ -56,8 +57,8 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		strategies.add(new EtatCivilComparisonStrategy());
 		strategies.add(new NationaliteComparisonStrategy());
 		strategies.add(new PermisComparisonStrategy());
-		strategies.add(new AdresseResidencePrincipaleComparisonStrategy());
-		strategies.add(new AdresseResidenceSecondaireComparisonStrategy());
+		strategies.add(new AdresseResidencePrincipaleComparisonStrategy(serviceInfrastructureService));
+		strategies.add(new AdresseResidenceSecondaireComparisonStrategy(serviceInfrastructureService));
 		return strategies;
 	}
 

@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -30,9 +29,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-
-		final ServiceCivilService serviceCivil = getBean(ServiceCivilService.class, "serviceCivilService");
-		strategy = new DefaultCorrectionTranslationStrategy(serviceCivil);
+		strategy = new DefaultCorrectionTranslationStrategy(serviceCivil, serviceInfra);
 	}
 
 	@Override

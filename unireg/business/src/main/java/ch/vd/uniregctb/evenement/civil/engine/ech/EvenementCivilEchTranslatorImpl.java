@@ -117,9 +117,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	 */
 	private static final EvenementCivilEchTranslationStrategy INDEXATION_ONLY = new IndexationPureTranslationStrategy();
 
-	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(ServiceCivilService serviceCivilService, EvenementCivilEchStrategyParameters params) {
+	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(ServiceCivilService serviceCivilService, ServiceInfrastructureService serviceInfrastructureService,
+	                                                                                       EvenementCivilEchStrategyParameters params) {
 
-		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(serviceCivilService);
+		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(serviceCivilService, serviceInfrastructureService);
 
 		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
@@ -305,7 +306,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
-		strategies = buildStrategies(serviceCivilService, parameters);
+		strategies = buildStrategies(serviceCivilService, serviceInfrastructureService, parameters);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
