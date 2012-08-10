@@ -90,7 +90,13 @@
 			<name>format</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>output format (see RegDateHelper.StringFormat for available values)</description>
+			<description>the date format (e.g. "dd.MM.yyyy"). Supported patterns are: "dd", "MM" and "yyyy".</description>
+		</attribute>
+		<attribute>
+			<name>defaultValue</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>the text to display when the date is null. Default is an empty string.</description>
 		</attribute>
 	</tag>
 	<tag>

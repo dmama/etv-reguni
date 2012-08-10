@@ -17,7 +17,7 @@
             <legend><span><fmt:message key="label.efacture.historique.destinataire" /></span></legend>
             <display:table id="destinataire" name="histo.etats" class="display">
                 <display:column titleKey="label.efacture.date.obtention">
-                    <unireg:regdate regdate="${destinataire.dateObtention}" format="DISPLAY"/>
+                    <unireg:regdate regdate="${destinataire.dateObtention}"/>
                 </display:column>
                 <display:column titleKey="label.efacture.etat">
                     <c:out value="${destinataire.descriptionEtat}"/>
@@ -51,7 +51,7 @@
             <c:if test="${demandeEnCours != null}">
                 <display:table id="etatDemande" name="histo.demandeEnCours.etats" class="display">
                     <display:column titleKey="label.efacture.date.obtention">
-                        <unireg:regdate regdate="${etatDemande.dateObtention}" format="DISPLAY"/>
+                        <unireg:regdate regdate="${etatDemande.dateObtention}"/>
                     </display:column>
                     <display:column titleKey="label.efacture.etat">
                         <c:out value="${etatDemande.descriptionEtat}"/>

@@ -43,7 +43,7 @@
 							<a href="../mouvement/edit.do?numero=${tache.numero}&depuisTache=true&idTacheTraite=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
 						</c:when>
 						<c:when test="${tache.typeTache == 'TacheEnvoiDeclarationImpot' && !tache.annulee}">
-							<a href="../di/edit.do?depuisTache=true&action=newdi&numero=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="INDEX"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="INDEX"/>&typeDeclaration=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
+							<a href="../di/edit.do?depuisTache=true&action=newdi&numero=${tache.numero}&debut=<unireg:regdate regdate="${tache.dateDebutImposition}" format="yyyyMMdd"/>&fin=<unireg:regdate regdate="${tache.dateFinImposition}" format="yyyyMMdd"/>&typeDeclaration=${tache.typeDocument}&delaiRetour=${tache.delaiRetourEnJours}" ><unireg:numCTB numero="${tache.numero}" /></a>
 						</c:when>
 						<c:when test="${tache.typeTache == 'TacheAnnulationDeclarationImpot' && !tache.annulee}">
 							<a href="../di/edit.do?depuisTache=true&action=editdi&id=${tache.idDI}&idTache=${tache.id}"><unireg:numCTB numero="${tache.numero}" /></a>
