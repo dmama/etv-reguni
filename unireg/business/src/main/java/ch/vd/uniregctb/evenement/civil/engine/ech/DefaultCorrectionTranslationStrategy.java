@@ -67,22 +67,14 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			throw new IllegalArgumentException("Stratégie applicable aux seuls événements civils de correction.");
 		}
 
-		final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
-
 		// on va comparer les individus avant et après correction,
-		final Long idEvtOriginel;
-		if (event.getRefMessageId() != null) {
-			idEvtOriginel = event.getRefMessageId();
-		}
-		else {
-			idEvtOriginel = correction.getIdEvenementRef();
-			event.setRefMessageId(idEvtOriginel);       // contournement du bug SIREF-2590 (l'id de référence n'était pas présent dans l'événement initial)
-		}
+		final Long idEvtOriginel = event.getRefMessageId();
 		if (idEvtOriginel == null) {
 			throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
 		}
 
 		final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
+		final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
 		final List<String> champsModifies = new LinkedList<String>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
 		if (sansDifferenceFiscalementImportante(originel, correction, champsModifies)) {
