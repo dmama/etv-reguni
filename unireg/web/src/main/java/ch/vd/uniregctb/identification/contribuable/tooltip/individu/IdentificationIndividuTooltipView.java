@@ -35,7 +35,7 @@ public class IdentificationIndividuTooltipView {
 			this.nomNaissance = individu.getNomNaissance();
 			this.autresPrenoms = individu.getAutresPrenoms();
 			this.dateNaissance = individu.getDateNaissance();
-			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
+			this.sexe = individu.getSexe();
 			this.etatCivil = EtatCivilHelper.civil2core(individu.getEtatCivilCourant().getTypeEtatCivil());
 			this.numeroAssureSocial = individu.getNouveauNoAVS();
 			this.ancienNumeroAVS = individu.getNoAVS11();

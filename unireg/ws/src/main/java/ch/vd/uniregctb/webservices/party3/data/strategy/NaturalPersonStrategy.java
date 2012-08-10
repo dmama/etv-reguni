@@ -121,7 +121,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		final PersonIdentification identification = new PersonIdentification();
 		identification.setOfficialName(individu.getNom());
 		identification.setFirstName(individu.getPrenom());
-		identification.setSex(EchHelper.sexeToEch44(individu.isSexeMasculin() ? ch.vd.uniregctb.type.Sexe.MASCULIN : ch.vd.uniregctb.type.Sexe.FEMININ));
+		identification.setSex(EchHelper.sexeToEch44(individu.getSexe()));
 		identification.setVn(EchHelper.avs13ToEch(individu.getNouveauNoAVS()));
 		if (StringUtils.isNotBlank(individu.getNoAVS11())) {
 			identification.getOtherPersonId().add(new NamedPersonId(CH_AHV, individu.getNoAVS11())); // selon le document STAN_d_DEF_2010-06-11_eCH-0044_Personenidentifikation.pdf

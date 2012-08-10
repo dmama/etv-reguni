@@ -231,7 +231,7 @@ public abstract class Arrivee extends Mouvement {
 		// les critères de recherche
 		final String nomPrenom = tiersService.getNomPrenom(individu);
 		final RegDate dateNaissance = individu.getDateNaissance();
-		final Sexe sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
+		final Sexe sexe = individu.getSexe();
 
 		final TiersCriteria criteria = new TiersCriteria();
 		criteria.setTypeTiers(TiersCriteria.TypeTiers.NON_HABITANT);
@@ -264,7 +264,7 @@ public abstract class Arrivee extends Mouvement {
 				continue;
 			}
 			// [UNIREG-1603] on filtre le sexe en laissant passer les sexes non renseignés
-			if (pp.getSexe() != null && pp.getSexe() != sexe) {
+			if (pp.getSexe() != null && sexe != null && pp.getSexe() != sexe) {
 				continue;
 			}
 			// [UNIREG-1603] on filtre les non habitants qui possèdent un numéro d'individu

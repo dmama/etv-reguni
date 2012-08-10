@@ -24,6 +24,7 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.Tutelle;
+import ch.vd.uniregctb.type.Sexe;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
 
@@ -46,7 +47,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private Collection<Origine> origines;
 	private PermisList permis;
 	private Tutelle tutelle;
-	private boolean sexeMasculin;
+	private Sexe sexe;
 	private RegDate dateArriveeVD;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 	private boolean nonHabitantNonRenvoye = false;
@@ -71,7 +72,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.noAVS11 = right.noAVS11;
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
-		this.sexeMasculin = right.sexeMasculin;
+		this.sexe = right.sexe;
 
 		copyPartsFrom(right, parts);
 		limitPartsToBeforeDate(upTo, parts);
@@ -316,12 +317,12 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public boolean isSexeMasculin() {
-		return sexeMasculin;
+	public Sexe getSexe() {
+		return sexe;
 	}
 
-	public void setSexeMasculin(boolean sexeMasculin) {
-		this.sexeMasculin = sexeMasculin;
+	public void setSexe(Sexe sexe) {
+		this.sexe = sexe;
 	}
 
 	public boolean isNonHabitantNonRenvoye() {

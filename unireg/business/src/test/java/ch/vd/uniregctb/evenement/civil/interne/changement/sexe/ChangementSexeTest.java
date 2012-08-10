@@ -2,10 +2,10 @@ package ch.vd.uniregctb.evenement.civil.interne.changement.sexe;
 
 import java.util.List;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -16,6 +16,7 @@ import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.Sexe;
 
 public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 	private static final long NUMERO_CONTRIBUABLE = 6791L;
@@ -60,13 +61,13 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		TiersCriteria criteria = new TiersCriteria();
 		criteria.setNumero(NUMERO_CONTRIBUABLE);
 		List<TiersIndexedData> list = searcher.search(criteria);
-		Assert.isTrue(list.size() == 1, "Le tiers n'a pas été indexé");
+		Assert.assertEquals("Le tiers n'a pas été indexé", 1, list.size());
 		TiersIndexedData tiers = list.get(0);
-		Assert.isTrue(tiers.getNumero().equals(NUMERO_CONTRIBUABLE), "Le numéro du tiers est incorrect");
+		Assert.assertEquals("Le numéro du tiers est incorrect", (Long) NUMERO_CONTRIBUABLE, tiers.getNumero());
 
 		// changement du sexe dans le registre civil
 		final MockIndividu individu = mockServiceCivil.getIndividu(NO_INDIVIDU);
-		individu.setSexeMasculin(true);
+		individu.setSexe(Sexe.MASCULIN);
 
 
 		// déclenchement de l'événement
@@ -76,17 +77,17 @@ public class ChangementSexeTest extends AbstractEvenementCivilInterneTest {
 		chgtSexe.validate(collector, collector);// Valider la conformite sexe et numavs
 		chgtSexe.handle(collector);
 
-		Assert.isTrue(collector.getErreurs().isEmpty(), "Une erreur est survenue lors du traitement du changement de sexe");
+		Assert.assertTrue("Une erreur est survenue lors du traitement du changement de sexe", collector.getErreurs().isEmpty());
 
 		// on cherche de nouveau
 		List<TiersIndexedData> l = searcher.search(criteria);
-		Assert.isTrue(l.size() == 1, "L'indexation n'a pas fonctionné");
+		Assert.assertEquals( "L'indexation n'a pas fonctionné", 1, l.size());
 		LOGGER.debug("numero : " + l.get(0).getNumero());
 		LOGGER.debug ("nom : " + l.get(0).getNom1());
 
 		// on verifie que le changement a bien été effectué
 		Individu indi = serviceCivil.getIndividu(NO_INDIVIDU, date(2008, 12, 31));
-		Assert.isTrue(indi.isSexeMasculin(), "le nouveau sexe n'a pas été indexé");
+		Assert.assertEquals("le nouveau sexe n'a pas été indexé", Sexe.MASCULIN, indi.getSexe());
 	}
 
 }

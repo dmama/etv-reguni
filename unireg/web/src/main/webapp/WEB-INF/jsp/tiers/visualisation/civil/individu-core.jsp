@@ -54,7 +54,9 @@
 			<spring:bind path="${bind}" >
 				<c:set var="sexe" value="${status.value}"  scope="request"/>
 			</spring:bind>
-			<fmt:message key="option.sexe.${sexe}" />
+            <c:if test="${sexe != null}">
+                <fmt:message key="option.sexe.${sexe}" />
+            </c:if>
 		</td>
 	</tr>
 	<tr class="<unireg:nextRowClass/>" >

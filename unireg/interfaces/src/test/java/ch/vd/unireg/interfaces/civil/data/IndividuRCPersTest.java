@@ -38,7 +38,6 @@ import ch.vd.uniregctb.type.TypePermis;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class IndividuRCPersTest extends WithoutSpringTest {
@@ -270,7 +269,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals("Jean", ind.getPrenom());
 		assertEquals("Rucher", ind.getNom());
 		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
-		assertTrue(ind.isSexeMasculin());
+		assertEquals(Sexe.MASCULIN, ind.getSexe());
 
 		final Collection<Adresse> adresses = ind.getAdresses();
 		assertNotNull(adresses);
@@ -335,7 +334,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals("Jean", ind.getPrenom());
 		assertEquals("Rucher", ind.getNom());
 		assertEquals(date(1965, 3, 12), ind.getDateNaissance());
-		assertTrue(ind.isSexeMasculin());
+		assertEquals(Sexe.MASCULIN, ind.getSexe());
 
 		final Collection<Adresse> adresses = ind.getAdresses();
 		assertNotNull(adresses);

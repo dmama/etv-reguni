@@ -303,11 +303,7 @@ public class TiersServiceImpl implements TiersService {
         habitant.setPrenom(ind.getPrenom());
         habitant.setDateNaissance(ind.getDateNaissance());
         habitant.setDateDeces(ind.getDateDeces());
-        if (ind.isSexeMasculin()) {
-            habitant.setSexe(Sexe.MASCULIN);
-        } else {
-            habitant.setSexe(Sexe.FEMININ);
-        }
+	    habitant.setSexe(ind.getSexe());
 
 	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS);
 	    if (individu == null) {
@@ -539,7 +535,7 @@ public class TiersServiceImpl implements TiersService {
             if (individu == null) {
                 throw new IndividuNotFoundException(pp);
             }
-            sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
+            sexe = individu.getSexe();
         } else {
             sexe = pp.getSexe();
         }
@@ -1554,7 +1550,7 @@ public class TiersServiceImpl implements TiersService {
                 if (parent == null) {
                     throw new IndividuNotFoundException(relation.getNumeroAutreIndividu());
                 }
-                if (parent.isSexeMasculin()) {
+                if (parent.getSexe() == Sexe.MASCULIN) {
                     pere = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique(), true);
                     break;
                 }
@@ -1587,7 +1583,7 @@ public class TiersServiceImpl implements TiersService {
                 if (parent == null) {
                     throw new IndividuNotFoundException(relation.getNumeroAutreIndividu());
                 }
-                if (!parent.isSexeMasculin()) {
+                if (parent.getSexe() == Sexe.FEMININ) {
                     mere = tiersDAO.getPPByNumeroIndividu(parent.getNoTechnique(), true);
                     break;
                 }

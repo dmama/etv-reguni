@@ -18,7 +18,6 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
-import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -107,15 +106,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	 * @param indCible vue destination
 	 */
 	private void traiteSexe(Individu indSource, IndividuView indCible) {
-
-		final Sexe sexe;
-		if (indSource.isSexeMasculin()) {
-			sexe = Sexe.MASCULIN;
-		}
-		else {
-			sexe = Sexe.FEMININ;
-		}
-		indCible.setSexe(sexe);
+		indCible.setSexe(indSource.getSexe());
 	}
 
 	/**

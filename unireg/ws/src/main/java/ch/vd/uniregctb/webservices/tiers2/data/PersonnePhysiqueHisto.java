@@ -156,7 +156,7 @@ public class PersonnePhysiqueHisto extends ContribuableHisto {
 			this.nom = StringUtils.trimToNull(individu.getNom());
 			this.prenom = StringUtils.trimToNull(individu.getPrenom());
 			this.dateNaissance = DataHelper.coreToWeb(individu.getDateNaissance());
-			this.sexe = (individu.isSexeMasculin() ? Sexe.MASCULIN : Sexe.FEMININ);
+			this.sexe = EnumHelper.coreToWeb(individu.getSexe());
 			if (personne.getDateDeces() != null) {
 				this.dateDeces = DataHelper.coreToWeb(personne.getDateDeces());
 			}

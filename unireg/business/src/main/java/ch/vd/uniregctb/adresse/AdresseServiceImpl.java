@@ -612,11 +612,15 @@ public class AdresseServiceImpl implements AdresseService {
 		final boolean estDecede = (dateDeces != null && (date == null || dateDeces.isBeforeOrEqual(date)));
 
 		if (!estDecede) {
-			if (individu.isSexeMasculin()) {
+			final Sexe sexe = individu.getSexe();
+			if (sexe == Sexe.MASCULIN) {
 				salutations = FormulePolitesse.MONSIEUR;
 			}
-			else {
+			else if (sexe == Sexe.FEMININ) {
 				salutations = FormulePolitesse.MADAME;
+			}
+			else {
+				salutations = FormulePolitesse.MADAME_MONSIEUR;
 			}
 		}
 		else {

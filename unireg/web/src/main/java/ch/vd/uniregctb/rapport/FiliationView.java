@@ -6,6 +6,7 @@ import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportFiliation;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.Sexe;
 
 public class FiliationView {
 
@@ -40,7 +41,7 @@ public class FiliationView {
 		final String nomBrut = tiersService.getNomPrenom(autre);
 		final String nom;
 		if (autre.getDateDeces() != null) {
-			if (autre.isSexeMasculin()) {
+			if (autre.getSexe() == Sexe.MASCULIN) {
 				nom = String.format("%s, défunt", nomBrut);
 			}
 			else {
@@ -67,7 +68,7 @@ public class FiliationView {
 		else {
 			final String nomParent = tiersService.getNomPrenom(autre);
 			final String verbe = ferme ? "était" : "est";
-			final String type = autre.isSexeMasculin() ? "le père" : "la mère";
+			final String type = autre.getSexe() == null ? "le parent" : (autre.getSexe() == Sexe.MASCULIN ? "le père" : "la mère");
 			tooltip = String.format("%s %s %s de %s", nomParent, verbe, type, nomInd);
 		}
 

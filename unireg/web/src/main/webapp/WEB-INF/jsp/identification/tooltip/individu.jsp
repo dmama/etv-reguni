@@ -13,7 +13,7 @@
 				<fmt:message key="label.nom.naissance"/>&nbsp;:&nbsp;<b><c:out value="${command.nomNaissance}"/></b><br/>
 				<fmt:message key="label.prenom"/>&nbsp;:&nbsp;<b><c:out value="${command.prenom}"/></b><br/>
 				<fmt:message key="label.autres.prenoms"/>&nbsp;:&nbsp;<b><c:out value="${command.autresPrenoms}"/></b><br/>
-				<fmt:message key="label.sexe"/>&nbsp;:&nbsp;<b><c:out value="${command.sexe}"/></b><br/>
+				<fmt:message key="label.sexe"/>&nbsp;:&nbsp;<b><c:out value="${command.sexe != null ? command.sexe : ''}"/></b><br/>
 				<fmt:message key="label.date.naissance"/>&nbsp;:&nbsp;<b><unireg:regdate regdate="${command.dateNaissance}"/></b><br/>
 				<fmt:message key="label.etat.civil"/>&nbsp;:&nbsp;<b><c:out value="${command.etatCivil}"/></b><br/>
 				<fmt:message key="label.nouveau.numero.avs"/>&nbsp;:&nbsp;<b><c:out value="${command.numeroAssureSocial}"/></b><br/>
