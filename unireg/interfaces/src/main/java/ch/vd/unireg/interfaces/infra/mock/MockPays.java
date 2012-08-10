@@ -37,6 +37,7 @@ public class MockPays extends MockEntityOFS implements Pays {
 	//
 
 	public static final MockPays PaysInconnu = new MockPays(ServiceInfrastructureRaw.noPaysInconnu, "PaysInconnu", "INC", null, null);
+	public static final MockPays Apatridie = new MockPays(ServiceInfrastructureRaw.noPaysApatride, "Apatridie", "---", true, null, null, ServiceInfrastructureRaw.noPaysApatride);     // <-- à n'utiliser que pour les nationalités!
 	public static final MockPays RDA = new MockPays(8208, "République démocratique allemande", "", false, null, null);
 
 	private final boolean valide;
