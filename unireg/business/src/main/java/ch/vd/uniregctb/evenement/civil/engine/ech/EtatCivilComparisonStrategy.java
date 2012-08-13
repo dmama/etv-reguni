@@ -14,7 +14,7 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	private static final String ATTRIBUT = "état civil";
 
     @Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 	    // à un instant donné (et juste après un événement répond à cette catégorisation), un individu n'a au plus qu'un seul état civil
 	    // -> on peut se baser sur l'état civil "courant"
 	    final EtatCivil ecOriginel = originel.getIndividu().getEtatCivilCourant();

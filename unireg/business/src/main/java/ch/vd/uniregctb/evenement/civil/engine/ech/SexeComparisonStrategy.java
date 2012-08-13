@@ -11,7 +11,7 @@ public class SexeComparisonStrategy implements IndividuComparisonStrategy {
 	private static final String ATTRIBUTE = "sexe";
 
 	@Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		final Sexe origSexe = originel.getIndividu().getSexe();
 		final Sexe corSexe = corrige.getIndividu().getSexe();
 		final boolean same = origSexe == corSexe;

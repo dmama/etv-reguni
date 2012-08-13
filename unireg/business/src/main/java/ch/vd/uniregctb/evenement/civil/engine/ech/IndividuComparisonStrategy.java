@@ -16,5 +16,5 @@ public interface IndividuComparisonStrategy {
 	 * @param msg (out) dans le cas où une différence significative est trouvée, le nom de l'attribut qui est différent (date de naissance, adresse de résidence...)
 	 * @return <code>true</code> si aucune différence fiscalement importante n'est à signaler, <code>false</code> s'il y en a au moins une, au contraire (auquel cas le paramètre msg doit être renseigné)
 	 */
-	boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg);
+	boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg);
 }

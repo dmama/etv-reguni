@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.DataHolder;
 public abstract class DateIndividuComparisonStrategy implements IndividuComparisonStrategy {
 
 	@Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		final RegDate dateOriginel = getDate(originel);
 		final RegDate dateCorrige = getDate(corrige);
 		if (!areDatesIdentiques(dateOriginel, dateCorrige)) {
