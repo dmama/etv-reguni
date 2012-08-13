@@ -184,9 +184,9 @@ var Dialog = {
 						// on effectue la recherche par ajax
 						$.get(App.curl(queryString), function(results) {
 							$('#tiers-picker-filter-description').text(results.filterDescription);
-							$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
+							$('#tiers-picker-results').html(Dialog.__buildHtmlTiersPickerResults(results, buttonId));
 						}, 'json')
-						.error(Ajax.popupErrorHandler);
+						.error(Dialog.__tiersPickerErrorHandler);
 
 					}, 200); // 200 ms
 					$.data(this, "tiers-picker-timer", timer);
@@ -214,14 +214,14 @@ var Dialog = {
 				// on effectue la recherche par ajax
 				$.get(App.curl(queryString), function(results) {
 					$('#tiers-picker-filter-description').text(results.filterDescription);
-					$('#tiers-picker-results').html(Dialog.build_html_tiers_picker_results(results, buttonId));
+					$('#tiers-picker-results').html(Dialog.__buildHtmlTiersPickerResults(results, buttonId));
 				}, 'json')
-				.error(Ajax.popupErrorHandler);
+				.error(Dialog.__tiersPickerErrorHandler);
 			});
 
 			// la fonction pour tout effacer, y compris les résultat de la recherche
-			var fullSearch = $('#clearAll').button();
-			fullSearch.click(function() {
+			var clearAll = $('#clearAll').button();
+			clearAll.click(function() {
 				$('#tiers-picker-id').val(null);
 				$('#tiers-picker-nomraison').val(null);
 				$('#tiers-picker-localite').val(null);
@@ -248,7 +248,20 @@ var Dialog = {
 		return false;
 	},
 
-	build_html_tiers_picker_results: function(results, buttonId) {
+	__tiersPickerErrorHandler: function(xhr, ajaxOptions, thrownError) {
+		$('#tiers-picker-filter-description').text('');
+
+		var html = "<span class=\"error\">Désolé ! Une erreur est survenue et la recherche demandée n'a pas pu être effectuée.\n\n" +
+			"Veuillez réessayer plus tard, s'il-vous-plaît.<br><br>" +
+			"Si le problème persiste, merci de communiquer à votre administrateur le message suivant :<br><br>" +
+			"<ul style=\"padding-left:40px;\"><li>Date : " + new Date() + "</li>" +
+			"<li>URL : " + StringUtils.escapeHTML(this.url) + "</li></ul><br>" +
+			"" + StringUtils.escapeHTML(thrownError + ' (' +  xhr.status +') : '+ xhr.responseText) + "</span>";
+
+		$('#tiers-picker-results').html(html);
+	},
+
+	__buildHtmlTiersPickerResults: function(results, buttonId) {
 		var table = results.summary;
 
 		if (results.entries.length > 0) {
