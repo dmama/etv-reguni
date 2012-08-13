@@ -36,7 +36,11 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	private static final IndividuComparisonHelper.Equalator<Localisation> LOCALISATION_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Localisation>() {
 		@Override
 		protected boolean areNonNullEqual(@NotNull Localisation o1, @NotNull Localisation o2) {
-			return o1.getType() == o2.getType() && IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(o1.getNoOfs(), o2.getNoOfs());
+			boolean equal = o1.getType() == o2.getType();
+			if (equal && o1.getType() == LocalisationType.CANTON_VD) {
+				equal = IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(o1.getNoOfs(), o2.getNoOfs());
+			}
+			return equal;
 		}
 	};
 

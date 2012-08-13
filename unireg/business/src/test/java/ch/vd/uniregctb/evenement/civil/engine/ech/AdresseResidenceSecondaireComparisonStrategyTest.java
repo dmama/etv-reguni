@@ -444,7 +444,7 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 	}
 
 	@Test
-	public void testAdresseSecondaireLocalisationPrecedenteOfs() throws Exception {
+	public void testAdresseSecondaireLocalisationPrecedenteOfsHS() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
@@ -475,12 +475,156 @@ public class AdresseResidenceSecondaireComparisonStrategyTest extends BusinessTe
 
 		final DataHolder<String> dh = new DataHolder<String>();
 		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testAdresseSecondaireLocalisationPrecedenteOfsHC() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFS(), null);
+		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", egid, range, precedente1, suivante));
+			           }
+		           }, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", egid, range, precedente2, suivante));
+			           }
+		           }
+		);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testAdresseSecondaireLocalisationPrecedenteOfsVD() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null);
+		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aigle.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", egid, range, precedente1, suivante));
+			           }
+		           }, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", egid, range, precedente2, suivante));
+			           }
+		           }
+		);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
 		Assert.assertFalse(sans);
 		Assert.assertEquals("adresse de résidence secondaire", dh.get());
 	}
 
 	@Test
-	public void testAdresseSecondaireLocalisationSuivanteOfs() throws Exception {
+	public void testAdresseSecondaireLocalisationSuivanteOfsHS() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS(), null);
+		final Localisation suivante2 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Danemark.getNoOFS(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", egid, range, precedente, suivante1));
+			           }
+		           }, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", egid, range, precedente, suivante2));
+			           }
+		           }
+		);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testAdresseSecondaireLocalisationSuivanteOfsHC() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFSEtendu(), null);
+		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "12", egid, range, precedente, suivante1));
+			           }
+		           }, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.SECONDAIRE, "13", egid, range, precedente, suivante2));
+			           }
+		           }
+		);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
+		Assert.assertTrue(sans);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testAdresseSecondaireLocalisationSuivanteOfsVD() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
