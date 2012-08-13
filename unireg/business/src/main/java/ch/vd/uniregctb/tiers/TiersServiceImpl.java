@@ -1810,6 +1810,9 @@ public class TiersServiceImpl implements TiersService {
 
         final AttributeIndividu[] enumValues = new AttributeIndividu[]{AttributeIndividu.ENFANTS, AttributeIndividu.PARENTS, AttributeIndividu.ADOPTIONS};
         final Individu ind = serviceCivilService.getIndividu(personnePhysique.getNumeroIndividu(), date, enumValues);
+	    if (ind == null) {
+		    throw new IndividuNotFoundException(personnePhysique);
+	    }
 
         // enfants biologiques
         final Collection<RelationVersIndividu> enfants = ind.getEnfants();
