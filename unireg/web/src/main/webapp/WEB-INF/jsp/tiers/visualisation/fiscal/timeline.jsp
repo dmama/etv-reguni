@@ -68,7 +68,7 @@
 			<table>
 				<tr><td class="principal_vd">Lausanne</td><td>For fiscal principal dans le canton de Vaud</td></tr>
 				<tr><td class="principal_hc">Berne</td><td>For fiscal principal hors canton</td></tr>
-				<tr><td class="principal_hs">Bruxelles</td><td>For fiscal principal hors suisse</td></tr>
+				<tr><td class="principal_hs">Belgique</td><td>For fiscal principal hors Suisse</td></tr>
 			</table>
 		</div>
 
