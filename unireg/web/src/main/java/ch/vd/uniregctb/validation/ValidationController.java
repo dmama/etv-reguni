@@ -15,6 +15,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -80,6 +81,9 @@ public class ValidationController {
 			final PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isConnuAuCivil()) {
 				final Individu ind = serviceCivil.getIndividu(pp.getNumeroIndividu(), RegDate.get());
+				if (ind == null) {
+					throw new IndividuNotFoundException(pp);
+				}
 				for (EtatCivil etatCivil : ind.getEtatsCivils()) {
 					if (etatCivil.getDateDebut() == null) {
 						final String message = String.format("Le contribuable possède un état civil (%s) sans date de début. Dans la mesure du possible, cette date a été estimée.",
