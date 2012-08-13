@@ -101,6 +101,11 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			strategieApplicable = getStrategyBasedOnDifferences(event, originel, correction);
 		}
 
+		// un peu de log pour pouvoir suivre après coup ce qui s'est passé
+		if (StringUtils.isNotBlank(event.getCommentaireTraitement())) {
+			Audit.info(event.getId(), event.getCommentaireTraitement());
+		}
+
 		return strategieApplicable.create(event, context, options);
 	}
 
@@ -131,11 +136,6 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 				commentaire = String.format("L'élément suivant a été modifié par la correction : %s.", champsModifies.get(0));
 			}
 			event.setCommentaireTraitement(commentaire);
-		}
-
-		// un peu de log pour pouvoir suivre après coup ce qui s'est passé
-		if (StringUtils.isNotBlank(event.getCommentaireTraitement())) {
-			Audit.info(event.getId(), event.getCommentaireTraitement());
 		}
 
 		return strategieApplicable;
