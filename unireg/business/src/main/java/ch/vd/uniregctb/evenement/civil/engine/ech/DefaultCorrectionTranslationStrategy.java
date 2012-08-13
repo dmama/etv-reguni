@@ -17,6 +17,8 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 
 /**
@@ -29,13 +31,16 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	private static final EvenementCivilEchTranslationStrategy TRAITEMENT_MANUEL = new TraitementManuelTranslationStrategy();
 
 	private static final String MESSAGE_INDEXATION_PURE = "Evénement ignoré car sans impact fiscal.";
+	private static final String MESSAGE_ANCIEN_HABITANT = "Evénement civil de correction sur un ancien habitant du canton.";
 	private static final String SEPARATEUR = ", ";
 
 	private final ServiceCivilService serviceCivil;
+	private final TiersService tiersService;
 	private final List<IndividuComparisonStrategy> comparisonStrategies;
 
-	public DefaultCorrectionTranslationStrategy(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfrastructureService) {
+	public DefaultCorrectionTranslationStrategy(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfrastructureService, TiersService tiersService) {
 		this.serviceCivil = serviceCivil;
+		this.tiersService = tiersService;
 		this.comparisonStrategies = buildStrategies(serviceInfrastructureService);
 	}
 
@@ -69,22 +74,42 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			throw new IllegalArgumentException("Stratégie applicable aux seuls événements civils de correction.");
 		}
 
-		// on va comparer les individus avant et après correction,
-		final Long idEvtOriginel = event.getRefMessageId();
-		if (idEvtOriginel == null) {
-			throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
+		final EvenementCivilEchTranslationStrategy strategieApplicable;
+		if (isContribuableAncienHabitant(event.getNumeroIndividu())) {
+			// il faudrait reprendre les données qui ont changé du civil, tout en n'écrasant pas les données changées directement changées dans Unireg...
+			event.setCommentaireTraitement(MESSAGE_ANCIEN_HABITANT);
+			strategieApplicable = TRAITEMENT_MANUEL;
+		}
+		else {
+
+			// on va comparer les individus avant et après correction,
+			final Long idEvtOriginel = event.getRefMessageId();
+			if (idEvtOriginel == null) {
+				throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
+			}
+
+			final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
+			if (originel == null) {
+				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d corrigé", idEvtOriginel));
+			}
+
+			final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
+			if (correction == null) {
+				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
+			}
+
+			strategieApplicable = getStrategyBasedOnDifferences(event, originel, correction);
 		}
 
-		final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
-		if (originel == null) {
-			throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d corrigé", idEvtOriginel));
-		}
+		return strategieApplicable.create(event, context, options);
+	}
 
-		final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
-		if (correction == null) {
-			throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
-		}
+	private boolean isContribuableAncienHabitant(long noIndividu) {
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		return pp != null && !pp.isHabitantVD();
+	}
 
+	private EvenementCivilEchTranslationStrategy getStrategyBasedOnDifferences(EvenementCivilEch event, IndividuApresEvenement originel, IndividuApresEvenement correction) {
 		final List<String> champsModifies = new LinkedList<String>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
 		if (isFiscalementNeutre(originel, correction, champsModifies)) {
@@ -113,7 +138,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 			Audit.info(event.getId(), event.getCommentaireTraitement());
 		}
 
-		return strategieApplicable.create(event, context, options);
+		return strategieApplicable;
 	}
 
 	private static String toString(List<String> champsModifies) {
