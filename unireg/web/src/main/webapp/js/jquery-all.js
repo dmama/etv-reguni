@@ -21073,7 +21073,13 @@ $.widget("ui.tooltip", {
 		this.tooltip.attr("aria-hidden", "false");
 		target.attr("aria-describedby", this.tooltip.attr("id"));
 
-		this.tooltip.stop(false, true).fadeIn();
+		// [SIFISC-5219] supprimé l'animation pour IE6
+		if ($.browser.msie && /6.0/.test(navigator.userAgent)) {
+			this.tooltip.stop(false, true).show();
+		}
+		else {
+			this.tooltip.stop(false, true).fadeIn();
+		}
 
 		this._trigger( "open", event );
 	},
@@ -21096,7 +21102,13 @@ $.widget("ui.tooltip", {
 		current.removeAttr("aria-describedby");
 		this.tooltip.attr("aria-hidden", "true");
 
-		this.tooltip.stop(false, true).fadeOut();
+		// [SIFISC-5219] supprimé l'animation pour IE6
+		if ($.browser.msie && /6.0/.test(navigator.userAgent)) {
+			this.tooltip.stop(false, true).hide();
+		}
+		else {
+			this.tooltip.stop(false, true).fadeOut();
+		}
 
 		this._trigger( "close", event );
 	}

@@ -4,6 +4,14 @@
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
+	<tiles:put name="head">
+		<style type="text/css">
+			.timeline td {
+				border-color: #F1F1F1;
+			}
+		</style>
+	</tiles:put>
+
 	<tiles:put name="title">Vue chronologique des adresses</tiles:put>
 
 	<tiles:put name="body">
@@ -12,7 +20,7 @@
 
 		<a href="<c:url value="/tiers/visu.do?id=" /><c:out value="${command.tiersId}" />" >Retour à la visualisation</a>
 
-		<div id="legend" class="timeline">
+		<div id="legend">
 			<table >
 				<tr><td class="civile">Lausanne</td><td>Adresse en provenance du registre civil</td></tr>
 				<tr><td class="fiscale">Lausanne</td><td>Adresse en provenance du registre fiscal</td></tr>
@@ -63,14 +71,16 @@
 						<tr>
 							<th>Période</th>
 							<c:forEach var="colonne" varStatus="status" items="${table.columns}" >
-								<th><c:out value="${colonne.description}"/></th>
+								<th<c:if test="${status.index == 0}"> colspan="2"</c:if>><c:out value="${colonne.description}"/></th>
 							</c:forEach>
 						</tr>
+
+						<tr class="invisibleBorder" />
 
 						<c:forEach var="ligne" varStatus="status" items="${table.rows}" >
 							<tr>
 								<%-- période --%>
-								<td class="periode">
+								<td class="periodeFull">
 									<c:if test="${ligne.periode.dateDebut != null}">
 										<unireg:date date="${ligne.periode.dateDebut}" />
 									</c:if>
@@ -86,7 +96,9 @@
 									</c:if>
 								</td>
 
-								<c:forEach var="cell" varStatus="status" items="${ligne.columns}" >
+									<td class="invisibleBorder" />
+
+									<c:forEach var="cell" varStatus="status" items="${ligne.columns}" >
 									<c:set var="cellCounter" value="${cellCounter + 1}" />
 									<c:choose>
 										<c:when test="${cell.filler}">

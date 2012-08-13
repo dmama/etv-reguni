@@ -520,26 +520,76 @@ table.postit tr.bottom td {
  * Timeline stuff
  */
 
+#timeline_header {
+	display: block;
+	margin-top: 1em;
+	margin-bottom: 0.5em;
+}
+
+#timeline_header input {
+	margin-left: 10px;
+	margin-right: 2px;
+}
+
 .timeline, #legend {
 	width: auto;
-	border-spacing: 0.5em;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+table.timeline {
+	margin-left: 1em;
+	margin-bottom: 1em;
 }
 
 .timeline th {
-	border: thin;
+	border: 1px;
 	border-style: solid;
+	border-color: #666666;
 	padding: 0.3em;
 	text-align: center;
 	background-color: #FFFFCC;
 }
 
 .timeline td {
-	padding: 2px;
+	border: 0.4em;
+	border-style: solid;
+	border-color: white;
+	padding: 0.5em;
 	text-align: center;
 }
 
+.timeline td.annee {
+	padding: 2px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-left-width: 0;
+	border-bottom-width: 1px;
+	border-style: solid;
+	border-color: #996633;
+	background-color: #FFFFCC;
+}
+
+.timeline td.annee div span {
+	display: block;
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+}
+
 .timeline td.periode {
-	border: thin;
+	padding: 2px;
+	border-top-width: 1px;
+	border-right-width: 0;
+	border-left-width: 1px;
+	border-bottom-width: 1px;
+	border-style: solid;
+	border-color: #996633;
+	background-color: #FFFFCC;
+}
+
+.timeline td.periodeFull {
+	padding: 2px;
+	border: 1px;
 	border-style: solid;
 	border-color: #996633;
 	background-color: #FFFFCC;
@@ -609,6 +659,12 @@ table.postit tr.bottom td {
 
 .timeline td.filler {
 	border: 0;
+}
+
+.timeline .invisibleBorder {
+	border: 0;
+	padding: 0;
+	height: 3px;
 }
 
 #legend {

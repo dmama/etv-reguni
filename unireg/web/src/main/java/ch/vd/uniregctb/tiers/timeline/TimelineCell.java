@@ -14,7 +14,7 @@ public class TimelineCell {
 	public final boolean span; // si vrai, la cellule est "remplie" par le span d'un range
 
 	public int longueurAffichage;
-	public final DateRange range;
+	public final DateRange range; // le contenu de la cellule
 
 	TimelineCell(boolean filler, boolean span) {
 		this.filler = filler;

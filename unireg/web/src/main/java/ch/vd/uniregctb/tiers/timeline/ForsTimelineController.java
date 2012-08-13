@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.tiers.timeline;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -14,10 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.uniregctb.adresse.AdresseEnvoi;
-import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -33,7 +29,6 @@ import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.timeline.ForsTimelineView.Table;
 
 /**
  * Contrôleur pour l'affichage de l'historique des fors fiscaux et des assujettissements d'un contribuable
@@ -43,7 +38,7 @@ import ch.vd.uniregctb.tiers.timeline.ForsTimelineView.Table;
 @Controller
 public class ForsTimelineController {
 
-	private final Logger LOGGER = Logger.getLogger(ForsTimelineController.class);
+//	private final Logger LOGGER = Logger.getLogger(ForsTimelineController.class);
 
 	public final static String ID_PARAMETER = "id";
 	public final static String FOR_PRINT = "print";
@@ -51,7 +46,6 @@ public class ForsTimelineController {
 	public final static String DESCRIPTION = "description";
 
 	private TiersDAO dao;
-	private AdresseService adresseService;
 	private TiersService tiersService;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
@@ -60,11 +54,14 @@ public class ForsTimelineController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav,
 	                    @RequestParam(ID_PARAMETER) Long id,
+	                    @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
+	                    @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
+	                    @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
 	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		final ForsTimelineView bean = new ForsTimelineView();
+		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissements, showPeriodesImposition);
 		ControllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
 
@@ -105,11 +102,11 @@ public class ForsTimelineController {
 		final List<ForFiscal> forsFiscaux = tiers.getForsFiscauxNonAnnules(true);
 
 		// Extraction des fors de gestion
-		final List<ForGestion> forsGestion = tiersService.getForsGestionHisto(tiers);
+		final List<ForGestion> forsGestion = bean.isShowForsGestion() ? tiersService.getForsGestionHisto(tiers) : Collections.<ForGestion>emptyList();
 
 		// Extraction de l'assujettissement
 		List<Assujettissement> assujettissements = new ArrayList<Assujettissement>();
-		if (tiers instanceof Contribuable) {
+		if (bean.isShowAssujettissements() && tiers instanceof Contribuable) {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
@@ -127,7 +124,7 @@ public class ForsTimelineController {
 
 		// Extraction des périodes d'imposition
 		List<PeriodeImposition> periodesImposition = new ArrayList<PeriodeImposition>();
-		if (tiers instanceof Contribuable) {
+		if (bean.isShowPeriodesImposition() && tiers instanceof Contribuable) {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
 			if (debutActivite != null) {
@@ -146,21 +143,13 @@ public class ForsTimelineController {
 		// Calcul des différents ranges de l'axe du temps
 		final List<DateRange> ranges = new ArrayList<DateRange>();
 		ranges.addAll(forsFiscaux);
+		ranges.addAll(forsGestion);
 		ranges.addAll(assujettissements);
 		ranges.addAll(periodesImposition);
-		ranges.addAll(forsGestion);
 
-		final List<DateRange> periodes = new ArrayList<DateRange>();
-		final List<RegDate> boundaries = TimelineHelper.extractBoundaries(ranges);
-		RegDate previous = null;
-		for (RegDate current : boundaries) {
-			if (previous != null) {
-				periodes.add(new DateRangeHelper.Range(previous, (current == null ? null : current.getOneDayBefore())));
-			}
-			previous = current;
-		}
+		final List<DateRange> periodes = buildPeriodes(ranges);
 
-		final Table table = bean.getTable();
+		final TimelineTable table = bean.getTable();
 		table.setPeriodes(periodes);
 
 		// Renseignement des fors fiscaux
@@ -176,36 +165,66 @@ public class ForsTimelineController {
 		}
 
 		// Renseignement des fors de gestion
-		for (ForGestion fg : forsGestion) {
-			table.addForGestion(fg);
+		if (bean.isShowForsGestion()) {
+			for (ForGestion fg : forsGestion) {
+				table.addForGestion(fg);
+			}
 		}
 
 		// Renseignement des assujettissements
-		for (Assujettissement a : assujettissements) {
-			table.addAssujettissement(a);
+		if (bean.isShowAssujettissements()) {
+			for (Assujettissement a : assujettissements) {
+				table.addAssujettissement(a);
+			}
 		}
 
 		// Renseignement des périodes d'imposition
-		for (PeriodeImposition p : periodesImposition) {
-			table.addPeriodeImposition(p);
+		if (bean.isShowPeriodesImposition()) {
+			for (PeriodeImposition p : periodesImposition) {
+				table.addPeriodeImposition(p);
+			}
+		}
+	}
+
+	private static List<DateRange> buildPeriodes(List<DateRange> ranges) {
+		final List<DateRange> periodes = new ArrayList<DateRange>();
+		final List<RegDate> boundaries = TimelineHelper.extractBoundaries(ranges);
+		RegDate previous = null;
+		for (RegDate current : boundaries) {
+			if (previous != null) {
+				periodes.add(new Periode(previous, (current == null ? null : current.getOneDayBefore())));
+			}
+			previous = current;
+		}
+		return periodes;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public static class Periode extends DateRangeHelper.Range {
+
+		public Periode(RegDate debut, RegDate fin) {
+			super(debut, fin);
 		}
 
-		// Renseignement de l'adresse
-		try {
-			AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-			bean.setAdresse(adresseEnvoi);
+		public String getDateDebutLabel() {
+			return toDayMonth(getDateDebut());
 		}
-		catch (AdresseException e) {
-			LOGGER.warn("Résolution des adresses pour le tiers [" + tiers.getNumero() + "] impossible.", e);
+
+		public String getDateFinLabel() {
+			final RegDate date = getDateFin();
+			if (date == null) {
+				return "...";
+			}
+			return toDayMonth(date);
+		}
+
+		private String toDayMonth(RegDate date) {
+			return String.format("%02d.%02d", date.day(), date.month());
 		}
 	}
 
 	public void setTiersDao(TiersDAO dao) {
 		this.dao = dao;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
 	}
 
 	public void setTiersService(TiersService tiersService) {
