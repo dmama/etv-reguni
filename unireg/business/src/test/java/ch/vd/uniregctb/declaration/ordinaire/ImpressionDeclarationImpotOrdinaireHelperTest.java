@@ -35,6 +35,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -1456,6 +1457,81 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testIDEnvoiHorsSuisse() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null, MockPays.Danemark);
+
+		final String numCtb = String.format("%09d", pp.getNumero());
+
+		final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+		final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+		final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+		declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFSEtendu());
+		declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+		{
+
+			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012),TypFichierImpression.Factory.newInstance(),
+					null, false);
+			assertNotNull(document);
+			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_EUROPE,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals("",document.getInfoDocument().getIdEnvoi());
+
+
+		}
+
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testIDEnvoiHorsSuisseAdresseIncomplete() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
+
+
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative morges = tiersService.getOrCreateCollectiviteAdministrative(MockOfficeImpot.OID_MORGES.getNoColAdm());
+		final CollectiviteAdministrative aci = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACI);
+
+
+		// Crée une personne physique (ctb ordinaire vaudois) qui a déménagé mi 2010 de Morges à Paris
+		final PersonnePhysique pp = addNonHabitant("Céline", "André", date(1980, 6, 23), Sexe.MASCULIN);
+		addForPrincipal(pp, date(2006, 1, 1), MotifFor.ARRIVEE_HS, date(2010, 6, 30), MotifFor.DEPART_HS, MockCommune.Morges);
+		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(2010,7,1),null,null,null,MockPays.PaysInconnu);
+
+		final String numCtb = String.format("%09d", pp.getNumero());
+
+		final PeriodeFiscale periode2012 = addPeriodeFiscale(2012);
+		final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode2012);
+		final DeclarationImpotOrdinaire declaration2012 = addDeclarationImpot(pp, periode2012, date(2012, 1, 1), date(2012, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+		declaration2012.setNumeroOfsForGestion(MockCommune.Morges.getNoOFSEtendu());
+		declaration2012.setRetourCollectiviteAdministrativeId(aci.getId());
+		{
+
+			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012),TypFichierImpression.Factory.newInstance(),
+					null, false);
+			assertNotNull(document);
+			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_RESTE_MONDE,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals("10",document.getInfoDocument().getIdEnvoi());
+
+
+		}
+
+
+	}
+
 
 
 }

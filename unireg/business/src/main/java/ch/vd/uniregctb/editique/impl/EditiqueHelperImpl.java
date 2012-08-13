@@ -359,7 +359,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 				break;
 
 			default:
-				throw new EditiqueException("type d'affranchissement inconnu = " + adresseEnvoiDetaillee.getTypeAffranchissement());
+				affranchissement.setZone(null);
 		}
 	}
 

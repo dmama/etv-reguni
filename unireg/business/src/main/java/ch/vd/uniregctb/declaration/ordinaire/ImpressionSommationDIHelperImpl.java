@@ -192,8 +192,11 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, TypeAdresseFiscale.COURRIER, false);
+			//SIFISC-4146
+			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
+			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
 			String idEnvoi = "";
-			if (adresseEnvoiDetaillee.isSuisse() && !params.isMiseSousPliImpossible()) {
+			if (adresseEnvoiDetaillee.getPays()!=null && adresseEnvoiDetaillee.getPays().getNoOFS() != ServiceInfrastructureService.noPaysInconnu && !params.isMiseSousPliImpossible()) {
 				idEnvoi = "";
 			} else {
 				final Integer officeImpotId = tiersService.getOfficeImpotId(params.getDi().getTiers());

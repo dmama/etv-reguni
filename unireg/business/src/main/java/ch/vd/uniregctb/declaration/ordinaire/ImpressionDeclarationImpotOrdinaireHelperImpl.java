@@ -166,8 +166,12 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final Tiers tiers = informationDocument.getTiers();
 		try {
 			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
+
 			String idEnvoi = "";
-			if (adresseEnvoiDetaillee.isSuisse()) {
+			//SIFISC-4146
+			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
+			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
+			if (adresseEnvoiDetaillee.getPays()!=null && adresseEnvoiDetaillee.getPays().getNoOFS() != ServiceInfrastructureService.noPaysInconnu) {
 				idEnvoi = "";
 			}
 			else {
