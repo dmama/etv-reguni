@@ -122,7 +122,7 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	}
 
 	@Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		final List<Adresse> resOriginelles = extractAdressesResidence(originel.getIndividu().getAdresses());
 		final List<Adresse> resCorrigees = extractAdressesResidence(corrige.getIndividu().getAdresses());
 		if (!IndividuComparisonHelper.areContentsEqual(resOriginelles, resCorrigees, ADRESSE_COMPARATOR, ADRESSE_EQUALATOR)) {

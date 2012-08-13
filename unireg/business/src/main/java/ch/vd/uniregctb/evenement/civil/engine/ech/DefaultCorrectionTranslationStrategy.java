@@ -76,10 +76,18 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		}
 
 		final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
+		if (originel == null) {
+			throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d corrigé", idEvtOriginel));
+		}
+
 		final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
+		if (correction == null) {
+			throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
+		}
+
 		final List<String> champsModifies = new LinkedList<String>();
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
-		if (sansDifferenceFiscalementImportante(originel, correction, champsModifies)) {
+		if (isFiscalementNeutre(originel, correction, champsModifies)) {
 			strategieApplicable = INDEXATION_PURE;
 			event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 		}
@@ -124,22 +132,22 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		return false;
 	}
 
-	private boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement correction, @NotNull List<String> champsModifies) {
+	private boolean isFiscalementNeutre(@NotNull IndividuApresEvenement originel, @NotNull IndividuApresEvenement correction, @NotNull List<String> champsModifies) {
 
 		// si un des individus manque, alors il y a forcément des différences importantes
-		if (originel == null || correction == null || originel.getIndividu() == null || correction.getIndividu() == null) {
+		if (originel.getIndividu() == null || correction.getIndividu() == null) {
 			champsModifies.add("individu");
 			return false;
 		}
 
-		boolean sans = true;
+		boolean neutre = true;
 		for (IndividuComparisonStrategy strategy : comparisonStrategies) {
 			final DataHolder<String> champ = new DataHolder<String>();
-			sans = strategy.sansDifferenceFiscalementImportante(originel, correction, champ) && sans;
+			neutre = strategy.isFiscalementNeutre(originel, correction, champ) && neutre;
 			if (StringUtils.isNotBlank(champ.get())) {
 				champsModifies.add(champ.get());
 			}
 		}
-		return sans;
+		return neutre;
 	}
 }

@@ -52,8 +52,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertTrue(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertTrue(neutre);
 		Assert.assertNull(dh.get());
 	}
 
@@ -73,8 +73,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertTrue(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertTrue(neutre);
 		Assert.assertNull(dh.get());
 	}
 
@@ -96,8 +96,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertFalse(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertFalse(neutre);
 		Assert.assertEquals("date de naissance", dh.get());
 	}
 
@@ -119,8 +119,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertFalse(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertFalse(neutre);
 		Assert.assertEquals("date de naissance", dh.get());
 	}
 
@@ -141,8 +141,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertFalse(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertFalse(neutre);
 		Assert.assertEquals("date de naissance", dh.get());
 	}
 
@@ -163,8 +163,8 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		Assert.assertNotNull(iae1);
 
 		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean sans = strategy.sansDifferenceFiscalementImportante(iae1, iae2, dh);
-		Assert.assertFalse(sans);
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertFalse(neutre);
 		Assert.assertEquals("date de naissance", dh.get());
 	}
 

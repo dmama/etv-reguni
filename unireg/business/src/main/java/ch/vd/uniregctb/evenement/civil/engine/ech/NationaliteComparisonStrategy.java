@@ -59,7 +59,7 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 	}
 
 	@Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 
 		// La spécification dit qu'il faut détecter le passage de "nationalité inconnue" à "nationalité connue" et vice-versa (= statut de la nationalité),
 		// et que dans le cas où les nationalités existaient et changent, seule les changements sur la nationalité suisse sont importants

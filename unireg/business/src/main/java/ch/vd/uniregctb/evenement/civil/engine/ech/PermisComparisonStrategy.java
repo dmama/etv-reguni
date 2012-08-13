@@ -45,7 +45,7 @@ public class PermisComparisonStrategy implements IndividuComparisonStrategy {
 	};
 
     @Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 	    if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getPermis(), corrige.getIndividu().getPermis(), PERMIS_COMPARATOR, PERMIS_EQUALATOR)) {
 		    msg.set(ATTRIBUT);
 		    return false;

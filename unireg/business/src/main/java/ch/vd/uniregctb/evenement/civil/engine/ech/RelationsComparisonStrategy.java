@@ -34,7 +34,7 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 	};
 
 	@Override
-	public boolean sansDifferenceFiscalementImportante(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		// les différences de relations sont à chercher dans les conjoints et les filiations
 		if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getConjoints(), corrige.getIndividu().getConjoints(), RELATION_COMPARATOR, RELATION_EQUALATOR)
 				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getEnfants(), corrige.getIndividu().getEnfants(), RELATION_COMPARATOR, RELATION_EQUALATOR)
