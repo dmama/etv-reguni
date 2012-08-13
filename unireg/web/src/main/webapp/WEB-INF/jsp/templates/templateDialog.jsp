@@ -16,6 +16,10 @@
 	</head>
 	<body>
 
+		<script type="text/javascript">
+			App.init('<c:url value="/"/>');
+		</script>
+
 		<%-- Message flash --%>
 		<%--@elvariable id="flash" type="ch.vd.uniregctb.supergra.FlashMessage"--%>
 		<c:if test="${flash != null && flash.active}">
