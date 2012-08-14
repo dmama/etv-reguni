@@ -1,10 +1,17 @@
 package ch.vd.uniregctb.indexer.tiers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.indexer.IndexableData;
+import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {
@@ -49,7 +56,7 @@ public class TiersIndexableData extends IndexableData {
 	private String numeros;
 	private String nomRaison;
 	private String autresNom;
-	private String dateNaissance;
+	private List<RegDate> datesNaissance;
 	private String noOfsForPrincipal;
 	private String typeOfsForPrincipal;
 	private String nosOfsAutresFors;
@@ -95,7 +102,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.NUMEROS, numeros);
 		addAnalyzedValue(d, TiersIndexableData.NOM_RAISON, nomRaison);
 		addAnalyzedValue(d, TiersIndexableData.AUTRES_NOM, autresNom);
-		addAnalyzedValue(d, TiersIndexableData.DATE_NAISSANCE, dateNaissance);
+		addAnalyzedValue(d, TiersIndexableData.DATE_NAISSANCE, IndexerFormatHelper.objectToString(datesNaissance));
 		addNotAnalyzedValue(d, TiersIndexableData.NO_OFS_FOR_PRINCIPAL, noOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.TYPE_OFS_FOR_PRINCIPAL, typeOfsForPrincipal);
 		addNotAnalyzedValue(d, TiersIndexableData.NOS_OFS_AUTRES_FORS, nosOfsAutresFors);
@@ -111,7 +118,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, dateNaissance, forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, categorieDebiteurIs, noSymic);
+		addToutValues(d, numeros, nomRaison, autresNom, toDisplayString(datesNaissance), forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, categorieDebiteurIs, noSymic);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -130,6 +137,21 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
 
 		return d;
+	}
+
+	@Nullable
+	private static String toDisplayString(List<RegDate> list) {
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
+		final StringBuilder sb = new StringBuilder();
+		for (RegDate date : list) {
+			if (sb.length() > 0) {
+				sb.append(' ');
+			}
+			sb.append(RegDateHelper.dateToDisplayString(date));
+		}
+		return sb.toString();
 	}
 
 	private void addStoredValue(Document d, String name, String value) {
@@ -203,16 +225,30 @@ public class TiersIndexableData extends IndexableData {
 		this.autresNom = add(this.autresNom, autresNom);
 	}
 
-	public String getDateNaissance() {
-		return dateNaissance;
+	public List<RegDate> getDatesNaissance() {
+		return datesNaissance;
 	}
 
-	public void setDateNaissance(String dateNaissance) {
-		this.dateNaissance = dateNaissance;
+	public void setDatesNaissance(List<RegDate> datesNaissance) {
+		this.datesNaissance = datesNaissance;
 	}
 
-	public void addDateNaissance(String dateNaissance) {
-		this.dateNaissance = add(this.dateNaissance, dateNaissance);
+	public void addDateNaissance(RegDate date) {
+		if (date != null) {
+			if (this.datesNaissance == null) {
+				this.datesNaissance = new ArrayList<RegDate>();
+			}
+			this.datesNaissance.add(date);
+		}
+	}
+
+	public void addDatesNaissance(List<RegDate> list) {
+		if (list != null && !list.isEmpty()) {
+			if (this.datesNaissance == null) {
+				this.datesNaissance = new ArrayList<RegDate>();
+			}
+			this.datesNaissance.addAll(list);
+		}
 	}
 
 	public String getNoOfsForPrincipal() {

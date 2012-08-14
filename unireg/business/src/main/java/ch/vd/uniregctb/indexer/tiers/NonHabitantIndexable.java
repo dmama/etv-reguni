@@ -43,7 +43,7 @@ public class NonHabitantIndexable extends PersonnePhysiqueIndexable {
 		data.setNomRaison(pp.getNom());
 		data.addAutresNom(pp.getPrenom());
 		data.addAutresNom(pp.getNom());
-		data.setDateNaissance(IndexerFormatHelper.objectToString(pp.getDateNaissance()));
+		data.addDateNaissance(pp.getDateNaissance());
 		data.addNumeroAssureSocial(pp.getNumeroAssureSocial());
 		data.addNumeroAssureSocial(ancienNumAVS);
 		data.addNom1(pp.getPrenom());

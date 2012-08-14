@@ -3,6 +3,8 @@ package ch.vd.uniregctb.indexer.tiers;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.tiers.TiersCriteria;
@@ -46,7 +48,7 @@ public interface GlobalTiersSearcher {
 	 * @throws IndexerException en cas d'erreur levée dans l'indexeur
 	 * @return une liste de données de tiers
 	 */
-	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException;
+	public TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException;
 
 	/**
 	 * Vérifie si un tiers est indexé ou non.

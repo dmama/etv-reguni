@@ -39,7 +39,7 @@ public class HabitantIndexable extends PersonnePhysiqueIndexable {
 		data.addAutresNom(individu.getPrenom());
 		data.addAutresNom(individu.getNom());
 		data.addAutresNom(individu.getNomNaissance());
-		data.setDateNaissance(IndexerFormatHelper.objectToString(individu.getDateNaissance()));
+		data.addDateNaissance(individu.getDateNaissance());
 		data.setNomRaison(individu.getNom());
 		data.addNumeroAssureSocial(individu.getNouveauNoAVS());
 		data.addNumeroAssureSocial(individu.getNoAVS11());

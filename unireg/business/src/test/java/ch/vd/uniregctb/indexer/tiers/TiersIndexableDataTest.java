@@ -132,7 +132,7 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
-		data.setDateNaissance(IndexerFormatHelper.objectToString(RegDate.get(1975, 4, 12)));
+		data.addDateNaissance(date(1975, 4, 12));
 		globalIndex.indexEntity(data);
 
 		// recherche des données (OK)
@@ -150,6 +150,30 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		// recherche des données (KO)
 		criteria.setDateNaissance(RegDate.get(1988, 1, 1));
 		assertEmpty(globalTiersSearcher.search(criteria));
+	}
+
+	/**
+	 * [SIFISC-5926] Vérifie que la recherche par mots-clés de la date de naissance fonctionne avec le format dd.mm.aaaa
+	 */
+	@Test
+	public void testIndexationDateNaissance2() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.addDateNaissance(date(1975, 4, 12));
+		globalIndex.indexEntity(data);
+
+		// recherche des données (OK)
+		final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("12.04.1975", null, 10);
+		assertNotNull(resultats);
+		assertEquals(1, resultats.size());
+
+		final TiersIndexedData indexed = resultats.get(0);
+		assertEquals((Long) ID, indexed.getNumero());
+		assertEquals("19750412", indexed.getDateNaissance());
+
+		// recherche des données (KO)
+		assertEmpty(globalTiersSearcher.searchTop("01.01.1988", null, 10));
 	}
 
 	@Test

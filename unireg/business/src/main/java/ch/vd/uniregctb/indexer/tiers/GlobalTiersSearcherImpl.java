@@ -16,6 +16,7 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.StatusManager;
@@ -106,7 +107,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 	}
 
 	@Override
-	public TopList<TiersIndexedData> searchTop(String keywords, TiersFilter filter, int max) throws IndexerException {
+	public TopList<TiersIndexedData> searchTop(String keywords, @Nullable TiersFilter filter, int max) throws IndexerException {
 
 		final int tokenMinLength = 3;
 
