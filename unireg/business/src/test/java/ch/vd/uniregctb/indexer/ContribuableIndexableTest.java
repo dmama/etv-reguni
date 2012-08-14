@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.indexer;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Test;
 
-import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -145,7 +145,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		// Search
 		//assertContains(numCtb1.toString(), values.get(TiersIndexableData.NUMEROS));
 		assertContains("Maillard", values.getNomRaison());
-		assertEquals("19560121", values.getDateNaissance()); // [UNIREG-2633]
+		assertEquals(Arrays.asList(date(1956, 1, 21)), values.getDatesNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		// Display
 		assertContains("Maillard", values.getNom1());
@@ -178,9 +178,9 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertEquals(NonHabitantIndexable.SUB_TYPE, indexable.getSubType());
 
 		final TiersIndexableData values = (TiersIndexableData) indexable.getIndexableData();
-		assertEquals(DateHelper.dateToIndexString(nonHab.getDateNaissance().asJavaDate()), values.getDateNaissance());
+		assertEquals(Arrays.asList(nonHab.getDateNaissance()), values.getDatesNaissance());
 		assertEquals("Suisse", values.getPays());
-		assertEquals("19650312", values.getDateNaissance());
+		assertEquals(Arrays.asList(date(1965, 3, 12)), values.getDatesNaissance());
 		assertEquals("", values.getDateDeces());
 	}
 
@@ -203,7 +203,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("Contribuable PP", values.getRoleLigne1());
 
 		// Individu
-		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
+		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
 		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
@@ -236,7 +236,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		assertContains("source", values.getRoleLigne2());
 
 		// Individu
-		assertEquals(IndexerFormatHelper.objectToString(individu.getDateNaissance()), values.getDateNaissance());
+		assertEquals(Arrays.asList(individu.getDateNaissance()), values.getDatesNaissance());
 		assertEquals(String.format("%s %s", individu.getPrenom(), individu.getNom()), values.getNom1());
 		assertContains(IndexerFormatHelper.formatNumeroAVS(individu.getNouveauNoAVS()), values.getNumeroAssureSocial());
 	}
@@ -761,7 +761,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertEquals("19560121 19671203", values.getDateNaissance()); // [UNIREG-2633]
+		assertEquals(Arrays.asList(date(1956, 1, 21), date(1967, 12, 3)), values.getDatesNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("123.45.678"), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS("987.65.432"), values.getNumeroAssureSocial());
 		// Display
@@ -812,7 +812,7 @@ public class ContribuableIndexableTest extends WithoutSpringTest {
 		//assertContains(numCtb2.toString(), values.getNumeros());
 		assertContains("Maillard", values.getNomRaison());
 		assertContains("Gallet", values.getNomRaison());
-		assertEquals(dateN1.index() + " " + dateN2.index(), values.getDateNaissance()); // [UNIREG-2633]
+		assertEquals(Arrays.asList(dateN1, dateN2), values.getDatesNaissance()); // [UNIREG-2633]
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS1), values.getNumeroAssureSocial());
 		assertContains(FormatNumeroHelper.formatAncienNumAVS(noAVS2), values.getNumeroAssureSocial());
 		// Display
