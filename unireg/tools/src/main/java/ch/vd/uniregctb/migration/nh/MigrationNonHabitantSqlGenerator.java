@@ -31,7 +31,7 @@ public class MigrationNonHabitantSqlGenerator {
 		Writer out = null;
 		try {
 			input = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), CsvHelper.CHARSET));
-			final String[] headers = input.readLine().split(Character.toString(CsvHelper.COMMA));
+			final String[] headers = input.readLine().split(SEP);
 			final Map<String, Object> root = new HashMap<String, Object>(2);
 			final List<Map<String, String>> tiers = new ArrayList<Map<String, String>>(4000);
 			root.put("tiers", tiers);
