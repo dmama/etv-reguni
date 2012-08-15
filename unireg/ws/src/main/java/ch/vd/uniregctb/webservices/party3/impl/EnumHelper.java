@@ -343,7 +343,7 @@ public abstract class EnumHelper {
 			return NaturalPersonCategory.C_02_B_PERMIT;
 		case _03_ETABLI_C:
 			return NaturalPersonCategory.C_03_C_PERMIT;
-		case _04_CONJOINT_DIPLOMATE_CI:
+		case _04_CONJOINT_DIPLOMATE_OU_FONCT_INT_CI:
 			return NaturalPersonCategory.C_04_CI_PERMIT;
 		case _05_ETRANGER_ADMIS_PROVISOIREMENT_F:
 			return NaturalPersonCategory.C_05_F_PERMIT;
@@ -357,10 +357,8 @@ public abstract class EnumHelper {
 			return NaturalPersonCategory.C_09_S_PERMIT;
 		case _10_TENUE_DE_S_ANNONCER:
 			return NaturalPersonCategory.C_10_OBLIGED_TO_ANNOUNCE;
-		case _11_DIPLOMATE:
+		case _11_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL:
 			return NaturalPersonCategory.C_11_DIPLOMAT;
-		case _12_FONCTIONNAIRE_INTERNATIONAL:
-			return NaturalPersonCategory.C_12_INTERNATIONAL_CIVIL_SERVANT;
 		case _13_NON_ATTRIBUEE:
 			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
 		default:
@@ -378,11 +376,11 @@ public abstract class EnumHelper {
 			return NaturalPersonCategory.C_02_B_PERMIT;
 		case COURTE_DUREE:
 			return NaturalPersonCategory.C_07_L_PERMIT;
-		case DIPLOMATE:
+		case DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL:
 			return NaturalPersonCategory.C_11_DIPLOMAT;
 		case ETABLISSEMENT:
 			return NaturalPersonCategory.C_03_C_PERMIT;
-		case FONCTIONNAIRE_INTERNATIONAL:
+		case CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL:
 			return NaturalPersonCategory.C_12_INTERNATIONAL_CIVIL_SERVANT;
 		case FRONTALIER:
 			return NaturalPersonCategory.C_06_G_PERMIT;

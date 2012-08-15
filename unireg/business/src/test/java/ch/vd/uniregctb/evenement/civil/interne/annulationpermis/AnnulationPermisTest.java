@@ -83,7 +83,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 			addDefaultAdressesTo(rosa);
 			addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
-			permisRosa = (MockPermis) addPermis(rosa, TypePermis.FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
+			permisRosa = (MockPermis) addPermis(rosa, TypePermis.CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL, DATE_OBTENTION_PERMIS, null, false);
 		}
 	});
 
@@ -124,7 +124,7 @@ public class AnnulationPermisTest extends WithoutSpringTest {
 		EvenementCivilRegPP evenement = new EvenementCivilRegPP(1L, TypeEvenementCivil.ANNUL_CATEGORIE_ETRANGER, EtatEvenementCivil.A_TRAITER, DATE_OBTENTION_PERMIS, NUMERO_INDIVIDU_2, 0L, 1234, null);
 		// Teste l'adapter
 		AnnulationPermis adapter = new AnnulationPermis(evenement, context, options);
-		assertEquals(TypePermis.FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
+		assertEquals(TypePermis.CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL, adapter.getTypePermis());
 	}
 
 }
