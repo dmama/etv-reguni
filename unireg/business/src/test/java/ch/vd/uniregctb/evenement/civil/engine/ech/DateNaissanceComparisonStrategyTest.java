@@ -1,18 +1,14 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class DateNaissanceComparisonStrategyTest extends BusinessTest {
+public class DateNaissanceComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
 	private DateNaissanceComparisonStrategy strategy;
 
@@ -44,17 +40,7 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, date, date);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvtOriginel, noEvtCorrection);
 	}
 
 	@Test
@@ -65,17 +51,7 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvtOriginel, noEvtCorrection);
 	}
 
 	@Test
@@ -88,17 +64,7 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, date1, date2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("date de naissance", dh.get());
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
 	}
 
 	@Test
@@ -111,17 +77,7 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, date1, date2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("date de naissance", dh.get());
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
 	}
 
 	@Test
@@ -133,17 +89,7 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, date, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("date de naissance", dh.get());
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
 	}
 
 	@Test
@@ -155,17 +101,6 @@ public class DateNaissanceComparisonStrategyTest extends BusinessTest {
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, null, date);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("date de naissance", dh.get());
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
 	}
-
 }

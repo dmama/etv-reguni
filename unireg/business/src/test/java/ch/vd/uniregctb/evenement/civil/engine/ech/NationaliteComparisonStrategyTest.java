@@ -1,22 +1,18 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class NationaliteComparisonStrategyTest extends BusinessTest {
+public class NationaliteComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
 	private NationaliteComparisonStrategy strategy;
 
@@ -57,17 +53,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -81,17 +67,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -105,17 +81,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -129,17 +95,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -150,17 +106,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -175,17 +121,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -200,17 +136,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -225,17 +151,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -250,17 +166,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -275,17 +181,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -300,17 +196,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -325,17 +211,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -350,17 +226,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -375,17 +241,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays1, noEvt2, new DateRangeHelper.Range(debut, fin), pays2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -400,17 +256,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), pays, noEvt2, new DateRangeHelper.Range(debut2, null), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -425,17 +271,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), pays, noEvt2, new DateRangeHelper.Range(debut2, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -450,17 +286,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), pays, noEvt2, new DateRangeHelper.Range(debut, fin2), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -474,17 +300,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -498,17 +314,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -522,17 +328,7 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
 	@Test
@@ -546,16 +342,6 @@ public class NationaliteComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("nationalité", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 }

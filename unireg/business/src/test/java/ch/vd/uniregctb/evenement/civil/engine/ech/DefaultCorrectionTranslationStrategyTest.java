@@ -736,7 +736,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : date de naissance, relations, état civil.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : date de naissance, état civil, relations.", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -886,6 +886,76 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 				Assert.assertEquals("Evénement civil de correction sur un ancien habitant du canton.", evt.getCommentaireTraitement());
+
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				Assert.assertNotNull(erreurs);
+				Assert.assertEquals(1, erreurs.size());
+
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testModificationAdresseContact() throws Exception {
+
+		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
+			@Override
+			public void overrideStrategies(EvenementCivilEchTranslatorImplOverride translator) {
+				translator.overrideStrategy(TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, strategy);
+			}
+		});
+
+		final long noIndividu = 4684263L;
+		final long idEvtCorrige = 464735292L;
+		final long idEvtCorrection = 4326478256242L;
+		final RegDate dateEvtOrig = RegDate.get();
+		final RegDate dateEvtCorrection = dateEvtOrig.addDays(-2);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
+				marieIndividu(ind, date(1955, 12, 1));
+				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+
+				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
+				marieIndividu(ind2, date(1955, 12, 1));
+				addAdresse(ind2, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
+				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+			}
+		});
+
+		// construction de l'événement de correction
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(idEvtCorrection);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.TESTING);
+				evt.setAction(ActionEvenementCivilEch.CORRECTION);
+				evt.setDateEvenement(dateEvtCorrection);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setRefMessageId(idEvtCorrige);
+				hibernateTemplate.merge(evt);
+				return null;
+			}
+		});
+
+		// traitement de l'événement de correction
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de contact.", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
