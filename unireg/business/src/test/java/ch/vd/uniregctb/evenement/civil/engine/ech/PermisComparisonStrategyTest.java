@@ -91,7 +91,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testTypesDifferents() throws Exception {
+	public void testTypesDifferentsDontC() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
@@ -116,7 +116,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 	}
 
 	@Test
-	public void testPermisDifferentsMaisRestentSource() throws Exception {
+	public void testTypesDifferentsSansC() throws Exception {
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
@@ -135,12 +135,37 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 
 		final DataHolder<String> dh = new DataHolder<String>();
 		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertTrue(neutre);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testDatesDebutDifferentesPermisC() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut1 = date(2000, 1, 1);
+		final RegDate debut2 = date(2000, 2, 1);
+		final RegDate fin = date(2012, 8, 3);
+		final TypePermis type = TypePermis.ETABLISSEMENT;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
 		Assert.assertFalse(neutre);
 		Assert.assertEquals("permis", dh.get());
 	}
 
 	@Test
-	public void testDatesDebutDifferentes() throws Exception {
+	public void testDatesDebutDifferentesPermisNonC() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut1 = date(2000, 1, 1);
@@ -160,12 +185,37 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 
 		final DataHolder<String> dh = new DataHolder<String>();
 		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
+		Assert.assertTrue(neutre);
+		Assert.assertNull(dh.get());
+	}
+
+	@Test
+	public void testDatesFinDifferentesPermisC() throws Exception {
+
+		final long noIndividu = 367315L;
+		final RegDate debut = date(2000, 2, 1);
+		final RegDate fin1 = date(2012, 8, 3);
+		final RegDate fin2 = null;
+		final TypePermis type = TypePermis.ETABLISSEMENT;
+		final long noEvt1 = 4326784234L;
+		final long noEvt2 = 54378436574L;
+
+		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
+
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
+		Assert.assertNotNull(iae1);
+
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
+		Assert.assertNotNull(iae1);
+
+		final DataHolder<String> dh = new DataHolder<String>();
+		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
 		Assert.assertFalse(neutre);
 		Assert.assertEquals("permis", dh.get());
 	}
 
 	@Test
-	public void testDatesFinDifferentes() throws Exception {
+	public void testDatesFinDifferentesPermisNonC() throws Exception {
 
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
@@ -185,8 +235,8 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 
 		final DataHolder<String> dh = new DataHolder<String>();
 		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		Assert.assertTrue(neutre);
+		Assert.assertNull(dh.get());
 	}
 
 	@Test
