@@ -5,16 +5,12 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
-import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class AdresseContactComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
+public class AdresseContactComparisonStrategyTest extends AbstractAdresseComparisonStrategyTest {
 
 	private AdresseContactComparisonStrategy strategy;
 
@@ -22,10 +18,6 @@ public class AdresseContactComparisonStrategyTest extends AbstractIndividuCompar
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
 		strategy = new AdresseContactComparisonStrategy();
-	}
-
-	private static interface AddressBuilder {
-		void buildAdresses(MockIndividu individu);
 	}
 
 	private static Adresse buildAdresse(TypeAdresseCivil type, String titre, String rue, String numeroPostal, String numero, String localite, @Nullable DateRange range) {
@@ -37,25 +29,6 @@ public class AdresseContactComparisonStrategyTest extends AbstractIndividuCompar
 			adr.setDateFinValidite(range.getDateFin());
 		}
 		return adr;
-	}
-
-	private void setupCivil(final long noIndividu, final long noEvt1, final AddressBuilder b1, final long noEvt2, final AddressBuilder b2) {
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu ind = addIndividu(noIndividu, null, "Fraise", "Tartala", false);
-				if (b1 != null) {
-					b1.buildAdresses(ind);
-				}
-				addIndividuFromEvent(noEvt1, ind, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
-
-				final MockIndividu indCorrige = createIndividu(noIndividu, null, "Frèze", "Tart'ala", false);
-				if (b2 != null) {
-					b2.buildAdresses(indCorrige);
-				}
-				addIndividuFromEvent(noEvt2, indCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt1);
-			}
-		});
 	}
 
 	@Test
