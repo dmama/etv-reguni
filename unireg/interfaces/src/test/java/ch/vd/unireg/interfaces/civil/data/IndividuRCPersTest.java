@@ -7,9 +7,11 @@ import java.util.Collections;
 import java.util.List;
 
 import ch.ech.ech0007.v4.SwissMunicipality;
+import ch.ech.ech0008.v2.Country;
 import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
+import ch.ech.ech0011.v5.Destination;
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -28,6 +30,8 @@ import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -241,6 +245,58 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertAdresse(date(1985, 1, 1), null, "Place du Temple", "Cully", secondaires.get(3));
 	}
 
+	/**
+	 * [SIFISC-4833] Vérifie que les localisations précédentes et suivantes sont bien ignorées lors des déménagements à l'intérieur de la même commune (malgré le fait que RcPers renseigne
+	 * systématiquement ces informations).
+	 */
+	@Test
+	public void initAdressesLocalisationAvecDemenagementsDansLaCommune() throws Exception {
+
+		final Residence r1 = newResidencePrincipale(date(2009, 9, 4), null, date(2009, 10, 31), MockRue.Echallens.GrandRue);
+		r1.setGoesTo(newDestination(MockCommune.Lausanne));
+
+		// 3 adresses à Lausanne avec les mêmes localisations
+		final Residence r2 = newResidencePrincipale(date(2009, 11, 1), null, date(2012, 7, 3), MockRue.Lausanne.AvenueDeBeaulieu);
+		r2.setComesFrom(newDestination(MockCommune.Echallens));
+		r2.setGoesTo(newDestination(MockPays.France));
+
+		final Residence r3 = newResidencePrincipale(date(2009, 11, 1), date(2010, 9, 1), date(2012, 7, 3), MockRue.Lausanne.AvenueDeMarcelin);
+		r3.setComesFrom(newDestination(MockCommune.Echallens));
+		r3.setGoesTo(newDestination(MockPays.France));
+
+		final Residence r4 = newResidencePrincipale(date(2009, 11, 1), date(2011, 7, 1), date(2012, 7, 3), MockRue.Lausanne.BoulevardGrancy);
+		r4.setComesFrom(newDestination(MockCommune.Echallens));
+		r4.setGoesTo(newDestination(MockPays.France));
+
+		// initialisation des adresses
+		final Collection<Adresse> adresses =
+				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(r1, r2, r3, r4), infraService);
+		assertNotNull(adresses);
+		assertEquals(4, adresses.size());
+
+		final List<Adresse> principales = new ArrayList<Adresse>();
+		final List<Adresse> secondaires = new ArrayList<Adresse>();
+		for (Adresse a : adresses) {
+			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				principales.add(a);
+			}
+			else if (a.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
+				secondaires.add(a);
+			}
+			else {
+				fail();
+			}
+		}
+		assertEmpty(secondaires);
+
+		// les localisations des adresses principales doivent être nulles lors des déménagements
+		assertEquals(4, principales.size());
+		assertAdresse(date(2009, 9, 4), null, date(2009, 10, 31), newLocalisation(MockCommune.Lausanne), "Grand Rue", "Echallens", principales.get(0));
+		assertAdresse(date(2009, 11, 1), newLocalisation(MockCommune.Echallens), date(2010, 8, 31), null, "Av de Beaulieu", "Lausanne", principales.get(1));
+		assertAdresse(date(2010, 9, 1), null, date(2011, 6, 30), null, "Av de Marcelin", "Lausanne", principales.get(2));
+		assertAdresse(date(2011, 7, 1), null, date(2012, 7, 3), newLocalisation(MockPays.France), "Boulevard de Grancy", "Lausanne", principales.get(3));
+	}
+
 	@Test
 	public void testGetPersonWithHistoryValues() throws Exception {
 
@@ -449,6 +505,30 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(localite, adresse.getLocalite());
 	}
 
+	private static void assertAdresse(@Nullable RegDate dateDebut, @Nullable Localisation provenance, @Nullable RegDate dateFin, @Nullable Localisation destination, @Nullable String rue,
+	                                  @Nullable String localite, Adresse adresse) {
+		assertNotNull(adresse);
+		assertEquals(dateDebut, adresse.getDateDebut());
+		assertEqualsLocalisations(provenance, adresse.getLocalisationPrecedente());
+		assertEquals(dateFin, adresse.getDateFin());
+		assertEqualsLocalisations(destination, adresse.getLocalisationSuivante());
+		assertEquals(rue, adresse.getRue());
+		assertEquals(localite, adresse.getLocalite());
+	}
+
+	private static void assertEqualsLocalisations(Localisation left, Localisation right) {
+		if ((left == null && right != null) || (left != null && right == null)) {
+			assertEquals(left, right);
+		}
+		else if (left == null) {
+			// ok
+		}
+		else {
+			assertEquals(left.getType(), right.getType());
+			assertEquals(left.getNoOfs(), right.getNoOfs());
+		}
+	}
+
 	private static Residence newResidencePrincipale(RegDate arrivalDate, @Nullable RegDate movingDate, @Nullable RegDate departureDate, MockRue rue) {
 		Commune commune = rue.getLocalite().getCommuneLocalite();
 		final SwissMunicipality municipality = newSwissMunicipality(commune);
@@ -463,6 +543,46 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final DwellingAddress dwellingAddress = newDwellingAddress(movingDate, rue);
 		return new Residence(null, null, new Residence.OtherResidence(), municipality, municipality, XmlUtils.regdate2xmlcal(arrivalDate), null, dwellingAddress, XmlUtils.regdate2xmlcal(
 				departureDate), null);
+	}
+
+	private static Destination newDestination(MockCommune commune) {
+		Destination d = new Destination();
+		d.setSwissTown(newSwissMunicipality(commune));
+		return d;
+	}
+
+	private static Destination newDestination(MockPays pays) {
+		final Destination d = new Destination();
+		d.setForeignCountry(newForeignCountry(pays));
+		return d;
+	}
+
+	private static Destination.ForeignCountry newForeignCountry(MockPays pays) {
+		Destination.ForeignCountry fc = new Destination.ForeignCountry();
+		fc.setCountry(newCountry(pays));
+		return fc;
+	}
+
+	private static Country newCountry(MockPays pays) {
+		final Country country = new Country();
+		country.setCountryId(pays.getNoOFS());
+		country.setCountryIdISO2(pays.getCodeIso2());
+		country.setCountryNameShort(pays.getNomMinuscule());
+		return country;
+	}
+
+	private static Localisation newLocalisation(MockCommune commune) {
+		Localisation l = new Localisation();
+		l.setNoOfs(commune.getNoOFS());
+		l.setType(commune.isVaudoise() ? LocalisationType.CANTON_VD : LocalisationType.HORS_CANTON);
+		return l;
+	}
+
+	private static Localisation newLocalisation(MockPays pays) {
+		Localisation l = new Localisation();
+		l.setNoOfs(pays.getNoOFS());
+		l.setType(LocalisationType.HORS_SUISSE);
+		return l;
 	}
 
 	private static SwissMunicipality newSwissMunicipality(Commune commune) {
