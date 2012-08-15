@@ -2,3 +2,9 @@
 INSERT INTO VERSION_DB (VERSION_NB, SCRIPT_ID) VALUES ('5.1.1', '5.0.1_5.1.1_upgrade');
 
 ALTER TABLE TIERS ADD (ADRESSE_EMAIL_EFACTURE nvarchar2(255));
+
+-- [SIFISC-5349] Besoin de plus de place pour stocker le nom de l'enum
+ALTER TABLE TIERS MODIFY (NH_CAT_ETRANGER NVARCHAR2(50));
+-- [SIFISC-5349] TODO a valider: je le mets ici le script d'update des donnees ou dans un endroit à part ?
+update tiers set NH_CAT_ETRANGER = '_04_CONJOINT_DIPLOMATE_OU_FONCT_INT_CI' where NH_CAT_ETRANGER = '_04_CONJOINT_DIPLOMATE_CI';
+update tiers set NH_CAT_ETRANGER = '_11_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL' where NH_CAT_ETRANGER in ('_11_DIPLOMATE', '_12_FONCTIONNAIRE_INTERNATIONAL');
