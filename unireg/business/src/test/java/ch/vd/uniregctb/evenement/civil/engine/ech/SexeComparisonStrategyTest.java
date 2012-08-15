@@ -1,20 +1,16 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class SexeComparisonStrategyTest extends BusinessTest {
+public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
 	private SexeComparisonStrategy strategy;
 
@@ -45,17 +41,7 @@ public class SexeComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 256432652L;
 
 		setupCivil(noIndividu, noEvt1, Sexe.MASCULIN, noEvt2, Sexe.MASCULIN);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -66,17 +52,7 @@ public class SexeComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 256432652L;
 
 		setupCivil(noIndividu, noEvt1, Sexe.MASCULIN, noEvt2, Sexe.FEMININ);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("sexe", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "sexe");
 	}
 
 	@Test
@@ -87,17 +63,7 @@ public class SexeComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 256432652L;
 
 		setupCivil(noIndividu, noEvt1, null, noEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -108,17 +74,7 @@ public class SexeComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 256432652L;
 
 		setupCivil(noIndividu, noEvt1, null, noEvt2, Sexe.FEMININ);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("sexe", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "sexe");
 	}
 
 	@Test
@@ -129,16 +85,6 @@ public class SexeComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 256432652L;
 
 		setupCivil(noIndividu, noEvt1, Sexe.MASCULIN, noEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("sexe", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "sexe");
 	}
 }

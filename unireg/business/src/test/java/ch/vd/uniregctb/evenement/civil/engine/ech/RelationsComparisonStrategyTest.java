@@ -1,22 +1,18 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class RelationsComparisonStrategyTest extends BusinessTest {
+public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
 	private RelationsComparisonStrategy strategy;
 
@@ -73,17 +69,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		final long idEvt2 = 567437834342L;
 
 		setupCivil(noIndividu, idEvt1, null, idEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -112,16 +98,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -150,16 +127,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -187,16 +155,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -225,16 +184,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -263,16 +213,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -300,16 +241,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -338,16 +270,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -376,16 +299,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -413,16 +327,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 		           }
 		);
 
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
 	@Test
@@ -439,17 +344,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersEnfant(individu, range, noEnfant);
 			}
 		});
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -466,17 +361,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersParent(individu, range, noParent);
 			}
 		});
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -493,17 +378,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersConjoint(individu, range, noConjoint);
 			}
 		});
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -520,17 +395,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersEnfant(individu, range, noEnfant);
 			}
 		}, idEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -547,17 +412,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersParent(individu, range, noParent);
 			}
 		}, idEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -574,17 +429,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 				addRelationVersConjoint(individu, range, noConjoint);
 			}
 		}, idEvt2, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -608,17 +453,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -640,19 +475,8 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           public void buildRelations(MockIndividu individu) {
 				           addRelationVersParent(individu, range, noParent2);
 			           }
-		           }
-		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		           });
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -676,17 +500,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -710,17 +524,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -744,17 +548,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -778,17 +572,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -812,17 +596,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -846,17 +620,7 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 
 	@Test
@@ -880,16 +644,6 @@ public class RelationsComparisonStrategyTest extends BusinessTest {
 			           }
 		           }
 		);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(idEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(idEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("relations", dh.get());
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
 	}
 }

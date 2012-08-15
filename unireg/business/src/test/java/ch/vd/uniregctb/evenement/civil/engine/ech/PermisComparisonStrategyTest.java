@@ -1,21 +1,17 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import junit.framework.Assert;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
-import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypePermis;
 
-public class PermisComparisonStrategyTest extends BusinessTest {
+public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStrategyTest {
 
 	private PermisComparisonStrategy strategy;
 
@@ -56,17 +52,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, new DateRangeHelper.Range(debut, fin), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -77,17 +63,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -102,17 +78,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type1, noEvt2, new DateRangeHelper.Range(debut, fin), type2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 
 	@Test
@@ -126,17 +92,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type1, noEvt2, new DateRangeHelper.Range(debut, fin), type2);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -151,17 +107,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 
 	@Test
@@ -176,17 +122,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -201,17 +137,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 
 	@Test
@@ -226,17 +152,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertTrue(neutre);
-		Assert.assertNull(dh.get());
+		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
 	@Test
@@ -250,17 +166,7 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), type);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 
 	@Test
@@ -274,16 +180,6 @@ public class PermisComparisonStrategyTest extends BusinessTest {
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, null, null);
-
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvt1);
-		Assert.assertNotNull(iae1);
-
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvt2);
-		Assert.assertNotNull(iae1);
-
-		final DataHolder<String> dh = new DataHolder<String>();
-		final boolean neutre = strategy.isFiscalementNeutre(iae1, iae2, dh);
-		Assert.assertFalse(neutre);
-		Assert.assertEquals("permis", dh.get());
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 }
