@@ -55,7 +55,7 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		strategies.add(new NationaliteComparisonStrategy());
 		strategies.add(new PermisComparisonStrategy());
 		strategies.add(new RelationsComparisonStrategy());
-		strategies.add(new SexeComparisonStrategy());
+//		strategies.add(new SexeComparisonStrategy());       // finalement enlevé....
 		return strategies;
 	}
 

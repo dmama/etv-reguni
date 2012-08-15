@@ -240,15 +240,8 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : sexe.", evt.getCommentaireTraitement());
-
-				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
-
-				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				Assert.assertEquals("Traitement automatique non implémenté. Veuillez effectuer cette opération manuellement.", erreur.getMessage());
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				Assert.assertEquals("Evénement ignoré car sans impact fiscal.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
