@@ -77,6 +77,45 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 	}
 
 	@Test
+	public void testApparitionAdresse() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
+			           @Override
+			           public void buildAdresses(MockIndividu individu) {
+				           individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
+			           }
+		           }
+		);
+
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+	}
+
+	@Test
+	public void testDisparitionAdresse() throws Exception {
+		final long noIndividu = 1236745674L;
+		final long noEvt1 = 3278456435L;
+		final long noEvt2 = 43757536526L;
+		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
+		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+
+		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
+			@Override
+			public void buildAdresses(MockIndividu individu) {
+				individu.getAdresses().add(buildAdresse(getTypeAdresseResidence(), "13", 123, range, precedente, suivante));
+			}
+		}, noEvt2, null);
+
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+	}
+
+	@Test
 	public void testMemeAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
