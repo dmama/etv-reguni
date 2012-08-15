@@ -133,8 +133,20 @@ public class AdresseRCPers implements Adresse, Serializable {
 		this.noOfsCommuneAdresse = residence.getResidenceMunicipality().getMunicipalityId();
 		this.egid = dwellingAddress.getEGID() == null ? null : dwellingAddress.getEGID().intValue();
 		this.ewid = dwellingAddress.getEWID() == null ? null : dwellingAddress.getEWID().intValue();
-		this.localisationPrecedente = initLocalisation(residence.getComesFrom(), infraService);
-		this.localisationSuivante = initLocalisation(residence.getGoesTo(), infraService);
+
+		if (residence.getDwellingAddress().getMovingDate() != null) {
+			this.localisationPrecedente = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation précédente doit être nulle
+		}
+		else {
+			this.localisationPrecedente = initLocalisation(residence.getComesFrom(), infraService);
+		}
+
+		if (next != null && next.getDwellingAddress().getMovingDate() != null) {
+			this.localisationSuivante = null; // [SIFISC-4833] en cas de déménagement à l'intérieur de la commune, la localisation suivante doit être nulle
+		}
+		else {
+			this.localisationSuivante = initLocalisation(residence.getGoesTo(), infraService);
+		}
 	}
 
 	private AdresseRCPers(String localite, int noOfsPays) {
