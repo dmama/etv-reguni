@@ -190,9 +190,9 @@ public abstract class EnumHelper {
 		if (typePermis2Categorie.isEmpty()) {
 			typePermis2Categorie.put(TypePermis.ANNUEL, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
 			typePermis2Categorie.put(TypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
-			typePermis2Categorie.put(TypePermis.DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._11_DIPLOMATE);
+			typePermis2Categorie.put(TypePermis.DIPLOMATE, PersonnePhysique.Categorie._11_DIPLOMATE);
 			typePermis2Categorie.put(TypePermis.ETABLISSEMENT, PersonnePhysique.Categorie._03_ETABLI_C);
-			typePermis2Categorie.put(TypePermis.CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._04_CONJOINT_DIPLOMATE_CI);
+			typePermis2Categorie.put(TypePermis.FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL);
 			typePermis2Categorie.put(TypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
 			typePermis2Categorie.put(TypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
 			typePermis2Categorie.put(TypePermis.PROVISOIRE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);

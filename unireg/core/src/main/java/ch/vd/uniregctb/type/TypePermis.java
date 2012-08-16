@@ -19,15 +19,15 @@ public enum TypePermis {
 	/**
 	 * Diplomate (D ou code LHR 11xx)
 	 */
-	DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL,
+	DIPLOMATE,
 	/**
 	 * Titulaire d'un permis d'établissement (C)
 	 */
 	ETABLISSEMENT,
 	/**
-	 * Conjoint/enfant de diplomate ou de fonctionnaire international (Ci)
+	 * Fonctionnaire internal ou conjoint/enfant de diplomate (Ci)
 	 */
-	CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL,
+	FONCTIONNAIRE_INTERNATIONAL,
 	/**
 	 * Frontalier (G)
 	 */
@@ -80,7 +80,7 @@ public enum TypePermis {
 			return ETABLISSEMENT;
 		case 4:
 			// permis Ci (fonctionnaire international ou conjoint/enfant de diplomate)
-			return CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+			return FONCTIONNAIRE_INTERNATIONAL;
 		case 5:
 			// permis F
 			return ETRANGER_ADMIS_PROVISOIREMENT;
@@ -97,9 +97,9 @@ public enum TypePermis {
 			// permis S
 			return PERSONNE_A_PROTEGER;
 		case 11:
-			return DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+			return DIPLOMATE;
 		case 12:
-			return CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+			return FONCTIONNAIRE_INTERNATIONAL;
 		case 13:
 			return PROVISOIRE;
 		default:
@@ -120,7 +120,7 @@ public enum TypePermis {
 			return "02";
 		case ETABLISSEMENT:
 			return "03";
-		case CONJOINT_DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL:
+		case FONCTIONNAIRE_INTERNATIONAL:
 			return "04";
 		case ETRANGER_ADMIS_PROVISOIREMENT:
 			return "05";
@@ -132,7 +132,7 @@ public enum TypePermis {
 			return "08";
 		case PERSONNE_A_PROTEGER:
 			return "09";
-		case DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL:
+		case DIPLOMATE:
 			return "11";
 		case PROVISOIRE:
 			return "13";

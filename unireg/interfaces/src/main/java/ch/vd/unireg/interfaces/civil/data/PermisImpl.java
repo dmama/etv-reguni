@@ -44,13 +44,13 @@ public class PermisImpl implements Permis, Serializable {
 			return TypePermis.COURTE_DUREE;
 		}
 		else if (type == EnumTypePermis.DIPLOMATE) {
-			return TypePermis.DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+			return TypePermis.DIPLOMATE;
 		}
 		else if (type == EnumTypePermis.ETABLLISSEMENT) {
 			return TypePermis.ETABLISSEMENT;
 		}
 		else if (type == EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL) {
-			return TypePermis.DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+			return TypePermis.FONCTIONNAIRE_INTERNATIONAL;
 		}
 		else if (type == EnumTypePermis.FRONTALIER) {
 			return TypePermis.FRONTALIER;
