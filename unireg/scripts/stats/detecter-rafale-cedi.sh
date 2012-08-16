@@ -2,9 +2,10 @@
 # Tentative de détection des "rafales" du CEDI dans le quittancement des déclarations d'impôt
 # (rafale = tentative de quittancement, sur le ou les mêmes contribuables, toutes les 50-100 ms, pendant des heures...)
 
-FILE="$1"
+ENV="$1"
+FILE="$2"
 if [ -z "$FILE" ]; then
-	echo "Syntaxe : $(basename "$0") ws-access.log toto@vd.ch [titi@vd.ch ...]" >&2
+	echo "Syntaxe : $(basename "$0") <Environnement> ws-access.log toto@vd.ch [titi@vd.ch ...]" >&2
 	exit 1
 elif [ ! -r "$FILE" ]; then
 	echo "Le fichier '$FILE' n'est pas accessible en lecture!" >&2
@@ -12,7 +13,7 @@ elif [ ! -r "$FILE" ]; then
 fi
 
 # seuls les adresses mails sont maintenant dans "$@"
-shift
+shift 2
 
 function read_file() {
 	if [[ "$1" =~ \.lzma$ ]]; then
@@ -39,7 +40,7 @@ MSG=$(if [ -n "$ANALYSIS" ]; then
 
 	echo "Ceci est un message automatique..."
 	echo
-	echo "Il apparait que certaines DI ont été quittancées plus de 50 fois au cours de ces $PERIODE_MINUTES dernières minutes :"
+	echo "Il apparait que certaines DI ont été quittancées plus de 50 fois au cours de ces $PERIODE_MINUTES dernières minutes en $ENV:"
 	echo
 	echo "$ANALYSIS" | while read COUNT ID; do
 		echo "- DI $ID, quittancée $COUNT fois"
@@ -53,6 +54,6 @@ if [ -n "$MSG" ]; then
 	if [ -z "$1" ]; then
 		echo "$MSG"
 	else
-		echo "$MSG" | mutt -s "Alerte de quittancement de DI" -- "$@"
+		echo "$MSG" | mutt -s "Alerte de quittancement de DI ($ENV)" -- "$@"
 	fi
 fi
