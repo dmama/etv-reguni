@@ -72,7 +72,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final TypePermis type1 = TypePermis.DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+		final TypePermis type1 = TypePermis.DIPLOMATE;
 		final TypePermis type2 = TypePermis.ETABLISSEMENT;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
@@ -161,7 +161,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final TypePermis type = TypePermis.DIPLOMATE_OU_FONCTIONNAIRE_INTERNATIONAL;
+		final TypePermis type = TypePermis.DIPLOMATE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
