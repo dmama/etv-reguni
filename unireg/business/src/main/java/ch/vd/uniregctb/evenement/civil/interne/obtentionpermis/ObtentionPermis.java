@@ -106,7 +106,7 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 		// il faut mettre à jour le permis chez nous
 		final PersonnePhysique pp = getPrincipalPP();
 		if (pp != null && !pp.isHabitantVD()) {
-			pp.setCategorieEtranger(CategorieEtranger.enumToCategorie(getTypePermis()));
+			pp.setCategorieEtranger(CategorieEtranger.valueOf(getTypePermis()));
 			Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant le permis '%s'",
 					getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), getTypePermis().name()));
 		}

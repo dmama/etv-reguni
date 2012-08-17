@@ -33,7 +33,7 @@ public class IdentificationIndividuMigrationNH extends IdentificationIndividu {
 		//permis
 		if (individu.getPermis() != null && individu.getPermis().getPermisActif(null) != null) {
 			final Permis dernierPermis = individu.getPermis().getPermisActif(null);
-			this.categorieEtranger = CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()).name();
+			this.categorieEtranger = CategorieEtranger.valueOf(dernierPermis.getTypePermis()).name();
 			this.dateDebutValiditeAutorisation = dernierPermis.getDateDebut();
 		} else {
 			this.categorieEtranger = null;

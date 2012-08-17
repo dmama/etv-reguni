@@ -339,7 +339,7 @@ public class TiersServiceImpl implements TiersService {
         //permis
         final Permis dernierPermis = individu.getPermis().getPermisActif(null);
         if (dernierPermis != null) {
-            habitant.setCategorieEtranger(CategorieEtranger.enumToCategorie(dernierPermis.getTypePermis()));
+            habitant.setCategorieEtranger(CategorieEtranger.valueOf(dernierPermis.getTypePermis()));
             habitant.setDateDebutValiditeAutorisation(dernierPermis.getDateDebut());
         } else {
             habitant.setCategorieEtranger(null);
