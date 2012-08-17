@@ -39,7 +39,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 			protected void init() {
 				final RegDate dateNaissance = date(1964, 3, 12);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Suzuki", "Tsetsuko", false);
-				addPermis(ind, TypePermis.ANNUEL, dateArrivee, null, false);
+				addPermis(ind, TypePermis.SEJOUR, dateArrivee, null, false);
 				setNationalite(ind, dateNaissance, null, MockPays.Japon);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
@@ -140,7 +140,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 			public void modifyIndividu(MockIndividu individu) {
 				final MockPermis permis = new MockPermis();
 				permis.setDateDebutValidite(dateObtentionPermis);
-				permis.setTypePermis(TypePermis.ANNUEL);
+				permis.setTypePermis(TypePermis.SEJOUR);
 				individu.setPermis(permis);
 			}
 		});

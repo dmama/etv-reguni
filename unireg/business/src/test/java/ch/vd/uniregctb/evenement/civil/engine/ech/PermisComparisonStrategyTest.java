@@ -47,7 +47,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final TypePermis type = TypePermis.ANNUEL;
+		final TypePermis type = TypePermis.SEJOUR;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
@@ -72,7 +72,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final TypePermis type1 = TypePermis.DIPLOMATE;
+		final TypePermis type1 = TypePermis.DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE;
 		final TypePermis type2 = TypePermis.ETABLISSEMENT;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
@@ -87,7 +87,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
 		final TypePermis type1 = TypePermis.COURTE_DUREE;
-		final TypePermis type2 = TypePermis.ANNUEL;
+		final TypePermis type2 = TypePermis.SEJOUR;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 
@@ -161,7 +161,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 2, 1);
 		final RegDate fin = date(2012, 8, 3);
-		final TypePermis type = TypePermis.DIPLOMATE;
+		final TypePermis type = TypePermis.DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 

@@ -2414,7 +2414,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				addNationalite(m, MockPays.Suisse, date(1972, 11, 4), null);
 				addNationalite(mme, MockPays.France, date(1977, 8, 16), null);
-				addPermis(mme, TypePermis.ANNUEL, date(2002, 7, 18), null, false);
+				addPermis(mme, TypePermis.SEJOUR, date(2002, 7, 18), null, false);
 				marieIndividus(m, mme, dateMariage);
 			}
 		});

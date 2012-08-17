@@ -38,19 +38,19 @@ public class PermisImpl implements Permis, Serializable {
 			return null;
 		}
 		if (type == EnumTypePermis.ANNUEL) {
-			return TypePermis.ANNUEL;
+			return TypePermis.SEJOUR;
+		}
+		else if (type == EnumTypePermis.ETABLLISSEMENT) {
+			return TypePermis.ETABLISSEMENT;
 		}
 		else if (type == EnumTypePermis.COURTE_DUREE) {
 			return TypePermis.COURTE_DUREE;
 		}
 		else if (type == EnumTypePermis.DIPLOMATE) {
-			return TypePermis.DIPLOMATE;
-		}
-		else if (type == EnumTypePermis.ETABLLISSEMENT) {
-			return TypePermis.ETABLISSEMENT;
+			return TypePermis.DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE;
 		}
 		else if (type == EnumTypePermis.FONCTIONNAIRE_INTERNATIONAL) {
-			return TypePermis.FONCTIONNAIRE_INTERNATIONAL;
+			return TypePermis.FONCT_INTER_SANS_IMMUNITE;
 		}
 		else if (type == EnumTypePermis.FRONTALIER) {
 			return TypePermis.FRONTALIER;

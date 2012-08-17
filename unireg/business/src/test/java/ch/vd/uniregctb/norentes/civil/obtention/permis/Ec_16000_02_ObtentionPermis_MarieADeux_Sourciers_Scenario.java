@@ -72,7 +72,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 
 				addOrigine(indBea, MockPays.France.getNomMinuscule());
-				addPermis(indMomo, TypePermis.ANNUEL, dateMariage, null, false);
+				addPermis(indMomo, TypePermis.SEJOUR, dateMariage, null, false);
 				addNationalite(indBea, MockPays.France, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, null);
 			}

@@ -274,6 +274,6 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(permis0);
 		assertNull(permis0.getDateDebut());
 		assertNull(permis0.getDateFin());
-		assertEquals(TypePermis.ANNUEL, permis0.getTypePermis());
+		assertEquals(TypePermis.SEJOUR, permis0.getTypePermis());
 	}
 }

@@ -303,7 +303,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
-				addPermis(julie, TypePermis.ANNUEL, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
+				addPermis(julie, TypePermis.SEJOUR, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
 				addPermis(julie, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
@@ -362,7 +362,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu julie = addIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, dateNaissance, "Goux", "Julie", false);
 				addNationalite(julie, MockPays.France, dateNaissance, null);
 				addPermis(julie, TypePermis.COURTE_DUREE, dateNaissance, dateObtentionPermis.getOneDayBefore(), false);
-				addPermis(julie, TypePermis.ANNUEL, dateObtentionPermis, null, false);
+				addPermis(julie, TypePermis.SEJOUR, dateObtentionPermis, null, false);
 				addAdresse(julie, TypeAdresseCivil.PRINCIPALE, MockRue.Neuchatel.RueDesBeauxArts, null, dateDepart, null);
 			}
 		});
@@ -381,7 +381,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.ANNUEL);
+				final ObtentionPermis obtentionPermis = createValidObtentionPermisNonC(julie, dateObtentionPermis, MockCommune.Neuchatel.getNoOFS(), TypePermis.SEJOUR);
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -570,7 +570,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.SEJOUR));
 			}
 		});
 		
@@ -650,7 +650,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.SEJOUR));
 			}
 		});
 
@@ -725,7 +725,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Kaderate", "Yamamoto", true);
 				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Geneve.AvenueGuiseppeMotta, null, dateDebut, null);
 				addAdresse(individu, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, dateDebut, null);
-				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.ANNUEL));
+				individu.setPermis(new MockPermis(dateDebut, null, null, TypePermis.SEJOUR));
 			}
 		});
 
