@@ -96,10 +96,8 @@ select
 	'${t.ETAT_CIVIL_TYPE}',
 	0,
 	${t.NO_TIERS}
-from
-	tiers
-where
-	numero = ${t.NO_TIERS} and pp_habitant = 1;
+from dual;
+
 </#if>
 
 <#if t.NO_AVS11?trim != "">
@@ -160,19 +158,19 @@ update tiers set
 	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
 	nh_date_debut_valid_autoris = <@NumOrNull t.DATE_DEBUT_VALID_AUTORIS />,
 	nh_date_naissance = <@NumOrNull t.DATE_NAISSANCE />,
-	nh_no_ofs_nationalite =<@NumOrNull t.NO_OFS_NATIONALITE />,
+	nh_no_ofs_nationalite = <@NumOrNull t.NO_OFS_NATIONALITE />,
 	nh_nom = <@StrOrNull t.NOM />,
 	nh_numero_assure_social =<@StrOrNull t.NO_AVS13 />,
 	nh_prenom = <@StrOrNull t.PRENOM />,
-	nh_sexe = <@StrOrNull t.SEXE />,
-	log_muser = '${USER}',
-	log_mdate = CURRENT_TIMESTAMP
+	nh_sexe = <@StrOrNull t.SEXE />
 where
 	numero = ${t.NO_TIERS} and pp_habitant = 1;
 
 update tiers set
 	numero_individu = null,
-	index_dirty = 1
+	index_dirty = 1,
+	log_muser = '${USER}',
+	log_mdate = CURRENT_TIMESTAMP
 where
 	numero = ${t.NO_TIERS};
 
