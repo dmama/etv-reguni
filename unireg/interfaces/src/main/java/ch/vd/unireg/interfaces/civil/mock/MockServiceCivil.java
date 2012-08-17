@@ -299,6 +299,17 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	/**
+	 * Ajoute une adresse pour l'individu spécifié (à partir d'un pays).
+	 */
+	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, String rue, String npaLocalite, MockPays pays,
+	                                 @Nullable RegDate debutValidite,
+	                                 @Nullable RegDate finValidite) {
+		final MockAdresse adresse = newAdresse(type, rue, casePostale, npaLocalite, pays, debutValidite, finValidite);
+		add(individu, adresse);
+		return adresse;
+	}
+
+	/**
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'un bâtiment).
 	 */
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
