@@ -64,7 +64,10 @@ public enum CategorieEtranger {
 			return _12_FONCT_INTER_SANS_IMMUNITE;
 		}
 		else if (TypePermis.PAS_ATTRIBUE == permis) {
-			return _12_FONCT_INTER_SANS_IMMUNITE;
+			return _13_NON_ATTRIBUEE;
+		}
+		else if (TypePermis.PROVISOIRE == permis) {
+			return _13_NON_ATTRIBUEE;
 		}
 		else if (TypePermis.SUISSE_SOURCIER == permis) {
 			return null;
