@@ -27,7 +27,7 @@ public class PdfIdentIndividusNonMigresRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport d'exécution du job d'indentification des individus non-migrés par RcPers");
+		addTitrePrincipal("Rapport d'exécution du job d'indentification des individus non-migrés par RCPers");
 
 		// Résultats
 		addEntete1("Résultats");

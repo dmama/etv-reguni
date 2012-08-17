@@ -149,7 +149,7 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
         else {
             final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuFromEvent(event.getId());
             if (apresEvenement == null) {
-                throw new EvenementCivilException(String.format("Pas d'événement RcPers lié à l'événement civil %d", event.getId()));
+                throw new EvenementCivilException(String.format("Pas d'événement RCPers lié à l'événement civil %d", event.getId()));
             }
             final Individu individu = apresEvenement.getIndividu();
             if (individu == null) {

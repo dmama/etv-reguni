@@ -48,7 +48,7 @@ public class ServiceCivilMarshaller implements ServiceCivilRaw, InitializingBean
 			target = regpp;
 		}
 		else if ("rcpers".equalsIgnoreCase(targetName)) {
-			LOGGER.info("Utilisation du service civil RcPers.");
+			LOGGER.info("Utilisation du service civil RCPers.");
 			target = rcpers;
 		}
 		else {

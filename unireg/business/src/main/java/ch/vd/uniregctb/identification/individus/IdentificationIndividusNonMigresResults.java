@@ -13,7 +13,7 @@ public class IdentificationIndividusNonMigresResults {
 	public static enum ErreurType {
 		EXCEPTION(JobResults.EXCEPTION_DESCRIPTION),
 		INDIVIDU_REGPP_INCONNU("L'individu est inconnu dans RegPP"),
-		INDIVIDU_RCPERS_INCONNU("L'individu est inconnu dans RcPers, alors que la recherche l'avait retourné"),
+		INDIVIDU_RCPERS_INCONNU("L'individu est inconnu dans RCPers, alors que la recherche l'avait retourné"),
 		INDIVIDU_REGPP_NOM_VIDE("Le nom de l'individu est vide dans RegPP");
 
 		private final String description;
@@ -28,8 +28,8 @@ public class IdentificationIndividusNonMigresResults {
 	}
 
 	public static enum NonIdentificationType {
-		AUCUN_INDIVIDU_RCPERS("Aucune correspondance de l'individu n'a été trouvée dans RcPers"),
-		PLUSIEURS_INDIVIDUS_RCPERS("Plusieurs correspondances de l'individu ont été trouvées dans RcPers");
+		AUCUN_INDIVIDU_RCPERS("Aucune correspondance de l'individu n'a été trouvée dans RCPers"),
+		PLUSIEURS_INDIVIDUS_RCPERS("Plusieurs correspondances de l'individu ont été trouvées dans RCPers");
 
 		private final String description;
 
@@ -43,7 +43,7 @@ public class IdentificationIndividusNonMigresResults {
 	}
 
 	public static enum IgnoreType {
-		INDIVIDU_RCPERS_CONNU("L'individu est connu dans RcPers");
+		INDIVIDU_RCPERS_CONNU("L'individu est connu dans RCPers");
 
 		private final String description;
 
