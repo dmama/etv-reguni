@@ -81,7 +81,7 @@ public class Ec_4000_05_Mariage_EvtCoupleMarie_Scenario extends EvenementCivilSc
 
 				addOrigine(indJeanBruno, MockPays.France.getNomMinuscule());
 				addNationalite(indJeanBruno, MockPays.France, dateNaissanceJeanBruno, null);
-				addPermis(indJeanBruno, TypePermis.ANNUEL, RegDate.get(2004, 11, 10), null, false);
+				addPermis(indJeanBruno, TypePermis.SEJOUR, RegDate.get(2004, 11, 10), null, false);
 				addPermis(indJeanBruno, TypePermis.ETABLISSEMENT, dateEtablissement, null, false);
 				addAdresse(indJeanBruno, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateEtablissement, null);
 				addAdresse(indJeanBruno, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateEtablissement, null);

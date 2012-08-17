@@ -163,13 +163,34 @@ public abstract class EnumHelper {
 		if (categorie == null) {
 			return null;
 		}
-
-		// Remplace les permis "A", "B", ... par "PERMIS_A", "PERMIS_B", ...
-		final String name = categorie.name().replaceAll("^(A|B|C|CI|F|G|L|N|S)$", "PERMIS_$1");
-
-		final PersonnePhysique.Categorie value = PersonnePhysique.Categorie.fromValue(name);
-		Assert.notNull(value);
-		return value;
+		switch (categorie) {
+		case _02_PERMIS_SEJOUR_B:
+			return PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B;
+		case _03_ETABLI_C:
+			return PersonnePhysique.Categorie._03_ETABLI_C;
+		case _04_CONJOINT_DIPLOMATE_CI:
+			return PersonnePhysique.Categorie._04_CONJOINT_DIPLOMATE_CI;
+		case _05_ETRANGER_ADMIS_PROVISOIREMENT_F:
+			return PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F;
+		case _06_FRONTALIER_G:
+			return PersonnePhysique.Categorie._06_FRONTALIER_G;
+		case _07_PERMIS_SEJOUR_COURTE_DUREE_L:
+			return PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L;
+		case _08_REQUERANT_ASILE_N:
+			return PersonnePhysique.Categorie._08_REQUERANT_ASILE_N;
+		case _09_A_PROTEGER_S:
+			return PersonnePhysique.Categorie._09_A_PROTEGER_S;
+		case _10_TENUE_DE_S_ANNONCER:
+			return PersonnePhysique.Categorie._10_TENUE_DE_S_ANNONCER;
+		case _11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
+			return PersonnePhysique.Categorie._11_DIPLOMATE;
+		case _12_FONCT_INTER_SANS_IMMUNITE:
+			return PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL;
+		case _13_NON_ATTRIBUEE:
+			return PersonnePhysique.Categorie._13_NON_ATTRIBUEE;
+		default:
+			throw new IllegalArgumentException("Type de categorie inconnue = [" + categorie + ']');
+		}
 	}
 
 	public static PersonnePhysique.Categorie coreToWeb(TypePermis permis) {
@@ -188,17 +209,20 @@ public abstract class EnumHelper {
 
 	private static synchronized void initTypePermis2Categorie() {
 		if (typePermis2Categorie.isEmpty()) {
-			typePermis2Categorie.put(TypePermis.ANNUEL, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
-			typePermis2Categorie.put(TypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
-			typePermis2Categorie.put(TypePermis.DIPLOMATE, PersonnePhysique.Categorie._11_DIPLOMATE);
+			typePermis2Categorie.put(TypePermis.SEJOUR, PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B);
 			typePermis2Categorie.put(TypePermis.ETABLISSEMENT, PersonnePhysique.Categorie._03_ETABLI_C);
-			typePermis2Categorie.put(TypePermis.FONCTIONNAIRE_INTERNATIONAL, PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL);
-			typePermis2Categorie.put(TypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
-			typePermis2Categorie.put(TypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
-			typePermis2Categorie.put(TypePermis.PROVISOIRE, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
-			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
+			typePermis2Categorie.put(TypePermis.CONJOINT_DIPLOMATE, PersonnePhysique.Categorie._04_CONJOINT_DIPLOMATE_CI);
 			typePermis2Categorie.put(TypePermis.ETRANGER_ADMIS_PROVISOIREMENT, PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F);
+			typePermis2Categorie.put(TypePermis.FRONTALIER, PersonnePhysique.Categorie._06_FRONTALIER_G);
+			typePermis2Categorie.put(TypePermis.COURTE_DUREE, PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L);
+			typePermis2Categorie.put(TypePermis.REQUERANT_ASILE, PersonnePhysique.Categorie._08_REQUERANT_ASILE_N);
+			typePermis2Categorie.put(TypePermis.PERSONNE_A_PROTEGER, PersonnePhysique.Categorie._09_A_PROTEGER_S);
+			typePermis2Categorie.put(TypePermis.PERSONNE_TENUE_DE_S_ANNONCER, PersonnePhysique.Categorie._10_TENUE_DE_S_ANNONCER);
+			typePermis2Categorie.put(TypePermis.DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE, PersonnePhysique.Categorie._11_DIPLOMATE);
+			typePermis2Categorie.put(TypePermis.FONCT_INTER_SANS_IMMUNITE, PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL);
+			typePermis2Categorie.put(TypePermis.PAS_ATTRIBUE, PersonnePhysique.Categorie._13_NON_ATTRIBUEE);
 			typePermis2Categorie.put(TypePermis.SUISSE_SOURCIER, PersonnePhysique.Categorie.SUISSE);
+			typePermis2Categorie.put(TypePermis.PROVISOIRE, PersonnePhysique.Categorie._13_NON_ATTRIBUEE);
 		}
 	}
 

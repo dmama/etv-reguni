@@ -39,7 +39,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
-				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
+				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.SEJOUR));
 			}
 		});
 		
@@ -108,7 +108,7 @@ public class AnnulationNationaliteEchProcessorTest extends AbstractEvenementCivi
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				addNationalite(ind, MockPays.Albanie, dateDebutNationalite, null);
-				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.ANNUEL));
+				ind.setPermis(new MockPermis(dateDebutNationalite, null, null, TypePermis.SEJOUR));
 			}
 		});
 

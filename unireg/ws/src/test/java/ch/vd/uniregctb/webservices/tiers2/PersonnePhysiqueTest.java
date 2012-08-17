@@ -2,6 +2,7 @@ package ch.vd.uniregctb.webservices.tiers2;
 
 import org.junit.Test;
 
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
@@ -28,8 +29,8 @@ public class PersonnePhysiqueTest extends EnumTest {
 		assertEquals(PersonnePhysique.Categorie._08_REQUERANT_ASILE_N, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._08_REQUERANT_ASILE_N));
 		assertEquals(PersonnePhysique.Categorie._09_A_PROTEGER_S, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._09_A_PROTEGER_S));
 		assertEquals(PersonnePhysique.Categorie._10_TENUE_DE_S_ANNONCER, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._10_TENUE_DE_S_ANNONCER));
-		assertEquals(PersonnePhysique.Categorie._11_DIPLOMATE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._11_DIPLOMATE));
-		assertEquals(PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._12_FONCTIONNAIRE_INTERNATIONAL));
+		assertEquals(PersonnePhysique.Categorie._11_DIPLOMATE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE));
+		assertEquals(PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL, EnumHelper.coreToWeb(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE));
 		assertEquals(PersonnePhysique.Categorie._13_NON_ATTRIBUEE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.CategorieEtranger._13_NON_ATTRIBUEE));
 	}
 
@@ -37,16 +38,19 @@ public class PersonnePhysiqueTest extends EnumTest {
 	public void testCategorieFromTypePermis() {
 		assertNull(EnumHelper.coreToWeb((TypePermis) null));
 
-		assertEquals(PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B, EnumHelper.coreToWeb(TypePermis.ANNUEL));
-		assertEquals(PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L, EnumHelper.coreToWeb(TypePermis.COURTE_DUREE));
-		assertEquals(PersonnePhysique.Categorie._11_DIPLOMATE, EnumHelper.coreToWeb(TypePermis.DIPLOMATE));
+		assertEquals(PersonnePhysique.Categorie._02_PERMIS_SEJOUR_B, EnumHelper.coreToWeb(TypePermis.SEJOUR));
 		assertEquals(PersonnePhysique.Categorie._03_ETABLI_C, EnumHelper.coreToWeb(TypePermis.ETABLISSEMENT));
-		assertEquals(PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL, EnumHelper.coreToWeb(TypePermis.FONCTIONNAIRE_INTERNATIONAL));
-		assertEquals(PersonnePhysique.Categorie._06_FRONTALIER_G, EnumHelper.coreToWeb(TypePermis.FRONTALIER));
-		assertEquals(PersonnePhysique.Categorie._09_A_PROTEGER_S, EnumHelper.coreToWeb(TypePermis.PERSONNE_A_PROTEGER));
-		// Pas d'équivalent : TypePermis.PROVISOIRE
-		assertEquals(PersonnePhysique.Categorie._08_REQUERANT_ASILE_N, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE));
+		assertEquals(PersonnePhysique.Categorie._04_CONJOINT_DIPLOMATE_CI, EnumHelper.coreToWeb(TypePermis.CONJOINT_DIPLOMATE));
 		assertEquals(PersonnePhysique.Categorie._05_ETRANGER_ADMIS_PROVISOIREMENT_F, EnumHelper.coreToWeb(TypePermis.ETRANGER_ADMIS_PROVISOIREMENT));
+		assertEquals(PersonnePhysique.Categorie._06_FRONTALIER_G, EnumHelper.coreToWeb(TypePermis.FRONTALIER));
+		assertEquals(PersonnePhysique.Categorie._07_PERMIS_SEJOUR_COURTE_DUREE_L, EnumHelper.coreToWeb(TypePermis.COURTE_DUREE));
+		assertEquals(PersonnePhysique.Categorie._08_REQUERANT_ASILE_N, EnumHelper.coreToWeb(TypePermis.REQUERANT_ASILE));
+		assertEquals(PersonnePhysique.Categorie._09_A_PROTEGER_S, EnumHelper.coreToWeb(TypePermis.PERSONNE_A_PROTEGER));
+		assertEquals(PersonnePhysique.Categorie._10_TENUE_DE_S_ANNONCER, EnumHelper.coreToWeb(TypePermis.PERSONNE_TENUE_DE_S_ANNONCER));
+		assertEquals(PersonnePhysique.Categorie._11_DIPLOMATE, EnumHelper.coreToWeb(TypePermis.DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE));
+		assertEquals(PersonnePhysique.Categorie._12_FONCTIONNAIRE_INTERNATIONAL, EnumHelper.coreToWeb(TypePermis.FONCT_INTER_SANS_IMMUNITE));
+		assertEquals(PersonnePhysique.Categorie._13_NON_ATTRIBUEE, EnumHelper.coreToWeb(TypePermis.PAS_ATTRIBUE));
+		// Pas d'équivalent : TypePermis.PROVISOIRE
 		// Pas d'équivalent : TypePermis.SUISSE_SOURCIER;
 	}
 }

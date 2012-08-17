@@ -1043,7 +1043,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				addNationalite(pierre, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(pierre, TypePermis.ETRANGER_ADMIS_PROVISOIREMENT, RegDate.get(1962, 9, 2), RegDate.get(1963, 1, 14), false);
 				addPermis(pierre, TypePermis.REQUERANT_ASILE, RegDate.get(1963, 1, 15), RegDate.get(1963, 8, 19), false);
-				addPermis(pierre, TypePermis.ANNUEL, RegDate.get(1963, 8, 20), null, false);
+				addPermis(pierre, TypePermis.SEJOUR, RegDate.get(1963, 8, 20), null, false);
 			}
 		});
 
@@ -2248,7 +2248,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
+				addPermis(ind, TypePermis.SEJOUR, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2311,7 +2311,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
+				addPermis(ind, TypePermis.SEJOUR, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2363,7 +2363,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
+				addPermis(ind, TypePermis.SEJOUR, date(1980, 1, 1), null, false);
 			}
 		});
 
@@ -2559,7 +2559,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			protected void init() {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
-				addPermis(ind, TypePermis.ANNUEL, date(1980, 1, 1), null, false);
+				addPermis(ind, TypePermis.SEJOUR, date(1980, 1, 1), null, false);
 			}
 		});
 

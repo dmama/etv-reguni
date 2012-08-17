@@ -5,51 +5,77 @@ import org.apache.commons.lang.StringUtils;
 
 public enum TypePermis {
 	/**
-	 * Saisonnier (A). Ce permis a été supprimé en mai 2002.
+	 * 01 (A) Permis Saisonnier
 	 */
 	SAISONNIER,
 	/**
-	 * Titulaire d’un permis de séjour (B)
+	 * 02 (B) Permis de séjour
 	 */
-	ANNUEL,
+	SEJOUR,
 	/**
-	 * Titulaire d’un permis de séjour de courte durée (L)
-	 */
-	COURTE_DUREE,
-	/**
-	 * Diplomate (D ou code LHR 11xx)
-	 */
-	DIPLOMATE,
-	/**
-	 * Titulaire d'un permis d'établissement (C)
+	 * 03 (C) Permis d'établissement
 	 */
 	ETABLISSEMENT,
 	/**
-	 * Fonctionnaire internal ou conjoint/enfant de diplomate (Ci)
+	 * 04 (Ci) Conjoint/Enfant de diplomate ou de fonctionnaire international
 	 */
-	FONCTIONNAIRE_INTERNATIONAL,
+	CONJOINT_DIPLOMATE,
+
 	/**
-	 * Frontalier (G)
-	 */
-	FRONTALIER,
-	/**
-	 * Personne à protéger (S).
-	 */
-	PERSONNE_A_PROTEGER,
-	/**
-	 * Statut provisoire (SP). Il s'agit d'un permis temporaire délivré à l'arrivée d'un étranger en attente de la décision de l'administration sur le permis accordé.
-	 */
-	PROVISOIRE,
-	/**
-	 * Requérant d'asile (N)
-	 */
-	REQUERANT_ASILE,
-	/**
-	 * Étranger admis provisoirement (F)
+	 * 05 (F) Étranger admis provisoirement
 	 */
 	ETRANGER_ADMIS_PROVISOIREMENT,
+
 	/**
-	 * Suisse imposé à la source résidant à l'étranger (CH).
+	 * 06 (G) Permis Frontalier
+	 */
+	FRONTALIER,
+
+	/**
+	 * 07 (L) Permis de séjour de courte durée
+	 */
+	COURTE_DUREE,
+
+	/**
+	 * 08 (N) Requérant d'asile
+	 */
+	REQUERANT_ASILE,
+
+	/**
+	 * 09 (S) Personne à protéger.
+	 */
+	PERSONNE_A_PROTEGER,
+
+	/**
+	 * 10 Personne tenue de s'annoncer (pour les séjours tres court en Suisse de personnes qui doivent se déclarer)
+	 *
+	 */
+	PERSONNE_TENUE_DE_S_ANNONCER,
+
+	/**
+	 * 11 Diplomate ou fonctionnaire internationnal avec immunité diplomatique
+	 */
+	DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE,
+
+	/**
+	 * 12 Fonctionnaire internationnal sans immunité diplomatique
+	 */
+	FONCT_INTER_SANS_IMMUNITE,
+
+	/**
+	 * 13 Pas Attribué
+	 */
+	PAS_ATTRIBUE,
+
+	/**
+	 * PAS DANS ECH - Statut provisoire (SP). Il s'agit d'un permis temporaire délivré à l'arrivée d'un étranger en attente de la décision de l'administration sur le permis accordé.
+	 */
+	PROVISOIRE,
+
+	/**
+	 * PAS DANS ECH - Suisse imposé à la source résidant à l'étranger (CH).
+	 *
+	 * TODO - Type à supprimer a partir du moment ou l'on decide de ne plus supporter RegPP
 	 */
 	SUISSE_SOURCIER;
 
@@ -74,13 +100,13 @@ public enum TypePermis {
 			return SAISONNIER;
 		case 2:
 			// permis B
-			return ANNUEL;
+			return SEJOUR;
 		case 3:
 			// permis C
 			return ETABLISSEMENT;
 		case 4:
 			// permis Ci (fonctionnaire international ou conjoint/enfant de diplomate)
-			return FONCTIONNAIRE_INTERNATIONAL;
+			return CONJOINT_DIPLOMATE;
 		case 5:
 			// permis F
 			return ETRANGER_ADMIS_PROVISOIREMENT;
@@ -96,12 +122,14 @@ public enum TypePermis {
 		case 9:
 			// permis S
 			return PERSONNE_A_PROTEGER;
+		case 10:
+			return PERSONNE_TENUE_DE_S_ANNONCER;
 		case 11:
-			return DIPLOMATE;
+			return DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE;
 		case 12:
-			return FONCTIONNAIRE_INTERNATIONAL;
+			return FONCT_INTER_SANS_IMMUNITE;
 		case 13:
-			return PROVISOIRE;
+			return PAS_ATTRIBUE;
 		default:
 			// hors-catégorie
 			return null;
@@ -116,11 +144,11 @@ public enum TypePermis {
 		switch (typePermis) {
 		case SAISONNIER:
 			return "01";
-		case ANNUEL:
+		case SEJOUR:
 			return "02";
 		case ETABLISSEMENT:
 			return "03";
-		case FONCTIONNAIRE_INTERNATIONAL:
+		case CONJOINT_DIPLOMATE:
 			return "04";
 		case ETRANGER_ADMIS_PROVISOIREMENT:
 			return "05";
@@ -132,10 +160,16 @@ public enum TypePermis {
 			return "08";
 		case PERSONNE_A_PROTEGER:
 			return "09";
-		case DIPLOMATE:
+		case PERSONNE_TENUE_DE_S_ANNONCER:
+			return "10";
+		case DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
 			return "11";
-		case PROVISOIRE:
+		case FONCT_INTER_SANS_IMMUNITE:
+			return "12";
+		case PAS_ATTRIBUE:
 			return "13";
+		case PROVISOIRE:
+			return null;
 		case SUISSE_SOURCIER:
 			return null;
 		default:

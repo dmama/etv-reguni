@@ -84,7 +84,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 
 				addOrigine(indAida, MockPays.Albanie.getNomMinuscule());
 				addNationalite(indAida, MockPays.Albanie, dateNaissanceAida, null);
-				addPermis(indAida, TypePermis.ANNUEL, RegDate.get(2007, 7, 7), null, false);
+				addPermis(indAida, TypePermis.SEJOUR, RegDate.get(2007, 7, 7), null, false);
 				addAdresse(indAida, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2007, 7, 7), null);
 			}
 

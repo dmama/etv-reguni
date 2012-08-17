@@ -356,9 +356,9 @@ public abstract class EnumHelper {
 			return NaturalPersonCategory.C_09_S_PERMIT;
 		case _10_TENUE_DE_S_ANNONCER:
 			return NaturalPersonCategory.C_10_OBLIGED_TO_ANNOUNCE;
-		case _11_DIPLOMATE:
+		case _11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
 			return NaturalPersonCategory.C_11_DIPLOMAT;
-		case _12_FONCTIONNAIRE_INTERNATIONAL:
+		case _12_FONCT_INTER_SANS_IMMUNITE:
 			return NaturalPersonCategory.C_12_INTERNATIONAL_CIVIL_SERVANT;
 		case _13_NON_ATTRIBUEE:
 			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
@@ -373,15 +373,15 @@ public abstract class EnumHelper {
 		}
 
 		switch (permis) {
-		case ANNUEL:
+		case SEJOUR:
 			return NaturalPersonCategory.C_02_B_PERMIT;
 		case COURTE_DUREE:
 			return NaturalPersonCategory.C_07_L_PERMIT;
-		case DIPLOMATE:
+		case DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
 			return NaturalPersonCategory.C_11_DIPLOMAT;
 		case ETABLISSEMENT:
 			return NaturalPersonCategory.C_03_C_PERMIT;
-		case FONCTIONNAIRE_INTERNATIONAL:
+		case FONCT_INTER_SANS_IMMUNITE:
 			return NaturalPersonCategory.C_12_INTERNATIONAL_CIVIL_SERVANT;
 		case FRONTALIER:
 			return NaturalPersonCategory.C_06_G_PERMIT;

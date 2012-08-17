@@ -34,7 +34,7 @@ public class AnnulationCorrectionPermisEchProcessorTest extends AbstractEvenemen
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
+				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.SEJOUR));
 
 				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ETABLISSEMENT));
@@ -106,7 +106,7 @@ public class AnnulationCorrectionPermisEchProcessorTest extends AbstractEvenemen
 				ind.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.COURTE_DUREE));
 
 				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
-				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ANNUEL));
+				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.SEJOUR));
 				addIndividuFromEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER);
 			}
 		});

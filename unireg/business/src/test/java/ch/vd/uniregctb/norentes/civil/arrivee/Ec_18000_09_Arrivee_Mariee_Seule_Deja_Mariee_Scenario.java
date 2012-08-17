@@ -75,8 +75,8 @@ public class Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario extends Evene
 				addEtatCivil(jean, date(2008, 7, 26), TypeEtatCivil.MARIE);
 
 				MockIndividu georgette = addIndividu(noIndGeorgette, date(1951, 11, 3), "Matala Bambi", "Georgette", false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2008, 9, 8), date(2009, 6, 12), false);
-				addPermis(georgette, TypePermis.ANNUEL, date(2009, 6, 13), null, false);
+				addPermis(georgette, TypePermis.SEJOUR, date(2008, 9, 8), date(2009, 6, 12), false);
+				addPermis(georgette, TypePermis.SEJOUR, date(2009, 6, 13), null, false);
 				addNationalite(georgette, MockPays.France, date(1951, 11, 3), null);
 				addAdresse(georgette, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, date(
 						2008, 8, 11), date(2008, 8, 14));
