@@ -137,7 +137,7 @@ public class IdentificationIndividusNonMigresResults {
 			this.noCtb = nonIdentifie.noCtb;
 			this.identiteRegPP= (IdentificationIndividuMigrationNH) nonIdentifie.identiteRegPP;
 
-			StringBuilder rmq = new StringBuilder("Habitant RegPP non migré dans Rcpers, il n'a pas été possible de l'identifier.");
+			StringBuilder rmq = new StringBuilder("Habitant RegPP non migré dans RCPers, il n'a pas été possible de l'identifier.");
 			if (nonIdentifie.raison == NonIdentificationType.PLUSIEURS_INDIVIDUS_RCPERS ) {
 				rmq.append("Il pourrait cependant correspondre aux individus: ");
 				rmq.append(nonIdentifie.details.substring(nonIdentifie.details.indexOf('[') + 1, nonIdentifie.details.lastIndexOf(']')));
@@ -150,7 +150,7 @@ public class IdentificationIndividusNonMigresResults {
 			this.noCtb = identifie.noCtb;
 			this.identiteRegPP = (IdentificationIndividuMigrationNH) identifie.identiteRegPP;
 			StringBuilder rmq = new StringBuilder(String.format(
-					"Habitant RegPP non migré dans Rcpers, identifié comme pouvant être l'individu %s grâce à son %s. ",
+					"Habitant RegPP non migré dans RCPers, identifié comme pouvant être l'individu %s grâce à son %s. ",
 					identifie.identiteRcPers.noInd,
 					identifie.strategie));
 			if (identifie.tiersDejaLies.isEmpty()) {
