@@ -1,30 +1,13 @@
 <#macro StrOrNull value><#if value?trim = "">null<#else>'${value}'</#if></#macro>
 <#macro NumOrNull value><#if value?trim = "">null<#else>${value}</#if></#macro>
 
-<#--TODO Palliatif à valider pour la date de debut: 01.01.2000 si pas de valeur-->
+<#--Palliatif pour la date de debut: 01.01.2000 si pas de valeur-->
 <#macro DateOrDefault value><#if value?trim = "">20000101<#else>${value}</#if></#macro>
 
 <#list tiers as t>
 -----------------------------------
 -- Migration du tiers ${t.NO_TIERS} (ancien individu ${t.NO_IND_REGPP})
 -----------------------------------
-update tiers set
-	numero_individu = null,
-	pp_habitant = 0,
-	index_dirty = 1,
-	date_deces = <@NumOrNull t.DATE_DECES />,
-	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
-	nh_date_debut_valid_autoris = <@NumOrNull t.DATE_DEBUT_VALID_AUTORIS />,
-	nh_date_naissance = <@NumOrNull t.DATE_NAISSANCE />,
-	nh_no_ofs_nationalite =<@NumOrNull t.NO_OFS_NATIONALITE />,
-	nh_nom = <@StrOrNull t.NOM />,
-	nh_numero_assure_social =<@StrOrNull t.NO_AVS13 />,
-	nh_prenom = <@StrOrNull t.PRENOM />,
-	nh_sexe = <@StrOrNull t.SEXE />,
-	log_muser = '${USER}',
-	log_mdate = CURRENT_TIMESTAMP
-where numero = ${t.NO_TIERS};
-
 insert into remarque (
 	id,        -- hibernate_sequence.nextval,
 	log_cdate, -- CURRENT_TIMESTAMP
@@ -74,7 +57,7 @@ select
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- Palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'COURRIER',
 	<@StrOrNull t.ADRESSE_NO_APPARTEMENT />,
 	<@NumOrNull t.ADRESSE_NO_CASE_POSTALE />,
@@ -109,11 +92,12 @@ select
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- Palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'${t.ETAT_CIVIL_TYPE}',
 	0,
 	${t.NO_TIERS}
 from dual;
+
 </#if>
 
 <#if t.NO_AVS11?trim != "">
@@ -136,7 +120,10 @@ select
 	'CH_AHV_AVS',
 	'${t.NO_AVS11}',
 	${t.NO_TIERS}
-from dual;
+from
+	tiers
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
 
 <#if t.NO_RCE?trim != "">
@@ -159,7 +146,32 @@ select
 	'CH_ZAR_RCE',
 	'${t.NO_RCE}',
 	${t.NO_TIERS}
-from dual;
+from
+	tiers
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
+
+update tiers set
+	pp_habitant = 0,
+	date_deces = <@NumOrNull t.DATE_DECES />,
+	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
+	nh_date_debut_valid_autoris = <@NumOrNull t.DATE_DEBUT_VALID_AUTORIS />,
+	nh_date_naissance = <@NumOrNull t.DATE_NAISSANCE />,
+	nh_no_ofs_nationalite = <@NumOrNull t.NO_OFS_NATIONALITE />,
+	nh_nom = <@StrOrNull t.NOM />,
+	nh_numero_assure_social =<@StrOrNull t.NO_AVS13 />,
+	nh_prenom = <@StrOrNull t.PRENOM />,
+	nh_sexe = <@StrOrNull t.SEXE />
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
+
+update tiers set
+	numero_individu = null,
+	index_dirty = 1,
+	log_muser = '${USER}',
+	log_mdate = CURRENT_TIMESTAMP
+where
+	numero = ${t.NO_TIERS};
 
 </#list>
