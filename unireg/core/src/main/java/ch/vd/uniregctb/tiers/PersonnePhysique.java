@@ -43,6 +43,10 @@ public class PersonnePhysique extends Contribuable {
 	public PersonnePhysique(Boolean habitant) {
 		this.habitant = habitant;
 	}
+	public PersonnePhysique(long numeroIndividu) {
+		this.numeroIndividu = numeroIndividu;
+		this.habitant = true;
+	}
 	/**
 	 * <!-- begin-user-doc --> <!-- end-user-doc --> Numéro du contribuable imposé à la source dans l'ancienne application SIMPA-IS.
 	 *

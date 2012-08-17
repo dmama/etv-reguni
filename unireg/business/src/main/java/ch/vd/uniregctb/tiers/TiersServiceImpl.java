@@ -41,8 +41,10 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
@@ -59,6 +61,7 @@ import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
+import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -75,6 +78,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
+import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1498,36 +1502,80 @@ public class TiersServiceImpl implements TiersService {
         return isVaudois != null && isVaudois;
     }
 
-    /**
-     * @param pp   une personne physique
-     * @param date une date de réféence
-     * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
-     *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
-     */
-    private Boolean isDomicileDansLeCanton(PersonnePhysique pp, @Nullable RegDate date) {
+	/**
+	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970).
+	 *
+	 * @param pp   une personne physique
+	 * @param date une date de réféence
+	 * @return <b>true</b> si l'adresse de domicile de la personne donnée à la date donnée est dans le canton; <b>false</b> si elle est hors-canton où hors-Suisse. Retourne <code>null</code> si on ne
+	 *         sait pas répondre de manière définitive (pas d'adresse de domicile connue, erreurs...)
+	 */
+	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp, @Nullable RegDate date) {
 
-        try {
-            final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
-            if (adresseDomicile != null) {
-                final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
-                if (commune != null && commune.isVaudoise()) {
-                    return Boolean.TRUE;
-                } else {
-                    return Boolean.FALSE;
-                }
-            }
-        } catch (AdresseException e) {
-            // rien à faire...
-            LOGGER.warn("Impossible de déterminer l'adresse de domicile du tiers " + pp.getNumero(), e);
-        } catch (ServiceInfrastructureException e) {
-            // rien à faire...
-            LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
-        }
+		try {
+			final Long numeroIndividu = pp.getNumeroIndividu();
+			if (numeroIndividu == null) {
+				// non-habitant => pas de domicile dans le canton par définition
+				return false;
+			}
+			else {
+				final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
+				if (adresses == null) {
+					// individu non trouvé ?
+					return null;
+				}
 
-        return null;
-    }
+				if (adresses.principales.isEmpty()) {
+					// pas d'adresses principales => pas de domicile dans le canton
+					return false;
+				}
 
-    @Override
+				final Adresse adresse = DateRangeHelper.rangeAt(adresses.principales, date);
+				if (adresse == null) {
+					// l'adresse courante est nulle. Deux possibilités :
+					//  - soit la personne est partie HC/HS,
+					//  - soit la personne a annoncé son départ pour une commune vaudoise et ne s'est pas encore annoncée dans le nouvelle commune.
+
+					Adresse precedente = null;
+					for (Adresse a : adresses.principales) {
+						if (RegDateHelper.isBefore(a.getDateFin(), date, NullDateBehavior.LATEST)) {
+							precedente = a;
+						}
+					}
+
+					if (precedente == null) {
+						// la personne ne possède pas d'adresse dans le canton avant la date demandée
+						return false;
+					}
+					else if (precedente.getLocalisationSuivante() == null) {
+						// l'adresse précédente ne possède pas d'information sur la destination de la personne, on considère qu'elle est partie hors-Suisse (voir SIFISC-5970)
+						return false;
+					}
+					else {
+						// cas simple
+						return precedente.getLocalisationSuivante().getType() == LocalisationType.CANTON_VD;
+					}
+				}
+				else {
+					// la personne possède une adresse de domicile à la date demandée.
+					final Commune commune = serviceInfra.getCommuneByAdresse(adresse, date);
+					return commune != null && commune.isVaudoise();
+				}
+			}
+		}
+		catch (ServiceInfrastructureException e) {
+			// rien à faire...
+			LOGGER.warn("Impossible de déterminer la commune de l'adresse de domicile du tiers " + pp.getNumero(), e);
+		}
+		catch (DonneesCivilesException e) {
+			// rien à faire...
+			LOGGER.warn("Impossible de déterminer les adresses principales du tiers " + pp.getNumero(), e);
+		}
+
+		return null;
+	}
+
+	@Override
     public PersonnePhysique getPere(PersonnePhysique pp, RegDate dateValidite) {
         if (pp == null || !pp.isConnuAuCivil()) {
             return null;

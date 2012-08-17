@@ -39,6 +39,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypePermis;
 
+import static ch.vd.unireg.interfaces.InterfacesTestHelper.newLocalisation;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -569,20 +570,6 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		country.setCountryIdISO2(pays.getCodeIso2());
 		country.setCountryNameShort(pays.getNomMinuscule());
 		return country;
-	}
-
-	private static Localisation newLocalisation(MockCommune commune) {
-		Localisation l = new Localisation();
-		l.setNoOfs(commune.getNoOFS());
-		l.setType(commune.isVaudoise() ? LocalisationType.CANTON_VD : LocalisationType.HORS_CANTON);
-		return l;
-	}
-
-	private static Localisation newLocalisation(MockPays pays) {
-		Localisation l = new Localisation();
-		l.setNoOfs(pays.getNoOFS());
-		l.setType(LocalisationType.HORS_SUISSE);
-		return l;
 	}
 
 	private static SwissMunicipality newSwissMunicipality(Commune commune) {
