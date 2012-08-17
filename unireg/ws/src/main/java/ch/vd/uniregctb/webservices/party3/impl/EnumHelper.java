@@ -376,30 +376,32 @@ public abstract class EnumHelper {
 		switch (permis) {
 		case SEJOUR:
 			return NaturalPersonCategory.C_02_B_PERMIT;
-		case COURTE_DUREE:
-			return NaturalPersonCategory.C_07_L_PERMIT;
-		case DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
-			return NaturalPersonCategory.C_11_DIPLOMAT;
 		case ETABLISSEMENT:
 			return NaturalPersonCategory.C_03_C_PERMIT;
 		case CONJOINT_DIPLOMATE:
 			return NaturalPersonCategory.C_04_CI_PERMIT;
-		case FRONTALIER:
-			return NaturalPersonCategory.C_06_G_PERMIT;
-		case PERSONNE_A_PROTEGER:
-			return NaturalPersonCategory.C_09_S_PERMIT;
-		case PAS_ATTRIBUE:
-			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
-		case REQUERANT_ASILE:
-			return NaturalPersonCategory.C_08_N_PERMIT;
 		case ETRANGER_ADMIS_PROVISOIREMENT:
 			return NaturalPersonCategory.C_05_F_PERMIT;
-		case SUISSE_SOURCIER:
-			return NaturalPersonCategory.SWISS;
+		case FRONTALIER:
+			return NaturalPersonCategory.C_06_G_PERMIT;
+		case COURTE_DUREE:
+			return NaturalPersonCategory.C_07_L_PERMIT;
+		case REQUERANT_ASILE:
+			return NaturalPersonCategory.C_08_N_PERMIT;
+		case PERSONNE_A_PROTEGER:
+			return NaturalPersonCategory.C_09_S_PERMIT;
 		case PERSONNE_TENUE_DE_S_ANNONCER:
 			return NaturalPersonCategory.C_10_OBLIGED_TO_ANNOUNCE;
+		case DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE:
+			return NaturalPersonCategory.C_11_DIPLOMAT;
 		case FONCT_INTER_SANS_IMMUNITE:
 			return NaturalPersonCategory.C_12_INTERNATIONAL_CIVIL_SERVANT;
+		case PAS_ATTRIBUE:
+			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
+		case PROVISOIRE:
+			return NaturalPersonCategory.C_13_NOT_ASSIGNED;
+		case SUISSE_SOURCIER:
+			return NaturalPersonCategory.SWISS;
 		default:
 			throw new IllegalArgumentException("Type de permis inconnu = [" + permis + ']');
 		}

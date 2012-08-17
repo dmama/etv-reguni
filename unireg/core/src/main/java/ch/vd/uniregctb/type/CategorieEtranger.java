@@ -23,7 +23,7 @@ public enum CategorieEtranger {
 	_12_FONCT_INTER_SANS_IMMUNITE,
 	_13_NON_ATTRIBUEE;
 	
-	public static CategorieEtranger enumToCategorie(TypePermis permis) {
+	public static CategorieEtranger valueOf(TypePermis permis) {
 		if (permis == null)
 			return null;
 
