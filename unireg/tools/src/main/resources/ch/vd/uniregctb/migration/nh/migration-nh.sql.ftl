@@ -8,23 +8,6 @@
 -----------------------------------
 -- Migration du tiers ${t.NO_TIERS} (ancien individu ${t.NO_IND_REGPP})
 -----------------------------------
-update tiers set
-	numero_individu = null,
-	pp_habitant = 0,
-	index_dirty = 1,
-	date_deces = <@NumOrNull t.DATE_DECES />,
-	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
-	nh_date_debut_valid_autoris = <@NumOrNull t.DATE_DEBUT_VALID_AUTORIS />,
-	nh_date_naissance = <@NumOrNull t.DATE_NAISSANCE />,
-	nh_no_ofs_nationalite =<@NumOrNull t.NO_OFS_NATIONALITE />,
-	nh_nom = <@StrOrNull t.NOM />,
-	nh_numero_assure_social =<@StrOrNull t.NO_AVS13 />,
-	nh_prenom = <@StrOrNull t.PRENOM />,
-	nh_sexe = <@StrOrNull t.SEXE />,
-	log_muser = '${USER}',
-	log_mdate = CURRENT_TIMESTAMP
-where numero = ${t.NO_TIERS};
-
 insert into remarque (
 	id,        -- hibernate_sequence.nextval,
 	log_cdate, -- CURRENT_TIMESTAMP
@@ -113,7 +96,10 @@ select
 	'${t.ETAT_CIVIL_TYPE}',
 	0,
 	${t.NO_TIERS}
-from dual;
+from
+	tiers
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
 
 <#if t.NO_AVS11?trim != "">
@@ -136,7 +122,10 @@ select
 	'CH_AHV_AVS',
 	'${t.NO_AVS11}',
 	${t.NO_TIERS}
-from dual;
+from
+	tiers
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
 
 <#if t.NO_RCE?trim != "">
@@ -159,7 +148,32 @@ select
 	'CH_ZAR_RCE',
 	'${t.NO_RCE}',
 	${t.NO_TIERS}
-from dual;
+from
+	tiers
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
+
+update tiers set
+	pp_habitant = 0,
+	date_deces = <@NumOrNull t.DATE_DECES />,
+	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
+	nh_date_debut_valid_autoris = <@NumOrNull t.DATE_DEBUT_VALID_AUTORIS />,
+	nh_date_naissance = <@NumOrNull t.DATE_NAISSANCE />,
+	nh_no_ofs_nationalite =<@NumOrNull t.NO_OFS_NATIONALITE />,
+	nh_nom = <@StrOrNull t.NOM />,
+	nh_numero_assure_social =<@StrOrNull t.NO_AVS13 />,
+	nh_prenom = <@StrOrNull t.PRENOM />,
+	nh_sexe = <@StrOrNull t.SEXE />,
+	log_muser = '${USER}',
+	log_mdate = CURRENT_TIMESTAMP
+where
+	numero = ${t.NO_TIERS} and pp_habitant = 1;
+
+update tiers set
+	numero_individu = null,
+	index_dirty = 1
+where
+	numero = ${t.NO_TIERS};
 
 </#list>
