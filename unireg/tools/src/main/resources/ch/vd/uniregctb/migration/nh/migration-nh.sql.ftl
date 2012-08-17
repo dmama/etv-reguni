@@ -1,7 +1,7 @@
 <#macro StrOrNull value><#if value?trim = "">null<#else>'${value}'</#if></#macro>
 <#macro NumOrNull value><#if value?trim = "">null<#else>${value}</#if></#macro>
 
-<#--TODO Palliatif à valider pour la date de debut: 01.01.2000 si pas de valeur-->
+<#--Palliatif pour la date de debut: 01.01.2000 si pas de valeur-->
 <#macro DateOrDefault value><#if value?trim = "">20000101<#else>${value}</#if></#macro>
 
 <#list tiers as t>
@@ -57,7 +57,7 @@ select
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ADRESSE_DATE_DEBUT />, <#-- Palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'COURRIER',
 	<@StrOrNull t.ADRESSE_NO_APPARTEMENT />,
 	<@NumOrNull t.ADRESSE_NO_CASE_POSTALE />,
@@ -92,7 +92,7 @@ select
 	'${USER}',
 	CURRENT_TIMESTAMP,
 	'${USER}',
-	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- TODO Trouver un palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
+	<@DateOrDefault t.ETAT_CIVIL_DATE_DEBUT />, <#-- Palliatif pour le cas ou la date debut, pour l'instant voir macro @DateOrDefault -->
 	'${t.ETAT_CIVIL_TYPE}',
 	0,
 	${t.NO_TIERS}
