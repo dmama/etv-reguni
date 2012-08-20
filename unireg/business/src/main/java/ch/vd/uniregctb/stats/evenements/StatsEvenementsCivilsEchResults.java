@@ -24,8 +24,9 @@ public class StatsEvenementsCivilsEchResults {
 		public final Date dateTraitement;
 		public final EtatEvenementCivil etat;
 		public final Long noIndividu;       // nullable, dans le cas où l'erreur est justement que l'on a pas trouvé l'individu
+		public final String commentaireTraitement;
 
-		public EvenementCivilInfo(long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate dateEvenement, Date dateTraitement, EtatEvenementCivil etat, Long noIndividu) {
+		public EvenementCivilInfo(long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate dateEvenement, Date dateTraitement, EtatEvenementCivil etat, Long noIndividu, String commentaireTraitement) {
 			this.id = id;
 			this.type = type;
 			this.action = action;
@@ -33,18 +34,19 @@ public class StatsEvenementsCivilsEchResults {
 			this.dateTraitement = dateTraitement;
 			this.etat = etat;
 			this.noIndividu = noIndividu;
+			this.commentaireTraitement = commentaireTraitement;
 		}
 	}
 	
 	public static final class EvenementCivilEnErreurInfo extends EvenementCivilInfo implements StatistiqueEvenementInfo {
 
-		private static final String[] COLONNES = { "ID", "TYPE", "ACTION", "DATE_EVENEMENT", "DATE_TRAITEMENT", "ETAT", "INVIDIVU", "ERREUR" };
+		private static final String[] COLONNES = { "ID", "TYPE", "ACTION", "DATE_EVENEMENT", "DATE_TRAITEMENT", "ETAT", "INVIDIVU", "COMMENTAIRE_TRAITEMENT", "ERREUR" };
 
 		public final String message;
 
 		public EvenementCivilEnErreurInfo(long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate dateEvenement,
-		                                  Date dateTraitement, EtatEvenementCivil etat, Long noIndividu, String message) {
-			super(id, type, action, dateEvenement, dateTraitement, etat, noIndividu);
+		                                  Date dateTraitement, EtatEvenementCivil etat, Long noIndividu, String commentaireTraitement, String message) {
+			super(id, type, action, dateEvenement, dateTraitement, etat, noIndividu, commentaireTraitement);
 			this.message = message;
 		}
 
@@ -56,20 +58,20 @@ public class StatsEvenementsCivilsEchResults {
 		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), type.name(), action.name(), RegDateHelper.dateToDashString(dateEvenement),
-								  DateHelper.dateTimeToDisplayString(dateTraitement), etat.name(), noIndividu != null ? Long.toString(noIndividu) : null, message };
+								  DateHelper.dateTimeToDisplayString(dateTraitement), etat.name(), noIndividu != null ? Long.toString(noIndividu) : null, commentaireTraitement, message };
 		}
 	}
 	
 	public static final class EvenementCivilTraiteManuellementInfo extends EvenementCivilInfo implements StatistiqueEvenementInfo {
 
-		private static final String[] COLONNES = { "ID", "TYPE", "ACTION", "DATE_EVENEMENT", "DATE_RECEPTION", "DATE_MODIFICATION", "VISA_OPERATEUR", "ETAT", "INVIDIVU" };
+		private static final String[] COLONNES = { "ID", "TYPE", "ACTION", "DATE_EVENEMENT", "DATE_RECEPTION", "DATE_MODIFICATION", "VISA_OPERATEUR", "ETAT", "INVIDIVU", "COMMENTAIRE_TRAITEMENT" };
 
 		public final String visaOperateur;
 		public final Date dateReception;
 
 		public EvenementCivilTraiteManuellementInfo(long id, TypeEvenementCivilEch type, ActionEvenementCivilEch action, RegDate dateEvenement, EtatEvenementCivil etat,
-		                                            Long noIndividu, String visaOperateur, Date dateReception, Date dateModification) {
-			super(id, type, action, dateEvenement, dateModification, etat, noIndividu);
+		                                            Long noIndividu, String commentaireTraitement, String visaOperateur, Date dateReception, Date dateModification) {
+			super(id, type, action, dateEvenement, dateModification, etat, noIndividu, commentaireTraitement);
 			this.visaOperateur = visaOperateur;
 			this.dateReception = dateReception;
 		}
@@ -82,7 +84,7 @@ public class StatsEvenementsCivilsEchResults {
 		@Override
 		public String[] getValeursColonnes() {
 			return new String[] { Long.toString(id), type.name(), action.name(), RegDateHelper.dateToDashString(dateEvenement), dateReception.toString(),
-								  dateTraitement.toString(), visaOperateur, etat.name(), noIndividu != null ? Long.toString(noIndividu) : null };
+								  dateTraitement.toString(), visaOperateur, etat.name(), noIndividu != null ? Long.toString(noIndividu) : null, commentaireTraitement };
 		}
 	}
 	
