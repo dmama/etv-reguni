@@ -4,23 +4,85 @@ package ch.vd.uniregctb.type;
 import org.apache.commons.lang.StringUtils;
 
 public enum TypePermis {
-	SAISONNIER,     // 01 (A) Permis Saisonnier
-	SEJOUR,         // 02 (B) Permis de séjour
-	ETABLISSEMENT,  // 03 (C) Permis d'établissement
-	CONJOINT_DIPLOMATE, // 04 (Ci) Conjoint/Enfant de diplomate ou de fonctionnaire international
-	ETRANGER_ADMIS_PROVISOIREMENT, // * 05 (F) Étranger admis provisoirement
-	FRONTALIER, // 06 (G) Permis Frontalier
-	COURTE_DUREE, // 07 (L) Permis de séjour de courte durée
-	REQUERANT_ASILE, // 08 (N) Requérant d'asile
-	PERSONNE_A_PROTEGER, // 09 (S) Personne à protéger
-	PERSONNE_TENUE_DE_S_ANNONCER, // 10 Personne tenue de s'annoncer (pour les séjours tres court en Suisse de personnes qui doivent se déclarer)
-	DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE,// 11 Diplomate ou fonctionnaire internationnal avec immunité diplomatique
-	FONCT_INTER_SANS_IMMUNITE, // 12 Fonctionnaire internationnal sans immunité diplomatique
-	PAS_ATTRIBUE, // 13 Pas Attribué
-	PROVISOIRE, // PAS DANS ECH - Statut provisoire (SP). Il s'agit d'un permis temporaire délivré à l'arrivée d'un étranger en attente de la décision de l'administration sur le permis accordé.
-	SUISSE_SOURCIER; // PAS DANS ECH - Suisse imposé à la source résidant à l'étranger (CH).
 
-	public static TypePermis valueOfCodeEch(String evdPermisCode) {
+	/**
+	 * 01 (A) Permis Saisonnier
+	 */
+	SAISONNIER,
+
+	/**
+	 * 02 (B) Permis de séjour
+	 */
+	SEJOUR,
+
+	/**
+	 * 03 (C) Permis d'établissement
+	 */
+	ETABLISSEMENT,
+
+	/**
+	 * 04 (Ci) Conjoint/Enfant de diplomate ou de fonctionnaire international
+	 */
+	CONJOINT_DIPLOMATE,
+
+	/**
+	 * 05 (F) Étranger admis provisoirement
+	 */
+	ETRANGER_ADMIS_PROVISOIREMENT,
+
+	/**
+	 * 06 (G) Permis Frontalier
+	 */
+	FRONTALIER,
+
+	/**
+	 * 07 (L) Permis de séjour de courte durée
+	 */
+	COURTE_DUREE,
+
+	/**
+	 * 08 (N) Requérant d'asile
+	 */
+	REQUERANT_ASILE,
+
+	/**
+	 * 09 (S) Personne à protéger
+	 */
+	PERSONNE_A_PROTEGER,
+
+	/**
+	 * 10 Personne tenue de s'annoncer <br/>
+	 * Pour les séjours tres court en Suisse de personnes qui doivent se déclarer.
+	 */
+	PERSONNE_TENUE_DE_S_ANNONCER,
+
+	/**
+	 * 11 Diplomate ou fonctionnaire internationnal avec immunité diplomatique
+	 */
+	DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE,
+
+	/**
+	 * 12 Fonctionnaire internationnal sans immunité diplomatique
+	 */
+	FONCT_INTER_SANS_IMMUNITE,
+
+	/**
+	 * 13 Pas Attribué
+	 */
+	PAS_ATTRIBUE,
+
+	/**
+	 * PAS DANS eVD - Statut provisoire (SP).<br/>
+	 * Il s'agit d'un permis temporaire délivré à l'arrivée d'un étranger en attente de la décision de l'administration sur le permis accordé.
+	 */
+	PROVISOIRE,
+
+	/**
+	 * PAS DANS eVD - Suisse imposé à la source résidant à l'étranger (CH).
+	 */
+	SUISSE_SOURCIER;
+
+	public static TypePermis getFromEvd(String evdPermisCode) {
 		if (StringUtils.isBlank(evdPermisCode)) {
 			return null;
 		}
