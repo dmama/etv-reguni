@@ -169,7 +169,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			}
 			finally {
 				final long end = System.nanoTime();
-				LOGGER.info(String.format("Lot de %d événemement(s) traité en %d ms", evts.size(), TimeUnit.NANOSECONDS.toMillis(end - start)));
+				LOGGER.info(String.format("Lot de %d événement(s) traité en %d ms", evts.size(), TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
 		}
 
