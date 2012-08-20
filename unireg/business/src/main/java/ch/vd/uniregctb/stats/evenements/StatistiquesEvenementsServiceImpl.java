@@ -190,14 +190,14 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 	
 	private List<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo> getToutesErreursEvenementsCivilsEch() {
 
-		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU, R.TYPE, R.ACTION_EVT, E.MESSAGE"
+		final String sql = "SELECT R.ID, R.DATE_EVENEMENT, R.DATE_TRAITEMENT, R.ETAT, R.NO_INDIVIDU, R.TYPE, R.ACTION_EVT, E.MESSAGE, R.COMMENTAIRE_TRAITEMENT"
 				+ " FROM EVENEMENT_CIVIL_ECH R JOIN EVENEMENT_CIVIL_ECH_ERREUR E ON E.EVT_CIVIL_ID = R.ID WHERE R.ETAT NOT IN ('TRAITE','REDONDANT') ORDER BY R.ID, R.DATE_TRAITEMENT";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo>() {
 			@Override
 			public StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo onRow(Object[] row) {
 
-				Assert.isEqual(8, row.length);
+				Assert.isEqual(9, row.length);
 
 				final long id = ((Number) row[0]).longValue();
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[1]).intValue(), false);
@@ -207,21 +207,22 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[5]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[6]);
 				final String message = (String) row[7];
-				return new StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, message);
+				final String commentaireStraitement = (String) row[8];
+				return new StatsEvenementsCivilsEchResults.EvenementCivilEnErreurInfo(id, type, action, dateEvenement, dateTraitement, etat, individu, commentaireStraitement, message);
 			}
 		});
 	}
 
 	private List<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo> getManipulationsManuellesEch(RegDate debutActivite) {
 
-		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU, TYPE, ACTION_EVT FROM EVENEMENT_CIVIL_ECH"
+		final String sql = "SELECT ID, LOG_CDATE, LOG_MDATE, LOG_MUSER, DATE_EVENEMENT, ETAT, NO_INDIVIDU, TYPE, ACTION_EVT, COMMENTAIRE_TRAITEMENT FROM EVENEMENT_CIVIL_ECH"
 				+ " WHERE LOG_MUSER LIKE '" + VISA_HUMAIN_TEMPLATE + "' AND LOG_MDATE > TO_DATE('" + debutActivite.index() + "', 'YYYYMMDD') ORDER BY ID";
 
 		return executeSelect(sql, new SelectCallback<StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo>() {
 			@Override
 			public StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo onRow(Object[] row) {
 
-				Assert.isEqual(9, row.length);
+				Assert.isEqual(10, row.length);
 
 				final long id = ((Number) row[0]).longValue();
 				final Date dateReception = (Date) row[1];
@@ -232,7 +233,8 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final Long individu = ((Number) row[6]).longValue();
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
-				return new StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, visaOperateur, dateReception, dateModification);
+				final String commentaireTraitement = (String) row[9];
+				return new StatsEvenementsCivilsEchResults.EvenementCivilTraiteManuellementInfo(id, type, action, dateEvenement, etat, individu, commentaireTraitement, visaOperateur, dateReception, dateModification);
 			}
 		});
 	}
