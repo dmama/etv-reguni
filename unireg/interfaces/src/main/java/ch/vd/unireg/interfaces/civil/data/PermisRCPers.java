@@ -25,7 +25,7 @@ public class PermisRCPers implements Permis, Serializable {
 		this.dateFin = XmlUtils.xmlcal2regdate(permit.getResidencePermitTill());
 		DateRangeHelper.assertValidRange(dateDebut, dateFin, ServiceCivilException.class);
 		this.dateAnnulation = null; // les permis annulés ne sont pas exposés par RCPers
-		this.typePermis = TypePermis.valueOfCodeEch(permit.getResidencePermit());
+		this.typePermis = TypePermis.getFromEvd(permit.getResidencePermit());
 	}
 
 	public static Permis get(ResidencePermit permit) {
