@@ -148,6 +148,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		 */
 		private void processEvents(long noIndividu, List<EvenementCivilEchBasicInfo> evts) {
 			int pointer = 0;
+			final long start = System.nanoTime();
 			try {
 				LOGGER.info(String.format("Lancement du traitement d'un lot de %d événement(s) pour l'individu %d", evts.size(), noIndividu));
 
@@ -165,6 +166,10 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			}
 			catch (Exception e) {
 				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", evts.get(pointer).getId()), e);
+			}
+			finally {
+				final long end = System.nanoTime();
+				LOGGER.info(String.format("Lot de %d événemement(s) traité en %d ms", evts.size(), TimeUnit.NANOSECONDS.toMillis(end - start)));
 			}
 		}
 
