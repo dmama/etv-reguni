@@ -81,7 +81,7 @@ public class Ec_18000_05_Arrivee_RollBack_1_Scenario extends EvenementCivilScena
 		traiteEvenements(id);
 	}
 
-	@Check(id=2, descr="Vérifie que l'habitant Alain est inconnu et que l'événements est en erreur")
+	@Check(id=2, descr="Vérifie que l'habitant Alain est inconnu et que l'événement est en erreur")
 	public void check4() throws Exception {
 		PersonnePhysique alain = tiersDAO.getHabitantByNumeroIndividu(noIndAlain);
 		assertNull(alain, "Alain ne devrait pas être dans le registre");

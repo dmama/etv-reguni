@@ -165,7 +165,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", evts.get(pointer).getId()), e);
+				LOGGER.error(String.format("Erreur lors du traitement de l'événement civil %d", evts.get(pointer).getId()), e);
 			}
 			finally {
 				final long end = System.nanoTime();

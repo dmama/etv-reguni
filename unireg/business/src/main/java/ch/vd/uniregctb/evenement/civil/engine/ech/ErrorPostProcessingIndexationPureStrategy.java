@@ -73,7 +73,7 @@ public class ErrorPostProcessingIndexationPureStrategy implements ErrorPostProce
 				}
 			}
 			catch (Exception e) {
-				LOGGER.error(String.format("Erreur lors du traitement de l'événements civil %d", pourIndexation.get(pointer).getId()), e);
+				LOGGER.error(String.format("Erreur lors du traitement de l'événement civil %d", pourIndexation.get(pointer).getId()), e);
 			}
 		}
 	}
