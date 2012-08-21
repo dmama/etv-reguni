@@ -555,7 +555,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testDemandeIdentificationEMPACI_LISTE_IS() throws Exception {
+	public void testDemandeIdentificationImpotSource_LISTE_IS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 
 		handler.setDemandeHandler(new DemandeHandler() {
@@ -566,7 +566,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_EMPACI_LISTE_IS_alfred_hitchcock.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_IMPOT_SOURCE_LISTE_IS_alfred_hitchcock.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -583,7 +583,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		final IdentificationContribuable m = messages.get(0);
 		assertNotNull(m);
-		assertEquals(TypeDemande.EMPACI, m.getDemande().getTypeDemande());
+		assertEquals(TypeDemande.IMPOT_SOURCE, m.getDemande().getTypeDemande());
 	}
 
 

@@ -708,8 +708,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			soumettreMessageEfacture(message);
 			break;
 
-		case EMPACI:
-			soumettreMessageEmpaci(message);
+		case IMPOT_SOURCE:
+			soumettreMessageImpotSource(message);
 			break;
 		default:
 			traiterException(message, new IllegalArgumentException("Type de demande inconnue"));
@@ -738,9 +738,9 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	}
 
 
-	private void soumettreMessageEmpaci(IdentificationContribuable message) {
+	private void soumettreMessageImpotSource(IdentificationContribuable message) {
 
-		LOGGER.info("Le message n°" + message.getId() + " passe en traitement EMPACI.");
+		LOGGER.info("Le message n°" + message.getId() + " passe en traitement Impot source.");
 		soumettreMessage(message);
 
 	}

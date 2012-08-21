@@ -2451,7 +2451,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 
-		return createDemandeEMPACI(personne, mode);
+		return createDemandeImpotSource(personne, mode);
 	}
 
 	private static IdentificationContribuable createDemandeE_Facture(final String navs13) {
@@ -2549,7 +2549,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return message;
 	}
 
-	private static IdentificationContribuable createDemandeEMPACI(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
+	private static IdentificationContribuable createDemandeImpotSource(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
 		header.setBusinessUser("Test");
@@ -2564,7 +2564,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setDate(DateHelper.getCurrentDate());
 		demande.setPeriodeFiscale(2010);
 		demande.setPersonne(personne);
-		demande.setTypeDemande(TypeDemande.EMPACI);
+		demande.setTypeDemande(TypeDemande.IMPOT_SOURCE);
 
 		final IdentificationContribuable message = new IdentificationContribuable();
 		message.setHeader(header);

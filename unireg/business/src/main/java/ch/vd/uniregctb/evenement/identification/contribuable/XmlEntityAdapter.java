@@ -236,7 +236,7 @@ public abstract class XmlEntityAdapter {
 			entity.setTypeDemande(TypeDemande.E_FACTURE);
 		}
 		else if (TYPE_MESSAGE_LISTE_IS.equals(xml.getDemande().getTypeMessage())) {
-			entity.setTypeDemande(TypeDemande.EMPACI);
+			entity.setTypeDemande(TypeDemande.IMPOT_SOURCE);
 		}
 		else {
 			entity.setTypeDemande(TypeDemande.MELDEWESEN);
