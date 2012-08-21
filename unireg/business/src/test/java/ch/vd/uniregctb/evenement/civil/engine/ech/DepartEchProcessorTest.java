@@ -580,7 +580,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car départ vaudois : la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -642,7 +642,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car départ vaudois : la nouvelle commune de résidence Lausanne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -790,9 +790,9 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNotNull(erreurs);
 				Assert.assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire(Arrangement fiscal?)",
-						numeroCtb);
-				Assert.assertEquals(message,erreur.getMessage());
+				String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)", numeroCtb);
+				Assert.assertEquals(message, erreur.getMessage());
+				Assert.assertNull(evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -996,7 +996,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence Echallens est toujours dans le canton.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car départ secondaire vaudois : la nouvelle commune de résidence Echallens est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -1135,7 +1135,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car départ vaudois : la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -1274,7 +1274,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Ignoré car départ secondaire vaudois : la nouvelle commune de résidence Aubonne est toujours dans le canton.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});

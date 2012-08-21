@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
@@ -482,11 +483,18 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 		}
 		else {
 			// validation et traitement
+			final EtatEvenementCivil etat;
 			evtInterne.validate(erreurs, warnings);
 			if (erreurs.hasErreurs()) {
-				return EtatEvenementCivil.EN_ERREUR;
+				etat = EtatEvenementCivil.EN_ERREUR;
 			}
-			return evtInterne.handle(warnings).toEtat();
+			else {
+				etat = evtInterne.handle(warnings).toEtat();
+			}
+			if (StringUtils.isNotBlank(event.getCommentaireTraitement()) && evtInterne.shouldResetCommentaireTraitement(etat, event.getCommentaireTraitement())) {
+				event.setCommentaireTraitement(null);
+			}
+			return etat;
 		}
 	}
 

@@ -26,6 +26,7 @@ import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -236,6 +237,15 @@ public abstract class EvenementCivilInterne {
 	}
 
 	protected boolean forceRefreshCacheConjoint() {
+		return false;
+	}
+
+	/**
+	 * @param etat l'état final de l'événement civil après (tentative de) traitement
+	 * @param commentaireTraitement commentaire de traitement présent dans l'événement civil à la fin du traitement
+	 * @return <code>true</code> si le commentaire de traitement doit être éliminé car il n'y a pas de sens de le garder compte tenu de l'état final de l'événement
+	 */
+	public boolean shouldResetCommentaireTraitement(EtatEvenementCivil etat, String commentaireTraitement) {
 		return false;
 	}
 
