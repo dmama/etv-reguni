@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<identificationCTB xmlns="http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7">
+	<demande>
+		<demande>
+			<messageId>369876123</messageId>
+			<emetteurId>EMPACI</emetteurId>
+			<typeMessage>LISTE_IS</typeMessage>
+			<periodeFiscale>2010+01:00</periodeFiscale>
+			<prioriteEmetteur>true</prioriteEmetteur>
+			<prioriteUtilisateur>1</prioriteUtilisateur>
+			<modeIdentification>MANUEL_AVEC_ACK</modeIdentification>
+			<transmetteur>Swissdec</transmetteur>
+			<dateMessage>2011-07-28+02:00</dateMessage>
+		</demande>
+		<personne>
+			<nom>Hitchcock</nom>
+			<prenoms>Alfred Joseph</prenoms>
+			<sexe>1</sexe>
+			<dateNaissance>
+				<anneeMoisJour>1903-08-13+01:00</anneeMoisJour>
+			</dateNaissance>
+			<adresse>
+				<lieu>London</lieu>
+				<pays>UK</pays>
+			</adresse>
+		</personne>
+	</demande>
+</identificationCTB>
