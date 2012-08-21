@@ -50,10 +50,10 @@ public class DepartSecondaire extends Depart {
 		this.ancienneAdresse = ancienneAdresseSecondaire;
 		this.ancienneCommune = ancienneCommuneSecondaire;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
-		this.nouvelleLocalisation =  computeNouvelleLocalisation(adresseSecondaire);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(adresseSecondaire);
 	}
 
-	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
+	protected DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
@@ -69,12 +69,6 @@ public class DepartSecondaire extends Depart {
 		}
 
 		this.nouvelleCommune = findNouvelleCommuneByLocalisation(this.nouvelleLocalisation, context, dateDepart);
-		//SIFISC-4912 Pour les evenements ech,les départs secondaires vaudois sont ignorés
-		if (isDepartVaudois()) {
-			final String message = String.format("Ignoré car considéré comme un départ secondaire vaudois: la nouvelle commune de résidence %s est toujours dans le canton.",
-					nouvelleCommune.getNomMinuscule());
-			event.setCommentaireTraitement(message);
-		}
 	}
 
 	@Override
@@ -145,7 +139,7 @@ public class DepartSecondaire extends Depart {
 				}
 				else if (ffp != null) {
 					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
-					final Integer nullableNoOfs = getNouvelleLocalisation()==null ? null : getNouvelleLocalisation().getNoOfs();
+					final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
 					final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
 				}
@@ -153,17 +147,12 @@ public class DepartSecondaire extends Depart {
 		}
 	}
 
-
-
-
-
 	private void validateAbsenceForPrincipalPourDepartVaudois(EvenementCivilErreurCollector erreurs) {
 		if (isDepartVaudois()) {
 			final PersonnePhysique pp = getPrincipalPP();
 			if (pp != null) {
-				ForFiscalPrincipal forFP = null;
 				final MenageCommun menageCommun = context.getTiersService().findMenageCommun(pp, getDate());
-
+				final ForFiscalPrincipal forFP;
 				if (menageCommun != null) {
 					forFP = menageCommun.getForFiscalPrincipalAt(getDate());
 				}
@@ -172,8 +161,8 @@ public class DepartSecondaire extends Depart {
 				}
 
 				if (forFP != null && forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire(Arrangement fiscal?)",
-							pp.getNumero()));
+					erreurs.addErreur(String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)",
+					                                pp.getNumero()));
 				}
 			}
 		}

@@ -65,7 +65,7 @@ public class DepartPrincipal extends Depart {
 
 	}
 
-	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
+	protected DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
@@ -82,13 +82,6 @@ public class DepartPrincipal extends Depart {
 
 		//Recherche de la nouvelle commune
 		this.nouvelleCommune = findNouvelleCommuneByLocalisation(nouvelleLocalisation, context, getDate());
-
-		//SIFISC-4230 Pour les evenements ech,les départs vaudois sont ignorés
-		if (isDepartVaudois()) {
-			final String message = String.format("Ignoré car considéré comme un départ vaudois: la nouvelle commune de résidence %s est toujours dans le canton.",
-					nouvelleCommune.getNomMinuscule());
-			event.setCommentaireTraitement(message);
-		}
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {

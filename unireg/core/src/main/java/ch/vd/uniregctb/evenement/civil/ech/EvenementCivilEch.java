@@ -16,6 +16,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.HibernateEntity;
@@ -147,7 +148,7 @@ public class EvenementCivilEch extends HibernateEntity {
 		return commentaireTraitement;
 	}
 
-	public void setCommentaireTraitement(String commentaireTraitement) {
+	public void setCommentaireTraitement(@Nullable String commentaireTraitement) {
 		this.commentaireTraitement = commentaireTraitement;
 	}
 
