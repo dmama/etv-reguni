@@ -43,10 +43,10 @@ public class DepartEchTranslationStrategy implements EvenementCivilEchTranslatio
 		// sinon... on n'en sait rien... et boom !
 		final Adresse adresseTerminee = getAdresseTerminee(event, context);
 		if (adresseTerminee.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
-			return new DepartPrincipalEch(event, context, options, adresseTerminee);
+			return new DepartPrincipal(event, context, options, adresseTerminee);
 		}
 		else {
-			return new DepartSecondaireEch(event, context, options, adresseTerminee);
+			return new DepartSecondaire(event, context, options, adresseTerminee);
 		}
 	}
 
