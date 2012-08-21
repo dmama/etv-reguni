@@ -1,5 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.depart;
 
+import java.util.EnumSet;
+import java.util.Set;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -18,11 +21,15 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DepartSecondaire extends Depart {
+
+	private static final String IGNORE_VD = "Ignoré car départ secondaire vaudois";
+	private static final Set<EtatEvenementCivil> ETATS_AVEC_MESSAGE_IGNORE_VD_POSSIBLE = EnumSet.of(EtatEvenementCivil.A_VERIFIER, EtatEvenementCivil.REDONDANT, EtatEvenementCivil.TRAITE);
 
 	private final Adresse ancienneAdresse;
 	private final Commune ancienneCommune;
@@ -53,7 +60,7 @@ public class DepartSecondaire extends Depart {
 		this.nouvelleLocalisation = computeNouvelleLocalisation(adresseSecondaire);
 	}
 
-	protected DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
+	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
@@ -69,6 +76,12 @@ public class DepartSecondaire extends Depart {
 		}
 
 		this.nouvelleCommune = findNouvelleCommuneByLocalisation(this.nouvelleLocalisation, context, dateDepart);
+
+		// SIFISC-4912 Pour les événements ech, les départs secondaires vaudois a priori sont ignorés
+		if (isDepartVaudois()) {
+			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomMinuscule());
+			event.setCommentaireTraitement(message);
+		}
 	}
 
 	@Override
@@ -166,5 +179,12 @@ public class DepartSecondaire extends Depart {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean shouldResetCommentaireTraitement(EtatEvenementCivil etat, String commentaireTraitement) {
+		// [SIFISC-6008] On ne dit pas qu'on ignore un événement civil qui est parti en erreur...
+		// Si on a mis ce message (cf IGNORE_VD), c'est qu'on est dans le cas d'un départ vaudois reçu au travers d'un événement RCPers
+		return super.shouldResetCommentaireTraitement(etat, commentaireTraitement) || (!ETATS_AVEC_MESSAGE_IGNORE_VD_POSSIBLE.contains(etat) && commentaireTraitement.startsWith(IGNORE_VD));
 	}
 }

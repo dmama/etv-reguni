@@ -1,6 +1,8 @@
 package ch.vd.uniregctb.evenement.civil.interne.depart;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -21,11 +23,15 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class DepartPrincipal extends Depart {
+
+	private static final String IGNORE_VD = "Ignoré car départ vaudois";
+	private static final Set<EtatEvenementCivil> ETATS_AVEC_MESSAGE_IGNORE_VD_POSSIBLE = EnumSet.of(EtatEvenementCivil.A_VERIFIER, EtatEvenementCivil.REDONDANT, EtatEvenementCivil.TRAITE);
 
 	private Adresse ancienneAdresse;
 	private Commune ancienneCommune;
@@ -45,11 +51,11 @@ public class DepartPrincipal extends Depart {
 		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
 		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdressePrincipale, lendemainDepart);
 		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
-		//SIFISC-4230 Pour les evenements regPP, les départs vaudois doivent partir en erreur
+
+		// SIFISC-4230 Pour les événements regPP, les départs vaudois doivent partir en erreur
 		if (isDepartVaudois()) {
 			throw new EvenementCivilException("La nouvelle commune est toujours dans le canton de Vaud");
 		}
-
 	}
 
 	/**
@@ -62,10 +68,9 @@ public class DepartPrincipal extends Depart {
 		this.ancienneAdresse = ancienneAdressePrincipale;
 		this.ancienneCommune = ancienneCommunePrincipale;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
-
 	}
 
-	protected DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
+	public DepartPrincipal(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {
 		super(event, context, options);
 
 		final RegDate dateDepart = getDate();
@@ -82,15 +87,16 @@ public class DepartPrincipal extends Depart {
 
 		//Recherche de la nouvelle commune
 		this.nouvelleCommune = findNouvelleCommuneByLocalisation(nouvelleLocalisation, context, getDate());
+
+		// SIFISC-4230 Pour les evenements ech, les départs vaudois sont a priori ignorés
+		if (isDepartVaudois()) {
+			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomMinuscule());
+			event.setCommentaireTraitement(message);
+		}
 	}
 
 	public void checkCompleteness(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) {
 		Audit.info(getNumeroEvenement(), "Verification de la cohérence du départ");
-
-	//Suppression de la verification de la nouvelle adresse. Celle ci n'est pas renseignée pour les évènements ech
-	//	if (getNouvelleAdressePrincipale() == null) {
-	//		warnings.addWarning("La nouvelle adresse principale de l'individu est vide");
-	//	}
 
 		if (getNumeroOfsEntiteForAnnonce() == null) {
 			erreurs.addErreur("La commune d'annonce est vide");
@@ -208,7 +214,6 @@ public class DepartPrincipal extends Depart {
 	}
 
 	/**
-	 * @param depart un événement de départ
 	 * @return <b>true</b> si l'habitant est celibataire, marié seul, ou marié et son conjoint est aussi parti; <b>false</b> autrement.
 	 */
 	private boolean isDepartComplet() {
@@ -258,5 +263,10 @@ public class DepartPrincipal extends Depart {
 		}
 	}
 
-
+	@Override
+	public boolean shouldResetCommentaireTraitement(EtatEvenementCivil etat, String commentaireTraitement) {
+		// [SIFISC-6008] On ne dit pas qu'on ignore un événement civil qui est parti en erreur...
+		// Si on a mis ce message (cf IGNORE_VD), c'est qu'on est dans le cas d'un départ vaudois reçu au travers d'un événement RCPers
+		return super.shouldResetCommentaireTraitement(etat, commentaireTraitement) || (!ETATS_AVEC_MESSAGE_IGNORE_VD_POSSIBLE.contains(etat) && commentaireTraitement.startsWith(IGNORE_VD));
+	}
 }
