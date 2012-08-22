@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -8,6 +9,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
+import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
+import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -18,6 +22,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
@@ -322,6 +327,124 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals(String.format("Plusieurs tiers non-annulés partagent le même numéro d'individu %d ([%d, %d])", noIndividu, ids.id1, ids.id2), erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMereConnueMaisInvalideAuCivil() throws Exception {
+
+		final long noIndividu = 54678215611L;
+		final long noIndividuMere = 43678342L;
+		final RegDate dateNaissance = RegDate.get().addMonths(-1);
+
+		// le nouveau né apparaît au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu bebe = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", true);
+				bebe.setParents(Arrays.<RelationVersIndividu>asList(new RelationVersIndividuImpl(noIndividuMere, TypeRelationVersIndividu.MERE, dateNaissance, null)));
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long naissanceId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateNaissance);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.NAISSANCE);
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNull(pp);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noIndividu);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(naissanceId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMereConnueMaisPereInvalideAuCivil() throws Exception {
+
+		final long noIndividu = 54678215611L;
+		final long noIndividuMere = 43678342L;
+		final long noIndividuPere = 435345L;
+		final RegDate dateNaissance = RegDate.get().addMonths(-1);
+
+		// le nouveau né apparaît au civil
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu maman = addIndividu(noIndividuMere, null, "Toubo", "Amandine", Sexe.FEMININ);
+				final MockIndividu bebe = addIndividu(noIndividu, dateNaissance, "Toubo", "Toupeti", Sexe.MASCULIN);
+				bebe.setParents(Arrays.<RelationVersIndividu>asList(
+						new RelationVersIndividuImpl(noIndividuPere, TypeRelationVersIndividu.PERE, dateNaissance, null),
+						new RelationVersIndividuImpl(noIndividuMere, TypeRelationVersIndividu.MERE, dateNaissance, null)));
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique maman = addHabitant(noIndividuMere);
+				return maman.getNumero();
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long naissanceId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateNaissance);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.NAISSANCE);
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNull(pp);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noIndividu);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(naissanceId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				Assert.assertNotNull(pp);
+
 				return null;
 			}
 		});

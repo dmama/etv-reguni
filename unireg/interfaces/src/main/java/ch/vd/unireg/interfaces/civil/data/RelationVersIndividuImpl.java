@@ -10,14 +10,16 @@ import ch.vd.registre.base.date.RegDateHelper;
 
 public class RelationVersIndividuImpl implements RelationVersIndividu, Serializable {
 
-	private static final long serialVersionUID = 3590334211719029030L;
+	private static final long serialVersionUID = -6624424767436254182L;
 
-	private long numeroAutreIndividu;
-	private RegDate dateDebut;
+	private final long numeroAutreIndividu;
+	private final TypeRelationVersIndividu type;
+	private final RegDate dateDebut;
 	private RegDate dateFin;
 
-	public RelationVersIndividuImpl(long numeroAutreIndividu, RegDate dateDebut, RegDate dateFin) {
+	public RelationVersIndividuImpl(long numeroAutreIndividu, TypeRelationVersIndividu type, RegDate dateDebut, RegDate dateFin) {
 		this.numeroAutreIndividu = numeroAutreIndividu;
+		this.type = type;
 		this.dateDebut = dateDebut;
 		this.dateFin = dateFin;
 	}
@@ -25,6 +27,11 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 	@Override
 	public long getNumeroAutreIndividu() {
 		return numeroAutreIndividu;
+	}
+
+	@Override
+	public TypeRelationVersIndividu getTypeRelation() {
+		return type;
 	}
 
 	@Override
@@ -54,6 +61,7 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 		final RelationVersIndividuImpl that = (RelationVersIndividuImpl) o;
 
 		if (numeroAutreIndividu != that.numeroAutreIndividu) return false;
+		if (type != that.type) return false;
 		if (!dateDebut.equals(that.dateDebut)) return false;
 		if (dateFin != null ? !dateFin.equals(that.dateFin) : that.dateFin != null) return false;
 
@@ -63,10 +71,9 @@ public class RelationVersIndividuImpl implements RelationVersIndividu, Serializa
 	@Override
 	public int hashCode() {
 		int result = (int) (numeroAutreIndividu ^ (numeroAutreIndividu >>> 32));
+		result = 31 * result + type.hashCode();
 		result = 31 * result + dateDebut.hashCode();
 		result = 31 * result + (dateFin != null ? dateFin.hashCode() : 0);
 		return result;
 	}
-
-
 }

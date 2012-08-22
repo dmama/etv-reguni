@@ -247,10 +247,10 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 
 		final List<RelationVersIndividu> parents = new ArrayList<RelationVersIndividu>(2);
 		if (p != null) {
-			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), dateNaissance, p.getDateDeces()));
+			parents.add(new RelationVersIndividuImpl(p.getNoTechnique(), TypeRelationVersIndividu.PERE, dateNaissance, p.getDateDeces()));
 		}
 		if (m != null) {
-			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), dateNaissance, m.getDateDeces()));
+			parents.add(new RelationVersIndividuImpl(m.getNoTechnique(), TypeRelationVersIndividu.MERE, dateNaissance, m.getDateDeces()));
 		}
 
 		return parents;
@@ -270,7 +270,8 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 		for (Object o : targetEnfants) {
 			final ch.vd.registre.civil.model.Individu i = (ch.vd.registre.civil.model.Individu) o;
 			if (isValidUpTo(i.getDateNaissance(), upToJava)) {
-				list.add(new RelationVersIndividuImpl(i.getNoTechnique(), RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
+				final TypeRelationVersIndividu type = i.isSexeMasculin() ? TypeRelationVersIndividu.FILS : TypeRelationVersIndividu.FILLE;
+				list.add(new RelationVersIndividuImpl(i.getNoTechnique(), type, RegDate.get(i.getDateNaissance()), RegDate.get(i.getDateDeces())));
 			}
 		}
 		return list;
@@ -319,12 +320,13 @@ public class IndividuImpl extends EntiteCivileImpl implements Individu, Serializ
 	}
 
 	private static List<RelationVersIndividu> initConjoint(EtatCivilListHost etatsCivils, RegDate upTo) {
-		List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
+		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		if (etatsCivils != null) {
 			for (EtatCivil etatCivil : etatsCivils) {
-				Long numeroConjoint = ((EtatCivilImpl) etatCivil).getNumeroConjoint();
+				final Long numeroConjoint = ((EtatCivilImpl) etatCivil).getNumeroConjoint();
 				if (numeroConjoint != null && numeroConjoint > 0 && isValidUpTo(etatCivil.getDateDebut(), upTo)) {
-					list.add(new RelationVersIndividuImpl(numeroConjoint, etatCivil.getDateDebut(), etatCivil.getDateFin()));
+					// TODO jde on ne fait pas la différence entre conjoint et partenaire enregistré... est-ce un problème ?
+					list.add(new RelationVersIndividuImpl(numeroConjoint, TypeRelationVersIndividu.CONJOINT, etatCivil.getDateDebut(), etatCivil.getDateFin()));
 				}
 			}
 		}

@@ -24,6 +24,7 @@ import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.Tutelle;
+import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.type.Sexe;
 
 public class MockIndividu extends MockEntiteCivile implements Individu {
@@ -175,7 +176,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		else {
 			final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 			for (Individu parent : individus) {
-				list.add(new RelationVersIndividuImpl(parent.getNoTechnique(), parent.getDateNaissance(), parent.getDateDeces()));
+				final TypeRelationVersIndividu type = parent.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.PERE : TypeRelationVersIndividu.MERE;
+				list.add(new RelationVersIndividuImpl(parent.getNoTechnique(), type, parent.getDateNaissance(), parent.getDateDeces()));
 			}
 			this.parents = list;
 		}
@@ -197,7 +199,8 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		else {
 			final Collection<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 			for (Individu enfant : individus) {
-				list.add(new RelationVersIndividuImpl(enfant.getNoTechnique(), enfant.getDateNaissance(), enfant.getDateDeces()));
+				final TypeRelationVersIndividu type = enfant.getSexe() == Sexe.MASCULIN ? TypeRelationVersIndividu.FILS : TypeRelationVersIndividu.FILLE;
+				list.add(new RelationVersIndividuImpl(enfant.getNoTechnique(), type, enfant.getDateNaissance(), enfant.getDateDeces()));
 			}
 			this.enfants = list;
 		}
