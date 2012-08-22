@@ -230,8 +230,11 @@ public class Mariage extends EvenementCivilInterne {
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		
 		try {
-			// [SIFISC-4672] Reconstitution du ménage commun complet à la réception de l'événement civil de mariage du deuxième individu
-			if (menageAReconstituer != null) {
+			// [SIFISC-6021] Le comportement de reconstitution des ménages n'est pas encore bien défini, on shunte les modif en attendant d'en savoir plus ...
+			final boolean SKIP_SIFISC_4672 = true;
+			//noinspection PointlessBooleanExpression,ConstantConditions
+			if (!SKIP_SIFISC_4672 && menageAReconstituer != null) {
+				// [SIFISC-4672] Reconstitution du ménage commun complet à la réception de l'événement civil de mariage du deuxième individu
 				context.getMetierService().reconstitueMenage(menageAReconstituer, contribuable, getDate(), null, etatCivilUnireg);
 			}
 			else  {
