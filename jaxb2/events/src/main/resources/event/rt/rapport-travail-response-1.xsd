@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/response/1"
+		   elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/response/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
+		   xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:complexType name="rapportTravailReponseMiseAJourType">
+		<xs:annotation>
+			<xs:documentation>
+				Message de réponse suite à une demande de mise à jour d'un rapport	de travail
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="common:rapportTravailType">
+				<xs:sequence>
+					<xs:element name="datePriseEnCompte" type="unireg:dateType" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Date de prise en compte de la mise à jour du rapport de travail</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="libelle" type="xs:string" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Libellé ou code d'erreur</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	</xs:schema>

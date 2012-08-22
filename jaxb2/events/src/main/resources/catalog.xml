@@ -4,6 +4,11 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd" uri="event/di/evenementDeclarationImpot-input-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd" uri="event/di/evenementDeclarationImpot-output-1.xsd"/>
 
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" uri="event/rt/rapport-travail-common-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd" uri="event/rtrapport-travail-request-1.xsd"/>
+	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd" uri="event/rt/rapport-travail-response-1.xsd"/>
+
+
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd" uri="event/party/address-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd" uri="event/party/address-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-request-1.xsd" uri="event/party/numbers-request-1.xsd"/>

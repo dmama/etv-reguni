@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/request/1"
+		   elementFormDefault="qualified" attributeFormDefault="unqualified"
+		   xmlns="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/request/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
+		   xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:complexType name="rapportTravailMiseAJourType">
+		<xs:annotation>
+			<xs:documentation>Evenement qui permet de demander à unireg la mise à jour d'un rapport
+				de travail
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="common:rapportTravailType">
+				<xs:sequence>
+
+					<xs:element name="dateDebutVersementSalaire" type="unireg:dateType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Date de début versement salaire (du décompte sourcier) VS-DD</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="dateFinVersementSalaire" type="unireg:dateType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Date de fin versement salaire (du décompte sourcier) VS-DF</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="tauxActivite" type="tauxActiviteType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>taux d'activité (Taux)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="typeActivite" type="activiteType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>taux d'activité (Taux)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="codeEvenement" type="codeEvenementType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>code de l'évènement (Code-Evt)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+					<xs:element name="dateEvenement" type="unireg:dateType" minOccurs="0">
+						<xs:annotation>
+							<xs:documentation>Date de l'évènement (Date-Evt)</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:simpleType name="tauxActiviteType">
+		<xs:annotation>
+			<xs:documentation>Entier entre 0 et 100</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer">
+			<xs:minInclusive value="0" />
+			<xs:maxInclusive value="100" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="activiteType">
+		<xs:annotation>
+			<xs:documentation>3 valeurs: Principale, Accessoire, Complémentaire</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="PRINCIPALE">
+				<xs:annotation>
+					<xs:documentation>activité principale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCESSOIRE">
+				<xs:annotation>
+					<xs:documentation>activité accessoire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPLEMENTAIRE">
+				<xs:annotation>
+					<xs:documentation>activité complémentaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="codeEvenementType">
+		<xs:annotation>
+			<xs:documentation>B - Sortie; I - Décès; ou Z - Fermeture_RT</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="B">
+				<xs:annotation>
+					<xs:documentation>sortie.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="I">
+				<xs:annotation>
+					<xs:documentation>Décès.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="Z">
+				<xs:annotation>
+					<xs:documentation>Fermeture du rapport de travail.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

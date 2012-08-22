@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    xmlns="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/1"
+	xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+    <xs:complexType name="rapportTravailType">
+        <xs:annotation>
+            <xs:documentation>Données de base d'un rapport de travail</xs:documentation>
+		</xs:annotation>
+			<xs:sequence>
+				<xs:element name="numeroDebiteur" type="unireg:partyNumberType" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Numéro du débiteur</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="numeroContribuable" type="unireg:partyNumberType" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>Numéro du contribuable</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="numeroSequenceListe" type="xs:string" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>numéro de séquence</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="type" type="typeListeType" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>type de liste</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="dateDebutPeriodeDeclaration" type="unireg:dateType" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Date de début période de déclaration liste (PD-DD)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="dateFinPeriodeDeclaration" type="unireg:dateType" minOccurs="1">
+					<xs:annotation>
+						<xs:documentation>Date de fin période de déclaration liste (PD-DF)</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+    </xs:complexType>
+
+	<xs:simpleType name="typeListeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Type de la liste traitée: Liste Récapitulative ou Liste Corrective.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="LR">
+				<xs:annotation>
+					<xs:documentation>Liste récapitulative.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LC">
+				<xs:annotation>
+					<xs:documentation>Liste corrective.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>
