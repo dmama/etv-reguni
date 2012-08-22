@@ -29,6 +29,7 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 	private static final IndividuComparisonHelper.Equalator<RelationVersIndividu> RELATION_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<RelationVersIndividu>() {
 		@Override
 		protected boolean areNonNullEqual(@NotNull RelationVersIndividu o1, @NotNull RelationVersIndividu o2) {
+			// on se fiche du sexe de l'autre personne (enfant, parent, conjoint..)
 			return IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2) && o1.getNumeroAutreIndividu() == o2.getNumeroAutreIndividu();
 		}
 	};

@@ -33,6 +33,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
+import ch.vd.unireg.interfaces.civil.rcpers.EvdHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.AdresseRCPers;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -42,13 +43,6 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 public class IndividuRCPers implements Individu, Serializable {
 
 	private static final long serialVersionUID = -7813406058433917119L;
-
-	private static final String EST_CONJOINT = "1";
-	private static final String EST_PARTENAIRE_ENREGISTRE = "2";
-	private static final String EST_MERE = "3";
-	private static final String EST_PERE = "4";
-	private static final String EST_FILLE = "101";
-	private static final String EST_FILS = "102";
 
 	private long noTechnique;
 	private String prenom;
@@ -406,11 +400,12 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		for (Relationship r : relationship) {
-			if (EST_FILLE.equals(r.getTypeOfRelationship()) || EST_FILS.equals(r.getTypeOfRelationship())) {
+			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+			if (type != null && type.isEnfant()) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
 				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
+				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;
@@ -422,7 +417,8 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		for (Relationship r : relationship) {
-			if (EST_MERE.equals(r.getTypeOfRelationship()) || EST_PERE.equals(r.getTypeOfRelationship())) {
+			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+			if (type != null && type.isParent()) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
 				if (validFrom == null) {
@@ -430,7 +426,7 @@ public class IndividuRCPers implements Individu, Serializable {
 					validFrom = dateNaissance;
 				}
 				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
+				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;
@@ -442,11 +438,12 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		final List<RelationVersIndividu> list = new ArrayList<RelationVersIndividu>();
 		for (Relationship r : relationship) {
-			if (EST_CONJOINT.equals(r.getTypeOfRelationship()) || EST_PARTENAIRE_ENREGISTRE.equals(r.getTypeOfRelationship())) {
+			final TypeRelationVersIndividu type = EvdHelper.typeRelationFromEvd1(r.getTypeOfRelationship());
+			if (type != null && type.isConjointOuPartenaire()) {
 				final Long numeroInd = getNoIndividu(r.getLocalPersonId());
 				final RegDate validFrom = XmlUtils.xmlcal2regdate(r.getRelationValidFrom());
 				final RegDate validTill = fixRelationEndDate(validFrom, XmlUtils.xmlcal2regdate(r.getRelationValidTill()));
-				list.add(new RelationVersIndividuImpl(numeroInd, validFrom, validTill));
+				list.add(new RelationVersIndividuImpl(numeroInd, type, validFrom, validTill));
 			}
 		}
 		return list.isEmpty() ? null : list;

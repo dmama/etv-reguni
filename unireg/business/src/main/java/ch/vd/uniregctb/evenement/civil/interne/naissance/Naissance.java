@@ -130,6 +130,9 @@ public class Naissance extends EvenementCivilInterne {
 		if (parent != null) {
 			context.getEvenementFiscalService().publierEvenementFiscalNaissance(bebe, parent, dateEvenement);
 		}
+		else {
+			Audit.warn(getNumeroEvenement(), "Contribuable de l'autorité parentale non trouvé, pas d'envoi de faire-part...");
+		}
 
 		return HandleStatus.TRAITE;
 	}

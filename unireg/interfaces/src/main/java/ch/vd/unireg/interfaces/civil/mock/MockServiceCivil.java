@@ -34,6 +34,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -422,7 +423,8 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 	
 	public static void addRelationConjoint(MockIndividu individu, MockIndividu nouveauConjoint, RegDate dateMariage) {
-		individu.getConjoints().add(new RelationVersIndividuImpl(nouveauConjoint.getNoTechnique(), dateMariage, null));
+		final TypeRelationVersIndividu type = individu.getSexe() == nouveauConjoint.getSexe() ? TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE : TypeRelationVersIndividu.CONJOINT;
+		individu.getConjoints().add(new RelationVersIndividuImpl(nouveauConjoint.getNoTechnique(), type, dateMariage, null));
 	}
 	
 	public static void reconcilieIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateReconciliation) {
