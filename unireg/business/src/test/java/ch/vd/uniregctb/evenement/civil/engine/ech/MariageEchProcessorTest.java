@@ -530,7 +530,7 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique monsieur = (PersonnePhysique) tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				MenageCommun menage = addEnsembleTiersCouple(monsieur,null,dateMariage,null).getMenage();
 				tiersService.closeForFiscalPrincipal(monsieur,dateMariage.getOneDayBefore(),MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 				addForPrincipal(menage, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens);
@@ -580,6 +580,132 @@ public class MariageEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEch evtMr = evtCivilDAO.get(mariageMonsieurId);
 				assertNotNull(evtMr);
 				assertEquals(EtatEvenementCivil.EN_ERREUR, evtMr.getEtat());
+
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+
+				final PersonnePhysique madame = tiersService.getPersonnePhysiqueByNumeroIndividu(noMadame);
+				assertNotNull(madame);
+
+				// On vérifie que madame n'est pas dans un ménage
+				final EnsembleTiersCouple ensemble1 = tiersService.getEnsembleTiersCouple(madame, dateMariage);
+				assertNull(ensemble1);
+
+				// Et que le ménage de monsieur n'a pas bougé
+				final EnsembleTiersCouple ensemble2 = tiersService.getEnsembleTiersCouple(monsieur, dateMariage);
+				assertNotNull(ensemble2);
+				assertSame(monsieur, ensemble2.getPrincipal());
+				assertNull(ensemble2.getConjoint());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testMariageSIFISC6022() throws Exception {
+
+		final long noMadame = 46215611L;
+		final long noMonsieur = 78215611L;
+		final RegDate dateMariage = RegDate.get().addMonths(-1);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissanceMonsieur = date(1923, 2, 12);
+				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissanceMonsieur, "Crispus", "Santacorpus", true);
+				final RegDate dateNaissanceMadame = date(1974, 8, 1);
+				final MockIndividu madame = addIndividu(noMadame, dateNaissanceMadame, "Lisette", "Bouton", false);
+
+				addNationalite(monsieur, MockPays.Suisse, dateNaissanceMonsieur, null);
+				addNationalite(madame, MockPays.Suisse, dateNaissanceMadame, null);
+
+				marieIndividu(monsieur, dateMariage);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique monsieur = addHabitant(noMonsieur);
+				addForPrincipal(monsieur, date(1943, 2, 12), MotifFor.MAJORITE, MockCommune.Echallens);
+				PersonnePhysique madame = addHabitant(noMadame);
+				addForPrincipal(madame, date(1992, 8, 1), MotifFor.MAJORITE, MockCommune.Chamblon);
+				return null;
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long mariageMonsieurId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(1235563456L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMonsieur);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMonsieur);
+
+		// vérification que l'évenement est traité et que monsieur est marié seul
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(mariageMonsieurId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+				final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(monsieur, dateMariage);
+				assertNotNull(ensemble);
+				assertSame(monsieur, ensemble.getPrincipal());
+				assertNull(ensemble.getConjoint());
+				return null;
+			}
+		});
+
+
+		// maintenant, on marie Madame ...
+		doModificationIndividus(noMonsieur, noMadame, new IndividusModification() {
+			@Override
+			public void modifyIndividus(MockIndividu monsieur, MockIndividu madame) {
+				MockServiceCivil.marieIndividu(madame, dateMariage);
+				MockServiceCivil.addRelationConjoint(madame, monsieur, dateMariage);
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long mariageMadameId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(34256724756L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateMariage);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMadame);
+				evt.setType(TypeEvenementCivilEch.MARIAGE);
+
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMadame);
+
+		// vérification que l' evenement de madame est en erruer et que un nouveau ménage commun ne soit pas créé
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evtMme = evtCivilDAO.get(mariageMadameId);
+				assertNotNull(evtMme);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evtMme.getEtat());
 
 				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
 				assertNotNull(monsieur);
