@@ -12,7 +12,7 @@
 						<fmt:message key="option.usage.civil.${adresseCivile.usageCivil}" />
 					</display:column>
 					<display:column sortable ="false" titleKey="label.provenance">
-						<unireg:localisation localisation="${adresseCivile.localisationPrecedente}" showVD="false"/>
+						<unireg:localisation localisation="${adresseCivile.localisationPrecedente}" showVD="true"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${adresseCivile.dateDebut}"/>
@@ -21,7 +21,7 @@
 						<unireg:regdate regdate="${adresseCivile.dateFin}"/>
 					</display:column>
 					<display:column sortable ="false" titleKey="label.destination">
-						<unireg:localisation localisation="${adresseCivile.localisationSuivante}" showVD="false"/>
+						<unireg:localisation localisation="${adresseCivile.localisationSuivante}" showVD="true"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
@@ -47,7 +47,7 @@
 						<fmt:message key="option.usage.civil.${adresseCivileConjoint.usageCivil}" />
 					</display:column>
 					<display:column sortable ="false" titleKey="label.provenance">
-						<unireg:localisation localisation="${adresseCivileConjoint.localisationPrecedente}" showVD="false"/>
+						<unireg:localisation localisation="${adresseCivileConjoint.localisationPrecedente}" showVD="true"/>
 					</display:column>
 					<display:column sortable ="true" titleKey="label.date.debut" sortProperty="dateDebut">
 						<unireg:regdate regdate="${adresseCivileConjoint.dateDebut}"/>
@@ -56,7 +56,7 @@
 						<unireg:regdate regdate="${adresseCivileConjoint.dateFin}"/>
 					</display:column>
 					<display:column sortable ="false" titleKey="label.destination">
-						<unireg:localisation localisation="${adresseCivileConjoint.localisationSuivante}" showVD="false"/>
+						<unireg:localisation localisation="${adresseCivileConjoint.localisationSuivante}" showVD="true"/>
 					</display:column>
 					<display:column sortable="true" titleKey="label.adresse.complement" property="complements"/>
 					<display:column sortable ="true" titleKey="label.rueCasePostale" property="rue"/>
