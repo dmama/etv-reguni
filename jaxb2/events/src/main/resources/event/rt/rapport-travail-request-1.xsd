@@ -4,47 +4,76 @@
 		   xmlns="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/request/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
 		   xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
-	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
+			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
 	<xs:complexType name="rapportTravailMiseAJourType">
 		<xs:annotation>
-			<xs:documentation>Evenement qui permet de demander à unireg la mise à jour d'un rapport
-				de travail
-			</xs:documentation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evenement qui permet de demander à unireg la mise à jour d'un rapport
+						de travail
+					</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="common:rapportTravailType">
 				<xs:sequence>
-
 					<xs:element name="dateDebutVersementSalaire" type="unireg:dateType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Date de début versement salaire (du décompte sourcier) VS-DD</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de début versement salaire (du décompte sourcier) VS-DD</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="dateFinVersementSalaire" type="unireg:dateType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Date de fin versement salaire (du décompte sourcier) VS-DF</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de fin versement salaire (du décompte sourcier) VS-DF</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="tauxActivite" type="tauxActiviteType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>taux d'activité (Taux)</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>taux d'activité (Taux)</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="typeActivite" type="activiteType" minOccurs="0">
+					<xs:element name="typeActivite" type="typeActiviteType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>taux d'activité (Taux)</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>type d'activité (Type)</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 					<xs:element name="codeEvenement" type="codeEvenementType" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation>code de l'évènement (Code-Evt)</xs:documentation>
-					</xs:annotation>
-				</xs:element>
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>code de l'évènement (Code-Evt)</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="dateEvenement" type="unireg:dateType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>Date de l'évènement (Date-Evt)</xs:documentation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Date de l'évènement (Date-Evt)</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
@@ -52,17 +81,18 @@
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:simpleType name="tauxActiviteType">
-		<xs:annotation>
-			<xs:documentation>Entier entre 0 et 100</xs:documentation>
-		</xs:annotation>
 		<xs:restriction base="xs:integer">
 			<xs:minInclusive value="0" />
 			<xs:maxInclusive value="100" />
 		</xs:restriction>
 	</xs:simpleType>
-	<xs:simpleType name="activiteType">
+	<xs:simpleType name="typeActiviteType">
 		<xs:annotation>
-			<xs:documentation>3 valeurs: Principale, Accessoire, Complémentaire</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Type d'activité pouvant prendre 3 valeurs: Principale, Accessoire, Complémentaire</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="PRINCIPALE">
@@ -84,7 +114,11 @@
 	</xs:simpleType>
 	<xs:simpleType name="codeEvenementType">
 		<xs:annotation>
-			<xs:documentation>B - Sortie; I - Décès; ou Z - Fermeture_RT</xs:documentation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>B - Sortie; I - Décès; ou Z - Fermeture_RT</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="B">
