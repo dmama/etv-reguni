@@ -131,7 +131,7 @@ public class Mariage extends EvenementCivilInterne {
 			String msg = String.format("L'individu conjoint %d n'a pas d'état civil actif dans le registre civil au %s",
 					conjoint.getNoTechnique(), RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
-			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, msg);
+			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, conjoint.getNoTechnique(), msg);
 		}
 
 		// si le conjoint n'est pas marié/pacsé, on lève une ConjointBizarreException
@@ -139,7 +139,7 @@ public class Mariage extends EvenementCivilInterne {
 			String msg = String.format("L'état civil de l'individu conjoint %d est '%s' dans le registre civil au %s",
 					conjoint.getNoTechnique(), etatCivil.getTypeEtatCivil(), RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
-			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, msg);
+			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL, conjoint.getNoTechnique(), msg);
 		}
 
 		final Individu principal = serviceCivil.getIndividu(noIndividu, dateDeValidite);
@@ -147,7 +147,7 @@ public class Mariage extends EvenementCivilInterne {
 			String msg = String.format("Le lien de conjoint n'existe pas depuis l'individu %d vers l'individu %d dans le registre civil au %s",
 					conjoint.getNoTechnique(), noIndividu, RegDateHelper.dateToDisplayString(dateDeValidite));
 			Audit.info(idEvent, msg);
-			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.LIEN, msg);
+			throw new ConjointBizarreException(ConjointBizarreException.TypeDeBizarrerie.LIEN, conjoint.getNoTechnique(), msg);
 		}
 
 		// on a trouvé le conjoint !
@@ -190,6 +190,23 @@ public class Mariage extends EvenementCivilInterne {
 		 */
 		if (isFromRcpers && conjointBizarreException != null && conjointBizarreException.bizarrerie == ConjointBizarreException.TypeDeBizarrerie.ETAT_CIVIL) {
 			erreurs.addErreur(conjointBizarreException);
+		}
+
+		/*
+		 * [SIFISC-6022] Dans le cas où le conjoint serait déja impliqué dans un ménage commun
+		 */
+		if (isFromRcpers && conjointBizarreException != null && conjointBizarreException.bizarrerie == ConjointBizarreException.TypeDeBizarrerie.LIEN) {
+			PersonnePhysique conjoint = context.getTiersService().getPersonnePhysiqueByNumeroIndividu(conjointBizarreException.noIndividuDuConjointBizarre);
+			if (conjoint != null) {
+				EnsembleTiersCouple etc = context.getTiersService().getEnsembleTiersCouple(conjoint, getDate());
+				if (etc != null) {
+					erreurs.addErreur(
+							String.format("L'individu conjoint (%s), contribuable (%s) est déjà associé au ménage commun (%s)",
+									conjoint.getNumeroIndividu(),
+									conjoint.getNumero(),
+									etc.getMenage().getNumero()));
+				}
+			}
 		}
 
 		/*
@@ -277,10 +294,12 @@ public class Mariage extends EvenementCivilInterne {
 		private static final long serialVersionUID = 8334382141567038871L;
 
 		final TypeDeBizarrerie bizarrerie;
+		final Long noIndividuDuConjointBizarre;
 
-		private ConjointBizarreException(TypeDeBizarrerie bizarrerie, String message) {
+		private ConjointBizarreException(TypeDeBizarrerie bizarrerie, Long noIndiv, String message) {
 			super(message);
 			this.bizarrerie = bizarrerie;
+			this.noIndividuDuConjointBizarre = noIndiv;
 		}
 
 	}
