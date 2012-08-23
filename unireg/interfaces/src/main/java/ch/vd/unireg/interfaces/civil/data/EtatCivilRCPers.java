@@ -60,7 +60,10 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 					final RegDate dateSeparation = XmlUtils.xmlcal2regdate(separation.getDateOfSeparation());
 					final RegDate dateReconciliation = XmlUtils.xmlcal2regdate(separation.getSeparationTill());
 
-					etatsCivils.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU));
+					// [SIFISC-5840] Les "états-civils" séparés sans date de début doivent être ignorés également
+					if (dateSeparation != null) {
+						etatsCivils.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU));
+					}
 					if (dateReconciliation != null) {
 						etatsCivils.add(new EtatCivilRCPers(dateReconciliation, type));
 					}
