@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.5 - 22 août 2012 - ajouté l'element 'status' sur le type 'commonHouseholdType' -->
+<!-- v1.2 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.0beta1 - 1 septembre 2011 - remplacé eCH-0044-2-0f.xsd par eCH-0044-2-0.xsd -->
 <!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
 <xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/person/1" elementFormDefault="qualified"
@@ -77,9 +78,49 @@
 		<xs:complexContent>
 			<xs:extension base="taxpayer:taxpayerType">
 				<xs:sequence>
-					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType" />
-					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType" />
+					<xs:element minOccurs="0" name="mainTaxpayer" type="person:naturalPersonType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le composant principal du ménage-commun, ou null si le ménage n'a jamais été rattaché à une personne.
+										Attention ! Cette valeur n'est renseignée que si la part HOUSEHOLD_MEMBERS est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="secondaryTaxpayer" type="person:naturalPersonType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Le conjoint du ménage-commun, ou null si le conjoint est inconnu.
+										Attention ! Cette valeur n'est renseignée que si la part HOUSEHOLD_MEMBERS est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element minOccurs="0" name="status" type="person:commonHouseholdStatusType">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'état du ménage-commun (actif, séparé ou terminé pour cause de décès) ou null si le ménage commun n'a jamais été rattaché à une personne.
+										Attention ! Ce status n'est renseigné que si la part HOUSEHOLD_MEMBERS est demandée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding2" type="xs:int">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
@@ -93,6 +134,32 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:simpleType name="commonHouseholdStatusType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>L'état d'un ménage-commun.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="ACTIVE">
+				<xs:annotation>
+					<xs:documentation>Le ménage est toujours actif (marié, pacsé, ...).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="SEPARATED_DIVORCED">
+				<xs:annotation>
+					<xs:documentation>Le ménage est terminé suite à une séparation ou un divorce (ou à une interruption de pacs).</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ENDED_BY_DEATH">
+				<xs:annotation>
+					<xs:documentation>Le ménage est terminé suite au décès d'un (ou des deux) des conjoints.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:simpleType name="sexType">
 		<xs:annotation>
 			<xs:appinfo>
