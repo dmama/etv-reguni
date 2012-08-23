@@ -57,6 +57,7 @@ import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
+import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
@@ -83,6 +84,7 @@ import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
@@ -1562,5 +1564,185 @@ public class PartyWebServiceTest extends WebserviceTest {
 			final PartyInfo info = list.getItems().get(0);
 			assertEquals(ids.jules, info.getNumber());
 		}
+	}
+
+	@Test
+	public void testGetCommonHouseholdStatus() throws Exception {
+
+		final RegDate dateFin = date(1997, 12, 3);
+
+		class Ids {
+			long menageVide;
+			long menageActif;
+			long menageSepare;
+			long menageSepareDecesApres;
+			long menageTermineCauseDecesPrincipal;
+			long menageTermineCauseDecesConjoint;
+			long menageTermineCauseDecesComourants;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				ids.menageVide = addMenageCommun(null).getId();
+
+				final PersonnePhysique marcel = addNonHabitant("Marcel", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique julie = addNonHabitant("Julie", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				final EnsembleTiersCouple menageActif = addEnsembleTiersCouple(marcel, julie, date(1970, 5, 1), null);
+				ids.menageActif = menageActif.getMenage().getId();
+
+				final PersonnePhysique john = addNonHabitant("John", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique selene = addNonHabitant("Sélène", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				final EnsembleTiersCouple menageSepare = addEnsembleTiersCouple(john, selene, date(1970, 5, 1), dateFin);
+				ids.menageSepare = menageSepare.getMenage().getId();
+
+				final PersonnePhysique olivier = addNonHabitant("Olivier", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				olivier.setDateDeces(date(2000, 3, 1));
+				final PersonnePhysique sabrina = addNonHabitant("Sabrina", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				final EnsembleTiersCouple menageSepareDecesApres = addEnsembleTiersCouple(olivier, sabrina, date(1970, 5, 1), dateFin);
+				ids.menageSepareDecesApres = menageSepareDecesApres.getMenage().getId();
+
+				final PersonnePhysique hughes = addNonHabitant("Hughes", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				hughes.setDateDeces(dateFin);
+				final PersonnePhysique juliette = addNonHabitant("Juliette", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				final EnsembleTiersCouple decesPrincipal = addEnsembleTiersCouple(hughes, juliette, date(1970, 5, 1), dateFin);
+				ids.menageTermineCauseDecesPrincipal = decesPrincipal.getMenage().getId();
+
+				final PersonnePhysique ramon = addNonHabitant("Ramon", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique eva = addNonHabitant("Eva", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				eva.setDateDeces(dateFin);
+				final EnsembleTiersCouple decesConjoint = addEnsembleTiersCouple(ramon, eva, date(1970, 5, 1), dateFin);
+				ids.menageTermineCauseDecesConjoint = decesConjoint.getMenage().getId();
+
+				final PersonnePhysique samson = addNonHabitant("Samson", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				samson.setDateDeces(dateFin);
+				final PersonnePhysique dalila = addNonHabitant("Dalila", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				dalila.setDateDeces(dateFin);
+				final EnsembleTiersCouple comourant = addEnsembleTiersCouple(samson, dalila, date(1970, 5, 1), dateFin);
+				ids.menageTermineCauseDecesComourants = comourant.getMenage().getId();
+				return null;
+			}
+		});
+
+		// ménage vide
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageVide);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNull(status);
+		}
+
+		// ménage actif
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageActif);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.ACTIVE, status);
+		}
+
+		// ménage séparé
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageSepare);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.SEPARATED_DIVORCED, status);
+		}
+
+		// ménage séparé et décès plus tardif du principal
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageSepareDecesApres);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.SEPARATED_DIVORCED, status);
+		}
+
+		// ménage terminé cause décès du principal
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageTermineCauseDecesPrincipal);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.ENDED_BY_DEATH, status);
+		}
+
+		// ménage terminé cause décès du conjoint
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageTermineCauseDecesConjoint);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.ENDED_BY_DEATH, status);
+		}
+
+		// ménage terminé cause décès simultané du principal et du conjoint (comourants)
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageTermineCauseDecesComourants);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.ENDED_BY_DEATH, status);
+		}
+
 	}
 }

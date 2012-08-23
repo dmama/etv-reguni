@@ -3076,7 +3076,7 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public RegDate getDateDeces(PersonnePhysique pp) {
+    public RegDate getDateDeces(@Nullable PersonnePhysique pp) {
         if (pp == null)
             return null;
 

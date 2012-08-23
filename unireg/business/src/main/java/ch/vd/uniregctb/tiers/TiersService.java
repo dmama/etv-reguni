@@ -835,7 +835,7 @@ public interface TiersService {
      * @param pp une personne physique
      * @return la date de décès ou <code>null</code> si la personne n'est pas décédée.
      */
-    public RegDate getDateDeces(PersonnePhysique pp);
+    public RegDate getDateDeces(@Nullable PersonnePhysique pp);
 
     /**
      * @param pp une personne physique
