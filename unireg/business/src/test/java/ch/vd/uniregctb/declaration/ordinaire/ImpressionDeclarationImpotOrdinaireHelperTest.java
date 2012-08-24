@@ -1460,8 +1460,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testIDEnvoiHorsSuisse() throws Exception {
-		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
+	public void testIDEnvoiHorsSuisseRueOuLocaliteInconnue() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuisseRueOuLocaliteInconnue SIFISC-4146");
 
 
 		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
@@ -1487,7 +1487,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 					null, false);
 			assertNotNull(document);
 			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_EUROPE,document.getInfoDocument().getAffranchissement().getZone());
-			assertEquals("",document.getInfoDocument().getIdEnvoi());
+			assertEquals("10",document.getInfoDocument().getIdEnvoi());
 
 
 		}
@@ -1497,8 +1497,8 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testIDEnvoiHorsSuisseAdresseIncomplete() throws Exception {
-		LOGGER.debug("EditiqueHelperTest - testRemplitExpediteur UNIREG-2541");
+	public void testIDEnvoiHorsSuissePaysInconnue() throws Exception {
+		LOGGER.debug("EditiqueHelperTest - testIDEnvoiHorsSuissePaysInconnue SIFISC-4146");
 
 
 		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);

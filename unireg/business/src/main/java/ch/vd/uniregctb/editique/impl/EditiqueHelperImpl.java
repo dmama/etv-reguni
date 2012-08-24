@@ -12,6 +12,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
@@ -21,6 +22,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.common.NpaEtLocalite;
+import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
@@ -45,8 +48,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	private static final String APPLICATION_ARCHIVAGE = "FOLDERS";
 	private static final String TYPE_DOSSIER_ARCHIVAGE = "003";
-
-
 
 
 	private ServiceInfrastructureService infraService;
@@ -280,7 +281,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		//
 		// Expediteur
 		//
-		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci =  infraService.getACI();
+		ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative aci = infraService.getACI();
 		ch.vd.unireg.interfaces.civil.data.Adresse aciAdresse = aci.getAdresse();
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
@@ -311,9 +312,10 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	/**
 	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
-	 * @param typeDocument le type de document qui nous intéresse
-	 * @param noTiers le numéro du tiers concerné par le document
-	 * @param cleArchivage la clé d'archivage du document
+	 *
+	 * @param typeDocument   le type de document qui nous intéresse
+	 * @param noTiers        le numéro du tiers concerné par le document
+	 * @param cleArchivage   la clé d'archivage du document
 	 * @param dateTraitement la date de génération du document
 	 * @return la structure de demande d'archivage remplie
 	 */
@@ -343,24 +345,40 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	}
 
 	@Override
-	public  void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
+	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException {
 
 		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 
-		switch (adresseEnvoiDetaillee.getTypeAffranchissement()){
-			case SUISSE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
-				break;
-			case EUROPE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
-				break;
-			case MONDE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
-				break;
+		switch (adresseEnvoiDetaillee.getTypeAffranchissement()) {
+		case SUISSE:
+			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
+			break;
+		case EUROPE:
+			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
+			break;
+		case MONDE:
+			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
+			break;
 
-			default:
-				affranchissement.setZone(null);
+		default:
+			affranchissement.setZone(null);
 		}
+	}
+
+	@Override
+	public boolean isAdresseEnvoiDetailleeIncomplete(AdresseEnvoiDetaillee adresseEnvoiDetaillee) {
+
+		final RueEtNumero rueEtNumero = adresseEnvoiDetaillee.getRueEtNumero();
+		final NpaEtLocalite npaEtLocalite = adresseEnvoiDetaillee.getNpaEtLocalite();
+		final Pays pays = adresseEnvoiDetaillee.getPays();
+
+		final boolean rueVideOuInconnue = rueEtNumero == null || RueEtNumero.VIDE.equals(rueEtNumero);
+		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
+		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
+
+		return rueVideOuInconnue || localiteVideOuInconnue || paysVideOuInconnue;
+
+
 	}
 
 	@Override
@@ -370,7 +388,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			adresse = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 		}
 		catch (AdresseException e) {
-			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " +tiers.getNumero()+" erreur: "+e.getMessage());
+			throw new EditiqueException("Impossible de récuperer l'adresse d'envoi pour le tiers = " + tiers.getNumero() + " erreur: " + e.getMessage());
 		}
 		remplitAffranchissement(infoDocument, adresse);
 	}

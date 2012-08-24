@@ -171,7 +171,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 			//SIFISC-4146
 			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
 			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
-			if (adresseEnvoiDetaillee.getPays()!=null && adresseEnvoiDetaillee.getPays().getNoOFS() != ServiceInfrastructureService.noPaysInconnu) {
+			if (!editiqueHelper.isAdresseEnvoiDetailleeIncomplete(adresseEnvoiDetaillee)) {
 				idEnvoi = "";
 			}
 			else {
