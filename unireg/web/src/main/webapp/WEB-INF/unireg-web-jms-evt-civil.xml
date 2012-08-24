@@ -102,6 +102,7 @@
 		<property name="notificationQueue" ref="evtCivilEchNotificationQueue"/>
 		<property name="transactionManager" ref="transactionManager"/>
         <property name="evtCivilService" ref="evtCivilEchService" />
+		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessorImpl">

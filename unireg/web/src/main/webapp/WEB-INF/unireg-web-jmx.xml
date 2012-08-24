@@ -127,7 +127,7 @@
 	</bean>
 
 	<bean name="webAccessLoadJmxBean" class="ch.vd.uniregctb.load.DetailedLoadJmxBeanImpl">
-		<constructor-arg name="serviceName" value="web-access"/>
+		<constructor-arg name="serviceName" value="WebAccess"/>
 		<constructor-arg name="service" ref="accessLoggerFilter"/>
 		<constructor-arg name="statsService" ref="statsService"/>
 	</bean>
