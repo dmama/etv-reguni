@@ -1415,9 +1415,8 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réunification du couple
 		 */
-		return doMariageReconciliation(menageCommun, date, remarque, ch.vd.uniregctb.type.EtatCivil.MARIE, numeroEvenement, changeHabitantFlag);
+		return doMariageReconciliation(menageCommun, date, remarque, mariesOuPacses(menageCommun) , numeroEvenement, changeHabitantFlag);
 	}
-
 
 	@Override
 	public void annuleReconciliation(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, Long numeroEvenement) throws MetierServiceException {
@@ -1682,6 +1681,26 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mise à jour de la situation de famille
 		 */
+		ch.vd.uniregctb.type.EtatCivil etatCivilFamille = mariesOuPacses(menage);
+		updateSituationFamilleAnnulationSeparation(menage, date, etatCivilFamille);
+	}
+
+	/**
+	 * Determine si le ménage commun est lié par un pacs ou un mariage.<br/>
+	 *
+	 * Se base sur le sexe des personnes constituant le ménage s'il y a 2 personnes
+	 * ou interroge le civil pour les mariés seuls.
+	 * Si on ne trouve pas l'info dans le civil par défaut on renvoie {@link ch.vd.uniregctb.type.EtatCivil#MARIE}
+	 *
+	 * @param menage le ménage commun en question
+	 *
+	 * @return
+	 *  <ul>
+	 *      <li>{@link ch.vd.uniregctb.type.EtatCivil#MARIE} pour un mariage ou si on arrive pas a determiner l'information avec certitude;</li>
+	 *      <li>{@link ch.vd.uniregctb.type.EtatCivil#LIE_PARTENARIAT_ENREGISTRE} pour un pacs</li>
+	 *  </ul>
+	 */
+	private ch.vd.uniregctb.type.EtatCivil mariesOuPacses(MenageCommun menage) {
 		final Set<PersonnePhysique> personnePhysiqueSet = tiersService.getPersonnesPhysiques(menage);
 		final PersonnePhysique[] personnes = personnePhysiqueSet.toArray(new PersonnePhysique[personnePhysiqueSet.size()]);
 		final PersonnePhysique tiers1 = personnes[0];
@@ -1695,12 +1714,10 @@ public class MetierServiceImpl implements MetierService {
 			// Dans le cas d'un marié seul, on peut avoir à faire à un partenartiat enregistré
 			// on verifie dans le civil si c'est le cas.
 			if (tiers1.isConnuAuCivil()) {
-				etatCivilFamille = EtatCivilHelper.civil2core(serviceCivilService.getEtatCivilActif(tiers1.getNumeroIndividu(), date).getTypeEtatCivil());
+				etatCivilFamille = EtatCivilHelper.civil2core(serviceCivilService.getEtatCivilActif(tiers1.getNumeroIndividu(), menage.getDateDebutActivite()).getTypeEtatCivil());
 			}
 		}
-
-		updateSituationFamilleAnnulationSeparation(menage, date, etatCivilFamille);
-
+		return etatCivilFamille;
 	}
 
 	private void updateSituationFamilleAnnulationSeparation(MenageCommun menage, RegDate date, ch.vd.uniregctb.type.EtatCivil etatCivilFamille) {

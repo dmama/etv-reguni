@@ -433,13 +433,29 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	/**
+	 * lie un individu, mais seul.
+	 */
+	private static void lieIndividu(MockIndividu individu, RegDate date, TypeEtatCivil etatCivil) {
+
+		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
+		final EtatCivil etatCivilIndividu = creeEtatCivil(date, etatCivil);
+		etatsCivilIndividu.add(etatCivilIndividu);
+	}
+
+	/**
 	 * Marie un individu, mais seul.
 	 */
 	public static void marieIndividu(MockIndividu individu, RegDate dateMariage) {
-		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateMariage, TypeEtatCivil.MARIE);
-		etatsCivilIndividu.add(etatCivilIndividu);
+		lieIndividu(individu, dateMariage, TypeEtatCivil.MARIE);
 	}
+
+	/**
+	 * Pacse un individu, mais seul.
+	 */
+	public static void pacseIndividu(MockIndividu individu, RegDate datePacs) {
+		lieIndividu(individu, datePacs, TypeEtatCivil.PACS);
+	}
+
 
 	public static void separeIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateSeparation) {
 		separeIndividu(individu, dateSeparation);
