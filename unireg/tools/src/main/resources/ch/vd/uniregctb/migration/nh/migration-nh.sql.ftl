@@ -1,8 +1,8 @@
 <#macro StrOrNull value><#if value?trim = "">null<#else>'${value}'</#if></#macro>
 <#macro NumOrNull value><#if value?trim = "">null<#else>${value}</#if></#macro>
 
-<#--Palliatif pour la date de debut: 01.01.2000 si pas de valeur-->
-<#macro DateOrDefault value><#if value?trim = "">20000101<#else>${value}</#if></#macro>
+<#--Palliatif pour la date de debut: 21.09.2012 si pas de valeur (date de la MeP 12R3, valeur "magique" choisie par l'ACI)-->
+<#macro DateOrDefault value><#if value?trim = "">20120921<#else>${value}</#if></#macro>
 
 <#list tiers as t>
 -----------------------------------
