@@ -19,6 +19,7 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -27,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 
-public class CessationSeparationEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
+public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSeparationEchProcessorTest {
 
 	@Test(timeout = 10000L)
 	public void testCessationSeparationAvecRedondance() throws Exception {
@@ -268,4 +269,41 @@ public class CessationSeparationEchProcessorTest extends AbstractEvenementCivilE
 			}
 		});
 	}
+
+	@Test(timeout = 10000L)
+	public void testHomoSIFISC6044() throws Exception {
+		testSituationFamille(
+				ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
+				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
+				TypeEvenementCivilEch.CESSATION_SEPARATION);
+	}
+
+	@Test(timeout = 10000L)
+	public void testHeteroSIFISC6044() throws Exception {
+		testSituationFamille(
+				EtatCivil.MARIE,
+				EtatCivil.DIVORCE,
+				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
+				TypeEvenementCivilEch.CESSATION_SEPARATION);
+	}
+
+	@Test(timeout = 10000L)
+	public void testHomoSeulSIFISC6044() throws Exception {
+		testSituationFamilleMarieSeul(
+				ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
+				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
+				TypeEvenementCivilEch.CESSATION_SEPARATION);
+	}
+
+	@Test(timeout = 10000L)
+	public void testHeteroSeulSIFISC6044() throws Exception {
+		testSituationFamilleMarieSeul(
+				EtatCivil.MARIE,
+				EtatCivil.DIVORCE,
+				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
+				TypeEvenementCivilEch.CESSATION_SEPARATION);
+	}
+
 }
