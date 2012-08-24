@@ -604,7 +604,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return true;
     }
 
-    protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, RegDate fin, Integer nombreEnfants) {
+    protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, Integer nombreEnfants) {
         SituationFamille situation = new SituationFamillePersonnePhysique();
         situation.setDateDebut(debut);
         situation.setDateFin(fin);
@@ -612,7 +612,17 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return (SituationFamillePersonnePhysique) tiersDAO.addAndSave(pp, situation);
     }
 
-    protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, RegDate fin, int nombreEnfants,
+	protected SituationFamillePersonnePhysique addSituation(PersonnePhysique pp, RegDate debut, @Nullable RegDate fin, Integer nombreEnfants, ch.vd.uniregctb.type.EtatCivil etatCivil) {
+		SituationFamille situation = new SituationFamillePersonnePhysique();
+		situation.setDateDebut(debut);
+		situation.setDateFin(fin);
+		situation.setNombreEnfants(nombreEnfants);
+		situation.setEtatCivil(etatCivil);
+		return (SituationFamillePersonnePhysique) tiersDAO.addAndSave(pp, situation);
+	}
+
+
+	protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, @Nullable RegDate fin, int nombreEnfants,
                                                         TarifImpotSource tarif) {
         SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
         situation.setDateDebut(debut);
@@ -622,7 +632,19 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         return (SituationFamilleMenageCommun) tiersDAO.addAndSave(menage, situation);
     }
 
-    protected IdentificationPersonne addIdentificationPersonne(PersonnePhysique pp, CategorieIdentifiant categorie, String identifiant) {
+	protected SituationFamilleMenageCommun addSituation(MenageCommun menage, RegDate debut, @Nullable RegDate fin, int nombreEnfants,
+	                                                     TarifImpotSource tarif, ch.vd.uniregctb.type.EtatCivil etatCivil) {
+		SituationFamilleMenageCommun situation = new SituationFamilleMenageCommun();
+		situation.setDateDebut(debut);
+		situation.setDateFin(fin);
+		situation.setNombreEnfants(nombreEnfants);
+		situation.setTarifApplicable(tarif);
+		situation.setEtatCivil(etatCivil);
+		return (SituationFamilleMenageCommun) tiersDAO.addAndSave(menage, situation);
+	}
+
+
+	protected IdentificationPersonne addIdentificationPersonne(PersonnePhysique pp, CategorieIdentifiant categorie, String identifiant) {
         IdentificationPersonne ident = new IdentificationPersonne();
         ident.setCategorieIdentifiant(categorie);
         ident.setIdentifiant(identifiant);

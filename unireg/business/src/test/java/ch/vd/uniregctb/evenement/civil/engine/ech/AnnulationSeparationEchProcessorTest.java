@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -23,11 +24,18 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.SituationFamille;
+import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class AnnulationSeparationEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 	
@@ -396,4 +404,97 @@ public class AnnulationSeparationEchProcessorTest extends AbstractEvenementCivil
 			}
 		});
 	}
+
+	/**
+	 * Test les effets de bord de l'annulation de séparation sur les situation de famille unireg
+	 * @throws Exception
+	 */
+	public void testSIFISC5323(final ch.vd.uniregctb.type.EtatCivil etatCivilEnMenage, final ch.vd.uniregctb.type.EtatCivil etatCivilSepare) throws Exception {
+
+		final long noMonsieur = 411587L;
+		final RegDate dateNaissance = date(1957, 3, 29);
+		final RegDate dateMariage = date(2005, 5, 5);
+		final RegDate dateSeparation = date(2008, 11, 23);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu monsieur = addIndividu(noMonsieur, dateNaissance, "Lambert", "Christophe", true);
+				addNationalite(monsieur, MockPays.Suisse, dateNaissance, null);
+				marieIndividu(monsieur,dateMariage);
+				separeIndividu(monsieur,dateSeparation);
+			}
+		});
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique monsieur = addHabitant(noMonsieur);
+				final MenageCommun menage = addEnsembleTiersCouple(monsieur, null, dateMariage, dateSeparation.getOneDayBefore()).getMenage();
+				addForPrincipal(monsieur,
+						dateNaissance.addYears(18), MotifFor.MAJORITE,
+						dateMariage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						MockCommune.Echallens);
+				addForPrincipal(menage,
+						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Echallens);
+				addSituation(monsieur, dateNaissance, dateMariage.getOneDayBefore() , 0, ch.vd.uniregctb.type.EtatCivil.CELIBATAIRE);
+				addSituation(menage, dateMariage, dateSeparation.getOneDayBefore(), 0, TarifImpotSource.NORMAL, etatCivilEnMenage);
+				addSituation(monsieur, dateSeparation,null, 0, etatCivilSepare);
+				return null;
+			}
+		});
+
+		// événement civil (avec individu déjà renseigné pour ne pas devoir appeler RCPers...)
+		final long annulationSeparationId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(454563457L);
+				evt.setAction(ActionEvenementCivilEch.ANNULATION);
+				evt.setDateEvenement(dateSeparation);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noMonsieur);
+				evt.setType(TypeEvenementCivilEch.SEPARATION);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement synchrone de l'événement
+		traiterEvenements(noMonsieur);
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(annulationSeparationId);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique monsieur = tiersService.getPersonnePhysiqueByNumeroIndividu(noMonsieur);
+				assertNotNull(monsieur);
+				final SituationFamille situationDeFamillePersonnelle = monsieur.getSituationFamilleActive();
+				assertNull(situationDeFamillePersonnelle);
+				final MenageCommun menage = tiersService.getEnsembleTiersCouple(monsieur, null).getMenage();
+				assertNotNull(menage);
+				final SituationFamilleMenageCommun situationDeFamilleMenage = (SituationFamilleMenageCommun) menage.getSituationFamilleActive();
+				assertNotNull(situationDeFamilleMenage);
+				assertNull(situationDeFamilleMenage.getDateFin());
+				assertEquals(etatCivilEnMenage, situationDeFamilleMenage.getEtatCivil());
+
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testHeteroSIFISC5323() throws Exception {
+		testSIFISC5323(ch.vd.uniregctb.type.EtatCivil.MARIE, ch.vd.uniregctb.type.EtatCivil.DIVORCE);
+	}
+
+	@Test(timeout = 10000L)
+	public void testHomoSIFISC5323() throws Exception {
+		testSIFISC5323(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT);
+	}
+
 }
