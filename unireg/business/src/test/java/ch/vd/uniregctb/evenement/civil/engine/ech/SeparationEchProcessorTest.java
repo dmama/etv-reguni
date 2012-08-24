@@ -108,8 +108,8 @@ public class SeparationEchProcessorTest extends AbstractEvenementCivilEchProcess
 	}
 
 
-	@Test
-	public void testSeparationAvecNonHabitant() throws Exception {
+	@Test(timeout = 10000L)
+		 public void testSeparationAvecNonHabitant() throws Exception {
 
 		final long noMonsieur = 78215611L;
 		final RegDate dateMariage = date(2005, 5, 5);
