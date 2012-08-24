@@ -14,9 +14,9 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
+import ch.vd.uniregctb.load.BasicLoadMonitor;
 import ch.vd.uniregctb.load.LoadAverager;
 import ch.vd.uniregctb.load.LoadMonitorable;
-import ch.vd.uniregctb.stats.LoadMonitor;
 import ch.vd.uniregctb.stats.StatsService;
 
 public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchReceptionHandler, EvenementCivilEchReceptionMonitor, InitializingBean, DisposableBean {
@@ -133,17 +133,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			loadAverager.start();
 
 			// enregistrement du monitoring
-			statsService.registerLoadMonitor(SERVICE_NAME, new LoadMonitor() {
-				@Override
-				public int getLoad() {
-					return service.getLoad();
-				}
-
-				@Override
-				public double getFiveMinuteAverageLoad() {
-					return loadAverager.getAverageLoad();
-				}
-			});
+			statsService.registerLoadMonitor(SERVICE_NAME, new BasicLoadMonitor(service, loadAverager));
 		}
 	}
 

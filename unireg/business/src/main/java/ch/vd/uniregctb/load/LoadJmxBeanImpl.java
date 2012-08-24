@@ -5,7 +5,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-import ch.vd.uniregctb.stats.LoadMonitor;
 import ch.vd.uniregctb.stats.StatsService;
 
 @ManagedResource
@@ -41,17 +40,7 @@ public class LoadJmxBeanImpl<T extends LoadMonitorable> implements LoadJmxBean, 
 		
 		// on n'enregistre dans le service de stats que si c'est nécessaire
 		if (statsService != null) {
-			statsService.registerLoadMonitor(serviceName, new LoadMonitor() {
-				@Override
-				public int getLoad() {
-					return LoadJmxBeanImpl.this.service.getLoad();
-				}
-
-				@Override
-				public double getFiveMinuteAverageLoad() {
-					return LoadJmxBeanImpl.this.averager.getAverageLoad();
-				}
-			});
+			statsService.registerLoadMonitor(serviceName, new BasicLoadMonitor(service, averager));
 		}
 	}
 
