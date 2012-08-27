@@ -202,7 +202,7 @@ public abstract class EchHelper {
 		case PACS_VEUF:
 			return "7/4";
 		case SEPARE:
-		case PACS_INTERROMPU:
+		case PACS_SEPARE:
 		default:
 			throw new IllegalArgumentException("L'état-civil [" + etatCivil + "] n'existe pas dans la norme eCH");
 		}

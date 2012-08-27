@@ -101,7 +101,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final RegDate debut = date(2000, 1, 1);
 		final RegDate fin = date(2012, 8, 3);
 		final TypeEtatCivil type1 = TypeEtatCivil.PACS_TERMINE;
-		final TypeEtatCivil type2 = TypeEtatCivil.PACS_INTERROMPU;
+		final TypeEtatCivil type2 = TypeEtatCivil.PACS_SEPARE;
 		final long noEvt1 = 4326784234L;
 		final long noEvt2 = 54378436574L;
 

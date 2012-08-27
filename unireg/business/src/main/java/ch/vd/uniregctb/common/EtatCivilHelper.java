@@ -20,13 +20,13 @@ public class EtatCivilHelper {
 
 	/**
 	 * @param etatCivil à tester
-	 * @return  true si l'état civil représente la valeur SEPARE ou PACS_INTERROMPU.
+	 * @return  true si l'état civil représente la valeur SEPARE ou PACS_SEPARE.
 	 */
 	public static boolean estSepare(@Nullable EtatCivil etatCivil) {
 		if (etatCivil == null)
 			return false;
 		final TypeEtatCivil type = etatCivil.getTypeEtatCivil();
-		return type == TypeEtatCivil.SEPARE || type == TypeEtatCivil.PACS_INTERROMPU;
+		return type == TypeEtatCivil.SEPARE || type == TypeEtatCivil.PACS_SEPARE;
 	}
 
 	/**
@@ -67,7 +67,7 @@ public class EtatCivilHelper {
 			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
 		case PACS_VEUF:
 			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_DECES;
-		case PACS_INTERROMPU:
+		case PACS_SEPARE:
 			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE;
 		case SEPARE:
 			return ch.vd.uniregctb.type.EtatCivil.SEPARE;

@@ -131,7 +131,7 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		assertNotNull(etats);
 		assertEquals(2, etats.size());
 		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, etats.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, etats.get(1));
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_SEPARE, etats.get(1));
 	}
 
 	@Test
@@ -153,9 +153,9 @@ public class EtatCivilRCPersTest extends WithoutSpringTest {
 		assertNotNull(etats);
 		assertEquals(4, etats.size());
 		assertEtatCivil(date(2000, 1, 1), null, TypeEtatCivil.PACS, etats.get(0));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, etats.get(1));
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_SEPARE, etats.get(1));
 		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.PACS, etats.get(2));
-		assertEtatCivil(date(2006, 1, 4), null, TypeEtatCivil.PACS_INTERROMPU, etats.get(3));
+		assertEtatCivil(date(2006, 1, 4), null, TypeEtatCivil.PACS_SEPARE, etats.get(3));
 	}
 
 	/**

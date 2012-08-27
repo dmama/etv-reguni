@@ -79,7 +79,7 @@ public abstract class EnumHelper {
 		case MARIE:
 			return MaritalStatus.MARRIED;
 		case PACS_TERMINE:
-		case PACS_INTERROMPU:
+		case PACS_SEPARE:
 			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW;
 		case PACS_VEUF:
 			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_DEATH;

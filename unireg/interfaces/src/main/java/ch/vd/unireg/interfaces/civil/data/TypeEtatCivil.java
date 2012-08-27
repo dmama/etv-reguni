@@ -22,7 +22,7 @@ public enum TypeEtatCivil {
 	/**
 	 * Etat civil équivalent à l'état {@link #SEPARE} mais pour les pacs.
 	 */
-	PACS_INTERROMPU,
+	PACS_SEPARE,
 	SEPARE,
 	VEUF,
 	NON_MARIE;
@@ -47,7 +47,7 @@ public enum TypeEtatCivil {
 			return PACS_TERMINE;
 		}
 		else if (right == EnumTypeEtatCivil.PACS_INTERROMPU) {
-			return PACS_INTERROMPU;
+			return PACS_SEPARE;
 		}
 		else if (right == EnumTypeEtatCivil.SEPARE) {
 			return SEPARE;

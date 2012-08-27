@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
-import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.webservices.party3.SearchMode;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
@@ -60,36 +59,6 @@ public abstract class EnumHelper {
 			return MaritalStatus.SEPARATED;
 		case VEUF:
 			return MaritalStatus.WIDOWED;
-		default:
-			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
-		}
-	}
-
-	public static MaritalStatus coreToWeb(TypeEtatCivil etatCivil) {
-		if (etatCivil == null) {
-			return null;
-		}
-
-		switch (etatCivil) {
-		case CELIBATAIRE:
-			return MaritalStatus.SINGLE;
-		case DIVORCE:
-			return MaritalStatus.DIVORCED;
-		case PACS:
-			return MaritalStatus.REGISTERED_PARTNER;
-		case MARIE:
-			return MaritalStatus.MARRIED;
-		case PACS_TERMINE:
-		case PACS_INTERROMPU:
-			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW;
-		case PACS_VEUF:
-			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_DEATH;
-		case SEPARE:
-			return MaritalStatus.SEPARATED;
-		case VEUF:
-			return MaritalStatus.WIDOWED;
-		case NON_MARIE:
-			return MaritalStatus.NOT_MARRIED;
 		default:
 			throw new IllegalArgumentException("Type d'état civil inconnu = [" + etatCivil + ']');
 		}

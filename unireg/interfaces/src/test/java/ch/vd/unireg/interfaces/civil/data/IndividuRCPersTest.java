@@ -126,7 +126,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(3, list.size());
 		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.PACS, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_INTERROMPU, list.get(2));
+		assertEtatCivil(date(2005, 5, 29), null, TypeEtatCivil.PACS_SEPARE, list.get(2));
 	}
 
 	@Test
@@ -140,7 +140,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		assertEquals(4, list.size());
 		assertEtatCivil(date(1960, 1, 1), date(1999, 12, 31), TypeEtatCivil.CELIBATAIRE, list.get(0));
 		assertEtatCivil(date(2000, 1, 1), date(2005, 5, 28), TypeEtatCivil.PACS, list.get(1));
-		assertEtatCivil(date(2005, 5, 29), date(2005, 10, 3), TypeEtatCivil.PACS_INTERROMPU, list.get(2));
+		assertEtatCivil(date(2005, 5, 29), date(2005, 10, 3), TypeEtatCivil.PACS_SEPARE, list.get(2));
 		assertEtatCivil(date(2005, 10, 4), null, TypeEtatCivil.PACS, list.get(3));
 	}
 

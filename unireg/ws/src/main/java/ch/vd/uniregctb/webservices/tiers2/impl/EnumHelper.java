@@ -58,7 +58,7 @@ public abstract class EnumHelper {
 		case MARIE:
 			return EtatCivil.MARIE;
 		case PACS_TERMINE:
-		case PACS_INTERROMPU:
+		case PACS_SEPARE:
 			return EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
 		case PACS_VEUF:
 			return EtatCivil.PARTENARIAT_DISSOUS_DECES;

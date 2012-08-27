@@ -62,7 +62,7 @@ public class EtatCivilRCPers implements EtatCivil, Serializable {
 
 					// [SIFISC-5840] Les "états-civils" séparés sans date de début doivent être ignorés également
 					if (dateSeparation != null) {
-						etatsCivils.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_INTERROMPU));
+						etatsCivils.add(new EtatCivilRCPers(dateSeparation, type == TypeEtatCivil.MARIE ? TypeEtatCivil.SEPARE : TypeEtatCivil.PACS_SEPARE));
 					}
 					if (dateReconciliation != null) {
 						etatsCivils.add(new EtatCivilRCPers(dateReconciliation, type));
