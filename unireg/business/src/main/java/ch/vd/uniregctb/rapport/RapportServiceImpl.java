@@ -21,7 +21,6 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
@@ -51,7 +50,6 @@ import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -511,31 +509,6 @@ public class RapportServiceImpl implements RapportService {
 			throw new RuntimeException(e);
 		}
 
-	}
-
-	/**
-	 * Genère le rapport (PDF) pour les impressions en masse des chemises de taxation d'office
-	 *
-	 * @param results le résultat de l'exécution du job
-	 * @return le rapport
-	 */
-	@Override
-	public ImpressionChemisesTORapport generateRapport(final ImpressionChemisesTOResults results, final StatusManager statusManager) {
-		final String nom = "RapportChemisesTO" + results.getDateTraitement().index();
-		final String description = String.format("Rapport de l'impression des chemises de taxation d'office au %s.", RegDateHelper.dateToDisplayString(results.getDateTraitement()));
-		final Date dateGeneration = DateHelper.getCurrentDate();
-		try {
-			return docService.newDoc(ImpressionChemisesTORapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ImpressionChemisesTORapport>() {
-				@Override
-				public void writeDoc(ImpressionChemisesTORapport doc, OutputStream os) throws Exception {
-					final PdfImpressionChemisesTORapport document = new PdfImpressionChemisesTORapport();
-					document.write(results, nom, description, dateGeneration, os, statusManager);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	/**

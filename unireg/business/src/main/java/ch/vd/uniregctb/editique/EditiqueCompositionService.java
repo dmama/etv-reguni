@@ -152,14 +152,6 @@ public interface EditiqueCompositionService {
 	EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
 
 	/**
-	 * Imprime une chemise de taxation d'office en batch
-	 *
-	 * @param declaration
-	 * @throws EditiqueException
-	 */
-	void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException;
-
-	/**
 	 * Envoie à l'éditique le bordereau de mouvements de dossiers correspondant aux mouvement donnés
 	 *
 	 * @param bordereauMouvementDossier les mouvements qui doivent apparaître sur le bordereau

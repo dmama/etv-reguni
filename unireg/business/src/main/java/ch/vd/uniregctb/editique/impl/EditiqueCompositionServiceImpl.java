@@ -362,14 +362,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	}
 
 	@Override
-	public void imprimeTaxationOfficeBatch(DeclarationImpotOrdinaire declaration) throws EditiqueException {
-		final TypeDocumentEditique typeDocument = impressionTaxationOfficeHelper.getTypeDocumentEditique();
-		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
-		final String nomDocument = impressionTaxationOfficeHelper.construitIdDocument(declaration);
-		editiqueService.creerDocumentParBatch(nomDocument, typeDocument, document, false);
-	}
-
-	@Override
 	public EditiqueResultat envoyerImpressionLocaleBordereau(BordereauMouvementDossier bordereau) throws EditiqueException, JMSException {
 		final TypeDocumentEditique prefixe = impressionBordereauMouvementDossierHelper.getTypeDocumentEditique();
 		final String[] infoOperateur = getInfoOperateur();

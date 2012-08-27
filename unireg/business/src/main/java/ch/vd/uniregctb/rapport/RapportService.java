@@ -13,7 +13,6 @@ import ch.vd.uniregctb.declaration.ordinaire.EnvoiAnnexeImmeubleResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiSommationsDIsResults;
 import ch.vd.uniregctb.declaration.ordinaire.ImportCodesSegmentResults;
-import ch.vd.uniregctb.declaration.ordinaire.ImpressionChemisesTOResults;
 import ch.vd.uniregctb.declaration.ordinaire.ListeDIsNonEmises;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesDIs;
@@ -42,7 +41,6 @@ import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
-import ch.vd.uniregctb.document.ImpressionChemisesTORapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
@@ -261,16 +259,6 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	EchoirDIsRapport generateRapport(EchoirDIsResults results, StatusManager status);
-
-	/**
-	 * Genère le rapport (PDF) pour les impressions en masse des chemises de taxation d'office
-	 *
-	 * @param results
-	 *            le résultat de l'exécution du job
-	 *
-	 * @return le rapport
-	 */
-	ImpressionChemisesTORapport generateRapport(ImpressionChemisesTOResults results, StatusManager statusManager);
 
 	/**
 	 * Genère le rapport (PDF) pour la réinitialisation des barèmes double-gain

@@ -6,17 +6,11 @@ import javax.persistence.Entity;
 
 /**
  * Rapport d'exécution du batch d'impression des chemises TO
+ * @deprecated Cette classe reste dans le jar pour pouvoir relire des rapports sauvegardés en base, mais n'est plus jamais générée.
  */
 @Entity
 @DiscriminatorValue("ChemisesTORapport")
 public class ImpressionChemisesTORapport extends Document {
-
-	private static final long serialVersionUID = 5582546081227737596L;
-
 	public ImpressionChemisesTORapport() {
-	}
-
-	public ImpressionChemisesTORapport(String nom, String fileExtension, String description, String fileName, String subPath, long fileSize) {
-		super(nom, fileExtension, description, fileName, subPath, fileSize);
 	}
 }

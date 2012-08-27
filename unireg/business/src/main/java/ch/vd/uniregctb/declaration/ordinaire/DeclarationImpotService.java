@@ -190,13 +190,6 @@ public interface DeclarationImpotService {
 	InputStream getCopieConformeConfirmationDelai(DelaiDeclaration delai) throws EditiqueException;
 
 	/**
-	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises n'ont pas encore été imprimées
-	 *
-	 * @param noColOid si donné, limite l'envoi des chemises à cet OID
-	 */
-	ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status);
-
-	/**
 	 * Ajoute un délai aux déclarations des contribuables spécifiés.
 	 *
 	 * @param ids            les ids des contribuables

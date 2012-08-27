@@ -172,13 +172,6 @@
         <property name="rapportService" ref="rapportService"/>
     </bean>
 
-    <bean id="impressionChemisesTOJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.ImpressionChemisesTOJob">
-        <constructor-arg value="404"/>
-        <constructor-arg value="Imprimer les chemises TO des déclarations d'impôt échues"/>
-        <property name="declarationImpotService" ref="diService"/>
-        <property name="rapportService" ref="rapportService"/>
-    </bean>
-
     <bean id="exclureCtbsEnvoiDIsJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiJob">
         <constructor-arg value="405"/>
         <constructor-arg value="Exclure des contribuables des envois automatiques de DIs"/>

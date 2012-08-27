@@ -445,15 +445,6 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	}
 
 	/**
-	 * Imprime les chemises TO pour les DIs échues pour lesquelle ces chemises n'ont pas encore été imprimées
-	 */
-	@Override
-	public ImpressionChemisesTOResults envoiChemisesTaxationOffice(int nombreMax, Integer noColOid, StatusManager status) {
-		final ImpressionChemisesTOProcessor processor = new ImpressionChemisesTOProcessor(hibernateTemplate, diDAO, transactionManager, editiqueCompositionService, infraService);
-		return processor.run(nombreMax, noColOid, status);
-	}
-
-	/**
 	 * Construit l'ID du document pour l'archivage
 	 *
 	 * @param declaration
