@@ -6,7 +6,7 @@
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:complexType name="identifiantRapportTravailType">
+	<xs:complexType name="identifiantMiseAJourRapportTravailType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -24,7 +24,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="numeroContribuable" type="unireg:partyNumberType" minOccurs="0">
+			<xs:element name="numeroContribuable" type="unireg:partyNumberType" minOccurs="1">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -42,7 +42,7 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="type" type="typeListeType" minOccurs="1">
+			<xs:element name="typeListe" type="typeListeType" minOccurs="1">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
