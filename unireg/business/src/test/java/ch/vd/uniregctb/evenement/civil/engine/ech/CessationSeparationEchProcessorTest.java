@@ -274,7 +274,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 	public void testHomoSIFISC6044() throws Exception {
 		testSituationFamille(
 				ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
-				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
 				TypeEvenementCivilEch.CESSATION_SEPARATION);
 	}
@@ -292,7 +292,7 @@ public class CessationSeparationEchProcessorTest extends AnnulationOuCessationSe
 	public void testHomoSeulSIFISC6044() throws Exception {
 		testSituationFamilleMarieSeul(
 				ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE,
-				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+				ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.PREMIERE_LIVRAISON,
 				TypeEvenementCivilEch.CESSATION_SEPARATION);
 	}

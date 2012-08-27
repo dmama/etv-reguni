@@ -68,7 +68,7 @@ public class EtatCivilHelper {
 		case PACS_VEUF:
 			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_DECES;
 		case PACS_INTERROMPU:
-			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT;
+			return ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE;
 		case SEPARE:
 			return ch.vd.uniregctb.type.EtatCivil.SEPARE;
 		case VEUF:

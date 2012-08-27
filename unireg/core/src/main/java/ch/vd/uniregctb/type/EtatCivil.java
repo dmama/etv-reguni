@@ -13,7 +13,8 @@ public enum EtatCivil {
 	PARTENARIAT_DISSOUS_JUDICIAIREMENT("Partenariat dissous judiciairement"),
 	DIVORCE("Divorcé(e)"),
 	SEPARE("Séparé(e)"),
-	PARTENARIAT_DISSOUS_DECES("Partenariat dissous décès");
+	PARTENARIAT_DISSOUS_DECES("Partenariat dissous décès"),
+	PARTENARIAT_SEPARE("Partenariat séparé");
 
 	private final String format;
 

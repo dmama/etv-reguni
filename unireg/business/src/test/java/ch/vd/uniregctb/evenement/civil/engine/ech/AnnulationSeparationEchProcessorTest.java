@@ -405,7 +405,7 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 
 	@Test(timeout = 10000L)
 	public void testHomoSIFISC5323() throws Exception {
-		testSituationFamille(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+		testSituationFamille(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 
@@ -417,7 +417,7 @@ public class AnnulationSeparationEchProcessorTest extends AnnulationOuCessationS
 
 	@Test(timeout = 10000L)
 	public void testHomoSeulSIFISC5323() throws Exception {
-		testSituationFamilleMarieSeul(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT,
+		testSituationFamilleMarieSeul(ch.vd.uniregctb.type.EtatCivil.LIE_PARTENARIAT_ENREGISTRE, ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE,
 				ActionEvenementCivilEch.ANNULATION, TypeEvenementCivilEch.SEPARATION);
 	}
 }

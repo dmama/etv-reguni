@@ -3,6 +3,7 @@ package ch.vd.uniregctb.webservices.party3.data;
 import org.junit.Test;
 
 import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
+import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.webservices.party3.EnumTest;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
 
@@ -12,10 +13,11 @@ import static junit.framework.Assert.assertNull;
 
 public class MaritalStatusTest extends EnumTest {
 
-	@Test
-	public void testCoherence() {
-		assertEnumLengthEquals(MaritalStatus.class, ch.vd.uniregctb.type.EtatCivil.class);
-	}
+// [SIFISC-6042] Les deux enums ne sont plus égaux depuis l'ajout de la constante PARTENARIAT_SEPARE
+//	@Test
+//	public void testCoherence() {
+//		assertEnumLengthEquals(MaritalStatus.class, ch.vd.uniregctb.type.EtatCivil.class);
+//	}
 
 	@Test
 	public void testFromValue() {
@@ -29,5 +31,6 @@ public class MaritalStatusTest extends EnumTest {
 		assertEquals(MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW, EnumHelper.coreToWeb(ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT));
 		assertEquals(MaritalStatus.DIVORCED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.EtatCivil.DIVORCE));
 		assertEquals(MaritalStatus.SEPARATED, EnumHelper.coreToWeb(ch.vd.uniregctb.type.EtatCivil.SEPARE));
+		assertEquals(MaritalStatus.SEPARATED, EnumHelper.coreToWeb(EtatCivil.PARTENARIAT_SEPARE));
 	}
 }

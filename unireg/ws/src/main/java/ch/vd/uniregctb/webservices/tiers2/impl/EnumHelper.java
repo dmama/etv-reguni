@@ -34,6 +34,10 @@ public abstract class EnumHelper {
 			return null;
 		}
 
+		if (etatCivil == ch.vd.uniregctb.type.EtatCivil.PARTENARIAT_SEPARE) {
+			return EtatCivil.SEPARE; // [SIFISC-6042]
+		}
+
 		final EtatCivil value = EtatCivil.fromValue(etatCivil.name());
 		Assert.notNull(value);
 		return value;

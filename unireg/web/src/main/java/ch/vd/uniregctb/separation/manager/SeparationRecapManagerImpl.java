@@ -88,8 +88,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 			etatCivilFamille = memeSexe ? EtatCivil.PARTENARIAT_DISSOUS_JUDICIAIREMENT : EtatCivil.DIVORCE;
 			break;
 		case SEPARE:
-			// pour l'instant il n'y pas des distinction d'état civil lors de la séparation d'un couple homo
-			etatCivilFamille = EtatCivil.SEPARE;
+			etatCivilFamille = memeSexe ? EtatCivil.PARTENARIAT_SEPARE : EtatCivil.SEPARE;
 			break;
 		case NON_MARIE:
 			// la ligne suivante implique la création systématique d’une situation de famille

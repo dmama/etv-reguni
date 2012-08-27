@@ -55,6 +55,7 @@ public abstract class EnumHelper {
 		case PARTENARIAT_DISSOUS_JUDICIAIREMENT:
 			return MaritalStatus.PARTNERSHIP_ABOLISHED_BY_LAW;
 		case SEPARE:
+		case PARTENARIAT_SEPARE:
 			return MaritalStatus.SEPARATED;
 		case VEUF:
 			return MaritalStatus.WIDOWED;
