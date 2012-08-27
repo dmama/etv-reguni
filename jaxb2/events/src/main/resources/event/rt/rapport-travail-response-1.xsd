@@ -9,7 +9,10 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:complexType name="rapportTravailReponseMiseAJourType">
+
+	<xs:element name="miseAJourRapportTravailResponse" type="miseAJourRapportTravailResponseType" />
+
+	<xs:complexType name="miseAJourRapportTravailResponseType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -19,29 +22,34 @@
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="common:rapportTravailType">
-				<xs:sequence>
-					<xs:element name="datePriseEnCompte" type="unireg:dateType" minOccurs="1">
-						<xs:annotation>
-							<xs:appinfo>
-								<jxb:property>
-									<jxb:javadoc>Date de prise en compte de la mise à jour du rapport de travai</jxb:javadoc>
-								</jxb:property>
-							</xs:appinfo>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="libelle" type="xs:string" minOccurs="0">
-						<xs:annotation>
-							<xs:appinfo>
-								<jxb:property>
-									<jxb:javadoc>Libellé ou code d'erreur</jxb:javadoc>
-								</jxb:property>
-							</xs:appinfo>
-						</xs:annotation>
-					</xs:element>
-				</xs:sequence>
-			</xs:extension>
-		</xs:complexContent>
+		<xs:sequence>
+			<xs:element name="identifiantRapportTravail" type="common:identifiantRapportTravailType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Identifiant du rapport de travail</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="datePriseEnCompte" type="unireg:dateType" minOccurs="1">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date de prise en compte de la mise à jour du rapport de travai</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="libelle" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Libellé ou code d'erreur</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
