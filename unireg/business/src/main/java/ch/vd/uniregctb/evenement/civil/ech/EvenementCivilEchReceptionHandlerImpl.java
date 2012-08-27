@@ -78,7 +78,6 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	@Override
     @Nullable
 	public EvenementCivilEch saveIncomingEvent(final EvenementCivilEch event) {
-		final long id = event.getId();
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		return template.execute(new TransactionCallback<EvenementCivilEch>() {
@@ -87,6 +86,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 			public EvenementCivilEch doInTransaction(TransactionStatus status) {
 
 				// si un événement civil existe déjà avec l'ID donné, on log un warning et on s'arrête là...
+				final long id = event.getId();
 				if (evtCivilDAO.exists(id)) {
 					Audit.warn(id, String.format("L'événement civil %d existe déjà en base : cette nouvelle réception est donc ignorée!", id));
 					return null;
