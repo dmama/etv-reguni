@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -28,10 +27,18 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -86,16 +93,16 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 				return null;
 			}
 		});
@@ -157,16 +164,16 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HC, ffp.getMotifOuverture());
 				return null;
 			}
 		});
@@ -223,23 +230,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getConjoint());
-				Assert.assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getConjoint());
+				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 				
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 				
 				return null;
 			}
@@ -268,23 +275,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getPrincipal());
-				Assert.assertEquals(pp.getId(), couple.getConjoint().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArrivee, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -343,23 +350,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getConjoint());
-				Assert.assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getConjoint());
+				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArriveeLui, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArriveeLui, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -388,23 +395,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getPrincipal());
-				Assert.assertEquals(pp.getId(), couple.getConjoint().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArriveeLui, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArriveeLui, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -464,23 +471,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getConjoint());
-				Assert.assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getConjoint());
+				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArriveeLui, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArriveeLui, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -509,29 +516,29 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getPrincipal());
-				Assert.assertEquals(pp.getId(), couple.getConjoint().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
+				assertNotNull(ffp);
 				final RegDate dateDebutFor = ffp.getDateDebut();
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
-				Assert.assertEquals(message,erreur.getMessage());
+				assertEquals(message, erreur.getMessage());
 				return null;
 			}
 		});
@@ -620,23 +627,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noLui);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getConjoint());
-				Assert.assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getConjoint());
+				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
-				Assert.assertEquals(dateArriveeLui, ffp.getDateDebut());
-				Assert.assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertNotNull(ffp);
+				assertEquals(dateArriveeLui, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -665,29 +672,29 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
-				Assert.assertNotNull(pp);
+				assertNotNull(pp);
 
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
-				Assert.assertNotNull(couple);
-				Assert.assertNotNull(couple.getMenage());
-				Assert.assertNotNull(couple.getPrincipal());
-				Assert.assertEquals(pp.getId(), couple.getConjoint().getNumero());
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNotNull(couple.getPrincipal());
+				assertEquals(pp.getId(), couple.getConjoint().getNumero());
 
 				final MenageCommun mc = couple.getMenage();
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
-				Assert.assertNotNull(ffp);
+				assertNotNull(ffp);
 				final RegDate dateDebutFor = ffp.getDateDebut();
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun", RegDateHelper.dateToDashString(dateArriveeElle),noElle);
-				Assert.assertEquals(message,erreur.getMessage());
+				assertEquals(message, erreur.getMessage());
 				return null;
 			}
 		});
@@ -737,8 +744,8 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 
 				return null;
@@ -787,16 +794,16 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.A_VERIFIER, evt.getEtat());
 
 				final Set<EvenementCivilEchErreur> warnings = evt.getErreurs();
-				Assert.assertNotNull(warnings);
-				Assert.assertEquals(1, warnings.size());
+				assertNotNull(warnings);
+				assertEquals(1, warnings.size());
 				final EvenementCivilEchErreur warning = warnings.iterator().next();
-				Assert.assertNotNull(warning);
-				Assert.assertEquals(TypeEvenementErreur.WARNING, warning.getType());
-				Assert.assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", warning.getMessage());
+				assertNotNull(warning);
+				assertEquals(TypeEvenementErreur.WARNING, warning.getType());
+				assertEquals("Ancienne adresse avant l'arrivée inconnue : veuillez indiquer le motif d'ouverture du for principal", warning.getMessage());
 				return null;
 			}
 		});
@@ -844,19 +851,106 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
-				Assert.assertNotNull(evt);
-				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
-				Assert.assertNotNull(erreurs);
-				Assert.assertEquals(1, erreurs.size());
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
-				Assert.assertNotNull(erreur);
-				Assert.assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
-				Assert.assertEquals("L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)",
+				assertNotNull(erreur);
+				assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+				assertEquals("L'individu est inconnu dans registre fiscal mais arrive depuis une commune vaudoise (incohérence entre les deux registres)",
 						erreur.getMessage());
 				return null;
 			}
 		});
+	}
+
+
+
+	@Test(timeout = 10000L)
+	public void testArriveeHCAncienNonHabitantSIFISC6032() throws Exception {
+
+		try {
+			final long noIndividu = 126673246L;
+			final RegDate dateNaissance = date(1956, 4, 23);
+			final RegDate dateMariage = date(2010, 1, 15);
+			final RegDate dateArrivee = date(2011, 10, 31);
+
+			setWantIndexation(true);
+
+			// le p'tit nouveau
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+					final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Chollet", "Ignacio", true);
+					MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+					adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
+					addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+					marieIndividu(ind, dateMariage);
+				}
+			});
+
+			// Mise en place du fiscal
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					PersonnePhysique pp = addNonHabitant("Ignacio", "Chollet", dateNaissance, Sexe.MASCULIN);
+					addForPrincipal(
+							pp, dateArrivee.addYears(-5), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Geneve,
+							MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+					addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateArrivee.addYears(-5), null, MockRue.Geneve.AvenueGuiseppeMotta);
+
+					return null;
+				}
+			});
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateArrivee);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividu);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividu);
+
+			// vérification du traitement
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+					assertNotNull(pp);
+					final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(pp, null);
+					assertNotNull(etc);
+					final ForFiscalPrincipal ffpMenage = etc.getMenage().getForFiscalPrincipalAt(null);
+					assertNotNull(ffpMenage);
+					assertEquals(MotifFor.ARRIVEE_HC, ffpMenage.getMotifOuverture());
+					assertNull(ffpMenage.getDateFin());
+					final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+					assertNotNull(ffpPP);
+					assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpPP.getMotifFermeture());
+					assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
 	}
 }
