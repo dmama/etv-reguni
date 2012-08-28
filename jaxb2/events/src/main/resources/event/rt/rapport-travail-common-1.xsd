@@ -6,7 +6,7 @@
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
-	<xs:complexType name="identifiantMiseAJourRapportTravailType">
+	<xs:complexType name="identifiantRapportTravailType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>

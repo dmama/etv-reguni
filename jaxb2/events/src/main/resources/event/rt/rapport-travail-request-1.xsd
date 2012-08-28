@@ -23,7 +23,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="identifiantMiseAJourRapportTravail" type="common:identifiantMiseAJourRapportTravailType">
+			<xs:element name="identifiantRapportTravail" type="common:identifiantRapportTravailType">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
