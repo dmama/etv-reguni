@@ -477,6 +477,49 @@
 	</tag>
 
 	<tag>
+		<name>buttonTo</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagButtonTo</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche un bouton vers une autre page.</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le texte du button.</description>
+		</attribute>
+		<attribute>
+			<name>action</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>L'url relatif (action du formulaire) a atteindre lors du clic sur le bouton.</description>
+		</attribute>
+		<attribute>
+			<name>params</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Les paramètres (au format JSON) qui doivent être soumis en même temps que le formulaire.</description>
+		</attribute>
+		<attribute>
+			<name>method</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>La méthode http (GET, POST) à utiliser (par défaut POST).</description>
+		</attribute>
+		<attribute>
+			<name>confirm</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Un texte de confirmation avant exécution.</description>
+		</attribute>
+		<attribute>
+			<name>form_class</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>La classe CSS du formulaire qui contient le bouton.</description>
+		</attribute>
+	</tag>
+
+	<tag>
 		<name>raccourciModifier</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagRaccourci$Modifier</tag-class>
 		<body-content>JSP</body-content>

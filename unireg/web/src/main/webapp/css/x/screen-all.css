@@ -1880,6 +1880,20 @@ div.flash-error {
 	font-weight: normal;
 }
 
+/**
+ * Button to stuff
+ */
+/* ./app/assets/stylesheets/button_to.css.scss */
+form.button_to {
+	margin:0;
+	padding:0;
+	display:inline;
+}
+
+form.button_to div, form.button_to div input {
+	display:inline;
+}
+
 /* ------ tooltip.css --------*/
 
 

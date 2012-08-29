@@ -360,3 +360,16 @@ div.flash-error {
 .inbox tr.read td {
 	font-weight: normal;
 }
+
+/**
+ * Button to stuff
+ */
+form.button_to {
+	margin:0;
+	padding:0;
+	display:inline;
+}
+
+form.button_to div, form.button_to div input {
+	display:inline;
+}
