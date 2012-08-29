@@ -14,6 +14,7 @@ import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 
 public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesResults.InfoDebiteurAvecLrEchue, DeterminerLRsEchuesResults> {
 
@@ -166,11 +167,13 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 	}
 
 	public static class ResultLrEchue extends ResultDebiteur<ResultLrEchue> implements Comparable<ResultLrEchue> {
+		public final CategorieImpotSource categorieImpotSource;
 		public final RegDate debutPeriode;
 		public final RegDate finPeriode;
 
-		public ResultLrEchue(long idDebiteur, String nomDebiteur, RegDate debutPeriode, RegDate finPeriode) {
+		public ResultLrEchue(long idDebiteur, CategorieImpotSource categorieImpotSource, String nomDebiteur, RegDate debutPeriode, RegDate finPeriode) {
 			super(idDebiteur, nomDebiteur);
+			this.categorieImpotSource = categorieImpotSource;
 			this.debutPeriode = debutPeriode;
 			this.finPeriode = finPeriode;
 		}
@@ -272,6 +275,6 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 	}
 
 	public void addLrEchue(DebiteurPrestationImposable dpi, DeclarationImpotSource lr) {
-		lrEchues.add(new ResultLrEchue(dpi.getId(),  getNomDebiteur(dpi), lr.getDateDebut(), lr.getDateFin()));
+		lrEchues.add(new ResultLrEchue(dpi.getId(), dpi.getCategorieImpotSource(), getNomDebiteur(dpi), lr.getDateDebut(), lr.getDateFin()));
 	}
 }

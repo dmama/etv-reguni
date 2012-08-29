@@ -126,12 +126,13 @@ public class PdfDeterminerLRsEchuesRapport extends PdfRapport {
 			contenu = CsvHelper.asCsvFile(lrEchues, filename, status, new CsvHelper.FileFiller<DeterminerLRsEchuesResults.ResultLrEchue>() {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
-					b.append("NO_TIERS").append(COMMA).append("NOM").append(COMMA).append("DEBUT_PERIODE_LR").append(COMMA).append("FIN_PERIODE_LR");
+					b.append("NO_TIERS").append(COMMA).append("CATEGORIE_IS").append(COMMA).append("NOM").append(COMMA).append("DEBUT_PERIODE_LR").append(COMMA).append("FIN_PERIODE_LR");
 				}
 
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, DeterminerLRsEchuesResults.ResultLrEchue info) {
 					b.append(info.idDebiteur).append(COMMA);
+					b.append(info.categorieImpotSource).append(COMMA);
 					b.append(escapeChars(info.nomDebiteur)).append(COMMA);
 					b.append(info.debutPeriode.index()).append(COMMA);
 					b.append(info.finPeriode.index());
