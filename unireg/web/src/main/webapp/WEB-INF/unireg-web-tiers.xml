@@ -130,6 +130,8 @@
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="diService" ref="diService" />
+		<property name="tacheDAO" ref="tacheDAO" />
 	</bean>
 
 	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">

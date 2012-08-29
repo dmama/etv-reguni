@@ -76,7 +76,6 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
@@ -132,32 +131,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		DeclarationImpotOrdinaire di = diDAO.get(id);
 		if (di == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-	}
-
-	/**
-	 * Annule une DI
-	 *
-	 * @param diEditView
-	 */
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerDI(DeclarationImpotDetailView diEditView) {
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		final Contribuable tiers = (Contribuable) di.getTiers();
-		diService.annulationDI(tiers, di, RegDate.get());
-		//Mise à jour de l'état de la tâche si il y en a une
-		TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-		criterion.setAnnee(diEditView.getPeriodeFiscale());
-		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criterion.setContribuable(tiers);
-		List<Tache> taches = tacheDAO.find(criterion);
-		if (taches != null && !taches.isEmpty()) {
-			for (Tache t : taches) {
-				TacheAnnulationDeclarationImpot tache = (TacheAnnulationDeclarationImpot) t;
-				tache.setEtat(TypeEtatTache.TRAITE);
-			}
 		}
 	}
 

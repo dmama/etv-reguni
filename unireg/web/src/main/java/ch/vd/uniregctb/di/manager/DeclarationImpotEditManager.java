@@ -122,14 +122,6 @@ public interface DeclarationImpotEditManager {
 	EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception;
 
 	/**
-	 * Annule une DI
-	 *
-	 * @param diEditView
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void annulerDI(DeclarationImpotDetailView diEditView);
-
-	/**
 	 * Mintient une DI et passe la tâche à traitée
 	 *
 	 * @param idTache

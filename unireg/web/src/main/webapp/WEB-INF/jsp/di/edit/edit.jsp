@@ -9,7 +9,7 @@
 		<a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
-	<form:form method="post" id="formEditDI" name="theForm">
+	<form:form method="post" id="formEditDI" name="theForm" style="display: inline;">
 		<input type="hidden"  name="__TARGET__" value="">
 		<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
 	
@@ -96,11 +96,7 @@
 					</c:if>
 				</c:if>
 			</c:if>		
-			<!-- Annulation DI -->
-			<c:if test="${command.allowedSommation}">
-				<input type="submit" name="annulerDI" value="<fmt:message key="label.bouton.annuler.declaration" />" onclick="return Page_AnnulerDI(event || window.event);" />
-			</c:if>
-			
+
 		</c:if>
 		<c:if test="${command.id == null}">
 			<c:if test="${command.imprimable == false}"> 
@@ -112,6 +108,12 @@
 		</c:if>
 		<!-- Fin Boutons -->
 	</form:form>
+
+	<!-- Annulation DI -->
+	<c:if test="${command.allowedSommation}">
+		<unireg:buttonTo name="Annuler déclaration" action="/decl/annuler.do" method="POST" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?" params='{"id":"${command.id}"}'/>
+	</c:if>
+
 	<script type="text/javascript" language="Javascript1.3">
 
 			/**

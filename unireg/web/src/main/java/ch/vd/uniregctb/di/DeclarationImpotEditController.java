@@ -46,7 +46,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	public final static String BUTTON_SAVE_DI = "__confirmed_save";
 	public final static String BUTTON_SOMMER_DI = "sommer";
 	public final static String BUTTON_AJOUTER_DI = "ajouterDI";
-	public final static String BUTTON_ANNULER_DI = "annulerDI";
 	public final static String TARGET_IMPRIMER_DI = "imprimerDI";
 	public final static String BUTTON_DUPLICATA_DI = "duplicataDI";
 	public final static String TARGET_ANNULER_DELAI = "annulerDelai";
@@ -88,7 +87,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 	protected boolean suppressValidation(HttpServletRequest request, Object command, BindException errors) {
 		if ((getTarget() != null && !TARGET_IMPRIMER_DI.equals(getTarget())) ||
 				request.getParameter(BUTTON_SOMMER_DI) != null ||
-				request.getParameter(BUTTON_ANNULER_DI) != null ||
 				request.getParameter(BUTTON_MAINTENIR_DI) != null) {
 			return true;
 		}
@@ -207,9 +205,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 					}
 					else if (request.getParameter(BUTTON_SOMMER_DI) != null) {
 						mav = sommerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
-					}
-					else if (request.getParameter(BUTTON_ANNULER_DI) != null) {
-						mav = annulerDI(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
 					}
 					else if (request.getParameter(BUTTON_IMPRIMER_TO) != null) {
 						mav = imprimerTO(request, response, checkBean(DeclarationImpotDetailView.class, command, true), errors);
@@ -480,20 +475,6 @@ public class DeclarationImpotEditController extends AbstractDeclarationImpotCont
 		}
 
 		return mav;
-	}
-
-	private ModelAndView annulerDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
-
-		checkAccesDossierEnEcriture(bean.getContribuable().getNumero());
-
-		String depuisTache = request.getParameter(DEPUIS_TACHE_PARAMETER_NAME);
-		diEditManager.annulerDI(bean);
-		if (depuisTache == null) {
-			return new ModelAndView("redirect:edit.do?action=listdis&numero=" + bean.getContribuable().getNumero());
-		}
-		else {
-			return new ModelAndView("redirect:/tache/list.do");
-		}
 	}
 
 	private ModelAndView maintenirDI(HttpServletRequest request, HttpServletResponse response, DeclarationImpotDetailView bean, BindException errors) throws Exception {
