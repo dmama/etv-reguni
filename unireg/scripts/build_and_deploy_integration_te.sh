@@ -31,8 +31,8 @@ echo "Version: $version"
 
 env=integration-te
 user=unireg@spip
-upDir=/ccv/home/unireg/uploads
-tomcatDir=/ccv/home/unireg/apache-tomcat
+upDir=/ccv/data1/unireg/uploads
+tomcatDir=/ccv/data1/unireg/apache-tomcat
 
 webFileOrig=unireg-web-release.zip
 webFileDest=unireg-web-release-${version}-${DATE}.zip
