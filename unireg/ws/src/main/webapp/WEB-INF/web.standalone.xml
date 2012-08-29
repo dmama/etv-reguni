@@ -13,7 +13,7 @@
 			/WEB-INF/unireg-ws-database.xml,
 			/WEB-INF/unireg-ws-properties.xml,
 			/WEB-INF/unireg-ws-security.xml,
-			/WEB-INF/unireg-ws-services.xml,
+			/WEB-INF/unireg-ws-mock.xml,
 			/WEB-INF/unireg-ws-ws.xml,
 			/WEB-INF/unireg-standalone-mocks.xml
 		</param-value>

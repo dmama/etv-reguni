@@ -3,6 +3,8 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersSearcherImpl"/>
+
 	<!-- Le ehcache manager pour ne pas avoir à inclure le fichier unireg-ws-cache.xml -->
 	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
 	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
@@ -17,14 +19,21 @@
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
 	<!-- Bean client interfacesService MOCK -->
-	<bean id="serviceInfrastructureServiceHost" class="ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService"/>
+	<bean id="serviceInfrastructureRaw" class="ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService"/>
 	<bean id="serviceInfrastructureService" class="ch.vd.uniregctb.interfaces.service.ServiceInfrastructureImpl">
-		<property name="rawService" ref="serviceInfrastructureServiceHost" />
+		<property name="rawService" ref="serviceInfrastructureRaw" />
 	</bean>
 
 	<!-- Bean client ServiceCivil MOCK -->
-	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil" />
-	<alias alias="serviceCivilService" name="serviceCivilServiceMarshaller"/>
+	<bean id="serviceCivilRaw" class="ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil" />
+	<bean id="serviceCivilService" class="ch.vd.uniregctb.interfaces.service.ServiceCivilImpl">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="target" ref="serviceCivilRaw"/>
+		<property name="serviceLogger" ref="serviceCivilLogger"/>
+	</bean>
+
+	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
+	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
 
 	<!-- Bean client ServicePM MOCK -->
 	<bean id="servicePersonneMoraleService" class="ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM"  />

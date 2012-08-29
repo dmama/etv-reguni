@@ -99,6 +99,11 @@ public class DefaultMockServiceCivil extends MockServiceCivil {
 		addDefaultAdressesTo(addIndividu(333908, RegDate.get(1950, 1, 1), "Schmid", "Laurent", Sexe.MASCULIN));
 		addDefaultAdressesTo(addIndividu(333911, RegDate.get(1950, 1, 1), "Schmid", "Valentin", Sexe.MASCULIN));
 		addDefaultAdressesTo(addIndividu(325631, RegDate.get(1950, 1, 1), "Emery", "Jean-Christophe", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(857307, RegDate.get(1950, 1, 1), "Allora", "Maude", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(122937, RegDate.get(1950, 1, 1), "Allora", "Walter", Sexe.MASCULIN));
+		addDefaultAdressesTo(addIndividu(122938, RegDate.get(1950, 1, 1), "Allora", "Violette", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(1013955, RegDate.get(1950, 1, 1), "Allora", "Jenny", Sexe.FEMININ));
+		addDefaultAdressesTo(addIndividu(122939, RegDate.get(1950, 1, 1), "Allora", "Cédric", Sexe.MASCULIN));
 	}
 
 	protected void addDefaultAdressesTo(MockIndividu individu) {

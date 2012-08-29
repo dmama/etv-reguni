@@ -17,17 +17,4 @@
 
 	<alias alias="globalTiersSearcher" name="globalTiersSearcherTracing"/>
 
-	<bean id="globalTiersIndexer" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersIndexerImpl" />
-
-	<bean id="tacheService" class="ch.vd.uniregctb.tache.MockTacheService" />
-	<bean id="delaisService" class="ch.vd.uniregctb.parametrage.MockDelaisService" />
-
-	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService" />
-	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService" />
-	<bean id="impressionDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionDeclarationImpotOrdinaireHelper" />
-	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionSommationDIHelper" />
-	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.MockImpressionSommationLRHelper" />
-	<bean id="impressionConfirmationDelaiHelper" class="ch.vd.uniregctb.declaration.ordinaire.MockImpressionConfirmationDelaiHelper" />
-	<bean id="efactureService" class="ch.vd.uniregctb.efacture.MockEFactureService"/>
-
 </beans>
