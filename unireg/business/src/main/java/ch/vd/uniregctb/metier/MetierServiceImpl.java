@@ -12,18 +12,24 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.EtatCivilHelper;
@@ -1771,6 +1777,133 @@ public class MetierServiceImpl implements MetierService {
 		return !couple.estComposeDe(principal, conjoint);
 	}
 
+	private static class LocalisationException extends Exception {
+		public LocalisationException(String message) {
+			super(message);
+		}
+	}
+
+	private static class LocalisationFor {
+		private final int noOfs;
+		private final TypeAutoriteFiscale taf;
+		private final RegDate dateDepartHS;
+
+		public LocalisationFor(int noOfs, TypeAutoriteFiscale taf, RegDate dateDepartHS) {
+			this.noOfs = noOfs;
+			this.taf = taf;
+			this.dateDepartHS = dateDepartHS;
+		}
+
+		public LocalisationFor(AdresseGenerique adr, RegDate date, ServiceInfrastructureService infraService) throws LocalisationException {
+			if (adr.getNoOfsPays() == null || adr.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+				final Commune commune = infraService.getCommuneByAdresse(adr, date);
+				if (commune == null) {
+					throw new LocalisationException("Adresse sans commune");
+				}
+				taf = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+				noOfs = commune.getNoOFSEtendu();
+			}
+			else {
+				taf = TypeAutoriteFiscale.PAYS_HS;
+				noOfs = adr.getNoOfsPays();
+			}
+			dateDepartHS = (taf == TypeAutoriteFiscale.PAYS_HS ? adr.getDateDebut() : null);
+		}
+
+		public LocalisationFor(Adresse adr, RegDate date, ServiceInfrastructureService infraService) throws LocalisationException {
+			if (adr.getNoOfsPays() == null || adr.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
+				final Commune commune = infraService.getCommuneByAdresse(adr, date);
+				if (commune == null) {
+					throw new LocalisationException("Adresse sans commune");
+				}
+				taf = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
+				noOfs = commune.getNoOFSEtendu();
+			}
+			else {
+				taf = TypeAutoriteFiscale.PAYS_HS;
+				noOfs = adr.getNoOfsPays();
+			}
+			dateDepartHS = (taf == TypeAutoriteFiscale.PAYS_HS ? adr.getDateDebut() : null);
+		}
+
+		public LocalisationFor(Localisation localisation, RegDate dateFinAdresse) {
+			final Integer noOfsSource = localisation.getNoOfs();
+			if (noOfsSource != null) {
+				noOfs = noOfsSource;
+				switch (localisation.getType()) {
+					case CANTON_VD:
+						taf = TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+						break;
+					case HORS_CANTON:
+						taf = TypeAutoriteFiscale.COMMUNE_HC;
+						break;
+					case HORS_SUISSE:
+						taf = TypeAutoriteFiscale.PAYS_HS;
+						break;
+					default:
+						throw new IllegalArgumentException("Mauvaise valeur de type de localisation : " + localisation.getType());
+				}
+			}
+			else {
+				noOfs = ServiceInfrastructureService.noPaysInconnu;
+				taf = TypeAutoriteFiscale.PAYS_HS;
+			}
+			dateDepartHS = (taf == TypeAutoriteFiscale.PAYS_HS ? dateFinAdresse.getOneDayAfter() : null);
+		}
+
+		public int getNoOfs() {
+			return noOfs;
+		}
+
+		public TypeAutoriteFiscale getTypeAutoriteFiscale() {
+			return taf;
+		}
+
+		public RegDate getDateDepartHS() {
+			return dateDepartHS;
+		}
+	}
+
+	private LocalisationFor getLocalisationForFromAdressesFiscales(RegDate date, PersonnePhysique pp) throws AdresseException, LocalisationException {
+		final AdresseGenerique adrFiscale = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
+		return adrFiscale != null ? new LocalisationFor(adrFiscale, date, serviceInfra) : null;
+	}
+
+	private LocalisationFor getLocalisationFor(RegDate date, PersonnePhysique pp) throws AdresseException, LocalisationException {
+		final AdressesCivilesHisto adrCiviles = adresseService.getAdressesCivilesHisto(pp, false);
+		if (adrCiviles != null && adrCiviles.principales != null && adrCiviles.principales.size() > 0) {
+			// y a-t-il une adresse de domicile valide à la date donnée, des fois ?
+			final Adresse adrValide = DateRangeHelper.rangeAt(adrCiviles.principales, date);
+			if (adrValide != null) {
+				return new LocalisationFor(adrValide, date, serviceInfra);
+			}
+
+			// adresse précédente ?
+			final List<DateRange> past = DateRangeHelper.intersections(new DateRangeHelper.Range(null, date), adrCiviles.principales);
+			if (past == null || past.size() == 0) {
+				return getLocalisationForFromAdressesFiscales(date, pp);
+			}
+
+			// on prend la dernière adresse connue et on va chercher sa "localisation suivante"
+			final Adresse derniereAdresse = DateRangeHelper.rangeAt(adrCiviles.principales, past.get(past.size() - 1).getDateFin());
+			final Localisation localisationSuivante = derniereAdresse.getLocalisationSuivante();
+			if (localisationSuivante == null) {
+				return new LocalisationFor(ServiceInfrastructureService.noPaysInconnu, TypeAutoriteFiscale.PAYS_HS, derniereAdresse.getDateFin().getOneDayAfter());
+			}
+			else if (localisationSuivante.getType() == LocalisationType.CANTON_VD) {
+				// en cas de départ vaudois, on est en présence d'un départ sans arrivée -> on prend la dernière commune vaudoise connue
+				return new LocalisationFor(derniereAdresse, derniereAdresse.getDateFin(), serviceInfra);
+			}
+			else {
+				return new LocalisationFor(localisationSuivante, derniereAdresse.getDateFin());
+			}
+		}
+		else {
+			// aucune adresse civile, voyons les fiscales (pour jouer les défauts, par exemple)
+			return getLocalisationForFromAdressesFiscales(date, pp);
+		}
+	}
+
 	/**
 	 * Crée un nouveau for fiscal principal pour le tiers en suivant les règles pour divorce/séparation.
 	 *
@@ -1788,11 +1921,11 @@ public class MetierServiceImpl implements MetierService {
 
 		try {
 			// [UNIREG-2143] prendre en compte l'adresse de domicile pour établissement du for
-			final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(pp, TypeAdresseFiscale.DOMICILE, date, false);
+			final LocalisationFor localisationFor = getLocalisationFor(date, pp);
 
 			final Integer noOfsEtendu;
 			final TypeAutoriteFiscale typeAutoriteFiscale;
-			if (adresseDomicile == null) {
+			if (localisationFor == null) {
 				// pas d'adresse de domicile connue -> on n'ouvre aucun for
 				final String message = String.format("Adresse de domicile du contribuable %s inconnue au %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
 						RegDateHelper.dateToDisplayString(date));
@@ -1801,36 +1934,23 @@ public class MetierServiceImpl implements MetierService {
 				noOfsEtendu = null;
 				typeAutoriteFiscale = null;
 			}
-			else if (adresseDomicile.getNoOfsPays() == null || adresseDomicile.getNoOfsPays() == ServiceInfrastructureService.noOfsSuisse) {
-				// en Suisse
-				final Commune commune = serviceInfra.getCommuneByAdresse(adresseDomicile, date);
-				if (commune != null) {
-					noOfsEtendu = commune.getNoOFSEtendu();
-					typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-				}
-				else {
-					// pas de commune identifiable -> c'est une erreur grave (adresse suisse sans commune...)
-					final String message = String.format("Commune non identifiable pour l'adresse de domicile du contribuable %s au %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
-							RegDateHelper.dateToDisplayString(date));
-					throw new MetierServiceException(message);
-				}
-			}
 			else {
-				// à l'étranger
-				noOfsEtendu = adresseDomicile.getNoOfsPays();
-				typeAutoriteFiscale = TypeAutoriteFiscale.PAYS_HS;
+				noOfsEtendu = localisationFor.getNoOfs();
+				typeAutoriteFiscale = localisationFor.getTypeAutoriteFiscale();
 
-				// erreur si sortie du canton vers l'étranger n'est pas autorisée
-				if (!autoriseSortieDuCantonVersEtranger && forMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
+					// erreur si sortie du canton vers l'étranger n'est pas autorisée
+					if (!autoriseSortieDuCantonVersEtranger && forMenage.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 
-					// [UNIREG-2143] le départ vers l'étranger n'est interdit que si l'adresse de domicile étrangère a une date de début de validité dans la même année
-					// que la date de l'événement (et avant)
-					final RegDate dateDebutDomicileHS = adresseDomicile.getDateDebut();
-					if (dateDebutDomicileHS != null && dateDebutDomicileHS.year() == date.year()) {
-						final String message = String.format(
-								"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
-								FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
-						throw new MetierServiceException(message);
+						// [UNIREG-2143] le départ vers l'étranger n'est interdit que si l'adresse de domicile étrangère a une date de début de validité dans la même année
+						// que la date de l'événement (et avant)
+						final RegDate dateDebutDomicileHS = localisationFor.getDateDepartHS();
+						if (dateDebutDomicileHS != null && dateDebutDomicileHS.year() == date.year()) {
+							final String message = String.format(
+									"D'après son adresse de domicile, on devrait ouvrir un for hors-Suisse pour le contribuable %s (apparemment parti avant la clôture du ménage, mais dans la même période fiscale) alors que le for du ménage %s était vaudois",
+									FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), FormatNumeroHelper.numeroCTBToDisplay(forMenage.getTiers().getNumero()));
+							throw new MetierServiceException(message);
+						}
 					}
 				}
 			}
@@ -1843,6 +1963,10 @@ public class MetierServiceImpl implements MetierService {
 			else {
 				return null;
 			}
+		}
+		catch (LocalisationException e) {
+			final String message = String.format("Détermination du domicile du contribuable %s bloquée : %s", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), e.getMessage());
+			throw new MetierServiceException(message);
 		}
 		catch (AdresseException e) {
 			final String message = String.format("Impossible de déterminer l'adresse de domicile du contribuable %s : pas d'ouverture de for", FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()));
