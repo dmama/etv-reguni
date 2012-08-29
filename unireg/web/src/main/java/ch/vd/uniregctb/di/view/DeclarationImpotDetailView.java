@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -22,7 +23,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
  * @author xcifde
  * 
  */
-public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDetailView>, DeclarationImpotView {
+public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDetailView>, DeclarationImpotView, Annulable {
 
 	private TiersGeneralView contribuable;
 
@@ -296,6 +297,7 @@ public class DeclarationImpotDetailView implements Comparable<DeclarationImpotDe
 		this.codeControle = codeControle;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}
