@@ -53,6 +53,7 @@ import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.OtherPartyAddressType;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
+import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
@@ -1493,6 +1494,57 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals("Les Péchauds", formattedAddress0.getLine3());
 		assertEquals("1432 Gressy", formattedAddress0.getLine4());
 		assertNull(formattedAddress0.getLine5());
+	}
+
+	//[SIFISC-8060] vérifier si une adresse incomplète est bien indiquée comme telle
+	@Test
+	public void testGetAddressePartyIncomplete() throws Exception {
+
+		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956, 1, 1), null, null, null, MockPays.EtatsUnis);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final NaturalPerson person = (NaturalPerson) service.getParty(params);
+		assertNotNull(person);
+
+		final List<Address> mailAddresses = person.getMailAddresses();
+		assertNotNull(mailAddresses);
+		assertEquals(1, mailAddresses.size());
+
+		final Address address0 = mailAddresses.get(0);
+		assertTrue(address0.isIncomplete());
+	}
+
+
+	@Test
+	public void testGetAddressePartyComplete() throws Exception {
+
+		final long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Julien", "Leproux", date(1956, 1, 1), Sexe.MASCULIN);
+				addAdresseEtrangere(pp, TypeAdresseTiers.COURRIER, date(1956,1,1),null, "8 Avenue foch","7007 Paris", MockPays.France);
+				return pp.getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest(login, (int) id, Arrays.asList(PartyPart.ADDRESSES));
+		final NaturalPerson person = (NaturalPerson) service.getParty(params);
+		assertNotNull(person);
+
+		final List<Address> mailAddresses = person.getMailAddresses();
+		assertNotNull(mailAddresses);
+		assertEquals(1, mailAddresses.size());
+
+		final Address address0 = mailAddresses.get(0);
+		assertFalse(address0.isIncomplete());
+		assertEquals(TariffZone.EUROPE,address0.getAddressInformation().getTariffZone());
 	}
 
 	/**

@@ -196,7 +196,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
 			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
 			String idEnvoi = "";
-			if (!editiqueHelper.isAdresseEnvoiDetailleeIncomplete(adresseEnvoiDetaillee) && !params.isMiseSousPliImpossible()) {
+			if (!adresseEnvoiDetaillee.isIncomplete() && !params.isMiseSousPliImpossible()) {
 				idEnvoi = "";
 			} else {
 				final Integer officeImpotId = tiersService.getOfficeImpotId(params.getDi().getTiers());

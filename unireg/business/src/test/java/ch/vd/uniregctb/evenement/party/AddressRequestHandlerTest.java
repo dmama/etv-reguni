@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -219,6 +220,103 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			popSecurityProvider();
 		}
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testHandleRequetePaysInconnue() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,null, MockPays.PaysInconnu);
+				return pp.getNumero();
+			}
+		});
+
+		pushSecurityProvider(provider);
+		try {
+			final AddressRequest request = new AddressRequest();
+			final UserLogin login = new UserLogin("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber(id.intValue());
+			request.getTypes().add(AddressType.RESIDENCE);
+
+			final AddressResponse response = (AddressResponse) handler.handle(request).getResponse();
+			assertNotNull(response);
+
+			final List<Address> addresses = response.getAddresses();
+			assertNotNull(addresses);
+			assertEquals(1, addresses.size());
+
+			final Address address = addresses.get(0);
+			assertNotNull(address);
+			assertTrue(address.isIncomplete());
+			assertEquals(AddressType.RESIDENCE, address.getType());
+			assertEquals(new Date(1950, 3, 14), address.getDateFrom());
+			assertNull(address.getDateTo());
+
+			final AddressInformation info = address.getAddressInformation();
+			assertNotNull(info);
+			assertEquals(TariffZone.OTHER_COUNTRIES, info.getTariffZone());
+
+		}
+		finally {
+			popSecurityProvider();
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testHandleRequeteAdresseIncomplete() throws Exception {
+
+		final Role[] roles = {Role.VISU_ALL};
+		final MockSecurityProvider provider = new MockSecurityProvider(roles);
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Michel", "Mabelle", date(1950, 3, 14), Sexe.MASCULIN);
+				addAdresseEtrangere(pp,TypeAdresseTiers.DOMICILE,date(1950, 3, 14), null,null,null, MockPays.France);
+				return pp.getNumero();
+			}
+		});
+
+		pushSecurityProvider(provider);
+		try {
+			final AddressRequest request = new AddressRequest();
+			final UserLogin login = new UserLogin("xxxxx", 22);
+			request.setLogin(login);
+			request.setPartyNumber(id.intValue());
+			request.getTypes().add(AddressType.RESIDENCE);
+
+			final AddressResponse response = (AddressResponse) handler.handle(request).getResponse();
+			assertNotNull(response);
+
+			final List<Address> addresses = response.getAddresses();
+			assertNotNull(addresses);
+			assertEquals(1, addresses.size());
+
+			final Address address = addresses.get(0);
+			assertNotNull(address);
+			assertEquals(AddressType.RESIDENCE, address.getType());
+			assertEquals(new Date(1950, 3, 14), address.getDateFrom());
+			assertNull(address.getDateTo());
+			assertTrue(address.isIncomplete());
+
+			final AddressInformation info = address.getAddressInformation();
+			assertNotNull(info);
+			assertEquals(TariffZone.EUROPE, info.getTariffZone());
+
+		}
+		finally {
+			popSecurityProvider();
+		}
+	}
+
 
 
 	@Test

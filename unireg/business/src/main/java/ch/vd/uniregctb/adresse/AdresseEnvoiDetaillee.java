@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.FormulePolitesse;
 
@@ -344,6 +345,22 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 	public boolean isArtificelle() {
 		return artificelle;
+	}
+
+	/**Determine si une adresse d'envoi est incomplète selont les critères suivant:
+	 *Une adresse est incomplete si la rue, la localité, le pays sont absents ou si l'une d'elle a une valeur égal à null ou inconnu
+	 *
+	 * @return <b>vrai</b> si l'adresse est incomplete selon les régles ACI,<b>faux</b> autrement.
+	 */
+	public boolean isIncomplete() {
+
+		final boolean rueVideOuInconnue = rueEtNumero == null || RueEtNumero.VIDE.equals(rueEtNumero);
+		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
+		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
+
+		return rueVideOuInconnue || localiteVideOuInconnue || paysVideOuInconnue;
+
+
 	}
 
 	@Override

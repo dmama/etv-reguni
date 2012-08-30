@@ -161,13 +161,4 @@ public interface EditiqueHelper {
 	 * @throws EditiqueException
 	 */
 	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
-
-	/**Determine si une adresse d'envoi est incomplète selont les critères suivant:
-	 *Une adresse est incomplete si la rue, la localité, le pays sont absents ou si l'une d'elle a une valeur égal à null ou inconnu
-	 *
-	 *
-	 * @param adresseEnvoiDetaillee
-	 * @return true si l'adresse est incomplete false sinon
-	 */
-	public boolean isAdresseEnvoiDetailleeIncomplete(AdresseEnvoiDetaillee adresseEnvoiDetaillee);
 }

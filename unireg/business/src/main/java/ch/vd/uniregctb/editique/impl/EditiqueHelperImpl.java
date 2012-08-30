@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
@@ -22,14 +21,13 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -349,37 +347,30 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 
-		switch (adresseEnvoiDetaillee.getTypeAffranchissement()) {
-		case SUISSE:
-			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
-			break;
-		case EUROPE:
-			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
-			break;
-		case MONDE:
-			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
-			break;
+		final TypeAffranchissement typeAffranchissementAdresse = adresseEnvoiDetaillee.getTypeAffranchissement();
 
-		default:
+		if (typeAffranchissementAdresse != null) {
+			switch (typeAffranchissementAdresse) {
+			case SUISSE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
+				break;
+			case EUROPE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
+				break;
+			case MONDE:
+				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
+				break;
+
+			default:
+				affranchissement.setZone(null);
+			}
+		}
+		else{
 			affranchissement.setZone(null);
 		}
-	}
-
-	@Override
-	public boolean isAdresseEnvoiDetailleeIncomplete(AdresseEnvoiDetaillee adresseEnvoiDetaillee) {
-
-		final RueEtNumero rueEtNumero = adresseEnvoiDetaillee.getRueEtNumero();
-		final NpaEtLocalite npaEtLocalite = adresseEnvoiDetaillee.getNpaEtLocalite();
-		final Pays pays = adresseEnvoiDetaillee.getPays();
-
-		final boolean rueVideOuInconnue = rueEtNumero == null || RueEtNumero.VIDE.equals(rueEtNumero);
-		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
-		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
-
-		return rueVideOuInconnue || localiteVideOuInconnue || paysVideOuInconnue;
-
 
 	}
+
 
 	@Override
 	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException {
