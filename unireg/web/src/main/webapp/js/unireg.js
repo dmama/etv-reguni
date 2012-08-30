@@ -1932,6 +1932,24 @@ var Form = {
 			$('input[name="__EVENT_ARGUMENT__"]', theForm).val(eventArgument);
 	        theForm.submit();
 	    }
+	},
+
+	/**
+	 * Crée une form dynamiquement et soumet-là.
+	 *
+	 * @param method la méthode de soumission de la form
+	 * @param action l'action de la form
+	 * @param params les paramètres (structure clé-valeur) de la soumission
+	 */
+	dynamicSubmit:function (method, action, params) {
+		var html = '<form method="' + method + '" action="' + action + '">';
+		$.each(params, function (key, val) {
+			html += '<input type=\"hidden\" name=\"' + key + '\" value=\"' + val + '\"/>';
+		});
+		html += '</form>';
+		var form = $(html);
+		form.appendTo('body');
+		form.submit();
 	}
 };
 

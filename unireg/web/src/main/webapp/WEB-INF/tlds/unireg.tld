@@ -480,7 +480,7 @@
 		<name>buttonTo</name>
 		<tag-class>ch.vd.uniregctb.taglibs.JspTagButtonTo</tag-class>
 		<body-content>JSP</body-content>
-		<description>Affiche un bouton vers une autre page.</description>
+		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<attribute>
 			<name>name</name>
 			<required>true</required>
@@ -512,10 +512,53 @@
 			<description>Un texte de confirmation avant exécution.</description>
 		</attribute>
 		<attribute>
-			<name>form_class</name>
+			<name>button_class</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>La classe CSS du formulaire qui contient le bouton.</description>
+			<description>La classe CSS du bouton.</description>
+		</attribute>
+	</tag>
+
+	<tag>
+		<name>linkTo</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagLinkTo</tag-class>
+		<body-content>JSP</body-content>
+		<description>Affiche un lien vers une autre page.</description>
+		<attribute>
+			<name>name</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le texte du button.</description>
+		</attribute>
+		<attribute>
+			<name>action</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>L'url relatif a atteindre lors du clic sur le lien.</description>
+		</attribute>
+		<attribute>
+			<name>params</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Les paramètres (au format JSON) qui doivent être soumis en même temps que le formulaire (POST) ou qui doivent être appliqués à l'url (GET).</description>
+		</attribute>
+		<attribute>
+			<name>method</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>La méthode http (GET, POST) à utiliser (par défaut GET).</description>
+		</attribute>
+		<attribute>
+			<name>confirm</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Un texte de confirmation avant de suivre le lien.</description>
+		</attribute>
+		<attribute>
+			<name>link_class</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>La classe CSS du lien.</description>
 		</attribute>
 	</tag>
 
