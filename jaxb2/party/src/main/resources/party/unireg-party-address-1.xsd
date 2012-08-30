@@ -134,6 +134,17 @@
 					</xs:appinfo>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="incomplete" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Indique si une adresse d'envoi est incomplète selont les critères suivant:
+								Une adresse est incomplete si la rue, la localité, le pays sont absents ou si l'une de ces informations a une valeur égale à null ou inconnu.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
 			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
 		</xs:sequence>
 	</xs:complexType>
