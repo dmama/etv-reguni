@@ -266,7 +266,17 @@ public class CorrectionFlagHabitantProcessor {
 				+ " and not exists (select am.objetId from AppartenanceMenage am, Tiers sujet where ff.tiers.id = am.objetId and sujet.id = am.sujetId"
 					+ " and am.annulationDate is null and am.dateFin is null and sujet.class = PersonnePhysique and sujet.habitant = 1)";
 
-		return (List<Long>) hibernateTemplate.find(hql);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				//noinspection unchecked
+				return hibernateTemplate.find(hql);
+			}
+		});
+
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -278,6 +288,15 @@ public class CorrectionFlagHabitantProcessor {
 				+ " and exists (select am.objetId from AppartenanceMenage am, Tiers sujet where ff.tiers.id = am.objetId and sujet.id = am.sujetId"
 					+ " and am.annulationDate is null and am.dateFin is null and sujet.class = PersonnePhysique and sujet.habitant = 1)";
 
-		return (List<Long>) hibernateTemplate.find(hql);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		return template.execute(new TransactionCallback<List<Long>>() {
+			@Override
+			public List<Long> doInTransaction(TransactionStatus status) {
+				//noinspection unchecked
+				return hibernateTemplate.find(hql);
+			}
+		});
 	}
 }
