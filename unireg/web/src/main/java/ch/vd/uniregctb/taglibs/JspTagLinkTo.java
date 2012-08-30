@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
+import org.springframework.web.util.HtmlUtils;
 
 /**
  * Button qui navigue vers ou qui poste un formulaire sur autre URL.
@@ -32,6 +33,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 	private String params;
 	private String method = "get";
 	private String confirm;
+	private String title;
 	private String link_class = "link_to";
 
 	private String contextPath;
@@ -93,6 +95,10 @@ public class JspTagLinkTo extends BodyTagSupport {
 		this.confirm = confirm;
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public String getLink_class() {
 		return link_class;
 	}
@@ -129,6 +135,9 @@ public class JspTagLinkTo extends BodyTagSupport {
 
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<a href=\"").append(url).append("\" class=\"").append(link_class).append("\"");
+		if (StringUtils.isNotBlank(title)) {
+			sb.append(" title=\"").append(HtmlUtils.htmlEscape((title))).append("\"");
+		}
 		if (onclickScript != null) {
 			sb.append(" onclick=\"").append(onclickScript).append("\"");
 		}

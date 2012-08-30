@@ -26,6 +26,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 	private String params;
 	private String method = "post";
 	private String confirm;
+	private String title;
 	private String button_class = "button_to";
 	private boolean disabled = false;
 
@@ -88,6 +89,14 @@ public class JspTagButtonTo extends BodyTagSupport {
 		this.confirm = confirm;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
 	public String getButton_class() {
 		return button_class;
 	}
@@ -123,6 +132,9 @@ public class JspTagButtonTo extends BodyTagSupport {
 
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<input type=\"button\" value=\"").append(HtmlUtils.htmlEscape(name)).append("\" class=\"").append(button_class).append("\"");
+		if (StringUtils.isNotBlank(title)) {
+			sb.append(" title=\"").append(HtmlUtils.htmlEscape((title))).append("\"");
+		}
 		sb.append(" onclick=\"").append(onclickScript).append("\"");
 		if (disabled) {
 			sb.append(" disabled=\"disabled\"");
