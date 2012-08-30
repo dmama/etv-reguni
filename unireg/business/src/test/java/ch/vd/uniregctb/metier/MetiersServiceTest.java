@@ -3380,4 +3380,164 @@ public class MetiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Montre que le for d'un couple qui se marie à l'étranger est repris du for de Monsieur pour les vrais non-habitants
+	 */
+	@Test
+	public void testForCoupleApresMariageContribuablesSansAdresseDomicileEtForHorsSuisse() throws Exception {
+
+		final RegDate dateMariage = date(2011, 11, 11);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// vide...
+			}
+		});
+
+		// mise en place des individus HS
+		class Ids {
+			final long idLui;
+			final long idElle;
+
+			Ids(long idLui, long idElle) {
+				this.idLui = idLui;
+				this.idElle = idElle;
+			}
+		}
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addNonHabitant("Luciano", "Pavarotti", null, Sexe.MASCULIN);
+				final PersonnePhysique elle = addNonHabitant("Adriana", "Pavarotti", null, Sexe.FEMININ);
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, MockPays.Allemagne);
+				addForPrincipal(elle, date(2000, 1, 1), MotifFor.INDETERMINE, MockPays.Danemark);
+				return new Ids(lui.getNumero(), elle.getNumero());
+			}
+		});
+
+		// mariage
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, true, null);
+				return null;
+			}
+		});
+
+		// vérification du résultat (c'est le for du contribuable principal qui détermine celui du couple)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, dateMariage);
+				Assert.assertNotNull(couple);
+				Assert.assertNotNull(couple.getPrincipal());
+				Assert.assertNotNull(couple.getConjoint());
+				Assert.assertEquals((Long) ids.idLui, couple.getPrincipal().getNumero());
+				Assert.assertEquals((Long) ids.idElle, couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Montre que le for du couple d'anciens habitants qui se marient à l'étranger vient du for de Monsieur même en présence
+	 * d'anciennes adresses de domicile vaudoises avec GoesTo
+	 */
+	@Test
+	public void testForCoupleApresMariageContribuablesAnciensHabitantsHorsSuisse() throws Exception {
+
+		final RegDate dateDepart = date(2001, 5, 21);
+		final RegDate dateMariage = date(2011, 11, 11);
+		final long noIndividuLui = 12L;
+		final long noIndividuElle = 6785L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, null, "Pavarotti", "Luciano", Sexe.MASCULIN);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, dateDepart);
+				adrLui.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, null, "Tabadabada", "Tabata", Sexe.FEMININ);
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, null, dateDepart);
+				adrElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Colombie.getNoOFS(), null));
+			}
+		});
+
+		// mise en place des individus HS
+		class Ids {
+			final long idLui;
+			final long idElle;
+
+			Ids(long idLui, long idElle) {
+				this.idLui = idLui;
+				this.idElle = idElle;
+			}
+		}
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				tiersService.changeHabitantenNH(lui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				tiersService.changeHabitantenNH(elle);
+				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Cossonay);
+				addForPrincipal(lui, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
+				addForPrincipal(elle, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Echallens);
+				addForPrincipal(elle, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Danemark);
+				return new Ids(lui.getNumero(), elle.getNumero());
+			}
+		});
+
+		// mariage
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, true, null);
+				return null;
+			}
+		});
+
+		// vérification du résultat (c'est le for du contribuable principal qui détermine celui du couple)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(lui, dateMariage);
+				Assert.assertNotNull(couple);
+				Assert.assertNotNull(couple.getPrincipal());
+				Assert.assertNotNull(couple.getConjoint());
+				Assert.assertEquals((Long) ids.idLui, couple.getPrincipal().getNumero());
+				Assert.assertEquals((Long) ids.idElle, couple.getConjoint().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateMariage, ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				return null;
+			}
+		});
+	}
 }
