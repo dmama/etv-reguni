@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -32,9 +34,11 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
+import ch.vd.uniregctb.evenement.di.EvenementDeclarationException;
 import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
+import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -44,6 +48,7 @@ import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -61,10 +66,10 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
@@ -1608,5 +1613,183 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		assertEquals(ctbsIndigents, results.ctbsIndigents.size());
 		assertEquals(ctbsIgnores, results.ctbsIgnores.size());
 		assertEquals(ctbsEnErrors, results.ctbsEnErrors.size());
+	}
+
+	@Test
+	public void testAnnulationDeclaration() throws Exception {
+
+		final int annee = 2012;
+
+		class Ids {
+			Long pp;
+			Long di;
+		}
+		final Ids ids = new Ids();
+
+		// on créée un contribuable assujetti durant l'année 2012 avec une déclaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+				ids.pp = pp.getId();
+
+				final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
+				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
+				final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				ids.di = di2012.getId();
+				return null;
+			}
+		});
+
+		final Set<Long> fiscEventEnvoiDI = new HashSet<Long>();
+		final Set<Long> fiscEventAnnulationDI = new HashSet<Long>();
+		final Set<Integer> diEventEmission = new HashSet<Integer>();
+		final Set<Integer> diEventAnnulation = new HashSet<Integer>();
+
+		service.setEvenementFiscalService(new MockEvenementFiscalService() {
+			@Override
+			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+				fiscEventEnvoiDI.add(di.getId());
+			}
+
+			@Override
+			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+				fiscEventAnnulationDI.add(di.getId());
+			}
+		});
+		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+			@Override
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+				diEventEmission.add(periodeFiscale);
+			}
+
+			@Override
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+				diEventAnnulation.add(periodeFiscale);
+			}
+		});
+
+		// on annule la déclaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+
+				service.annulationDI(pp, di, RegDate.get());
+				return null;
+			}
+		});
+
+		// on vérifie que la déclaration est bien annulée et que les événements fiscaux ont bien été envoyés
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+				assertTrue(di.isAnnule());
+
+				assertEmpty(fiscEventEnvoiDI);
+				assertEquals(1, fiscEventAnnulationDI.size());
+				assertEquals(ids.di, fiscEventAnnulationDI.iterator().next());
+
+				assertEmpty(diEventEmission);
+				assertEquals(1, diEventAnnulation.size());
+				assertEquals(Integer.valueOf(annee), diEventAnnulation.iterator().next());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-5517] Vérifie que la désannulation d'une déclaration fonctionne bien et que les événements fiscaux et de DI sont bien envoyés.
+	 */
+	@Test
+	public void testDesannulationDeclaration() throws Exception {
+
+		final int annee = 2012;
+
+		class Ids {
+			Long pp;
+			Long di;
+		}
+		final Ids ids = new Ids();
+
+		// on créée un contribuable assujetti durant l'année 2012 avec une déclaration annulée
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Robert", "Robert", date(1965, 3, 2), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ARRIVEE_HC, date(annee, 12, 31), MotifFor.DEPART_HC, MockCommune.Aubonne);
+				ids.pp = pp.getId();
+
+				final PeriodeFiscale p2012 = addPeriodeFiscale(annee);
+				final ModeleDocument modele2012 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2012);
+				final DeclarationImpotOrdinaire di2012 = addDeclarationImpot(pp, p2012, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2012);
+				di2012.setAnnule(true);
+				ids.di = di2012.getId();
+				return null;
+			}
+		});
+
+		final Set<Long> fiscEventEnvoiDI = new HashSet<Long>();
+		final Set<Long> fiscEventAnnulationDI = new HashSet<Long>();
+		final Set<Integer> diEventEmission = new HashSet<Integer>();
+		final Set<Integer> diEventAnnulation = new HashSet<Integer>();
+
+		service.setEvenementFiscalService(new MockEvenementFiscalService() {
+			@Override
+			public void publierEvenementFiscalEnvoiDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+				fiscEventEnvoiDI.add(di.getId());
+			}
+
+			@Override
+			public void publierEvenementFiscalAnnulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+				fiscEventAnnulationDI.add(di.getId());
+			}
+		});
+		service.setEvenementDeclarationSender(new MockEvenementDeclarationSender(){
+			@Override
+			public void sendEmissionEvent(long numeroContribuable, int periodeFiscale, RegDate date, String codeControle, String codeRoutage) throws EvenementDeclarationException {
+				diEventEmission.add(periodeFiscale);
+			}
+
+			@Override
+			public void sendAnnulationEvent(long numeroContribuable, int periodeFiscale, RegDate date) throws EvenementDeclarationException {
+				diEventAnnulation.add(periodeFiscale);
+			}
+		});
+
+		// on désannule la déclaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+
+				service.desannulationDI(pp, di, RegDate.get());
+				return null;
+			}
+		});
+
+		// on vérifie que la déclaration est bien désannulée et que les événements fiscaux ont bien été envoyés
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = hibernateTemplate.get(PersonnePhysique.class, ids.pp);
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di);
+				assertFalse(di.isAnnule());
+
+				assertEquals(1, fiscEventEnvoiDI.size());
+				assertEquals(ids.di, fiscEventEnvoiDI.iterator().next());
+				assertEmpty(fiscEventAnnulationDI);
+
+				assertEquals(1, diEventEmission.size());
+				assertEquals(Integer.valueOf(annee), diEventEmission.iterator().next());
+				assertEmpty(diEventAnnulation);
+				return null;
+			}
+		});
 	}
 }

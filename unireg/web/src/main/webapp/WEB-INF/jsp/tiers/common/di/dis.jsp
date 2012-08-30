@@ -42,14 +42,20 @@
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
 				<c:if test="${!di.annule}">
-					<a href="#" class="detail" title="DI" onclick="Decl.open_details_di(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
+					<a href="#" class="detail" title="Détails de la déclaration" onclick="Decl.open_details_di(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
 				</c:if>
 				<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!di.annule}">
-					<unireg:raccourciModifier link="edit.do?action=editdi&id=${di.id}" tooltip="di"/>
+					<unireg:raccourciModifier link="edit.do?action=editdi&id=${di.id}" tooltip="Editer la déclaration"/>
 				</c:if>
+				<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
+					<c:if test="${di.annule}">
+						<unireg:linkTo name="" title="Désannuler la déclaration" action="/decl/desannuler.do" method="post" params="{id:${di.id}}"
+						               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
+					</c:if>
+				</authz:authorize>
 			</c:if>
 		</display:column>
 		<display:setProperty name="paging.banner.all_items_found" value=""/>

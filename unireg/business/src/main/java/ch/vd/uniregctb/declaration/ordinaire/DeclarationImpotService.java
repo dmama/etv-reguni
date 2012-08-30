@@ -162,6 +162,15 @@ public interface DeclarationImpotService {
 	DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
 
 	/**
+	 * Désannule une déclaration d'impôt qui est annulée. Cette opération, outre de désannuler la déclaration, émet les événements fiscaux et DI qui vont bien.
+	 *
+	 * @param ctb           un contribuable
+	 * @param di            la déclaration du contribuable à désannuler
+	 * @param dateEvenement la date de désannulation
+	 */
+	void desannulationDI(Contribuable ctb, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+
+	/**
 	 * Envoye des sommations à la date donnée
 	 *
 	 * @param dateTraitement        date de traitement pour l'envoi des sommations

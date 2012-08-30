@@ -99,7 +99,7 @@
 
 			<!-- Annulation DI -->
 			<c:if test="${command.allowedSommation}">
-				<unireg:buttonTo name="Annuler déclaration" action="/decl/annuler.do" method="POST" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?" params='{id:${command.id}}'/>
+				<unireg:buttonTo name="Annuler déclaration" action="/decl/annuler.do" method="post" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?" params='{id:${command.id}}'/>
 			</c:if>
 
 		</c:if>
@@ -161,8 +161,6 @@
 				return true;
 		 	}
 
-		 	
-			 	
 	</script>	
 	</tiles:put>
 </tiles:insert>

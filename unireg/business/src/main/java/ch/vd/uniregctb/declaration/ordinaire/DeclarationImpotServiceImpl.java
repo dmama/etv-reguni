@@ -417,6 +417,28 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		return di;
 	}
 
+	@Override
+	public void desannulationDI(Contribuable ctb, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+
+		if (!di.isAnnule()) {
+			throw new IllegalArgumentException("Impossible de désannuler la déclaration n°" + di.getId() + " car elle n'est pas annulée !");
+		}
+
+		di.setAnnule(false);
+		evenementFiscalService.publierEvenementFiscalEnvoiDI(ctb, di, dateEvenement);
+		try {
+			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement de désannulation de DI (pour le moment, il ne s'agit que d'ADDI)
+			final int pf = di.getPeriode().getAnnee();
+			if (pf >= DeclarationImpotOrdinaire.PREMIERE_ANNEE_RETOUR_ELECTRONIQUE) {
+				final String codeSegmentString = Integer.toString(di.getCodeSegment() != null ? di.getCodeSegment() : VALEUR_DEFAUT_CODE_SEGMENT);
+				evenementDeclarationSender.sendEmissionEvent(ctb.getNumero(), pf, dateEvenement, di.getCodeControle(), codeSegmentString);
+			}
+		}
+		catch (EvenementDeclarationException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

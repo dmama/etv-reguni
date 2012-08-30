@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.di;
 
-import java.util.List;
-
 import org.springframework.context.MessageSource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
@@ -21,12 +19,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
-import ch.vd.uniregctb.type.TypeEtatTache;
-import ch.vd.uniregctb.type.TypeTache;
 
 /**
  * Controller Spring 3 pour la gestion des déclarations d'impôt ordinaires (à compléter lors des divers refactoring)
@@ -106,7 +99,7 @@ public class DeclarationImpotController {
 
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
 
-		// vérification des droits en lecture
+		// vérification des droits en écriture
 		final Long tiersId = di.getTiers().getId();
 		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
 
@@ -114,27 +107,50 @@ public class DeclarationImpotController {
 		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.annulationDI(tiers, di, RegDate.get());
 
-		// Mise à jour de l'état de la tâche si il y en a une
-		final TacheCriteria criterion = new TacheCriteria();
-		criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-		criterion.setAnnee(di.getPeriode().getAnnee());
-		criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		criterion.setContribuable(tiers);
-		final List<Tache> taches = tacheDAO.find(criterion);
-		if (taches != null && !taches.isEmpty()) {
-			for (Tache t : taches) {
-				TacheAnnulationDeclarationImpot tache = (TacheAnnulationDeclarationImpot) t;
-				if (tache.getDeclarationImpotOrdinaire().getId().equals(id)) {
-					tache.setEtat(TypeEtatTache.TRAITE);
-				}
-			}
-		}
-
 		if (depuisTache == null) {
 			return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
 		}
 		else {
 			return "redirect:/tache/list.do";
 		}
+	}
+
+	/**
+	 * Désannuler une déclaration d'impôt ordinaire.
+	 *
+	 * @param id          l'id de la déclaration d'impôt ordinaire à désannuler
+	 * @return les détails d'une déclaration d'impôt au format JSON
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/decl/desannuler.do", method = RequestMethod.POST)
+	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.DI_DESANNUL_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt.");
+		}
+
+		final Declaration decl = hibernateTemplate.get(Declaration.class, id);
+		if (decl == null) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'existe pas.");
+		}
+
+		if (!(decl instanceof DeclarationImpotOrdinaire)) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas une déclaration d'impôt ordinaire.");
+		}
+
+		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) decl;
+		if (!di.isAnnule()) {
+			throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas annulée.");
+		}
+
+		// vérification des droits en écriture
+		final Long tiersId = di.getTiers().getId();
+		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		// désannulation de la déclaration
+		final Contribuable tiers = (Contribuable) di.getTiers();
+		diService.desannulationDI(tiers, di, RegDate.get());
+
+		return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
 	}
 }
