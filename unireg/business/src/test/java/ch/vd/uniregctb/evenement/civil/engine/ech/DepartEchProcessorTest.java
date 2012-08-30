@@ -29,13 +29,16 @@ import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -1348,6 +1351,99 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				Assert.assertNotNull(erreur);
 				Assert.assertEquals("Aucune adresse principale ou secondaire ne se termine 1 jour ou moins avant la date de l'événement.", erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas d'un couple d'anciens habitants (HS) dont un des membres revient seul (mais toujours marié) et repart
+	 * --> vérification de l'endroit où est ouvert le for du couple après le deuxième départ
+	 */
+	@Test
+	public void testDepartIndividuMarieAvecConjointDejaHorsSuisse() throws Exception {
+
+		final long noIndividuLui = 346L;
+		final long noIndividuElle = 326L;
+		final RegDate dateMariage = date(1990, 4, 12);
+		final RegDate dateDepartInitial = date(2000, 1, 1);
+		final RegDate dateRetourMonsieur = date(2006, 5, 12);
+		final RegDate dateNouveauDepartMonsieur = date(2010, 6, 30);
+
+		// monsieur et madame sont mariés, partis hors-Suisse
+		// seul monsieur revient... puis repart...
+		// où est alors mis le for du couple après le départ de Monsieur ?
+
+		// service civil
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, null, "Petit", "Albert", Sexe.MASCULIN);
+				final MockAdresse adrLui1 = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, dateDepartInitial);
+				adrLui1.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				final MockAdresse adrLui2 = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateRetourMonsieur, dateNouveauDepartMonsieur);
+				adrLui2.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				adrLui2.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, null, "Petit", "Françoise", Sexe.FEMININ);
+				final MockAdresse adrElle1 = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateMariage, dateDepartInitial);
+				adrElle1.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+
+				marieIndividus(lui, elle, dateMariage);
+			}
+		});
+
+		// fiscal
+		final long idMc = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndividuLui);
+				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				tiersService.changeHabitantenNH(elle);
+
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				final MenageCommun mc = couple.getMenage();
+				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepartInitial, MotifFor.DEPART_HS, MockCommune.Lausanne);
+				addForPrincipal(mc, dateDepartInitial.getOneDayAfter(), MotifFor.DEPART_HS, dateRetourMonsieur.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.France);
+				addForPrincipal(mc, dateRetourMonsieur, MotifFor.ARRIVEE_HS, MockCommune.Moudon);
+
+				return mc.getNumero();
+			}
+		});
+
+		// création d'un événement civil de départ de monsieur
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(217483457L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateNouveauDepartMonsieur);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividuLui);
+
+		// vérification de l'emplacement du for du couple après ça...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMc);
+				Assert.assertNotNull(mc);
+
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(dateNouveauDepartMonsieur.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertNull(ffp.getDateFin());
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertNull(ffp.getMotifFermeture());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});
