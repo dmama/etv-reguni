@@ -68,10 +68,14 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				evtView.setAdresse(retrieveAdresse(numeroIndividu));
 				retrieveTiersAssociePrincipal(evt.getId(), numeroIndividu, evtView);
 				retrieveTiersAssocieMenage(evt.getId(), numeroIndividu, evtView);
-				retrieveEvenementAssocie(numeroIndividu, evtView);
 			}
 			catch (Exception e) {
 				evtView.setIndividuError(e.getMessage());
+			}
+			try {
+				retrieveEvenementAssocie(numeroIndividu, evtView);
+			} catch (Exception e) {
+					evtView.setIndividuError(e.getMessage());
 			}
 		} else {
             if (!evt.isAnnule() && !evt.getEtat().isTraite()) {

@@ -197,10 +197,10 @@
         </c:if>
         <div>
         <c:if test="${command.totalAutresEvenementsAssocies > 1}">
-            <a href='rechercher.do?numeroIndividuFormatte=${command.individu.numeroIndividu}&modeLotEvenement=true'>${command.totalAutresEvenementsAssocies} autres événements</a>
+            <a href='rechercher.do?numeroIndividuFormatte=${command.noIndividu}&modeLotEvenement=true'>${command.totalAutresEvenementsAssocies} autres événements</a>
         </c:if>
         <c:if test="${command.totalAutresEvenementsAssocies == 1}">
-            <a href='rechercher.do?numeroIndividuFormatte=${command.individu.numeroIndividu}&modeLotEvenement=true'>1 autre événement</a>
+            <a href='rechercher.do?numeroIndividuFormatte=${command.noIndividu}&modeLotEvenement=true'>1 autre événement</a>
         </c:if>
          dans le lot associé à cet individu.
         </div>
