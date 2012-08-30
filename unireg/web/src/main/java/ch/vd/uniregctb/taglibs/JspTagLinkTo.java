@@ -144,11 +144,28 @@ public class JspTagLinkTo extends BodyTagSupport {
 		return sb.toString();
 	}
 
+	/**
+	 * Construit le javascript qui permet de créer dynamiquement et de soumettre un formulaire avec l'action et les paramètres spécifiés.
+	 *
+	 * @param contextPath le context path de l'application
+	 * @param action      l'action (= l'url sans paramètre, e.g. "/tiers/visu.do")
+	 * @param method      la méthode de soumission du formulaire ("get", "post", ...)
+	 * @param params      les paramètres au format JSON sans guillement (e.g. "{id:3}")
+	 * @return le code javascript qui va bien.
+	 */
 	public static String buildSubmitFormScript(String contextPath, String action, String method, String params) {
 		return "Form.dynamicSubmit('" + method + "', '" + contextPath + action + "', " + params + "); return false;";
 	}
 
-	private static String buildGetUrl(String contextPath, String action, String params) {
+	/**
+	 * Construit une url complète et valide en fonction de l'action et des paramètres spécifiés.
+	 *
+	 * @param contextPath le context path de l'application
+	 * @param action      l'action (= l'url sans paramètre, e.g. "/tiers/visu.do")
+	 * @param params      les paramètres au format JSON sans guillement (e.g. "{id:3}")
+	 * @return l'url complète (e.g. "/fiscalite/unireg/web/tiers/visu.do?id=3")
+	 */
+	public static String buildGetUrl(String contextPath, String action, String params) {
 		final StringBuilder url = new StringBuilder();
 		if (StringUtils.isNotBlank(params)) {
 			Map<String, String> paramsMap = parseParams(params);

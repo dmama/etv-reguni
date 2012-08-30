@@ -109,12 +109,17 @@ public class JspTagButtonTo extends BodyTagSupport {
 		final StringBuilder onclickScript = new StringBuilder();
 
 		if (StringUtils.isNotBlank(confirm)) {
-			final String confirmScript =  "if (!confirm('" + StringEscapeUtils.escapeJavaScript(confirm) + "')) return false;";
+			final String confirmScript = "if (!confirm('" + StringEscapeUtils.escapeJavaScript(confirm) + "')) return false;";
 			onclickScript.append(confirmScript);
 		}
 
-		final String submitForm = JspTagLinkTo.buildSubmitFormScript(contextPath, action, method, params);
-		onclickScript.append(submitForm);
+		if ("get".equalsIgnoreCase(method)) {
+			onclickScript.append("window.location.href='").append(JspTagLinkTo.buildGetUrl(contextPath, action, params)).append("'; return false");
+		}
+		else {
+			final String submitForm = JspTagLinkTo.buildSubmitFormScript(contextPath, action, method, params);
+			onclickScript.append(submitForm);
+		}
 
 		final StringBuilder sb = new StringBuilder();
 		sb.append("<input type=\"button\" value=\"").append(HtmlUtils.htmlEscape(name)).append("\" class=\"").append(button_class).append("\"");
