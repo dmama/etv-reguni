@@ -82,7 +82,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		corp.setIpmroNumber(hostCorp.getNumeroIPMRO());
 
 		// [UNIREG-2040] on va chercher l'information de blocage dans notre base si elle existe
-		corp.setAutomaticReimbursementBlocked(right.getBlocageRemboursementAutomatique());
+		corp.setAutomaticReimbursementBlocked(right.getBlocageRemboursementAutomatique() != null && right.getBlocageRemboursementAutomatique());
 
 		if (parts != null && parts.contains(PartyPart.ADDRESSES)) {
 

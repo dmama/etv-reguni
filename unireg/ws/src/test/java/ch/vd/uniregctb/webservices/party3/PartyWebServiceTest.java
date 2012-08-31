@@ -1797,4 +1797,38 @@ public class PartyWebServiceTest extends WebserviceTest {
 		}
 
 	}
+
+	/**
+	 * On vérifie que tout se passe bien lorsque le remboursement automatique est nul.
+	 */
+	@Test
+	public void testGetCorporationWithoutAutomaticReimbursementInfo() throws Exception {
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				addPM(12345L, "Biscottes Duchmole", "SARL", date(1990, 4, 5), null);
+			}
+		});
+
+		final Long id = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				Entreprise ent = addEntreprise(12345L);
+				ent.setBlocageRemboursementAutomatique(null);
+				return ent.getId();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(id.intValue());
+
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(Corporation.class, party);
+
+		final Corporation hh = (Corporation) party;
+		assertFalse(hh.isAutomaticReimbursementBlocked());
+	}
 }
