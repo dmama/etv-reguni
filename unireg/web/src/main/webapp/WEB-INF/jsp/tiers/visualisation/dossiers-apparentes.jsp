@@ -58,7 +58,7 @@
 
 	    buildRapportsOptions: function(page, showHisto, typeSelectionne, typesRapportEntreTiers, sortField, sortOrder) {
             var html = '<table><tr>\n';
-            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRapportHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return loadRapports(' + page + ');"> ';
+            html += '<td width="25%"><input class="noprint" type="checkbox" id="isRapportHisto"' + (showHisto ? ' checked="true"' : '') + ' onclick="return DossiersApparentes.loadRapports(' + page + ');"> ';
             html += '<label class="noprint" for="isRapportHisto">Historique</label></td>\n';
             html += '<td width="75%">&nbsp;</td>\n';
             html += '</tr><tr>\n';
@@ -81,7 +81,7 @@
 
 	    buildRapportsPagination: function(page, pageSize, totalCount) {
             return DisplayTable.buildPagination(page, pageSize, totalCount, function(i) {
-                return 'loadRapports(' + i + ')';
+                return 'DossiersApparentes.loadRapports(' + i + ')';
             });
         },
 
@@ -118,10 +118,10 @@
             }
 
             var html = '<table id="rapport" class="display"><thead><tr>\n';
-            html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'type\');">Rapport avec le tiers</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'dateDebut\');">Date début</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'dateFin\');">Date fin</a></th>';
-            html += '<th class="sortable"><a href="#" onclick="return sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
+            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'type\');">Rapport avec le tiers</a></th>';
+            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateDebut\');">Date début</a></th>';
+            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'dateFin\');">Date fin</a></th>';
+            html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'tiersId\');">N° de tiers</a></th>';
             html += '<th>Nom / Raison sociale</th>';
             if (hasAutoriteTutelaire) {
                 html += '<th class="sortable"><a href="#" onclick="return DossiersApparentes.sortRapportBy(\'autoriteTutelaireId\');">Autorité tutelaire</a></th>';
