@@ -3,8 +3,6 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="globalTiersSearcher" class="ch.vd.uniregctb.indexer.tiers.ZeroTiersSearcherImpl"/>
-
 	<!-- Le ehcache manager pour ne pas avoir à inclure le fichier unireg-ws-cache.xml -->
 	<bean id="ehCacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
 	  <property name="configLocation" value="file:${extprop.ehcache.file}" />
