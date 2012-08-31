@@ -105,6 +105,16 @@
 					</authz:authorize>
 				</c:if>
 
+				<unireg:ifEfacture>
+					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
+						<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
+							<li id="efactureTab">
+								<a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
+							</li>
+						</authz:authorize>
+					</c:if>
+				</unireg:ifEfacture>
+
 				<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant'}">
 					<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_VISU_IMMEUBLES">
 						<li id="immeublesTab">
@@ -112,16 +122,6 @@
 						</li>
 					</authz:authorize>
 				</c:if>
-
-				<unireg:ifEfacture>
-					<c:if test="${command.natureTiers == 'Habitant' || command.natureTiers == 'NonHabitant' || command.natureTiers == 'MenageCommun'}">
-						<authz:authorize ifAnyGranted="ROLE_VISU_ALL, ROLE_GEST_EFACTURE">
-	                        <li id="efactureTab">
-	                            <a href="#tabContent_efactureTab"><span><fmt:message key="label.efacture"/></span></a>
-	                        </li>
-		                </authz:authorize>
-					</c:if>
-				</unireg:ifEfacture>
 
 				<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 					<li id="remarqueTab">
