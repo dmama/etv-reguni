@@ -441,18 +441,12 @@ public final class ServiceTracing implements ServiceTracingInterface {
 			else {
 				paramString = null;
 			}
-			final String throwableString;
-			if (thrown != null) {
-				throwableString = String.format(", %s thrown", thrown.getClass().getName());
-			}
-			else {
-				throwableString = StringUtils.EMPTY;
-			}
+			final String returnInfo = (thrown == null ? String.format(" => %d item(s)", items) : String.format(", %s thrown", thrown.getClass().getName()));
 			if (StringUtils.isBlank(paramString)) {
-				detailLogger.info(String.format("(%d ms) %s => %d item(s)%s", (nanoTime - start) / 1000000, name, items, throwableString));
+				detailLogger.info(String.format("(%d ms) %s%s", (nanoTime - start) / 1000000, name, returnInfo));
 			}
 			else {
-				detailLogger.info(String.format("(%d ms) %s{%s} => %d item(s)%s", (nanoTime - start) / 1000000, name, paramString, items, throwableString));
+				detailLogger.info(String.format("(%d ms) %s{%s}%s", (nanoTime - start) / 1000000, name, paramString, returnInfo));
 			}
 		}
 	}
