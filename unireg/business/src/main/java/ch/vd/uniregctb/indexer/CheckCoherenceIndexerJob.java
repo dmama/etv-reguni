@@ -88,7 +88,7 @@ public class CheckCoherenceIndexerJob extends JobDefinition {
 		// Affiche le résultat
 		if (counts.errors > 0 || counts.warnings > 0) {
 			Audit.error("Les données de l'indexer sont incohérentes : " + counts.errors + " erreur(s) et " + counts.warnings
-					+ " warning(s) ont été trouvés. Voir le log technique pour les détails.");
+					+ " avertissement(s) ont été trouvés. Voir le log technique pour les détails.");
 		}
 		else {
 			Audit.info("Les données de l'indexer sont cohérentes.");

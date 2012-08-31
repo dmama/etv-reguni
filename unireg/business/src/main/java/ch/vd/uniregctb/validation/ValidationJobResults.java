@@ -55,7 +55,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 			StringBuilder message = new StringBuilder();
 			final List<String> errors = erreur.getErrors();
 			final List<String> warnings = erreur.getWarnings();
-			message.append(errors.size()).append(" erreur(s) - ").append(warnings.size()).append(" warning(s):\n");
+			message.append(errors.size()).append(" erreur(s) - ").append(warnings.size()).append(" avertissement(s):\n");
 
 			for (String e : errors) {
 				message.append(" [E] ").append(e).append('\n');

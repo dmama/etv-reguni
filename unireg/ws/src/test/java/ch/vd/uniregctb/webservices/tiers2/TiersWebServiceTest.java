@@ -673,7 +673,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(CodeQuittancement.EXCEPTION, retour.code);
 		assertEquals(WebServiceExceptionType.BUSINESS, retour.exceptionType);
 
-		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
 		assertEquals(expectedMessage, retour.exceptionMessage);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -781,7 +781,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		assertEquals(CodeQuittancement.EXCEPTION, retourInvalide.code);
 		assertEquals(WebServiceExceptionType.BUSINESS, retourInvalide.exceptionType);
 
-		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
 		assertEquals(expectedMessage, retourInvalide.exceptionMessage);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

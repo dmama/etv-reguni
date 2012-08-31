@@ -40,7 +40,7 @@ public abstract class AbstractValidatorTest<T> extends BusinessTest {
 		}
 		if (expectedWarningCount == vr.warningsCount()) {
 			for (int i = 0 ; i < vr.warningsCount() ; ++ i) {
-				Assert.assertEquals("Warning #" + i, warnings.get(i), vr.getWarnings().get(i));
+				Assert.assertEquals("Avertissement #" + i, warnings.get(i), vr.getWarnings().get(i));
 			}
 		}
 		else {

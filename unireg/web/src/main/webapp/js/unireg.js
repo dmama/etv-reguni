@@ -1190,7 +1190,7 @@ var Tiers = {
 				}
 				if (results.warnings) {
 					for (var i in results.warnings) {
-						html += '<li class="warn">Warning: ' + StringUtils.escapeHTML(results.warnings[i]) +'</li>'
+						html += '<li class="warn">Avertissement: ' + StringUtils.escapeHTML(results.warnings[i]) +'</li>'
 					}
 				}
 				html += '</ul></td></tr></table>';

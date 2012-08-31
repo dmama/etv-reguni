@@ -807,7 +807,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				final String msg = erreur.getMessage();
 				final String[] lignes = msg.split("\n");
 				assertEquals(3, lignes.length);
-				assertTrue(lignes[0].endsWith("2 erreur(s) - 0 warning(s):"));
+				assertTrue(lignes[0].endsWith("2 erreur(s) - 0 avertissement(s):"));
 				assertTrue(lignes[1].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
 				assertTrue(lignes[2].endsWith(String.format("ne peut pas exister alors que le tiers [%d] appartient à un ménage-commun", ppId)));
 				return null;

@@ -55,7 +55,7 @@ public class ActionException extends RuntimeException {
 	public String getMessage() {
 
 		StringBuilder message = new StringBuilder();
-		message.append(errors.size()).append(" erreur(s) - ").append(warnings.size()).append(" warning(s):\n");
+		message.append(errors.size()).append(" erreur(s) - ").append(warnings.size()).append(" avertissement(s):\n");
 
 		for (String e : errors) {
 			message.append(" [E] ").append(e).append('\n');

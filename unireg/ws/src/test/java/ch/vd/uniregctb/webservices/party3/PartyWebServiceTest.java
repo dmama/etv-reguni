@@ -583,7 +583,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final ServiceExceptionInfo exceptionInfo = retour.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
-		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", ids.ppId);
 		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
@@ -695,7 +695,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		final ServiceExceptionInfo exceptionInfo = retourInvalide.getExceptionInfo();
 		assertNotNull(exceptionInfo);
 		assertTrue(exceptionInfo instanceof BusinessExceptionInfo);
-		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 warning(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
+		final String expectedMessage = String.format("PersonnePhysique #%d - 1 erreur(s) - 0 avertissement(s):\n [E] Le nom est un attribut obligatoire pour un non-habitant\n", liste.get(1).idCtb);
 		assertEquals(expectedMessage, exceptionInfo.getMessage());
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {

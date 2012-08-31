@@ -37,13 +37,13 @@
 							<c:forEach items="${s.validationResults.warnings}" var="w" >
 							<tr>
 								<td class="bullet">»</td>
-								<td class="warning">Warning: <c:out value="${w}"/></td>
+								<td class="warning"><fmt:message key="label.validation.warning"/>: <c:out value="${w}"/></td>
 							</tr>
 							</c:forEach>
 							<c:forEach items="${s.validationResults.errors}" var="e" >
 							<tr>
 								<td class="bullet">»</td>
-								<td class="error">Erreur: <c:out value="${e}"/></td>
+								<td class="error"><fmt:message key="label.validation.erreur"/>: <c:out value="${e}"/></td>
 							</tr>
 							</c:forEach>
 						</table>

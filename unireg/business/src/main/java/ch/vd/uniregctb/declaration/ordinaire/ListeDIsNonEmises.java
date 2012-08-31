@@ -208,7 +208,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 		StringBuilder sbWarn = null;
 		for (String warn : results.getWarnings()) {
 			if (sbWarn == null) {
-				sbWarn = new StringBuilder("WARNING : ");
+				sbWarn = new StringBuilder("AVERTISSEMENTS : ");
 			}
 			else {
 				sbWarn.append(", ");

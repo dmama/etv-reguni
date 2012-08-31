@@ -361,7 +361,7 @@ public class CoupleManagerImplTest extends BusinessTest {
 			fail("Le ménage-commun ne devrait pas valider à cause du validateur piégé enregistré dans le validation service.");
 		}
 		catch (Exception e) {
-			assertContains("MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 warning(s):\n" +
+			assertContains("MenageCommun #" + ids.menage + " - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Erreur de validation bidon\n", e.getMessage());
 		}
 		finally {

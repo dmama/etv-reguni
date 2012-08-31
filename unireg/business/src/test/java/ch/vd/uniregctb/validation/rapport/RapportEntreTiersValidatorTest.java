@@ -97,7 +97,7 @@ public class RapportEntreTiersValidatorTest extends AbstractValidatorTest<Rappor
 			fail();
 		}
 		catch (ValidationException e) {
-			assertEquals("MenageCommun #" + idMenage + " - 1 erreur(s) - 0 warning(s):\n" +
+			assertEquals("MenageCommun #" + idMenage + " - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Une représentation légale ne peut s'appliquer que sur une personne physique\n", e.getMessage());
 		}
 	}

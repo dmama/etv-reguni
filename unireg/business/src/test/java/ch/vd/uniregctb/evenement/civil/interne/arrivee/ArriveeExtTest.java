@@ -2347,7 +2347,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		}
 		catch (ValidationException e) {
 			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé
-			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 warning(s):\n" +
+			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, les modes d'imposition possibles sont \"ordinaire\" ou \"source\".\n", e.getMessage());
 		}
 	}
@@ -2595,7 +2595,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		}
 		catch (ValidationException e) {
 			// [SIFISC-57] le tiers ne valide pas, et l'événement ne peut pas passer avant que le mode d'imposition du fors existant soit corrigé
-			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 warning(s):\n" +
+			assertEquals("PersonnePhysique #10000001 - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] Pour un rattachement personnel de type domicile, dans un autre canton ou à l'étranger, les modes d'imposition possibles sont \"ordinaire\" ou \"source\".\n", e.getMessage());
 		}
 	}

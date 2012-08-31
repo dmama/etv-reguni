@@ -81,7 +81,7 @@ public class RapportEditManagerTest extends WebTest {
 			fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
 		}
 		catch (ValidationException e) {
-			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 warning(s):\n" +
+			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
 		}
 
@@ -138,7 +138,7 @@ public class RapportEditManagerTest extends WebTest {
 			fail("Il ne devrait pas être possible de sauver un rapport de représentation avec extension de l'exécution forcée sur un habitant");
 		}
 		catch (ValidationException e) {
-			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 warning(s):\n" +
+			assertEquals("PersonnePhysique #10000002 - 1 erreur(s) - 0 avertissement(s):\n" +
 					" [E] L'extension de l'exécution forcée est uniquement autorisée pour les tiers avec un for fiscal principal hors-Suisse\n", e.getMessage());
 		}
 
