@@ -253,9 +253,12 @@ public abstract class Depart extends Mouvement {
 			}
 
 			/*
-					 * Le Depart du mort-vivant
-					 */
-			if (getIndividu().getDateDeces() != null) {
+			 * Le Depart du mort-vivant
+			 */
+			final Individu individu = getIndividu();
+			if (individu == null) {
+				erreurs.addErreur("L'individu est null");
+			} else if (individu.getDateDeces() != null) {
 				erreurs.addErreur("L'individu est décédé");
 			}
 
@@ -278,9 +281,9 @@ public abstract class Depart extends Mouvement {
 	/**
 	 * Permet de valider la cohérence d'une adresse fournie par l'événement départ
 	 *
-	 * @param adresse
-	 * @param commune
-	 * @param erreurs
+	 * @param adresse l'adresse à valider
+	 * @param commune commune à valider
+	 * @param erreurs buffer d'erreur
 	 */
 	protected void validateCoherenceAdresse(Adresse adresse, Commune commune, EvenementCivilErreurCollector erreurs) {
 		if (!isDepartVaudois()) {
@@ -298,7 +301,6 @@ public abstract class Depart extends Mouvement {
 
 			// La commune d'annonce est differente de la commune de résidence avant l'évenement
 			// de départ
-			//TODO (BNM) attention si depart.getNumeroOfsCommuneAnnonce correspond à une commune avec des fractions
 			if (commune != null) {
 				if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsEntiteForAnnonce()) ||
 						(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsEntiteForAnnonce())) {

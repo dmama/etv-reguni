@@ -76,7 +76,12 @@ public class DepartPrincipal extends Depart {
 		final RegDate dateDepart = getDate();
 		this.ancienneAdresse = ancienneAdresse;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
-		this.numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
+		if (ancienneCommune.isFraction()) {
+			    numeroOfsEntiteForAnnonce = ancienneCommune.getNumTechMere(); // NumTechMere == noOFS pour les communes faîtières
+		} else {
+				numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
+		}
+
 
 		if (this.ancienneAdresse != null) {
 			this.nouvelleLocalisation = this.ancienneAdresse.getLocalisationSuivante();
@@ -233,10 +238,6 @@ public class DepartPrincipal extends Depart {
 	/**
 	 * Traite un depart d'une residence principale
 	 *
-	 * @param depart         un événement de départ
-	 * @param contribuable
-	 * @param dateFermeture
-	 * @param motifFermeture
 	 */
 	private void handleDepartResidencePrincipale(Depart depart, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture, int numeroOfsAutoriteFiscale) {
 

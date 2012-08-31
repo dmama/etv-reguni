@@ -132,9 +132,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
-				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, arrivee, depart);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -420,9 +418,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
-				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -481,9 +477,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
-				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -651,6 +645,64 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
+	@Test
+	public void testDepartDepuisFractionDeCommune_SIFISC_6068() throws Exception {
+
+		final long noIndividu = 126673246L;
+		final RegDate depart = date(2011, 10, 31);
+		final RegDate arrivee = date(2003, 1, 1);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1967, 4, 23);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
+				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, arrivee, depart);
+				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.Espagne.getNoOFS(), null));
+				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
+			}
+		});
+
+		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				PersonnePhysique luis = addHabitant(noIndividu);
+				addForPrincipal(luis, arrivee, MotifFor.ARRIVEE_HS, MockCommune.Fraction.LeSentier);
+				return null;
+			}
+		});
+
+		// événement de départ
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(depart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(evt);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				return null;
+			}
+		});
+	}
+
+
 	//Test le cas d'un depart vaudois en secondaire avec une destination inconnue
 	@Test
 	public void testDepartResidenceSecondaireAvecForPrincipal() throws Exception {
@@ -665,9 +717,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
-				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -746,11 +796,9 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
 				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Lausanne.getNoOFS(), null));
-				final MockAdresse nouvelleAdresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, depart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, depart.getOneDayAfter(), null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -825,7 +873,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			serviceCivil.setUp(cache);
 
 			// création de la personne physique fiscale
-			final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
 				@Override
 				public Long doInTransaction(TransactionStatus status) {
 					final PersonnePhysique pp = addHabitant(noIndividu);
@@ -946,11 +994,9 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			protected void init() {
 				final RegDate dateNaissance = date(1967, 4, 23);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Enrique", "Luis", true);
-
-
 				final MockAdresse adresseVaudoise = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Pully.CheminDesRoches, null, arrivee, depart);
 				adresseVaudoise.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD,MockCommune.Echallens.getNoOFS(), null));
-				final MockAdresse adresseVaudoiseSuivante = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, depart.getOneDayAfter(), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, depart.getOneDayAfter(), null);
 				addNationalite(ind, MockPays.Espagne, dateNaissance, null);
 			}
 		});
@@ -958,7 +1004,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		doInNewTransactionAndSession(new ch.vd.registre.base.tx.TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				PersonnePhysique luis = addHabitant(noIndividu);
+				addHabitant(noIndividu);
 				return null;
 			}
 		});
@@ -1024,7 +1070,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -1097,7 +1143,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -1163,7 +1209,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -1235,7 +1281,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -1301,7 +1347,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// mise en place fiscale
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
@@ -1412,7 +1458,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 
 		// création d'un événement civil de départ de monsieur
-		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = new EvenementCivilEch();

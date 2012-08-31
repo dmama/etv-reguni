@@ -331,7 +331,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	/**
 	 * Crée une nouvelle adresse à partie d'une rue.
 	 */
-	public static MockAdresse newAdresse(TypeAdresseCivil type, MockRue rue, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+	public static MockAdresse newAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
 		Assert.notNull(rue);
 
 		final MockLocalite localite = rue.getLocalite();
