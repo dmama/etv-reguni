@@ -1,5 +1,6 @@
 <#macro StrOrNull value><#if value?trim = "">null<#else>'${value}'</#if></#macro>
 <#macro NumOrNull value><#if value?trim = "">null<#else>${value}</#if></#macro>
+<#macro SchemaPrefix>UNIREG.</#macro>
 
 <#--Palliatif pour la date de debut: 21.09.2012 si pas de valeur (date de la MeP 12R3, valeur "magique" choisie par l'ACI)-->
 <#macro DateOrDefault value><#if value?trim = "">20120921<#else>${value}</#if></#macro>
@@ -8,7 +9,7 @@
 -----------------------------------
 -- Migration du tiers ${t.NO_TIERS} (ancien individu ${t.NO_IND_REGPP})
 -----------------------------------
-insert into remarque (
+insert into <@SchemaPrefix/>remarque (
 	id,        -- hibernate_sequence.nextval,
 	log_cdate, -- CURRENT_TIMESTAMP
 	log_cuser, -- '${USER}'
@@ -18,7 +19,7 @@ insert into remarque (
 	tiers_id   -- ${t.NO_TIERS}
 )
 select
-	hibernate_sequence.nextval,
+	<@SchemaPrefix/>hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
@@ -28,7 +29,7 @@ select
 from dual;
 
 <#if t.ADRESSE_TYPE?trim != "">
-insert into adresse_tiers (
+insert into <@SchemaPrefix/>adresse_tiers (
 	adr_type,                -- '${t.ADRESSE_TYPE}'
 	id,                      -- hibernate_sequence.nextval
 	permanente,              -- 0
@@ -51,7 +52,7 @@ insert into adresse_tiers (
 )
 select
 	'${t.ADRESSE_TYPE}',
-	hibernate_sequence.nextval,
+	<@SchemaPrefix/>hibernate_sequence.nextval,
 	0,
 	CURRENT_TIMESTAMP,
 	'${USER}',
@@ -73,7 +74,7 @@ from dual;
 </#if>
 
 <#if t.ETAT_CIVIL_TYPE?trim != "" >
-insert into situation_famille (
+insert into <@SchemaPrefix/>situation_famille (
 	situation_famille_type, -- 'SituationFamille'
 	id,                     -- hibernate_sequence.nextval
 	log_cdate,              -- CURRENT_TIMESTAMP
@@ -87,7 +88,7 @@ insert into situation_famille (
 )
 select
 	'SituationFamille',
-	hibernate_sequence.nextval,
+	<@SchemaPrefix/>hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
@@ -101,7 +102,7 @@ from dual;
 </#if>
 
 <#if t.NO_AVS11?trim != "">
-insert into identification_personne (
+insert into <@SchemaPrefix/>identification_personne (
 	id,					-- hibernate_sequence.nextval
 	log_cdate,			-- CURRENT_TIMESTAMP
 	log_cuser,			-- '${USER}'
@@ -112,7 +113,7 @@ insert into identification_personne (
 	non_habitant_id		-- ${t.NO_TIERS}
 )
 select
-	hibernate_sequence.nextval,
+	<@SchemaPrefix/>hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
@@ -121,13 +122,13 @@ select
 	'${t.NO_AVS11}',
 	${t.NO_TIERS}
 from
-	tiers
+	<@SchemaPrefix/>tiers
 where
 	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
 
 <#if t.NO_RCE?trim != "">
-insert into identification_personne (
+insert into <@SchemaPrefix/>identification_personne (
 	id,					-- hibernate_sequence.nextval
 	log_cdate,			-- CURRENT_TIMESTAMP
 	log_cuser,			-- '${USER}'
@@ -138,7 +139,7 @@ insert into identification_personne (
 	non_habitant_id		-- ${t.NO_TIERS}
 )
 select
-	hibernate_sequence.nextval,
+	<@SchemaPrefix/>hibernate_sequence.nextval,
 	CURRENT_TIMESTAMP,
 	'${USER}',
 	CURRENT_TIMESTAMP,
@@ -147,12 +148,12 @@ select
 	'${t.NO_RCE}',
 	${t.NO_TIERS}
 from
-	tiers
+	<@SchemaPrefix/>tiers
 where
 	numero = ${t.NO_TIERS} and pp_habitant = 1;
 </#if>
 
-update tiers set
+update <@SchemaPrefix/>tiers set
 	pp_habitant = 0,
 	date_deces = <@NumOrNull t.DATE_DECES />,
 	nh_cat_etranger = <@StrOrNull t.CAT_ETRANGER />,
@@ -166,7 +167,7 @@ update tiers set
 where
 	numero = ${t.NO_TIERS} and pp_habitant = 1;
 
-update tiers set
+update <@SchemaPrefix/>tiers set
 	numero_individu = null,
 	index_dirty = 1,
 	log_muser = '${USER}',
