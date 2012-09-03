@@ -14,7 +14,7 @@
 				<legend><span><fmt:message key="label.di.periode.selection" /></span></legend>
 			
 				<!-- Debut liste de ranges -->
-				<c:forEach var="range" items="${command.ranges}">
+				<c:forEach var="range" items="${ranges}">
 						<input type="radio" id="<c:out value="${range.id}"/>" name="selection" value="<c:out value="${range.id}"/>">
 						<c:if test="${range.optionnelle}">
 							<label class="optionnel" for="<c:out value="${range.id}"/>"><c:out value="${range.description}" /> (*)</label><br/>
@@ -28,19 +28,26 @@
 			</fieldset>
 			
 			<!-- Debut boutons -->
-			<input type="button" value="<fmt:message key="label.bouton.creer"/>" onclick="javascript:creerDi();">
-			<input type="button" value="<fmt:message key="label.bouton.annuler"/>" onclick="document.location='edit.do?action=listdis&numero=${command.contribuable.numero}'">
+			<input type="button" onclick="return creerDi();" value="Créer"/>
+			<unireg:buttonTo name="Annuler" action="/di/edit.do" method="get" params="{action:'listdis',numero:${tiersId}}"/>
 			<!-- Fin boutons -->
 		</form:form>
 		
 		<br/>
 		<span>(*) cette déclaration n'est pas obligatoire : elle peut être émise sur demande du contribuable.</span>
 
-		<script type="text/javascript" language="Javascript1.3">
-		 	function creerDi() {		 
-				Form.doPostBack("theForm", "creerDI", "");
-		 	}
-		</script>	
-		
+		<script type="text/javascript">
+			function creerDi() {
+				var selection = $('input[name=selection]:checked').val();
+				if (!selection) {
+					alert("Veuillez sélectionner une période");
+					return false;
+				}
+				var dates = selection.split('-');
+				window.location.href='<c:url value="/di/edit.do?action=newdi&numero=${tiersId}"/>&debut=' + dates[0] + '&fin=' + dates[1];
+				return false;
+			}
+		</script>
+
 	</tiles:put>
 </tiles:insert>

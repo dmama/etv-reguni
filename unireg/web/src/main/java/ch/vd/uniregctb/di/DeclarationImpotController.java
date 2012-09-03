@@ -1,20 +1,30 @@
 package ch.vd.uniregctb.di;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.context.MessageSource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ControllerUtils;
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
 import ch.vd.uniregctb.di.view.DeclarationView;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -31,6 +41,7 @@ public class DeclarationImpotController {
 	private DeclarationImpotService diService;
 	private TacheDAO tacheDAO;
 	private MessageSource messageSource;
+	private DeclarationImpotEditManager manager;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -46,6 +57,10 @@ public class DeclarationImpotController {
 
 	public void setTacheDAO(TacheDAO tacheDAO) {
 		this.tacheDAO = tacheDAO;
+	}
+
+	public void setManager(DeclarationImpotEditManager manager) {
+		this.manager = manager;
 	}
 
 	/**
@@ -152,5 +167,47 @@ public class DeclarationImpotController {
 		diService.desannulationDI(tiers, di, RegDate.get());
 
 		return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir une déclaration parmis une liste dans le but de l'ajouter sur le contribuable spécifié.
+	 *
+	 * @param tiersId le numéro de contribuable
+	 * @param model   le modèle sous-jacent
+	 * @return la vue à afficher
+	 * @throws AccessDeniedException si l'utilisateur ne possède pas les droits d'accès sur le contribuable
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/decl/choisir.do", method = RequestMethod.GET)
+	public String choisir(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
+		}
+		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		model.addAttribute("tiersId", tiersId);
+
+		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(tiersId);
+		if (ranges == null || ranges.isEmpty()) {
+			// [UNIREG-832] impossible d'imprimer une nouvelle DI: on reste dans le même écran et on affiche un message d'erreur
+			Flash.warning(DeclarationImpotEditManager.CANNOT_ADD_NEW_DI);
+			model.addAttribute("ranges", Collections.emptyList());
+			return "/decl/choisir";
+		}
+		else if (ranges.size() == 1) {
+			final DateRange range = ranges.get(0);
+			// il reste exactement une DI à créer : on continue directement sur l'écran d'impression
+			return "redirect:/di/edit.do?action=newdi&numero=" + tiersId + "&debut=" + range.getDateDebut().index() + "&fin=" + range.getDateFin().index();
+		}
+		else {
+			// [UNIREG-889] il y reste plusieurs DIs à créer : on demande à l'utilisateur de choisir
+			final ArrayList<ChoixDeclarationImpotView> views = new ArrayList<ChoixDeclarationImpotView>(ranges.size());
+			for (PeriodeImposition r : ranges) {
+				views.add(new ChoixDeclarationImpotView(r, r.isOptionnelle()));
+			}
+			model.addAttribute("ranges", views);
+			return "/decl/choisir";
+		}
 	}
 }

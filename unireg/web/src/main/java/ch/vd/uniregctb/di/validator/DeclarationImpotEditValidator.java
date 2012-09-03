@@ -13,7 +13,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
-import ch.vd.uniregctb.di.view.DeclarationImpotSelectView;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class DeclarationImpotEditValidator implements Validator {
@@ -27,8 +26,7 @@ public class DeclarationImpotEditValidator implements Validator {
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return DeclarationImpotDetailView.class.equals(clazz) || DeclarationImpotListView.class.equals(clazz)
-				|| DeclarationImpotSelectView.class.equals(clazz);
+		return DeclarationImpotDetailView.class.equals(clazz) || DeclarationImpotListView.class.equals(clazz);
 	}
 
 	@Override

@@ -132,6 +132,7 @@
 		<property name="messageSource" ref="messageSource" />
 		<property name="diService" ref="diService" />
 		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="manager" ref="diEditManager"/>
 	</bean>
 
 	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">

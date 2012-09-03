@@ -8,10 +8,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<form:form method="post" name="formAddDI" action="edit.do?ajouterDI=true&numero=${command.contribuable.numero}" >
-						<unireg:raccourciAjouter onClick="document.formAddDI.submit();" tooltip="Ajouter" display="label.bouton.ajouter"/>
-					<form:errors cssClass="error"/>
-					</form:form>
+					<unireg:linkTo name="&nbsp;Ajouter" action="/decl/choisir.do" method="get" params="{tiersId:${command.contribuable.numero}}" title="Ajouter une déclaration" link_class="add noprint"/>
 				</td>
 			</tr>
 		</table>

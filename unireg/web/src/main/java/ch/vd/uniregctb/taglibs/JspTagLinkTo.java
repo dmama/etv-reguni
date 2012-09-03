@@ -204,6 +204,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 			final Map<String, String> map = new HashMap<String, String>();
 			JsonParser jParser = jfactory.createJsonParser(params);
 			jParser.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+			jParser.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 			while (jParser.nextToken() != JsonToken.END_OBJECT) {
 				if (jParser.getCurrentToken() != JsonToken.START_OBJECT) {
 					map.put(jParser.getCurrentName(), jParser.getText());
