@@ -79,6 +79,40 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 		assertEmpty(globalTiersSearcher.search(criteria));
 	}
 
+	/**
+	 * [SIFISC-6093] Vérifie que la recherche simple sur les numéros de tiers fonctionne avec les numéros de tiers formattés (107.605.50) ou non (10760550)
+	 */
+	@Test
+	public void testSearchTopNumeros() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = new TiersIndexableData(10760550L, "test", "test");
+		data.setNumeros("10760550");
+		data.setAnnule(IndexerFormatHelper.objectToString(false));
+		data.setDebiteurInactif(IndexerFormatHelper.objectToString(false));
+		globalIndex.indexEntity(data);
+
+		// recherche avec numéro non-formatté
+		{
+			final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("10760550", null, 10);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals(Long.valueOf(10760550L), indexed.getNumero());
+		}
+
+		// recherche avec numéro formatté
+		{
+			final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("107.605.50", null, 10);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals(Long.valueOf(10760550L), indexed.getNumero());
+		}
+	}
+
 	@Test
 	public void testIndexationNomRaison() throws Exception {
 
@@ -156,21 +190,34 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 	 * [SIFISC-5926] Vérifie que la recherche par mots-clés de la date de naissance fonctionne avec le format dd.mm.aaaa
 	 */
 	@Test
-	public void testIndexationDateNaissance2() throws Exception {
+	public void testSearchTopDateNaissance() throws Exception {
 
 		// création et indexation des données
 		final TiersIndexableData data = newIndexableData();
 		data.addDateNaissance(date(1975, 4, 12));
 		globalIndex.indexEntity(data);
 
-		// recherche des données (OK)
-		final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("12.04.1975", null, 10);
-		assertNotNull(resultats);
-		assertEquals(1, resultats.size());
+		{
+			// recherche des données date non-formattée (OK)
+			final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("12041975", null, 10);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
 
-		final TiersIndexedData indexed = resultats.get(0);
-		assertEquals((Long) ID, indexed.getNumero());
-		assertEquals("19750412", indexed.getDateNaissance());
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+			assertEquals("19750412", indexed.getDateNaissance());
+		}
+
+		{
+			// recherche des données date formattée (OK)
+			final List<TiersIndexedData> resultats = globalTiersSearcher.searchTop("12.04.1975", null, 10);
+			assertNotNull(resultats);
+			assertEquals(1, resultats.size());
+
+			final TiersIndexedData indexed = resultats.get(0);
+			assertEquals((Long) ID, indexed.getNumero());
+			assertEquals("19750412", indexed.getDateNaissance());
+		}
 
 		// recherche des données (KO)
 		assertEmpty(globalTiersSearcher.searchTop("01.01.1988", null, 10));

@@ -121,7 +121,7 @@ public class TiersIndexableData extends IndexableData {
 		addNotAnalyzedValue(d, TiersIndexableData.DEBITEUR_INACTIF, debiteurInactif);
 
 		// on aggrège tous les valeurs utiles dans un seul champ pour une recherche de type google
-		addToutValues(d, numeros, nomRaison, autresNom, toDisplayString(datesNaissance), forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
+		addToutValues(d, numeros, nomRaison, autresNom, toSearchString(datesNaissance), forPrincipal, rue, npa, localiteEtPays, natureJuridique, numeroAssureSocial, ancienNumeroSourcier, categorieDebiteurIs, noSymic);
 
 		// champs de stockage (pas recherchables)
 		addStoredValue(d, TiersIndexableData.NOM1, nom1);
@@ -143,7 +143,7 @@ public class TiersIndexableData extends IndexableData {
 	}
 
 	@Nullable
-	private static String toDisplayString(List<RegDate> list) {
+	private static String toSearchString(List<RegDate> list) {
 		if (list == null || list.isEmpty()) {
 			return null;
 		}
@@ -154,7 +154,7 @@ public class TiersIndexableData extends IndexableData {
 			}
 			sb.append(RegDateHelper.dateToDisplayString(date));
 		}
-		return sb.toString();
+		return sb.toString().replaceAll("\\.", ""); // [SIFISC-6093] on supprime tous les points ('.') dans les strings de recherche.
 	}
 
 	private void addStoredValue(Document d, String name, String value) {

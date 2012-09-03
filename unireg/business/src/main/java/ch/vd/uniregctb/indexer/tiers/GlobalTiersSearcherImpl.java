@@ -119,7 +119,7 @@ public class GlobalTiersSearcherImpl implements GlobalTiersSearcher, Initializin
 			return new TopList<TiersIndexedData>();
 		}
 
-		keywords = keywords.toLowerCase();
+		keywords = keywords.toLowerCase().replaceAll("\\.", ""); // [SIFISC-6093] on supprime tous les points ('.') dans les critères de recherche.
 
 		// critère sur le numéro de contribuable
 		final BooleanQuery query = new BooleanQuery();
