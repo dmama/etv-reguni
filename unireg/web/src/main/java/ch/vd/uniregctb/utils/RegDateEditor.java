@@ -13,6 +13,7 @@ public class RegDateEditor extends PropertyEditorSupport {
 	private final boolean allowEmpty;
 	private final boolean allowPartial;
 	private final boolean silentParsingError;
+	private final RegDateHelper.StringFormat format;
 
 	/**
 	 * @param allowEmpty         <b>vrai</b> si la date peut être nulle; <b>faux</b> pour qu'une date nulle lève une erreur.
@@ -23,6 +24,20 @@ public class RegDateEditor extends PropertyEditorSupport {
 		this.allowEmpty = allowEmpty;
 		this.allowPartial = allowPartial;
 		this.silentParsingError = silentParsingError;
+		this.format = RegDateHelper.StringFormat.DISPLAY;
+	}
+
+	/**
+	 * @param allowEmpty         <b>vrai</b> si la date peut être nulle; <b>faux</b> pour qu'une date nulle lève une erreur.
+	 * @param allowPartial       <b>vrai</b> si la date peut être partielle; <b>faux</b> pour qu'une date partielle lève une erreur.
+	 * @param silentParsingError <b>vrai</b> pour qu'une date malformée soit interprétée comme nulle; <b>faux</b> pour qu'une erreur soit levée.
+	 * @param format             le format souhaité
+	 */
+	public RegDateEditor(boolean allowEmpty, boolean allowPartial, boolean silentParsingError, RegDateHelper.StringFormat format) {
+		this.allowEmpty = allowEmpty;
+		this.allowPartial = allowPartial;
+		this.silentParsingError = silentParsingError;
+		this.format = format;
 	}
 
 	@Override
@@ -50,7 +65,7 @@ public class RegDateEditor extends PropertyEditorSupport {
 
 	private RegDate parseDate(String text) {
 		try {
-			return RegDateHelper.displayStringToRegDate(text, allowPartial);
+			return format.fromString(text, allowPartial);
 		}
 		catch (IllegalArgumentException ex) {
 			String message = ex.getMessage();
@@ -65,6 +80,6 @@ public class RegDateEditor extends PropertyEditorSupport {
 	@Override
 	public String getAsText() {
 		final RegDate value = (RegDate) getValue();
-		return (value != null ? RegDateHelper.dateToDisplayString(value) : "");
+		return (value != null ? format.toString(value) : "");
 	}
 }
