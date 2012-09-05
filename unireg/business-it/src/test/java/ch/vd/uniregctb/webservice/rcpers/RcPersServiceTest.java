@@ -50,7 +50,7 @@ public class RcPersServiceTest {
 		assertEquals("António", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
 
 		// vue des communes vaudoises
-		assertEquals("MAIA", person.getIdentity().getPersonIdentification().getOfficialName());
+		assertEquals("Maia", person.getIdentity().getPersonIdentification().getOfficialName());
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
@@ -91,12 +91,12 @@ public class RcPersServiceTest {
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Event event = client.getEvent(1645418472L);
+		final Event event = client.getEvent(1787458431L);
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
-		assertNotNull("La personne associée à l'événement n°1645418472 est nulle !", p);
-		assertEquals(1081928L, IndividuRCPers.getNoIndividu(p));
+		assertNotNull("La personne associée à l'événement n°1787458431 est nulle !", p);
+		assertEquals(192690L, IndividuRCPers.getNoIndividu(p));
 	}
 
 	private RcPersClientImpl buildClient() throws Exception {
