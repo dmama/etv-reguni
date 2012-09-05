@@ -1503,6 +1503,9 @@ var DateUtils = {
 	* Converti une chaine (dd.MM.yyyy) en date
 	*/
 	getDate: function(strDate, format){
+		if (!strDate) {
+			return null;
+		}
 		if (format == 'dd.MM.yyyy') {
 			day = parseInt(strDate.substring(0,2));
 			month = parseInt(strDate.substring(3,5));
@@ -1521,6 +1524,13 @@ var DateUtils = {
 		d.setMonth(month - 1); // 0..11
 		d.setFullYear(year); // 4 digits
 		return d;
+	},
+
+	/*
+	* Converti une date au format spécifié (dd.MM.yyyy) en une date au format 'index'.
+	*/
+	toIndex: function(strDate, format){
+		return this.toIndexString(this.getDate(strDate, format));
 	},
 
 	/*
@@ -1574,6 +1584,14 @@ var DateUtils = {
 		}
 
 		return date.format('dd.mm.yyyy HH:MM:ss');
+	},
+
+	toIndexString: function(date) {
+		if (!date) {
+			return '';
+		}
+
+		return date.format('yyyymmdd');
 	},
 
 	isToday: function(date) {

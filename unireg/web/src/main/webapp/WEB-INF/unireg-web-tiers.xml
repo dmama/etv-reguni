@@ -127,13 +127,24 @@
 		<property name="lrDAO" ref="lrDAO" />
 	</bean>
 
+	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
+		<property name="manager" ref="diEditManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+	</bean>
+
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="diService" ref="diService" />
 		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="manager" ref="diEditManager"/>
-	</bean>
+		<property name="diDAO" ref="diDAO"/>
+		<property name="delaisService" ref="delaisService" />
+		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="validator" ref="declarationImpotControllerValidator"/>
+ 	</bean>
 
 	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">
 		<property name="diDAO" ref="diDAO" />

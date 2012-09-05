@@ -33,7 +33,6 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
-import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -161,84 +160,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView diEditView) {
-
-		// on charge le tiers
-		final Tiers tiers = tiersDAO.get(numeroCtb);
-		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		ValidationException error = null;
-
-		// Si la période fiscale de la di concerne l'année en cours, il s'agit d'une di ouverte
-		diEditView.setOuverte(RegDate.get().year() == range.getDateDebut().year());
-		PeriodeImposition periode = null;
-
-		try {
-			periode = checkRangeDi((Contribuable) tiers, range);
-		}
-		catch (ValidationException e) {
-			error = e;
-		}
-
-		diEditView.setContribuable(tiersGeneralManager.getTiers(tiers, true));
-		if (error != null) {
-			diEditView.setImprimable(false);
-			diEditView.setErrorMessage(error.getMessage());
-		}
-		else {
-			diEditView.setImprimable(true);
-			diEditView.setPeriodeFiscale(periode.getDateDebut().year());
-			diEditView.setDateDebutPeriodeImposition(periode.getDateDebut());
-			diEditView.setDateFinPeriodeImposition(periode.getDateFin());
-			diEditView.setTypeAdresseRetour(periode.getAdresseRetour());
-			diEditView.setDelaiAccorde(delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get()));
-
-			//Par défaut le type de DI est celui de la dernière DI émise
-			EtatDeclaration etatDiPrecedente = diDAO.findDerniereDiEnvoyee(numeroCtb);
-			if (etatDiPrecedente != null) {
-				DeclarationImpotOrdinaire diPrecedente = (DeclarationImpotOrdinaire) etatDiPrecedente.getDeclaration();
-				if (diPrecedente.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
-					diEditView.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
-				}
-				else {
-					diEditView.setTypeDeclarationImpot(diPrecedente.getTypeDeclaration());
-				}
-			}
-			else {
-				diEditView.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
-			}
-
-			setDroitDI(diEditView, tiers);
-
-			// [UNIREG-2705] s'il existe une DI retournée annulée pour le même contribuable et la même
-			// période, alors on propose de marquer cette nouvelle DI comme déjà retournée
-			if (diEditView.isAllowedQuittancement()) {
-				final DeclarationImpotCriteria criteres = new DeclarationImpotCriteria();
-				criteres.setAnnee(range.getDateDebut().year());
-				criteres.setContribuable(numeroCtb);
-				final List<DeclarationImpotOrdinaire> dis = diDAO.find(criteres);
-				if (dis != null && !dis.isEmpty()) {
-					for (DeclarationImpotOrdinaire di : dis) {
-						if (di.isAnnule() && DateRangeHelper.equals(di, periode)) {
-							final EtatDeclaration etat = di.getDernierEtat();
-							if (etat != null && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
-								diEditView.setDateRetour(RegDate.get());
-								diEditView.setDateRetourProposeeCarDeclarationRetourneeAnnuleeExiste(true);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(readOnly = true)
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
 		// on charge le tiers
@@ -334,14 +255,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return periodesNonAssociees;
 	}
 
-	/**
-	 * [UNIREG-832] Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.
-	 *
-	 * @param contribuable le contribuable
-	 * @param range        le range de de validité de la déclaration à créer.
-	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
-	 */
-	protected PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) {
+	@Override
+	public PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException {
 
 		if (range.getDateDebut().year() != range.getDateFin().year()) {
 			throw new ValidationException(contribuable, "La déclaration doit tenir dans une année complète.");
@@ -614,18 +529,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return diEditView;
 	}
 
-
-	/**
-	 * Imprime une DI vierge Partie envoie
-	 *
-	 * @param diEditView
-	 * @throws Exception
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception {
-		//Sauvegarde de la DI
-		DeclarationImpotOrdinaire declaration = save(diEditView);
+	public EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
+	                                                TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+		// Création et sauvegarde de la DI
+		DeclarationImpotOrdinaire declaration = save(ctbId, id, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
@@ -633,37 +542,33 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return diService.envoiDIOnline(declaration, RegDate.get());
 	}
 
-	/**
-	 * Persiste en base et indexe le tiers modifie
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception {
-		final Contribuable ctb = (Contribuable) tiersDAO.get(diEditView.getContribuable().getNumero());
+	public DeclarationImpotOrdinaire save(long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
+	                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
 		DeclarationImpotOrdinaire di;
 		if (ctb == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 
-		if (diEditView.getId() == null) {
-			di = creerNouvelleDI(ctb, diEditView.getRegDateDebutPeriodeImposition(), diEditView.getRegDateFinPeriodeImposition(), diEditView.getTypeDeclarationImpot(),
-					diEditView.getTypeAdresseRetour(), diEditView.getRegDelaiAccorde(), diEditView.getRegDateRetour());
+		if (id == null) {
+			di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 		}
 		else {
-			di = diDAO.get(diEditView.getId());
-			if (diEditView.getRegDateRetour() != null) {
-				if (!diEditView.getRegDateRetour().equals(di.getDateRetour())) {
+			di = diDAO.get(id);
+			if (dateRetour != null) {
+				if (!dateRetour.equals(di.getDateRetour())) {
 					if (di.getDateRetour() != null) {
 						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 						etatRetournePrecedent.setAnnule(true);
 					}
-					final RegDate dateQuittance = RegDate.get(diEditView.getDateRetour());
-					final EtatDeclaration etat = new EtatDeclarationRetournee(dateQuittance, EtatDeclarationRetournee.SOURCE_WEB);
+					final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
 					di.addEtat(etat);
-					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateQuittance);
+					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
 
 					// Envoi du message de quittance au BAM
-					sendQuittancementToBam(di, dateQuittance);
+					sendQuittancementToBam(di, dateRetour);
 				}
 			}
 			else {
@@ -674,12 +579,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 
 			// UNIREG-1437 : on peut aussi changer le type de document
-			if (di.getTypeDeclaration() != diEditView.getTypeDeclarationImpot()) {
+			if (di.getTypeDeclaration() != typeDocument) {
 
 				// les types qui peuvent revenir de la view sont COMPLETE_LOCAL et VAUDTAX
 				// on ne va pas remplacer un COMPLETE_BATCH par un COMPLETE_LOCAL, cela ne sert à rien
-				if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || diEditView.getTypeDeclarationImpot() != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-					assigneModeleDocument(di, diEditView.getTypeDeclarationImpot());
+				if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+					assigneModeleDocument(di, typeDocument);
 				}
 			}
 		}
@@ -688,7 +593,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	protected DeclarationImpotOrdinaire creerNouvelleDI(Contribuable ctb, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour typeAdresseRetour,
-	                                                  RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
+	                                                    RegDate delaiAccorde, @Nullable RegDate dateRetour) throws AssujettissementException {
 		DeclarationImpotOrdinaire di = new DeclarationImpotOrdinaire();
 
 		// [SIFISC-1227] ce numéro de séquence ne doit pas être assigné, ainsi il sera re-calculé dans la méthode {@link TiersService#addAndSave(Tiers, Declaration)}

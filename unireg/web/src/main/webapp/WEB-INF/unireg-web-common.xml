@@ -141,7 +141,7 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelper">
+	<bean id="retourEditiqueControllerHelper" class="ch.vd.uniregctb.common.RetourEditiqueControllerHelperImpl">
 		<property name="downloadService" ref="editiqueDownloadService"/>
 	</bean>
 

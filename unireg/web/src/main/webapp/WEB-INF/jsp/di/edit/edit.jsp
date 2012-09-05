@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <c:set var="depuisTache" value="${param.depuisTache}" />
-<c:set var="action" value="${param.action}" />
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 	<tiles:put name="title"><fmt:message key="title.edition.di" /></tiles:put>
@@ -33,84 +32,72 @@
 		</c:if>
 		<c:if test="${depuisTache != null}">
 			<input type="button" name="retourDI" value="<fmt:message key="label.bouton.retour" />" onclick="history.go(-1);" />
-			<c:if test="${action != null && action != 'newdi'}">
-				<input type="submit" name="maintenir" value="<fmt:message key="label.bouton.maintenir.declaration" />" />
-			</c:if>
+			<input type="submit" name="maintenir" value="<fmt:message key="label.bouton.maintenir.declaration" />" />
 		</c:if>
 		
-		<c:if test="${command.id != null }">
-			<c:if test="${depuisTache == null}">
-				<c:if test="${command.allowedQuittancement}">
-					<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />
-				</c:if>
-				<c:if test="${command.allowedSommation}">
-					<c:if test="${command.sommable}">
-						<input type="submit" id="boutonSommerActif" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="return Page_SommerDI(event || window.event);" />
-						<input type="submit" id="boutonSommerNonActif" style="display:none;" name="sommer" disabled="disabled"  value="<fmt:message key="label.bouton.sommer" />"  onclick="return Page_SommerDI(event || window.event);" />
-					</c:if>
-				</c:if>
-	
-				<!-- Duplicata DI -->
-				
-				<c:if test="${command.allowedDuplic}">
-					<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di(${command.id});">
-					<script>
-					function open_imprime_di(id) {
-						var dialog = Dialog.create_dialog_div('imprime-di-dialog');
-
-						// charge le contenu de la boîte de dialogue
-						dialog.load('impression.do?id=' + id + '&' + new Date().getTime());
-
-						dialog.dialog({
-							title: "Impression d'un duplicata",
-							height: 440,
-							width: 500,
-							modal: true,
-							buttons: {
-								"Imprimer": function() {
-									// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
-									var buttons = $('.ui-button');
-									buttons.each(function() {
-										if ($(this).text() == 'Imprimer') {
-											$(this).addClass('ui-state-disabled');
-											$(this).attr('disabled', true);
-										}
-									});
-									var form = dialog.find('#formImpression');
-									form.attr('action', 'impression.do?action=duplicataDI');
-									form.submit();
-								},
-								"Fermer": function() {
-									dialog.dialog("close");
-								}
-							}
-						});
-					}
-					</script>
-
-				</c:if>
-				<!-- Impression de chemise de taxation d'office -->
-				<c:if test="${command.allowedSommation}"> 
-					<c:if test="${command.etat == 'ECHUE'}">
-						<input type="submit" name="imprimerTO" value="<fmt:message key="label.bouton.imprimer.to" />" onclick="return Page_ImprimerTO(event || window.event);" />
-					</c:if>
-				</c:if>
+		<c:if test="${depuisTache == null}">
+			<c:if test="${command.allowedQuittancement}">
+				<input type="submit" name="save" value="<fmt:message key="label.bouton.sauver" />" />
 			</c:if>
-
-			<!-- Annulation DI -->
 			<c:if test="${command.allowedSommation}">
-				<unireg:buttonTo name="Annuler déclaration" action="/decl/annuler.do" method="post" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?" params='{id:${command.id}}'/>
+				<c:if test="${command.sommable}">
+					<input type="submit" id="boutonSommerActif" name="sommer" value="<fmt:message key="label.bouton.sommer" />"  onclick="return Page_SommerDI(event || window.event);" />
+					<input type="submit" id="boutonSommerNonActif" style="display:none;" name="sommer" disabled="disabled"  value="<fmt:message key="label.bouton.sommer" />"  onclick="return Page_SommerDI(event || window.event);" />
+				</c:if>
 			</c:if>
 
-		</c:if>
-		<c:if test="${command.id == null}">
-			<c:if test="${command.imprimable == false}"> 
-				<input type="button" name="imprimerDI" disabled="disabled" value="<fmt:message key="label.bouton.imprimer" />" onclick="return Page_ImprimerDI(event || window.event, this);" />
+			<!-- Duplicata DI -->
+
+			<c:if test="${command.allowedDuplic}">
+				<input type="button" value="<fmt:message key="label.bouton.imprimer.duplicata" />" onclick="return open_imprime_di(${command.id});">
+				<script>
+				function open_imprime_di(id) {
+					var dialog = Dialog.create_dialog_div('imprime-di-dialog');
+
+					// charge le contenu de la boîte de dialogue
+					dialog.load('impression.do?id=' + id + '&' + new Date().getTime());
+
+					dialog.dialog({
+						title: "Impression d'un duplicata",
+						height: 440,
+						width: 500,
+						modal: true,
+						buttons: {
+							"Imprimer": function() {
+								// les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
+								var buttons = $('.ui-button');
+								buttons.each(function() {
+									if ($(this).text() == 'Imprimer') {
+										$(this).addClass('ui-state-disabled');
+										$(this).attr('disabled', true);
+									}
+								});
+								var form = dialog.find('#formImpression');
+								form.attr('action', 'impression.do?action=duplicataDI');
+								form.submit();
+							},
+							"Fermer": function() {
+								dialog.dialog("close");
+							}
+						}
+					});
+				}
+				</script>
+
 			</c:if>
-			<c:if test="${command.imprimable == true}"> 
-				<input type="button" name="imprimerDI" value="<fmt:message key="label.bouton.imprimer" />" onclick="return Page_ImprimerDI(event || window.event, this);" />
+			<!-- Impression de chemise de taxation d'office -->
+			<c:if test="${command.allowedSommation}">
+				<c:if test="${command.etat == 'ECHUE'}">
+					<input type="submit" name="imprimerTO" value="<fmt:message key="label.bouton.imprimer.to" />" onclick="return Page_ImprimerTO(event || window.event);" />
+				</c:if>
 			</c:if>
 		</c:if>
+
+		<!-- Annulation DI -->
+		<c:if test="${command.allowedSommation}">
+			<unireg:buttonTo name="Annuler déclaration" action="/decl/annuler.do" method="post" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?" params='{id:${command.id}}'/>
+		</c:if>
+
 		<!-- Fin Boutons -->
 	</form:form>
 
@@ -149,13 +136,7 @@
 				return true;
 		 	}
 		 	
-		 	function Page_ImprimerDI(ev, el) {		 
-				Form.doPostBack("theForm", "imprimerDI", "");
-				el.disabled = true; 
-				return true;
-		 	}
-		 			 	
-		 	function Page_ImprimerTO(ev, el) {		 		
+		 	function Page_ImprimerTO(ev, el) {
 				if(!confirm('Voulez-vous vraiment imprimer cette taxation d\'office ?'))
 					return Event.stop(ev);
 				return true;

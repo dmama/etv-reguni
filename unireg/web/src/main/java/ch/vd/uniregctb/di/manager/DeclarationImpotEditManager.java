@@ -3,6 +3,7 @@ package ch.vd.uniregctb.di.manager;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -19,6 +20,9 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeDocument;
 
 /**
  * Service offrant des methodes pour gérer le controller DeclarationImpotEditController
@@ -69,19 +73,6 @@ public interface DeclarationImpotEditManager {
 	void findByNumero(Long numero, DeclarationImpotListView view);
 
 	/**
-	 * Retourne la vue de création d'une nouvelle DI sur le contribuable spécifié.
-	 * <p/>
-	 * La nouvelle DI crée est la suivante dans l'ordre chronologique, ou - si le paramètre annee est renseigné - la DI pour l'année spécifiée. Cette méthode vérifie si le contribuable est bien assujetti
-	 * avant de créer une déclaration, et si ce n'est pas le cas lève une exception de validation.
-	 *
-	 * @param numeroCtb le numéro de contribuable
-	 * @param range     le plage de validité de la déclaration
-	 * @param view      le form backing object a compléter
-	 */
-	@Transactional(readOnly = true)
-	void creerDI(Long numeroCtb, DateRange range, DeclarationImpotDetailView view);
-
-	/**
 	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs déclarations n'ont pas été envoyées durant les années précédentes,
 	 * cette méthode retourne les dates de la déclaration non-envoyée la plus ancienne.
 	 * <p/>
@@ -104,22 +95,37 @@ public interface DeclarationImpotEditManager {
 	RegDate getDateNewDi(Long numero);
 
 	/**
-	 * Persiste en base et indexe le tiers modifie
+	 * Crée (si nécessaire) et persiste en base la déclaration spécifiée.
 	 *
-	 * @param idDi
-	 * @param delai
+	 * @param ctbId le numéro de contribuable concerné
+	 * @param id le numéro de la déclaration s'ils s'agit d'imprimer un duplicat; ou <b>null</b> s'il s'agit de créer une nouvelle déclaration vierge.
+	 * @param dateDebut la date de début de validité de la déclaration
+	 * @param dateFin la date de fin de validité de la déclaration
+	 * @param typeDocument le type de document de la déclaration
+	 * @param adresseRetour l'adresse de retour de la déclaration
+	 * @param delaiAccorde le délais accordé
+	 * @param dateRetour la date de retour si la déclaration a déjà été retournée
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	DeclarationImpotOrdinaire save(DeclarationImpotDetailView diEditView) throws Exception;
+	DeclarationImpotOrdinaire save(long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde,
+	                               @Nullable RegDate dateRetour) throws Exception;
 
 	/**
-	 * Imprime une DI vierge Partie envoie
+	 * Crée, sauve en base et imprime une DI vierge, ou imprime un duplicat de DI existante.
 	 *
-	 * @param diEditView
-	 * @throws EditiqueException
+	 * @param ctbId le numéro de contribuable concerné
+	 * @param id le numéro de la déclaration s'ils s'agit d'imprimer un duplicat; ou <b>null</b> s'il s'agit de créer une nouvelle déclaration vierge.
+	 * @param dateDebut la date de début de validité de la déclaration
+	 * @param dateFin la date de fin de validité de la déclaration
+	 * @param typeDocument le type de document de la déclaration
+	 * @param adresseRetour l'adresse de retour de la déclaration
+	 * @param delaiAccorde le délais accordé
+	 * @param dateRetour la date de retour si la déclaration a déjà été retournée
+	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalDI(DeclarationImpotDetailView diEditView) throws Exception;
+	EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
+	                                         RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
 
 	/**
 	 * Mintient une DI et passe la tâche à traitée
@@ -222,5 +228,13 @@ public interface DeclarationImpotEditManager {
 	@Transactional(readOnly = true)
 	public DelaiDeclarationView getDelaiView(Long idDelai);
 
+	/**
+	 * [UNIREG-832] Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.
+	 *
+	 * @param contribuable le contribuable
+	 * @param range        le range de de validité de la déclaration à créer.
+	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
+	 */
+	PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException;
 }
 

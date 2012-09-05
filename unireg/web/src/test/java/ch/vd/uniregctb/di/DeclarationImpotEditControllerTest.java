@@ -2,7 +2,6 @@ package ch.vd.uniregctb.di;
 
 import java.util.Map;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,16 +11,10 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.common.EditiqueCommunicationException;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
-import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest {
 
@@ -94,71 +87,4 @@ public class DeclarationImpotEditControllerTest extends AbstractDiControllerTest
 			assertNotNull(model);
 		}
 	}
-
-	/**
-	 * Teste la création et l'impression d'une nouvelle déclaration d'impôt
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testOnSubmitImpressionDI() throws Exception {
-
-		// affiche la page de création d'une nouvelle DI
-		{
-			request.setMethod("GET");
-			request.addParameter("action", DeclarationImpotEditController.ACTION_NEW_DI);
-			request.addParameter("numero", "43308102");
-			request.addParameter("debut", "20070101");
-			request.addParameter("fin", "20071231");
-			request.addParameter("typeDeclaration", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
-			request.addParameter("delaiRetour", "60");
-			request.addParameter("imprimable", "false");
-
-			final ModelAndView mav = controller.handleRequest(request, response);
-			assertNotNull(mav);
-
-			final DeclarationImpotDetailView view = (DeclarationImpotDetailView)mav.getModel().get("command");
-			assertNotNull(view);
-			assertNull(view.getErrorMessage());
-		}
-
-		// sauvegarde et impression de la nouvelle DI
-		{
-			request = new MockHttpServletRequest();
-			request.setSession(session); // note: le form backing object est conservé dans la session
-			request.setMethod("POST");
-			request.addParameter(AbstractSimpleFormController.PARAMETER_TARGET, DeclarationImpotEditController.TARGET_IMPRIMER_DI);
-
-			// exécution de la requête
-			try {
-				controller.handleRequest(request, response);
-			}
-			catch (EditiqueCommunicationException e) {
-				// ok
-			}
-
-			Tiers tiers = tiersDAO.get(new Long(43308102));
-			Assert.assertEquals(1, tiers.getDeclarations().size());
-		}
-	}
-
-
-	/**
-	 * test de création de Di sans délai
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testOnSubmitImpressionDiSansDelai() throws Exception {
-		request.setMethod("POST");
-		request.addParameter(DeclarationImpotEditController.TARGET_IMPRIMER_DI, "Imprimer");
-		request.addParameter("numero", "43308102");
-		request.addParameter("typeDeclarationImpot", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
-		// exécution de la requête
-		final ModelAndView mav = controller.handleRequest(request, response);
-		final Map<?, ?> model = mav.getModel();
-		assertNotNull(model);
-
-		Tiers tiers = tiersDAO.get(new Long(43308102));
-		Assert.assertEquals(0, tiers.getDeclarations().size());
-	}
-
 }

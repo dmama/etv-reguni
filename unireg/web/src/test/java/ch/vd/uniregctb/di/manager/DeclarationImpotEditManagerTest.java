@@ -585,7 +585,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				view.setId(ids.di);
 				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 				view.setDateRetour(date(2011, 4, 12));
-				manager.save(view);
+				manager.save(view.getContribuable().getNumero(), view.getId(), view.getRegDateDebutPeriodeImposition(), view.getRegDateFinPeriodeImposition(), view.getTypeDeclarationImpot(), view.getTypeAdresseRetour(),
+						view.getRegDelaiAccorde(), view.getRegDateRetour());
 				return null;
 			}
 		});
@@ -650,7 +651,8 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				view.setDateDebutPeriodeImposition(debutAnneeCourante.asJavaDate());
 				view.setDateFinPeriodeImposition(finAnneeCourante.asJavaDate());
 				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
-				manager.save(view);
+				manager.save(view.getContribuable().getNumero(), view.getId(), view.getRegDateDebutPeriodeImposition(), view.getRegDateFinPeriodeImposition(), view.getTypeDeclarationImpot(), view.getTypeAdresseRetour(),
+						view.getRegDelaiAccorde(), view.getRegDateRetour());
 				return null;
 			}
 		});
