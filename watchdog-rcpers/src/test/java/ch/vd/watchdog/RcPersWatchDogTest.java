@@ -46,7 +46,7 @@ public abstract class RcPersWatchDogTest {
 		assertNotNull("La personne n°476228 est introuvable !", person);
 
 		// vue des communes vaudoises
-		assertEquals("MAIA", person.getIdentity().getPersonIdentification().getOfficialName());
+		assertEquals("Maia", person.getIdentity().getPersonIdentification().getOfficialName());
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
@@ -105,12 +105,12 @@ public abstract class RcPersWatchDogTest {
 	public void testGetEvent() throws Exception {
 		final RcPersClientImpl client = buildClient();
 
-		final Event event = client.getEvent(1645418472L);
+		final Event event = client.getEvent(1787458431L);
 		assertNotNull(event);
 
 		final Person p = event.getPersonAfterEvent().getPerson();
-		assertNotNull("La personne associée à l'événement n°1645418472 est nulle !", p);
-		assertEquals(1081928L, getNoIndividu(p));
+		assertNotNull("La personne associée à l'événement n°1787458431 est nulle !", p);
+		assertEquals(192690L, getNoIndividu(p));
 	}
 
 	private static long getNoIndividu(Person person) {
