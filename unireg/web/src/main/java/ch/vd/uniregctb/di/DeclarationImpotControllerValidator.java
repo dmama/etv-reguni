@@ -2,6 +2,7 @@ package ch.vd.uniregctb.di;
 
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -13,6 +14,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
@@ -22,6 +24,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.utils.ValidatorUtils;
 
 public class DeclarationImpotControllerValidator implements Validator {
 
@@ -44,7 +47,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 	@Override
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
-				|| DeclarationListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz);
+				|| DeclarationListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
+				|| AjouterDelaiDeclarationView.class.equals(clazz);
 	}
 
 	@Override
@@ -58,6 +62,9 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
 			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
+		}
+		else if (target instanceof AjouterDelaiDeclarationView) {
+			valideAjoutDelaiDeclaration((AjouterDelaiDeclarationView) target, errors);
 		}
 	}
 
@@ -159,6 +166,33 @@ public class DeclarationImpotControllerValidator implements Validator {
 	private void valideImprimerDuplicataDI(ImprimerDuplicataDeclarationImpotView view, Errors errors) {
 		if (view.getIdDI() == null) {
 			errors.reject("error.di.inexistante");
+		}
+	}
+
+	private void valideAjoutDelaiDeclaration(AjouterDelaiDeclarationView view, Errors errors) {
+
+		if (view.getIdDeclaration() == null) {
+			errors.reject("error.di.inexistante");
+			return;
+		}
+
+		if (view.getDelaiAccordeAu() == null) {
+			ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
+		}
+		else if (view.getDelaiAccordeAu().isBefore(RegDate.get()) ||
+				(view.getAncienDelaiAccorde() != null && view.getDelaiAccordeAu().isBeforeOrEqual(view.getAncienDelaiAccorde()))) {
+			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "delaiAccordeAu")) {
+				errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
+			}
+		}
+
+		if (view.getDateDemande() == null) {
+			ValidationUtils.rejectIfEmpty(errors, "dateDemande", "error.date.demande.vide");
+		}
+		else if (view.getDateDemande().isAfter(RegDate.get())) {
+			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "dateDemande")) {
+				errors.rejectValue("dateDemande", "error.date.demande.future");
+			}
 		}
 	}
 }

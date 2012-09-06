@@ -12,7 +12,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -93,7 +92,7 @@ public interface DeclarationImpotEditManager {
 	 * Persiste en base le delai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	Long saveDelai(DelaiDeclarationView delaiView);
+	Long saveDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, boolean confirmationEcrite);
 
 	/**
 	 * Sommer une déclaration d'impôt
@@ -109,7 +108,6 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
 
-
 	/**
 	 * Imprimer la chemise de taxation d'office
 	 *
@@ -118,18 +116,8 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalTaxationOffice(Long id) throws EditiqueException;
 
-	/**
-	 * Cree une vue pour le delai d'une declaration
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	DelaiDeclarationView creerDelai(Long idDeclaration);
-
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
-
-
-	@Transactional(readOnly = true)
-	public DelaiDeclarationView getDelaiView(Long idDelai);
 
 	/**
 	 * [UNIREG-832] Vérifie que les dates de début et de fin pour la création d'une déclaration d'impôt sont correctes.

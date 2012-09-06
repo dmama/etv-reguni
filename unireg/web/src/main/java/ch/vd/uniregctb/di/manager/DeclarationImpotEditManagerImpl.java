@@ -43,7 +43,6 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -54,7 +53,6 @@ import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForGestion;
@@ -93,7 +91,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private TacheDAO tacheDAO;
 	private EditiqueCompositionService editiqueCompositionService;
 	private MessageSource messageSource;
-	private DelaisService delaisService;
 	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private ValidationService validationService;
 	private ParametreAppService parametres;
@@ -544,43 +541,17 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * Cree une vue pour le delai d'une declaration
-	 */
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public DelaiDeclarationView creerDelai(Long idDeclaration) {
-		DelaiDeclarationView delaiView = new DelaiDeclarationView();
-		delaiView.setIdDeclaration(idDeclaration);
-		DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
-		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-		delaiView.setTiersId(di.getTiers().getId());
-		delaiView.setDeclarationPeriode(di.getPeriode().getAnnee());
-		delaiView.setDeclarationRange(new DateRangeHelper.Range(di.getDateDebut(), di.getDateFin()));
-		delaiView.setDateExpedition(di.getDateExpedition());
-		delaiView.setOldDelaiAccorde(di.getDelaiAccordeAu());
-		delaiView.setAnnule(false);
-		// [UNIREG-1119] ajout de valeurs par défaut pour le délai
-		delaiView.setDateDemande(RegDate.get());
-		delaiView.setDelaiAccordeAu(delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(delaiView.getDateDemande()));
-
-		return delaiView;
-	}
-
-	/**
 	 * Persiste en base le delai
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public Long saveDelai(DelaiDeclarationView delaiView) {
-		DeclarationImpotOrdinaire di = diDAO.get(delaiView.getIdDeclaration());
+	public Long saveDelai(Long idDeclaration, RegDate dateDemande, RegDate delaiAccordeAu, boolean confirmationEcrite) {
+		final DeclarationImpotOrdinaire di = diDAO.get(idDeclaration);
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(RegDate.get());
-		delai.setAnnule(delaiView.isAnnule());
-		delai.setConfirmationEcrite(delaiView.getConfirmationEcrite());
-		delai.setDateDemande(delaiView.getDateDemande());
-		delai.setDelaiAccordeAu(delaiView.getDelaiAccordeAu());
+		delai.setConfirmationEcrite(confirmationEcrite);
+		delai.setDateDemande(dateDemande);
+		delai.setDelaiAccordeAu(delaiAccordeAu);
 		delai = diService.addAndSave(di, delai);
 		return delai.getId();
 	}
@@ -684,11 +655,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDelaisService(DelaisService delaisService) {
-		this.delaisService = delaisService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
 	}
@@ -725,12 +691,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		catch (JMSException e) {
 			throw new EditiqueException(e);
 		}
-	}
-	@Override
-	@Transactional(readOnly = true)
-	public DelaiDeclarationView getDelaiView(Long idDelai) {
-		final DelaiDeclaration delaiDeclaration = delaiDeclarationDAO.get(idDelai);
-		return new DelaiDeclarationView(delaiDeclaration);
 	}
 
 }

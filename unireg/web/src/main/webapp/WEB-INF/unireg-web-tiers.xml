@@ -127,27 +127,6 @@
 		<property name="lrDAO" ref="lrDAO" />
 	</bean>
 
-	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
-		<property name="manager" ref="diEditManager"/>
-		<property name="tiersDAO" ref="tiersDAO"/>
-		<property name="diDAO" ref="diDAO"/>
-	</bean>
-
-	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="messageSource" ref="messageSource" />
-		<property name="diService" ref="diService" />
-		<property name="tacheDAO" ref="tacheDAO" />
-		<property name="manager" ref="diEditManager"/>
-		<property name="diDAO" ref="diDAO"/>
-		<property name="delaisService" ref="delaisService" />
-		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
-		<property name="transactionManager" ref="transactionManager"/>
-		<property name="validator" ref="declarationImpotControllerValidator"/>
-		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
- 	</bean>
-
 	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="situationFamilleDAO" ref="situationFamilleDAO" />

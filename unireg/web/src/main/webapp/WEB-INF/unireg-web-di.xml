@@ -2,9 +2,25 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="abstractDeclarationImpotController" parent="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.di.AbstractDeclarationImpotController">
+	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
+		<property name="manager" ref="diEditManager"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="diDAO" ref="diDAO"/>
+	</bean>
+
+	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="messageSource" ref="messageSource" />
+		<property name="diService" ref="diService" />
+		<property name="tacheDAO" ref="tacheDAO" />
+		<property name="manager" ref="diEditManager"/>
+		<property name="diDAO" ref="diDAO"/>
+		<property name="delaisService" ref="delaisService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="diMapHelper" ref="diMapHelper" />
+		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="validator" ref="declarationImpotControllerValidator"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >
@@ -17,28 +33,11 @@
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO" />
-		<property name="delaisService" ref="delaisService" />
 		<property name="parametres" ref="parametreAppService" />
 		<property name="delaiDeclarationDAO" ref="delaiDeclarationDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
-
-	<bean id="diEditDelaiController" class="ch.vd.uniregctb.di.DeclarationImpotEditDelaiController" parent="abstractDeclarationImpotController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.di.view.DelaiDeclarationView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="di/edit/delai" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="diEditManager" ref="diEditManager" />
-		<property name="validator" ref="diEditDelaiValidator" />
-	</bean>
-
-	<bean id="diMapHelper" class="ch.vd.uniregctb.di.DeclarationImpotMapHelperImpl">
-		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
-	</bean>
-	
-	<bean id="diEditDelaiValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditDelaiValidator" />
 
 </beans>

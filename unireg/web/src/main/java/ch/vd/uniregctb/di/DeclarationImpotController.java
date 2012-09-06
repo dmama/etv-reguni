@@ -45,6 +45,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.DeclarationView;
@@ -146,6 +147,8 @@ public class DeclarationImpotController {
 		binder.registerCustomEditor(RegDate.class, "dateDebutPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateFinPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
 
 	/**
@@ -785,5 +788,95 @@ public class DeclarationImpotController {
 
 		Flash.message("Le délai a été annulé.");
 		return "redirect:/decl/editer.do?id=" + di.getId();
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir les paramètres pour l'ajout d'un délai sur une DI
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/decl/delai/ajouter.do", method = RequestMethod.GET)
+	public String ajouterDelai(@RequestParam("id") long id,
+	                        Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
+		model.addAttribute("command", new AjouterDelaiDeclarationView(di, delaiAccordeAu));
+		return "decl/delai/ajouter";
+	}
+
+	/**
+	 * Imprime un duplicata de DI.
+	 */
+	@RequestMapping(value = "/decl/delai/ajouter.do", method = RequestMethod.POST)
+	public String ajouterDelai(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationView view,
+	                        BindingResult result, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
+		}
+
+		final Long id = view.getIdDeclaration();
+
+		if (result.hasErrors()) {
+			return "decl/delai/ajouter";
+		}
+
+		// Vérifie les paramètres
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = diDAO.get(id);
+				if (di == null) {
+					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+				}
+
+				final Contribuable ctb = (Contribuable) di.getTiers();
+				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+				return null;
+			}
+		});
+
+		// On ajoute le délai
+		final Long idDelai = manager.saveDelai(id, view.getDateDemande(), view.getDelaiAccordeAu(), view.isConfirmationEcrite());
+
+		if (view.isConfirmationEcrite()) {
+
+			// On imprime le duplicata
+			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelai(id, idDelai);
+
+			final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+				@Override
+				public String doJob(EditiqueResultat resultat) {
+					return "redirect:/decl/editer.do?id=" + id;
+				}
+			};
+
+			final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+				@Override
+				public String doJob(EditiqueResultat resultat) {
+					Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
+					return "redirect:/decl/editer.do?id=" + id;
+				}
+			};
+
+			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, erreur, erreur);
+		}
+		else {
+			// Pas de duplicata -> on retourne à l'édition de la DI
+			return "redirect:/decl/editer.do?id=" + id;
+		}
 	}
 }

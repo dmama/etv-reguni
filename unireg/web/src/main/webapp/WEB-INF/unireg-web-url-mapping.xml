@@ -165,8 +165,6 @@
 				<entry key="/fusion/list-habitant.do" value-ref="habitantListController" />
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
-				<!-- DI -->
-				<entry key="/di/delai.do" value-ref="diEditDelaiController" />
 				<!-- Mouvements de dossier -->
 				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
 				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />
