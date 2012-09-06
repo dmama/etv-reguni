@@ -2612,7 +2612,7 @@ var Decl = {
 		if (delais) {
 			html = '<fieldset><legend><span>Délais</span></legend>';
 			html +=
-				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation éditée</th><th>Date traitement</th><th></th></tr></thead><tbody>';
+				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation écrite</th><th>Date traitement</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
 				var d = delais[i];
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';

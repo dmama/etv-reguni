@@ -683,7 +683,7 @@ public class DeclarationImpotController {
 	                       Model model) throws AccessDeniedException {
 
 		if (!SecurityProvider.isGranted(Role.DI_DUPLIC_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
 		}
 
 		final DeclarationImpotOrdinaire di = diDAO.get(id);

@@ -17,7 +17,7 @@
 				<unireg:regdate regdate="${delai.delaiAccordeAu}" />
 			<c:if test="${delai.annule}"></strike></c:if>
 		</display:column>
-		<display:column titleKey="label.confirmation.editee">
+		<display:column titleKey="label.confirmation.ecrite">
 			<input type="checkbox" name="decede" value="True"   
 			<c:if test="${delai.confirmationEcrite}">checked </c:if> disabled="disabled" />
 				<c:if test="${page == 'visu' }">
