@@ -3,9 +3,6 @@ package ch.vd.uniregctb.di.manager;
 import javax.jms.JMSException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,26 +39,21 @@ import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
-import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
-import ch.vd.uniregctb.di.view.ModeleDocumentView;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
-import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
-import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -91,7 +83,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotEditManagerImpl.class);
 
-	private TiersGeneralManager tiersGeneralManager;
 	private DeclarationImpotOrdinaireDAO diDAO;
 	private PeriodeFiscaleDAO periodeFiscaleDAO;
 	private DeclarationImpotService diService;
@@ -110,23 +101,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	private PeriodeImpositionService periodeImpositionService;
 
 	/**
-	 * Contrôle que la DI existe
-	 *
-	 * @param id
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public void controleDI(Long id) {
-		DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-	}
-
-	/**
 	 * Annule un delai
-	 *
-	 * @param idDI
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -306,87 +281,24 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		return (PeriodeImposition) elu;
 	}
-
-	/**
-	 * @return la plage de dates [debut; fin] couverte par la dernière déclaration (= la plus récente) existant sur le tiers spécifié; ou <code>null</code> si le tiers ne possède aucune déclaration
-	 *         valide.
-	 */
-	public DateRange getDerniereDeclaration(Contribuable contribuable) {
-
-		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
-		if (declarations == null || declarations.isEmpty()) {
-			return null;
-		}
-
-		// recherche la dernière déclaration non-annulée
-		Declaration derniere = null;
-		for (int i = declarations.size() - 1; i >= 0; --i) {
-			Declaration d = declarations.get(i);
-			if (!d.isAnnule()) {
-				derniere = d;
-				break;
-			}
-
-		}
-
-		return derniere;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public RegDate getDateNewDi(Long numero) {
-		RegDate dateNewDi = null;
-
-		//calcul de la date pour une nouvelle DI
-		EtatDeclaration etatPeriode = diDAO.findDerniereDiEnvoyee(numero);
-		if (etatPeriode != null) {
-			dateNewDi = etatPeriode.getDeclaration().getDateDebut();
-			dateNewDi = RegDate.get(dateNewDi.year() + 1, 1, 1);
-		}
-		else {
-			dateNewDi = RegDate.get().addYears(-1);
-		}
-
-		//vérification que la période fiscale correspondant existe
-		PeriodeFiscale periodFisc = periodeFiscaleDAO.getPeriodeFiscaleByYear(dateNewDi.year());
-		if (periodFisc != null)
-			return dateNewDi;
-		else
-			return null;
-	}
-
-	/**
-	 * @param diImpressionView
-	 * @throws DeclarationException
-	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException {
-		final DeclarationImpotOrdinaire declaration = diDAO.get(diImpressionView.getIdDI());
+	public EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException {
+		final DeclarationImpotOrdinaire declaration = diDAO.get(id);
 
 		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
 			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 		final PeriodeFiscale periode = periodeFiscaleDAO.getPeriodeFiscaleByYear(declaration.getPeriode().getAnnee());
-		final TypeDocument selectedTypeDocument = diImpressionView.getSelectedTypeDocument();
-		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, selectedTypeDocument);
+		final ModeleDocument modele = modeleDocumentDAO.getModelePourDeclarationImpotOrdinaire(periode, typeDocument);
 		declaration.setModeleDocument(modele);
 
-		List<ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique> annexes = null;
-
-		final List<ModeleDocumentView> modeles = diImpressionView.getModelesDocumentView();
-		for (ModeleDocumentView modeleView : modeles) {
-			if (modeleView.getTypeDocument() == selectedTypeDocument) {
-				annexes = modeleView.getModelesFeuilles();
-				break;
-			}
-		}
 
 		Audit.info(String.format("Impression (%s/%s) d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
 		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), declaration.getTiers().getNumero(),
 		                         RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin())));
 
-		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), selectedTypeDocument, annexes);
+		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), typeDocument, annexes);
 	}
 
 	@Override
@@ -633,9 +545,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Cree une vue pour le delai d'une declaration
-	 *
-	 * @param idDeclaration
-	 * @return
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -661,8 +570,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	/**
 	 * Persiste en base le delai
-	 *
-	 * @param delaiView
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -719,105 +626,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		}
 	}
 
-	/**
-	 * Renvoie le modèle de document du type recherché présent dans la liste, ou <code>null</code> s'il n'y en a pas
-	 *
-	 * @param modeles les modèles à fouiller
-	 * @param type    le type recherché
-	 * @return le premier modèle trouvé dans la liste correspondant au type recherché
-	 */
-	private static ModeleDocument findModeleOfType(Collection<ModeleDocument> modeles, TypeDocument type) {
-		for (ModeleDocument modele : modeles) {
-			if (modele.getTypeDocument() == type) {
-				return modele;
-			}
-		}
-		return null;
-	}
-
-	/**
-	 * Alimente la vue du controller DeclarationImpotImpressionController
-	 *
-	 * @param id
-	 * @param typeDocument
-	 * @return
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public DeclarationImpotImpressionView getView(Long id, String typeDocument) {
-
-		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		final TypeDocument enumTypeDocument;
-		if (typeDocument == null) {
-			if (di.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
-				enumTypeDocument = TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL;
-			}
-			else {
-				enumTypeDocument = di.getTypeDeclaration();
-			}
-		}
-		else {
-			enumTypeDocument = TypeDocument.valueOf(typeDocument);
-		}
-
-		final List<ModeleDocument> modelesDocument = modeleDocumentDAO.getByPeriodeFiscale(di.getPeriode());
-
-		// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
-		// (on stocke ici donc tous les formulaires existants dans la partie "BATCH" pour un contrôle rapide)
-		final ModeleDocument modeleDocumentCompleteBatch = findModeleOfType(modelesDocument, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-		final Set<String> numerosFormulairesBatch = new HashSet<String>();
-		if (modeleDocumentCompleteBatch != null) {
-			for (ModeleFeuilleDocument modeleFeuille : modeleDocumentCompleteBatch.getModelesFeuilleDocument()) {
-				numerosFormulairesBatch.add(modeleFeuille.getNumeroFormulaire());
-			}
-		}
-
-		final List<ModeleDocumentView> modelesDocumentView = new ArrayList<ModeleDocumentView>();
-		for (ModeleDocument modele : modelesDocument) {
-			if (modele.getTypeDocument() != TypeDocument.LISTE_RECAPITULATIVE && modele.getTypeDocument() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH) {
-
-				// [SIFISC-2066] on trie les feuilles dans l'ordre spécifié dans la paramétrisation
-				final List<ModeleFeuilleDocument> modelesFeuilleDocument = new ArrayList<ModeleFeuilleDocument>(modele.getModelesFeuilleDocument());
-				Collections.sort(modelesFeuilleDocument, new ModeleFeuilleDocumentComparator());
-
-				final List<ModeleFeuilleDocumentEditique> modelesFeuilleDocumentView = new ArrayList<ModeleFeuilleDocumentEditique>();
-				for (ModeleFeuilleDocument modeleFeuilleDocument : modelesFeuilleDocument) {
-
-					// [UNIREG-2001] si une annexe est dans la partie "LOCAL" mais pas dans la partie "BATCH", on ne la demande pas par défaut
-					final int nbreFeuilles;
-					if (!numerosFormulairesBatch.isEmpty() && modele.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-						if (numerosFormulairesBatch.contains(modeleFeuilleDocument.getNumeroFormulaire())) {
-							nbreFeuilles = 1;
-						}
-						else {
-							nbreFeuilles = 0;
-						}
-					}
-					else {
-						nbreFeuilles = 1;
-					}
-
-					final ModeleFeuilleDocumentEditique modeleFeuilleDocumentView = new ModeleFeuilleDocumentEditique();
-					modeleFeuilleDocumentView.setIntituleFeuille(modeleFeuilleDocument.getIntituleFeuille());
-					modeleFeuilleDocumentView.setNumeroFormulaire(modeleFeuilleDocument.getNumeroFormulaire());
-					modeleFeuilleDocumentView.setNbreIntituleFeuille(nbreFeuilles);
-					modelesFeuilleDocumentView.add(modeleFeuilleDocumentView);
-				}
-
-				final ModeleDocumentView modeleView = new ModeleDocumentView();
-				modeleView.setTypeDocument(modele.getTypeDocument());
-				modeleView.setModelesFeuilles(modelesFeuilleDocumentView);
-				modelesDocumentView.add(modeleView);
-			}
-		}
-
-		final DeclarationImpotImpressionView declarationImpotImpressionView = new DeclarationImpotImpressionView();
-		declarationImpotImpressionView.setIdDI(id);
-		declarationImpotImpressionView.setSelectedTypeDocument(enumTypeDocument);
-		declarationImpotImpressionView.setModelesDocumentView(modelesDocumentView);
-		return declarationImpotImpressionView;
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
@@ -846,11 +654,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTiersGeneralManager(TiersGeneralManager tiersGeneralManager) {
-		this.tiersGeneralManager = tiersGeneralManager;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -917,8 +720,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		di.setDateImpressionChemiseTaxationOffice(DateHelper.getCurrentDate());
 
 		try {
-			final EditiqueResultat resulat = editiqueCompositionService.imprimeTaxationOfficeOnline(di);
-			return resulat;
+			return editiqueCompositionService.imprimeTaxationOfficeOnline(di);
 		}
 		catch (JMSException e) {
 			throw new EditiqueException(e);

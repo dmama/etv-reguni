@@ -12,7 +12,6 @@
 		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tacheDAO" ref="tacheDAO" />
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="diService" ref="diService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
@@ -34,19 +33,6 @@
 		<property name="successView" value="common/refresh-parent" />
 		<property name="diEditManager" ref="diEditManager" />
 		<property name="validator" ref="diEditDelaiValidator" />
-	</bean>
-
-	<bean id="diImpressionController" class="ch.vd.uniregctb.di.DeclarationImpotImpressionController" parent="abstractDeclarationImpotController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.di.view.DeclarationImpotImpressionView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="di/edit/impression" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="diEditManager" ref="diEditManager" />
-		<property name="validator" ref="diImpressionValidator" />
-	</bean>
-
-	<bean id="diImpressionValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotImpressionValidator" >
 	</bean>
 
 	<bean id="diMapHelper" class="ch.vd.uniregctb.di.DeclarationImpotMapHelperImpl">

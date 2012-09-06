@@ -145,6 +145,7 @@
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="validator" ref="declarationImpotControllerValidator"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
  	</bean>
 
 	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">

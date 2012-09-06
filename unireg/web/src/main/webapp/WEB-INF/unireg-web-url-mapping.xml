@@ -167,7 +167,6 @@
 				-->
 				<!-- DI -->
 				<entry key="/di/delai.do" value-ref="diEditDelaiController" />
-				<entry key="/di/impression.do" value-ref="diImpressionController" />
 				<!-- Mouvements de dossier -->
 				<entry key="/mouvement/edit-contribuable.do" value-ref="mouvementEditContribuableController" />
 				<entry key="/mouvement/edit.do" value-ref="mouvementEditController" />

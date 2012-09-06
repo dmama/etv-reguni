@@ -42,12 +42,14 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
+import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -84,6 +86,7 @@ public class DeclarationImpotController {
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
 	private PlatformTransactionManager transactionManager;
 	private Validator validator;
+	private ModeleDocumentDAO modeleDocumentDAO;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -127,6 +130,10 @@ public class DeclarationImpotController {
 
 	public void setValidator(Validator validator) {
 		this.validator = validator;
+	}
+
+	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
+		this.modeleDocumentDAO = modeleDocumentDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -665,6 +672,85 @@ public class DeclarationImpotController {
 		};
 
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "to", inbox, erreur, erreur);
+	}
+
+	/**
+	 * Affiche un écran qui permet de choisir les paramètres pour l'impression d'un duplicata de DI
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/decl/duplicata.do", method = RequestMethod.GET)
+	public String duplicata(@RequestParam("id") long id,
+	                       Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isGranted(Role.DI_DUPLIC_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, modeleDocumentDAO));
+		return "decl/duplicata";
+	}
+
+	/**
+	 * Imprime un duplicata de DI.
+	 */
+	@RequestMapping(value = "/decl/duplicata.do", method = RequestMethod.POST)
+	public String duplicata(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
+	                        BindingResult result, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_DUPLIC_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final Long id = view.getIdDI();
+
+		if (result.hasErrors()) {
+			return "decl/duplicata";
+		}
+
+		// Vérifie les paramètres
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = diDAO.get(id);
+				if (di == null) {
+					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+				}
+
+				final Contribuable ctb = (Contribuable) di.getTiers();
+				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				return null;
+			}
+		});
+
+		// On imprime le duplicata
+
+		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(view.getIdDI(), view.getSelectedTypeDocument(), view.getSelectedAnnexes());
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
 	}
 
 	/**

@@ -11,7 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
+import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
@@ -28,14 +28,6 @@ import ch.vd.uniregctb.type.TypeDocument;
 public interface DeclarationImpotEditManager {
 
 	public static final String CANNOT_ADD_NEW_DI = "Le contribuable n'est pas assujetti, ou toutes ses déclarations sont déjà créées.";
-
-	/**
-	 * Contrôle que la DI existe
-	 *
-	 * @param id
-	 */
-	@Transactional(readOnly = true)
-	void controleDI(Long id);
 
 	/**
 	 * Récupère l'id du tiers qui possède la DI spécifiée.
@@ -58,15 +50,6 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(readOnly = true)
 	List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
-
-	/**
-	 * calcul l'année d'une nouvelle DI et vérifie que la période fiscale correspondante existe utilisé par creerDI
-	 *
-	 * @param numero
-	 * @return une date dont l'année correspond à la période fiscale d'une nouvelle DI à créer ou null si la période fiscale n'existe pas
-	 */
-	@Transactional(readOnly = true)
-	RegDate getDateNewDi(Long numero);
 
 	/**
 	 * Crée (si nécessaire) et persiste en base la déclaration spécifiée.
@@ -102,30 +85,15 @@ public interface DeclarationImpotEditManager {
 	                                         RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
 	/**
 	 * Annule un delai
-	 *
-	 * @param idDI
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	void annulerDelai(Long idDI, Long idDelai);
 
 	/**
 	 * Persiste en base le delai
-	 *
-	 * @param delaiView
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	Long saveDelai(DelaiDeclarationView delaiView);
-
-	/**
-	 * Alimente la vue du controller DeclarationImpotImpressionController
-	 *
-	 * @param id
-	 * @param typeDocument
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	DeclarationImpotImpressionView getView(Long id, String typeDocument);
-
 
 	/**
 	 * Sommer une déclaration d'impôt
@@ -137,9 +105,6 @@ public interface DeclarationImpotEditManager {
 
 	/**
 	 * Imprimer la lettre de confirmation de délai
-	 *
-	 * @param idDI
-	 * @param idDelai
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
@@ -155,20 +120,12 @@ public interface DeclarationImpotEditManager {
 
 	/**
 	 * Cree une vue pour le delai d'une declaration
-	 *
-	 * @param idDeclaration
-	 * @return
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	DelaiDeclarationView creerDelai(Long idDeclaration);
 
-	/**
-	 * @param diImpressionView
-	 * @throws DeclarationException
-	 * @throws DeclarationException
-	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalDuplicataDI(DeclarationImpotImpressionView diImpressionView) throws DeclarationException;
+	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 
 
 	@Transactional(readOnly = true)

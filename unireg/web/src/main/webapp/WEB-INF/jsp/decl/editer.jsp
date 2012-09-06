@@ -106,7 +106,7 @@
 							var dialog = Dialog.create_dialog_div('imprime-di-dialog');
 
 							// charge le contenu de la boîte de dialogue
-							dialog.load(App.curl('/di/impression.do') + '?id=' + id + '&' + new Date().getTime());
+							dialog.load(App.curl('/decl/duplicata.do') + '?id=' + id + '&' + new Date().getTime());
 
 							dialog.dialog({
 								title: "Impression d'un duplicata",
@@ -124,7 +124,7 @@
 											}
 										});
 										var form = dialog.find('#formImpression');
-										form.attr('action', App.curl('/di/impression.do') + '?action=duplicataDI');
+										form.attr('action', App.curl('/decl/duplicata.do'));
 										form.submit();
 									},
 									"Fermer": function() {

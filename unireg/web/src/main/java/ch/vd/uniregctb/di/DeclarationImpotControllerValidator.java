@@ -15,6 +15,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
+import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -42,7 +43,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz) || DeclarationListView.class.equals(clazz);
+		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
+				|| DeclarationListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz);
 	}
 
 	@Override
@@ -53,6 +55,9 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 		else if (target instanceof EditerDeclarationImpotView) {
 			validateEditerDI((EditerDeclarationImpotView)target, errors);
+		}
+		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
+			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
 		}
 	}
 
@@ -148,6 +153,12 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 		else {
 			return sommee;
+		}
+	}
+
+	private void valideImprimerDuplicataDI(ImprimerDuplicataDeclarationImpotView view, Errors errors) {
+		if (view.getIdDI() == null) {
+			errors.reject("error.di.inexistante");
 		}
 	}
 }
