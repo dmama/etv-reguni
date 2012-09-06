@@ -2185,7 +2185,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 			PersonnePhysique habitantConjoint = tiersDAO.getPPByNumeroIndividu(noIndividuConjoint);
 			assertNotNull(habitantConjoint);
-			assertTrue(habitantConjoint.isHabitantVD());
+			assertFalse("Madame passera habitante lors de la reception de l'evenement où elle est l'habitant principale", habitantConjoint.isHabitantVD());
 			assertEquals(new Long(noIndividuConjoint), habitantConjoint.getNumeroIndividu());
 			assertEquals(new Long(noCTBConjoint), habitantConjoint.getNumero());
 			

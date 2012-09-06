@@ -37,8 +37,10 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -200,12 +202,24 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				marieIndividus(lui, elle, dateMariage);
 				
 				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
-				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
 				
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
-				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD,MockCommune.Bussigny.getNoOFS(), null));
 			}
 		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				addForPrincipal(etc.getMenage(), dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				return null;
+			}
+		});
+
 
 		// création de l'événement civil pour l'arrivée de monsieur
 		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -246,7 +260,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
 				
 				return null;
 			}
@@ -291,7 +305,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(dateArrivee, ffp.getDateDebut());
-				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+				assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifOuverture());
 
 				return null;
 			}
@@ -945,6 +959,142 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 					assertNotNull(ffpPP);
 					assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffpPP.getMotifFermeture());
 					assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+					return null;
+				}
+			});
+		}
+		finally {
+			globalTiersIndexer.overwriteIndex();
+		}
+	}
+
+	/**
+	 * [SIFISC-6109] Vérifie qu'un événement d'arrivée pour un seul membre d'un couple de non-habitants (ancien habitant donc connu du civil) ne passe pas les 2 en habitant
+	 */
+	@Test (timeout = 10000L)
+	public void testArriveeUnSeulMembreDuCoupleDepuisHS_SIFISC_6109() throws Exception {
+
+		try {
+			final long noIndividuMonsieur = 1057790L;
+			final long noIndividuMadame = 1057791L;
+			final RegDate dateDepartCouple = date(2010, 10, 1);
+			final RegDate dateRetourMoniseurSeul = date(2011, 10, 1);
+			final RegDate dateRetourMadameSeule = dateRetourMoniseurSeul.addMonths(1);
+			final RegDate dateNaissanceMonsieur = date(1987, 2, 4);
+			final RegDate dateNaissanceMadame = date(1990, 3, 5);
+			final RegDate dateMariage = date(2009, 7, 8);
+
+			setWantIndexation(true);
+
+			// Le civil
+			serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+				@Override
+				protected void init() {
+
+					final MockIndividu monsieur = addIndividu(noIndividuMonsieur, dateNaissanceMonsieur, "Jolias", "Virgil", true);
+					final MockAdresse adresseMonsieur = addAdresse(monsieur, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateRetourMoniseurSeul, null);
+					adresseMonsieur.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+					addNationalite(monsieur, MockPays.Suisse, dateNaissanceMonsieur, null);
+					final MockIndividu madame = addIndividu(noIndividuMadame, dateNaissanceMadame, "Jolias", "Virginie", true);
+					final MockAdresse adresseMadame = addAdresse(madame, TypeAdresseCivil.PRINCIPALE, null, "rue de l'église, 4", "01250", MockPays.France, dateDepartCouple, dateRetourMadameSeule.getOneDayBefore());
+					final MockAdresse adresse2Madame = addAdresse(madame, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateRetourMadameSeule, null);
+					adresseMadame.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
+					adresse2Madame.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+					addNationalite(madame, MockPays.Suisse, dateNaissanceMonsieur, null);
+					marieIndividus(monsieur, madame, dateMariage);
+				}
+			});
+
+			// Le fiscal
+			final long ids[] = doInNewTransactionAndSession(new TxCallback<long[]>() {
+				@Override
+				public long[] execute(TransactionStatus status) throws Exception {
+					final PersonnePhysique ppMadame = addNonHabitant("Jolias", "Virginie", dateNaissanceMadame, Sexe.FEMININ);
+					final PersonnePhysique ppMonsieur = addNonHabitant("Jolias", "Virgil", dateNaissanceMonsieur, Sexe.MASCULIN);
+					// ancien habitant: ils ont un numéro d'individu
+					ppMadame.setNumeroIndividu(noIndividuMadame);
+					ppMonsieur.setNumeroIndividu(noIndividuMonsieur);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(ppMonsieur, ppMadame, dateMariage, null);
+					addForPrincipal(etc.getMenage(), dateMariage,MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDepartCouple.getOneDayBefore(), MotifFor.DEPART_HS, MockPays.France);
+					addForPrincipal(etc.getMenage(), date(2010,12,1),MotifFor.ACHAT_IMMOBILIER, MockPays.France);
+					return new long[] {ppMonsieur.getNumero(), ppMadame.getNumero(), etc.getMenage().getNumero()};
+				}
+			});
+
+			final long idMonsieur = ids[0];
+			final long idMadame = ids[1];
+
+			globalTiersIndexer.sync();
+
+			// événement d'arrivée
+			final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14532L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateRetourMoniseurSeul);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuMonsieur);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividuMonsieur);
+
+			// on s'assure que Madame n'est pas habitante ( et que monsieur l'est au passage..)
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evtId);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+					final PersonnePhysique monsieur = (PersonnePhysique) tiersService.getTiers(idMonsieur);
+					assertNotNull(monsieur);
+					assertTrue("Monsieur doit être habitant", monsieur.isHabitantVD());
+
+					final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
+					assertNotNull(madame);
+					assertFalse("Madame ne doit être habitante", madame.isHabitantVD());
+
+
+					return null;
+				}
+			});
+
+
+			// événement d'arrivée
+			final long evt2Id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = new EvenementCivilEch();
+					evt.setId(14533L);
+					evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+					evt.setDateEvenement(dateRetourMadameSeule);
+					evt.setEtat(EtatEvenementCivil.A_TRAITER);
+					evt.setNumeroIndividu(noIndividuMadame);
+					evt.setType(TypeEvenementCivilEch.ARRIVEE);
+					return hibernateTemplate.merge(evt).getId();
+				}
+			});
+
+			// traitement de l'événement
+			traiterEvenements(noIndividuMadame);
+
+			// Madame arrive finallement 1 mois apres monsieur
+			doInNewTransactionAndSession(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					final EvenementCivilEch evt = evtCivilDAO.get(evt2Id);
+					assertNotNull(evt);
+					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+					final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
+					assertNotNull(madame);
+					assertTrue("Madame doit être habitante", madame.isHabitantVD());
 					return null;
 				}
 			});
