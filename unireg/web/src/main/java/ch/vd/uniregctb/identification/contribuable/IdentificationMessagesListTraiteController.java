@@ -54,7 +54,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		LOGGER.debug("Start of IdentificationMessagesListTraiteController:formBackingObject");
 
 		// on doit avoir les droits de visualisation pour ça...
-		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO)) {
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
+				Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
 
@@ -123,6 +124,11 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.NCS);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.NCS));
+			}
+			else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.IMPOT_SOURCE);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
+				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.IMPOT_SOURCE));
 			}
 
 
@@ -198,6 +204,12 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
 			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.NCS);
+
+		}
+		else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+
+			//la cellule IS ne voie que les messages de type IMPOT SOURCE dont les Liste is
+			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.IMPOT_SOURCE);
 
 		}
 		else {

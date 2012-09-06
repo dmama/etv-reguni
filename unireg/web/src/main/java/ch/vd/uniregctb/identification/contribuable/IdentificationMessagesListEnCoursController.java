@@ -69,7 +69,8 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		LOGGER.debug("Start of IdentificationMessagesListEnCoursController:formBackingObject");
 
 		// on doit avoir les droits de visualisation pour ça...
-		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO)) {
+		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
+				Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO,Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
 
@@ -147,6 +148,10 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.NCS);
 				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.NCS);
+			}
+			else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.IMPOT_SOURCE);
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.IMPOT_SOURCE);
 			}
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
@@ -262,6 +267,12 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
 			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.NCS);
+
+		}
+		else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+
+			//la cellule IS ne voie que les messages de type IMPOT SOURCE dont les Liste is
+			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.IMPOT_SOURCE);
 
 		}
 		else {
