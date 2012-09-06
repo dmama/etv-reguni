@@ -2,14 +2,14 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
-	<tiles:put name="title"><fmt:message key="title.edition.di" /></tiles:put>
+	<tiles:put name="title"><fmt:message key="label.impression.di" /></tiles:put>
   	<tiles:put name="fichierAide"><a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-di.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a></tiles:put>
 	<tiles:put name="body">
 
 	<unireg:nextRowClass reset="1"/>
 	<unireg:bandeauTiers numero="${command.tiersId}" showAvatar="false" showValidation="false" showEvenementsCivils="false" showLinks="false" />
 
-	<form:form method="post" action="imprimer.do">
+	<form:form name="theForm" method="post" action="imprimer.do">
 
 		<form:errors cssClass="error"/>
 

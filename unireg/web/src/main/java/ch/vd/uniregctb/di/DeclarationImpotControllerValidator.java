@@ -7,19 +7,32 @@ import org.springframework.validation.Validator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
+import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class DeclarationImpotControllerValidator implements Validator {
 
 	private TiersDAO tiersDAO;
+	private DeclarationImpotOrdinaireDAO diDAO;
 	private DeclarationImpotEditManager manager;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
+		this.diDAO = diDAO;
 	}
 
 	public void setManager(DeclarationImpotEditManager manager) {
@@ -28,13 +41,21 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz);
+		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz);
 	}
 
 	@Override
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public void validate(Object target, Errors errors) {
-		final ImprimerNouvelleDeclarationImpotView view = (ImprimerNouvelleDeclarationImpotView) target;
+		if (target instanceof ImprimerNouvelleDeclarationImpotView) {
+			validateImprimerNouvelleDI((ImprimerNouvelleDeclarationImpotView) target, errors);
+		}
+		else if (target instanceof EditerDeclarationImpotView) {
+			validateEditerDI((EditerDeclarationImpotView)target, errors);
+		}
+	}
+
+	private void validateImprimerNouvelleDI(ImprimerNouvelleDeclarationImpotView view, Errors errors) {
 
 		// Vérifie que les paramètres reçus sont valides
 
@@ -73,6 +94,59 @@ public class DeclarationImpotControllerValidator implements Validator {
 			catch (ValidationException e) {
 				errors.reject(e.getMessage());
 			}
+		}
+
+		final RegDate delaiAccorde = view.getDelaiAccorde();
+		if (delaiAccorde == null) {
+			errors.rejectValue("delaiAccorde", "error.delai.accorde.vide");
+		}
+		else if (delaiAccorde.isBefore(RegDate.get()) || delaiAccorde.isAfter(RegDate.get().addMonths(6))) {
+			errors.rejectValue("delaiAccorde", "error.delai.accorde.invalide");
+		}
+	}
+
+	private void validateEditerDI(EditerDeclarationImpotView view, Errors errors) {
+
+		// Vérifie que les paramètres reçus sont valides
+
+		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
+		if (di == null) {
+			errors.reject("error.di.inexistante");
+			return;
+		}
+
+		final RegDate dateRetour = view.getDateRetour();
+		if (dateRetour != null) {
+			if (dateRetour.isAfter(RegDate.get())) {
+				errors.rejectValue("dateRetour", "error.date.retour.future");
+			}
+
+			final EtatDeclaration dernierEtat = getDernierEtatEmisOuSommee(di);
+			if (dateRetour.isBefore(dernierEtat.getDateObtention())) {
+				if (dernierEtat instanceof EtatDeclarationSommee) {
+					errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
+				}
+				if (dernierEtat instanceof EtatDeclarationEmise) {
+					errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
+				}
+			}
+		}
+
+		final TypeDocument typeDocument = view.getTypeDocument();
+		if (typeDocument != null && typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+			errors.rejectValue("typeDocument", "error.type.document.invalide");
+		}
+	}
+
+	private static EtatDeclaration getDernierEtatEmisOuSommee(DeclarationImpotOrdinaire di) {
+		EtatDeclaration emis = di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
+		EtatDeclaration sommee = di.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+		//On aura toujours un état émis sur une déclaration sinon bug
+		if (sommee == null) {
+			return emis;
+		}
+		else {
+			return sommee;
 		}
 	}
 }

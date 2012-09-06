@@ -67,7 +67,7 @@ public class DeclarationImpotEditDelaiController extends AbstractDeclarationImpo
 			return imprimerDelai(response, delaiSauve, errors);
 		}
 
-		return new ModelAndView("redirect:edit.do?action=editdi&id=" + idDI);
+		return new ModelAndView("redirect:/decl/editer.do?id=" + idDI);
 
 	}
 
@@ -88,7 +88,7 @@ public class DeclarationImpotEditDelaiController extends AbstractDeclarationImpo
 		final TraitementRetourEditique inbox = new TraitementRetourEditique() {
 			@Override
 			public ModelAndView doJob(EditiqueResultat resultat) {
-				return new ModelAndView("redirect:edit.do?action=editdi&id=" + bean.getIdDeclaration());
+				return new ModelAndView("redirect:/decl/editer.do?id=" + bean.getIdDeclaration());
 			}
 		};
 

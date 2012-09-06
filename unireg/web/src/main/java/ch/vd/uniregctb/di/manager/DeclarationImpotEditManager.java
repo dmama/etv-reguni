@@ -12,7 +12,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
 import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
@@ -42,12 +41,6 @@ public interface DeclarationImpotEditManager {
 	void controleDI(Long id);
 
 	/**
-	 * Alimente la vue en fonction de l'ID de la DI
-	 */
-	@Transactional(readOnly = true)
-	void get(Long id, DeclarationImpotDetailView view);
-
-	/**
 	 * Récupère l'id du tiers qui possède la DI spécifiée.
 	 *
 	 * @param idDI l'id de la déclaration d'impôt
@@ -55,16 +48,6 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(readOnly = true)
 	public Long getTiersId(Long idDI);
-
-	/**
-	 * Reactualise la vue
-	 *
-	 * @param diEditView
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView);
-
 
 	/**
 	 * Alimente la vue en fonction d'un contribuable
@@ -138,10 +121,10 @@ public interface DeclarationImpotEditManager {
 	/**
 	 * Annule un delai
 	 *
-	 * @param diEditView
+	 * @param idDI
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai);
+	void annulerDelai(Long idDI, Long idDelai);
 
 	/**
 	 * Persiste en base le delai
@@ -173,21 +156,12 @@ public interface DeclarationImpotEditManager {
 
 
 	/**
-	 * Sommer une Declaration Impot
+	 * Sommer une déclaration d'impôt
 	 *
-	 * @param bean
+	 * @param id l'id de la déclaration d'impôt à sommer.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException;
-
-	/**
-	 * Imprimer la lettre de confirmation de délai
-	 *
-	 * @param bean
-	 * @param idDelai
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView bean, Long idDelai) throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException;
 
 	/**
 	 * Imprimer la lettre de confirmation de délai
@@ -202,10 +176,10 @@ public interface DeclarationImpotEditManager {
 	/**
 	 * Imprimer la chemise de taxation d'office
 	 *
-	 * @param bean
+	 * @param id l'id de la déclaration d'impôt échue dont on veut imprimer la chemise de taxation d'office.
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException;
+	EditiqueResultat envoieImpressionLocalTaxationOffice(Long id) throws EditiqueException;
 
 	/**
 	 * Cree une vue pour le delai d'une declaration
@@ -236,5 +210,7 @@ public interface DeclarationImpotEditManager {
 	 * @throws ValidationException si le contribuable ne valide pas, n'est pas du tout assujetti, si les dates ne correspondent pas à l'assujettissement calculé ou s'il existe déjà une déclaration.
 	 */
 	PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException;
+
+	DeclarationImpotOrdinaire update(long id, TypeDocument typeDocument, RegDate dateRetour);
 }
 

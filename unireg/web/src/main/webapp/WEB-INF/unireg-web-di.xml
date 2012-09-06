@@ -7,16 +7,11 @@
 		<property name="diMapHelper" ref="diMapHelper" />
 	</bean>
 
-	<bean id="diEditValidator" class="ch.vd.uniregctb.di.validator.DeclarationImpotEditValidator" >
-		<property name="diDAO" ref="diDAO" />
-	</bean>
-	
 	<bean id="diEditController" class="ch.vd.uniregctb.di.DeclarationImpotEditController" parent="abstractDeclarationImpotController" >
 		<property name="sessionForm" value="true" />
 		<property name="commandName" value="command" />
-		<property name="formView" value="di/edit/edit" />
+		<property name="formView" value="di/edit/edit-contribuable" />
 		<property name="successView" value="redirect:/di/list.do" />
-		<property name="validator" ref="diEditValidator" />
 		<property name="diEditManager" ref="diEditManager" />
 	</bean>
 	

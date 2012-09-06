@@ -2,7 +2,6 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Caracteristiques generales -->
 <fieldset>
-<FONT COLOR="#FF0000">${erreurCommunicationEditique}</FONT>
 	<legend><span><fmt:message key="caracteristiques.di" /></span></legend>
 		<c:if test="${command.allowedEmission}">
 		<table border="0">

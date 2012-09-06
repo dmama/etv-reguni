@@ -11,7 +11,9 @@ import org.springframework.context.MessageSource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
@@ -27,22 +29,24 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
-import ch.vd.uniregctb.common.RetourEditiqueControllerHelperImpl;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
 import ch.vd.uniregctb.di.view.DeclarationView;
+import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -170,7 +174,7 @@ public class DeclarationImpotController {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/decl/annuler.do", method = RequestMethod.POST)
-	public String annuler(@RequestParam("id") long id, @RequestParam(value = "depuisTache", required = false) Boolean depuisTache) throws AccessDeniedException {
+	public String annuler(@RequestParam("id") long id, @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) throws AccessDeniedException {
 
 		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
@@ -195,18 +199,18 @@ public class DeclarationImpotController {
 		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.annulationDI(tiers, di, RegDate.get());
 
-		if (depuisTache == null) {
-			return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+		if (depuisTache) {
+			return "redirect:/tache/list.do";
 		}
 		else {
-			return "redirect:/tache/list.do";
+			return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
 		}
 	}
 
 	/**
 	 * Désannuler une déclaration d'impôt ordinaire.
 	 *
-	 * @param id          l'id de la déclaration d'impôt ordinaire à désannuler
+	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
 	 * @return les détails d'une déclaration d'impôt au format JSON
 	 */
 	@Transactional(rollbackFor = Throwable.class)
@@ -381,14 +385,14 @@ public class DeclarationImpotController {
 		final EditiqueResultat resultat = manager.envoieImpressionLocalDI(tiersId, null, view.getDateDebutPeriodeImposition(), view.getDateFinPeriodeImposition(), view.getTypeDocument(),
 				view.getTypeAdresseRetour(), view.getDelaiAccorde(), view.getDateRetour());
 
-		final RetourEditiqueControllerHelperImpl.TraitementRetourEditique inbox = new RetourEditiqueControllerHelperImpl.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
 			@Override
 			public String doJob(EditiqueResultat resultat) {
 				return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
 			}
 		};
 
-		final RetourEditiqueControllerHelperImpl.TraitementRetourEditique erreur = new RetourEditiqueControllerHelperImpl.TraitementRetourEditique() {
+		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
 			@Override
 			public String doJob(EditiqueResultat resultat) {
 				Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
@@ -443,6 +447,65 @@ public class DeclarationImpotController {
 	}
 
 	/**
+	 * Affiche un écran qui permet d'éditer une déclaration.
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/decl/editer.do", method = RequestMethod.GET)
+	public String editer(@RequestParam("id") long id,
+	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
+	                     Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId);
+		model.addAttribute("command", view);
+		model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
+
+		return "decl/editer";
+	}
+
+	/**
+	 * Enregistre les modifications apportée à la déclaration.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/decl/editer.do", method = RequestMethod.POST)
+	public String editer(@Valid @ModelAttribute("command") final EditerDeclarationImpotView view, BindingResult result,
+	                     Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		if (result.hasErrors()) {
+			view.initReadOnlyValues(di);
+			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
+			return "decl/editer";
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		manager.update(view.getId(), view.getTypeDocument(), view.getDateRetour());
+
+		return "redirect:/di/edit.do?action=listdis&numero=" + ctb.getId();
+	}
+
+	/**
 	 * Permet de traiter une tâche d'annulation de DI en n'annulant pas la DI et en marquant la tâche comme traitée. Il s'agit d'une fonctionnalité historique qui mériterait d'être respécifiée car
 	 * fatalement la tâche d'annulation va réapparaître au prochain recalcul automatique des tâches.
 	 *
@@ -469,5 +532,143 @@ public class DeclarationImpotController {
 		}
 
 		return "redirect:/tache/list.do";
+	}
+
+	/**
+	 * Sommer la déclaration spécifiée.
+	 */
+	@RequestMapping(value = "/decl/sommer.do", method = RequestMethod.POST)
+	public String sommer(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		// Vérifie les paramètres
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = diDAO.get(id);
+				if (di == null) {
+					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+				}
+
+				if (!EditerDeclarationImpotView.isSommable(di)) {
+					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas dans un état sommable.");
+				}
+
+				final Contribuable ctb = (Contribuable) di.getTiers();
+				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				return null;
+			}
+		});
+
+		// On imprime la sommation
+
+		final EditiqueResultat resultat = manager.envoieImpressionLocalSommationDI(id);
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, erreur, erreur);
+	}
+
+	/**
+	 * Imprimer la chemise de taxation d'office pour la déclaration spécifiée.
+	 */
+	@RequestMapping(value = "/decl/imprimerTO.do", method = RequestMethod.POST)
+	public String imprimerTO(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		// Vérifie les paramètres
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.execute(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = diDAO.get(id);
+				if (di == null) {
+					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+				}
+
+				if (EditerDeclarationImpotView.getDernierEtat(di) != TypeEtatDeclaration.ECHUE) {
+					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas échue.");
+				}
+
+				final Contribuable ctb = (Contribuable) di.getTiers();
+				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				return null;
+			}
+		});
+
+		// On imprime la chemise de taxation d'office
+
+		final EditiqueResultat resultat = manager.envoieImpressionLocalTaxationOffice(id);
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
+			@Override
+			public String doJob(EditiqueResultat resultat) {
+				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
+				return "redirect:/decl/editer.do?id=" + id;
+			}
+		};
+
+		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "to", inbox, erreur, erreur);
+	}
+
+	/**
+	 * Annuler le délai spécifié.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/decl/delai/annuler.do", method = RequestMethod.POST)
+	public String annulerDelai(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
+		}
+
+		// Vérifie les paramètres
+		final DelaiDeclaration delai = hibernateTemplate.get(DelaiDeclaration.class, id);
+		if (delai == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.delai.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Declaration di = delai.getDeclaration();
+		final RegDate premier = di.getPremierDelai();
+		if (di.getDelaiAccordeAu() == premier) {
+			throw new IllegalArgumentException("Le premier délai accordé ne peut pas être annulé.");
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On annule le délai
+
+		manager.annulerDelai(di.getId(), delai.getId());
+
+		Flash.message("Le délai a été annulé.");
+		return "redirect:/decl/editer.do?id=" + di.getId();
 	}
 }

@@ -360,12 +360,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'une DI
 	@Test
 	public void testDiEdit() throws Exception {
-		assertPage("/di/edit.do?action=editdi&id=2", "Edition de la déclaration d'impôt");
+		assertPage("/decl/editer.do?id=2", "Edition de la déclaration d'impôt");
 	}
 
 	@Test
 	public void testDiEditInexistante() throws Exception {
-		assertPage("/di/edit.do?action=editdi&id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/decl/editer.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	// Page d'édition des DI d'un contribuable

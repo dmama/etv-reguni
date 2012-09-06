@@ -133,7 +133,7 @@ public class DeclarationImpotImpressionController extends AbstractDeclarationImp
 				final TraitementRetourEditique inbox = new TraitementRetourEditique() {
 					@Override
 					public ModelAndView doJob(EditiqueResultat resultat) {
-						mav.setView(new RedirectView(String.format("edit.do?action=editdi&id=%d", idDi)));
+						mav.setView(new RedirectView(String.format("/decl/editer.do?id=%d", idDi)));
 						return null;
 					}
 				};

@@ -130,6 +130,7 @@
 	<bean id="declarationImpotControllerValidator" class="ch.vd.uniregctb.di.DeclarationImpotControllerValidator">
 		<property name="manager" ref="diEditManager"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
+		<property name="diDAO" ref="diDAO"/>
 	</bean>
 
 	<bean id="declarationImpotController" class="ch.vd.uniregctb.di.DeclarationImpotController">
@@ -146,11 +147,6 @@
 		<property name="validator" ref="declarationImpotControllerValidator"/>
  	</bean>
 
-	<bean id="diVisuManager" class="ch.vd.uniregctb.tiers.manager.DeclarationImpotVisuManagerImpl">
-		<property name="diDAO" ref="diDAO" />
-		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
-	</bean>
-	
 	<bean id="consultLogController" class="ch.vd.uniregctb.common.ConsultLogController">
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="situationFamilleDAO" ref="situationFamilleDAO" />

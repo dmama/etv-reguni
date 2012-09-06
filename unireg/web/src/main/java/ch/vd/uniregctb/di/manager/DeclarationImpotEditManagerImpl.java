@@ -69,10 +69,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.param.ModeleFeuilleDocumentComparator;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
@@ -81,7 +78,6 @@ import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -136,12 +132,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	/**
 	 * Annule un delai
 	 *
-	 * @param diEditView
+	 * @param idDI
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void annulerDelai(DeclarationImpotDetailView diEditView, Long idDelai) {
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
+	public void annulerDelai(Long idDI, Long idDelai) {
+		DeclarationImpotOrdinaire di = diDAO.get(idDI);
 		if (di == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
@@ -419,52 +415,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		diListView.setDis(disView);
 	}
 
-	/**
-	 * Alimente la vue DeclarationImpotEditView en fonction de l'ID de la DI
-	 *
-	 * @param id
-	 * @return une vue DeclarationImpotEditView
-	 * @throws AdressesResolutionException
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public void get(Long id, DeclarationImpotDetailView diEditView) {
-
-		DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
-		diEditView.setImprimable(true);
-		diEditView.setContribuable(tiersGeneralView);
-		diEditView.fill(di);
-
-		setDroitDI(diEditView, di.getTiers());
-
-		boolean isSommable = false;
-		final EtatDeclaration etatDI = di.getDernierEtat();
-		if (etatDI != null && etatDI.getEtat() == TypeEtatDeclaration.EMISE) {
-			if (di.getDelaiAccordeAu() == null || RegDate.get().isAfter(di.getDelaiAccordeAu())) {
-				isSommable = true;
-			}
-		}
-		else {
-			diEditView.setAllowedDelai(false);
-		}
-
-		boolean wasSommee = false;
-		for (EtatDeclaration etat : di.getEtats()) {
-			if (!etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.SOMMEE) {
-				wasSommee = true;
-				break;
-			}
-		}
-
-		diEditView.setSommable(isSommable);
-		diEditView.setWasSommee(wasSommee);
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public Long getTiersId(Long idDI) {
@@ -473,60 +423,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			return null;
 		}
 		return di.getTiers().getNumero();
-	}
-
-	/**
-	 * positionne les droits de l'utilisateur
-	 *
-	 * @param diEditView
-	 */
-	private void setDroitDI(DeclarationImpotDetailView diEditView, Tiers tiers) {
-
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
-		if (acces == null || acces == Niveau.LECTURE) {
-			diEditView.setAllowedSommation(false);
-			diEditView.setAllowedDelai(false);
-			diEditView.setAllowedDuplic(false);
-			diEditView.setAllowedQuittancement(false);
-		}
-		else {
-			//seuls les entreprise, les habitants, les non habitants et les ménages peuvent avoir une DI
-			if (tiers instanceof Entreprise) {
-				//les entreprise ne sont pas gérée pour le moment, il est interdit de créer une DI pour une entreprise
-				diEditView.setAllowedSommation(SecurityProvider.isGranted(Role.DI_SOM_PM));
-				diEditView.setAllowedDelai(SecurityProvider.isGranted(Role.DI_DELAI_PM));
-				diEditView.setAllowedDuplic(SecurityProvider.isGranted(Role.DI_DUPLIC_PM));
-				diEditView.setAllowedQuittancement(SecurityProvider.isGranted(Role.DI_QUIT_PM));
-			}
-			else { //PP
-				diEditView.setAllowedSommation(SecurityProvider.isGranted(Role.DI_SOM_PP));
-				diEditView.setAllowedDelai(SecurityProvider.isGranted(Role.DI_DELAI_PP));
-				diEditView.setAllowedDuplic(SecurityProvider.isGranted(Role.DI_DUPLIC_PP));
-				diEditView.setAllowedQuittancement(SecurityProvider.isGranted(Role.DI_QUIT_PP));
-			}
-		}
-	}
-
-	/**
-	 * Reactualise la vue
-	 *
-	 * @param diEditView
-	 * @return
-	 * @throws AdressesResolutionException
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public DeclarationImpotDetailView refresh(DeclarationImpotDetailView diEditView) {
-		DeclarationImpotOrdinaire di = diDAO.get(diEditView.getId());
-		if (di == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		Contribuable ctb = (Contribuable) di.getTiers();
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(ctb, true);
-		diEditView.setContribuable(tiersGeneralView);
-		diEditView.fill(di);
-		return diEditView;
 	}
 
 	@Override
@@ -556,39 +452,45 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
 		}
 		else {
-			di = diDAO.get(id);
-			if (dateRetour != null) {
-				if (!dateRetour.equals(di.getDateRetour())) {
-					if (di.getDateRetour() != null) {
-						final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
-						etatRetournePrecedent.setAnnule(true);
-					}
-					final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
-					di.addEtat(etat);
-					evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
+			di = update(id, typeDocument, dateRetour);
+		}
 
-					// Envoi du message de quittance au BAM
-					sendQuittancementToBam(di, dateRetour);
-				}
-			}
-			else {
-				final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
-				if (etatRetournePrecedent != null) {
+		return di;
+	}
+
+	@Override
+	public DeclarationImpotOrdinaire update(long id, TypeDocument typeDocument, RegDate dateRetour) {
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (dateRetour != null) {
+			if (dateRetour != di.getDateRetour()) {
+				if (di.getDateRetour() != null) {
+					final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
 					etatRetournePrecedent.setAnnule(true);
 				}
+				final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
+				di.addEtat(etat);
+				evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
+
+				// Envoi du message de quittance au BAM
+				sendQuittancementToBam(di, dateRetour);
 			}
-
-			// UNIREG-1437 : on peut aussi changer le type de document
-			if (di.getTypeDeclaration() != typeDocument) {
-
-				// les types qui peuvent revenir de la view sont COMPLETE_LOCAL et VAUDTAX
-				// on ne va pas remplacer un COMPLETE_BATCH par un COMPLETE_LOCAL, cela ne sert à rien
-				if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
-					assigneModeleDocument(di, typeDocument);
-				}
+		}
+		else {
+			final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+			if (etatRetournePrecedent != null) {
+				etatRetournePrecedent.setAnnule(true);
 			}
 		}
 
+		// UNIREG-1437 : on peut aussi changer le type de document
+		if (di.getTypeDeclaration() != typeDocument) {
+
+			// les types qui peuvent revenir de la view sont COMPLETE_LOCAL et VAUDTAX
+			// on ne va pas remplacer un COMPLETE_BATCH par un COMPLETE_LOCAL, cela ne sert à rien
+			if (di.getTypeDeclaration() != TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH || typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+				assigneModeleDocument(di, typeDocument);
+			}
+		}
 		return di;
 	}
 
@@ -829,10 +731,10 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalSommationDI(DeclarationImpotDetailView bean) throws EditiqueException {
+	public EditiqueResultat envoieImpressionLocalSommationDI(Long id) throws EditiqueException {
 
 		final RegDate dateDuJour = RegDate.get();
-		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		final EtatDeclarationSommee etat = new EtatDeclarationSommee(dateDuJour, dateDuJour);
 		di.addEtat(etat);
 		diDAO.save(di);
@@ -846,16 +748,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new EditiqueException(e);
 		}
 	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalConfirmationDelai(DeclarationImpotDetailView diEditView, Long idDelai) throws EditiqueException {
-		return envoieImpressionLocalConfirmationDelai(diEditView.getId(), idDelai);
-	}
-
 
 	/**
 	 * {@inheritDoc}
@@ -1066,8 +958,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalTaxationOffice(DeclarationImpotDetailView bean) throws EditiqueException {
-		final DeclarationImpotOrdinaire di = diDAO.get(bean.getId());
+	public EditiqueResultat envoieImpressionLocalTaxationOffice(Long id) throws EditiqueException {
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
 		di.setDateImpressionChemiseTaxationOffice(DateHelper.getCurrentDate());
 
 		try {

@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.di.validator;
+package ch.vd.uniregctb.di;
 
 import java.util.List;
 
@@ -16,9 +16,10 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
+import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
@@ -27,41 +28,53 @@ import ch.vd.uniregctb.type.TypeDocument;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class DeclarationImpotEditValidatorTest extends WebTest {
-	private DeclarationImpotEditValidator validator;
-	private Long idCedi;
-	DeclarationImpotOrdinaireDAO diDAO;
+public class DeclarationImpotControllerValidatorTest extends WebTest {
+
+	private DeclarationImpotControllerValidator validator;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
-		validator = new DeclarationImpotEditValidator();
+		final DeclarationImpotOrdinaireDAO diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
+		validator = new DeclarationImpotControllerValidator();
+		validator.setTiersDAO(tiersDAO);
 		validator.setDiDAO(diDAO);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				CollectiviteAdministrative cedi = addCollAdm(MockCollectiviteAdministrative.CEDI);
-				idCedi = cedi.getId();
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				return null;
 			}
 		});
 	}
 
-
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testEditDelai() {
-		DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+	public void testEditDelai() throws Exception {
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique pp = addNonHabitant("Eric", "Masserey", date(1976, 3, 12), Sexe.MASCULIN);
+				return pp.getId();
+			}
+		});
+
+		ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView();
+		view.setTiersId(id);
+
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();
 		assertNotNull(allErrors);
-		assertEquals(1, allErrors.size());
+		assertEquals(2, allErrors.size());
 
-		final ObjectError error = allErrors.get(0);
-		assertEquals("error.delai.accorde.vide", error.getCode());
+		final ObjectError error0 = allErrors.get(0);
+		assertEquals("error.date.debut.vide", error0.getCode());
+
+		final ObjectError error1 = allErrors.get(1);
+		assertEquals("error.delai.accorde.vide", error1.getCode());
 	}
 
 	@Test
@@ -95,8 +108,9 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 				return null;
 			}
 		});
+
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
@@ -115,8 +129,6 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		final List<ObjectError> allErrors2 = errors2.getAllErrors();
 		assertNotNull(allErrors2);
 		assertEquals(0, allErrors2.size());
-
-
 	}
 
 	//SIFISC-90
@@ -152,8 +164,9 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 				return null;
 			}
 		});
+
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
@@ -163,7 +176,6 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		assertEquals(1, allErrors.size());
 		final ObjectError error = allErrors.get(0);
 		assertEquals("error.date.retour.anterieure.date.emission", error.getCode());
-
 	}
 
 
@@ -193,14 +205,15 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(gustave, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
 						declarationComplete2010);
 				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-				addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011,4, 28));
+				addEtatDeclarationSommee(declaration2010, date(2011, 4, 26), date(2011, 4, 28));
 				ids.declarationId = declaration2010.getId();
 
 				return null;
 			}
 		});
+
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		DeclarationImpotDetailView view = new DeclarationImpotDetailView();
+		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 4, 24));
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
@@ -219,56 +232,52 @@ public class DeclarationImpotEditValidatorTest extends WebTest {
 		final List<ObjectError> allErrors2 = errors2.getAllErrors();
 		assertNotNull(allErrors2);
 		assertEquals(0, allErrors2.size());
-
-
 	}
 
-//SIFISC-90
-@Test
-@Transactional(rollbackFor = Throwable.class)
-public void testCorrectionRetourAvecDateAnterieurSommation() throws Exception {
-	class Ids {
-		Long coridonId;
-		Long declarationId;
-	}
-
-	final Ids ids = new Ids();
-	doInNewTransaction(new TxCallback<Object>() {
-		@Override
-		public Object execute(TransactionStatus status) throws Exception {
-			final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
-			ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
-			addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
-			addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
-			addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
-			addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
-
-			// Un contribuable quelconque
-			Contribuable coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
-			ids.coridonId = coridon.getNumero();
-			addForPrincipal(coridon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
-			DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-					declarationComplete2010);
-			addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
-			addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28));
-			ids.declarationId = declaration2010.getId();
-
-			return null;
+	//SIFISC-90
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCorrectionRetourAvecDateAnterieurSommation() throws Exception {
+		class Ids {
+			Long coridonId;
+			Long declarationId;
 		}
-	});
-	//On tente de la quittancer au 20.06.2011 -> Blocage et message d'erreur
-	DeclarationImpotDetailView view = new DeclarationImpotDetailView();
-	view.setId(ids.declarationId);
-	view.setDateRetour(date(2011, 4, 26));
-	final Errors errors = new BeanPropertyBindingResult(view, "view");
-	validator.validate(view, errors);
-	final List<ObjectError> allErrors = errors.getAllErrors();
-	assertNotNull(allErrors);
-	assertEquals(1, allErrors.size());
-	final ObjectError error = allErrors.get(0);
-	assertEquals("error.date.retour.anterieure.date.emission.sommation", error.getCode());
 
-}
+		final Ids ids = new Ids();
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PeriodeFiscale periode2010 = addPeriodeFiscale(2010);
+				ModeleDocument declarationComplete2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2010);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2010);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2010);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2010);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2010);
 
+				// Un contribuable quelconque
+				Contribuable coridon = addNonHabitant("Coridon", "De la Mouette", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.coridonId = coridon.getNumero();
+				addForPrincipal(coridon, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				DeclarationImpotOrdinaire declaration2010 = addDeclarationImpot(coridon, periode2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						declarationComplete2010);
+				addEtatDeclarationEmise(declaration2010, date(2011, 1, 24));
+				addEtatDeclarationSommee(declaration2010, date(2011, 7, 26), date(2011, 7, 28));
+				ids.declarationId = declaration2010.getId();
 
+				return null;
+			}
+		});
+
+		//On tente de la quittancer au 20.06.2011 -> Blocage et message d'erreur
+		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
+		view.setId(ids.declarationId);
+		view.setDateRetour(date(2011, 4, 26));
+		final Errors errors = new BeanPropertyBindingResult(view, "view");
+		validator.validate(view, errors);
+		final List<ObjectError> allErrors = errors.getAllErrors();
+		assertNotNull(allErrors);
+		assertEquals(1, allErrors.size());
+		final ObjectError error = allErrors.get(0);
+		assertEquals("error.date.retour.anterieure.date.emission.sommation", error.getCode());
+	}
 }

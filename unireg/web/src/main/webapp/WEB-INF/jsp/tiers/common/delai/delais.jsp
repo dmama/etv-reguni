@@ -36,13 +36,10 @@
 			<c:if test="${page == 'visu' }">
 				<img src="../images/consult_off.gif" title="${delai.logModifUser}-<fmt:formatDate value="${delai.logModifDate}" pattern="dd.MM.yyyy HH:mm:ss"/>" />
 			</c:if>
-			<c:if test="${depuisTache == null}">
-				<c:if test="${command.allowedDelai}">
-					<c:if test="${page == 'edit' }">
-						<c:if test="${(!delai.annule) && (!delai.first)}">
-							<unireg:raccourciAnnuler onClick="javascript:Page_AnnulerDelai(${delai.id});" tooltip="Annuler le délai"/>
-						</c:if>
-					</c:if>
+			<c:if test="${depuisTache == null && command.allowedDelai && page == 'edit'}">
+				<c:if test="${(!delai.annule) && (!delai.first)}">
+					<unireg:linkTo name="&nbsp;" title="Annuler le délai"  confirm="Voulez-vous vraiment annuler ce delai ?"
+					               action="/decl/delai/annuler.do" method="post" params="{id:${delai.id}}" link_class="delete"/>
 				</c:if>
 			</c:if>
 		</display:column>
@@ -51,13 +48,5 @@
 		<display:setProperty name="paging.banner.one_item_found" value=""/>
 	</display:table>
 
-	<script type="text/javascript">
-		function Page_AnnulerDelai(idDelai) {
-				if(confirm('Voulez-vous vraiment annuler ce delai ?')) {
-					Form.doPostBack("theForm", "annulerDelai", idDelai);
-			 	}
-	 	}
-	</script>
-	
 </fieldset>
 </c:if>

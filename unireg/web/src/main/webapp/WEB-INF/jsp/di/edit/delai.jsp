@@ -60,12 +60,12 @@
 		<tr>
 			<td width="25%">&nbsp;</td>
 			<td width="25%">
-				<input type="button" name="actionDelai" id="imprimer" value="Imprimer" style="display:none;" onclick="javascript:ajouterDelaiAvecConfirmation('${command.dateExpedition}','${command}');">
-				<input type="button" name="actionDelai" id="ajouter" value="Ajouter" onclick="javascript:ajouterDelaiDI('${command.dateExpedition}','${command}');">
-				<input type="button" name="actionDelai" id="retour" value="Retour" style="display:none;" onclick="document.location.href='../di/edit.do?action=editdi&id=' + ${command.idDeclaration}">
+				<input type="button" name="actionDelai" id="imprimer" value="Imprimer" style="display:none;" onclick="ajouterDelaiAvecConfirmation('${command.dateExpedition}','${command}');">
+				<input type="button" name="actionDelai" id="ajouter" value="Ajouter" onclick="ajouterDelaiDI('${command.dateExpedition}','${command}');">
+				<input type="button" name="actionDelai" id="retour" value="Retour" style="display:none;" onclick="document.location.href='../decl/editer.do?id=' + ${command.idDeclaration}">
 			</td>
 			<td width="25%">
-				<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../di/edit.do?action=editdi&id=' + ${command.idDeclaration}">
+				<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../decl/editer.do?id=' + ${command.idDeclaration}">
 			<td width="25%">&nbsp;</td>
 		</tr>
 	</table>

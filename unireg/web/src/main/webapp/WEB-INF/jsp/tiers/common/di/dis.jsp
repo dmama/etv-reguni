@@ -48,7 +48,7 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!di.annule}">
-					<unireg:raccourciModifier link="edit.do?action=editdi&id=${di.id}" tooltip="Editer la déclaration"/>
+					<unireg:linkTo name="&nbsp;" action="/decl/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 				</c:if>
 				<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
 					<c:if test="${di.annule}">
