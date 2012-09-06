@@ -22,7 +22,7 @@ public class DeclarationListView {
 		this.dis = initDeclarations(ctb.getDeclarations(), messageSource);
 	}
 
-	private static List<DeclarationView> initDeclarations(Collection<Declaration> declarations, MessageSource messageSource) {
+	public static List<DeclarationView> initDeclarations(Collection<Declaration> declarations, MessageSource messageSource) {
 		if (declarations == null || declarations.isEmpty()) {
 			return Collections.emptyList();
 		}

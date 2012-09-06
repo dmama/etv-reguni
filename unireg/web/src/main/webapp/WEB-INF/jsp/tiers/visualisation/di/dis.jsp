@@ -19,13 +19,13 @@
 					${di.periodeFiscale}
 				</display:column>
 				<display:column sortable ="true" titleKey="label.periode.imposition" sortProperty="dateDebutPeriodeImposition">
-					<fmt:formatDate value="${di.dateDebutPeriodeImposition}" pattern="dd.MM.yyyy"/>&nbsp;-&nbsp;<fmt:formatDate value="${di.dateFinPeriodeImposition}" pattern="dd.MM.yyyy"/>
+					<unireg:regdate regdate="${di.dateDebut}"/>&nbsp;-&nbsp;<unireg:regdate regdate="${di.dateFin}"/>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiAccorde">
-					<fmt:formatDate value="${di.delaiAccorde}" pattern="dd.MM.yyyy"/>
+					<unireg:regdate regdate="${di.delaiAccorde}"/>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
-					<fmt:formatDate value="${di.dateRetour}" pattern="dd.MM.yyyy"/>
+					<unireg:regdate regdate="${di.dateRetour}"/>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.etat.avancement" >
 					<fmt:message key="option.etat.avancement.${di.etat}" />

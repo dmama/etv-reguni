@@ -24,9 +24,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -580,13 +578,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotDetailView view = new DeclarationImpotDetailView();
-				view.setContribuable(new TiersGeneralView(ids.pp));
-				view.setId(ids.di);
-				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-				view.setDateRetour(date(2011, 4, 12));
-				manager.save(view.getContribuable().getNumero(), view.getId(), view.getRegDateDebutPeriodeImposition(), view.getRegDateFinPeriodeImposition(), view.getTypeDeclarationImpot(), view.getTypeAdresseRetour(),
-						view.getRegDelaiAccorde(), view.getRegDateRetour());
+				manager.save(ids.pp, ids.di, date(2010, 1, 1), date(2010, 12, 31), TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, RegDate.get(), date(2011, 4, 12));
 				return null;
 			}
 		});
@@ -645,14 +637,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotDetailView view = new DeclarationImpotDetailView();
-				view.setTypeAdresseRetour(TypeAdresseRetour.CEDI);
-				view.setContribuable(new TiersGeneralView(ppId));
-				view.setDateDebutPeriodeImposition(debutAnneeCourante.asJavaDate());
-				view.setDateFinPeriodeImposition(finAnneeCourante.asJavaDate());
-				view.setTypeDeclarationImpot(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL);
-				manager.save(view.getContribuable().getNumero(), view.getId(), view.getRegDateDebutPeriodeImposition(), view.getRegDateFinPeriodeImposition(), view.getTypeDeclarationImpot(), view.getTypeAdresseRetour(),
-						view.getRegDelaiAccorde(), view.getRegDateRetour());
+				manager.save(ppId, null, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
 				return null;
 			}
 		});

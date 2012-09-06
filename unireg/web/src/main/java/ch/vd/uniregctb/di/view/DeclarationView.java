@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.utils.WebContextUtils;
  * Vue d'une déclaration d'impôt (ordinaire ou source).
  */
 @SuppressWarnings("UnusedDeclaration")
-public class DeclarationView {
+public class DeclarationView implements Annulable {
 
 	private long id;
 	private Long tiersId;
@@ -142,6 +143,7 @@ public class DeclarationView {
 		return sourceRetour;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.individu.IndividuView;
@@ -69,7 +69,7 @@ public class TiersView {
 
 	private List<ListeRecapDetailView> lrs;
 
-	private List<DeclarationImpotDetailView> dis;
+	private List<DeclarationView> dis;
 
 	private ForFiscalView forsPrincipalActif;
 
@@ -315,11 +315,11 @@ public class TiersView {
 		this.adressesEnErreurMessage = adressesEnErreurMessage;
 	}
 
-	public List<DeclarationImpotDetailView> getDis() {
+	public List<DeclarationView> getDis() {
 		return dis;
 	}
 
-	public void setDis(List<DeclarationImpotDetailView> dis) {
+	public void setDis(List<DeclarationView> dis) {
 		this.dis = dis;
 	}
 

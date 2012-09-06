@@ -27,10 +27,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.WebParamPagination;
-import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
+import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -127,7 +124,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			if (tiers instanceof Contribuable) {
 				final Contribuable contribuable = (Contribuable) tiers;
 				tiersVisuView.setDebiteurs(getDebiteurs(contribuable));
-				tiersVisuView.setDis(getDeclarationsImpotOrdinaire(contribuable));
+				tiersVisuView.setDis(DeclarationListView.initDeclarations(contribuable.getDeclarations(), messageSource));
 				tiersVisuView.setMouvements(getMouvements(contribuable));
 				setForsFiscaux(tiersVisuView, contribuable);
 
@@ -204,28 +201,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		allowedModif.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
 
 		return allowedModif;
-	}
-
-	/**
-	 * Mise à jour de la vue Declaration Impot Ordinaire
-	 *
-	 * @param contribuable
-	 * @return
-	 */
-	private List<DeclarationImpotDetailView> getDeclarationsImpotOrdinaire(Contribuable contribable) {
-
-		List<DeclarationImpotDetailView> disView = new ArrayList<DeclarationImpotDetailView>();
-		Set<Declaration> declarations = contribable.getDeclarations();
-		for (Declaration declaration : declarations) {
-			if (declaration instanceof DeclarationImpotOrdinaire) {
-				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) declaration;
-				DeclarationImpotDetailView diView = new DeclarationImpotDetailView();
-				diView.fill(di);
-				disView.add(diView);
-			}
-		}
-		Collections.sort(disView, new DeclarationImpotDetailComparator());
-		return disView;
 	}
 
 	/**
