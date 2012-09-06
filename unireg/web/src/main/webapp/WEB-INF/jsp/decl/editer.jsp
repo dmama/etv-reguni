@@ -170,7 +170,7 @@
 							return false;
 						}
 					}
-					document.location.href='<c:url value="/di/edit.do"/>?action=listdis&numero=' + numero ;
+					document.location.href='<c:url value="/decl/list.do"/>?tiersId=' + numero ;
 					return true;
 				}
 

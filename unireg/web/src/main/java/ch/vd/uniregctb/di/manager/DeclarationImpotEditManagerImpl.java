@@ -26,7 +26,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
@@ -48,10 +47,7 @@ import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailComparator;
-import ch.vd.uniregctb.di.view.DeclarationImpotDetailView;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
-import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.di.view.ModeleDocumentView;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
@@ -59,7 +55,6 @@ import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.jms.BamMessageHelper;
 import ch.vd.uniregctb.jms.BamMessageSender;
@@ -75,7 +70,6 @@ import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Qualification;
@@ -395,26 +389,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), selectedTypeDocument, annexes);
 	}
 
-	/**
-	 * Alimente la vue DeclarationImpotListView en fonction d'un contribuable
-	 *
-	 * @throws AdressesResolutionException
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public void findByNumero(Long numero, DeclarationImpotListView diListView) {
-
-		diListView.setContribuable(creerCtbDI(numero));
-		List<DeclarationImpotDetailView> disView = new ArrayList<DeclarationImpotDetailView>();
-		List<DeclarationImpotOrdinaire> dis = diDAO.findByNumero(numero);
-		for (DeclarationImpotOrdinaire di : dis) {
-			DeclarationImpotDetailView diView = new DeclarationImpotDetailView(di);
-			disView.add(diView);
-		}
-		Collections.sort(disView, new DeclarationImpotDetailComparator());
-		diListView.setDis(disView);
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public Long getTiersId(Long idDI) {
@@ -705,26 +679,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	/**
-	 * Alimente la vue contribuable pour la DI
-	 *
-	 * @param numero
-	 * @return
-	 * @throws AdressesResolutionException
-	 */
-	@Override
-	@Transactional(readOnly = true)
-	public TiersGeneralView creerCtbDI(Long numero) {
-
-		Tiers tiers = tiersDAO.get(numero);
-		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
-		}
-		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
-
-		return tiersGeneralView;
-	}
-
-	/**
 	 * Sommer une Declaration Impot
 	 *
 	 * @throws EditiqueException
@@ -970,15 +924,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			throw new EditiqueException(e);
 		}
 	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void maintenirDI(Long idTache) {
-		Tache tache = tacheDAO.get(idTache);
-		tache.setEtat(TypeEtatTache.TRAITE);
-
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public DelaiDeclarationView getDelaiView(Long idDelai) {

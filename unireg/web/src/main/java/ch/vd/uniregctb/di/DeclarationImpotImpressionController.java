@@ -22,7 +22,7 @@ import ch.vd.uniregctb.tracing.TracingManager;
 
 public class DeclarationImpotImpressionController extends AbstractDeclarationImpotController {
 
-	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotEditController.class);
+	protected static final Logger LOGGER = Logger.getLogger(DeclarationImpotImpressionController.class);
 
 	public final static String DI_ID_PARAMETER_NAME = "id";
 

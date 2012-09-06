@@ -9,15 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.di.view.DeclarationImpotImpressionView;
-import ch.vd.uniregctb.di.view.DeclarationImpotListView;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueResultat;
-import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
@@ -48,12 +45,6 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(readOnly = true)
 	public Long getTiersId(Long idDI);
-
-	/**
-	 * Alimente la vue en fonction d'un contribuable
-	 */
-	@Transactional(readOnly = true)
-	void findByNumero(Long numero, DeclarationImpotListView view);
 
 	/**
 	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs déclarations n'ont pas été envoyées durant les années précédentes,
@@ -109,15 +100,6 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
 	                                         RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception;
-
-	/**
-	 * Mintient une DI et passe la tâche à traitée
-	 *
-	 * @param idTache
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	void maintenirDI(Long idTache);
-
 	/**
 	 * Annule un delai
 	 *
@@ -133,16 +115,6 @@ public interface DeclarationImpotEditManager {
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	Long saveDelai(DelaiDeclarationView delaiView);
-
-	/**
-	 * Alimente la vue contribuable pour la DI
-	 *
-	 * @param numero
-	 * @return
-	 * @throws AdressesResolutionException
-	 */
-	@Transactional(readOnly = true)
-	TiersGeneralView creerCtbDI(Long numero) throws AdressesResolutionException;
 
 	/**
 	 * Alimente la vue du controller DeclarationImpotImpressionController

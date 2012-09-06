@@ -371,12 +371,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition des DI d'un contribuable
 	@Test
 	public void testDiEditContribuable() throws Exception {
-		assertPage("/di/edit.do?action=listdis&numero=86006202", "Edition des déclarations d'impôt d'un contribuable");
+		assertPage("/decl/list.do?tiersId=86006202", "Edition des déclarations d'impôt d'un contribuable");
 	}
 
 	@Test
 	public void testDiEditContribuableInexistant() throws Exception {
-		assertPage("/di/edit.do?action=listdis&numero=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/decl/list.do?tiersId=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
 	}
 
 	// Page d'édition d'un délai d'une DI

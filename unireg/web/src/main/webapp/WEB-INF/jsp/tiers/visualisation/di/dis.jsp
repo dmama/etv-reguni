@@ -5,19 +5,49 @@
 	<table border="0">
 		<tr><td>
 			<c:if test="${empty param['message'] && empty param['retour']}">
-				<unireg:raccourciModifier link="../di/edit.do?action=listdis&numero=${command.tiers.numero}" tooltip="Modifier les DI" display="label.bouton.modifier"/>
-			</c:if>	
+				<unireg:linkTo name="&nbsp;Modifier" title="Modifier les DIs" action="/decl/list.do" params="{tiersId:${command.tiers.numero}}" link_class="edit"/>
+			</c:if>
 		</td></tr>
 	</table>
 </c:if>
 <c:if test="${not empty command.dis}">
-<fieldset>
-	<legend><span><fmt:message key="label.declarations.impot" /></span></legend>
-
-	<jsp:include page="../../common/di/dis.jsp">
-		<jsp:param name="page" value="visu"/>
-	</jsp:include>
-
-</fieldset>
+	<fieldset>
+		<legend><span><fmt:message key="label.declarations.impot" /></span></legend>
+		<c:if test="${not empty command.dis}">
+			<display:table name="command.dis" id="di" pagesize="10" requestURI="visu.do" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
+				<display:column sortable="true" titleKey="label.periode.fiscale">
+					${di.periodeFiscale}
+				</display:column>
+				<display:column sortable ="true" titleKey="label.periode.imposition" sortProperty="dateDebutPeriodeImposition">
+					<fmt:formatDate value="${di.dateDebutPeriodeImposition}" pattern="dd.MM.yyyy"/>&nbsp;-&nbsp;<fmt:formatDate value="${di.dateFinPeriodeImposition}" pattern="dd.MM.yyyy"/>
+				</display:column>
+				<display:column sortable ="true" titleKey="label.date.delai.accorde" sortProperty="delaiAccorde">
+					<fmt:formatDate value="${di.delaiAccorde}" pattern="dd.MM.yyyy"/>
+				</display:column>
+				<display:column sortable ="true" titleKey="label.date.retour" sortProperty="dateRetour">
+					<fmt:formatDate value="${di.dateRetour}" pattern="dd.MM.yyyy"/>
+				</display:column>
+				<display:column sortable ="true" titleKey="label.etat.avancement" >
+					<fmt:message key="option.etat.avancement.${di.etat}" />
+					<c:if test="${di.dateRetour != null}">
+						<c:if test="${di.sourceRetour == null}">
+							(<fmt:message key="option.source.quittancement.UNKNOWN" />)
+						</c:if>
+						<c:if test="${di.sourceRetour != null}">
+							(<fmt:message key="option.source.quittancement.${di.sourceRetour}" />)
+						</c:if>
+					</c:if>
+				</display:column>
+				<display:column style="action">
+					<c:if test="${!di.annule}">
+						<a href="#" class="detail" title="Détails de la déclaration" onclick="Decl.open_details_di(<c:out value="${di.id}"/>); return false;">&nbsp;</a>
+					</c:if>
+					<unireg:consulterLog entityNature="DI" entityId="${di.id}"/>
+				</display:column>
+				<display:setProperty name="paging.banner.all_items_found" value=""/>
+				<display:setProperty name="paging.banner.one_item_found" value=""/>
+			</display:table>
+		</c:if>
+	</fieldset>
 </c:if>
 <!-- Fin DI -->

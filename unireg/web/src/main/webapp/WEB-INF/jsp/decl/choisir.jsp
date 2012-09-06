@@ -29,7 +29,7 @@
 			
 			<!-- Debut boutons -->
 			<input type="button" onclick="return creerDi();" value="Créer"/>
-			<unireg:buttonTo name="Annuler" action="/di/edit.do" method="get" params="{action:'listdis',numero:${tiersId}}"/>
+			<unireg:buttonTo name="Annuler" action="/decl/list.do" method="get" params="{tiersId:${tiersId}}"/>
 			<!-- Fin boutons -->
 		</form:form>
 		

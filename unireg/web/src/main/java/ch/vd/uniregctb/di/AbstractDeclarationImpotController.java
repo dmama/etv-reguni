@@ -84,16 +84,6 @@ public class AbstractDeclarationImpotController extends AbstractSimpleFormEditiq
 	public static final String TYPE_ADRESSE_RETOUR_MAP_NAME = "typesAdresseRetour";
 
 	/**
-	 * Le nom de l'objet de criteres de recherche
-	 */
-	public static final String DI_CRITERIA_NAME = "diCriteria";
-
-	/**
-	 * Le nom de l'attribut utilise pour la liste.
-	 */
-	public static final String DI_LIST_ATTRIBUTE_NAME = "dis";
-
-	/**
 	 * Le nom du parametre action pour gerer bouton effacer
 	 */
 	public final static String ACTION_PARAMETER_NAME = "action";

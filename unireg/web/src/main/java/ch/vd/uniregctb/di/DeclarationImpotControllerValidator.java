@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
+import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -41,7 +42,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz);
+		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz) || DeclarationListView.class.equals(clazz);
 	}
 
 	@Override

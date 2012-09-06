@@ -166,7 +166,6 @@
 				<entry key="/fusion/recap.do" value-ref="fusionRecapController" />
 				-->
 				<!-- DI -->
-				<entry key="/di/edit.do" value-ref="diEditController" />
 				<entry key="/di/delai.do" value-ref="diEditDelaiController" />
 				<entry key="/di/impression.do" value-ref="diImpressionController" />
 				<!-- Mouvements de dossier -->

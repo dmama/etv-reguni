@@ -45,6 +45,7 @@ import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
+import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
@@ -141,6 +142,34 @@ public class DeclarationImpotController {
 	}
 
 	/**
+	 * Liste les déclarations d'impôt d'un contribuable
+	 * @param tiersId le numéro d'un contribuable
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/decl/list.do", method = RequestMethod.GET)
+	public String list(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isAnyGranted(Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
+		if (tiers == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (!(tiers instanceof Contribuable)) {
+			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");
+		}
+		final Contribuable ctb = (Contribuable) tiers;
+
+		// vérification des droits en écriture
+		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+
+		model.addAttribute("command", new DeclarationListView(ctb, messageSource));
+		return "/decl/lister";
+	}
+
+	/**
 	 * @param id l'id de la déclaration d'impôt ordinaire
 	 * @return les détails d'une déclaration d'impôt au format JSON
 	 */
@@ -203,7 +232,7 @@ public class DeclarationImpotController {
 			return "redirect:/tache/list.do";
 		}
 		else {
-			return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+			return "redirect:/decl/list.do?tiersId=" + tiersId;
 		}
 	}
 
@@ -243,7 +272,7 @@ public class DeclarationImpotController {
 		final Contribuable tiers = (Contribuable) di.getTiers();
 		diService.desannulationDI(tiers, di, RegDate.get());
 
-		return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+		return "redirect:/decl/list.do?tiersId=" + tiersId;
 	}
 
 	/**
@@ -311,7 +340,7 @@ public class DeclarationImpotController {
 			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
 		if (!(tiers instanceof Contribuable)) {
-			throw new IllegalArgumentException("Le tiers spécifié n'est pas une personne physique.");
+			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");
 		}
 		final Contribuable ctb = (Contribuable) tiers;
 
@@ -388,7 +417,7 @@ public class DeclarationImpotController {
 		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
 			@Override
 			public String doJob(EditiqueResultat resultat) {
-				return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+				return "redirect:/decl/list.do?tiersId=" + tiersId;
 			}
 		};
 
@@ -396,7 +425,7 @@ public class DeclarationImpotController {
 			@Override
 			public String doJob(EditiqueResultat resultat) {
 				Flash.error(String.format("%s Veuillez imprimer un duplicata de la déclaration d'impôt.", EditiqueErrorHelper.getMessageErreurEditique(resultat)));
-				return "redirect:/di/edit.do?action=listdis&numero=" + tiersId;
+				return "redirect:/decl/list.do?tiersId=" + tiersId;
 			}
 		};
 
@@ -502,7 +531,7 @@ public class DeclarationImpotController {
 
 		manager.update(view.getId(), view.getTypeDocument(), view.getDateRetour());
 
-		return "redirect:/di/edit.do?action=listdis&numero=" + ctb.getId();
+		return "redirect:/decl/list.do?tiersId=" + ctb.getId();
 	}
 
 	/**
