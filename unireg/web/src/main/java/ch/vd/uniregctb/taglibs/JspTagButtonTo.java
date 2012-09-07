@@ -21,6 +21,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 
 	private static final long serialVersionUID = 4115565970912710828L;
 
+	private String id;
 	private String name;
 	private String action;
 	private String params;
@@ -28,6 +29,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 	private String confirm;
 	private String title;
 	private String button_class = "button_to";
+	private boolean visible = true;
 	private boolean disabled = false;
 
 	private String contextPath;
@@ -47,6 +49,10 @@ public class JspTagButtonTo extends BodyTagSupport {
 		catch (Exception ex) {
 			throw new JspTagException(ex);
 		}
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -109,6 +115,10 @@ public class JspTagButtonTo extends BodyTagSupport {
 		return disabled;
 	}
 
+	public void setVisible(boolean visible) {
+		this.visible = visible;
+	}
+
 	public void setDisabled(boolean disabled) {
 		this.disabled = disabled;
 	}
@@ -131,7 +141,14 @@ public class JspTagButtonTo extends BodyTagSupport {
 		}
 
 		final StringBuilder sb = new StringBuilder();
-		sb.append("<input type=\"button\" value=\"").append(HtmlUtils.htmlEscape(name)).append("\" class=\"").append(button_class).append("\"");
+		sb.append("<input");
+		if (StringUtils.isNotBlank(id)) {
+			sb.append(" id=\"").append(id).append("\"");
+		}
+		if (!visible) {
+			sb.append(" style=\"display:none;\"");
+		}
+		sb.append(" type=\"button\" value=\"").append(HtmlUtils.htmlEscape(name)).append("\" class=\"").append(button_class).append("\"");
 		if (StringUtils.isNotBlank(title)) {
 			sb.append(" title=\"").append(HtmlUtils.htmlEscape((title))).append("\"");
 		}

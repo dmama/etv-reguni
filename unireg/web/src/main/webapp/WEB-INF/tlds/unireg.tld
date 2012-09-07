@@ -482,10 +482,16 @@
 		<body-content>JSP</body-content>
 		<description>Affiche un bouton qui soumet un formulaire vers une autre page lorsqu'il est cliqué.</description>
 		<attribute>
+			<name>id</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>L'id du bouton.</description>
+		</attribute>
+		<attribute>
 			<name>name</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le texte du button.</description>
+			<description>Le texte du bouton.</description>
 		</attribute>
 		<attribute>
 			<name>action</name>
@@ -515,13 +521,25 @@
 			<name>title</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>Le titre du button (tooltip).</description>
+			<description>Le titre du bouton (tooltip).</description>
 		</attribute>
 		<attribute>
 			<name>button_class</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>La classe CSS du bouton.</description>
+		</attribute>
+		<attribute>
+			<name>visible</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai (défaut) si le bouton est visible; faux pour le cacher.</description>
+		</attribute>
+		<attribute>
+			<name>disabled</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Vrai si le bouton est désactivé; faux (défaut) pour l'activer.</description>
 		</attribute>
 	</tag>
 

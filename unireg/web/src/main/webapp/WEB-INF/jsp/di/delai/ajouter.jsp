@@ -34,7 +34,7 @@
 								<jsp:param name="path" value="dateDemande"/>
 								<jsp:param name="id" value="dateDemande"/>
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color:red;">*</span>
 						</td>
 						<td><fmt:message key="label.date.delai.accorde"/>&nbsp;:</td>
 						<td>
@@ -42,7 +42,7 @@
 								<jsp:param name="path" value="delaiAccordeAu"/>
 								<jsp:param name="id" value="delaiAccordeAu"/>
 							</jsp:include>
-							<FONT COLOR="#FF0000">*</FONT>
+							<span style="color:red;">*</span>
 						</td>
 					</tr>
 					<unireg:nextRowClass reset="0"/>
@@ -63,10 +63,10 @@
 					<td width="25%">&nbsp;</td>
 					<td width="25%">
 						<input type="button" id="ajouter" value="Ajouter" onclick="return ajouterDelai(this);">
-						<input type="button" id="retour" value="Retour" style="display:none;" onclick="document.location.href='../editer.do?id=' + ${command.idDeclaration}">
+						<unireg:buttonTo id="retour" name="Retour" visible="false" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
 					</td>
 					<td width="25%">
-						<input type="button" id="annuler" value="Annuler" onclick="document.location.href='../editer.do?id=' + ${command.idDeclaration}">
+						<unireg:buttonTo id="annuler" name="Annuler" action="/di/editer.do" method="get" params="{id:${command.idDeclaration}}"/>
 					<td width="25%">&nbsp;</td>
 				</tr>
 			</table>
