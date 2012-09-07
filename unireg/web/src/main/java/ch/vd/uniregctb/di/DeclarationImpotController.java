@@ -147,6 +147,7 @@ public class DeclarationImpotController {
 		binder.registerCustomEditor(RegDate.class, "dateDebutPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateFinPeriodeImposition", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "dateRetour", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
+		// champs du formulaire d'ajout de délai à une déclaration
 		binder.registerCustomEditor(RegDate.class, "dateDemande", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 		binder.registerCustomEditor(RegDate.class, "delaiAccordeAu", new RegDateEditor(true, false, false, RegDateHelper.StringFormat.DISPLAY));
 	}
@@ -607,21 +608,8 @@ public class DeclarationImpotController {
 
 		final EditiqueResultat resultat = manager.envoieImpressionLocalSommationDI(id);
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
+		final RedirectEditDI inbox = new RedirectEditDI(id);
+		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "sommationDi", inbox, erreur, erreur);
 	}
 
@@ -659,21 +647,8 @@ public class DeclarationImpotController {
 
 		final EditiqueResultat resultat = manager.envoieImpressionLocalTaxationOffice(id);
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
+		final RedirectEditDI inbox = new RedirectEditDI(id);
+		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "to", inbox, erreur, erreur);
 	}
 
@@ -738,21 +713,8 @@ public class DeclarationImpotController {
 
 		final EditiqueResultat resultat = manager.envoieImpressionLocalDuplicataDI(view.getIdDI(), view.getSelectedTypeDocument(), view.getSelectedAnnexes());
 
-		final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
-		final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-			@Override
-			public String doJob(EditiqueResultat resultat) {
-				Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
-				return "redirect:/decl/editer.do?id=" + id;
-			}
-		};
-
+		final RedirectEditDI inbox = new RedirectEditDI(id);
+		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "di", inbox, erreur, erreur);
 	}
 
@@ -857,25 +819,42 @@ public class DeclarationImpotController {
 			// On imprime le duplicata
 			final EditiqueResultat resultat = manager.envoieImpressionLocalConfirmationDelai(id, idDelai);
 
-			final RetourEditiqueControllerHelper.TraitementRetourEditique inbox = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-				@Override
-				public String doJob(EditiqueResultat resultat) {
-					return "redirect:/decl/editer.do?id=" + id;
-				}
-			};
-
-			final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
-				@Override
-				public String doJob(EditiqueResultat resultat) {
-					Flash.error("La communication avec l'éditique a échoué. Veuillez recommencer.");
-					return "redirect:/decl/editer.do?id=" + id;
-				}
-			};
-
+			final RedirectEditDI inbox = new RedirectEditDI(id);
+			final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
 			return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "delai", inbox, erreur, erreur);
 		}
 		else {
 			// Pas de duplicata -> on retourne à l'édition de la DI
+			return "redirect:/decl/editer.do?id=" + id;
+		}
+	}
+
+	private static class RedirectEditDI implements RetourEditiqueControllerHelper.TraitementRetourEditique {
+		private final long id;
+
+		public RedirectEditDI(long id) {
+			this.id = id;
+		}
+
+		@Override
+		public String doJob(EditiqueResultat resultat) {
+			return "redirect:/decl/editer.do?id=" + id;
+		}
+	}
+
+	private static class RedirectEditDIApresErreur implements RetourEditiqueControllerHelper.TraitementRetourEditique {
+		private final long id;
+		private final MessageSource messageSource;
+
+		public RedirectEditDIApresErreur(long id, MessageSource messageSource) {
+			this.id = id;
+			this.messageSource = messageSource;
+		}
+
+		@Override
+		public String doJob(EditiqueResultat resultat) {
+			final String message = messageSource.getMessage("global.error.communication.editique", null, WebContextUtils.getDefaultLocale());
+			Flash.error(message);
 			return "redirect:/decl/editer.do?id=" + id;
 		}
 	}

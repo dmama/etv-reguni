@@ -13,6 +13,9 @@
 	</tiles:put>
 	<tiles:put name="body">
 		<form:form method="post" name="theForm" id="formAddDelai" action="ajouter.do">
+
+			<form:errors cssClass="error"/>
+
 			<form:hidden path="idDeclaration" value="${command.idDeclaration}"/>
 			<fieldset>
 				<legend><span><fmt:message key="label.delais"/></span></legend>
