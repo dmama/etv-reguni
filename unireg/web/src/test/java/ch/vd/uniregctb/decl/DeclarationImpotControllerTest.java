@@ -69,7 +69,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("delaiRetour", "60");
 		request.addParameter("imprimable", "false");
-		request.setRequestURI("/decl/imprimer.do");
+		request.setRequestURI("/di/imprimer.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -111,7 +111,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("typeAdresseRetour", TypeAdresseRetour.CEDI.toString());
 		request.addParameter("delaiAccorde", "15.10.2012");
-		request.setRequestURI("/decl/imprimer.do");
+		request.setRequestURI("/di/imprimer.do");
 
 		// exécution de la requête
 		final ModelAndView results = handle(request, response);

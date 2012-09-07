@@ -14,7 +14,7 @@
 			<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PP">
 				<table border="0">
 					<tr><td>
-						<unireg:linkTo name="&nbsp;Ajouter" action="/decl/choisir.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
+						<unireg:linkTo name="&nbsp;Ajouter" action="/di/choisir.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
 					</td></tr>
 				</table>
 			</authz:authorize>
@@ -51,11 +51,11 @@
 					</display:column>
 					<display:column style="action">
 						<c:if test="${!di.annule}">
-							<unireg:linkTo name="&nbsp;" action="/decl/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
+							<unireg:linkTo name="&nbsp;" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 						</c:if>
 						<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
 							<c:if test="${di.annule}">
-								<unireg:linkTo name="" title="Désannuler la déclaration" action="/decl/desannuler.do" method="post" params="{id:${di.id}}"
+								<unireg:linkTo name="" title="Désannuler la déclaration" action="/di/desannuler.do" method="post" params="{id:${di.id}}"
 								               confirm="Voulez-vous vraiment désannuler cette déclaration d'impôt ?" link_class="undelete" />
 							</c:if>
 						</authz:authorize>

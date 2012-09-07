@@ -82,7 +82,7 @@
 			<!-- Fin  Declaration impot -->
 
 			<!-- Debut Delais -->
-			<jsp:include page="../di/edit/delais.jsp"/>
+			<jsp:include page="delai/lister.jsp"/>
 			<!-- Fin Delais -->
 		
 			<!-- Debut Boutons -->
@@ -106,7 +106,7 @@
 							var dialog = Dialog.create_dialog_div('imprime-di-dialog');
 
 							// charge le contenu de la boîte de dialogue
-							dialog.load(App.curl('/decl/duplicata.do') + '?id=' + id + '&' + new Date().getTime());
+							dialog.load(App.curl('/di/duplicata.do') + '?id=' + id + '&' + new Date().getTime());
 
 							dialog.dialog({
 								title: "Impression d'un duplicata",
@@ -124,7 +124,7 @@
 											}
 										});
 										var form = dialog.find('#formImpression');
-										form.attr('action', App.curl('/decl/duplicata.do'));
+										form.attr('action', App.curl('/di/duplicata.do'));
 										form.submit();
 									},
 									"Fermer": function() {
@@ -144,13 +144,13 @@
 
 			<c:if test="${command.depuisTache}">
 				<unireg:buttonTo name="Retour" action="/tache/list.do" method="get" />
-				<unireg:buttonTo name="Maintenir déclaration" action="/decl/maintenir.do" method="post" params="{tacheId:${command.tacheId}}"/>
+				<unireg:buttonTo name="Maintenir déclaration" action="/di/maintenir.do" method="post" params="{tacheId:${command.tacheId}}"/>
 			</c:if>
 
 			<!-- Annulation DI -->
 			<c:if test="${command.allowedSommation}">
 				<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"
-				                 action="/decl/annuler.do" method="post" params='{id:${command.id},depuisTache:${command.depuisTache}}'/>
+				                 action="/di/annuler.do" method="post" params='{id:${command.id},depuisTache:${command.depuisTache}}'/>
 			</c:if>
 
 		<!-- Fin Boutons -->
@@ -170,7 +170,7 @@
 							return false;
 						}
 					}
-					document.location.href='<c:url value="/decl/list.do"/>?tiersId=' + numero ;
+					document.location.href='<c:url value="/di/list.do"/>?tiersId=' + numero ;
 					return true;
 				}
 
@@ -178,7 +178,7 @@
 					if(!confirm('Voulez-vous vraiment sommer cette déclaration d\'impôt ?')) {
 						return false;
 					}
-					Form.dynamicSubmit('post', App.curl('/decl/sommer.do'), {id:${command.id}});
+					Form.dynamicSubmit('post', App.curl('/di/sommer.do'), {id:${command.id}});
 					button.disabled = true;
 					return true;
 			    }
@@ -186,7 +186,7 @@
 			    function Page_ImprimerTO(button) {
 					if(!confirm('Voulez-vous vraiment imprimer cette taxation d\'office ?'))
 						return false;
-				    Form.dynamicSubmit('post', App.curl('/decl/imprimerTO.do'), {id:${command.id}});
+				    Form.dynamicSubmit('post', App.curl('/di/imprimerTO.do'), {id:${command.id}});
 				    button.disabled = true;
 				    return true;
 			    }

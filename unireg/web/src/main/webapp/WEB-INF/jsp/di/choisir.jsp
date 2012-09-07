@@ -7,9 +7,6 @@
 		<unireg:nextRowClass reset="1"/>
 		
 		<form:form name="theForm">
-			<input type="hidden"  name="__TARGET__" value="">
-			<input type="hidden"  name="__EVENT_ARGUMENT__" value="">
-			
 			<fieldset class="select-di">
 				<legend><span><fmt:message key="label.di.periode.selection" /></span></legend>
 			
@@ -29,7 +26,7 @@
 			
 			<!-- Debut boutons -->
 			<input type="button" onclick="return creerDi();" value="Créer"/>
-			<unireg:buttonTo name="Annuler" action="/decl/list.do" method="get" params="{tiersId:${tiersId}}"/>
+			<unireg:buttonTo name="Annuler" action="/di/list.do" method="get" params="{tiersId:${tiersId}}"/>
 			<!-- Fin boutons -->
 		</form:form>
 		
@@ -44,7 +41,7 @@
 					return false;
 				}
 				var dates = selection.split('-');
-				window.location.href='<c:url value="/decl/imprimer.do?tiersId=${tiersId}"/>&debut=' + dates[0] + '&fin=' + dates[1];
+				window.location.href='<c:url value="/di/imprimer.do?tiersId=${tiersId}"/>&debut=' + dates[0] + '&fin=' + dates[1];
 				return false;
 			}
 		</script>

@@ -136,7 +136,7 @@
 						}
 					}
 				</c:if>
-				document.location.href='<c:url value="/decl/list.do"/>?tiersId=' + numero ;
+				document.location.href='<c:url value="/di/list.do"/>?tiersId=' + numero ;
 				return true;
 			}
 			

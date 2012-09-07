@@ -2537,7 +2537,7 @@ var Decl = {
 	 */
 	open_details_di: function(diId) {
 
-		$.getJSON(App.curl("/decl/details.do?id=") + diId + "&" + new Date().getTime(), function(di) {
+		$.getJSON(App.curl("/di/details.do?id=") + diId + "&" + new Date().getTime(), function(di) {
 			if (di) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
 				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + di.periodeFiscale + '</td>';
@@ -2577,7 +2577,7 @@ var Decl = {
 	 */
 	open_details_lr: function(lrId) {
 
-		$.getJSON(App.curl("/decl/details.do?id=") + lrId + "&" + new Date().getTime(), function(lr) {
+		$.getJSON(App.curl("/di/details.do?id=") + lrId + "&" + new Date().getTime(), function(lr) {
 			if (lr) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la liste récapitulative</span></legend>';
 				info += '<table><tr class="odd"><td width="50%">Date début période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateDebut) + '</td></tr>';

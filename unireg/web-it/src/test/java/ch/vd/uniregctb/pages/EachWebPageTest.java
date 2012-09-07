@@ -360,45 +360,45 @@ public class EachWebPageTest extends WebitTest {
 	// Page d'édition d'une DI
 	@Test
 	public void testDiEdit() throws Exception {
-		assertPage("/decl/editer.do?id=2", "Edition de la déclaration d'impôt");
+		assertPage("/di/editer.do?id=2", "Edition de la déclaration d'impôt");
 	}
 
 	@Test
 	public void testDiEditInexistante() throws Exception {
-		assertPage("/decl/editer.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/editer.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	// Page d'édition des DI d'un contribuable
 	@Test
 	public void testDiEditContribuable() throws Exception {
-		assertPage("/decl/list.do?tiersId=86006202", "Edition des déclarations d'impôt d'un contribuable");
+		assertPage("/di/list.do?tiersId=86006202", "Edition des déclarations d'impôt d'un contribuable");
 	}
 
 	@Test
 	public void testDiEditContribuableInexistant() throws Exception {
-		assertPage("/decl/list.do?tiersId=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/di/list.do?tiersId=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
 	}
 
 	// Page d'édition d'un délai d'une DI
 	@Test
 	public void testDiDelai() throws Exception {
-		assertPage("/decl/delai/ajouter.do?id=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du contribuable 860.062.02");
+		assertPage("/di/delai/ajouter.do?id=2", "Ajout d'un délai sur la déclaration 2005 (01.01.2005 - 31.12.2005) du contribuable 860.062.02");
 	}
 
 	@Test
 	public void testDiDelaiInexistante() throws Exception {
-		assertPage("/decl/delai/ajouter.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/delai/ajouter.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	// Page d'impression d'une DI
 	@Test
 	public void testDiImpression() throws Exception {
-		assertPage("/decl/duplicata.do?id=2", "");
+		assertPage("/di/duplicata.do?id=2", "");
 	}
 
 	@Test
 	public void testDiImpressionInexistante() throws Exception {
-		assertPage("/decl/duplicata.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
+		assertPage("/di/duplicata.do?id=12345678", "Page d'erreur", "La DI spécifiée n'existe pas");
 	}
 
 	/*-----------------------------------------
