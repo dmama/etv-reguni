@@ -443,10 +443,10 @@ public class TiersMapHelper extends CommonMapHelper {
 	 */
 	public Map<TypeDocument, String> getTypesDeclarationImpot() {
 
-
 		if (mapTypesDeclarationImpot == null) {
 			mapTypesDeclarationImpot =
-					initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
+					initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class, TypeDocument.LISTE_RECAPITULATIVE, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH,
+							TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE);
 		}
 		return mapTypesDeclarationImpot;
 	}
