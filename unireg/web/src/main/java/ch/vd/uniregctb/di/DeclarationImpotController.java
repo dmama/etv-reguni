@@ -210,7 +210,6 @@ public class DeclarationImpotController {
 	 *
 	 * @param id          l'id de la déclaration d'impôt ordinaire à annuler
 	 * @param depuisTache vrai si l'annulation de la déclaration d'impôt a été appelée depuis l'écran des tâches
-	 * @return les détails d'une déclaration d'impôt au format JSON
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/annuler.do", method = RequestMethod.POST)
@@ -251,7 +250,6 @@ public class DeclarationImpotController {
 	 * Désannuler une déclaration d'impôt ordinaire.
 	 *
 	 * @param id l'id de la déclaration d'impôt ordinaire à désannuler
-	 * @return les détails d'une déclaration d'impôt au format JSON
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/desannuler.do", method = RequestMethod.POST)
