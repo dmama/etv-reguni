@@ -36,6 +36,7 @@ import ch.vd.uniregctb.common.EditiqueErrorHelper;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RetourEditiqueControllerHelper;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotCriteria;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -166,7 +167,7 @@ public class DeclarationImpotController {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(tiersId);
 		}
 		if (!(tiers instanceof Contribuable)) {
 			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");

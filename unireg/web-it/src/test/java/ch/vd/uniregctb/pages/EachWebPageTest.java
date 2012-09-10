@@ -376,7 +376,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testDiEditContribuableInexistant() throws Exception {
-		assertPage("/di/list.do?tiersId=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/di/list.do?tiersId=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Page d'édition d'un délai d'une DI
