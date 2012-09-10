@@ -13,6 +13,7 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -72,7 +73,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		final Tiers tiers = getTiersDAO().get(numero);
 
 		if (tiers == null) {
-			throw new RuntimeException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 		if (tiers != null) {
 			setTiersGeneralView(tiersEditView, tiers);

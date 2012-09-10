@@ -5,7 +5,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
@@ -17,7 +17,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparationRecapManager, MessageSourceAware{
 
@@ -67,7 +66,7 @@ public class AnnulationSeparationRecapManagerImpl implements AnnulationSeparatio
 		//FIXME (CGD) impléementer Ifosec
 		MenageCommun menageCommun = (MenageCommun) tiersService.getTiers(numero);
 		if (menageCommun == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		ForFiscalPrincipal forFiscalPrincipal = menageCommun.getDernierForFiscalPrincipal();

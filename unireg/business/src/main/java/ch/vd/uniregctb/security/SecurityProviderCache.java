@@ -24,6 +24,7 @@ import ch.vd.uniregctb.cache.EhCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -215,7 +216,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	private boolean estControle(long tiersId) {
 		final boolean exists = tiersExists(tiersId);
 		if (!exists) {
-			throw new ObjectNotFoundException("Le tiers id=[" + tiersId + "] n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 		return dossiersControles.contains(tiersId);
 	}

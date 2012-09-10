@@ -74,7 +74,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testEditTiersInexistant() throws Exception {
-		assertPage("/tiers/create.do?id=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
+		assertPage("/tiers/create.do?id=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*--------------------------
@@ -90,7 +90,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testVisuTiersInexistant() throws Exception {
-		assertPage("/tiers/visu.do?id=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/tiers/visu.do?id=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Page de visualisation d'un for
@@ -134,7 +134,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testTiersEditSituationFamilleInexistante() throws Exception {
-		assertPage("/fiscal/situation-famille.do?numero=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/fiscal/situation-famille.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------
@@ -195,7 +195,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testRapportSearchInexistant() throws Exception {
-		assertPage("/rapport/search.do?numero=12345678", "Page d'erreur", "Le tiers spécifié n'existe pas");
+		assertPage("/rapport/search.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Rapport entre tiers - Page d'édition
@@ -206,14 +206,12 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testRapportEditTiersInexistant() throws Exception {
-		assertPage("/rapport/edit.do?numeroTiers=12345678&numeroTiersLie=12900001", "Page d'erreur",
-				"Le tiers id=[12345678] n'existe pas");
+		assertPage("/rapport/edit.do?numeroTiers=12345678&numeroTiersLie=12900001", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	@Test
 	public void testRapportEditTiersLieInexistant() throws Exception {
-		assertPage("/rapport/edit.do?numeroTiers=86006202&numeroTiersLie=12345678", "Page d'erreur",
-				"Le tiers id=[12345678] n'existe pas");
+		assertPage("/rapport/edit.do?numeroTiers=86006202&numeroTiersLie=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------
@@ -337,8 +335,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testLrEditDebiteurInexistant() throws Exception {
-		assertPage("/lr/edit-debiteur.do?numero=12345678", "Page d'erreur",
-				"Le tiers spécifié n'existe pas");
+		assertPage("/lr/edit-debiteur.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Page d'édition d'un délai d'une LR
@@ -431,8 +428,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testMvtCtbEditInexistant() throws Exception {
-		assertPage("/mouvement/edit-contribuable.do?numero=12345678", "Page d'erreur",
-				"Le tiers id=[12345678] n'existe pas");
+		assertPage("/mouvement/edit-contribuable.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	// Edition d'un mouvement
@@ -443,7 +439,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testMvtEditInexistant() throws Exception {
-		assertPage("/mouvement/edit.do?numero=12345678", "Page d'erreur", "Le tiers id=[12345678] n'existe pas");
+		assertPage("/mouvement/edit.do?numero=12345678", "Page d'erreur", "Le tiers n°123.456.78 n'existe pas");
 	}
 
 	/*----------------------

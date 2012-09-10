@@ -12,6 +12,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
@@ -57,7 +58,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		Tiers tiers = tiersService.getTiers(numeroTiers);
 
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numeroTiers);
 		}
 
 		RapportView rapportView =  new RapportView();
@@ -71,7 +72,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			//Tiers lié
 			Tiers tiersLie = tiersService.getTiers(numeroTiersLie);
 			if (tiersLie == null) {
-				throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+				throw new TiersNotFoundException(numeroTiersLie);
 			}
 
 			TiersGeneralView tiersLieView = tiersGeneralManager.getTiers(tiersLie, true);
@@ -271,7 +272,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		tiersEditView.setTiers(tiers);
@@ -313,7 +314,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		tiersEditView.setTiers(tiers);

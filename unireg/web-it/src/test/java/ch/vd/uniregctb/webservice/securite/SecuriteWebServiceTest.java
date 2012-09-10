@@ -103,7 +103,7 @@ public class SecuriteWebServiceTest extends WebitTest {
 			fail();
 		}
 		catch (WebServiceException_Exception expected) {
-			assertContains("Le tiers id=[0] n'existe pas", expected.getMessage());
+			assertContains("Le tiers n°0 n'existe pas", expected.getMessage());
 		}
 	}
 

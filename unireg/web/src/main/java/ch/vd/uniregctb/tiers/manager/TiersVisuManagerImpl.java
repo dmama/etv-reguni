@@ -24,8 +24,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesFiscalesHisto;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -48,7 +48,6 @@ import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Service qui fournit les methodes pour visualiser un tiers
@@ -81,7 +80,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		setTiersGeneralView(tiersVisuView, tiers);
@@ -229,7 +228,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(noDebiteur);
 		if (debiteur == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(noDebiteur);
 		}
 
 		final List<RapportsPrestationView.Rapport> rapports = new ArrayList<RapportsPrestationView.Rapport>();

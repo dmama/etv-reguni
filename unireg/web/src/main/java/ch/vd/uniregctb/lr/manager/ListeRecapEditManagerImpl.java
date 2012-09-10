@@ -19,6 +19,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -512,7 +513,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private TiersGeneralView creerDpiLr(Long numero) {
 		Tiers tiers = tiersDAO.get(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 		DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 		TiersGeneralView dpiView = tiersGeneralManager.getDebiteur(dpi, true);

@@ -347,7 +347,7 @@ public class DeclarationImpotController {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(tiersId);
 		}
 		if (!(tiers instanceof Contribuable)) {
 			throw new IllegalArgumentException("Le tiers spécifié n'est pas un contribuable.");

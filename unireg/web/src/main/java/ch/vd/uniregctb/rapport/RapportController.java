@@ -19,8 +19,8 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -123,7 +123,7 @@ public class RapportController {
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 
 		final boolean excludeContactImpotSource = (tiers instanceof Contribuable);
@@ -161,7 +161,7 @@ public class RapportController {
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 
 		final List<FiliationView> views = new ArrayList<FiliationView>();
@@ -207,7 +207,7 @@ public class RapportController {
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 
 		return getDebiteurViews(tiers);

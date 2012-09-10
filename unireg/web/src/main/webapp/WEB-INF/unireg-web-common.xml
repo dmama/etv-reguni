@@ -101,10 +101,6 @@
 		</constructor-arg>
 	</bean>
 
-	<bean class="ch.vd.uniregctb.common.TiersNotFoundException">
-		<property name="messageSource" ref="messageSource"/>
-	</bean>
-
 	<bean id="jspTagInfra" class="ch.vd.uniregctb.taglibs.JspTagInfra">
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>

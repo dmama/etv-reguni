@@ -34,8 +34,8 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.RueEtNumero;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -111,7 +111,6 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Methodes annexes utilisées par TiersVisuManager et TiersEditManager
@@ -1279,7 +1278,7 @@ public class TiersManager implements MessageSourceAware {
 	public void annulerTiers(Long numero) {
 		final Tiers tiers = tiersService.getTiers(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 		tiersService.annuleTiers(tiers);
 	}

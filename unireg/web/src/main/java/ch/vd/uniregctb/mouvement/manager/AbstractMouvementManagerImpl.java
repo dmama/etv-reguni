@@ -25,7 +25,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.NomPrenom;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -227,7 +227,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	protected ContribuableView creerCtbView(Long numero) {
 		final Tiers tiers = getTiersService().getTiers(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(getMessageSource().getMessage("error.tiers.inexistant" , null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		return creerCtbView(tiers);

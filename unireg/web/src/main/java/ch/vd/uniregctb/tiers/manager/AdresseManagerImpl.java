@@ -29,6 +29,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
@@ -111,7 +112,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 		final Tiers tiers = tiersService.getTiers(numeroCtb);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numeroCtb);
 		}
 		
 		final List<AdresseDisponibleView> lAdresse = getAdressesDisponible(tiers);
@@ -680,7 +681,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		TiersEditView tiersEditView = new TiersEditView();
 		final Tiers tiers = tiersService.getTiers(numero);
 		if (tiers == null) {
-			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		tiersEditView.setTiers(tiers);

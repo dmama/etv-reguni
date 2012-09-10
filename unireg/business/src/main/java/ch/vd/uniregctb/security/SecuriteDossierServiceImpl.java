@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.securite.model.Operateur;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.tiers.DroitAcces;
@@ -45,7 +46,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 		final Tiers tiers = tiersDAO.get(tiersId, true); // ne pas flusher la session automatiquement
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 		return getAcces(tiers);
 	}
@@ -81,7 +82,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 		final Tiers tiers = tiersDAO.get(tiersId, true); // ne pas flusher la session automatiquement
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 
 		final Operateur operateur = serviceSecurite.getOperateur(visaOperateur);

@@ -13,7 +13,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -41,7 +41,6 @@ import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.utils.BeanUtils;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
  * Service qui fournit les methodes pour editer un tiers
@@ -67,7 +66,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		}
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		setTiersGeneralView(tiersEditView, tiers);
@@ -131,7 +130,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new RuntimeException( this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		Assert.isInstanceOf(DebiteurPrestationImposable.class, tiers);
@@ -173,7 +172,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		tiersEditView.clear();
 		final Tiers tiers = getTiersDAO().get(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		setTiersGeneralView(tiersEditView, tiers);

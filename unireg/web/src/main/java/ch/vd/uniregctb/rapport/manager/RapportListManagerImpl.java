@@ -2,12 +2,11 @@ package ch.vd.uniregctb.rapport.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.view.RapportListView;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
-import ch.vd.uniregctb.utils.WebContextUtils;
 
 
 /**
@@ -30,7 +29,7 @@ public class RapportListManagerImpl extends TiersManager implements RapportListM
 		Tiers tiers = tiersService.getTiers(numero);
 
 		if (tiers == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant" , null,  WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 

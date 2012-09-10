@@ -13,7 +13,7 @@ import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.EtatCivilHelper;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -60,7 +60,7 @@ public class ValidationController {
 
 		final Tiers tiers = tiersDAO.get(tiersId);
 		if (tiers == null) {
-			throw new ObjectNotFoundException("Le tiers spécifié n'existe pas");
+			throw new TiersNotFoundException(tiersId);
 		}
 
 		final ValidationResults results = validationService.validate(tiers);

@@ -10,6 +10,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
@@ -162,7 +163,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		final Tiers tiers = getTiersService().getTiers(numero);
 		if (tiers == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 		List<String> nomCourrier = getAdresseService().getNomCourrier(tiers, null, false);
 		rapportView.setNomCourrier(nomCourrier);

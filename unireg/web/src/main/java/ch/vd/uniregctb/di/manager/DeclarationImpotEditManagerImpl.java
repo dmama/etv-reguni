@@ -27,6 +27,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -127,7 +128,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		// on charge le tiers
 		final Contribuable contribuable = (Contribuable) tiersDAO.get(numero);
 		if (contribuable == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.tiers.inexistant", null, WebContextUtils.getDefaultLocale()));
+			throw new TiersNotFoundException(numero);
 		}
 
 		return calculateRangesProchainesDIs(contribuable);
