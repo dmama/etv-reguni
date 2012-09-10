@@ -219,8 +219,8 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		final DeclarationImpotSource lr = addLRaSommerAvecDebiteur(pf, date(2007, 1, 1), date(2007, 1, 31), PeriodiciteDecompte.MENSUEL);
 		lr.addEtat(new EtatDeclarationRetournee(date(2007, 1, 12), "TEST"));
 
-		final RegDate dateEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention();
-		final RegDate dateRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).getDateObtention();
+		final RegDate dateEmission = lr.getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention();
+		final RegDate dateRetour = lr.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE).getDateObtention();
 		assertTrue(dateEmission.isAfter(dateRetour));
 
 		hibernateTemplate.flush();

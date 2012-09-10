@@ -142,10 +142,6 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		return id;
 	}
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
 	public void setId(Long theId) {
 		this.id = theId;
 	}
@@ -356,7 +352,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 
 	@Transient
 	public RegDate getDateRetour() {
-		EtatDeclaration etatDeclaration = getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+		EtatDeclaration etatDeclaration = getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
@@ -365,24 +361,28 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 
 	@Transient
 	public RegDate getDateExpedition() {
-		EtatDeclaration etatDeclaration = getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
+		EtatDeclaration etatDeclaration = getDernierEtatOfType(TypeEtatDeclaration.EMISE);
 		if (etatDeclaration != null) {
 			return etatDeclaration.getDateObtention();
 		}
 		return null;
 	}
 
+	/**
+	 * @param type le type d'état demandé
+	 * @return le dernier état (= le plus récent) non-annulé du type demandé
+	 */
 	@Transient
-	public EtatDeclaration getEtatDeclarationActif(TypeEtatDeclaration etatDeclaration) {
+	public EtatDeclaration getDernierEtatOfType(TypeEtatDeclaration type) {
 		// tri par ordre croissant
 		final List<EtatDeclaration> etatsSorted = getEtatsSorted();
 		if (etatsSorted == null || etatsSorted.isEmpty()) {
 			return null;
 		}
-		return getEtatDeclarationActif(etatDeclaration, etatsSorted);
+		return getDernierEtatOfType(type, etatsSorted);
 	}
 
-	private static EtatDeclaration getEtatDeclarationActif(TypeEtatDeclaration etatRecherche, List<EtatDeclaration> etatsSorted) {
+	private static EtatDeclaration getDernierEtatOfType(TypeEtatDeclaration etatRecherche, List<EtatDeclaration> etatsSorted) {
 		Assert.notNull(etatRecherche, "etatDeclaration required.");
 
 		// récupère le dernier état non-annulé du type spécifié
@@ -408,7 +408,7 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		}
 
 		// [UNIREG-2489] : si la déclaration a été retournée, alors son état est retourné, même si les dates ne jouent pas
-		final EtatDeclaration retour = getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE, etatsSorted);
+		final EtatDeclaration retour = getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE, etatsSorted);
 		if (retour != null) {
 			return retour;
 		}

@@ -555,7 +555,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
+				assertNull(di.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
 
 				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);

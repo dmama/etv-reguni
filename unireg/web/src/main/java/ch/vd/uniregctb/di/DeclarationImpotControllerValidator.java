@@ -152,8 +152,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 	}
 
 	private static EtatDeclaration getDernierEtatEmisOuSommee(DeclarationImpotOrdinaire di) {
-		EtatDeclaration emis = di.getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
-		EtatDeclaration sommee = di.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+		EtatDeclaration emis = di.getDernierEtatOfType(TypeEtatDeclaration.EMISE);
+		EtatDeclaration sommee = di.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
 		//On aura toujours un état émis sur une déclaration sinon bug
 		if (sommee == null) {
 			return emis;

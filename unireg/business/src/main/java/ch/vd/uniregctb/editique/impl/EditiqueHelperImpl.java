@@ -258,7 +258,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		}
 		expediteur.setLocaliteExpedition("Lausanne");
 		final RegDate dateExpedition;
-		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
 		dateExpedition = sommee.getDateEnvoiCourrier();
 		//UNIREG-3309
 		//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )

@@ -250,7 +250,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
 		periode.setDateDecompte(
 				RegDateHelper.toIndexString(
-						params.getDi().getEtatDeclarationActif(TypeEtatDeclaration.EMISE).getDateObtention()
+						params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()
 				)
 		);
 		periode.setDatDerCalculAc("");

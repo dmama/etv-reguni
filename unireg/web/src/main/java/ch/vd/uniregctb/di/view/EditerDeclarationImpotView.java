@@ -109,7 +109,7 @@ public class EditerDeclarationImpotView {
 	}
 
 	private static String initSourceQuittancement(DeclarationImpotOrdinaire di) {
-		final EtatDeclarationRetournee etatRourne = (EtatDeclarationRetournee) di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+		final EtatDeclarationRetournee etatRourne = (EtatDeclarationRetournee) di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 		return etatRourne == null ? null : etatRourne.getSource();
 	}
 

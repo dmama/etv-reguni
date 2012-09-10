@@ -70,7 +70,7 @@ public class DeclarationTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testGetEtatDeclarationActifCasNormal() {
+	public void testGetDernierEtatOfTypeCasNormal() {
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
@@ -78,28 +78,28 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 4, 4), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.ECHUE));
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatOfType(TypeEtatDeclaration.ECHUE));
+		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
 	}
 
 	@Test
-	public void testGetEtatDeclarationActifAvecEtatsSommeeEtRetourneeLeMemeJour() {
+	public void testGetDernierEtatOfTypeAvecEtatsSommeeEtRetourneeLeMemeJour() {
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
 		declaration.addEtat(new EtatDeclarationRetournee(date(2000, 2, 2), "TEST"));
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE));
-		assertNull(declaration.getEtatDeclarationActif(TypeEtatDeclaration.ECHUE));
+		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+		assertNull(declaration.getDernierEtatOfType(TypeEtatDeclaration.ECHUE));
 	}
 
 	@Test
-	public void testGetEtatDeclarationActifAvecEtatAnnule() {
+	public void testGetDernierEtatOfTypeAvecEtatAnnule() {
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
 		declaration.addEtat(new EtatDeclarationEmise(date(2000, 1, 1)));
@@ -109,14 +109,14 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(etatRetourne);
 		declaration.addEtat(new EtatDeclarationSommee(date(2000, 2, 2),date(2000, 2, 2)));
 
-		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.ECHUE));
-		assertNull(declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2000, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
+		assertEtat(date(2000, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatOfType(TypeEtatDeclaration.ECHUE));
+		assertNull(declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
 	}
 
 	@Test
-	public void testGetEtatDeclarationActifAvecPlusieursMemesEtats() {
+	public void testGetDernierEtatOfTypeAvecPlusieursMemesEtats() {
 
 		// cas DI avec états incohérents
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
@@ -127,10 +127,10 @@ public class DeclarationTest extends WithoutSpringTest {
 		declaration.addEtat(new EtatDeclarationEmise(date(2001, 1, 1)));
 		declaration.addEtat(new EtatDeclarationSommee(date(2001, 2, 2),date(2000, 2, 2)));
 
-		assertEtat(date(2001, 1, 1), TypeEtatDeclaration.EMISE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.EMISE));
-		assertEtat(date(2001, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE));
-		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.ECHUE));
-		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE));
+		assertEtat(date(2001, 1, 1), TypeEtatDeclaration.EMISE, declaration.getDernierEtatOfType(TypeEtatDeclaration.EMISE));
+		assertEtat(date(2001, 2, 2), TypeEtatDeclaration.SOMMEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE));
+		assertEtat(date(2000, 3, 3), TypeEtatDeclaration.ECHUE, declaration.getDernierEtatOfType(TypeEtatDeclaration.ECHUE));
+		assertEtat(date(2000, 4, 4), TypeEtatDeclaration.RETOURNEE, declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
 	}
 
 

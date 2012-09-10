@@ -348,7 +348,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		if (dateRetour != null) {
 			if (dateRetour != di.getDateRetour()) {
 				if (di.getDateRetour() != null) {
-					final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+					final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 					etatRetournePrecedent.setAnnule(true);
 				}
 				final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
@@ -360,7 +360,7 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 			}
 		}
 		else {
-			final EtatDeclaration etatRetournePrecedent = di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+			final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 			if (etatRetournePrecedent != null) {
 				etatRetournePrecedent.setAnnule(true);
 			}

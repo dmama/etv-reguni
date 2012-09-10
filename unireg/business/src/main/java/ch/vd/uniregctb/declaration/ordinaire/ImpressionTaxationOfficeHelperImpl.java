@@ -137,7 +137,7 @@ public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper i
 		final Dossier dossier = chemiseTO.addNewDossier();
 		dossier.setMotif(MOTIF_TO);
 
-		final EtatDeclaration etatSomme = declaration.getEtatDeclarationActif(TypeEtatDeclaration.SOMMEE);
+		final EtatDeclaration etatSomme = declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
 		final RegDate dateSommation = etatSomme.getDateObtention();
 		dossier.setDateEvenement(String.valueOf(dateSommation.index()));
 

@@ -309,7 +309,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 		}
 
 		// [UNIREG-2705] il est maintenant possible de créer des déclarations déjà retournées (et pas seulement pour les indigents) 
-		final EtatDeclaration etatRetour = declaration.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+		final EtatDeclaration etatRetour = declaration.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 		if (etatRetour != null) {
 			evenementFiscalService.publierEvenementFiscalRetourDI(ctb, declaration, etatRetour.getDateObtention());
 		}
@@ -382,7 +382,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement, String source) {
 		if (!dateEvenement.equals(di.getDateRetour())) {
 			if (di.getDateRetour() != null) {
-				di.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
+				di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
 			}
 			final EtatDeclaration etat = new EtatDeclarationRetournee(dateEvenement, source);
 			di.addEtat(etat);

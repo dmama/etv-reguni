@@ -111,14 +111,14 @@ public class EvenementExterneListenerTest extends BusinessTest {
 				assertNotNull(etats);
 				assertEquals(2, etats.size());      // l'état "EMISE" et l'état "RETOURNEE"
 
-				final EtatDeclaration etatEmission = lr.getEtatDeclarationActif(TypeEtatDeclaration.EMISE);
+				final EtatDeclaration etatEmission = lr.getDernierEtatOfType(TypeEtatDeclaration.EMISE);
 				assertNotNull(etatEmission);
 				assertTrue(etats.contains(etatEmission));
 				assertEquals(TypeEtatDeclaration.EMISE, etatEmission.getEtat());
 				assertEquals(dateFin, etatEmission.getDateObtention());
 				assertFalse(etatEmission.isAnnule());
 
-				final EtatDeclaration etatRetour = lr.getEtatDeclarationActif(TypeEtatDeclaration.RETOURNEE);
+				final EtatDeclaration etatRetour = lr.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
 				assertNotNull(etatRetour);
 				assertTrue(etats.contains(etatRetour));
 				assertEquals(TypeEtatDeclaration.RETOURNEE, etatRetour.getEtat());

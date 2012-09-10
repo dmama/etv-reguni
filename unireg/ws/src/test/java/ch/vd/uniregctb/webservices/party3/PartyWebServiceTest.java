@@ -456,7 +456,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 				final ModeleDocument modele = addModeleDocument(ch.vd.uniregctb.type.TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
-				assertNull(di.getEtatDeclarationActif(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
+				assertNull(di.getDernierEtatOfType(ch.vd.uniregctb.type.TypeEtatDeclaration.EMISE));
 
 				final EtatDeclaration retour = new EtatDeclarationRetournee(RegDate.get(), "TEST");
 				di.addEtat(retour);
