@@ -13,35 +13,30 @@ import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 @SuppressWarnings("UnusedDeclaration")
 public class DemandeAvecHistoView {
 
-	private String idDemande;
-	private RegDate dateDemande;
-	private List<EtatDemandeView> etats;
+	private final String idDemande;
+	private final RegDate dateDemande;
+	private final List<EtatDemandeView> etats;
 
-	public String getIdDemande() {
-		return idDemande;
-	}
-
-	public void setIdDemande(String idDemande) {
+	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, List<EtatDemandeView> etats) {
 		this.idDemande = idDemande;
-	}
+		this.dateDemande = dateDemande;
 
-	public List<EtatDemandeView> getEtats() {
-		return etats;
-	}
-
-	public void setEtats(List<EtatDemandeView> etats) {
 		if (etats == null || etats.isEmpty()) {
 			throw new IllegalArgumentException("etats ne peut être ni null ni vide");
 		}
 		this.etats = new ArrayList<EtatDemandeView>(etats);
 	}
 
-	public RegDate getDateDemande() {
-		return dateDemande;
+	public String getIdDemande() {
+		return idDemande;
 	}
 
-	public void setDateDemande(RegDate dateDemande) {
-		this.dateDemande = dateDemande;
+	public List<EtatDemandeView> getEtats() {
+		return etats;
+	}
+
+	public RegDate getDateDemande() {
+		return dateDemande;
 	}
 
 	public EtatDemandeView getEtatCourant() {

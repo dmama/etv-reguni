@@ -123,16 +123,13 @@ public class EfactureManagerImpl implements EfactureManager {
 		final List<DemandeAvecHistoView> demandes = new ArrayList<DemandeAvecHistoView>(sizeDemandes);
 		for (ListIterator<DemandeAvecHisto> it = destinataire.getHistoriqueDemandes().listIterator(sizeDemandes); it.hasPrevious(); ) {
 			final DemandeAvecHisto demande = it.previous();
-			final DemandeAvecHistoView view  = new DemandeAvecHistoView();
-			view.setIdDemande(demande.getIdDemande());
-			view.setDateDemande(demande.getDateDemande());
 			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
 			final List<EtatDemandeView> etatsDemande = new ArrayList<EtatDemandeView>(sizeEtatDemandes);
-			for(ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ){
+			for (ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ){
 				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
 			}
-			view.setEtats(etatsDemande);
+			final DemandeAvecHistoView view  = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), etatsDemande);
 			demandes.add(view);
 		}
 		res.setDemandes(demandes);
@@ -158,21 +155,10 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	private EtatDemandeView getEtatDemande(EtatDemande etat) {
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etat.getType());
-		String descriptionEtat = messageSource.getMessage(
-				"label.efacture.etat.demande."+ etat.getType(),
-				null,
-				WebContextUtils.getDefaultLocale());
-		// TODO A supprimer à terme
-		// Utile pour l'instant car les données de tests e-facture non pas les descriptions adéquates
-		// pour differencier les differents "sous-états" de validation en cours
-		if ("true".equals(System.getProperty("debug-efacture"))) {
-				if (etat.getType().isEnAttente()) {
-					descriptionEtat += " " + etat.getType().name();
-				}
-		}
+		final String descriptionEtat = messageSource.getMessage("label.efacture.etat.demande."+ etat.getType(), null, WebContextUtils.getDefaultLocale());
 		final String key = etat.getChampLibre();
-		final ArchiveKey archiveKey = (key ==null || typeDocumentEditique ==null) ?null : new ArchiveKey(typeDocumentEditique,key);
-		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(),archiveKey,descriptionEtat,etat.getType());
+		final ArchiveKey archiveKey = (key == null || typeDocumentEditique == null) ? null : new ArchiveKey(typeDocumentEditique, key);
+		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(), archiveKey, descriptionEtat, etat.getType());
 	}
 
 

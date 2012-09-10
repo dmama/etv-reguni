@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.efacture;
 
-import ch.vd.registre.base.date.RegDate;
+import java.util.Date;
 
 public class EtatDestinataireView extends AbstractEtatView {
 
 	private final String descriptionEtat;
 
-	public EtatDestinataireView(RegDate dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat) {
+	public EtatDestinataireView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat) {
 		super(dateObtention, motifObtention, documentArchiveKey);
 		this.descriptionEtat = descriptionEtat;
 	}

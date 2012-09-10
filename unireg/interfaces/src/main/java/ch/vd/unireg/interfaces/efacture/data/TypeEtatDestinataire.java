@@ -18,15 +18,15 @@ public enum TypeEtatDestinataire {
 		return description;
 	}
 
-	public boolean isActivable(){
+	public boolean isActivable() {
 		return this == INSCRIT_SUSPENDU || this == DESINSCRIT_SUSPENDU ;
 	}
 
-	public boolean isSuspendable(){
+	public boolean isSuspendable() {
 		return this == INSCRIT || this == DESINSCRIT;
 	}
 
-	public static TypeEtatDestinataire valueOf (PayerStatus status) {
+	public static TypeEtatDestinataire valueOf(PayerStatus status) {
 		switch (status) {
 		case DESINSCRIT:
 			return TypeEtatDestinataire.DESINSCRIT;

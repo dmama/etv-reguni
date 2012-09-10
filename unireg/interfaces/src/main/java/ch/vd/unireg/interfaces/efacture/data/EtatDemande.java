@@ -1,7 +1,8 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.util.Date;
+
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
 /**
@@ -10,7 +11,7 @@ import ch.vd.uniregctb.common.XmlUtils;
 public class EtatDemande {
 
 	private String champLibre;
-	private RegDate date;
+	private Date date;
 	private Integer codeRaison;
 	private String descriptionRaison;
 	private TypeEtatDemande type;
@@ -21,7 +22,7 @@ public class EtatDemande {
 
 	private EtatDemande(TypeEtatDemande type) {
 		this.type = type;
-		this.date = RegDate.getEarlyDate();
+		this.date = null;
 		this.codeRaison = null;
 		this.descriptionRaison = "ATTENTION: le service E-facture ne renvoie aucun historique des états de cette demande, cette donnée est générée par UNIREG";
 		this.champLibre = "";
@@ -29,7 +30,7 @@ public class EtatDemande {
 
 	public EtatDemande(RegistrationRequestHistoryEntry target) {
 		this.champLibre = target.getCustomField();
-		this.date = XmlUtils.xmlcal2regdate(target.getDate());
+		this.date = XmlUtils.xmlcal2date(target.getDate());
 		this.codeRaison = target.getReasonCode();
 		this.descriptionRaison = target.getReasonDescription();
 		this.type = TypeEtatDemande.valueOf(target.getStatus(), TypeAttenteDemande.valueOf(target.getReasonCode()));
@@ -39,7 +40,7 @@ public class EtatDemande {
 		return champLibre;
 	}
 
-	public RegDate getDate() {
+	public Date getDate() {
 		return date;
 	}
 

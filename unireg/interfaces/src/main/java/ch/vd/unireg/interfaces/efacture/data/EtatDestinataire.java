@@ -1,12 +1,13 @@
 package ch.vd.unireg.interfaces.efacture.data;
 
+import java.util.Date;
+
 import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class EtatDestinataire {
 	private String champLibre;
-	private RegDate dateObtention;
+	private Date dateObtention;
 	private String descriptionRaison;
 	private Integer codeRaison;
 	private TypeEtatDestinataire type;
@@ -17,7 +18,7 @@ public class EtatDestinataire {
 
 	private EtatDestinataire (TypeEtatDestinataire type) {
 		this.type = type;
-		this.dateObtention = RegDate.getEarlyDate();
+		this.dateObtention = null;
 		this.codeRaison = null;
 		this.descriptionRaison = "ATTENTION: le service E-facture ne renvoie aucun historique des états du destinataire, cette donnée est générée par UNIREG";
 		this.champLibre ="";
@@ -25,7 +26,7 @@ public class EtatDestinataire {
 
 	public EtatDestinataire(PayerSituationHistoryEntry payerSituationHistoryEntry) {
 		this.champLibre = payerSituationHistoryEntry.getCustomField();
-		this.dateObtention = XmlUtils.xmlcal2regdate(payerSituationHistoryEntry.getDate());
+		this.dateObtention = XmlUtils.xmlcal2date(payerSituationHistoryEntry.getDate());
 		this.descriptionRaison = payerSituationHistoryEntry.getReasonDescription();
 		this.type = TypeEtatDestinataire.valueOf(payerSituationHistoryEntry.getStatus());
 		this.codeRaison = payerSituationHistoryEntry.getReasonCode();
@@ -35,7 +36,7 @@ public class EtatDestinataire {
 		return champLibre;
 	}
 
-	public RegDate getDateObtention() {
+	public Date getDateObtention() {
 		return dateObtention;
 	}
 

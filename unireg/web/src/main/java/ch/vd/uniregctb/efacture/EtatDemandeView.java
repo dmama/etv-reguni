@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
-import ch.vd.registre.base.date.RegDate;
+import java.util.Date;
+
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
 
 public class EtatDemandeView extends AbstractEtatView {
@@ -8,7 +9,7 @@ public class EtatDemandeView extends AbstractEtatView {
 	private final String descriptionEtat;
 	private final TypeEtatDemande type;
 
-	public EtatDemandeView(RegDate dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, TypeEtatDemande type) {
+	public EtatDemandeView(Date dateObtention, String motifObtention, ArchiveKey documentArchiveKey, String descriptionEtat, TypeEtatDemande type) {
 		super(dateObtention, motifObtention, documentArchiveKey);
 		this.descriptionEtat = descriptionEtat;
 		this.type = type;

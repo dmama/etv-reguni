@@ -67,7 +67,7 @@
             for (var e in etats) {
                 var etat = etats[e];
                 html += '<tr class="' + (e % 2 == 0 ? 'odd' : 'even') + '">';
-                html += '<td>' + RegDate.format(etat.dateObtention) + '</td>';
+                html += '<td>' + DateUtils.toNormalString(new Date(etat.dateObtention)) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.descriptionEtat) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.motifObtention) + '</td>';
                 html += '<td>&nbsp;</td>';
@@ -97,7 +97,7 @@
 
                 var etatCourant = demande.etatCourant;
                 html += '<td>' + StringUtils.escapeHTML(etatCourant.descriptionEtat) + '</td>';
-                html += '<td>' + RegDate.format(etatCourant.dateObtention) + '</td>';
+                html += '<td>' + DateUtils.toNormalString(new Date(etatCourant.dateObtention)) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etatCourant.motifObtention) + '</td>';
                 html += '</tr>\n';
 
@@ -115,7 +115,7 @@
 
         buildHistoriqueEtatsDemande: function(noCtb, idDemande, etats) {
             var html = '<table id="efacture-demande_' + idDemande + '" class="display"><thead><tr>\n';
-            html += '<th width="10%"><fmt:message key="label.efacture.date.obtention"/></th>';
+            html += '<th width="15%"><fmt:message key="label.efacture.date.obtention"/></th>';
             html += '<th><fmt:message key="label.efacture.etat"/></th>';
             html += '<th><fmt:message key="label.efacture.motifTransition"/></th>';
             html += '<th/>';
@@ -125,7 +125,7 @@
             for (var e in etats) {
                 var etat = etats[e];
                 html += '<tr class="' + (e % 2 == 0 ? 'odd' : 'even') + '">';
-                html += '<td>' + RegDate.format(etat.dateObtention) + '</td>';
+                html += '<td>' + DateUtils.toNormalString(new Date(etat.dateObtention)) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.descriptionEtat) + '</td>';
                 html += '<td>' + StringUtils.escapeHTML(etat.motifObtention) + '</td>';
                 if (etat.documentArchiveKey) {
@@ -133,7 +133,7 @@
                     var idIcon = 'print-doc-' + idDemande + '-' + e;
                     var url = '<c:url value="/copie-conforme.do"/>?noCtb=' + noCtb + '&typeDoc=' + StringUtils.escapeHTML(etat.documentArchiveKey.typeDocument) + '&key=' + StringUtils.escapeHTML(etat.documentArchiveKey.key);
                     html += '<a class="pdf" id="' + idIcon + '" href="' + url + '" onclick=\'Link.tempSwap(this, "#disabled-' + idIcon + '");\'>&nbsp;</a>\n';
-                    html += '<span a class="pdf-grayed" id="disabled-' + idIcon + '" style="display: none;" >&nbsp;</span>\n';
+                    html += '<span class="pdf-grayed" id="disabled-' + idIcon + '" style="display: none;" >&nbsp;</span>\n';
                     html += '</td>';
                 }
                 else {
