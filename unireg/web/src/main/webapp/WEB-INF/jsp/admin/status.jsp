@@ -51,6 +51,10 @@
 						<td><fmt:message key="label.info.service.brvplus"/> :</td>
 						<td id="bvrPlusStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
+					<tr class="<unireg:nextRowClass/>">
+						<td><fmt:message key="label.info.service.efacture"/> :</td>
+						<td id="efactureStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
+					</tr>
 				</tbody>
 			</table>
 		</fieldset>
@@ -80,6 +84,9 @@
 				});
 				$.get('<c:url value="/admin/status/bvr.do"/>?' + new Date().getTime(), function(status) {
 					updateServiceStatus('#bvrPlusStatus', status);
+				});
+				$.get('<c:url value="/admin/status/efacture.do"/>?' + new Date().getTime(), function(status) {
+					updateServiceStatus('#efactureStatus', status);
 				});
 
 				function updateServiceStatus(element, status) {

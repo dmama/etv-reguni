@@ -8,6 +8,7 @@
 		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
 		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
+		<property name="serviceEFactureChecker" ref="serviceEFactureChecker" />
 	</bean>
 
 	<bean id="serviceCivilChecker" class="ch.vd.uniregctb.checker.ServiceCivilChecker">
@@ -24,6 +25,10 @@
 
 	<bean id="serviceBVRChecker" class="ch.vd.uniregctb.checker.ServiceBVRChecker">
 		<property name="bvrClient" ref="bvrPlusClient" />
+	</bean>
+
+	<bean id="serviceEFactureChecker" class="ch.vd.uniregctb.checker.ServiceEFactureChecker">
+		<property name="efactureClient" ref="eFactureClient" />
 	</bean>
 
 </beans>

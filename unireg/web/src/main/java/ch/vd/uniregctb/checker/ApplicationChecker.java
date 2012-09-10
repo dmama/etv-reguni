@@ -11,11 +11,13 @@ public class ApplicationChecker {
 	private ServiceInfraChecker serviceInfraChecker;
 	private ServiceSecuriteChecker serviceSecuriteChecker;
 	private ServiceBVRChecker serviceBVRChecker;
+	private ServiceEFactureChecker serviceEFactureChecker;
 
 	public String getStatus() {
 		final Status status;
 		if (serviceCivilChecker.getStatus() == Status.OK && serviceInfraChecker.getStatus() == Status.OK &&
-				serviceSecuriteChecker.getStatus() == Status.OK && serviceBVRChecker.getStatus() == Status.OK) {
+				serviceSecuriteChecker.getStatus() == Status.OK && serviceBVRChecker.getStatus() == Status.OK &&
+				serviceEFactureChecker.getStatus() == Status.OK) {
 			status = Status.OK;
 		}
 		else {
@@ -28,6 +30,7 @@ public class ApplicationChecker {
 		return "{'serviceCivil' : '" + serviceCivilChecker.getStatus().name() + "', " +
 				"'serviceInfra' : '" + serviceInfraChecker.getStatus().name() + "', " +
 				"'serviceSecurite' : '" + serviceSecuriteChecker.getStatus().name() + "', " +
+				"'serviceEFacture' : '" + serviceEFactureChecker.getStatus().name() + "', " +
 				"'serviceBVRPlus' : '" + serviceBVRChecker.getStatus().name() + "'}";
 	}
 
@@ -66,6 +69,11 @@ public class ApplicationChecker {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceBVRChecker(ServiceBVRChecker serviceBVRChecker) {
 		this.serviceBVRChecker = serviceBVRChecker;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceEFactureChecker(ServiceEFactureChecker serviceEFactureChecker) {
+		this.serviceEFactureChecker = serviceEFactureChecker;
 	}
 }
 

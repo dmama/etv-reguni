@@ -12,6 +12,7 @@
 		<property name="serviceInfraChecker" ref="serviceInfraChecker" />
 		<property name="serviceSecuriteChecker" ref="serviceSecuriteChecker" />
 		<property name="serviceBVRChecker" ref="serviceBVRChecker" />
+		<property name="serviceEFactureChecker" ref="serviceEFactureChecker" />
 	</bean>
 
 	<bean id="autoCompleteInfraController" class="ch.vd.uniregctb.json.AutoCompleteInfraController">

@@ -39,6 +39,7 @@ public class StatusController {
 	private ServiceChecker serviceInfraChecker;
 	private ServiceChecker serviceSecuriteChecker;
 	private ServiceChecker serviceBVRChecker;
+	private ServiceChecker serviceEFactureChecker;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setGlobalSearcher(GlobalTiersSearcher globalSearcher) {
@@ -84,6 +85,11 @@ public class StatusController {
 		this.serviceBVRChecker = serviceBVRChecker;
 	}
 
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceEFactureChecker(ServiceChecker serviceEFactureChecker) {
+		this.serviceEFactureChecker = serviceEFactureChecker;
+	}
+
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/admin/status.do", method = RequestMethod.GET)
 	public String status(Model model) {
@@ -115,8 +121,14 @@ public class StatusController {
 
 	@ResponseBody
 	@RequestMapping(value = "/admin/status/bvr.do", method = RequestMethod.GET)
-	public ServiceStatusView securiteBVR() {
+	public ServiceStatusView bvrPlusStatus() {
 		return new ServiceStatusView("serviceBVR", serviceBVRChecker);
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/admin/status/efacture.do", method = RequestMethod.GET)
+	public ServiceStatusView efactureStatus() {
+		return new ServiceStatusView("serviceEFacture", serviceEFactureChecker);
 	}
 
 	private String getIndexCount() {
