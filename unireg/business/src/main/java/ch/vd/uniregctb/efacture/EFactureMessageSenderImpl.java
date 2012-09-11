@@ -23,7 +23,6 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
-import ch.vd.unireg.interfaces.efacture.data.TypeRefusDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 
 public class EFactureMessageSenderImpl implements EFactureMessageSender {
@@ -64,9 +63,8 @@ public class EFactureMessageSenderImpl implements EFactureMessageSender {
 	}
 
 	@Override
-	public String envoieRefusDemandeInscription(String idDemande, TypeRefusDemande typeRefusEFacture, String description, boolean retourAttendu) throws EvenementEfactureException {
-		final String desc= typeRefusEFacture == null? description:typeRefusEFacture.getDescription();
-		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, desc, null, retourAttendu);
+	public String envoieRefusDemandeInscription(String idDemande, String description, boolean retourAttendu) throws EvenementEfactureException {
+		return sendMiseAJourDemande(idDemande, RegistrationRequestStatus.REFUSEE, null, description, null, retourAttendu);
 	}
 
 	@Override

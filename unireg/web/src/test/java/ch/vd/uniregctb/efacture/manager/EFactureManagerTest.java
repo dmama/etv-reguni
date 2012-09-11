@@ -58,11 +58,11 @@ public class EFactureManagerTest extends WithoutSpringTest {
 	public void testEnvoyerDocumentAvecNotificationEFacture () throws Exception {
 		final TypeDocument typeDocumentAEnvoyer = TypeDocument.E_FACTURE_ATTENTE_CONTACT;
 		expect(eFactureService.imprimerDocumentEfacture(NO_CTB, typeDocumentAEnvoyer, DATE_DEMANDE)).andReturn("ARCHIVAGE_ID");
-		expect(eFactureService.notifieMiseEnattenteInscription(
+		expect(eFactureService.notifieMiseEnAttenteInscription(
 				eq("ID_DEMANDE"),
 				eq(TypeAttenteDemande.EN_ATTENTE_CONTACT),
 				contains("USER_ID"),
-				eq("ARCHIVAGE_ID"),eq(true))).andReturn("BUSINESS_ID");
+				eq("ARCHIVAGE_ID"), eq(true))).andReturn("BUSINESS_ID");
 		replayAll();
 		assertEquals("BUSINESS_ID", eFactureManager.envoyerDocumentAvecNotificationEFacture(NO_CTB, typeDocumentAEnvoyer, "ID_DEMANDE", DATE_DEMANDE));
 	}

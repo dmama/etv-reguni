@@ -28,7 +28,7 @@ public interface EFactureService {
 	 * @param retourAttendu vrai si un retour est attendu suite à la notification
 	 */
 
-	String notifieMiseEnattenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
+	String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException;
 
 	/**
 	 * Demande l'impression du document de demande de signature ou de demande de contact

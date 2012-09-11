@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.efacture;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
@@ -16,14 +15,9 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 	private final Logger LOGGER = Logger.getLogger(EFactureEventHandlerImpl.class);
 
 	private EFactureService eFactureService;
-	private EFactureMessageSender sender;
 
 	public void seteFactureService(EFactureService eFactureService) {
 		this.eFactureService = eFactureService;
-	}
-
-	public void setSender(EFactureMessageSender sender) {
-		this.sender = sender;
 	}
 
 	@Override
@@ -60,24 +54,27 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 
 			// valide l'etat du contribuable et envoye le courrier adéquat
 			final TypeAttenteDemande etatFinal;
+			final TypeDocument typeDocument;
+			final String description;
 			if (eFactureService.valideEtatFiscalContribuablePourInscription(demande.getCtbId())) {
 				etatFinal = TypeAttenteDemande.EN_ATTENTE_SIGNATURE;
-				final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, demande.getDateDemande());
-				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), etatFinal, etatFinal.getDescription(), archivageId, false);
+				typeDocument = TypeDocument.E_FACTURE_ATTENTE_SIGNATURE;
+				description = etatFinal.getDescription();
 			}
 			else {
 				etatFinal = TypeAttenteDemande.EN_ATTENTE_CONTACT;
-				final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), TypeDocument.E_FACTURE_ATTENTE_CONTACT, demande.getDateDemande());
-				final String description = String.format("%s Assujettissement incohérent avec la e-facture.", etatFinal.getDescription());
-				sender.envoieMiseEnAttenteDemandeInscription(demande.getIdDemande(), etatFinal, description, archivageId, false);
+				typeDocument = TypeDocument.E_FACTURE_ATTENTE_CONTACT;
+				description = String.format("%s Assujettissement incohérent avec la e-facture.", etatFinal.getDescription());
 			}
 
+			final String archivageId = eFactureService.imprimerDocumentEfacture(demande.getCtbId(), typeDocument, demande.getDateDemande());
+			eFactureService.notifieMiseEnAttenteInscription(demande.getIdDemande(), etatFinal, description, archivageId, false);
 			LOGGER.info(String.format("Demande d'inscription passée à l'état %s", etatFinal));
 		}
 	}
 
 	private void refuseDemande(Demande demande, TypeRefusDemande refus) throws EvenementEfactureException {
-		sender.envoieRefusDemandeInscription(demande.getIdDemande(), refus, StringUtils.EMPTY, false);
+		eFactureService.refuserDemande(demande.getIdDemande(), false, refus.getDescription());
 		LOGGER.info(String.format("Demande d'inscription refusée : %s", refus));
 	}
 

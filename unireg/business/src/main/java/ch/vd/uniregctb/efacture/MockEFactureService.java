@@ -12,7 +12,7 @@ import ch.vd.uniregctb.type.TypeDocument;
 
 public class MockEFactureService implements EFactureService {
 	@Override
-	public String notifieMiseEnattenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws
 			EvenementEfactureException {
 		return "";
 	}

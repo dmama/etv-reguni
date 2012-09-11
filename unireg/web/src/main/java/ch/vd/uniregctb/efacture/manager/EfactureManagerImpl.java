@@ -45,7 +45,7 @@ public class EfactureManagerImpl implements EfactureManager {
 		final TypeAttenteDemande typeAttenteEFacture = determineTypeAttenteEfacture(typeDocument);
 		final String messageAvecVisaUser = getMessageAvecVisaUser();
 		final String description = String.format("%s %s", typeAttenteEFacture.getDescription(), messageAvecVisaUser);
-		return eFactureService.notifieMiseEnattenteInscription(idDemande, typeAttenteEFacture, description, idArchivage, true);
+		return eFactureService.notifieMiseEnAttenteInscription(idDemande, typeAttenteEFacture, description, idArchivage, true);
 	}
 
 	private String getMessageAvecVisaUser() {
@@ -88,7 +88,7 @@ public class EfactureManagerImpl implements EfactureManager {
 	@Override
 	public String refuserDemande(String idDemande) throws EvenementEfactureException {
 		final String description = getMessageAvecVisaUser();
-		return eFactureService.refuserDemande(idDemande,true, description);
+		return eFactureService.refuserDemande(idDemande, true, description);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

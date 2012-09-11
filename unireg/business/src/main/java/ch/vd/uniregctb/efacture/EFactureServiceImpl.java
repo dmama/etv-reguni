@@ -195,7 +195,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 
 	@Override
 	public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
-		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande, null, description, retourAttendu);
+		return eFactureMessageSender.envoieRefusDemandeInscription(idDemande, description, retourAttendu);
 	}
 
 	@Override
@@ -225,7 +225,7 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	}
 
 	@Override
-	public String notifieMiseEnattenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
+	public String notifieMiseEnAttenteInscription(String idDemande, TypeAttenteDemande typeAttenteEFacture, String description, String idArchivage, boolean retourAttendu) throws EvenementEfactureException {
 		return eFactureMessageSender.envoieMiseEnAttenteDemandeInscription(idDemande, typeAttenteEFacture, description, idArchivage, retourAttendu);
 	}
 
