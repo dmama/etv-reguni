@@ -29,15 +29,6 @@ public interface DeclarationImpotEditManager {
 	public static final String CANNOT_ADD_NEW_DI = "Le contribuable n'est pas assujetti, ou toutes ses déclarations sont déjà créées.";
 
 	/**
-	 * Récupère l'id du tiers qui possède la DI spécifiée.
-	 *
-	 * @param idDI l'id de la déclaration d'impôt
-	 * @return l'id du tiers; ou <b>null</b> si l'id de la DI est nul
-	 */
-	@Transactional(readOnly = true)
-	public Long getTiersId(Long idDI);
-
-	/**
 	 * [UNIREG-832] Calcule les dates de début et de fin pour la création de la prochaine d'impôt sur un contribuable. Si plusieurs déclarations n'ont pas été envoyées durant les années précédentes,
 	 * cette méthode retourne les dates de la déclaration non-envoyée la plus ancienne.
 	 * <p/>
@@ -47,24 +38,7 @@ public interface DeclarationImpotEditManager {
 	 * @return une liste de périodes d'imposition à utiliser pour une nouvelle déclaration, <code>null</code> s'il n'est pas possible d'ajouter une déclaration d'impôt.
 	 * @throws ValidationException si le contribuable ne valide pas, ou s'il n'est pas possible de déterminer son assujettissement.
 	 */
-	@Transactional(readOnly = true)
 	List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException;
-
-	/**
-	 * Crée (si nécessaire) et persiste en base la déclaration spécifiée.
-	 *
-	 * @param ctbId le numéro de contribuable concerné
-	 * @param id le numéro de la déclaration s'ils s'agit d'imprimer un duplicat; ou <b>null</b> s'il s'agit de créer une nouvelle déclaration vierge.
-	 * @param dateDebut la date de début de validité de la déclaration
-	 * @param dateFin la date de fin de validité de la déclaration
-	 * @param typeDocument le type de document de la déclaration
-	 * @param adresseRetour l'adresse de retour de la déclaration
-	 * @param delaiAccorde le délais accordé
-	 * @param dateRetour la date de retour si la déclaration a déjà été retournée
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	DeclarationImpotOrdinaire save(long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour, RegDate delaiAccorde,
-	                               @Nullable RegDate dateRetour) throws Exception;
 
 	/**
 	 * Crée, sauve en base et imprime une DI vierge, ou imprime un duplicat de DI existante.
@@ -85,7 +59,6 @@ public interface DeclarationImpotEditManager {
 	/**
 	 * Annule un delai
 	 */
-	@Transactional(rollbackFor = Throwable.class)
 	void annulerDelai(Long idDI, Long idDelai);
 
 	/**
@@ -128,6 +101,14 @@ public interface DeclarationImpotEditManager {
 	 */
 	PeriodeImposition checkRangeDi(Contribuable contribuable, DateRange range) throws ValidationException;
 
-	DeclarationImpotOrdinaire update(long id, TypeDocument typeDocument, RegDate dateRetour);
+	/**
+	 * Quittancer (= ajout un état 'retourné') manuellement une déclaration.
+	 *
+	 * @param id           l'id de la déclaration à quittancer
+	 * @param typeDocument le type de document retourné
+	 * @param dateRetour   la date de retour de la déclaration
+	 * @return la déclaration quittancée
+	 */
+	DeclarationImpotOrdinaire quittancerDI(long id, TypeDocument typeDocument, RegDate dateRetour);
 }
 

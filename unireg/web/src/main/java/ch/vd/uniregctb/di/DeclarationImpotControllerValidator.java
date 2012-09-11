@@ -15,6 +15,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
+import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
@@ -48,7 +49,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 	public boolean supports(Class<?> clazz) {
 		return ImprimerNouvelleDeclarationImpotView.class.equals(clazz) || EditerDeclarationImpotView.class.equals(clazz)
 				|| DeclarationListView.class.equals(clazz) || ImprimerDuplicataDeclarationImpotView.class.equals(clazz)
-				|| AjouterDelaiDeclarationView.class.equals(clazz);
+				|| AjouterDelaiDeclarationView.class.equals(clazz) || AjouterEtatDeclarationView.class.equals(clazz);
 	}
 
 	@Override
@@ -57,8 +58,8 @@ public class DeclarationImpotControllerValidator implements Validator {
 		if (target instanceof ImprimerNouvelleDeclarationImpotView) {
 			validateImprimerNouvelleDI((ImprimerNouvelleDeclarationImpotView) target, errors);
 		}
-		else if (target instanceof EditerDeclarationImpotView) {
-			validateEditerDI((EditerDeclarationImpotView)target, errors);
+		else if (target instanceof AjouterEtatDeclarationView) {
+			validateAjouterEtatDI((AjouterEtatDeclarationView)target, errors);
 		}
 		else if (target instanceof ImprimerDuplicataDeclarationImpotView) {
 			valideImprimerDuplicataDI((ImprimerDuplicataDeclarationImpotView) target, errors);
@@ -118,7 +119,7 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 	}
 
-	private void validateEditerDI(EditerDeclarationImpotView view, Errors errors) {
+	private void validateAjouterEtatDI(AjouterEtatDeclarationView view, Errors errors) {
 
 		// Vérifie que les paramètres reçus sont valides
 
@@ -129,24 +130,30 @@ public class DeclarationImpotControllerValidator implements Validator {
 		}
 
 		final RegDate dateRetour = view.getDateRetour();
-		if (dateRetour != null) {
-			if (dateRetour.isAfter(RegDate.get())) {
-				errors.rejectValue("dateRetour", "error.date.retour.future");
-			}
+		if (dateRetour == null) {
+			errors.rejectValue("dateRetour", "error.date.retour.vide");
+			return;
+		}
 
-			final EtatDeclaration dernierEtat = getDernierEtatEmisOuSommee(di);
-			if (dateRetour.isBefore(dernierEtat.getDateObtention())) {
-				if (dernierEtat instanceof EtatDeclarationSommee) {
-					errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
-				}
-				if (dernierEtat instanceof EtatDeclarationEmise) {
-					errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
-				}
+		if (dateRetour.isAfter(RegDate.get())) {
+			errors.rejectValue("dateRetour", "error.date.retour.future");
+		}
+
+		final EtatDeclaration dernierEtat = getDernierEtatEmisOuSommee(di);
+		if (dateRetour.isBefore(dernierEtat.getDateObtention())) {
+			if (dernierEtat instanceof EtatDeclarationSommee) {
+				errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission.sommation");
+			}
+			if (dernierEtat instanceof EtatDeclarationEmise) {
+				errors.rejectValue("dateRetour", "error.date.retour.anterieure.date.emission");
 			}
 		}
 
 		final TypeDocument typeDocument = view.getTypeDocument();
-		if (typeDocument != null && typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
+		if (typeDocument == null) {
+			errors.rejectValue("typeDocument", "error.type.document.vide");
+		}
+		else if (typeDocument != TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL && typeDocument != TypeDocument.DECLARATION_IMPOT_VAUDTAX) {
 			errors.rejectValue("typeDocument", "error.type.document.invalide");
 		}
 	}

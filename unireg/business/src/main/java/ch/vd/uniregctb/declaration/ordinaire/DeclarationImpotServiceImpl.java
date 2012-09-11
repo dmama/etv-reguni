@@ -380,15 +380,14 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 
 	@Override
 	public DeclarationImpotOrdinaire quittancementDI(Contribuable contribuable, DeclarationImpotOrdinaire di, final RegDate dateEvenement, String source) {
-		if (!dateEvenement.equals(di.getDateRetour())) {
-			if (di.getDateRetour() != null) {
-				di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
-			}
-			final EtatDeclaration etat = new EtatDeclarationRetournee(dateEvenement, source);
-			di.addEtat(etat);
+		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
+		// if (di.getDateRetour() != null) {
+		// 	di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE).setAnnule(true);
+		// }
+		final EtatDeclaration etat = new EtatDeclarationRetournee(dateEvenement, source);
+		di.addEtat(etat);
 
-			evenementFiscalService.publierEvenementFiscalRetourDI(contribuable, di, dateEvenement);
-		}
+		evenementFiscalService.publierEvenementFiscalRetourDI(contribuable, di, dateEvenement);
 		return di;
 	}
 

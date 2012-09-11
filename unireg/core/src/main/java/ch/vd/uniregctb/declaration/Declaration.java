@@ -350,6 +350,9 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		// end-user-code
 	}
 
+	/**
+	 * @return la date de retour de la déclaration; c'est-à-dire la date d'obtention de l'état 'retourné' le plus récent. Ou <b>null</b> si la déclaration n'est pas retournée.
+	 */
 	@Transient
 	public RegDate getDateRetour() {
 		EtatDeclaration etatDeclaration = getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);

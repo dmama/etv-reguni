@@ -4,13 +4,14 @@ import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
-public class EtatDeclarationView implements Comparable<EtatDeclarationView> {
+public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Annulable {
 
 	private Long id;
 	private RegDate dateObtention;
@@ -61,6 +62,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView> {
 		return dateObtention;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

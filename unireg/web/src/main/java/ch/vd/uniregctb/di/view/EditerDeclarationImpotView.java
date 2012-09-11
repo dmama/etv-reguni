@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -22,6 +23,9 @@ public class EditerDeclarationImpotView {
 
 	// Données en lecture-seule du formulaire
 	private Long tiersId;
+	private Long id;
+	private TypeDocument typeDocument;
+	private RegDate dateRetour;
 	private int periodeFiscale;
 	private RegDate dateDebutPeriodeImposition;
 	private RegDate dateFinPeriodeImposition;
@@ -29,16 +33,12 @@ public class EditerDeclarationImpotView {
 	private String sourceQuittancement;
 	private TypeEtatDeclaration dernierEtat;
 	private List<DelaiDeclarationView> delais;
+	private List<EtatDeclarationView> etats;
 	private boolean isSommable;
 	/**
 	 * VRAI si la DI a été sommée (même si elle est maintenant retournée ou échue)
 	 */
 	private boolean wasSommee;
-
-	// Données modifiables du formulaire
-	private Long id;
-	private TypeDocument typeDocument;
-	private RegDate dateRetour;
 	@Nullable
 	private Long tacheId;
 
@@ -51,14 +51,14 @@ public class EditerDeclarationImpotView {
 	public EditerDeclarationImpotView() {
 	}
 
-	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId) {
-		initReadOnlyValues(di);
+	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource) {
+		initReadOnlyValues(di, messageSource);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
@@ -68,6 +68,7 @@ public class EditerDeclarationImpotView {
 		this.sourceQuittancement = initSourceQuittancement(di);
 		this.dernierEtat = getDernierEtat(di);
 		this.delais = initDelais(di);
+		this.etats = initEtats(di.getEtats(), messageSource);
 		this.isAllowedDelai = initIsAllowedDelai(this.dernierEtat);
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
@@ -137,12 +138,17 @@ public class EditerDeclarationImpotView {
 		return list;
 	}
 
-	public Long getTiersId() {
-		return tiersId;
+	private static List<EtatDeclarationView> initEtats(Set<EtatDeclaration> etats, MessageSource messageSource) {
+		final List<EtatDeclarationView> list = new ArrayList<EtatDeclarationView>();
+		for (EtatDeclaration etat : etats) {
+			list.add(new EtatDeclarationView(etat, messageSource));
+		}
+		Collections.sort(list);
+		return list;
 	}
 
-	public void setId(Long id) {
-		this.id = id;
+	public Long getTiersId() {
+		return tiersId;
 	}
 
 	public Long getId() {
@@ -173,16 +179,8 @@ public class EditerDeclarationImpotView {
 		return typeDocument;
 	}
 
-	public void setTypeDocument(TypeDocument typeDocument) {
-		this.typeDocument = typeDocument;
-	}
-
 	public RegDate getDateRetour() {
 		return dateRetour;
-	}
-
-	public void setDateRetour(RegDate dateRetour) {
-		this.dateRetour = dateRetour;
 	}
 
 	public TypeEtatDeclaration getDernierEtat() {
@@ -193,6 +191,10 @@ public class EditerDeclarationImpotView {
 		return delais;
 	}
 
+	public List<EtatDeclarationView> getEtats() {
+		return etats;
+	}
+
 	public boolean isDepuisTache() {
 		return tacheId != null;
 	}
@@ -200,10 +202,6 @@ public class EditerDeclarationImpotView {
 	@Nullable
 	public Long getTacheId() {
 		return tacheId;
-	}
-
-	public void setTacheId(@Nullable Long tacheId) {
-		this.tacheId = tacheId;
 	}
 
 	public boolean isAllowedQuittancement() {

@@ -16,7 +16,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.di.view.EditerDeclarationImpotView;
+import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -110,9 +110,10 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
+		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
+		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();
@@ -166,9 +167,10 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
+		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 1, 20));
+		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();
@@ -213,9 +215,10 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.01.2011 -> Blocage et message d'erreur
-		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
+		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 4, 24));
+		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();
@@ -269,9 +272,10 @@ public class DeclarationImpotControllerValidatorTest extends WebTest {
 		});
 
 		//On tente de la quittancer au 20.06.2011 -> Blocage et message d'erreur
-		EditerDeclarationImpotView view = new EditerDeclarationImpotView();
+		AjouterEtatDeclarationView view = new AjouterEtatDeclarationView();
 		view.setId(ids.declarationId);
 		view.setDateRetour(date(2011, 4, 26));
+		view.setTypeDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX);
 		final Errors errors = new BeanPropertyBindingResult(view, "view");
 		validator.validate(view, errors);
 		final List<ObjectError> allErrors = errors.getAllErrors();

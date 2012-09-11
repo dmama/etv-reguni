@@ -24,6 +24,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
+import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
 import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
@@ -79,6 +80,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		manager.setModeleDocumentDAO(getBean(ModeleDocumentDAO.class, "modeleDocumentDAO"));
 		manager.setTacheDAO(getBean(TacheDAO.class, "tacheDAO"));
 		manager.setPeriodeImpositionService(getBean(PeriodeImpositionService.class, "periodeImpositionService"));
+		manager.setDiService(getBean(DeclarationImpotService.class, "diService"));
 	}
 
 	@Test
@@ -578,7 +580,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				manager.save(ids.pp, ids.di, date(2010, 1, 1), date(2010, 12, 31), TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, TypeAdresseRetour.CEDI, RegDate.get(), date(2011, 4, 12));
+				manager.quittancerDI(ids.di, TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, date(2011, 4, 12));
 				return null;
 			}
 		});
@@ -637,7 +639,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				manager.save(ppId, null, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
+				manager.envoieImpressionLocalDI(ppId, null, debutAnneeCourante, finAnneeCourante, TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, TypeAdresseRetour.CEDI, RegDate.get(), null);
 				return null;
 			}
 		});

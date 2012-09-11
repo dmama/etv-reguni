@@ -34,7 +34,7 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
-public class EnvoiSommationDIsProcessorTest extends BusinessTest {
+public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 
 	private EnvoiSommationsDIsProcessor processor;
 	private DeclarationImpotOrdinaireDAO diDao;
@@ -74,6 +74,51 @@ public class EnvoiSommationDIsProcessorTest extends BusinessTest {
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
+				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
+
+				final DelaiDeclaration delai = new DelaiDeclaration();
+				delai.setDateDemande(dateEmission);
+				delai.setDelaiAccordeAu(dateDelaiInitial);
+				declaration.addDelai(delai);
+
+				return declaration.getId();
+			}
+		});
+
+		final EnvoiSommationsDIsResults results = processor.run(RegDate.get(), false, 0, null);
+		Assert.assertEquals("La DI n'aurait même pas dû être vue", 0, results.getTotalDisTraitees());
+
+		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalSommations(2008));
+		Assert.assertEquals(0, results.getTotalIndigent());
+		Assert.assertEquals(0, results.getTotalNonAssujettissement());
+		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
+		Assert.assertEquals(0, results.getTotalDisOptionnelles());
+	}
+
+	/**
+	 * [SIFISC-5208] On s'assure qu'une déclaration retournée plusieurs fois, n'est pas sommée
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDiRetourneePlusieursFois() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PersonnePhysique pp = addNonHabitant("Jacques", "Cartier", RegDate.get(1980, 1, 5), Sexe.MASCULIN);
+				addForPrincipal(pp, RegDate.get(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
+
+				final RegDate dateEmission = RegDate.get(2009, 1, 15);
+				final RegDate dateDelaiInitial = RegDate.get(2009, 3, 15);
+				final PeriodeFiscale periode = addPeriodeFiscale(2008);
+				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
+				final DeclarationImpotOrdinaire declaration = addDeclarationImpot(pp, periode, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
+				declaration.addEtat(new EtatDeclarationEmise(dateEmission));
+				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(-5), "ADDI"));
 				declaration.addEtat(new EtatDeclarationRetournee(dateDelaiInitial.addDays(5), "TEST"));   // oui, le retour est après le délai initial, mais cela ne doit pas avoir d'influence
 
 				final DelaiDeclaration delai = new DelaiDeclaration();

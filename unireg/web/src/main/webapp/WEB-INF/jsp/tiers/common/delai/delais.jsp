@@ -3,9 +3,7 @@
 <c:set var="page" value="${param.page}" />
 <c:set var="depuisTache" value="${param.depuisTache}" />
 <c:if test="${not empty command.delais}">
-<fieldset>
-	<legend><span><fmt:message key="label.delais" /></span></legend>
-	
+
 	<display:table 	name="command.delais" id="delai" pagesize="10" class="display">
 		<display:column titleKey="label.date.demande">
 			<c:if test="${delai.annule}"><strike></c:if>
@@ -48,5 +46,4 @@
 		<display:setProperty name="paging.banner.one_item_found" value=""/>
 	</display:table>
 
-</fieldset>
 </c:if>

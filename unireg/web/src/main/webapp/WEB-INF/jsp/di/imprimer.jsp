@@ -142,6 +142,7 @@
 			
 		 	function Page_ImprimerDI(button) {
 				 $('span.error').hide(); // on cache d'éventuelles erreurs datant d'un ancien submit
+				 Modifier.isModified = false; // du moment qu'on imprie la DI, les valeurs saisies ont été prises en compte
 				 $(button).closest("form").submit();
 				 button.disabled = true;
 				return true;

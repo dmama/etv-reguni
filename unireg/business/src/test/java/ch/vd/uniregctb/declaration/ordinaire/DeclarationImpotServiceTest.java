@@ -2,12 +2,12 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -69,6 +69,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -417,7 +418,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final RegDate dateEvenement = RegDate.get(2007, 5, 12);
+				final RegDate dateEvenement = date(2007, 5, 12);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
 				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST"));
@@ -433,14 +434,14 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 
 				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
-				Assert.assertNotNull(di);
+				assertNotNull(di);
 
 				final EtatDeclaration dernierEtat = di.getDernierEtat();
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
-				assertEquals(RegDate.get(2007, 5, 12), di.getDateRetour());
+				assertEquals(date(2007, 5, 12), di.getDateRetour());
 
 				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
-				assertEquals(RegDate.get(2007, 5, 12), etatRetourne.getDateObtention());
+				assertEquals(date(2007, 5, 12), etatRetourne.getDateObtention());
 				assertEquals("TEST", etatRetourne.getSource());
 				return null;
 			}
@@ -451,7 +452,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
-				final RegDate dateEvenement = RegDate.get(2007, 8, 8);
+				final RegDate dateEvenement = date(2007, 8, 8);
 				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
 				DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
 				assertNotNull(service.quittancementDI(eric, di, dateEvenement, "TEST2"));
@@ -469,10 +470,10 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 				final EtatDeclaration dernierEtat = di.getDernierEtat();
 				assertEquals(TypeEtatDeclaration.RETOURNEE, dernierEtat.getEtat());
-				assertEquals(RegDate.get(2007, 8, 8), di.getDateRetour());
+				assertEquals(date(2007, 8, 8), di.getDateRetour());
 
 				final EtatDeclarationRetournee etatRetourne = (EtatDeclarationRetournee) dernierEtat;
-				assertEquals(RegDate.get(2007, 8, 8), etatRetourne.getDateObtention());
+				assertEquals(date(2007, 8, 8), etatRetourne.getDateObtention());
 				assertEquals("TEST2", etatRetourne.getSource());
 				return null;
 			}
@@ -1296,7 +1297,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				final CollectiviteAdministrative colAdm = tiersService.getCollectiviteAdministrative(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm());
-				
+
 				PeriodeFiscale periode = addPeriodeFiscale(2007);
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 				addModeleFeuilleDocument("Déclaration", "210", modele);
@@ -1788,6 +1789,137 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 				assertEquals(1, diEventEmission.size());
 				assertEquals(Integer.valueOf(annee), diEventEmission.iterator().next());
 				assertEmpty(diEventAnnulation);
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-5208] Vérifie qu'il est possible de quittancer plusieurs fois le retour d'une DI, et que toutes les états retournés sont mémorisés tels quels (sans annuler l'état précédent).
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testQuittancementDIMultiples() throws Exception {
+
+		class Ids {
+			public long ericId;
+		}
+		final Ids ids = new Ids();
+
+		// Création d'un contribuable ordinaire et de sa DI
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				ModeleDocument declarationComplete2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2006);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2006);
+
+				PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				ModeleDocument declarationComplete2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
+				addModeleFeuilleDocument("Déclaration", "210", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 1", "220", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 2-3", "230", declarationComplete2007);
+				addModeleFeuilleDocument("Annexe 4-5", "240", declarationComplete2007);
+
+				// Un tiers tout ce quil y a de plus ordinaire
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.ericId = eric.getNumero();
+				addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				addDeclarationImpot(eric, periode2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
+						declarationComplete2006);
+
+				return null;
+			}
+		});
+
+		// 1er quittance de la declaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 5, 12), "TEST0"));
+				return null;
+			}
+		});
+
+		// On s'assure que l'état retourné est bien enregistré
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				assertEquals(date(2007, 5, 12), di.getDateRetour());
+
+				final Set<EtatDeclaration> etats = di.getEtats();
+				assertNotNull(etats);
+				assertEquals(1, etats.size());
+
+				final Iterator<EtatDeclaration> iterator = etats.iterator();
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) iterator.next();
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+				assertEquals("TEST0", etat0.getSource());
+				assertFalse(etat0.isAnnule());
+
+				// l'état retourné est le dernier, comme il se doit
+				assertSame(etat0, di.getDernierEtat());
+				assertSame(etat0, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
+				return null;
+			}
+		});
+
+		// 2ème quittance de la declaration
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(service.quittancementDI(eric, di, date(2007, 10, 28), "TEST1"));
+				return null;
+			}
+		});
+
+		// On s'assure que le nouvel état retourné est aussi enregistré
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				Contribuable eric = hibernateTemplate.get(Contribuable.class, ids.ericId); // ordinaire
+				assertTrue(eric.getDeclarationsForPeriode(2006, false).size() == 1);
+
+				final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) eric.getDeclarationsForPeriode(2006, false).get(0);
+				assertNotNull(di);
+				assertEquals(date(2007, 10, 28), di.getDateRetour());
+
+				final List<EtatDeclaration> etats = di.getEtatsSorted();
+				assertNotNull(etats);
+				assertEquals(2, etats.size());
+
+				final EtatDeclarationRetournee etat0 = (EtatDeclarationRetournee) etats.get(0);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat0.getEtat());
+				assertEquals(date(2007, 5, 12), etat0.getDateObtention());
+				assertEquals("TEST0", etat0.getSource());
+				assertFalse(etat0.isAnnule());
+
+				final EtatDeclarationRetournee etat1 = (EtatDeclarationRetournee) etats.get(1);
+				assertEquals(TypeEtatDeclaration.RETOURNEE, etat1.getEtat());
+				assertEquals(date(2007, 10, 28), etat1.getDateObtention());
+				assertEquals("TEST1", etat1.getSource());
+				assertFalse(etat1.isAnnule());
+
+				// le nouvel état retourné doit être le dernier
+				assertSame(etat1, di.getDernierEtat());
+				assertSame(etat1, di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE));
 				return null;
 			}
 		});

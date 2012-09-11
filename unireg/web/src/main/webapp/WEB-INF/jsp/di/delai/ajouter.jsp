@@ -18,7 +18,7 @@
 
 			<form:hidden path="idDeclaration" value="${command.idDeclaration}"/>
 			<fieldset>
-				<legend><span><fmt:message key="label.delais"/></span></legend>
+				<legend><span><fmt:message key="label.etats"/></span></legend>
 				<table border="0">
 					<unireg:nextRowClass reset="0"/>
 					<tr class="<unireg:nextRowClass/>">

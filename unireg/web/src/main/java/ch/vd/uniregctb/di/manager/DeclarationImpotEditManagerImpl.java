@@ -67,7 +67,6 @@ import ch.vd.uniregctb.type.Qualification;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
-import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -102,7 +101,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * Annule un delai
 	 */
 	@Override
-	@Transactional(rollbackFor = Throwable.class)
 	public void annulerDelai(Long idDI, Long idDelai) {
 		DeclarationImpotOrdinaire di = diDAO.get(idDI);
 		if (di == null) {
@@ -122,7 +120,6 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	 * {@inheritDoc}
 	 */
 	@Override
-	@Transactional(readOnly = true)
 	public List<PeriodeImposition> calculateRangesProchainesDIs(Long numero) throws ValidationException {
 
 		// on charge le tiers
@@ -300,71 +297,27 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public Long getTiersId(Long idDI) {
-		final DeclarationImpotOrdinaire di = diDAO.get(idDI);
-		if (di == null) {
-			return null;
-		}
-		return di.getTiers().getNumero();
-	}
-
-	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalDI(Long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument,
 	                                                TypeAdresseRetour adresseRetour, RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
 		// Création et sauvegarde de la DI
-		DeclarationImpotOrdinaire declaration = save(ctbId, id, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
-		if (tiersService.getOfficeImpotId(declaration.getTiers()) == null) {
-			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
-		}
-		//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
-		return diService.envoiDIOnline(declaration, RegDate.get());
-	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public DeclarationImpotOrdinaire save(long ctbId, @Nullable Long id, RegDate dateDebut, RegDate dateFin, TypeDocument typeDocument, TypeAdresseRetour adresseRetour,
-	                                      RegDate delaiAccorde, @Nullable RegDate dateRetour) throws Exception {
 		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		DeclarationImpotOrdinaire di;
 		if (ctb == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.contribuable.inexistant", null, WebContextUtils.getDefaultLocale()));
 		}
-
-		if (id == null) {
-			di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
-		}
-		else {
-			di = update(id, typeDocument, dateRetour);
+		if (tiersService.getOfficeImpotId(ctb) == null) {
+			throw new DeclarationException("Le contribuable ne possède pas de for de gestion");
 		}
 
-		return di;
+		final DeclarationImpotOrdinaire di = creerNouvelleDI(ctb, dateDebut, dateFin, typeDocument, adresseRetour, delaiAccorde, dateRetour);
+		//Envoi du flux xml à l'éditique + envoi d'un événement fiscal
+		return diService.envoiDIOnline(di, RegDate.get());
 	}
 
 	@Override
-	public DeclarationImpotOrdinaire update(long id, TypeDocument typeDocument, RegDate dateRetour) {
-		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		if (dateRetour != null) {
-			if (dateRetour != di.getDateRetour()) {
-				if (di.getDateRetour() != null) {
-					final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-					etatRetournePrecedent.setAnnule(true);
-				}
-				final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
-				di.addEtat(etat);
-				evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
+	public DeclarationImpotOrdinaire quittancerDI(long id, TypeDocument typeDocument, RegDate dateRetour) {
 
-				// Envoi du message de quittance au BAM
-				sendQuittancementToBam(di, dateRetour);
-			}
-		}
-		else {
-			final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
-			if (etatRetournePrecedent != null) {
-				etatRetournePrecedent.setAnnule(true);
-			}
-		}
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
 
 		// UNIREG-1437 : on peut aussi changer le type de document
 		if (di.getTypeDeclaration() != typeDocument) {
@@ -375,6 +328,19 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 				assigneModeleDocument(di, typeDocument);
 			}
 		}
+
+		// [SIFISC-5208] Dorénavant, on stocke scrupuleusement tous les états de quittancement de type 'retournés', *sans* annuler les états précédents.
+		// if (di.getDateRetour() != null) {
+		// 	final EtatDeclaration etatRetournePrecedent = di.getDernierEtatOfType(TypeEtatDeclaration.RETOURNEE);
+		// 	etatRetournePrecedent.setAnnule(true);
+		// }
+		final EtatDeclaration etat = new EtatDeclarationRetournee(dateRetour, EtatDeclarationRetournee.SOURCE_WEB);
+		di.addEtat(etat);
+		evenementFiscalService.publierEvenementFiscalRetourDI((Contribuable) di.getTiers(), di, dateRetour);
+
+		// Envoi du message de quittance au BAM
+		sendQuittancementToBam(di, dateRetour);
+
 		return di;
 	}
 

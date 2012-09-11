@@ -4,9 +4,10 @@ import java.sql.Timestamp;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 
-public class DelaiDeclarationView implements Comparable<DelaiDeclarationView> {
+public class DelaiDeclarationView implements Comparable<DelaiDeclarationView>, Annulable {
 
 	private Long id;
 
@@ -125,6 +126,7 @@ public class DelaiDeclarationView implements Comparable<DelaiDeclarationView> {
 		this.declarationRange = declarationRange;
 	}
 
+	@Override
 	public boolean isAnnule() {
 		return annule;
 	}

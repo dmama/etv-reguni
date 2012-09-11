@@ -141,7 +141,10 @@ public interface DeclarationImpotService {
 	void echoirDI(DeclarationImpotOrdinaire declaration, RegDate dateTraitement);
 
 	/**
-	 * Quittancement d'une DI
+	 * Quittance une déclaration d'impôt ordinaire. C'est-à-dire : ajoute un état 'retourné' sur la déclaration.
+	 * <p/>
+	 * <b>Note:</b> plusieurs états 'retournés' non-annulés peuvent coexister en parallèle depuis la version 12R4 (voir SIFISC-5208). Lorsque plusieurs états 'retourné' existent, le dernier état
+	 * (= le plus récent) est utilisé. Finalement, la déclaration est considérée quittancée dès qu'un seul état 'retourné' existe.
 	 *
 	 * @param contribuable  un contribuable
 	 * @param di            la déclaration qui doit être quittancée

@@ -43,10 +43,12 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocumentDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.di.manager.DeclarationImpotEditManager;
 import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
+import ch.vd.uniregctb.di.view.AjouterEtatDeclarationView;
 import ch.vd.uniregctb.di.view.ChoixDeclarationImpotView;
 import ch.vd.uniregctb.di.view.DeclarationListView;
 import ch.vd.uniregctb.di.view.DeclarationView;
@@ -486,6 +488,97 @@ public class DeclarationImpotController {
 	}
 
 	/**
+	 * Affiche un écran qui permet de quittancer une déclaration.
+	 */
+	@Transactional(rollbackFor = Throwable.class, readOnly = true)
+	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.GET)
+	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(id);
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		final AjouterEtatDeclarationView view = new AjouterEtatDeclarationView(di, messageSource);
+		model.addAttribute("command", view);
+		model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
+
+		return "di/etat/ajouter";
+	}
+
+	/**
+	 * Quittance une déclaration d'impôt manuellement
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.POST)
+	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result,
+	                     Model model) throws AccessDeniedException {
+
+		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
+		}
+
+		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
+		if (di == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+		}
+
+		if (result.hasErrors()) {
+			view.initReadOnlyValues(di, messageSource);
+			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
+			return "di/etat/ajouter";
+		}
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On quittance la DI
+		manager.quittancerDI(view.getId(), view.getTypeDocument(), view.getDateRetour());
+
+		return "redirect:/di/editer.do?id=" + di.getId();
+	}
+
+	/**
+	 * Annuler le quittancement spécifié.
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/di/etat/annuler.do", method = RequestMethod.POST)
+	public String annulerEtat(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
+
+		if (!SecurityProvider.isGranted(Role.DI_QUIT_PP)) {
+			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
+		}
+
+		// Vérifie les paramètres
+		final EtatDeclaration etat = hibernateTemplate.get(EtatDeclaration.class, id);
+		if (etat == null) {
+			throw new ObjectNotFoundException(messageSource.getMessage("error.etat.inexistant", null, WebContextUtils.getDefaultLocale()));
+		}
+		if (!(etat instanceof EtatDeclarationRetournee)) {
+			throw new IllegalArgumentException("Seuls les quittancements peuvent être annulés.");
+		}
+
+		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
+
+		final Contribuable ctb = (Contribuable) di.getTiers();
+		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+
+		// On annule le quittancement
+		final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
+		retour.setAnnule(true);
+
+		Flash.message("Le quittancement du " + RegDateHelper.dateToDisplayString(retour.getDateObtention()) + " a été annulé.");
+		return "redirect:/di/editer.do?id=" + di.getId();
+	}
+
+	/**
 	 * Affiche un écran qui permet d'éditer une déclaration.
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
@@ -506,42 +599,10 @@ public class DeclarationImpotController {
 		final Contribuable ctb = (Contribuable) di.getTiers();
 		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId);
+		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource);
 		model.addAttribute("command", view);
-		model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
 
 		return "di/editer";
-	}
-
-	/**
-	 * Enregistre les modifications apportée à la déclaration.
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/editer.do", method = RequestMethod.POST)
-	public String editer(@Valid @ModelAttribute("command") final EditerDeclarationImpotView view, BindingResult result,
-	                     Model model) throws AccessDeniedException {
-
-		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt sur les personnes physiques.");
-		}
-
-		final DeclarationImpotOrdinaire di = diDAO.get(view.getId());
-		if (di == null) {
-			throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-		}
-
-		if (result.hasErrors()) {
-			view.initReadOnlyValues(di);
-			model.addAttribute("typesDeclarationImpotOrdinaire", tiersMapHelper.getTypesDeclarationsImpotOrdinaires());
-			return "di/editer";
-		}
-
-		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-
-		manager.update(view.getId(), view.getTypeDocument(), view.getDateRetour());
-
-		return "redirect:/di/list.do?tiersId=" + ctb.getId();
 	}
 
 	/**
