@@ -27,6 +27,12 @@
 					<td width="25%"><fmt:message key="label.date.fin.periode.imposition" />&nbsp;:</td>
 					<td width="25%"><unireg:regdate regdate="${command.dateFinPeriodeImposition}"/></td>
 				</tr>
+				<tr class="<unireg:nextRowClass/>" >
+					<td width="25%"><fmt:message key="label.type.declaration" />&nbsp;:</td>
+					<td width="25%"><fmt:message key="option.type.document.${command.typeDocument}"/></td>
+					<td width="25%"><fmt:message key="label.etat.courant" />&nbsp;:</td>
+					<td width="25%"><fmt:message key="option.etat.avancement.${command.dernierEtat}"/></td>
+				</tr>
 			</table>
 		</fieldset>
 		<!-- Fin  Declaration impot -->
