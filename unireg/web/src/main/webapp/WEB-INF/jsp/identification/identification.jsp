@@ -66,7 +66,7 @@
 						<fmt:formatDate value="${personne.dateFermetureFor}" pattern="dd.MM.yyyy"/>
 				</display:column>
 				<display:column>
-					<unireg:raccourciIdentifier onClick="javascript:Page_Identifier(${personne.numero});" tooltip="Identifier" />
+					<unireg:raccourciIdentifier onClick="javascript:IdentificationCtb.Page_Identifier(${personne.numero});" tooltip="Identifier" />
 				</display:column>
 			</display:table>
 
@@ -99,16 +99,19 @@
 		<unireg:RetourButton link="edit.do?unlock=true" message="Voulez-vous vraiment quitter cette page sans sauver ?"/>
 		
 		<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
-			&nbsp;<input type="button" name="expertiser" value="<fmt:message key="label.bouton.expertiser" />" onClick="javascript:confirmeExpertise();" />		
-		</authz:authorize>				
+            <c:set var="expertiserButtonName">
+                <fmt:message key="label.bouton.expertiser" />
+            </c:set>
+            &nbsp;<unireg:buttonTo action="/identification/gestion-messages/edit.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${command.demandeIdentificationView.id},expertiser:expertiser}"/>
+		</authz:authorize>
 		<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN">
-		&nbsp;<input type="button" name="nonIdentifiable" value="<fmt:message key="label.bouton.identification.impossible" />" onClick="javascript:page_NonIdentification(${command.demandeIdentificationView.id});" />
-		
+            <c:set var="nonIdentifiableButtonName">
+                <fmt:message key="label.bouton.identification.impossible" />
+            </c:set>
+            &nbsp;<unireg:buttonTo action="/identification/gestion-messages/nonIdentifie.do" name="${nonIdentifiableButtonName}" method="get" params="{id:${command.demandeIdentificationView.id}}"/>
 		</authz:authorize>
 		
 		<!-- Fin Boutons -->
-		
-			
 		</form:form>
 		
 		<script type="text/javascript" language="javascript" src="<c:url value="/js/identification.js"/>"></script>

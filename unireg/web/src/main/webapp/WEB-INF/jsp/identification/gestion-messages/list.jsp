@@ -56,7 +56,7 @@
 				
 				<c:if test="${!messageTraite}">
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
-					<display:column title="<input type='checkbox'  name='selectAll' onclick='javascript:selectAllIdentifications(this);' />">
+					<display:column title="<input type='checkbox'  name='selectAll' onclick='javascript:IdentificationCtb.selectAllIdentifications(this);' />">
 						<c:if test="${!message.annule}">
 							<input type="checkbox" checked  name="tabIdsMessages" id="tabIdsMessages_${message_rowNum}" value="${message.id}" >
 						</c:if>
@@ -142,7 +142,7 @@
 						<td width="25%">&nbsp;</td>
 						<td width="50%">
 							<div class="navigation-action">
-									<input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:confirmeSuspensionMessage();" />&nbsp;<input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:confirmeSoumissionMessage();"/>
+									<input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();" />&nbsp;<input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>
 							</div>
 						</td>
 						<td width="25%">&nbsp;</td>
