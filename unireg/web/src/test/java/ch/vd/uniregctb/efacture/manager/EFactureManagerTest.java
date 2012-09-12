@@ -1,15 +1,22 @@
 package ch.vd.uniregctb.efacture.manager;
 
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.junit.Test;
 import org.springframework.context.MessageSource;
 
+import ch.vd.evd0025.v1.PayerId;
+import ch.vd.evd0025.v1.PayerSituationHistoryEntry;
+import ch.vd.evd0025.v1.PayerStatus;
+import ch.vd.evd0025.v1.PayerWithHistory;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.efacture.data.DestinataireAvecHisto;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.unireg.interfaces.efacture.data.TypeAttenteDemande;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.WithoutSpringTest;
+import ch.vd.uniregctb.efacture.DestinataireAvecHistoView;
 import ch.vd.uniregctb.efacture.EFactureResponseService;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.type.TypeDocument;
@@ -24,6 +31,8 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class EFactureManagerTest extends WithoutSpringTest {
@@ -71,17 +80,26 @@ public class EFactureManagerTest extends WithoutSpringTest {
 		replay(eFactureResponseService, eFactureService, messageSource);
 	}
 
-//	@Test
-//	public void testGetDestinataireAvecSonHistorique() {
-//		// TODO FRED
-//		new DestinataireAvecHisto()
-//		expect(eFactureService.getDestinataireAvecSonHistorique(NO_CTB))
-//				.andReturn(null)
-//				.andReturn(new DestinataireAvecHisto());
-//		replayAll();
-//		DestinataireAvecHistoView view = eFactureManager.getDestinataireAvecSonHistorique(NO_CTB);
-//		assertNull(view);
-//	}
+	@Test
+	public void testGetDestinataireAvecSonHistorique() {
+		PayerSituationHistoryEntry pshe = new PayerSituationHistoryEntry();
+		pshe.setStatus(PayerStatus.INSCRIT);
+		expect(eFactureService.getDestinataireAvecSonHistorique(NO_CTB))
+				.andReturn(null)
+				.andReturn(
+						new DestinataireAvecHisto(
+								new PayerWithHistory(
+										new PayerId("BUSINESS_ID", "BILLER_ID"),
+										PayerStatus.INSCRIT,
+										new PayerWithHistory.HistoryOfSituations(Arrays.asList(pshe)),
+										new PayerWithHistory.HistoryOfRequests()),
+								NO_CTB));
+		replayAll();
+		DestinataireAvecHistoView view = eFactureManager.getDestinataireAvecSonHistorique(NO_CTB);
+		assertNull(view);
+		view = eFactureManager.getDestinataireAvecSonHistorique(NO_CTB);
+		assertNotNull(view);
+	}
 
 	@Test
 	public void testSuspendreContribuable() throws Exception {
@@ -130,7 +148,4 @@ public class EFactureManagerTest extends WithoutSpringTest {
 		assertContains("maintenant inscrit", msg);
 		assertContains(Long.toString(NO_CTB), msg);
 	}
-
-
-
 }
