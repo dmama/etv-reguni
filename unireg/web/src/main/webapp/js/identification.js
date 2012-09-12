@@ -50,6 +50,7 @@ var IdentificationCtb = {
 
     Page_Identifier: function(idCtb) {
         if(confirm('Voulez-vous vraiment identifier ce message avec ce contribuable ?')) {
+            $("table#personne a.key").replaceWith('<span>&nbsp;</span>');
             Form.doPostBack("theForm", "identifier", idCtb);
         }
     }
