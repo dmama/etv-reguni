@@ -70,7 +70,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/fiscal/evtQuittanceListe-v1.xsd")});
+		esbValidator.setSources(new Resource[] {new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);

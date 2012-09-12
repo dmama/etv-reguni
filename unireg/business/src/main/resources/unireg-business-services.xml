@@ -107,7 +107,6 @@
 
 	<!-- Section Evenement Externe -->
 	<bean id="evenementExterneService" class="ch.vd.uniregctb.evenement.externe.EvenementExterneServiceImpl">
-		<property name="sender" ref="evenementExterneSender" />
 		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="dataEventService" ref="dataEventService"/>

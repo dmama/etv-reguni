@@ -1,25 +1,33 @@
 package ch.vd.uniregctb.evenement.externe;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Marshaller;
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.math.BigInteger;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.util.Assert;
+import org.w3c.dom.Document;
 
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.ListeType;
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.OrigineType;
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.QuittanceType;
-import ch.vd.infrastructure.model.impl.DateUtils;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.technical.esb.EsbMessage;
+import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Liste;
+import ch.vd.unireg.xml.event.lr.quittance.v1.ObjectFactory;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Origine;
+import ch.vd.unireg.xml.event.lr.quittance.v1.Quittance;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
@@ -63,9 +71,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -77,23 +85,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -138,9 +141,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -152,23 +155,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(0, evts.size());
 				
@@ -186,9 +184,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -200,23 +198,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -256,9 +249,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -276,23 +269,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -312,9 +300,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -328,23 +316,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -386,9 +369,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -402,23 +385,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -470,9 +448,9 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		final RegDate dateFin = date(2008, 3, 31);
 		final RegDate dateQuittancement = RegDate.get();
 
-		final long dpiId = doInNewTransaction(new TransactionCallback<Long>() {
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
-			public Long doInTransaction(TransactionStatus status) {
+			public Long execute(TransactionStatus status) throws Exception {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
 				dpi.setNom1("DebiteurTest");
 				addForDebiteur(dpi, dateDebut, null, MockCommune.Lausanne);
@@ -487,23 +465,18 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-				final String message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				try {
-					listener.onMessage(message, "TEST-" + System.currentTimeMillis());
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
+			public Object execute(TransactionStatus status) throws Exception {
+				final EsbMessage message = createMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
+				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
 
-		doInNewTransaction(new TransactionCallback<Object>() {
+		doInNewTransaction(new TxCallback<Object>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
 				assertNotNull(evts.get(0));
@@ -548,22 +521,37 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		});
 	}
 
-	private String createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
-		return doc.xmlText();
+	private EsbMessage createMessageQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+		return createEsbMessage(createEvenementQuittancement(Quittance.QUITTANCEMENT, noCtb, Liste.LR, debutPeriode, finPeriode, dateEvenement));
 	}
 	
-	private String createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.ANNULATION, noCtb, ListeType.LR, debutPeriode, finPeriode, dateEvenement);
-		return doc.xmlText();
+	private EsbMessage createMessageAnnulationQuittancement(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+		return createEsbMessage(createEvenementQuittancement(Quittance.ANNULATION, noCtb, Liste.LR, debutPeriode, finPeriode, dateEvenement));
 	}
 
-	private String createMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) {
-		final EvtQuittanceListeDocument doc = createEvenementQuittancement(QuittanceType.QUITTANCEMENT, noCtb, ListeType.LC, debutPeriode, finPeriode, dateEvenement);
-		return doc.xmlText();
+	private EsbMessage createMessageLC(long noCtb, RegDate debutPeriode, RegDate finPeriode, RegDate dateEvenement) throws Exception {
+		return createEsbMessage(createEvenementQuittancement(Quittance.QUITTANCEMENT, noCtb, Liste.LC, debutPeriode, finPeriode, dateEvenement));
 	}
 
-	private static EvtQuittanceListeDocument createEvenementQuittancement(QuittanceType.Enum quitancement, Long numeroCtb, ListeType.Enum listeType, RegDate dateDebut,
+	private EsbMessage createEsbMessage(EvtQuittanceListe event) throws Exception {
+		JAXBContext context = JAXBContext.newInstance(ObjectFactory.class.getPackage().getName());
+		Marshaller marshaller = context.createMarshaller();
+
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		dbf.setNamespaceAware(true);
+		DocumentBuilder db = dbf.newDocumentBuilder();
+		Document doc = db.newDocument();
+
+		final QName qname = new QName("http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1", "evtQuittanceListe");
+		marshaller.marshal(new JAXBElement<EvtQuittanceListe>(qname, EvtQuittanceListe.class, event), doc);
+
+		final EsbMessage m = new EsbMessageFactory().createMessage();
+		m.setBody(doc);
+
+		return m;
+	}
+
+	private static EvtQuittanceListe createEvenementQuittancement(Quittance quitancement, Long numeroCtb, Liste listeType, RegDate dateDebut,
 	                                                              RegDate dateFin, RegDate dateEvenement) {
 
 		Assert.notNull(quitancement, "le type de quittancement est obligation");
@@ -571,27 +559,23 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		Assert.notNull(dateDebut, "la date du début du récapitulatif est obligatoire");
 		// Assert.assertNotNull(dateFin);
 
-		final EvtQuittanceListeDocument doc = EvtQuittanceListeDocument.Factory.newInstance();
-		final EvtQuittanceListeDocument.EvtQuittanceListe evenement = doc.addNewEvtQuittanceListe();
-		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe identification = evenement.addNewIdentificationListe();
+		final EvtQuittanceListe evenement = new EvtQuittanceListe();
+		final EvtQuittanceListe.IdentificationListe identification = new EvtQuittanceListe.IdentificationListe();
 		identification.setNumeroDebiteur(numeroCtb.intValue());
-		final EvtQuittanceListeDocument.EvtQuittanceListe.IdentificationListe.PeriodeDeclaration periodeDeclaration = identification.addNewPeriodeDeclaration();
-		final Calendar datedebutC = DateUtils.calendar(dateDebut.asJavaDate());
-		periodeDeclaration.setDateDebut(datedebutC);
+		final EvtQuittanceListe.IdentificationListe.PeriodeDeclaration periodeDeclaration = new EvtQuittanceListe.IdentificationListe.PeriodeDeclaration();
+		periodeDeclaration.setDateDebut(XmlUtils.regdate2xmlcal(dateDebut));
 		if (dateFin != null) {
-			final Calendar dateFinC = DateUtils.calendar(dateFin.asJavaDate());
-			periodeDeclaration.setDateFin(dateFinC);
+			periodeDeclaration.setDateFin(XmlUtils.regdate2xmlcal(dateFin));
 		}
 		identification.setPeriodeDeclaration(periodeDeclaration);
 		identification.setTypeListe(listeType);
 		identification.setNumeroSequence(new BigInteger("1"));
 		evenement.setIdentificationListe(identification);
 		evenement.setTypeEvtQuittance(quitancement);
-		evenement.setOrigineListe(OrigineType.ELECTRONIQUE);
+		evenement.setOrigineListe(Origine.ELECTRONIQUE);
 		Assert.notNull(dateEvenement, "la date de quittancement du récapitulatif est obligatoire");
-		evenement.setTimestampEvtQuittance(DateUtils.calendar(dateEvenement.asJavaDate()));
-		doc.setEvtQuittanceListe(evenement);
+		evenement.setTimestampEvtQuittance(XmlUtils.regdate2xmlcal(dateEvenement));
 
-		return doc;
+		return evenement;
 	}
 }

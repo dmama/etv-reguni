@@ -22,6 +22,4 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtExterne.enabled}" />
 	</bean>
 
-	<bean id="evenementExterneSender" class="ch.vd.uniregctb.evenement.externe.MockEvenementExterneSender"/>
-
 </beans>

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.externe;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.fiscalite.taxation.evtQuittanceListeV1.EvtQuittanceListeDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -19,16 +18,10 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementExterneServiceImpl.class);
 
-	private EvenementExterneSender sender;
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
 
 	private DataEventService dataEventService;
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setSender(EvenementExterneSender sender) {
-		this.sender = sender;
-	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
@@ -41,14 +34,6 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public void sendEvent(String businessId, EvtQuittanceListeDocument document) throws Exception {
-		sender.sendEvent(businessId, document);
 	}
 
 	/**
