@@ -115,7 +115,6 @@
 				<entry key="/admin/dbdump.do" value-ref="databaseDumpController" />
 
 				<!-- Paramétrage -->
-				<entry key="/param/application.do" value-ref="paramApplicationController" />
 				<entry key="/param/periode.do" value-ref="paramPeriodeController" />
 				<entry key="/param/init-periode.do" value-ref="initPeriodeController" />
 				<entry key="/param/parametres-pf-edit.do" value-ref="paramParametrePeriodeFiscaleEditController" />

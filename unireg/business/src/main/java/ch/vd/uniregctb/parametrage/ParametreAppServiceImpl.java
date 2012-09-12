@@ -195,8 +195,13 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	}
 
 	@Override
-	public String getValeur(ParametreEnum param) {
-		return parametres.get(param).getValeur();
+	public Integer getAgeRentierFemme() {
+		return Integer.parseInt(parametres.get(ParametreEnum.ageRentierFemme).getValeur());
+	}
+
+	@Override
+	public Integer getAgeRentierHomme() {
+		return Integer.parseInt(parametres.get(ParametreEnum.ageRentierHomme).getValeur());
 	}
 
 	private Integer[] getValeurPourParametreDeTypeJoursDansAnnee(ParametreEnum p) {
@@ -343,5 +348,15 @@ public class ParametreAppServiceImpl implements ParametreAppService, Initializin
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val) {
 		   assert val.length == 2;
 		setValeur(dateExclusionDecedeEnvoiDI, String.valueOf(val[0]) + '.' + val[1]);
+	}
+
+	@Override
+	public void setAgeRentierFemme(Integer val) {
+		setValeur(ageRentierFemme, val.toString());
+	}
+
+	@Override
+	public void setAgeRentierHomme(Integer val) {
+		setValeur(ageRentierHomme, val.toString());
 	}
 }

@@ -1,107 +1,74 @@
 package ch.vd.uniregctb.param;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.Valid;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
-import org.apache.log4j.Logger;
-import org.springframework.beans.BeanUtils;
-import org.springframework.validation.BindException;
-import org.springframework.web.servlet.ModelAndView;
-
-import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
 import ch.vd.uniregctb.param.view.ParamApplicationView;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityCheck;
 
-public class ParamApplicationController extends AbstractSimpleFormController {
+@Controller
+@RequestMapping("/param/app")
+public class ParamApplicationController {
 
-	protected static final Logger LOGGER = Logger.getLogger(ParamApplicationController.class);
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des paramètres";
 
 	private ParamApplicationManager manager;
-	
-	public ParamApplicationManager getParamApplicationManager() {
-		return manager;
-	}
+	private Validator validator;
 
 	public void setParamApplicationManager(
 			ParamApplicationManager paramApplicationManager) {
 		this.manager = paramApplicationManager;
 	}
-	
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
-		Map<String, Object> referenceData = new HashMap<String, Object> ();
+
+	public void setValidator(Validator validator) {
+		this.validator = validator;
+	}
+
+	@InitBinder
+	public void initBinder(WebDataBinder binder) {
+		binder.setValidator(validator);
+	}
+
+	@ModelAttribute
+	protected void referenceData(Model model) throws Exception {
 		for (ParametreEnum p : ParametreEnum.values()) {
-			referenceData.put(p.toString() + "ParDefaut", manager.getDefaut(p));
+			model.addAttribute(p.toString() + "ParDefaut", manager.getDefaut(p));
 		}
-		return referenceData;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
-	@Override
-	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		return manager.getForm();
+	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String list (Model model) {
+		model.addAttribute("params", manager.getForm());
+		return "param/application";
 	}
 
-	/**
-	 * 
-	 * Initialisation des valeurs pas défaut des paramètres dans le scope application
-	 * 
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#showForm(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, org.springframework.validation.BindException, java.util.Map)
-	 */
-	@SuppressWarnings("unchecked")
-	@Override
-	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model)
-			throws Exception {
-		
-		// Initialise les valeurs par défaut des parametres d'UNIREG dans le scope application si cela n'a pas deja été fait
-		if (request.getSession().getServletContext().getAttribute("initDefaultParamOk") == null) {
-			synchronized (ParamApplicationController.class) {
-				if (request.getSession().getServletContext().getAttribute("initDefaultParamOk") == null) {
-					for (ParametreEnum p : ParametreEnum.values()) {
-						request.getSession().getServletContext().setAttribute(p.toString() + "ParDefaut", manager.getDefaut(p));
-					}
-					request.getSession().getServletContext().setAttribute("initDefaultParamOk", Boolean.TRUE);
-				}
-			}
+	@RequestMapping(value = "/save.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String save(@Valid @ModelAttribute("params") ParamApplicationView form, BindingResult bindingResult) {
+		if (bindingResult.hasErrors()) {
+			return "param/application";
 		}
-		
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		return mav;
+		manager.save(form);
+		return "redirect:list.do";
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
-	@Override
-	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
-			throws Exception {
-		
-		ModelAndView mav = super.onSubmit(request, response, command, errors);
-		ParamApplicationView form = (ParamApplicationView)command;
-		switch (form.getAction()) {
-			case save:
-				manager.save(form);
-				break;
-			case reset:
-				manager.reset();
-				// Mise à jour du formBackingObject avec les valeurs par défaut
-				BeanUtils.copyProperties(manager.getForm(), form);
-				break;
-			default:
-				LOGGER.warn("action invalide : " + form.getAction());
-		}
-		return mav;
+	@RequestMapping(value = "/reset.do", method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
+	public String reset() {
+		manager.reset();
+		return "redirect:list.do";
 	}
-	
 }

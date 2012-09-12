@@ -25,11 +25,9 @@ import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.Sexe;
 
 /**
- * <!-- begin-user-doc --> <!-- end-user-doc --> Être humain sous l'angle du droit, individualisée par ses caractéristiques, telles que son
+ * Être humain sous l'angle du droit, individualisée par ses caractéristiques, telles que son
  * nom et prénom, sa date de naissance, son sexe, son numéro AVS?
  *
- * @uml.annotations derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8pFx9Edygsbnw9h5bVw"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8pFx9Edygsbnw9h5bVw"
  */
 @Entity
 @DiscriminatorValue("PersonnePhysique")
@@ -47,21 +45,11 @@ public class PersonnePhysique extends Contribuable {
 		this.numeroIndividu = numeroIndividu;
 		this.habitant = true;
 	}
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc --> Numéro du contribuable imposé à la source dans l'ancienne application SIMPA-IS.
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8mVx9Edygsbnw9h5bVw"
-	 */
+
 	private Long ancienNumeroSourcier;
 
 	private Set<DroitAcces> droitsAccesAppliques;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * Date de décès de la personne (si habitant surcharge de la date de décès du civil)
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_YWcUYJN-Edy7DqR-SPIh9g"
-	 */
 	private RegDate dateDeces;
 
 	/**
@@ -82,88 +70,41 @@ public class PersonnePhysique extends Contribuable {
 	 */
 	private Object individuCache;
 
-	//attributs d'un non habitant (ie personne physique non résident dans le canton)
+
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * Nouveau numéro d?assuré AVS au sens de l?art. 50c LAVS.
-	 * Le numéro d?assuré AVS est numérique (13 positions) et non signifiant.
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8PFx9Edygsbnw9h5bVw"
+	 *
+	 * Nouveau numéro d'assuré AVS au sens de l'art. 50c LAVS.
+	 * Le numéro d'assuré AVS est numérique (13 positions) et non signifiant.
+	 *
+	 * attributs d'un non habitant (ie personne physique non résident dans le canton)
 	 */
 	private String numeroAssureSocial;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Plx9Edygsbnw9h5bVw"
-	 */
 	private String nom;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8P1x9Edygsbnw9h5bVw"
-	 */
 	private String prenom;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * Date à laquelle la personne est née. Il arrive que seule l?année, voire l?année et le mois soient connus.
-	 * Format yyyymmdd, yyyymm ou yyyy
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8QFx9Edygsbnw9h5bVw"
-	 */
 	private RegDate dateNaissance;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Qlx9Edygsbnw9h5bVw"
-	 */
 	private Sexe sexe;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Code ISO-2 du pays selon la norme ISO-3166
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw"
 	 */
 	private Integer numeroOfsNationalite;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Code ISO-2 du pays selon la norme ISO-3166
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw"
 	 */
 	private Integer numeroOfsCommuneOrigine;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Genre de permis réglementant le séjour d'une personne étrangère en Suisse.
 	 * Voir eCH-0006 pour les valeurs possibles
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi0jVx9Edygsbnw9h5bVw"
 	 */
 	private CategorieEtranger categorieEtranger;
 
 	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
 	 * Date à partir de laquelle l'autorisation pour étrangers est valable
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_RfBlkFyUEdyz_5BS6IxMlQ"
 	 */
 	private RegDate dateDebutValiditeAutorisation;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_4Z2GsO9YEdyEV8rfFv3rEg"
-	 */
 	private Set<IdentificationPersonne> identificationsPersonnes;
 
 	/**
@@ -239,20 +180,15 @@ public class PersonnePhysique extends Contribuable {
 
 	/**
 	 * @return Returns the numeroIndividu.
-	 * Peut ne pas etre unique! , unique = true)
+	 * Peut ne pas etre unique!
 	 */
 	@Column(name = "NUMERO_INDIVIDU")
 	@Index(name = "IDX_NUMERO_INDIVIDU")
-//	@Column(name = "NUMERO_INDIVIDU", unique = true)
+
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNumeroIndividu the numeroIndividu to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8V1x9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroIndividu(@Nullable Long theNumeroIndividu) {
 		numeroIndividu = theNumeroIndividu;
 	}
@@ -269,22 +205,12 @@ public class PersonnePhysique extends Contribuable {
 		return s;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the ancienNumeroSourcier
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8mVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "ANCIEN_NUMERO_SOURCIER")
 	@Index(name = "IDX_ANC_NO_SRC", columnNames = "ANCIEN_NUMERO_SOURCIER")
 	public Long getAncienNumeroSourcier() {
 		return ancienNumeroSourcier;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theAncienNumeroSourcier the ancienNumeroSourcier to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8mVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setAncienNumeroSourcier(Long theAncienNumeroSourcier) {
 		ancienNumeroSourcier = theAncienNumeroSourcier;
 	}
@@ -309,59 +235,29 @@ public class PersonnePhysique extends Contribuable {
 		this.individuCache = individuCache;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the numeroAssureSocial
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8PFx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_NUMERO_ASSURE_SOCIAL", length = LengthConstants.TIERS_NUMAVS)
 	public String getNumeroAssureSocial() {
 		return numeroAssureSocial;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNumeroAssureSocial the numeroAssureSocial to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8PFx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroAssureSocial(@Nullable String theNumeroAssureSocial) {
 		numeroAssureSocial = theNumeroAssureSocial;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the nom
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Plx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_NOM", length = LengthConstants.TIERS_NOM)
 	public String getNom() {
 		return nom;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNom the nom to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Plx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNom(@Nullable String theNom) {
 		nom = theNom;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the prenom
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8P1x9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_PRENOM", length = LengthConstants.TIERS_NOM)
 	public String getPrenom() {
 		return prenom;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param thePrenom the prenom to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8P1x9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setPrenom(@Nullable String thePrenom) {
 		prenom = thePrenom;
 	}
@@ -386,130 +282,64 @@ public class PersonnePhysique extends Contribuable {
 		return dateNaissance;
 	}
 
-	/**
-	 * Voir la documentation sur le getter ({@link #getDateNaissance()}).
-	 *
-	 * @param theDateNaissance the dateNaissance to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8QFx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setDateNaissance(@Nullable RegDate theDateNaissance) {
 		dateNaissance = theDateNaissance;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the sexe
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Qlx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_SEXE", length = LengthConstants.TIERS_SEXE)
 	@Type(type = "ch.vd.uniregctb.hibernate.SexeUserType")
 	public Sexe getSexe() {
 		return sexe;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theSexe the sexe to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Qlx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setSexe(@Nullable Sexe theSexe) {
 		sexe = theSexe;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the numeroOfsNationalite
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_NO_OFS_NATIONALITE")
 	public Integer getNumeroOfsNationalite() {
 		return numeroOfsNationalite;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNumeroOfsNationalite the numeroOfsNationalite to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroOfsNationalite(@Nullable Integer theNumeroOfsNationalite) {
 		numeroOfsNationalite = theNumeroOfsNationalite;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the numeroOfsCommuneOrigine
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_NO_OFS_COMMUNE_ORIGINE")
 	public Integer getNumeroOfsCommuneOrigine() {
 		return numeroOfsCommuneOrigine;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theNumeroOfsCommuneOrigine the numeroOfsCommuneOrigine to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8Q1x9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setNumeroOfsCommuneOrigine(Integer numeroOfsCommuneOrigine) {
 		this.numeroOfsCommuneOrigine = numeroOfsCommuneOrigine;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the typeAutorisation
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi0jVx9Edygsbnw9h5bVw?GETTER"
-	 */
 	@Column(name = "NH_CAT_ETRANGER", length = LengthConstants.TIERS_CATETRANGER)
 	@Type(type = "ch.vd.uniregctb.hibernate.CategorieEtrangerUserType")
 	public CategorieEtranger getCategorieEtranger() {
 		return categorieEtranger;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theTypeAutorisation the typeAutorisation to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi0jVx9Edygsbnw9h5bVw?SETTER"
-	 */
 	public void setCategorieEtranger(@Nullable CategorieEtranger theCategorieEtranger) {
 		categorieEtranger = theCategorieEtranger;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the dateDebutValiditeAutorisation
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_RfBlkFyUEdyz_5BS6IxMlQ?GETTER"
-	 */
 	@Column(name = "NH_DATE_DEBUT_VALID_AUTORIS")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDebutValiditeAutorisation() {
 		return dateDebutValiditeAutorisation;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theDateDebutValiditeAutorisation the dateDebutValiditeAutorisation to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_RfBlkFyUEdyz_5BS6IxMlQ?SETTER"
-	 */
 	public void setDateDebutValiditeAutorisation(@Nullable RegDate theDateDebutValiditeAutorisation) {
 		dateDebutValiditeAutorisation = theDateDebutValiditeAutorisation;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the decede
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_YWcUYJN-Edy7DqR-SPIh9g?GETTER"
-	 */
 	@Column(name = "DATE_DECES")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType")
 	public RegDate getDateDeces() {
 		return dateDeces;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @param theDecede the decede to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_YWcUYJN-Edy7DqR-SPIh9g?SETTER"
-	 */
 	public void setDateDeces(@Nullable RegDate date) {
 		this.dateDeces = date;
 	}
@@ -524,11 +354,6 @@ public class PersonnePhysique extends Contribuable {
 		return dateDeces != null;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 * @return the identificationsPersonnes
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_4Z2GsO9YEdyEV8rfFv3rEg?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "NON_HABITANT_ID", nullable = false)
 	@ForeignKey(name = "FK_ID_PERS_TRS_ID")
@@ -537,12 +362,6 @@ public class PersonnePhysique extends Contribuable {
 		return identificationsPersonnes;
 	}
 
-	/**
-	 * <!-- begin-user-doc --> <!-- end-user-doc -->
-	 *
-	 * @param theIdentificationsPersonnes the identificationsPersonnes to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_4Z2GsO9YEdyEV8rfFv3rEg?SETTER"
-	 */
 	public void setIdentificationsPersonnes(
 			@Nullable Set<IdentificationPersonne> theIdentificationsPersonnes) {
 		// msi (23.11.2009) lorsqu'une collection est définie avec un Cascade=DELETE_ORPHAN *et* qu'on appel session.merge() sur une nouvelle instance de PersonnePhysique (donc avec une

@@ -53,7 +53,9 @@ public interface ParametreAppService {
 	 */
 	public Integer getAnneeMinimaleForDebiteur();
 
-	public String getValeur(ParametreEnum param);
+	public Integer getAgeRentierFemme();
+
+	public Integer getAgeRentierHomme();
 
 	public void reset();
 
@@ -102,5 +104,9 @@ public interface ParametreAppService {
 	public void setValeur(ParametreEnum param, String valeur);
 
 	public void setDateExclusionDecedeEnvoiDI(Integer[] val);
+
+	public void setAgeRentierFemme(Integer val);
+
+	public void setAgeRentierHomme(Integer val);
 
 }

@@ -49,6 +49,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
@@ -68,6 +69,7 @@ import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
+import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
@@ -128,6 +130,15 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	MajoriteRapport generateRapport(final OuvertureForsResults results, StatusManager s);
+
+	/**
+	 * Génère le rapport (PDF) du passage des nouveaux rentiers sourciers en mixte 1.
+	 *
+	 * @param results
+	 *            le résultat de l'exécution du job d'ouverture des fors des habitants majeurs
+	 * @return le rapport
+	 */
+	PassageNouveauxRentiersSourciersEnMixteRapport generateRapport(final PassageNouveauxRentiersSourciersEnMixteResults results, StatusManager s);
 
 	/**
 	 * Génère le rapport (PDF) du traitement de la fusion de communes.
@@ -296,17 +307,14 @@ public interface RapportService {
 	/**
 	 * Génère le rapport (PDF) de la liste des contribuables Suisses ou titulaires d'un permis C, résidents sur sol vaudois
 	 * d'après leur adresse de domicile, mais sans for vaudois
-	 * @param results
-	 * @param status
+	 *
 	 * @return le rapport
 	 */
 	ListeContribuablesResidentsSansForVaudoisRapport generateRapport(ListeContribuablesResidentsSansForVaudoisResults result, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du job de correction des flags "habitant"
-	 * @param resultsPP
-	 * @param resultsMC
-	 * @param status
+	 *
 	 * @return le rapport
 	 */
 	CorrectionFlagHabitantRapport generateRapport(CorrectionFlagHabitantSurPersonnesPhysiquesResults resultsPP, CorrectionFlagHabitantSurMenagesResults resultsMC, StatusManager status);
@@ -322,51 +330,38 @@ public interface RapportService {
 
 	/**
 	 * Génère le rapport d'exécution du job de détermination des mouvements de masse
-	 * @param results
-	 * @param status
+	 *
 	 * @return le rapport
 	 */
 	DeterminerMouvementsDossiersEnMasseRapport generateRapport(DeterminerMouvementsDossiersEnMasseResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport d'exécution du job d'échéance des LR
-	 * @param results
-	 * @param status
+	 *
 	 * @return le rapport
 	 */
 	DeterminerLRsEchuesRapport generateRapport(DeterminerLRsEchuesResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport suite à l'execution du job de relance de l'identifcation
-	 * @param results
-	 * @param status
-	 * @return
+	 *
 	 */
 	IdentifierContribuableRapport generateRapport(IdentifierContribuableResults results,StatusManager status);
 
 	/**
 	 * Génère le rapport suite à l'execution du job de relance des evenement externe
-	 * @param results
-	 * @param status
-	 * @return
+	 *
 	 */
-
 	TraiterEvenementExterneRapport generateRapport(TraiterEvenementExterneResult results, StatusManager status);
 
 	/**
 	 * Génère le rapport suite à l'execution du job de résolution des adresses
-	 * @param results
-	 * @param status
-	 * @return
 	 */
 	ResolutionAdresseRapport generateRapport(ResolutionAdresseResults results, StatusManager status);
 
 
 	/**
 	 * Génère le rapport suite à l'execution du job de comparaison de situation de famille
-	 * @param results
-	 * @param status
-	 * @return
 	 */
 	ComparerSituationFamilleRapport generateRapport(ComparerSituationFamilleResults results, StatusManager status);
 

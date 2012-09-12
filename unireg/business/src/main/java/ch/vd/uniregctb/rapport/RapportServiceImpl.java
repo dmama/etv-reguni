@@ -58,6 +58,7 @@ import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
 import ch.vd.uniregctb.document.MajoriteRapport;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.document.PassageNouveauxRentiersSourciersEnMixteRapport;
 import ch.vd.uniregctb.document.RapprocherCtbRapport;
 import ch.vd.uniregctb.document.ReinitialiserBaremeDoubleGainRapport;
 import ch.vd.uniregctb.document.ResolutionAdresseRapport;
@@ -78,6 +79,7 @@ import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
+import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
@@ -1046,4 +1048,27 @@ public class RapportServiceImpl implements RapportService {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public PassageNouveauxRentiersSourciersEnMixteRapport generateRapport(final PassageNouveauxRentiersSourciersEnMixteResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportPassageSourciersRentiersEnMixte" + results.dateTraitement.index();
+		final String description = String.format("Rapport d'exécution du job de passage des nouveaux sourciers rentiers en mixte 1. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(PassageNouveauxRentiersSourciersEnMixteRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<PassageNouveauxRentiersSourciersEnMixteRapport>() {
+				@Override
+				public void writeDoc(PassageNouveauxRentiersSourciersEnMixteRapport doc, OutputStream os) throws Exception {
+					PdfPassageNouveauxRentiersSourciersEnMixteRapport document = new PdfPassageNouveauxRentiersSourciersEnMixteRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 }

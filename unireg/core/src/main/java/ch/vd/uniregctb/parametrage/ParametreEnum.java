@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.parametrage;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 
 /**
  * Enumeration des differents paramètres de l'application
- *
- * @author xsifnr
  *
  */
 public enum ParametreEnum {
@@ -37,12 +34,13 @@ public enum ParametreEnum {
 	delaiRetentionRapportTravailInactif ("24", Type.delaisEnMois, true),
 
 	anneeMinimaleForDebiteur("2009", Type.annee, true), // [UNIREG-2507]
-	dateExclusionDecedeEnvoiDI("15.11",Type.jourDansAnnee,true);//[UNIREG-1952]
+	dateExclusionDecedeEnvoiDI("15.11",Type.jourDansAnnee,true),//[UNIREG-1952]
+
+	ageRentierHomme("65", Type.entierPositif, true),
+	ageRentierFemme("64", Type.entierPositif, true);
 
 	/**
 	 * Les differents type de paramétres possibles
-	 *
-	 * @author xsifnr
 	 *
 	 */
 	public enum Type {
@@ -83,13 +81,13 @@ public enum ParametreEnum {
 	/**
 	 * Permet de verifier la validité des valeurs des paramètres en fonction de leur type.
 	 *
-	 * @param s
+	 * @param s valeur à valider
 	 * @throws ValeurInvalideException
 	 *             si la valeur n'est pas valable
 	 */
 	public void validerValeur(String s) throws ValeurInvalideException {
 
-		String msgErr = MessageFormat.format(" ''{0}'' n''est pas une valeur valide pour le paramètre ''{1}'' de type ''{2}''", s,
+		String msgErr = String.format(" '%s' n'est pas une valeur valide pour le paramètre '%s' de type '%s'", s,
 				toString(), type.toString());
 
 		try {
@@ -139,7 +137,8 @@ public enum ParametreEnum {
 	 *
 	 * @return la valeur formatée
 	 *
-	 * @throw {@link IllegalArgumentException} si la valeur a formatée n'est pas valide.
+	 * @throws IllegalArgumentException si la valeur a formatée n'est pas valide.
+	 *
 	 */
 	public String formaterValeur(String valeur) {
 		try {
@@ -172,10 +171,10 @@ public enum ParametreEnum {
 	 *         <li>A l'index 0 le jour du mois
 	 *         <li>A l'index 1 le mois
 	 *         </ul>
-	 * @throws IncorrectDayMonthException
-	 *
-	 * @throw {@link IncorrectDayMonthException} si la string passée en paramètre n'est pas au format requis ou si elle represente une date
+	 * @throws IncorrectDayMonthException si la string passée en paramètre n'est pas au format requis ou si elle represente une date
 	 *        incohérente ou si elle est renseignée au 29 février.
+
+	 *
 	 */
 	private static Integer[] stringToDayMonth(String string) throws IncorrectDayMonthException {
 		string = string.trim();
@@ -185,7 +184,7 @@ public enum ParametreEnum {
 			Integer jour = Integer.valueOf(arr[0]);
 			Integer mois = Integer.valueOf(arr[1]);
 			// Verification sur la plausibilité de la date
-			if (jour < 1 || mois < 1 || jour > 30 && Arrays.asList(2, 4, 6, 9, 11).contains(mois) || jour > 31 || mois > 12) {
+			if (jour < 1 || mois < 1 || jour > 29 && mois == 2 || jour > 30 && Arrays.asList(4, 6, 9, 11).contains(mois) || jour > 31 || mois > 12) {
 				throw new IncorrectDayMonthException(string + " n'est pas une date cohérente");
 			}
 			if (jour == 29 && mois == 2) {
@@ -196,17 +195,14 @@ public enum ParametreEnum {
 			};
 		}
 		else {
-			throw new IncorrectDayMonthException('\'' + string + "' ne matche avec la expression régulière suivant : " + regexp);
+			throw new IncorrectDayMonthException('\'' + string + "' ne matche avec l'expression régulière suivante : " + regexp);
 		}
 	}
 
 	/**
 	 * Classe privée. Utilisée pour signaler une valeur Jour dans l'année incorrecte.
 	 *
-	 * @author xsifnr
-	 *
 	 */
-	@SuppressWarnings("serial")
 	private static class IncorrectDayMonthException extends Exception {
 		public IncorrectDayMonthException(String string) {
 			super(string);
@@ -216,10 +212,7 @@ public enum ParametreEnum {
 	/**
 	 * Exception signalant que la valeur assigné à un paramètre est invalide
 	 *
-	 * @author xsifnr
-	 *
 	 */
-	@SuppressWarnings("serial")
 	public static class ValeurInvalideException extends Exception {
 		public ValeurInvalideException(String string) {
 			super(string);
@@ -238,8 +231,6 @@ public enum ParametreEnum {
 	 * 	<li>{@link Integer} pour les autres
 	 * </ul>
 	 *
-	 * @param valeur
-	 * @return
 	 */
 	public Object convertirStringVersValeurTypee (String valeur) {
 		if (Type.jourDansAnnee == type) {
@@ -256,8 +247,6 @@ public enum ParametreEnum {
 	 *
 	 * Convertit la valeur typée d'un paramètre en {@link String}
 	 *
-	 * @param valeur
-	 * @return
 	 */
 	public String convertirValeurTypeeVersString (Object valeur) {
 		if (Type.jourDansAnnee == type) {
@@ -267,6 +256,4 @@ public enum ParametreEnum {
 			return valeur.toString();
 		}
 	}
-
-
 }

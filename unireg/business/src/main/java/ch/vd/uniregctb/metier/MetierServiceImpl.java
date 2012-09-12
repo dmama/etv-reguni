@@ -49,6 +49,7 @@ import ch.vd.uniregctb.metier.modeimposition.MariageModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolver;
 import ch.vd.uniregctb.metier.modeimposition.ModeImpositionResolverException;
 import ch.vd.uniregctb.metier.modeimposition.TerminaisonCoupleModeImpositionResolver;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -94,6 +95,7 @@ public class MetierServiceImpl implements MetierService {
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
 	private EFactureService eFactureService;
+	private ParametreAppService parametreAppService;
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
@@ -117,6 +119,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
+	}
+
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
 	}
 
 	public TiersDAO getTiersDAO() {
@@ -535,6 +541,7 @@ public class MetierServiceImpl implements MetierService {
 
 		return menageCommun;
 	}
+
 
 	private static final class ForSecondaireWrapper {
 		public final ForFiscalSecondaire forFiscal;
@@ -2667,6 +2674,16 @@ public class MetierServiceImpl implements MetierService {
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
 		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
 		return processor.run(dateTraitement, nbThreads, status);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public PassageNouveauxRentiersSourciersEnMixteResults passageSourcierEnMixteNouveauxRentiers(RegDate dateTraitement, StatusManager statusManager) {
+		final PassageNouveauxRentiersSourciersEnMixteProcessor processor = new PassageNouveauxRentiersSourciersEnMixteProcessor(transactionManager,
+				hibernateTemplate, tiersService, tiersDAO, adresseService, serviceInfra, serviceCivilService, validationService, parametreAppService);
+		return processor.run(dateTraitement, statusManager);
 	}
 
 }

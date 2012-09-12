@@ -55,7 +55,7 @@ public interface MetierService {
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le mariage
 	 * 
-	 * @return
+	 * @return le ménage commun marié
 	 */
 	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
@@ -212,7 +212,7 @@ public interface MetierService {
 	 * @param anciensNoOfs la liste des numéros Ofs des commune ayant fusionné
 	 * @param nouveauNoOfs le numéro Ofs de la commune résultant de la fusion
 	 * @param dateFusion   la date effective de la fusion
-	 * @param dateTraitement
+	 * @param dateTraitement date de traitement du batch
 	 *@param status       un status manager  @return les résultats détaillés du processus de fusion
 	 */
 	FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status);
@@ -321,4 +321,13 @@ public interface MetierService {
 	 * @return le résultat du batch
 	 */
 	ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status);
+
+	/**
+	 * Passe les nouveaux rentiers sourciers en mixte 1
+	 *
+	 * @param dateTraitement date de traitement effective du batch
+	 * @param statusManager le status manager
+	 * @return le résultat du batch
+	 */
+	PassageNouveauxRentiersSourciersEnMixteResults passageSourcierEnMixteNouveauxRentiers(RegDate dateTraitement, StatusManager statusManager);
 }

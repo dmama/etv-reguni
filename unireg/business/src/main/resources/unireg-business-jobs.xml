@@ -79,7 +79,7 @@
     </bean>
 
 	<!-- Job qui compare les situations de famille UNIREG avec celles du civil-->
-     <bean id="ComparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
+     <bean id="comparerSituationFamilleJob" parent="schedulerJob" class="ch.vd.uniregctb.situationfamille.ComparerSituationFamilleJob">
         <constructor-arg value="108"/>
         <constructor-arg value="Comparer les situations de familles"/>
         <property name="rapportService" ref="rapportService"/>
@@ -229,6 +229,15 @@
         <property name="metierService" ref="metierService"/>
         <property name="rapportService" ref="rapportService"/>
     </bean>
+
+	<bean id="passageSourcierEnMixteNouveauxRentiersJob" parent="schedulerJob" class="ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteJob">
+		<constructor-arg value="503"/>
+		<constructor-arg value="Passage pour les nouveaux rentiers de Sourcier à Mixte 1"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="metierService" ref="metierService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
 
 	<bean id="abstractProduireRolesJob" parent="schedulerJob" abstract="true" class="ch.vd.uniregctb.role.AbstractProduireRolesJob">
 		<property name="service" ref="roleService"/>

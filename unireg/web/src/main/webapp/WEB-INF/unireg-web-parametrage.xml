@@ -6,19 +6,13 @@
 		Configuration des beans pour : Paramètre d'application 
 	 -->
 	<bean id="paramHelper" class="ch.vd.uniregctb.param.ParamHelper" />
+
 	<bean id="paramApplicationManager" class="ch.vd.uniregctb.param.manager.ParamApplicationManagerImpl">
 		<property name="service" ref="parametreAppService" />
 	</bean>
 
-	<bean id="paramApplicationController"
-		  class="ch.vd.uniregctb.param.ParamApplicationController"
-		  parent="abstractSimpleFormController">
-		<property name="sessionForm" value="false" />
-		<property name="commandClass" value="ch.vd.uniregctb.param.view.ParamApplicationView" />
-		<property name="commandName" value="command" />
+	<bean id="paramApplicationController"  class="ch.vd.uniregctb.param.ParamApplicationController">
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
-		<property name="formView" value="param/application" />
-		<property name="successView" value="param/application" />
 		<property name="validator" ref="paramApplicationValidator" />
 	</bean>
 

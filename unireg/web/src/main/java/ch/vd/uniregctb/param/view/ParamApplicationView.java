@@ -6,18 +6,15 @@ import ch.vd.uniregctb.parametrage.ParametreEnum;
 /**
  * Classe mappant le formulaire de saisie de /param/application.jsp
  *
- * @author xsifnr
  */
 @SuppressWarnings({"UnusedDeclaration"})
 public class ParamApplicationView {
-
 //	private static final Logger LOGGER = Logger.getLogger(ParamApplicationView.class);
 
 	public enum Action {
 		save,
 		reset
 	}
-
 	private Action action;
 
 	public Action getAction() {
@@ -49,6 +46,10 @@ public class ParamApplicationView {
 	private String delaiEcheanceSommationListeRecapitualtive;
 	private String delaiRetentionRapportTravailInactif;
 	private String dateExclusionDecedeEnvoiDI;
+	private String ageRentierFemme;
+	private String ageRentierHomme;
+
+	public ParamApplicationView() {}
 
 	public ParamApplicationView(ParametreAppService service) {
 		this.noel = ParametreEnum.noel.convertirValeurTypeeVersString(service.getNoel());
@@ -74,6 +75,8 @@ public class ParamApplicationView {
 		this.delaiEcheanceSommationListeRecapitualtive = ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirValeurTypeeVersString(service.getDelaiEcheanceSommationListeRecapitualtive());
 		this.delaiRetentionRapportTravailInactif = ParametreEnum.delaiRetentionRapportTravailInactif.convertirValeurTypeeVersString(service.getDelaiRetentionRapportTravailInactif());
 		this.dateExclusionDecedeEnvoiDI = ParametreEnum.dateExclusionDecedeEnvoiDI.convertirValeurTypeeVersString(service.getDateExclusionDecedeEnvoiDI());
+		this.ageRentierFemme = ParametreEnum.ageRentierFemme.convertirValeurTypeeVersString(service.getAgeRentierFemme());
+		this.ageRentierHomme = ParametreEnum.ageRentierHomme.convertirValeurTypeeVersString(service.getAgeRentierHomme());
 	}
 
 	public void saveTo(ParametreAppService service) {
@@ -103,6 +106,8 @@ public class ParamApplicationView {
 				(Integer) ParametreEnum.delaiEcheanceSommationListeRecapitualtive.convertirStringVersValeurTypee(this.delaiEcheanceSommationListeRecapitualtive));
 		service.setDelaiRetentionRapportTravailInactif((Integer) ParametreEnum.delaiRetentionRapportTravailInactif.convertirStringVersValeurTypee(this.delaiRetentionRapportTravailInactif));
 		service.setDateExclusionDecedeEnvoiDI((Integer[])ParametreEnum.dateExclusionDecedeEnvoiDI.convertirStringVersValeurTypee(this.dateExclusionDecedeEnvoiDI));
+		service.setAgeRentierFemme((Integer) ParametreEnum.ageRentierFemme.convertirStringVersValeurTypee(this.ageRentierFemme));
+		service.setAgeRentierHomme((Integer) ParametreEnum.ageRentierHomme.convertirStringVersValeurTypee(this.ageRentierHomme));
 	}
 
 	public String getNoel() {
@@ -271,5 +276,21 @@ public class ParamApplicationView {
 
 	public void setDateExclusionDecedeEnvoiDI(String dateExclusionDecedeEnvoiDI) {
 		this.dateExclusionDecedeEnvoiDI = dateExclusionDecedeEnvoiDI;
+	}
+
+	public String getAgeRentierFemme() {
+		return ageRentierFemme;
+	}
+
+	public void setAgeRentierFemme(String ageRentierFemme) {
+		this.ageRentierFemme = ageRentierFemme;
+	}
+
+	public String getAgeRentierHomme() {
+		return ageRentierHomme;
+	}
+
+	public void setAgeRentierHomme(String ageRentierHomme) {
+		this.ageRentierHomme = ageRentierHomme;
 	}
 }
