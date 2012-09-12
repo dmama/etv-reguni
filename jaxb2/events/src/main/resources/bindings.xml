@@ -250,4 +250,13 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="event/lr/evtQuittanceListe-v1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.lr.quittance.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-lr-quittance-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>
