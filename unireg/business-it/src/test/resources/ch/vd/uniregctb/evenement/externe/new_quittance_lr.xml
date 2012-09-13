@@ -3,7 +3,6 @@
 	<ev-lr-1:typeEvenement>QUITTANCE</ev-lr-1:typeEvenement>
 	<ev-lr-1:dateEvenement>2009-12-07T09:30:47.0Z</ev-lr-1:dateEvenement>
 	<ev-lr-1:caracteristiquesListe>
-		<ev-lr-1:businessId>123456789</ev-lr-1:businessId>
 		<ev-lr-1:typeListe>LR</ev-lr-1:typeListe>
 		<ev-lr-1:numeroSequence>1</ev-lr-1:numeroSequence>
 		<ev-lr-1:periodeDeclaration>

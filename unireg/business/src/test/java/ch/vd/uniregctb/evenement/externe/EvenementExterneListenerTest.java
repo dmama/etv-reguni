@@ -1072,7 +1072,6 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		}
 
 		final CaracteristiquesListe identification = new CaracteristiquesListe();
-		identification.setBusinessId(businessId);
 		identification.setTypeListe(listeType);
 		identification.setNumeroSequence(BigInteger.valueOf(1));
 		identification.setPeriodeDeclaration(periodeDeclaration);
