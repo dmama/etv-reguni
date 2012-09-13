@@ -7,10 +7,13 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.type.GenreImpot;
+import ch.vd.uniregctb.type.ModeCommunication;
+import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.AbstractValidatorTest;
 
@@ -28,7 +31,10 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetectionChevauchementForsDebiteurForIntermediateOuvert() {
 
+
+
 		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+		debiteur.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL,null,date(2003,12,1),null));
 		{
 			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
 			forFiscal.setDateDebut(date(2003, 12, 1));
@@ -97,5 +103,107 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			tiers.setAnnule(true);
 			Assert.assertFalse(validate(tiers).hasErrors());
 		}
+	}
+	//Test ajout de LR en dehors période de for
+	/**
+	 *               +-----------------------+                              +-----------------------+     +-----------------------+   +-----------------------+
+	 *    For        |2006.10.02   2008.2.12 |                              |2010.10.02   2010.12.25|     |2011.6.24     2011.9.20|   |2011.12.1        null-
+	 *               +-----------------------+                              +-----------------------+     +-----------------------+   +-----------------------+
+	 *               +---------------------------+  +---------------------+                            +---------------------+  +---------------------+
+	 *  Périodicité  |2006.10.02        2008.6.30|  |2008.8.1   2008.12.31|                            |2011.1.1    2011.6.30|  |2011.9.1   2011.12.31|
+	 *               +---------------------------+  +---------------------+                            +---------------------+  +---------------------+
+	 *
+	 */
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidationLRCouvertesParFor() {
+
+
+		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+
+		debiteur.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2006, 10, 2), null));
+
+
+		{
+			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
+			forFiscal.setDateDebut(date(2006, 10, 2));
+			forFiscal.setDateFin(date(2008, 2, 12));
+			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			debiteur.addForFiscal(forFiscal);
+		}
+
+
+		{
+			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
+			forFiscal.setDateDebut(date(2010, 10, 2));
+			forFiscal.setDateFin(date(2010, 12, 25));
+			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			debiteur.addForFiscal(forFiscal);
+		}
+
+
+		{
+			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
+			forFiscal.setDateDebut(date(2011, 6, 24));
+			forFiscal.setDateFin(date(2011, 9, 20));
+			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			debiteur.addForFiscal(forFiscal);
+		}
+
+		{
+			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
+			forFiscal.setDateDebut(date(2011, 12, 1));
+			forFiscal.setDateFin(null);
+			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			debiteur.addForFiscal(forFiscal);
+		}
+
+		{
+			final DeclarationImpotSource lr = new DeclarationImpotSource();
+			lr.setModeCommunication(ModeCommunication.SITE_WEB);
+			lr.setPeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			lr.setDateDebut(date(2006, 10, 2));
+			lr.setDateFin(date(2008, 6, 30));
+			debiteur.addDeclaration(lr);
+		}
+
+		//LR en dehors de toute plage de for
+		{
+			final DeclarationImpotSource lr = new DeclarationImpotSource();
+			lr.setModeCommunication(ModeCommunication.SITE_WEB);
+			lr.setPeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			lr.setDateDebut(date(2008, 8, 1));
+			lr.setDateFin(date(2008, 12, 31));
+			debiteur.addDeclaration(lr);
+		}
+		{
+			final DeclarationImpotSource lr = new DeclarationImpotSource();
+			lr.setModeCommunication(ModeCommunication.SITE_WEB);
+			lr.setPeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			lr.setDateDebut(date(2011, 1, 1));
+			lr.setDateFin(date(2011, 6, 30));
+			debiteur.addDeclaration(lr);
+		}
+		{
+			final DeclarationImpotSource lr = new DeclarationImpotSource();
+			lr.setModeCommunication(ModeCommunication.SITE_WEB);
+			lr.setPeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			lr.setDateDebut(date(2011, 9, 1));
+			lr.setDateFin(date(2011, 12, 31));
+			debiteur.addDeclaration(lr);
+		}
+
+
+		assertValidation(Arrays.asList("La LR qui commence le (01.08.2008) et se termine le (31.12.2008) n'est couverte par aucun for valide"),
+				null, validate(debiteur));
 	}
 }

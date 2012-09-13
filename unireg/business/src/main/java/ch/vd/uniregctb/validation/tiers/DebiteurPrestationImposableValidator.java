@@ -9,6 +9,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -26,7 +27,8 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 	public ValidationResults validate(DebiteurPrestationImposable dpi) {
 		final ValidationResults vr = super.validate(dpi);
 		if (!dpi.isAnnule()) {
-			validatePeriodicites(dpi);
+			vr.merge(validatePeriodicites(dpi));
+			vr.merge(validateLRCouverteParFor(dpi));
 		}
 		return vr;
 	}
@@ -68,6 +70,23 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 
 		}
 		return results;
+	}
+
+
+	private ValidationResults validateLRCouverteParFor(DebiteurPrestationImposable dpi) {
+		ValidationResults vr = new ValidationResults();
+		final List<Declaration> lesLRs = dpi.getDeclarationsSorted();
+		if (lesLRs != null && !lesLRs.isEmpty()) {
+			final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
+
+			for (Declaration lr : lesLRs) {
+				if (!lr.isAnnule() && !DateRangeHelper.intersect(lr, fors)) {
+					vr.addError(String.format("La LR qui commence le (%s) et se termine le (%s) n'est couverte par aucun for valide",
+							RegDateHelper.dateToDisplayString(lr.getDateDebut()), RegDateHelper.dateToDisplayString(lr.getDateFin())));
+				}
+			}
+		}
+		return vr;
 	}
 
 	@Override

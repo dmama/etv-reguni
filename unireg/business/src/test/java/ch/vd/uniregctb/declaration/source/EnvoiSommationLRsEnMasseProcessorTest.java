@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -195,6 +196,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(CategorieImpotSource categorie, PeriodeFiscale periode) {
 		DebiteurPrestationImposable admin = addDebiteur(categorie, PeriodiciteDecompte.MENSUEL,  date(2007, 1, 1));
+		addForDebiteur(admin,date(2007,1,1),null, MockCommune.Lausanne);
 		DeclarationImpotSource lr = addLR(admin, date(2007, 1, 1), date(2007, 12, 31), periode);
 		addEtatDeclarationEmise(lr, date(2008, 1, 5));
 		addDelaiDeclaration(lr, date(2008, 1, 5), date(2008, 3, 15));
@@ -203,6 +205,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 
 	private DeclarationImpotSource addLRaSommerAvecDebiteur(PeriodeFiscale periode, RegDate debut, RegDate fin, PeriodiciteDecompte periodicite) {
 		DebiteurPrestationImposable admin = addDebiteur(CategorieImpotSource.REGULIERS, periodicite, debut);
+		addForDebiteur(admin,debut,null, MockCommune.Lausanne);
 		DeclarationImpotSource lr = addLR(admin, debut, fin, periode);
 		addEtatDeclarationEmise(lr, fin.addDays(6));
 		addDelaiDeclaration(lr, fin.addDays(6), fin.addMonths(1));

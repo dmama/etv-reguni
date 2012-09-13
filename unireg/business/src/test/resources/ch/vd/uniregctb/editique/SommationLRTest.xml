@@ -72,6 +72,51 @@
       <null/>
     </row>
   </table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>FOR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>GENRE_IMPOT</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>DATE_OUVERTURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>11</value>
+			<value>ForDebiteurPrestationImposable</value>
+			<value>12500001</value>
+			<value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+			<null/>
+			<null/>
+			<value>20070101</value>
+			<null/>
+			<null/>
+			<null/>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>12</value>
+			<value>ForDebiteurPrestationImposable</value>
+			<value>12500002</value>
+			<value>DEBITEUR_PRESTATION_IMPOSABLE</value>
+			<null/>
+			<null/>
+			<value>20070101</value>
+			<null/>
+			<null/>
+			<null/>
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+	</table>
   <table name="PERIODE_FISCALE">
     <column>LOG_MDATE</column>
     <column>ID</column>
