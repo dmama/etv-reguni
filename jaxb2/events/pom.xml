@@ -47,6 +47,7 @@
 						<include>event/party/party-response-1.xsd</include>
 						<include>event/rt/rapport-travail-request-1.xsd</include>
 						<include>event/rt/rapport-travail-response-1.xsd</include>
+						<include>event/lr/evtListe-1.xsd</include>
 						<include>event/lr/evtQuittanceListe-v1.xsd</include>
 					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
@@ -56,6 +57,7 @@
 					<args>
 						<arg>-extension</arg>
 						<arg>-Xpretty-classname</arg>
+						<arg>-Xpretty-classname-force:ch.vd.unireg.xml.event.lr.event.v1.EvtListeType/EvtListeData</arg>
 						<arg>-Xunireg-ws</arg>
 						<arg>-Xnamespace-prefix</arg>
 						<arg>-Xts</arg>
@@ -80,7 +82,7 @@
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-pretty-classname</artifactId>
-						<version>1.0.0</version>
+						<version>1.2.2</version>
 					</dependency>
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>

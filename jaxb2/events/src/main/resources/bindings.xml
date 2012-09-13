@@ -259,4 +259,13 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="event/lr/evtListe-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.lr.event.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ev-lr-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 </jxb:bindings>

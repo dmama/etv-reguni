@@ -83,7 +83,7 @@
 					<dependency>
 						<groupId>ch.vd.uniregctb</groupId>
 						<artifactId>jaxb2-pretty-classname</artifactId>
-						<version>1.1.0</version>
+						<version>1.2.2</version>
 					</dependency>
 					<dependency>
 						<groupId>org.apache.cxf.xjcplugins</groupId>
