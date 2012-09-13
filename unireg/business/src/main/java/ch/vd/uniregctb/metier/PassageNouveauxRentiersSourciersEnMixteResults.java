@@ -13,9 +13,9 @@ import ch.vd.uniregctb.common.JobResults;
 public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> {
 
 	public enum ErreurType {
-		DATE_NAISSANCE_NULLE("le sourcier ne possède pas de date de naissance."),
-		SEXE_NUL("Le sexe du sourcier n'est pas renseigné"),
-		DOMICILE_INCONNU("le domicile du contribuable est inconnu."),
+		DATE_NAISSANCE_NULLE("le sourcier ne possède pas de date de naissance"),
+		SEXE_NUL("le sexe du sourcier n'est pas renseigné"),
+		DOMICILE_INCONNU("le domicile du contribuable est inconnu"),
 		INFRA_EXCEPTION("le service infrastructure a retourné une exception"),
 		ADRESSE_EXCEPTION("le service d'adresses a retourné une exception"),
 		CIVIL_EXCEPTION("le service civil a retourné une exception"),

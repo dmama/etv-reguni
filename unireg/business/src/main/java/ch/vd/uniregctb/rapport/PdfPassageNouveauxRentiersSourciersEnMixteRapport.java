@@ -99,7 +99,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 
 			@Override
 			public boolean fillLine(CsvHelper.LineFiller b, PassageNouveauxRentiersSourciersEnMixteResults.Traite elt) {
-				b.append(elt.noCtb).append(COMMA);
+				b.append(elt.noCtb);
 				return true;
 			}
 		});
@@ -118,11 +118,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 			public boolean fillLine(CsvHelper.LineFiller b, PassageNouveauxRentiersSourciersEnMixteResults.Erreur elt) {
 				b.append(elt.noCtb).append(COMMA);
 				b.append(elt.raison.description()).append(COMMA);
-				if (elt.details != null) {
-					String escapedDetails = elt.details.replace("" + COMMA, " ");
-					escapedDetails = escapedDetails.replace("\n", " ::: ");
-					b.append(escapedDetails);
-				}
+				b.append(CsvHelper.asCsvField(elt.details));
 				return true;
 			}
 		});

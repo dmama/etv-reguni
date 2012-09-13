@@ -205,6 +205,9 @@ public abstract class CsvHelper {
 	 * @param lignes chaîne de caractères potentiellement sur plusieurs lignes
 	 */
 	public static String asCsvField(String lignes) {
+		if (lignes == null) {
+			return EMPTY;
+		}
 		return asCsvField(lignes.split(CR));
 	}
 

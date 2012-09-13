@@ -20,7 +20,6 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -62,7 +61,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 	private PassageNouveauxRentiersSourciersEnMixteResults rapport;
 
-	private HashSet <Long> conjointAIgnorerGlobal = new HashSet<Long>();
+	private Set<Long> conjointAIgnorerGlobal = new HashSet<Long>();
 
 	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, TiersDAO tiersDAO,
 	                                                        AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilService serviceCivil,
@@ -90,8 +89,9 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		final List<Long> list = getListPotentielsNouveauxRentiersSourciers(dateTraitement);
 
-		final BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults> template = new BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, s, hibernateTemplate);
+		final BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults> template =
+				new BatchTransactionTemplate<Long, PassageNouveauxRentiersSourciersEnMixteResults>(list, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+						transactionManager, s, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, PassageNouveauxRentiersSourciersEnMixteResults>() {
 
 			@Override
@@ -102,7 +102,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			@Override
 			public boolean doInTransaction(List<Long> batch, PassageNouveauxRentiersSourciersEnMixteResults r) throws Exception {
 				rapport = r;
-				HashSet<Long> conjointAIgnorer = new HashSet<Long>();
+				Set<Long> conjointAIgnorer = new HashSet<Long>();
 				traiteBatch(batch, dateTraitement, s, conjointAIgnorer);
 				conjointAIgnorerGlobal.addAll(conjointAIgnorer);
 				return !s.interrupted();
@@ -132,7 +132,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		return rapportFinal;
 	}
 
-	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, HashSet<Long> conjointAIgnorer) {
+	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, Set<Long> conjointAIgnorer) {
 
 		// On préchauffe le cache des individus, si possible
 		if (serviceCivil.isWarmable()) {
@@ -149,7 +149,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		}
 	}
 
-	private void traiteSourcier(Long id, RegDate dateReference, HashSet<Long> conjointAIgnorer) {
+	private void traiteSourcier(Long id, RegDate dateReference, Set<Long> conjointAIgnorer) {
 		PersonnePhysique sourcier = hibernateTemplate.get(PersonnePhysique.class, id);
 		++rapport.nbSourciersTotal;
 		// traitement du sourcier
@@ -161,12 +161,15 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		}
 		catch (Exception e) {
 			LOGGER.error("Erreur inconnue en traitant le sourcier n° " + sourcier.getNumero(), e);
-			rapport.addUnknownException(id,e);
+			rapport.addUnknownException(id, e);
 		}
 	}
 
-	private void traiteSourcier(PersonnePhysique sourcier, RegDate dateReference, HashSet<Long> conjointAIgnorer) throws PassageNouveauxRentiersSourciersEnMixteException {
-		LOGGER.debug("Traitement du sourcier n° " + sourcier.getNumero());
+	private void traiteSourcier(PersonnePhysique sourcier, RegDate dateReference, Set<Long> conjointAIgnorer) throws PassageNouveauxRentiersSourciersEnMixteException {
+
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Traitement du sourcier n° " + sourcier.getNumero());
+		}
 
 		if (conjointAIgnorer.contains(sourcier.getNumero()) || conjointAIgnorerGlobal.contains(sourcier.getNumero())) {
 			// le for du sourcier à deja été modifié par l'intermediaire de son conjoint --> Rien à faire
@@ -182,17 +185,17 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.VALIDATION, vr.toString());
 		}
 
-		final SourcierData data = new SourcierData();
+		final SourcierData data = new SourcierData(ageRentierHomme, ageRentierFemme);
 
 		fillDatesNaissanceDecesEtSexe(sourcier, data);
 
 		if (data.getDateNaissance() == null) {
-			LOGGER.info(String.format("La date de naissance du sourcier [%s] n'est pas determinable, impossible de calculé son age de rentier", sourcier.getNumero()));
+			LOGGER.info(String.format("La date de naissance du sourcier [%s] n'est pas determinable, impossible de calculer son age de rentier", sourcier.getNumero()));
 			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.DATE_NAISSANCE_NULLE);
 		}
 
 		if (data.getSexe() == null) {
-			LOGGER.info(String.format("Le sexe du sourcier [%s] n'est pas determinable, impossible de calculé son age de rentier", sourcier.getNumero()));
+			LOGGER.info(String.format("Le sexe du sourcier [%s] n'est pas determinable, impossible de calculer son age de rentier", sourcier.getNumero()));
 			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.SEXE_NUL);
 		}
 
@@ -226,19 +229,20 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 				data.setDateNaissanceConjoint(tiersService.getDateNaissance(conjoint));
 				data.setSexeConjoint(tiersService.getSexe(conjoint));
 			}
-		} else {
+		}
+		else {
 			data.setMenage(false);
 			conjoint = null;
 			contribuable = sourcier;
 		}
 		fillInfoDomicile(contribuable, data, dateReference);
 
-		if (!data.isDomicilieEnSuisse()) {
-			rapport.nbSourciersHorsSuisse ++;
+		if (!data.isDomicilieSurVD()) {
+			rapport.nbSourciersHorsSuisse++;
 			LOGGER.info(String.format("Le contribuable [%s] n'est pas domicilié en suisse -> ignoré", contribuable.getNumero()));
 			return;
 		}
-    	final RegDate dateRentier = data.getDateRentier();
+		final RegDate dateRentier = data.getDateRentier();
 
 		// Vérification de cohérence sur le for principal
 		final ForFiscalPrincipal dernierForFiscalPrincipal = contribuable.getDernierForFiscalPrincipal();
@@ -251,7 +255,8 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 				throw new PassageNouveauxRentiersSourciersEnMixteException(
 						sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.INCOHERENCE_FOR_FISCAL,
 						message);
-			} else {
+			}
+			else {
 				final String message = String.format(
 						"Le contribuable [%s] n'a pas de for sourcier ouvert. son dernier for est [%s]",
 						contribuable.getNumero(), dernierForFiscalPrincipal);
@@ -278,7 +283,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		tiersService.closeForFiscalPrincipal(contribuable, dateRentier.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION);
 		tiersService.openForFiscalPrincipal(contribuable, dateRentier, dernierForFiscalPrincipal.getMotifRattachement(), dernierForFiscalPrincipal.getNumeroOfsAutoriteFiscale(),
 				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION, false);
-		LOGGER.info("ouverture du for mixte pour le contribuable n° " + contribuable.getNumero());
+		LOGGER.info("ouverture du for mixte pour le contribuable [" + contribuable.getNumero() +"]");
 		rapport.addSourcierConverti(contribuable.getNumero());
 		if (data.isMenage() && conjoint != null) {
 			conjointAIgnorer.add(conjoint.getNumero());
@@ -291,11 +296,13 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			data.setDateNaissance(tiersService.getDateNaissance(sourcier));
 		}
 		catch (ServiceCivilException e) {
-			LOGGER.error("Impossible de récupérer l'individu n° " + sourcier.getNumero(), e);
+			LOGGER.error("Impossible de récupérer l'individu [" + sourcier.getNumeroIndividu() + "]", e);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.CIVIL_EXCEPTION, e);
-		} catch (IndividuNotFoundException e ) {
-			LOGGER.info("L'individu n° " + sourcier.getNumeroIndividu() + " associé à la personne n° "	+ sourcier.getNumero() + " n'existe pas");
-			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.INDIVIDU_INCONNU, "individu associé n°" + sourcier.getNumeroIndividu());
+		}
+		catch (IndividuNotFoundException e) {
+			LOGGER.info("L'individu [" + sourcier.getNumeroIndividu() + "] associé à la personne [" + sourcier.getNumero() + "] n'existe pas");
+			throw new PassageNouveauxRentiersSourciersEnMixteException(sourcier, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.INDIVIDU_INCONNU,
+					"individu associé n°" + sourcier.getNumeroIndividu());
 		}
 	}
 
@@ -306,12 +313,12 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 			adresseDomicile = adresseService.getAdresseFiscale(ctb, TypeAdresseFiscale.DOMICILE, dateReference, false);
 		}
 		catch (AdresseException e) {
-			LOGGER.error("Erreur dans les adresse de la personne n° " + ctb.getNumero(), e);
+			LOGGER.error("Erreur dans les adresse de la personne [" + ctb.getNumero() + "]", e);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.ADRESSE_EXCEPTION, e);
 		}
 
 		if (adresseDomicile == null) {
-			final String message = "Impossibilité d'identifier le domicile du contribuable n° " + ctb.getNumero() + " car il ne possède pas d'adresse.";
+			final String message = "Impossibilité d'identifier le domicile du contribuable [" + ctb.getNumero() + "] car il ne possède pas d'adresse.";
 			LOGGER.info(message);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.DOMICILE_INCONNU, message);
 		}
@@ -319,84 +326,67 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		if (adresseDomicile.isDefault()) {
 			// msi/tdq 3.6.09 : on ne doit pas tenir compte des adresses de domicile par défaut car elles n'ont pas de valeur pour
 			// déterminer si un contribuable est dans le canton
-			String message = "Impossibilité d'identifier le domicile du contribuable n° " + ctb.getNumero()
-					+ " car son adresse de domicile est une valeur par défaut.";
+			String message = "Impossibilité d'identifier le domicile du contribuable [" + ctb.getNumero() + "] car son adresse de domicile est une valeur par défaut.";
 			LOGGER.info(message);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.DOMICILE_INCONNU, message);
 		}
 
-		boolean estDomicilieEnSuisse;
-		final Commune commune;
+		boolean estDomicilieSurVaud;
 		try {
-			estDomicilieEnSuisse = serviceInfra.estEnSuisse(adresseDomicile);
-			if (estDomicilieEnSuisse) {
-				commune = serviceInfra.getCommuneByAdresse(adresseDomicile, dateReference);
-			}
-			else {
-				commune = null;
-			}
+			estDomicilieSurVaud = serviceInfra.estDansLeCanton(adresseDomicile);
 		}
 		catch (ServiceInfrastructureException e) {
-			LOGGER.error("Impossible de récupérer la commune de l n° " + ctb.getNumero(), e);
+			LOGGER.error("Impossible de determiner si l'adresse du contribuable [" + ctb.getNumero() + "] est sur le canton" , e);
 			throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.INFRA_EXCEPTION, e);
 		}
-
-		if (estDomicilieEnSuisse) {
-			if (commune == null) {
-				String message = "Impossibilité d'identifier le domicile du contribuable n° " + ctb.getNumero()
-						+ " car la localité avec le numéro postal " + adresseDomicile.getNumeroOrdrePostal() + " est inconnue.";
-				LOGGER.info(message);
-				throw new PassageNouveauxRentiersSourciersEnMixteException(ctb, PassageNouveauxRentiersSourciersEnMixteResults.ErreurType.DOMICILE_INCONNU, message);
-			}
-		}
-		data.setDomicilieEnSuisse(estDomicilieEnSuisse);
+		data.setDomicilieSurVD(estDomicilieSurVaud);
 	}
 
 	final private static String QUERY_SOURCIERS = // Requete retrouvant les personnes imposées à la source ou faisant parti d'un ménage imposé à la source
 			"SELECT pp.id                                                                                 "
-				+ "FROM                                                                                   "
-				+ "    PersonnePhysique AS pp                                                             "
-				+ "WHERE                                                                                  "
-				+ "	   pp.annulationDate IS null                                                          "
-				+ "	   AND pp.dateDeces IS null                                                           "
-				+ "	   AND (pp.dateNaissance IS null                                                      "
-				+ "      OR pp.dateNaissance <= :pivot AND pp.sexe IS null                                "
-				+ "      OR pp.dateNaissance <= :pivotHomme AND pp.sexe = '" + Sexe.MASCULIN+"'           "
-				+ "      OR pp.dateNaissance <= :pivotFemme AND pp.sexe = '" + Sexe.FEMININ +"')          "
-				+ "    AND ( EXISTS (                                                                     "
-				+ "        SELECT                                                                         "
-				+ "            fors.id                                                                    "
-				+ "        FROM                                                                           "
-				+ "            ForFiscalPrincipal AS fors                                                 "
-				+ "        WHERE                                                                          "
-				+ "            fors.annulationDate IS null                                                "
-				+ "            AND fors.tiers.id = pp.id                                                  "
-				+ "            AND fors.dateDebut <= :date                                                "
-				+ "            AND (fors.dateFin Is null OR fors.dateFin >= :date)                        "
-				+ "            AND fors.modeImposition = '" + ModeImposition.SOURCE + "')                 "
-				+ "    OR EXISTS (                                                                        "
-				+ "        SELECT                                                                         "
-				+ "            rap.id                                                                     "
-				+ "        FROM                                                                           "
-				+ "            RapportEntreTiers AS rap                                                   "
-				+ "        WHERE                                                                          "
-				+ "            rap.annulationDate IS null                                                 "
-				+ "            AND rap.sujetId = pp.id                                                    "
-				+ "            AND rap.class = AppartenanceMenage                                         "
-				+ "            AND rap.dateDebut <= :date                                                 "
-				+ "            AND (rap.dateFin IS null OR rap.dateFin >= :date)                          "
-				+ "            AND EXISTS (                                                               "
-				+ "                 SELECT                                                                "
-				+ "                     fors2.id                                                          "
-				+ "                 FROM                                                                  "
-				+ "                     ForFiscalPrincipal AS fors2                                       "
-				+ "                 WHERE                                                                 "
-				+ "                     fors2.annulationDate IS null                                      "
-				+ "                     AND fors2.tiers.id = rap.objetId                                  "
-				+ "                     AND fors2.dateDebut <= :date                                      "
-				+ "                     AND (fors2.dateFin Is null OR fors2.dateFin >= :date)             "
-				+ "                     AND fors2.modeImposition = '" + ModeImposition.SOURCE + "')))     "
-				+ "ORDER BY pp.id ASC                                                                     ";
+					+ "FROM                                                                               "
+					+ "    PersonnePhysique AS pp                                                         "
+					+ "WHERE                                                                              "
+					+ "	   pp.annulationDate IS null                                                      "
+					+ "	   AND pp.dateDeces IS null                                                       "
+					+ "	   AND (pp.dateNaissance IS null                                                  "
+					+ "      OR pp.dateNaissance <= :pivot AND pp.sexe IS null                            "
+					+ "      OR pp.dateNaissance <= :pivotHomme AND pp.sexe = '" + Sexe.MASCULIN + "'     "
+					+ "      OR pp.dateNaissance <= :pivotFemme AND pp.sexe = '" + Sexe.FEMININ  + "')    "
+					+ "    AND ( EXISTS (                                                                 "
+					+ "        SELECT                                                                     "
+					+ "            fors.id                                                                "
+					+ "        FROM                                                                       "
+					+ "            ForFiscalPrincipal AS fors                                             "
+					+ "        WHERE                                                                      "
+					+ "            fors.annulationDate IS null                                            "
+					+ "            AND fors.tiers.id = pp.id                                              "
+					+ "            AND fors.dateDebut <= :date                                            "
+					+ "            AND (fors.dateFin Is null OR fors.dateFin >= :date)                    "
+					+ "            AND fors.modeImposition = '" + ModeImposition.SOURCE + "')             "
+					+ "    OR EXISTS (                                                                    "
+					+ "        SELECT                                                                     "
+					+ "            rap.id                                                                 "
+					+ "        FROM                                                                       "
+					+ "            RapportEntreTiers AS rap                                               "
+					+ "        WHERE                                                                      "
+					+ "            rap.annulationDate IS null                                             "
+					+ "            AND rap.sujetId = pp.id                                                "
+					+ "            AND rap.class = AppartenanceMenage                                     "
+					+ "            AND rap.dateDebut <= :date                                             "
+					+ "            AND (rap.dateFin IS null OR rap.dateFin >= :date)                      "
+					+ "            AND EXISTS (                                                           "
+					+ "                 SELECT                                                            "
+					+ "                     fors2.id                                                      "
+					+ "                 FROM                                                              "
+					+ "                     ForFiscalPrincipal AS fors2                                   "
+					+ "                 WHERE                                                             "
+					+ "                     fors2.annulationDate IS null                                  "
+					+ "                     AND fors2.tiers.id = rap.objetId                              "
+					+ "                     AND fors2.dateDebut <= :date                                  "
+					+ "                     AND (fors2.dateFin Is null OR fors2.dateFin >= :date)         "
+					+ "                     AND fors2.modeImposition = '" + ModeImposition.SOURCE + "'))) "
+					+ "ORDER BY pp.id ASC                                                                 ";
 
 	private List<Long> getListPotentielsNouveauxRentiersSourciers(final RegDate date) {
 		final RegDate datePivotHomme = date.addYears(-ageRentierHomme);
@@ -430,82 +420,106 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	}
 
 	private RegDate calculeDateRentier(RegDate dateNaissance, Sexe sexe) {
+		return calculeDateRentier(dateNaissance, sexe, ageRentierHomme, ageRentierFemme);
+	}
+
+	static RegDate calculeDateRentier(RegDate dateNaissance, Sexe sexe, int ageRentierHomme, int ageRentierFemme) {
 		final int age;
 		switch (sexe) {
-			case MASCULIN: age = ageRentierHomme; break;
-			case FEMININ:  age = ageRentierFemme; break;
-		default: throw new RuntimeException(sexe + " unknown");
+		case MASCULIN:
+			age = ageRentierHomme;
+			break;
+		case FEMININ:
+			age = ageRentierFemme;
+			break;
+		default:
+			throw new RuntimeException(sexe + " unknown");
 		}
 		return dateNaissance.addYears(age);
 	}
 
 
-	private class SourcierData {
+	static class SourcierData {
 
 		private RegDate dateNaissance;
 		private RegDate dateNaissanceConjoint;
 		private Sexe sexe;
 		private Sexe sexeConjoint;
 		private boolean menage;
-		private boolean domicilieEnSuisse;
+		private boolean domicilieSurVD;
 
-		public RegDate getDateNaissance() {
+		private int ageRentierHomme;
+		private int ageRentierFemme;
+
+		SourcierData(int ageRentierHomme, int ageRentierFemme) {
+			this.ageRentierFemme = ageRentierFemme;
+			this.ageRentierHomme = ageRentierHomme;
+		}
+
+		RegDate getDateNaissance() {
 			return dateNaissance;
 		}
 
-		public void setDateNaissance(RegDate dateNaissance) {
+		void setDateNaissance(RegDate dateNaissance) {
 			this.dateNaissance = dateNaissance;
 		}
 
-		public RegDate getDateNaissanceConjoint() {
+		RegDate getDateNaissanceConjoint() {
 			return dateNaissanceConjoint;
 		}
 
-		public void setDateNaissanceConjoint(RegDate dateNaissance) {
+		void setDateNaissanceConjoint(RegDate dateNaissance) {
 			this.dateNaissanceConjoint = dateNaissance;
 		}
 
-		public Sexe getSexe() {
+		Sexe getSexe() {
 			return sexe;
 		}
 
-		public void setSexe(Sexe sexe) {
+		void setSexe(Sexe sexe) {
 			this.sexe = sexe;
 		}
 
-		public Sexe getSexeConjoint() {
+		Sexe getSexeConjoint() {
 			return sexeConjoint;
 		}
 
 
-		public void setSexeConjoint(Sexe sexe) {
+		void setSexeConjoint(Sexe sexe) {
 			this.sexeConjoint = sexe;
 		}
 
-		public boolean isDomicilieEnSuisse() {
-			return domicilieEnSuisse;
+		boolean isDomicilieSurVD() {
+			return domicilieSurVD;
 		}
 
-		public void setDomicilieEnSuisse(boolean estDomicilieEnSuisse) {
-			this.domicilieEnSuisse = estDomicilieEnSuisse;
+		void setDomicilieSurVD(boolean domicilieSurVD) {
+			this.domicilieSurVD = domicilieSurVD;
 		}
 
-		public void setMenage(boolean menage) {
+		void setMenage(boolean menage) {
 			this.menage = menage;
 		}
 
-		public boolean  isMenage() {
+		boolean isMenage() {
 			return menage;
 		}
 
-		public RegDate getDateRentier() {
+		/**
+		 * @return la date de rentier du contribuable; pour les ménages communs, il s'agit de la date du conjoint le plus vieux
+		 */
+		RegDate getDateRentier() {
 			if (getDateNaissance() == null || getSexe() == null) {
-				throw new IllegalStateException("Impossible d'appeler calculeDateRentier() si la date de naissance ou le sexe sont null");
+				throw new IllegalStateException("Appel interdit si la date de naissance ou le sexe est null");
 			}
-			RegDate dateRentier = calculeDateRentier(getDateNaissance(), getSexe());
-			if (isMenage() && getDateNaissanceConjoint() != null && getSexeConjoint() != null) {
-				RegDate dateRentierConjoint = calculeDateRentier(getDateNaissanceConjoint(), getSexeConjoint());
-				dateRentier = dateRentier.isBefore(dateRentierConjoint) ? dateRentier : dateRentierConjoint;
+			final RegDate dateRentier;
+			if (isMenage()
+					&& getDateNaissanceConjoint() != null && getSexeConjoint() != null
+					&& getDateNaissanceConjoint().isBefore(getDateNaissance())) {
+				dateRentier = calculeDateRentier(getDateNaissanceConjoint(), getSexeConjoint(), ageRentierHomme, ageRentierFemme);
+			}
+			else {
+				dateRentier = calculeDateRentier(getDateNaissance(), getSexe(), ageRentierHomme, ageRentierFemme);
 			}
 			return dateRentier;
 		}
