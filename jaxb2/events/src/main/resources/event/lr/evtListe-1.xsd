@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by zciedt (Etat de Vaud) -->
 <!-- -22.05.2012 (ZCIEDT) V1: Création -->
 <!-- -25.05.2012 (ZCIEDT) V1: Prise en compte des remarques de Sandro, Stéphane et Christophe -->
 <!-- -11.07.2012 (ZCIEDT) V1.1: Prise en compte des remarques de Manuel suite à séance du 10.07.2012 -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1">
+<!-- -16.08.2012 (ZCIEDT) V1.2: Suppression du businessId car redondant avec numéroSequence et complique la reprise des données, lowerCase des types complexes -->
+<!-- -21.08.2012 (ZCIEDT) V1.3: TypeDebiteur rendu facultatif car information inexistante dans Empaci au moment de l'envoi à Unireg -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" targetNamespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="3">
 	<xs:element name="evtListe">
 		<xs:annotation>
 			<xs:documentation>Evénement concernant les listes</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:complexContent>
-				<xs:extension base="EvtListeType">
+				<xs:extension base="evtListeType">
 					<xs:attributeGroup ref="header"/>
 				</xs:extension>
 			</xs:complexContent>
@@ -35,7 +38,7 @@
 		</xs:attribute>
 	</xs:attributeGroup>
 	<!-- Complex Types -->
-	<xs:complexType name="EvtListeType">
+	<xs:complexType name="evtListeType">
 		<xs:sequence>
 			<xs:element name="typeEvenement" type="evenementType">
 				<xs:annotation>
@@ -47,17 +50,17 @@
 					<xs:documentation>Changement d'état format timestamp</xs:documentation>
 				</xs:annotation>
 			</xs:element>
-			<xs:element name="caracteristiquesListe" type="CaracteristiquesListeType"/>
-			<xs:element name="caracteristiquesDebiteur" type="CaracteristiquesDebiteurType"/>
-			<xs:element name="detailEvenement" type="DetailEvenementType" minOccurs="0"/>
-			<xs:element name="utilisateur" type="UtilisateurType"/>
+			<xs:element name="caracteristiquesListe" type="caracteristiquesListeType"/>
+			<xs:element name="caracteristiquesDebiteur" type="caracteristiquesDebiteurType"/>
+			<xs:element name="detailEvenement" type="detailEvenementType" minOccurs="0"/>
+			<xs:element name="utilisateur" type="utilisateurType"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="UtilisateurType">
+	<xs:complexType name="utilisateurType">
 		<xs:sequence>
 			<xs:element name="visa" type="stringType">
-			<xs:annotation>
-				<xs:documentation>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le système.
+				<xs:annotation>
+					<xs:documentation>L'identification de l'utilisateur telle que définie par IAM. Cet identifiant DOIT être celui de l'utilisateur réel (= la personne physique) loggé dans le système.
 						Pour les batchs, il faut utiliser un utilisateur technique.
 				</xs:documentation>
 				</xs:annotation>
@@ -72,13 +75,8 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="CaracteristiquesListeType">
+	<xs:complexType name="caracteristiquesListeType">
 		<xs:sequence>
-			<xs:element name="businessId" type="stringType">
-				<xs:annotation>
-					<xs:documentation>Identifiant ESB de la liste concernée. C'est aussi l'identifiant EMPACI de la liste</xs:documentation>
-				</xs:annotation>
-			</xs:element>
 			<xs:element name="typeListe" type="listeType">
 				<xs:annotation>
 					<xs:documentation>LR ou LC ou LTO</xs:documentation>
@@ -94,11 +92,11 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="periodeDeclaration" type="PeriodeDeclarationType"/>
+			<xs:element name="periodeDeclaration" type="periodeDeclarationType"/>
 			<xs:element name="periodeFiscale" type="periodeFiscaleType"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="CaracteristiquesDebiteurType">
+	<xs:complexType name="caracteristiquesDebiteurType">
 		<xs:sequence>
 			<xs:element name="numeroDebiteur">
 				<xs:annotation>
@@ -110,30 +108,30 @@
 					</xs:restriction>
 				</xs:simpleType>
 			</xs:element>
-			<xs:element name="typeDebiteur" type="debiteurQualificationType">
+			<xs:element name="typeDebiteur" type="debiteurQualificationType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>PRE / CAS / HYP / LTN /  ADM / REG</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="DetailEvenementType">
+	<xs:complexType name="detailEvenementType">
 		<xs:sequence>
-			<xs:element name="rejetComptabilisation" type="RejetComptabilisationType" minOccurs="0"/>
+			<xs:element name="rejetComptabilisation" type="rejetComptabilisationType" minOccurs="0"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="RejetComptabilisationType">
+	<xs:complexType name="rejetComptabilisationType">
 		<xs:sequence>
-			<xs:element name="decompteContribuable" type="DecompteContribuableType" maxOccurs="unbounded"/>
+			<xs:element name="decompteContribuable" type="decompteContribuableType" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="DecompteContribuableType">
+	<xs:complexType name="decompteContribuableType">
 		<xs:sequence>
 			<xs:element name="motif" type="stringType"/>
 			<xs:element name="noSequenceDecompte" type="stringType"/>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:complexType name="PeriodeDeclarationType">
+	<xs:complexType name="periodeDeclarationType">
 		<xs:sequence>
 			<xs:element name="dateDebut" type="xs:date">
 				<xs:annotation>
