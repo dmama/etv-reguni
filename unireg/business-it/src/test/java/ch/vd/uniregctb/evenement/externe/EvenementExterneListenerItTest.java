@@ -70,7 +70,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
-		esbValidator.setSources(new Resource[] {new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd")});
+		esbValidator.setSources(new Resource[]{new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd"), new ClassPathResource("event/lr/evtListe-1.xsd")});
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(esbValidator);
@@ -79,7 +79,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testReceiveQuittanceLR() throws Exception {
+	public void testReceiveOldQuittanceLR() throws Exception {
 
 		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
 
@@ -91,7 +91,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		});
 
 		// Lit le message sous format texte
-		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/quittance_lr.xml");
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/old_quittance_lr.xml");
 		final String texte = FileUtils.readFileToString(file);
 
 		// Envoie le message
@@ -106,9 +106,43 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		final QuittanceLR q = (QuittanceLR) events.get(0);
 		assertNotNull(q);
 		Assert.assertEquals(1500001L, q.getTiersId().longValue());
-		assertEquals(RegDate.get(2009,12,7), RegDate.get(q.getDateEvenement()));
-		assertEquals(RegDate.get(2008,1,1), q.getDateDebut());
-		assertEquals(RegDate.get(2008,1,31), q.getDateFin());
+		assertEquals(RegDate.get(2009, 12, 7), RegDate.get(q.getDateEvenement()));
+		assertEquals(RegDate.get(2008, 1, 1), q.getDateDebut());
+		assertEquals(RegDate.get(2008, 1, 31), q.getDateFin());
+		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testReceiveNewQuittanceLR() throws Exception {
+
+		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
+
+		listener.setHandler(new EvenementExterneHandler() {
+			@Override
+			public void onEvent(EvenementExterne event) {
+				events.add(event);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/externe/new_quittance_lr.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte);
+
+		// On attend le message
+		while (events.isEmpty()) {
+			Thread.sleep(100);
+		}
+		Assert.assertEquals(1, events.size());
+
+		final QuittanceLR q = (QuittanceLR) events.get(0);
+		assertNotNull(q);
+		Assert.assertEquals(1500001L, q.getTiersId().longValue());
+		assertEquals(RegDate.get(2009, 12, 7), RegDate.get(q.getDateEvenement()));
+		assertEquals(RegDate.get(2008, 1, 1), q.getDateDebut());
+		assertEquals(RegDate.get(2008, 1, 31), q.getDateFin());
 		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());
 	}
 }
