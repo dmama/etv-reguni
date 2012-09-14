@@ -859,7 +859,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 		final TypFichierImpression.Document document = impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2010), TypFichierImpression.Factory.newInstance(),
 				null, false);
 		assertNotNull(document);
-		assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_SUISSE,document.getInfoDocument().getAffranchissement().getZone());
+		assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
 	}
 
 
@@ -1486,7 +1486,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012),TypFichierImpression.Factory.newInstance(),
 					null, false);
 			assertNotNull(document);
-			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_EUROPE,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
 			assertEquals("10",document.getInfoDocument().getIdEnvoi());
 
 
@@ -1523,7 +1523,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperTest extends BusinessTest 
 			final TypFichierImpression.Document document= impressionDIHelper.remplitEditiqueSpecifiqueDI(new InformationsDocumentAdapter(declaration2012),TypFichierImpression.Factory.newInstance(),
 					null, false);
 			assertNotNull(document);
-			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_RESTE_MONDE,document.getInfoDocument().getAffranchissement().getZone());
+			assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA,document.getInfoDocument().getAffranchissement().getZone());
 			assertEquals("10",document.getInfoDocument().getIdEnvoi());
 
 

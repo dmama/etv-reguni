@@ -52,6 +52,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	private AdresseService adresseService;
 	private TiersService tiersService;
 
+
 	/**
 	 * Alimente la partie Destinataire du document
 	 *
@@ -347,26 +348,33 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		final Affranchissement affranchissement = infoDocument.addNewAffranchissement();
 
-		final TypeAffranchissement typeAffranchissementAdresse = adresseEnvoiDetaillee.getTypeAffranchissement();
+		//SIFISC-6270
+		if (adresseEnvoiDetaillee.isIncomplete()) {
+			affranchissement.setZone(ZONE_AFFRANCHISSEMENT_NA);
+		}
+		else {
 
-		if (typeAffranchissementAdresse != null) {
-			switch (typeAffranchissementAdresse) {
-			case SUISSE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
-				break;
-			case EUROPE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
-				break;
-			case MONDE:
-				affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
-				break;
+			final TypeAffranchissement typeAffranchissementAdresse = adresseEnvoiDetaillee.getTypeAffranchissement();
 
-			default:
+			if (typeAffranchissementAdresse != null) {
+				switch (typeAffranchissementAdresse) {
+				case SUISSE:
+					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_SUISSE);
+					break;
+				case EUROPE:
+					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_EUROPE);
+					break;
+				case MONDE:
+					affranchissement.setZone(ZONE_AFFRANCHISSEMENT_RESTE_MONDE);
+					break;
+
+				default:
+					affranchissement.setZone(null);
+				}
+			}
+			else {
 				affranchissement.setZone(null);
 			}
-		}
-		else{
-			affranchissement.setZone(null);
 		}
 
 	}

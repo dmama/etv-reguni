@@ -39,6 +39,7 @@ public class EditiqueHelperTest extends BusinessTest {
 		final long numeroIndJerome = 2;
 		final long numeroIndJacques = 3;
 		final long numeroIndGeorges = 4;
+		final long numeroIndTheotime = 5;
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -53,6 +54,10 @@ public class EditiqueHelperTest extends BusinessTest {
 				MockIndividu indGeorges = addIndividu(numeroIndGeorges, date(1960, 1, 1), "Cognac", "Georges", true);
 				addAdresse(indGeorges, TypeAdresseCivil.COURRIER, "Android Street","3H4",null, CasePostale.parse("9654"),"San Francisco", MockPays.EtatsUnis, date(2012,1,1), null);
 
+				MockIndividu indTheotime = addIndividu(numeroIndTheotime, date(1960, 1, 1), "Cognac", "Theotime", true);
+				addAdresse(indTheotime, TypeAdresseCivil.COURRIER, "Chemin du village","7b12",null, CasePostale.parse("32254"),"Villeneuve", MockPays.PaysInconnu, date(2012,1,1), null);
+
+
 			}
 		});
 
@@ -60,7 +65,7 @@ public class EditiqueHelperTest extends BusinessTest {
 			Long jerome;
 			Long jacques;
 			Long georges;
-
+			Long theotime;
 		}
 		final Ids ids = new Ids();
 
@@ -75,7 +80,12 @@ public class EditiqueHelperTest extends BusinessTest {
 
 				final PersonnePhysique georgesCtb = addHabitant(numeroIndGeorges);
 				ids.georges = georgesCtb.getId();
+
+				final PersonnePhysique theotimeCtb = addHabitant(numeroIndTheotime);
+				ids.theotime = theotimeCtb.getId();
 				return null;
+
+
 			}
 		});
 
@@ -85,6 +95,7 @@ public class EditiqueHelperTest extends BusinessTest {
 				Tiers jerome = tiersService.getTiers(ids.jerome);
 				Tiers jacques = tiersService.getTiers(ids.jacques);
 				Tiers georges = tiersService.getTiers(ids.georges);
+				Tiers theotime = tiersService.getTiers(ids.theotime);
 
 				InfoDocumentDocument1.InfoDocument infoDocumentJerome = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentJerome, jerome);
@@ -97,6 +108,11 @@ public class EditiqueHelperTest extends BusinessTest {
 				InfoDocumentDocument1.InfoDocument infoDocumentGeorges = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
 				editiqueHelper.remplitAffranchissement(infoDocumentGeorges, georges);
 				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_RESTE_MONDE, infoDocumentGeorges.getAffranchissement().getZone());
+
+				InfoDocumentDocument1.InfoDocument infoDocumentTheotime = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+				editiqueHelper.remplitAffranchissement(infoDocumentTheotime, theotime);
+				assertEquals(EditiqueHelper.ZONE_AFFRANCHISSEMENT_NA, infoDocumentTheotime.getAffranchissement().getZone());
+
 				return null;
 			}
 		});
