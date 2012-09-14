@@ -976,6 +976,14 @@ public class TestData {
 		dpi1.setForsFiscaux(new HashSet());
 		dpi1.setRapportsObjet(new HashSet());
 		dpi1.setRapportsSujet(new HashSet());
+
+		ForDebiteurPrestationImposable forDebiteur1 = new ForDebiteurPrestationImposable();
+		forDebiteur1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+		forDebiteur1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		forDebiteur1.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+		forDebiteur1.setDateDebut(RegDate.get(2008, 1, 1));
+		dpi1.addForFiscal(forDebiteur1);
+
 		dpi1 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi1);
 
 		PersonnePhysique pp6 = new PersonnePhysique();
@@ -1351,6 +1359,27 @@ public class TestData {
 		pp1.addAdresseTiers(as6);
 		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
 
+		ForDebiteurPrestationImposable fdpi0 = new ForDebiteurPrestationImposable();
+		fdpi0.setId(11L);
+		fdpi0.setDateFin(RegDate.get(2007, 12, 31));
+		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
+		fdpi0.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+		fdpi0.setLogModifDate(new Timestamp(1199142000000L));
+		fdpi0.setNumeroOfsAutoriteFiscale(MockCommune.Echallens.getNoOFSEtendu());
+		fdpi0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		dpi0.addForFiscal(fdpi0);
+		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+
+		ForDebiteurPrestationImposable fdpi1 = new ForDebiteurPrestationImposable();
+		fdpi1.setId(12L);
+		fdpi1.setDateDebut(RegDate.get(2008, 3, 23));
+		fdpi1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+		fdpi1.setLogModifDate(new Timestamp(1199142000000L));
+		fdpi1.setNumeroOfsAutoriteFiscale(MockCommune.Leysin.getNoOFSEtendu());
+		fdpi1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+		dpi0.addForFiscal(fdpi1);
+		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+
 		DeclarationImpotSource dis0 = new DeclarationImpotSource();
 		dis0.setId(1L);
 		dis0.setDateDebut(RegDate.get(2008, 1, 1));
@@ -1363,7 +1392,8 @@ public class TestData {
 		dis0.setPeriode(pf6);
 		dis0.setPeriodicite(PeriodiciteDecompte.TRIMESTRIEL);
 		dpi0.addDeclaration(dis0);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
+
+
 
 		DeclarationImpotSource dis1 = new DeclarationImpotSource();
 		dis1.setId(5L);
@@ -1818,26 +1848,6 @@ public class TestData {
 		pp13.addForFiscal(ffp9);
 		pp13 = (PersonnePhysique) hibernateTemplate.merge(pp13);
 
-		ForDebiteurPrestationImposable fdpi0 = new ForDebiteurPrestationImposable();
-		fdpi0.setId(11L);
-		fdpi0.setDateFin(RegDate.get(2007, 12, 31));
-		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
-		fdpi0.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-		fdpi0.setLogModifDate(new Timestamp(1199142000000L));
-		fdpi0.setNumeroOfsAutoriteFiscale(MockCommune.Echallens.getNoOFSEtendu());
-		fdpi0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		dpi0.addForFiscal(fdpi0);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
-
-		ForDebiteurPrestationImposable fdpi1 = new ForDebiteurPrestationImposable();
-		fdpi1.setId(12L);
-		fdpi1.setDateDebut(RegDate.get(2008, 3, 23));
-		fdpi1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
-		fdpi1.setLogModifDate(new Timestamp(1199142000000L));
-		fdpi1.setNumeroOfsAutoriteFiscale(MockCommune.Leysin.getNoOFSEtendu());
-		fdpi1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		dpi0.addForFiscal(fdpi1);
-		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
 
 		ForFiscalPrincipal ffp10 = new ForFiscalPrincipal();
 		ffp10.setId(13L);
