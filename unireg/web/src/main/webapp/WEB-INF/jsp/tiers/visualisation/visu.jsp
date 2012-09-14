@@ -1,11 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 <%@ taglib uri="http://www.unireg.com/uniregTagLib" prefix="unireg" %>
-<tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
+
+<c:set var="layout" value="${param.layout}" />
+<c:if test="${layout != null && layout == 'dialog'}">
+	<c:set var="templatePath" value="/WEB-INF/jsp/templates/templateDialog.jsp" /> <%-- [SIFISC-6223] --%>
+</c:if>
+<c:if test="${layout == null || layout != 'dialog'}">
+	<c:set var="templatePath" value="/WEB-INF/jsp/templates/template.jsp" />
+</c:if>
+
+<tiles:insert template="${templatePath}">
 	<tiles:put name="title"><fmt:message key="title.visualisation.tiers" /></tiles:put>
 	
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/visualisation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<a href="#" onClick="ouvrirAide('<c:url value='/docs/visualisation.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	
 	<tiles:put name="vue">
@@ -21,6 +30,7 @@
 
 	<tiles:put name="body">
 	
+	<%--@elvariable id="warnings" type="java.util.List<String>"--%>
 	<c:if test="${not empty warnings}">
 		<table class="warnings iepngfix" cellspacing="0" cellpadding="0" border="0">
 			<tr><td class="heading"><fmt:message key="label.action.avertissements"/></td></tr>
@@ -34,21 +44,24 @@
 
 	<c:if test="${command.tiers != null}">
 
-		<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
-			<div style="position:relative;">
-				<div style="position:absolute; top:-1.5em; right:0px;" class="noprint">
-					<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
-				</div>
-			</div>
-		</authz:authorize>
-
 		<unireg:nextRowClass reset="1"/>
-		<!-- Debut Caracteristiques generales -->
-		<jsp:include page="../../general/tiers.jsp">
-			<jsp:param name="page" value="visu" />
-			<jsp:param name="path" value="tiersGeneral" />		
-		</jsp:include>
-		<!-- Fin Caracteristiques generales -->
+
+		<c:if test="${layout == null || layout != 'dialog'}"> <%-- [SIFISC-6223] --%>
+			<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+				<div style="position:relative;">
+					<div style="position:absolute; top:-1.5em; right:0;" class="noprint">
+						<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
+					</div>
+				</div>
+			</authz:authorize>
+
+			<!-- Debut Caracteristiques generales -->
+			<jsp:include page="../../general/tiers.jsp">
+				<jsp:param name="page" value="visu" />
+				<jsp:param name="path" value="tiersGeneral" />
+			</jsp:include>
+			<!-- Fin Caracteristiques generales -->
+		</c:if>
 
 		<!--onglets-->
 		<div id="tiersTabs">
@@ -210,7 +223,7 @@
 				</div>
 			</authz:authorize>
 		</div>
-		<script>
+		<script type="text/javascript">
 			$(function() {
 				$("#tiersTabs").tabs({cookie:{}, cache:true, spinner:"<em>Chargement&#8230;</em>"});
 
