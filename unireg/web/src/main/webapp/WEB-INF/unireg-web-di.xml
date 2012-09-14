@@ -12,7 +12,6 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="diService" ref="diService" />
-		<property name="tacheDAO" ref="tacheDAO" />
 		<property name="manager" ref="diEditManager"/>
 		<property name="diDAO" ref="diDAO"/>
 		<property name="delaisService" ref="delaisService" />

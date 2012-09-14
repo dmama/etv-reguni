@@ -62,14 +62,10 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.Tache;
-import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
-import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
-import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -82,7 +78,6 @@ public class DeclarationImpotController {
 	private HibernateTemplate hibernateTemplate;
 	private DeclarationImpotService diService;
 	private DeclarationImpotOrdinaireDAO diDAO;
-	private TacheDAO tacheDAO;
 	private MessageSource messageSource;
 	private DeclarationImpotEditManager manager;
 	private DelaisService delaisService;
@@ -106,10 +101,6 @@ public class DeclarationImpotController {
 
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
-	}
-
-	public void setTacheDAO(TacheDAO tacheDAO) {
-		this.tacheDAO = tacheDAO;
 	}
 
 	public void setManager(DeclarationImpotEditManager manager) {
@@ -603,35 +594,6 @@ public class DeclarationImpotController {
 		model.addAttribute("command", view);
 
 		return "di/editer";
-	}
-
-	/**
-	 * Permet de traiter une tâche d'annulation de DI en n'annulant pas la DI et en marquant la tâche comme traitée. Il s'agit d'une fonctionnalité historique qui mériterait d'être respécifiée car
-	 * fatalement la tâche d'annulation va réapparaître au prochain recalcul automatique des tâches.
-	 *
-	 * @param tacheId le numéro de la tâche d'annulation de déclaration qu'il faut passer à traiter sans autre forme de procès
-	 * @return la vue à afficher après traitement
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/di/maintenir.do", method = RequestMethod.POST)
-	public String maintenir(@RequestParam("tacheId") final long tacheId) {
-
-		final Tache tache = tacheDAO.get(tacheId);
-		if (tache == null) {
-			throw new ObjectNotFoundException("La tâche n°" + tacheId + " n'existe pas.");
-		}
-		if (!(tache instanceof TacheAnnulationDeclarationImpot)) {
-			throw new IllegalArgumentException("La tâche n°" + tacheId + " n'est pas une tâche d'annulation de déclaration d'impôt");
-		}
-
-		final TacheAnnulationDeclarationImpot tacheAnnulation = (TacheAnnulationDeclarationImpot) tache;
-		ControllerUtils.checkAccesDossierEnEcriture(tacheAnnulation.getContribuable().getNumero());
-
-		if (tacheAnnulation.getEtat() != TypeEtatTache.TRAITE) {
-			tacheAnnulation.setEtat(TypeEtatTache.TRAITE);
-		}
-
-		return "redirect:/tache/list.do";
 	}
 
 	/**

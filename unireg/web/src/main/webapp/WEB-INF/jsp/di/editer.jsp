@@ -100,7 +100,6 @@
 
 			<c:if test="${command.depuisTache}">
 				<unireg:buttonTo name="Retour" action="/tache/list.do" method="get" />
-				<unireg:buttonTo name="Maintenir déclaration" action="/di/maintenir.do" method="post" params="{tacheId:${command.tacheId}}"/>
 			</c:if>
 
 			<!-- Annulation DI -->
