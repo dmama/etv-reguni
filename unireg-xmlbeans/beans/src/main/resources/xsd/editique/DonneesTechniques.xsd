@@ -801,7 +801,7 @@
 			<xs:documentation>de type string qui determine la zone d'affranchissement postal (CH = Suisse, EU = Europe, RM = Reste du monde) sur les documents fiscaux</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:token">
-			<xs:pattern value="CH|EU|RM"/>
+			<xs:pattern value="CH|EU|RM|NA"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:simpleType name="typTypeAffranchissement">
