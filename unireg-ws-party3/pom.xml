@@ -181,7 +181,7 @@
 									splitindex="true"
 									use="true"
 									version="true" >
-								    <fileset dir="target/generated-cxf/src/main/java/ch/vd/unireg" defaultexcludes="yes">
+								    <fileset dir="target/generated-cxf/src/main/java/" defaultexcludes="yes">
 							    		<include name="**/*.java"/>
 							    		<exclude name="**/ObjectFactory.java"/>
 								    </fileset>
