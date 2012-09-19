@@ -46,7 +46,8 @@ public abstract class RcPersWatchDogTest {
 		assertNotNull("La personne n°476228 est introuvable !", person);
 
 		// vue des communes vaudoises
-		assertEquals("Maia", person.getIdentity().getPersonIdentification().getOfficialName());
+		final String officialName = person.getIdentity().getPersonIdentification().getOfficialName();
+		assertEquals("MAIA", officialName.toUpperCase()); // la casse du nom change très souvent lors des reprises de données
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
