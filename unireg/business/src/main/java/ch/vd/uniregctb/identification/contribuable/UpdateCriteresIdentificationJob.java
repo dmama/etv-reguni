@@ -10,7 +10,7 @@ public class UpdateCriteresIdentificationJob extends JobDefinition {
 
 	private static final Logger LOGGER = Logger.getLogger(UpdateCriteresIdentificationJob.class);
 
-	public static final String NAME = "UpdateCriteresIdentificationJob";
+	public static final String NAME = "updateCriteresIdentificationJob";
 	private static final String CATEGORIE = "Identification";
 
 	private IdentificationContribuableService identCtbService;
