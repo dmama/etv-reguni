@@ -1,0 +1,150 @@
+#tabs {
+	line-height: normal;
+	height: 25px;
+	margin-top: 20px;
+}
+
+#tabs ul {
+	margin-top: 0;
+	list-style: none;
+	padding-left: 3px;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+
+#tabs li {
+	display: inline;
+	padding-top: 5px; /* firefox */
+	.padding-top: 0px; /* IE6 + IE7 */
+	margin-left: -3px;
+	padding-left: 4px;
+	border-bottom: 1px solid #765;
+	background: url("tableftF.gif") no-repeat left top;
+	padding-bottom: 5px;
+	height: 20px;
+}
+
+#tabs a {
+	text-decoration: none;
+	font-weight: bold;
+	color: #765;
+	background: url("tabrightF.gif") no-repeat right top;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	height: 20px;
+}
+
+#tabs li.tab-with-errors {
+	padding-top: 5px;
+	margin-left: -3px;
+	padding-left: 4px;
+	padding-bottom: 5px;
+	height: 20px;
+	border-bottom: 1px solid #765;
+	background: url("tabErrorLeft.gif") no-repeat left top;
+}
+
+#tabs li.tab-with-errors a {
+	color: #765;
+	padding-top: 5px;
+	padding-left: 5px;
+	padding-right: 10px;
+	padding-bottom: 5px;
+	background: url("tabErrorRight.gif") no-repeat right top;
+}
+
+/* Commented Backslash Hack hides rule from IE5-Mac \*/
+#tabs a {
+	
+}
+
+/* End IE5-Mac hack */
+#tabs a:hover {
+	color: #333;
+}
+
+#tabs .current,#tabs .tab-with-errors {
+	background-position: 0 -42px;
+	border-width: 0;
+}
+
+#tabs li.current a {
+	background-position: 100% -42px;
+	padding-bottom: 5px;
+	color: #333;
+}
+
+#tabs li:hover,#tabs li:hover a {
+	background-position: 0 -42px;
+	color: #333;
+}
+
+#tabs li:hover a {
+	background-position: 100% -42px;
+}
+
+#tabs-enable {
+	width: inherit;
+}
+
+#tabs-disable {
+	width: inherit;
+}
+
+.toolbar-control {
+	border-right: darkgray 1px solid;
+	border-top: gainsboro 1px solid;
+	background-image: url(../../images/bg_white_nav.gif);
+	border-left: gainsboro 1px solid;
+	width: 99%;
+	height:12px;
+	padding-top: 4px;
+	padding-bottom: 4px;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+	border-bottom: darkgray 1px solid;
+	border-collapse: collapse;
+}
+
+.toolbar-control .ToolbarButton {
+	border: solid 0 Transparent;
+	background-color: Transparent;
+}
+
+.toolbar-control SPAN.disabled {
+	color: #969696;
+}
+
+.toolbar-control .ToolbarButton a {
+	color: #000059;
+	text-decoration: none;
+}
+
+.toolbar-control .ToolbarButton SPAN {
+	margin-left: 2px;
+}
+
+.toolbar-control a img {
+	border-style: none;
+	TEXT-DECORATION: none;
+	border-width: 0;
+}
+
+.toolbar-control .ToolbarButton a:link {
+	COLOR: #000059;
+}
+
+.toolbar-control .ToolbarButton a:active {
+	COLOR: #000059;
+}
+
+.toolbar-control .ToolbarButton a:visited {
+	COLOR:  #000059;
+}
+
+.toolbar-control .ToolbarButton a:hover {
+	color: #000059;
+}

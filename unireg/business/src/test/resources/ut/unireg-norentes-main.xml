@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="norentesManager" class="ch.vd.uniregctb.norentes.common.NorentesManagerImpl" factory-method="getInstance" />
+
+	<bean id="norentesScenario" abstract="true" class="ch.vd.uniregctb.norentes.common.NorentesScenario">
+		<property name="registrar" ref="norentesManager" />
+	</bean>
+
+	<bean id="evenementScenario" abstract="true" parent="norentesScenario" class="ch.vd.uniregctb.norentes.common.EvenementScenario">
+		<property name="globalSearcher" ref="globalTiersSearcher" />
+		<property name="globalIndexer" ref="globalTiersIndexer" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="databaseService" ref="databaseService" />
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="periodeFiscaleDAO" ref="periodeFiscaleDAO"/>
+		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="evenementCivilScenario" abstract="true" parent="evenementScenario" class="ch.vd.uniregctb.norentes.common.EvenementCivilScenario">
+		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="evenementCivilProcessor" ref="evenementCivilProcessor" />
+		<property name="evtExterneDAO" ref="evenementCivilRegPPDAO" />
+		<property name="tacheDAO" ref="tacheDAO"/>
+	</bean>
+
+</beans>

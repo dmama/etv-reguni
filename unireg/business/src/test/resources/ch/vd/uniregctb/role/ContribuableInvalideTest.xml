@@ -1,0 +1,78 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+	<table name="TIERS">
+		<column>LOG_MDATE</column>
+		<column>NUMERO</column>
+		<column>TIERS_TYPE</column>
+		<column>DEBITEUR_INACTIF</column>
+		<column>NH_NOM</column>
+		<column>NH_PRENOM</column>
+		<column>NH_NUMERO_ASSURE_SOCIAL</column>
+		<column>NH_DATE_NAISSANCE</column>
+		<column>NH_SEXE</column>
+		<column>NH_NO_OFS_NATIONALITE</column>
+		<column>BLOC_REMB_AUTO</column>
+		<column>DATE_DECES</column>
+		<column>PP_HABITANT</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000666</value>
+			<value>PersonnePhysique</value>
+			<value>0</value>
+			<value>Rodolf</value>
+			<value>Piedbor</value>
+			<null />
+			<value>19531218</value>
+			<value>MASCULIN</value>
+			<value>8231</value>
+			<value>0</value>
+			<null />
+			<value>0</value>
+		</row>
+	</table>
+	<table name="FOR_FISCAL">
+		<column>LOG_MDATE</column>
+		<column>ID</column>
+		<column>FOR_TYPE</column>
+		<column>TIERS_ID</column>
+		<column>GENRE_IMPOT</column>
+		<column>MOTIF_RATTACHEMENT</column>
+		<column>MODE_IMPOSITION</column>
+		<column>DATE_OUVERTURE</column>
+		<column>MOTIF_OUVERTURE</column>
+		<column>DATE_FERMETURE</column>
+		<column>MOTIF_FERMETURE</column>
+		<column>TYPE_AUT_FISC</column>
+		<column>NUMERO_OFS</column>
+		<row>
+			<value>2008-01-01</value>
+			<value>10000</value>
+			<value>ForFiscalPrincipal</value>
+			<value>10000666</value>
+			<value>REVENU_FORTUNE</value>
+			<value>DOMICILE</value>
+			<value>ORDINAIRE</value>
+			<value>19711218</value>
+			<value>MAJORITE</value>
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5586</value>
+		</row>
+		<row>
+			<value>2008-01-01</value>
+			<value>10001</value>
+			<value>ForFiscalSecondaire</value>
+			<value>10000666</value>
+			<value>REVENU_FORTUNE</value>
+			<value>IMMEUBLE_PRIVE</value>
+			<null />
+			<value>19200101</value>
+			<value>ACHAT_IMMOBILIER</value>
+			<null />
+			<null />
+			<value>COMMUNE_OU_FRACTION_VD</value>
+			<value>5407</value>
+		</row>
+	</table>
+</dataset>

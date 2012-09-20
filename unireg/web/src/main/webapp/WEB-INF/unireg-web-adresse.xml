@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="adressesEditController" class="ch.vd.uniregctb.tiers.AdressesEditController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/adresse/edit" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="adresseManager" ref="adresseManager" />
+	</bean>
+
+	<bean id="closeAdressesController" class="ch.vd.uniregctb.tiers.CloseAdressesController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.AdresseView" />
+		<property name="service" ref="tiersService" />
+		<property name="formView" value="tiers/edition/adresse/adresse-close" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
+		<property name="adresseManager" ref="adresseManager" />
+		<property name="validator" ref="closeAdresseValidator" />
+	</bean>
+
+
+	<bean id="tiersAdresseValidator" class="ch.vd.uniregctb.tiers.validator.TiersAdresseValidator" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="assujettissementService" ref="assujettissementService" />
+	</bean>
+
+	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >
+		<property name="tiersService" ref="tiersService" />
+	</bean>
+	
+	<bean id="tiersAdresseController" class="ch.vd.uniregctb.tiers.TiersAdresseController" parent="abstractTiersController">
+		<property name="sessionForm" value="true" />
+		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.AdresseView" />
+		<property name="commandName" value="command" />
+		<property name="formView" value="tiers/edition/adresse/adresse-edit" />
+		<property name="successView" value="common/refresh-parent" />
+		<property name="adresseManager" ref="adresseManager" />
+		<property name="validator" ref="tiersAdresseValidator" />
+	</bean>
+
+
+	
+	<bean id="adresseManager" class="ch.vd.uniregctb.tiers.manager.AdresseManagerImpl" parent="tiersManager">
+	</bean>
+
+
+</beans>

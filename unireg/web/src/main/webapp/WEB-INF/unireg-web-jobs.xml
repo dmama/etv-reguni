@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- Ce batch est défini uniquement dans le partie web car il utilise des clients RcPers et Host-Interfaces propres et pour permettre ça il faut que les propriétés externes
+	 	 soient accessibles. Normalement ces clients sont RcPers et Host-Interfaces sont gérés par Nexus, mais comme il s'agit d'une autre web-app, ils ne sont pas visibles. -->
+	<bean id="identificationIndividusNonMigresJob" parent="schedulerJob" class="ch.vd.uniregctb.identification.individus.IdentificationIndividusNonMigresJob">
+		<constructor-arg value="612" />
+		<constructor-arg value="Identifier les individus non-migrés par RcPers" />
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="tiersSearcher" ref="globalTiersSearcher" />
+		<property name="regppClient">
+			<bean class="${host-interfaces.ejb-proxy-class}">
+				<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}" />
+				<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}" />
+				<property name="resourceRef" value="false" />
+				<property name="lookupHomeOnStartup" value="false" />
+				<property name="refreshHomeOnConnectFailure" value="true" />
+				<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil" />
+				<property name="jndiTemplate" ref="ejbJndiTemplate" />
+			</bean>
+		</property>
+		<property name="rcPersClient">
+			<bean class="ch.vd.unireg.wsclient.rcpers.RcPersClientImpl">
+				<property name="baseUrl" value="${extprop.webservice.rcpers.url}" />
+				<property name="username" value="${extprop.webservice.rcpers.username}" />
+				<property name="password" value="${extprop.webservice.rcpers.password}" />
+				<property name="peoplePath" value="${extprop.webservice.rcpers.peoplePath}" />
+				<property name="peopleBySocialNumberPath" value="${extprop.webservice.rcpers.peopleBySocialNumberPath}" />
+				<property name="relationsPath" value="${extprop.webservice.rcpers.relationsPath}" />
+				<property name="eventPath" value="${extprop.webservice.rcpers.eventPath}" />
+				<property name="searchPath" value="${extprop.webservice.rcpers.searchPath}" />
+			</bean>
+		</property>
+		<property name="rapportService" ref="rapportService" />
+		<property name="infraService" ref="serviceInfrastructureRaw" />
+	</bean>
+
+</beans>

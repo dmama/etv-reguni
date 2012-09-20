@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by GUILLON (Etat de Vaud) -->
+<!--Version  0.0.1  - 29.04.09: JVO - Spécification Chemise TO UNIREG-->
+<!--Version  0.0.2  - 10.12.09: JVO - Nom de l' office-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:include schemaLocation="DonneesTechniques.xsd"/>
+	<xs:element name="LettresEFacture">
+		<!-- Description du schema pour l'impression du document BVR-->
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="numContrib" type="typNumeroCtb" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation>numéro  du contribuable sans les points</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="politesse" type="xs:string"/>
+				<xs:element name="dateDemande" type="typDatAAAAMMJJ">
+					<xs:annotation>
+						<xs:documentation>Date d'édition</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>

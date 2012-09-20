@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="superGraEntityController" class="ch.vd.uniregctb.supergra.SuperGraEntityController">
+		<property name="sessionForm" value="true"/>
+		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.EntityView"/>
+		<property name="commandName" value="entity"/>
+		<property name="formView" value="supergra/entity"/>
+		<property name="successView" value="entity.do"/>
+		<property name="bindOnNewForm" value="true"/>
+		<property name="manager" ref="superGraManager"/>
+	</bean>
+
+	<bean id="superGraCollectionController" class="ch.vd.uniregctb.supergra.SuperGraCollectionController">
+		<property name="sessionForm" value="true"/>
+		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.CollectionView"/>
+		<property name="commandName" value="coll"/>
+		<property name="formView" value="supergra/coll"/>
+		<property name="successView" value="coll.do"/>
+		<property name="bindOnNewForm" value="true"/>
+		<property name="manager" ref="superGraManager"/>
+	</bean>
+
+	<bean id="superGraManager" class="ch.vd.uniregctb.supergra.SuperGraManagerImpl">
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="annotatedClass" ref="hibernateAnnotatedClasses"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="validationService" ref="validationService"/>
+		<property name="validationInterceptor" ref="validationInterceptor"/>
+	</bean>
+
+</beans>

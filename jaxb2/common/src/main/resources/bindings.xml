@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<jxb:bindings version="2.1"
+			  xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xmlns:namespace="http://jaxb2-commons.dev.java.net/namespace-prefix"
+			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
+			  http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
+
+<jxb:bindings schemaLocation="unireg-common-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.common.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="common-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="unireg-exception-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.exception.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="ex-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+</jxb:bindings>
