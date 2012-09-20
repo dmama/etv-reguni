@@ -104,25 +104,11 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur(final boolean isTraite) {
 
 		final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		final List<PrioriteEmetteur> listesPriorites = template.execute(new TransactionCallback<List<PrioriteEmetteur>>() {
-			@Override
-			public List<PrioriteEmetteur> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getListePrioriteMessagesTraites();
-				}
-				else {
-					return identCtbDAO.getListePrioriteMessagesNonTraites();
-				}
 
-			}
-		});
-
-		for (PrioriteEmetteur prioriteEmetteur : listesPriorites) {
-			final String libellePriorite = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + prioriteEmetteur);
-			allPrioriteEmetteur.put(prioriteEmetteur, libellePriorite);
-		}
+		final String libellePrioritaire = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + PrioriteEmetteur.PRIORITAIRE);
+		final String libelleNonPrioritaire = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyPrioriteEmetteur + PrioriteEmetteur.NON_PRIORITAIRE);
+		allPrioriteEmetteur.put(PrioriteEmetteur.PRIORITAIRE, libellePrioritaire);
+		allPrioriteEmetteur.put(PrioriteEmetteur.NON_PRIORITAIRE, libelleNonPrioritaire);
 
 		return allPrioriteEmetteur;
 	}
@@ -179,22 +165,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatMessage(final boolean isTraite) {
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
 
 		final Map<Etat, String> mapEtat = new EnumMap<Etat, String>(Etat.class);
-		final List<Etat> typesMessage = template.execute(new TransactionCallback<List<Etat>>() {
-			@Override
-			public List<Etat> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getListeEtatsMessagesTraites();
-				}
-				else {
-					return identCtbDAO.getListeEtatsMessagesNonTraites();
-				}
-
-			}
-		});
+		final List<Etat> typesMessage = identCtbService.getListeEtatsMessages(isTraite);
 
 		for (Etat etat : typesMessage) {
 			String libelleEtat = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyEtatMessage + etat);
@@ -237,21 +210,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapTypeMessage(final boolean isTraite, @Nullable final TypeDemande typeDemande) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
 
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
-			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
-				}
-				else {
-					return identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
-				}
-			}
-		});
+		final List<String> typesMessage = identCtbService.getTypeMessages(typeDemande, isTraite);
 
 		for (String typeMessage : typesMessage) {
 			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
@@ -279,16 +240,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapUser() {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
 
 		final Map<String, String> mapUtilisateur = new HashMap<String, String>();
-		final List<String> listVisaUser = template.execute(new TransactionCallback<List<String>>() {
-			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getTraitementUser();
-			}
-		});
+		final List<String> listVisaUser = identCtbService.getTraitementUser();
 
 		for (String visaUser : listVisaUser) {
 			IdentifiantUtilisateur identifiantUtilisateur = identCtbService.getNomUtilisateurFromVisaUser(visaUser);
@@ -314,19 +268,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
 		final Map<String, String> allEmetteur = new TreeMap<String, String>(new StringComparator(false, false, false, null));
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		final List<String> emetteurs = template.execute(new TransactionCallback<List<String>>() {
-			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getEmetteursIdEtatsTraites();
-				}
-				else {
-					return identCtbDAO.getEmetteursIdEtatsNonTraites();
-				}
-			}
-		});
+		final List<String> emetteurs = identCtbService.getEmetteursId(isTraite);
 
 		for (String emetteur : emetteurs) {
 			allEmetteur.put(emetteur, emetteur);
@@ -355,19 +297,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale(final boolean isTraite) {
 		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
-			@Override
-			public List<Integer> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getPeriodeEtatsTraites();
-				}
-				else {
-					return identCtbDAO.getPeriodeEtatsNonTraites();
-				}
-			}
-		});
+		final List<Integer> periodes = identCtbService.getPeriodesFiscales(isTraite);
 
 		for (Integer periode : periodes) {
 			allPeriodeFiscale.put(periode, Integer.toString(periode));
@@ -420,11 +350,11 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 	/**
-	 * Tri les éléments dans une map (i.e. l'itérateur fournira les éléments dans cet ordre)
-	 * par rapport au tri naturel de la valeur
+	 * Tri les éléments dans une map (i.e. l'itérateur fournira les éléments dans cet ordre) par rapport au tri naturel de la valeur
+	 *
 	 * @param source map dont les éléments doivent être triés
-	 * @param <K> type des clés de la map
-	 * @param <V> type des valeurs de la map (doit implémenter {@link Comparable})
+	 * @param <K>    type des clés de la map
+	 * @param <V>    type des valeurs de la map (doit implémenter {@link Comparable})
 	 * @return une nouvelle map triée
 	 */
 	private static <K, V extends Comparable<V>> Map<K, V> sortMapAccordingToValues(Map<K, V> source) {

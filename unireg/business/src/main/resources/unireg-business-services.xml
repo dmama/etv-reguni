@@ -156,7 +156,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="identCtbService" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableServiceImpl" lazy-init="true">
+	<bean id="identCtbService" class="ch.vd.uniregctb.identification.contribuable.IdentificationContribuableServiceImpl">
 		<property name="searcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="identCtbDAO" ref="identCtbDAO" />

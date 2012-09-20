@@ -130,4 +130,43 @@ public interface IdentificationContribuableService {
 	 */
 
 	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage);
+
+	/**Permet de mettre à jour les caches des critères de recherche
+	 *
+	 */
+	public void updateCriteres();
+
+	/**
+	 * Récupère les valeurs des id emetteurs
+	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @return emetteurs ids
+	 */
+	public List<String> getEmetteursId(boolean traite);
+	/**
+	 * Récupère les valeurs des types de messages en fonction des types de demande
+	 * @param typeDemande MELDEWESEN, NCS, IMPOT_SOURCE
+	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @return emetteurs ids
+	 */
+	public List<String> getTypeMessages(TypeDemande typeDemande, boolean traite);
+
+	/**
+	 * Récupère les valeurs des Périodes fiscales
+	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @return periodes fiscales
+	 */
+	public List<Integer> getPeriodesFiscales(boolean traite);
+
+	/**
+	 * Récupère les ids des users ayant traiter des messages
+	 * @return id des users
+	 */
+	public List<String> getTraitementUser();
+
+	/**
+	 * Récupère les états des messages
+	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @return liste des états
+	 */
+	public List<Etat> getListeEtatsMessages(boolean traite);
 }

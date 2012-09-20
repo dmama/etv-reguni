@@ -36,6 +36,11 @@
 					<!-- l'optimisation de l'index lucene tous les jours, à 4 heures du matin -->
 					<property name="cronExpression" value="${extprop.crontab.optimisation.index.lucene}"/>
 				</bean>
+				<bean class="ch.vd.uniregctb.scheduler.CronTab$CronDefinition">
+					<property name="job" ref="updateCriteresIdentificationJob"/>
+					<!-- met-à-jour les critères d'identification ctb dans la page de recherche toutes les 5 minutes, de 6h à 20h tous les jours -->
+					<property name="cronExpression" value="${extprop.crontab.update.criteres.identification}"/>
+				</bean>
 			</list>
 		</property>
 	</bean>

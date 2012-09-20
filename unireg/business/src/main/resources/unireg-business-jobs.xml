@@ -94,6 +94,14 @@
 		<property name="logDisabled" value="true"/>
 	</bean>
 
+	<!-- Job qui met-à-jour les valeurs des critères pour la recherche de  messages d'identification -->
+	<bean id="updateCriteresIdentificationJob" parent="schedulerJob" class="ch.vd.uniregctb.identification.contribuable.UpdateCriteresIdentificationJob">
+		<constructor-arg value="110"/>
+		<constructor-arg value="Met-à-jour les valeurs des critères d'identification"/>
+		<property name="identCtbService" ref="identCtbService" />
+		<property name="logDisabled" value="true"/>
+	</bean>
+
     <!-- Job qui re-traite les événements civils -->
     <bean id="evenementHandlerJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.EvenementCivilHandlerJob">
         <constructor-arg value="200"/>

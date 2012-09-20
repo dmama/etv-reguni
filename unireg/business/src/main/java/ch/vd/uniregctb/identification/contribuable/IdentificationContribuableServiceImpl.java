@@ -14,8 +14,12 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.avs.AvsHelper;
@@ -64,7 +68,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 
-public class IdentificationContribuableServiceImpl implements IdentificationContribuableService, DemandeHandler {
+public class IdentificationContribuableServiceImpl implements IdentificationContribuableService, DemandeHandler, InitializingBean {
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableServiceImpl.class);
 
@@ -79,6 +83,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
+	private IdentificationContribuableCache identificationContribuableCache;
+
 
 	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
 		this.identificationContribuableHelper = identificationContribuableHelper;
@@ -123,6 +129,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	public void setServiceSecuriteService(ServiceSecuriteService serviceSecuriteService) {
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
+		updateCriteres();
+		LOGGER.info("Préchargement terminé.");
+	}
+
 
 	@SuppressWarnings({
 			"UnusedDeclaration"
@@ -1395,6 +1409,203 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return processor.run(dateTraitement, nbThreads, status, idMessage);
 	}
 
+	@Override
+	public synchronized void updateCriteres() {
+		 IdentificationContribuableCache cache = new IdentificationContribuableCache();
+		cache.setEmetteurIdsNonTraites(getNewValuesForEmetteurIds(false));
+		cache.setEmetteurIdsTraites(getNewValuesForEmetteurIds(true));
+		cache.setPeriodeFiscalesNonTraites(getNewValuesForPeriodesFiscales(false));
+		cache.setPeriodeFiscalesTraites(getNewValuesForPeriodesFiscales(true));
+		cache.setEtatMessageNonTraites(getNewValuesForEtatMessage(false));
+		cache.setEtatMessageTraites(getNewValuesForEtatMessage(true));
+		cache.setListTraitementUsers(getNewValuesForTraitementUsers());
+		updateCacheTypeMessage(cache);
+
+		identificationContribuableCache = cache;
+	}
+
+	private List<String> getNewValuesForEmetteurIds(final boolean isTraite) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+
+
+		// pas de besoin de synchronisation parce que l'assignement est atomique en java
+		return template.execute(new TransactionCallback<List<String>>() {
+			@Override
+			public List<String> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
+					return identCtbDAO.getEmetteursIdEtatsTraites();
+				}
+				else {
+					return identCtbDAO.getEmetteursIdEtatsNonTraites();
+				}
+
+			}
+		});
+	}
+
+	private void updateCacheTypeMessage(IdentificationContribuableCache cache) {
+		for (TypeDemande typeDemande : TypeDemande.values()) {
+			TypeMessageParEtatCache typeMessageParEtatCache = cache.getTypeMessagesParDemandeCache().get(typeDemande);
+			if (typeMessageParEtatCache == null) {
+				typeMessageParEtatCache = new TypeMessageParEtatCache();
+			}
+
+			typeMessageParEtatCache.typeMessageNonTraites = getNewValuesForTypeMessage(typeDemande, false);
+			typeMessageParEtatCache.typeMessageTraites = getNewValuesForTypeMessage(typeDemande, true);
+
+			cache.getTypeMessagesParDemandeCache().put(typeDemande, typeMessageParEtatCache);
+
+
+		}
+
+		cache.setTypeMessageNonTraites(getNewValuesForTypeMessage(null, false));
+		cache.setTypeMessageTraites(getNewValuesForTypeMessage(null, true));
+
+	}
+
+
+	private List<String> getNewValuesForTypeMessage(final TypeDemande typeDemande, final boolean isTraite) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+
+
+		return template.execute(new TransactionCallback<List<String>>() {
+			@Override
+			public List<String> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
+					return identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
+				}
+				else {
+					return identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
+				}
+
+			}
+		});
+	}
+
+
+
+	private List<String> getNewValuesForTraitementUsers() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+		return template.execute(new TransactionCallback<List<String>>() {
+			@Override
+			public List<String> doInTransaction(TransactionStatus status) {
+					return identCtbDAO.getTraitementUser();
+
+			}
+		});
+	}
+
+
+	private List<Integer> getNewValuesForPeriodesFiscales(final boolean isTraite) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+
+		return template.execute(new TransactionCallback<List<Integer>>() {
+			@Override
+			public List<Integer> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
+					return identCtbDAO.getPeriodeEtatsTraites();
+				}
+				else {
+					return identCtbDAO.getPeriodeEtatsNonTraites();
+				}
+
+			}
+		});
+	}
+
+
+	private List<Etat> getNewValuesForEtatMessage(final boolean isTraite) {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+
+		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
+
+		return template.execute(new TransactionCallback<List<Etat>>() {
+			@Override
+			public List<Etat> doInTransaction(TransactionStatus status) {
+				if (isTraite) {
+					return identCtbDAO.getListeEtatsMessagesTraites();
+				}
+				else {
+					return identCtbDAO.getListeEtatsMessagesNonTraites();
+				}
+
+			}
+		});
+	}
+
+
+
+	@Override
+	public List<String> getEmetteursId(boolean traite) {
+		if (traite) {
+			return identificationContribuableCache.getEmetteurIdsTraites();
+		}
+		else {
+			return identificationContribuableCache.getEmetteurIdsNonTraites();
+		}
+	}
+
+	@Override
+	public List<String> getTypeMessages(TypeDemande typeDemande, boolean traite) {
+		if (typeDemande != null) {
+
+			if (traite) {
+				return identificationContribuableCache.getTypeMessagesParDemandeCache().get(typeDemande).typeMessageTraites;
+			}
+			else {
+				return identificationContribuableCache.getTypeMessagesParDemandeCache().get(typeDemande).typeMessageNonTraites;
+			}
+		}
+		else{
+
+			if (traite) {
+				return identificationContribuableCache.getTypeMessageTraites();
+			}
+			else {
+				return identificationContribuableCache.getTypeMessageNonTraites();
+			}
+		}
+	}
+
+	@Override
+	public List<Integer> getPeriodesFiscales(boolean traite) {
+		if (traite) {
+			return identificationContribuableCache.getPeriodeFiscalesTraites();
+		}
+		else {
+			return identificationContribuableCache.getPeriodeFiscalesNonTraites();
+		}
+	}
+
+	@Override
+	public List<String> getTraitementUser() {
+		return identificationContribuableCache.getListTraitementUsers();
+	}
+
+	@Override
+	public List<Etat> getListeEtatsMessages(boolean traite) {
+		if (traite) {
+			return identificationContribuableCache.getEtatMessageTraites();
+		}
+		else {
+			return identificationContribuableCache.getEtatMessageNonTraites();
+		}
+	}
+
 	private String traduireBusinessUser(String user) {
 		String visaUser = user;
 		if (visaUser.contains("JMS-EvtIdentCtb")) {
@@ -1402,5 +1613,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		return visaUser;
+	}
+
+	public List<String> getEmetteurIdsTraites() {
+		return identificationContribuableCache.getEmetteurIdsTraites();
+	}
+
+
+	public List<String> getEmetteurIdsNonTraites() {
+		return identificationContribuableCache.getEmetteurIdsNonTraites();
 	}
 }
