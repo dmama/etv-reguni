@@ -42,7 +42,7 @@ abstract public class AnnulationOuCessationSeparationEchProcessorTest extends Ab
 		final RegDate dateNaissance = date(1957, 3, 29);
 		final RegDate dateMariage = date(2005, 5, 5);
 		final RegDate dateSeparation = date(2008, 11, 23);
-		final RegDate dateReconciliation = date(2009, 01, 15);
+		final RegDate dateReconciliation = date(2009, 1, 15);
 
 		serviceCivil.setUp(new DefaultMockServiceCivil() {
 			@Override

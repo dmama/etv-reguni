@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.web;
 
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -107,8 +106,8 @@ public final class HttpUtilities {
 
     public static String UrlPathEncode (String s)
     {
-        StringBuffer sbuf = new StringBuffer();
-        int len = s.length();
+        final StringBuilder sbuf = new StringBuilder();
+        final int len = s.length();
         for (int i = 0; i < len; i++) {
           int ch = s.charAt(i);
           if ('A' <= ch && ch <= 'Z') {     // 'A'..'Z'
@@ -141,13 +140,13 @@ public final class HttpUtilities {
     }
 
     public static String UrlPathDecode(String s) {
-        StringBuffer sbuf = new StringBuffer () ;
-        int l  = s.length() ;
+        final StringBuilder sbuf = new StringBuilder() ;
+        final int l  = s.length() ;
         int ch = -1 ;
         int b, sumb = 0;
         for (int i = 0, more = -1 ; i < l ; i++) {
           /* Get next byte b from URL segment s */
-          switch (ch = s.charAt(i)) {
+        switch (ch = s.charAt(i)) {
         case '%':
           ch = s.charAt (++i) ;
           int hb = (Character.isDigit ((char) ch)

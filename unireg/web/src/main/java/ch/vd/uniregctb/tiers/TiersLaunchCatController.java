@@ -24,7 +24,7 @@ public class TiersLaunchCatController extends AbstractController {
 		response.reset(); // pour éviter l'exception 'getOutputStream() has already been called for this response'
 
 		// XML Content
-		StringBuffer str = new StringBuffer();
+		final StringBuilder str = new StringBuilder();
 		str.append("<?xml version=\"1.0\" ?>\n");
 		str.append("<tasklist name=\"Launch Cat\">\n");
 		str.append("	<task name=\"Launch Cat\" action=\"execute\">\n");
@@ -44,7 +44,7 @@ public class TiersLaunchCatController extends AbstractController {
 		response.setContentLength(str.length());
 
 		// Output Stream
-		OutputStreamWriter os = new OutputStreamWriter(out);
+		final OutputStreamWriter os = new OutputStreamWriter(out);
 		os.write(str.toString(), 0, str.length());
 		os.close();
 

@@ -652,8 +652,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 			nomCourrier = null;
 		}
 
-		StringBuffer result = new StringBuffer();
-
+		final StringBuilder result = new StringBuilder();
 		if (nomCourrier != null) {
 			for (String nom : nomCourrier) {
 				result.append(nom).append(' ');

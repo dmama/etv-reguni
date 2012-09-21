@@ -21,7 +21,7 @@ public class EnsembleTiersCoupleView {
 		if (ensemble.getConjoint() != null) {
 			this.conjoint = new VignetteView(ensemble.getConjoint(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);
 		}
-		this.menage = new VignetteView(ensemble.getMenage(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);;
+		this.menage = new VignetteView(ensemble.getMenage(), false, false, false, false, false, tiersService, adresseService, infraService, messageSource);
 	}
 
 	public VignetteView getPrincipal() {

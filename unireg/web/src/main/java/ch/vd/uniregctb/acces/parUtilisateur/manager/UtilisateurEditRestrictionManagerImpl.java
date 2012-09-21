@@ -167,7 +167,6 @@ public class UtilisateurEditRestrictionManagerImpl implements UtilisateurEditRes
 	@Transactional(readOnly = true)
 	public ExtractionJob exportListeDroitsAcces(Long operateurId) {
 		final UtilisateurView utilisateurView = utilisateurManager.get(operateurId);
-		;
 		final DroitsAccesExtractor extractor = new DroitsAccesExtractor(utilisateurView);
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
 		return extractionService.postExtractionQuery(visa, extractor);
