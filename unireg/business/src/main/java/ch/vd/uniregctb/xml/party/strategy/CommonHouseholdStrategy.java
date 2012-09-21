@@ -53,6 +53,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		if (parts != null && parts.contains(PartyPart.HOUSEHOLD_MEMBERS)) {
 			to.setMainTaxpayer(from.getMainTaxpayer());
 			to.setSecondaryTaxpayer(from.getSecondaryTaxpayer());
+			to.setStatus(from.getStatus());
 		}
 	}
 
