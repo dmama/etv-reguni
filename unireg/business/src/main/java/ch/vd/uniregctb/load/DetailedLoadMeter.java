@@ -87,7 +87,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	public long start(T desc) {
 		currentLoad.incrementAndGet();
 		final long ts = timestamp();
-		details.get().detail = new LoadDetailImpl<T>(desc, ts, renderer);
+		details.get().detail = new LoadDetailImpl<T>(desc, ts, Thread.currentThread().getName(), renderer);
 		return ts;
 }
 

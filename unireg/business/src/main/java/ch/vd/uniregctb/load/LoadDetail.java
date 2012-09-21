@@ -14,4 +14,9 @@ public interface LoadDetail {
 	 * @return la durée actuelle d'exécution de l'activité en cours, en millisecondes
 	 */
 	long getDurationMs();
+
+	/**
+	 * @return le nom du thread sur lequel tourne l'activité en cours
+	 */
+	String getThreadName();
 }

@@ -6,11 +6,13 @@ public class LoadDetailImpl<T> implements LoadDetail {
 	
 	private final T descriptor;
 	private final long nanoStart;
+	private final String threadName;
 	private final LoadDetailRenderer<T> renderer;
 	
-	public LoadDetailImpl(T descriptor, long nanoStart, LoadDetailRenderer<T> renderer) {
+	public LoadDetailImpl(T descriptor, long nanoStart, String threadName, LoadDetailRenderer<T> renderer) {
 		this.descriptor = descriptor;
 		this.nanoStart = nanoStart;
+		this.threadName = threadName;
 		this.renderer = renderer;
 	}
 	
@@ -22,5 +24,10 @@ public class LoadDetailImpl<T> implements LoadDetail {
 	@Override
 	public long getDurationMs() {
 		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - nanoStart);
+	}
+
+	@Override
+	public String getThreadName() {
+		return threadName;
 	}
 }
