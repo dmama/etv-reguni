@@ -14,7 +14,7 @@ public abstract class LengthConstants {
 	public final static int TIERS_REMARQUE = 2000;
 	public final static int TIERS_ADRESSEBICSWIFT = 15;
 	public final static int TIERS_SEXE = 8;
-	public final static int TIERS_CATETRANGER = 35;
+	public final static int TIERS_CATETRANGER = 50;
 	public final static int TIERS_NUMCOMPTE = 34;
 	public final static int TIERS_NUMAVS = 13;
 	public final static int TIERS_NUMTEL = 35;
