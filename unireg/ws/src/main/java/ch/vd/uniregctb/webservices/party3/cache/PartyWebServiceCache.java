@@ -17,6 +17,8 @@ import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
@@ -385,6 +387,11 @@ public class PartyWebServiceCache implements UniregCacheInterface, PartyWebServi
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 		return target.acknowledgeTaxDeclarations(params);
+	}
+
+	@Override
+	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest request) throws WebServiceException {
+		return target.extendDeadline(request);
 	}
 
 	@Override

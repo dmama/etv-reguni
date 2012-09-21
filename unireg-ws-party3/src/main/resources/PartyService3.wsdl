@@ -27,6 +27,7 @@
 			<xs:include schemaLocation="messages/getmodifiedtaxpayers.xsd" />
 			<xs:include schemaLocation="messages/searchcorporationevents.xsd" />
 			<xs:include schemaLocation="messages/acknowledgetaxdeclarations.xsd" />
+			<xs:include schemaLocation="messages/extenddeadline.xsd" />
 			<xs:include schemaLocation="messages/setautomaticreimbursementblocking.xsd" />
 			<xs:include schemaLocation="messages/getdebtorinfo.xsd" />
 			<xs:include schemaLocation="messages/gettaxoffices.xsd" />
@@ -49,6 +50,8 @@
 			<xs:element name="setAutomaticReimbursementBlockingRequest" nillable="true" type="ws:setAutomaticReimbursementBlockingRequestType" />
 			<xs:element name="acknowledgeTaxDeclarationsRequest" nillable="true" type="ws:acknowledgeTaxDeclarationsRequestType" />
 			<xs:element name="acknowledgeTaxDeclarationsResponse" nillable="true" type="ws:acknowledgeTaxDeclarationsResponseType" />
+			<xs:element name="extendDeadlineRequest" nillable="true" type="ws:extendDeadlineRequestType" />
+			<xs:element name="extendDeadlineResponse" nillable="true" type="ws:extendDeadlineResponseType" />
 			<xs:element name="webServiceException" type="exception:serviceExceptionInfoType" />
 		</xs:schema>
 	</wsdl:types>
@@ -123,6 +126,13 @@
 		<wsdl:part name="acknowledgeTaxDeclarationsResponse" element="acknowledgeTaxDeclarationsResponse" />
 	</wsdl:message>
 
+	<wsdl:message name="extendDeadlineRequestMessage">
+		<wsdl:part name="extendDeadlineRequest" element="extendDeadlineRequest" />
+	</wsdl:message>
+	<wsdl:message name="extendDeadlineResponseMessage">
+		<wsdl:part name="extendDeadlineResponse" element="extendDeadlineResponse" />
+	</wsdl:message>
+
 	<wsdl:message name="pingRequestMessage" />
 	<wsdl:message name="pingResponseMessage" />
 
@@ -182,6 +192,12 @@
 			<wsdl:documentation>Quittance les déclarations d'impôt ordinaires aux dates spécifiées.</wsdl:documentation>
 			<wsdl:input message="acknowledgeTaxDeclarationsRequestMessage" />
 			<wsdl:output message="acknowledgeTaxDeclarationsResponseMessage" />
+			<wsdl:fault message="webServiceException" name="webServiceException" />
+		</wsdl:operation>
+		<wsdl:operation name="extendDeadline">
+			<wsdl:documentation>Ajoute un délai sur une déclaration d'impôt.</wsdl:documentation>
+			<wsdl:input message="extendDeadlineRequestMessage" />
+			<wsdl:output message="extendDeadlineResponseMessage" />
 			<wsdl:fault message="webServiceException" name="webServiceException" />
 		</wsdl:operation>
 		<wsdl:operation name="getDebtorInfo">
@@ -285,6 +301,17 @@
 			</wsdl:fault>
 		</wsdl:operation>
 		<wsdl:operation name="acknowledgeTaxDeclarations">
+			<wsdl:input>
+				<soap:body use="literal" />
+			</wsdl:input>
+			<wsdl:output>
+				<soap:body use="literal" />
+			</wsdl:output>
+			<wsdl:fault name="webServiceException">
+				<soap:fault name="webServiceException" use="literal" />
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="extendDeadline">
 			<wsdl:input>
 				<soap:body use="literal" />
 			</wsdl:input>

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.5 - 18 septembre 2012 - ajouté les délais sur les déclarations -->
 <!-- v1.4 - 25 juin 2012 - ajouté le type 'partyPartType' -->
 <!-- v1.2 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.1 - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
@@ -582,6 +583,13 @@
 			<xs:enumeration value="TAX_DECLARATIONS_STATUSES">
 				<xs:annotation>
 					<xs:documentation>Renseigne les états des déclarations. Attention ! L'utilisation de cette part est fortement déconseillée car elle dégrade très fortement les performances (=
+						implique une requête supplémentaire dans la base de données pour chaque déclaration de chaque tiers).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAX_DECLARATIONS_DEADLINES">
+				<xs:annotation>
+					<xs:documentation>Renseigne les délais des déclarations. Attention ! L'utilisation de cette part est fortement déconseillée car elle dégrade très fortement les performances (=
 						implique une requête supplémentaire dans la base de données pour chaque déclaration de chaque tiers).
 					</xs:documentation>
 				</xs:annotation>

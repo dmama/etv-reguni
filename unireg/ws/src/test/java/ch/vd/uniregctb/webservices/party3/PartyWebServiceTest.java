@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -32,6 +33,9 @@ import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetPartyRequest;
 import ch.vd.unireg.webservices.party3.GetTaxOfficesRequest;
@@ -62,6 +66,8 @@ import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationDeadline;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
@@ -1830,5 +1836,267 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		final Corporation hh = (Corporation) party;
 		assertFalse(hh.isAutomaticReimbursementBlocked());
+	}
+
+	/**
+	 * [SIFISC-6228] Vérifie que les délais des déclarations sont bien retournés par le web-service.
+	 */
+	@Test
+	public void testGetPartyTaxDeclarationDeadlines() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30));
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// sans la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEmpty(d0.getDeadlines());
+		}
+
+		// avec la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_DEADLINES));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			final List<TaxDeclarationDeadline> deadlines = d0.getDeadlines();
+			assertNotNull(deadlines);
+			assertEquals(1, deadlines.size());
+
+			final TaxDeclarationDeadline deadline0 = deadlines.get(0);
+			assertNotNull(deadline0);
+			assertEquals(newDate(annee + 1, 1, 15), deadline0.getApplicationDate());
+			assertEquals(newDate(annee + 1, 1, 15), deadline0.getProcessingDate());
+			assertEquals(newDate(annee + 1, 6, 30), deadline0.getDeadline());
+			assertFalse(deadline0.isWrittenConfirmation());
+		}
+	}
+
+	/**
+	 * [SIFISC-6228]
+	 */
+	@Test
+	public void testExtendDeadline() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long di2008;
+			long di2009;
+			long di2010;
+			long di2011;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(2009, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				// 2008 : échue
+				final DeclarationImpotOrdinaire di2008 = addDI(pp, 2008);
+				addEtatDeclarationEchue(di2008, date(2009, 7, 1));
+
+				// 2009 : retournée
+				final DeclarationImpotOrdinaire di2009 = addDI(pp, 2009);
+				addEtatDeclarationRetournee(di2009, date(2010, 4, 2));
+
+				// 2010 : sommée
+				final DeclarationImpotOrdinaire di2010 = addDI(pp, 2010);
+				addEtatDeclarationSommee(di2010, date(2011, 9, 1), date(2011, 9, 3));
+
+				// 2010 : émise
+				final DeclarationImpotOrdinaire di2011 = addDI(pp, 2011);
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.di2008 = di2008.getId();
+				ids.di2009 = di2009.getId();
+				ids.di2010 = di2010.getId();
+				ids.di2011 = di2011.getId();
+				return ids;
+			}
+
+			private DeclarationImpotOrdinaire addDI(PersonnePhysique pp, int annee) {
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30));
+				addEtatDeclarationEmise(di, date(annee, 1, 30));
+				return di;
+			}
+		});
+
+		final Date today = DataHelper.coreToWeb(RegDate.get());
+
+		// il ne doit pas être possible d'ajouter un délai sur une déclaration dont l'état est différent d'émise.
+
+		// 2008 : échue
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2008, 1));
+			params.setApplicationDate(today);
+			params.setNewDeadline(DataHelper.coreToWeb(RegDate.get().addMonths(1)));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[ECHUE]).", results.getExceptionInfo().getMessage());
+		}
+
+		// 2009 : retournée
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2009, 1));
+			params.setApplicationDate(today);
+			params.setNewDeadline(DataHelper.coreToWeb(RegDate.get().addMonths(1)));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[RETOURNEE]).", results.getExceptionInfo().getMessage());
+		}
+
+		// 2010 : sommée
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2010, 1));
+			params.setApplicationDate(today);
+			params.setNewDeadline(DataHelper.coreToWeb(RegDate.get().addMonths(1)));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, results.getCode());
+			assertEquals("La déclaration n'est pas dans l'état 'émise' (état=[SOMMEE]).", results.getExceptionInfo().getMessage());
+		}
+
+		// 2011 : émise
+
+		// demande dans le futur
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
+			params.setApplicationDate(DataHelper.coreToWeb(RegDate.get().addMonths(1)));
+			params.setNewDeadline(DataHelper.coreToWeb(RegDate.get().addMonths(1)));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_INVALID_APPLICATION_DATE, results.getCode());
+			assertEquals("La date de demande spécifiée [" + RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) +
+					"] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", results.getExceptionInfo().getMessage());
+		}
+
+		// nouveau délai dans le passé
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
+			params.setApplicationDate(today);
+			params.setNewDeadline(newDate(2012, 9, 14));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_INVALID_DEADLINE, results.getCode());
+			assertEquals("Le délai spécifié [14.09.2012] est antérieur à la date du jour [" + RegDateHelper.dateToDisplayString(RegDate.get()) + "].", results.getExceptionInfo().getMessage());
+		}
+
+		// ok
+		final RegDate nouveauDelai = RegDate.get().addMonths(1);
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
+			params.setApplicationDate(today);
+			params.setNewDeadline(DataHelper.coreToWeb(nouveauDelai));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.OK, results.getCode());
+		}
+
+		// on vérifie que le nouveau délai est en base de données
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, ids.di2011);
+				assertNotNull(di);
+
+				final Set<DelaiDeclaration> delais = di.getDelais();
+				assertNotNull(delais);
+				assertEquals(2, delais.size());
+
+				final List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>(delais);
+				Collections.sort(list, new DelaiDeclaration.Comparator());
+
+				assertEquals(date(2012, 6, 30), list.get(0).getDelaiAccordeAu());
+				assertEquals(nouveauDelai, list.get(1).getDelaiAccordeAu());
+
+				return null;
+			}
+		});
+
+		// nouveau délai avant le précédent
+		{
+			final ExtendDeadlineRequest params = new ExtendDeadlineRequest();
+			params.setLogin(login);
+			params.setKey(new TaxDeclarationKey((int) ids.ppId, 2011, 1));
+			params.setApplicationDate(today);
+			final RegDate newDeadline = RegDate.get().addDays(10);
+			params.setNewDeadline(DataHelper.coreToWeb(newDeadline));
+
+			final ExtendDeadlineResponse results = service.extendDeadline(params);
+			assertNotNull(results);
+			assertEquals(ExtendDeadlineCode.ERROR_INVALID_DEADLINE, results.getCode());
+			assertEquals("Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" +
+					RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) + "].", results.getExceptionInfo().getMessage());
+		}
 	}
 }

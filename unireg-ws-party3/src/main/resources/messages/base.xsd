@@ -97,6 +97,13 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
+			<xs:enumeration value="TAX_DECLARATIONS_DEADLINES">
+				<xs:annotation>
+					<xs:documentation>Renseigne les délais des déclarations. Attention ! L'utilisation de cette part est fortement déconseillée car elle dégrade très fortement les performances (=
+						implique une requête supplémentaire dans la base de données pour chaque déclaration de chaque tiers).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
 			<xs:enumeration value="BANK_ACCOUNTS">
 				<xs:annotation>
 					<xs:documentation>Les comptes bancaire du tiers.</xs:documentation>

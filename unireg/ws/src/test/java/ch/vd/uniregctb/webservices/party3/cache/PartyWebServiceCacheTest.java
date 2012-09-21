@@ -754,6 +754,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkBankAccounts = PartyPart.BANK_ACCOUNTS == p;
 		boolean checkTaxDeclarations = PartyPart.TAX_DECLARATIONS == p;
 		boolean checkTaxDeclarationsStatuses = PartyPart.TAX_DECLARATIONS_STATUSES == p;
+		boolean checkTaxDeclarationsDeadlines = PartyPart.TAX_DECLARATIONS_DEADLINES == p;
 		boolean checkTaxResidences = PartyPart.TAX_RESIDENCES == p;
 		boolean checkVirtualTaxResidences = PartyPart.VIRTUAL_TAX_RESIDENCES == p;
 		boolean checkManagingTaxResidences = PartyPart.MANAGING_TAX_RESIDENCES == p;
@@ -769,9 +770,9 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 		boolean checkImmovableProperties = PartyPart.IMMOVABLE_PROPERTIES == p;
 		boolean checkChildren = PartyPart.CHILDREN == p;
 		boolean checkParents = PartyPart.PARENTS == p;
-		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses ||
-				checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals ||
-				checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
+		Assert.isTrue(checkAddresses || checkTaxLiabilities || checkHouseholdMembers || checkBankAccounts || checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines
+				|| checkTaxResidences || checkVirtualTaxResidences || checkManagingTaxResidences || checkTaxationPeriods || checkRelationsBetweenParties || checkFamilyStatuses || checkCapitals
+				|| checkCorporationStatuses || checkLegalForms || checkTaxSystems || checkLegalSeats || checkDebtorPeriodicities || checkSimplifiedTaxLiabilities || checkImmovableProperties ||
 				checkChildren || checkParents, "La partie [" + p + "] est inconnue");
 
 		assertNullOrNotNull(checkAddresses, tiers.getMailAddresses(), "mailAddresses");
@@ -789,7 +790,7 @@ public class PartyWebServiceCacheTest extends WebserviceTest {
 			assertNullOrNotNull(checkTaxLiabilities, ctb.getTaxLiabilities(), "taxLiabilities");
 			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityVD(), "simplifiedTaxLiabilityVD");
 			assertNullOrNotNull(checkSimplifiedTaxLiabilities, ctb.getSimplifiedTaxLiabilityCH(), "simplifiedTaxLiabilityCH");
-			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses, ctb.getTaxDeclarations(), "taxDeclarations");
+			assertNullOrNotNull(checkTaxDeclarations || checkTaxDeclarationsStatuses || checkTaxDeclarationsDeadlines, ctb.getTaxDeclarations(), "taxDeclarations");
 			assertNullOrNotNull(checkTaxationPeriods, ctb.getTaxationPeriods(), "taxationPeriods");
 			assertNullOrNotNull(checkFamilyStatuses, ctb.getFamilyStatuses(), "familyStatuses");
 			assertNullOrNotNull(checkImmovableProperties, ctb.getImmovableProperties(), "immovableProperties");

@@ -117,7 +117,7 @@ public abstract class PartyStrategy<T extends Party> {
 			initManagingTaxResidences(left, tiers, context);
 		}
 
-		if (parts != null && (parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES))) {
+		if (parts != null && (parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			initTaxDeclarations(left, tiers, parts);
 		}
 	}
@@ -148,7 +148,7 @@ public abstract class PartyStrategy<T extends Party> {
 			copyManagingTaxResidences(to, from);
 		}
 
-		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES))) {
+		if ((parts.contains(PartyPart.TAX_DECLARATIONS) || parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES))) {
 			copyTaxDeclarations(to, from, parts, mode);
 		}
 	}
@@ -410,15 +410,15 @@ public abstract class PartyStrategy<T extends Party> {
 		if (mode == CopyMode.ADDITIVE) {
 			// en mode additif, on complète les déclarations si le 'from' contains les états des déclarations (et implicitement les déclarations
 			// elles-mêmes), ou si le 'to' ne contient aucune déclaration. Dans tous les autres, cas, on ne fait rien car on n'ajouterait rien si on le faisait.
-			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
+			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) || to.getTaxDeclarations() == null || to.getTaxDeclarations().isEmpty()) {
 				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 			}
 		}
 		else {
 			Assert.isEqual(CopyMode.EXCLUSIVE, mode);
 
-			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-				// on veut les déclarations et leurs états => on copie tout
+			if (parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES) || parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES)) {
+				// on veut les déclarations et leurs états/délais => on copie tout
 				copyColl(to.getTaxDeclarations(), from.getTaxDeclarations());
 			}
 			else {

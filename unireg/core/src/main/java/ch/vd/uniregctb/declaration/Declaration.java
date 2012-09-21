@@ -399,6 +399,27 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 	}
 
 	/**
+	 * @return le dernier délai (= le plus permissif)
+	 */
+	@Transient
+	public DelaiDeclaration getDernierDelais() {
+		if (delais == null || delais.isEmpty()) {
+			return null;
+		}
+
+		final List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>(delais.size());
+		for (DelaiDeclaration delai : delais) {
+			if (!delai.isAnnule()) {
+				list.add(delai);
+			}
+		}
+		Collections.sort(list, new DelaiDeclaration.Comparator());
+
+		final DelaiDeclaration d = list.get(list.size() - 1);
+		return d.isAnnule() ? null : d;
+	}
+
+	/**
 	 * @return l'état courant de la déclaration
 	 */
 	@Transient

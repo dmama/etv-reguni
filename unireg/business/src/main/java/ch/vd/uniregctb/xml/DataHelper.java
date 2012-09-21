@@ -265,6 +265,7 @@ public abstract class DataHelper {
 				break;
 			case TAX_DECLARATIONS:
 			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
 				results.add(TiersDAO.Parts.DECLARATIONS);
 				break;
 			case TAX_RESIDENCES:

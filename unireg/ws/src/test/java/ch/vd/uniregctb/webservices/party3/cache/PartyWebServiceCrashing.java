@@ -10,6 +10,8 @@ import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
@@ -124,6 +126,11 @@ public class PartyWebServiceCrashing implements PartyWebService {
 
 	@Override
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest request) throws WebServiceException {
 		throw new NotImplementedException();
 	}
 

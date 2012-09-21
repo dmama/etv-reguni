@@ -29,6 +29,9 @@ import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationResponse;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineCode;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
@@ -49,6 +52,7 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorInfo;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
 import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
@@ -58,6 +62,7 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -87,6 +92,8 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.webservices.party3.data.AcknowledgeTaxDeclarationBuilder;
 import ch.vd.uniregctb.webservices.party3.data.BatchPartyBuilder;
 import ch.vd.uniregctb.webservices.party3.data.DebtorInfoBuilder;
+import ch.vd.uniregctb.webservices.party3.data.ExtendDeadlineBuilder;
+import ch.vd.uniregctb.webservices.party3.exception.ExtendDeadlineError;
 import ch.vd.uniregctb.webservices.party3.exception.TaxDeclarationAcknowledgeError;
 import ch.vd.uniregctb.xml.BusinessHelper;
 import ch.vd.uniregctb.xml.Context;
@@ -672,6 +679,81 @@ public class PartyWebServiceImpl implements PartyWebService {
 			LOGGER.error(e, e);
 			throw ExceptionHelper.newTechnicalException(e);
 		}
+	}
+
+	@Override
+	@Transactional(rollbackFor = Throwable.class)
+	public ExtendDeadlineResponse extendDeadline(final ExtendDeadlineRequest request) throws WebServiceException {
+
+		ExtendDeadlineResponse r;
+		try {
+			r = handleExtendDeadline(request);
+		}
+		catch (ExtendDeadlineError e) {
+			r = ExtendDeadlineBuilder.newExtendDeadlineResponse(request.getKey(), e);
+		}
+		catch (ValidationException e) {
+			LOGGER.error(e, e);
+			r = new ExtendDeadlineResponse(request.getKey(), ExtendDeadlineCode.EXCEPTION, new BusinessExceptionInfo(e.getMessage(), BusinessExceptionCode.VALIDATION.name(), null));
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			r = new ExtendDeadlineResponse(request.getKey(), ExtendDeadlineCode.EXCEPTION, new TechnicalExceptionInfo(e.getMessage(), null));
+		}
+		return r;
+	}
+
+	private ExtendDeadlineResponse handleExtendDeadline(ExtendDeadlineRequest request) throws ExtendDeadlineError {
+
+		final TaxDeclarationKey key = request.getKey();
+
+		final ch.vd.uniregctb.tiers.Contribuable ctb = (ch.vd.uniregctb.tiers.Contribuable) context.tiersDAO.get((long) key.getTaxpayerNumber());
+		if (ctb == null) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_UNKNOWN_TAXPAYER, "Le contribuable est inconnu.");
+		}
+
+		final DeclarationImpotOrdinaire declaration = findDeclaration(ctb, key.getTaxPeriod(), key.getSequenceNumber());
+		if (declaration == null) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_UNKNOWN_TAX_DECLARATION, "La déclaration n'existe pas.");
+		}
+
+		if (declaration.isAnnule()) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
+		}
+
+		final TypeEtatDeclaration etat = declaration.getDernierEtat().getEtat();
+		if (etat != TypeEtatDeclaration.EMISE) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
+		}
+
+		final RegDate newDeadline = DataHelper.webToCore(request.getNewDeadline());
+		final RegDate oldDeadline = declaration.getDernierDelais().getDelaiAccordeAu();
+		final RegDate today = RegDate.get();
+
+		if (newDeadline.isBefore(today)) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_INVALID_DEADLINE,
+					"Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur à la date du jour [" + RegDateHelper.dateToDisplayString(today) + "].");
+		}
+		else if (newDeadline.isBeforeOrEqual(oldDeadline)) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_INVALID_DEADLINE,
+					"Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" + RegDateHelper.dateToDisplayString(oldDeadline) + "].");
+		}
+
+		final RegDate applicationDate = DataHelper.webToCore(request.getApplicationDate());
+		if (applicationDate.isAfter(today)) {
+			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_INVALID_APPLICATION_DATE,
+					"La date de demande spécifiée [" + RegDateHelper.dateToDisplayString(applicationDate) + "] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(today) + "].");
+		}
+
+		// Le délai est correcte, on l'ajoute
+		final DelaiDeclaration delai = new DelaiDeclaration();
+		delai.setDateTraitement(RegDate.get());
+		delai.setConfirmationEcrite(false);
+		delai.setDateDemande(applicationDate);
+		delai.setDelaiAccordeAu(newDeadline);
+		declaration.addDelai(delai);
+
+		return ExtendDeadlineBuilder.newExtendDeadlineResponse(key, ExtendDeadlineCode.OK);
 	}
 
 	@Override

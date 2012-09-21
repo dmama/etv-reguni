@@ -253,4 +253,21 @@ public class DelaiDeclaration extends HibernateEntity implements Comparable<Dela
 	public List<?> getLinkedEntities(boolean includeAnnuled) {
 		return declaration == null ? null : Arrays.asList(declaration);
 	}
+
+	/**
+	 * Comparateur qui trie les délais de déclaration du plus ancien au plus récent.
+	 */
+	public static class Comparator implements java.util.Comparator<DelaiDeclaration> {
+		@Override
+		public int compare(DelaiDeclaration o1, DelaiDeclaration o2) {
+
+			if (o1.getDelaiAccordeAu() == o2.getDelaiAccordeAu()) {
+				// s'il y a des délais identiques annulés aux mêmes dates, on mets l'état annulé avant
+				return o1.isAnnule() == o2.isAnnule() ? 0 : (o1.isAnnule() ? -1 : 1);
+			}
+
+			// de la plus petite à la plus grande
+			return o1.getDelaiAccordeAu().compareTo(o2.getDelaiAccordeAu());
+		}
+	}
 }

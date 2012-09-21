@@ -9,9 +9,11 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -68,6 +70,22 @@ public class TaxDeclarationBuilder {
 				d.getStatuses().add(newTaxDeclarationStatus(etat));
 			}
 		}
+		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
+			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
+			for (ch.vd.uniregctb.declaration.DelaiDeclaration delai : declaration.getDelais()) {
+				otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
+			}
+		}
+	}
+
+	private static TaxDeclarationDeadline newTaxDeclarationDeadline(DelaiDeclaration delai) {
+		final TaxDeclarationDeadline d = new TaxDeclarationDeadline();
+		d.setApplicationDate(DataHelper.coreToXML(delai.getDateDemande()));
+		d.setProcessingDate(DataHelper.coreToXML(delai.getDateTraitement()));
+		d.setDeadline(DataHelper.coreToXML(delai.getDelaiAccordeAu()));
+		d.setCancellationDate(DataHelper.coreToXML(delai.getAnnulationDate()));
+		d.setWrittenConfirmation(delai.getConfirmationEcrite() != null && delai.getConfirmationEcrite());
+		return d;
 	}
 
 	public static TaxDeclarationStatus newTaxDeclarationStatus(ch.vd.uniregctb.declaration.EtatDeclaration etat) {
@@ -103,7 +121,7 @@ public class TaxDeclarationBuilder {
 		final ArrayList<TaxDeclarationStatus> clonedEtats = cloneStatuses(d.getStatuses());
 		if (d instanceof OrdinaryTaxDeclaration) {
 			return new OrdinaryTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((OrdinaryTaxDeclaration) d).getSequenceNumber(),
-					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId(), ((OrdinaryTaxDeclaration) d).getSegmentationCode(), 0, null);
+					((OrdinaryTaxDeclaration) d).getDocumentType(), ((OrdinaryTaxDeclaration) d).getManagingMunicipalityFSOId(), ((OrdinaryTaxDeclaration) d).getSegmentationCode(), 0, null, 0, null);
 		}
 		else if (d instanceof WithholdingTaxDeclaration) {
 			return new WithholdingTaxDeclaration(d.getId(), d.getDateFrom(), d.getDateTo(), d.getCancellationDate(), d.getTaxPeriod(), clonedEtats, ((WithholdingTaxDeclaration) d).getPeriodicity(),

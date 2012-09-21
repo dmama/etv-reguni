@@ -21,6 +21,8 @@ import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
 import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
@@ -438,6 +440,42 @@ public class PartyWebServiceEndPoint implements PartyWebService, DetailedLoadMon
 				final AcknowledgeTaxDeclarationsResponse reponses = service.acknowledgeTaxDeclarations(params);
 				logEmbeddedErrors(params, reponses);
 				return reponses;
+			}
+			finally {
+				logout();
+			}
+		}
+		catch (WebServiceException e) {
+			LOGGER.error("Exception lors du traitement du message " + params + " : " + e.getMessage());
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception lors du traitement du message " + params, e);
+			t = e;
+			throw ExceptionHelper.newTechnicalException(e.getMessage());
+		}
+		finally {
+			final long end = loadMeter.end();
+			logWriteAccess(params, end - start, t);
+		}
+	}
+
+	@Override
+	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest params) throws WebServiceException {
+		Throwable t = null;
+		final long start = loadMeter.start(params);
+		try {
+			login(params.getLogin());
+			try {
+				checkGeneralReadAccess(params.getLogin());
+
+				if (!SecurityProvider.isGranted(Role.DI_DELAI_PP, params.getLogin().getUserId(), params.getLogin().getOid())) {
+					throw ExceptionHelper.newAccessDeniedException("L'utilisateur spécifié (" + params.getLogin().getUserId() + '/' + params.getLogin().getOid() +
+							") n'a pas les droits d'ajouter des délais sur les déclarations d'impôt ordinaires sur l'application.");
+				}
+
+				return service.extendDeadline(params);
 			}
 			finally {
 				logout();

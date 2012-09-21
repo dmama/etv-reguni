@@ -3,7 +3,6 @@ package ch.vd.uniregctb.webservices.party3.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,22 +11,18 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.ech.ech0044.v2.DatePartiallyKnown;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
 import ch.vd.unireg.webservices.party3.WebServiceException;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressOtherParty;
 import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.corporation.v1.CorporationEvent;
 import ch.vd.unireg.xml.party.v1.PartyInfo;
@@ -39,11 +34,7 @@ import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
 import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
 import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
-import ch.vd.uniregctb.tiers.Contribuable;
-import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.xml.address.AddressBuilder;
 
@@ -108,21 +99,6 @@ public class DataHelper {
 		for (AdresseEnvoiDetaillee a : adresses) {
 			if (range == null || DateRangeHelper.intersect(a, range)) {
 				list.add(AddressBuilder.newAddress(a, type));
-			}
-		}
-
-		return list.isEmpty() ? null : list;
-	}
-
-	public static List<AddressOtherParty> coreToWebAT(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws WebServiceException {
-		if (adresses == null || adresses.isEmpty()) {
-			return null;
-		}
-
-		List<AddressOtherParty> list = new ArrayList<AddressOtherParty>();
-		for (AdresseEnvoiDetaillee a : adresses) {
-			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newOtherPartyAddress(a, type));
 			}
 		}
 
@@ -224,39 +200,6 @@ public class DataHelper {
 	}
 
 	/**
-	 * Retourne le numéro de la déclaration d'impôt associée avec une période d'imposition.
-	 *
-	 * @param periodeImposition la période d'imposition considérée
-	 * @return l'id de déclaration associée; ou <b>null</b> si aucune déclaration n'est émise.
-	 */
-	public static Long getAssociatedDi(ch.vd.uniregctb.metier.assujettissement.PeriodeImposition periodeImposition) {
-
-		final Contribuable contribuable = periodeImposition.getContribuable();
-		final List<ch.vd.uniregctb.declaration.Declaration> dis = contribuable.getDeclarationsForPeriode(periodeImposition.getDateDebut()
-				.year(), false);
-		if (dis == null) {
-			return null;
-		}
-
-		Long idDi = null;
-
-		for (ch.vd.uniregctb.declaration.Declaration di : dis) {
-			if (!di.isAnnule() && DateRangeHelper.intersect(periodeImposition, di)) {
-				if (idDi != null) {
-					final String erreur = String.format("Inhérence des données: trouvé deux déclarations (ids %d et %d) "
-							+ "associées avec la période d'imposition du %s au %s sur le contribuable n°%d", idDi, di.getId(),
-							periodeImposition.getDateDebut().toString(), periodeImposition.getDateFin().toString(), contribuable
-							.getNumero());
-					throw new ValidationException(contribuable, erreur);
-				}
-				idDi = di.getId();
-			}
-		}
-
-		return idDi;
-	}
-
-	/**
 	 * Détermine le type d'un tiers à partir de son instance concrète.
 	 *
 	 * @param tiers l'instance concrète du tiers
@@ -330,6 +273,7 @@ public class DataHelper {
 				break;
 			case TAX_DECLARATIONS:
 			case TAX_DECLARATIONS_STATUSES:
+			case TAX_DECLARATIONS_DEADLINES:
 				results.add(Parts.DECLARATIONS);
 				break;
 			case TAX_RESIDENCES:
@@ -373,53 +317,6 @@ public class DataHelper {
 
 	public static Set<Parts> xmlToCore(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
 		return ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
-	}
-
-	@SuppressWarnings("unchecked")
-	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, TiersDAO tiersDAO) {
-
-		// Récupère les appartenances ménages du tiers
-		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
-		final Collection<AppartenanceMenage> rapportsMenage = CollectionUtils.select(rapports, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				final ch.vd.uniregctb.tiers.RapportEntreTiers rapport = (ch.vd.uniregctb.tiers.RapportEntreTiers) object;
-				return !rapport.isAnnule() && rapport instanceof AppartenanceMenage;
-			}
-		});
-
-		if (rapportsMenage.isEmpty()) {
-			return Collections.emptyList();
-		}
-
-		final List<ForFiscalPrincipal> forsVirtuels = new ArrayList<ForFiscalPrincipal>();
-
-		// Extrait les fors principaux du ménage, en les adaptant à la période de validité des appartenances ménages
-		for (AppartenanceMenage a : rapportsMenage) {
-			final Long menageId = a.getObjetId();
-			final List<ForFiscalPrincipal> forsMenage =
-					tiersDAO.getHibernateTemplate().find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", menageId);
-
-			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
-					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {
-						@Override
-						public ForFiscalPrincipal adapt(ForFiscalPrincipal f, RegDate debut, RegDate fin) {
-							if (debut == null && fin == null) {
-								return f;
-							}
-							else {
-								ForFiscalPrincipal clone = (ForFiscalPrincipal) f.duplicate();
-								clone.setDateDebut(debut);
-								clone.setDateFin(fin);
-								return clone;
-							}
-						}
-					});
-
-			forsVirtuels.addAll(extraction);
-		}
-
-		return forsVirtuels;
 	}
 
 	public static Date coreToWeb(String s) {
@@ -473,6 +370,8 @@ public class DataHelper {
 			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_DECLARATIONS;
 		case TAX_DECLARATIONS_STATUSES:
 			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_DECLARATIONS_STATUSES;
+		case TAX_DECLARATIONS_DEADLINES:
+			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_DECLARATIONS_DEADLINES;
 		case TAX_LIABILITIES:
 			return ch.vd.unireg.xml.party.v1.PartyPart.TAX_LIABILITIES;
 		case TAX_RESIDENCES:

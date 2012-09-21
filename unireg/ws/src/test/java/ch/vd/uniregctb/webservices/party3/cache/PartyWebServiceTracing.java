@@ -6,6 +6,8 @@ import java.util.List;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsRequest;
 import ch.vd.unireg.webservices.party3.AcknowledgeTaxDeclarationsResponse;
 import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineRequest;
+import ch.vd.unireg.webservices.party3.ExtendDeadlineResponse;
 import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
 import ch.vd.unireg.webservices.party3.GetDebtorInfoRequest;
 import ch.vd.unireg.webservices.party3.GetModifiedTaxpayersRequest;
@@ -40,6 +42,7 @@ public class PartyWebServiceTracing implements PartyWebService {
 	public List<SearchCorporationEventsRequest> searchEvenementsPMCalls = new ArrayList<SearchCorporationEventsRequest>();
 	public List<GetDebtorInfoRequest> getDebiteurInfoCalls = new ArrayList<GetDebtorInfoRequest>();
 	public List<AcknowledgeTaxDeclarationsRequest> acknowledgeTaxDeclarationsCalls = new ArrayList<AcknowledgeTaxDeclarationsRequest>();
+	public List<ExtendDeadlineRequest> extendDeadlineCalls = new ArrayList<ExtendDeadlineRequest>();
 	public List<GetModifiedTaxpayersRequest> getListeCtbModifiesCalls = new ArrayList<GetModifiedTaxpayersRequest>();
 
 	public PartyWebServiceTracing(PartyWebService target) {
@@ -109,5 +112,11 @@ public class PartyWebServiceTracing implements PartyWebService {
 	public AcknowledgeTaxDeclarationsResponse acknowledgeTaxDeclarations(AcknowledgeTaxDeclarationsRequest params) throws WebServiceException {
 		acknowledgeTaxDeclarationsCalls.add(params);
 		return target.acknowledgeTaxDeclarations(params);
+	}
+
+	@Override
+	public ExtendDeadlineResponse extendDeadline(ExtendDeadlineRequest request) throws WebServiceException {
+		extendDeadlineCalls.add(request);
+		return target.extendDeadline(request);
 	}
 }
