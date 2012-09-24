@@ -195,11 +195,6 @@
 					<xs:documentation>Suisse.</xs:documentation>
 				</xs:annotation>
 			</xs:enumeration>
-			<xs:enumeration value="CIVIL_SERVANT">
-				<xs:annotation>
-					<xs:documentation>Fonctionnaire.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
 			<xs:enumeration value="C_02_B_PERMIT">
 				<xs:annotation>
 					<xs:documentation>Permis de séjour (B).</xs:documentation>
