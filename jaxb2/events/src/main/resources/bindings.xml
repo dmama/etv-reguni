@@ -62,6 +62,39 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-immovableproperty-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.immovableproperty.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='immovablePropertyType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="immov-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-taxpayer-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.taxpayer.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='familyStatusType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings>
+			<namespace:prefix name="taxpay-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.party.person.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="person-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-address-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.address.v1" />
@@ -265,6 +298,24 @@
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="ev-lr-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/create-nonresident-request-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="cnr-req-1" />
+		</jxb:bindings>
+	</jxb:bindings>
+
+	<jxb:bindings schemaLocation="event/party/create-nonresident-response-1.xsd">
+		<jxb:schemaBindings>
+			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+		</jxb:schemaBindings>
+		<jxb:bindings>
+			<namespace:prefix name="cnr-rep-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
