@@ -32,7 +32,7 @@ public class PersonnePhysique extends Contribuable {
 	/**
 	 * <b>Dans la version 3 du web-service :</b> <i>naturalPersonCategoryType</i> (xml) / <i>NaturalPersonCategory</i> (client java)
 	 *
-	 * @see http://www.ejpd.admin.ch/ejpd/fr/home/themen/migration/ref_aufenthalt.html
+	 * @see <a href="http://www.ejpd.admin.ch/ejpd/fr/home/themen/migration/ref_aufenthalt.html">http://www.ejpd.admin.ch/ejpd/fr/home/themen/migration/ref_aufenthalt.html</a>
 	 */
 	@XmlType(name = "Categorie")
 	@XmlEnum(String.class)
@@ -43,7 +43,7 @@ public class PersonnePhysique extends Contribuable {
 		 */
 		SUISSE,
 		/**
-		 * <b>Dans la version 3 du web-service :</b> <i>CIVIL_SERVANT</i>.
+		 * <b>Dans la version 3 du web-service :</b> supprimée.
 		 */
 		FONCTIONNAIRE,
 		/**
