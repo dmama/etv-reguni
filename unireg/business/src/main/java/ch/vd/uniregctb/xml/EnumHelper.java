@@ -29,6 +29,7 @@ import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.TypeImmeuble;
 import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypePermis;
 
@@ -729,6 +730,42 @@ public abstract class EnumHelper {
 			return TiersCriteria.TypeTiers.PERSONNE_PHYSIQUE;
 		default:
 			throw new IllegalArgumentException("Type de tiers inconnu = [" + type + ']');
+		}
+	}
+
+	public static CategorieEtranger xmlToCore(NaturalPersonCategory category) {
+		if (category== null) {
+			return null;
+		}
+		switch (category) {
+		case SWISS:
+			return null;
+		case C_02_B_PERMIT:
+			return CategorieEtranger._02_PERMIS_SEJOUR_B;
+		case C_03_C_PERMIT:
+			return CategorieEtranger._03_ETABLI_C;
+		case C_04_CI_PERMIT:
+			return CategorieEtranger._04_CONJOINT_DIPLOMATE_CI;
+		case C_05_F_PERMIT:
+			return CategorieEtranger._05_ETRANGER_ADMIS_PROVISOIREMENT_F;
+		case C_06_G_PERMIT:
+			return CategorieEtranger._06_FRONTALIER_G;
+		case C_07_L_PERMIT:
+			return CategorieEtranger._07_PERMIS_SEJOUR_COURTE_DUREE_L;
+		case C_08_N_PERMIT:
+			return CategorieEtranger._08_REQUERANT_ASILE_N;
+		case C_09_S_PERMIT:
+			return CategorieEtranger._09_A_PROTEGER_S;
+		case C_10_OBLIGED_TO_ANNOUNCE:
+			return CategorieEtranger._10_TENUE_DE_S_ANNONCER;
+		case C_11_DIPLOMAT:
+			return CategorieEtranger._11_DIPLOMATE_OU_FONCT_INTER_AVEC_IMMUNITE;
+		case C_12_INTERNATIONAL_CIVIL_SERVANT:
+			return CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE;
+		case C_13_NOT_ASSIGNED:
+			return CategorieEtranger._13_NON_ATTRIBUEE;
+		default:
+			throw new IllegalArgumentException("unknown NaturalPersonCategory = [" + category + ']');
 		}
 	}
 }

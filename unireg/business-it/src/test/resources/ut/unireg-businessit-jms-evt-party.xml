@@ -12,6 +12,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
 			</util:map>
 		</property>
 	</bean>
@@ -58,5 +59,10 @@
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
 	</bean>
+
+	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+	</bean>
+
 
 </beans>
