@@ -31,6 +31,7 @@ import ch.vd.uniregctb.rf.TypeMutation;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
@@ -768,4 +769,20 @@ public abstract class EnumHelper {
 			throw new IllegalArgumentException("unknown NaturalPersonCategory = [" + category + ']');
 		}
 	}
+
+	public static Sexe xmlToCore(Sex sex) {
+		if (sex == null) {
+			return null;
+		}
+		switch (sex) {
+		case MALE:
+			return Sexe.MASCULIN;
+		case FEMALE:
+			return Sexe.FEMININ;
+		default:
+			throw new IllegalArgumentException("unknown Sex = [" + sex + ']');
+		}
+	}
+
+
 }
