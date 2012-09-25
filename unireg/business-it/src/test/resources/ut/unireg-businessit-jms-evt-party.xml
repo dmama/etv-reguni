@@ -12,7 +12,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandler" />
-				<entry key="ch.vd.unireg.xml.event.party.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
 			</util:map>
 		</property>
 	</bean>
