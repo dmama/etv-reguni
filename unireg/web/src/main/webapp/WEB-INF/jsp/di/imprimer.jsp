@@ -39,11 +39,11 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="25%"><fmt:message key="label.date.debut.periode.imposition" />&nbsp;:</td>
 						<td width="25%">
-							<c:if test="${not command.ouverte}">
+							<c:if test="${not command.ouverte and command.valid}">
 								<input type="hidden" name="dateDebutPeriodeImposition" value="<unireg:regdate regdate="${command.dateDebutPeriodeImposition}"/>"/>
 								<unireg:regdate regdate="${command.dateDebutPeriodeImposition}"/>
 							</c:if>
-							<c:if test="${command.ouverte}">
+							<c:if test="${command.ouverte or not command.valid}">
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateDebutPeriodeImposition" />
 									<jsp:param name="id" value="dateDebutPeriodeImposition" />
@@ -52,11 +52,11 @@
 						</td>
 						<td width="25%"><fmt:message key="label.date.fin.periode.imposition" />&nbsp;:</td>
 						<td width="25%">
-							<c:if test="${not command.ouverte}">
+							<c:if test="${not command.ouverte and command.valid}">
 								<input type="hidden" name="dateFinPeriodeImposition" value="<unireg:regdate regdate="${command.dateFinPeriodeImposition}"/>"/>
 								<unireg:regdate regdate="${command.dateFinPeriodeImposition}"/>
 							</c:if>
-							<c:if test="${command.ouverte}">
+							<c:if test="${command.ouverte  or not command.valid}">
 								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
 									<jsp:param name="path" value="dateFinPeriodeImposition" />
 									<jsp:param name="id" value="dateFinPeriodeImposition" />

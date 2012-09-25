@@ -71,6 +71,12 @@ public class DeclarationImpotControllerValidator implements Validator {
 
 	private void validateImprimerNouvelleDI(ImprimerNouvelleDeclarationImpotView view, Errors errors) {
 
+		if (errors.hasErrors()) {
+			// S'il y a déjà des erreurs de saisie dans le formulaire pas la peine d'aller plus loin dans
+			// la validation (effets de bord indesirables)
+			return;
+		}
+
 		// Vérifie que les paramètres reçus sont valides
 
 		final Tiers tiers = tiersDAO.get(view.getTiersId());
