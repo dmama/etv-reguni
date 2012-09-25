@@ -303,7 +303,7 @@
 
 	<jxb:bindings schemaLocation="event/party/create-nonresident-request-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+			<jxb:package name="ch.vd.unireg.xml.event.party.nonresident.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
 			<namespace:prefix name="cnr-req-1" />
@@ -312,10 +312,10 @@
 
 	<jxb:bindings schemaLocation="event/party/create-nonresident-response-1.xsd">
 		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.event.party.v1" />
+			<jxb:package name="ch.vd.unireg.xml.event.party.nonresident.v1" />
 		</jxb:schemaBindings>
 		<jxb:bindings>
-			<namespace:prefix name="cnr-rep-1" />
+			<namespace:prefix name="cnr-res-1" />
 		</jxb:bindings>
 	</jxb:bindings>
 
