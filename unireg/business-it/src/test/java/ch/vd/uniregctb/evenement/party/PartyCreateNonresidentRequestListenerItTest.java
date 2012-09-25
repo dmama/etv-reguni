@@ -5,8 +5,8 @@ import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.v1.CreateNonresidentRequest;
-import ch.vd.unireg.xml.event.party.v1.CreateNonresidentResponse;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
@@ -17,7 +17,6 @@ import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -85,7 +84,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testCreateNonresident() throws Exception {
 
-		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.CREATE_NONHAB);
 		pushSecurityProvider(provider);
 
 		final CreateNonresidentRequest request = new CreateNonresidentRequest();
@@ -107,8 +106,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 			}
 		});
 		CreateNonresidentResponse res = (CreateNonresidentResponse) parseResponse(getEsbMessage(getOutputQueue()));
-		assertTrue("Le non-habitant devrait être créé", res.isCreated());
-		assertNotNull("et donc son numero, non null", res.getNumber());
+		assertNotNull("Le non-habitant devrait être créé", res.getNumber());
 
 	}
 }

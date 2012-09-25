@@ -9,8 +9,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
-import ch.vd.unireg.xml.event.party.v1.CreateNonresidentRequest;
-import ch.vd.unireg.xml.event.party.v1.CreateNonresidentResponse;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
+import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
@@ -59,7 +59,7 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 
 	@Test
 	public void testCasNormaux() throws Exception {
-		pushSecurityProvider(new MockSecurityProvider(Role.VISU_ALL));
+		pushSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
 		for( NaturalPersonCategory category : EnumSet.allOf(NaturalPersonCategory.class)) {
 			testCasNormal(category);
 		}
@@ -83,13 +83,12 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		assertTrue("Le non-habitant devrait être créé", res.isCreated());
-		assertNotNull("et donc son numero, non null", res.getNumber());
+		assertNotNull(res.getNumber());
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(res.getNumber().longValue());
+				PersonnePhysique pp = (PersonnePhysique) tiersDAO.get((long)res.getNumber());
 				assertNotNull("Le non-habitant n'est pas en base", pp);
 				assertFalse("On est sensé avoir créer un non-habitant !", pp.isHabitantVD());
 				assertNull("le non-habitant ne devrait pas avoir de numéro d'indiv", pp.getNumeroIndividu());
