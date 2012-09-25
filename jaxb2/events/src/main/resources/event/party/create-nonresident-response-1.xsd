@@ -30,16 +30,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="created" type="xs:boolean">
-						<xs:annotation>
-							<xs:appinfo>
-								<jxb:property>
-									<jxb:javadoc>Vrai si le non-habitant a été créé, faux sinon.</jxb:javadoc>
-								</jxb:property>
-							</xs:appinfo>
-						</xs:annotation>
-					</xs:element>
-					<xs:element name="number" type="common:partyNumberType" minOccurs="0">
+					<xs:element name="number" type="common:partyNumberType">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
