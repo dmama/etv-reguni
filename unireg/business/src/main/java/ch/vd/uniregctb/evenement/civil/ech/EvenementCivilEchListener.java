@@ -50,6 +50,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 	private EvenementCivilEchReceptionHandler receptionHandler;
 	private EvenementCivilEchRethrower rethrower;
+	private int rethrowDelayMinutes = 0;
+	private RethrowerThread rethrowerThread;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
 	private boolean running;
 
@@ -66,6 +68,11 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRethrower(EvenementCivilEchRethrower rethrower) {
 		this.rethrower = rethrower;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setRethrowDelayMinutes(int rethrowDelayMinutes) {
+		this.rethrowDelayMinutes = rethrowDelayMinutes;
 	}
 
 	@Override
@@ -247,6 +254,68 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		callback.run();
 	}
 
+	/**
+	 * Thread séparé pour la tentative de relance au démarrage des événements civils e-CH "A_TRAITER" afin
+	 * de laisser le temps à la web-app NEXUS de se mettre en place (la relance de ces événements fait essentiellement
+	 * des appels à RCPers pour récupérer des données sur les individus / les événements, et tout cela passe par NEXUS)
+	 */
+	private final class RethrowerThread extends Thread {
+
+		private volatile boolean stopping = false;
+
+		private RethrowerThread() {
+			super("EvtCivilEchRethrower");
+		}
+
+		@Override
+		public void run() {
+			AuthenticationHelper.pushPrincipal("Relance-démarrage");
+			try {
+				waitDelay();
+				if (!stopping) {
+					rethrower.fetchAndRethrowEvents();
+				}
+			}
+			catch (InterruptedException e) {
+				LOGGER.error("Erreur pendant l'attente préalable à la relance des événements civils à traiter", e);
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+		}
+
+		private void waitDelay() throws InterruptedException {
+			if (rethrowDelayMinutes > 0) {
+				LOGGER.info(String.format("On attend %d minute%s avant de démarrer la relance des événements civils à traiter", rethrowDelayMinutes, rethrowDelayMinutes > 1 ? "s" : StringUtils.EMPTY));
+				final long rethrowDelayMillis = TimeUnit.MINUTES.toMillis(rethrowDelayMinutes);
+				final long start = System.currentTimeMillis();
+				synchronized (this) {
+					while (!stopping) {
+						final long now = System.currentTimeMillis();
+						if (now - start < rethrowDelayMillis) {
+							wait(rethrowDelayMillis - (now - start));
+						}
+						else {
+							// l'attente est finie !
+							LOGGER.info("Attente terminée...");
+							break;
+						}
+					}
+					if (stopping) {
+						LOGGER.info("Attente interrompue pour cause d'arrêt de l'application.");
+					}
+				}
+			}
+		}
+
+		public void stopNow() {
+			synchronized (this) {
+				stopping = true;
+				notifyAll();
+			}
+		}
+	}
+
 	@Override
 	public void start() {
 		// si on doit récupérer les anciens événements au démarrage, faisons-le maintenant
@@ -254,19 +323,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			// msi (24.05.2012) : on le fait dans un thread séparé pour éviter le deadlock suivant : l'application web est
 			// en cours de démarrage et a besoin des individus stockés dans nexus, mais nexus ne peut pas répondre
 			// à la moindre requête tant que toutes les webapps ne sont pas démarrées.
-			final Thread thread = new Thread() {
-				@Override
-				public void run() {
-					AuthenticationHelper.pushPrincipal("Relance-démarrage");
-					try {
-						rethrower.fetchAndRethrowEvents();
-					}
-					finally {
-						AuthenticationHelper.popPrincipal();
-					}
-				}
-			};
-			thread.start();
+			rethrowerThread = new RethrowerThread();
+			rethrowerThread.start();
 		}
 		running = true;
 	}
@@ -274,6 +332,9 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	@Override
 	public void stop() {
 		running = false;
+		if (rethrowerThread != null && rethrowerThread.isAlive()) {
+			rethrowerThread.stopNow();
+		}
 	}
 
 	@Override
@@ -304,6 +365,10 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 				}
 				LOGGER.info(b.toString());
 			}
+		}
+
+		if (rethrower != null && rethrowDelayMinutes < 0) {
+			throw new IllegalArgumentException("La propriété 'rethrowDelayMinutes' devrait être positive ou nulle");
 		}
 	}
 }

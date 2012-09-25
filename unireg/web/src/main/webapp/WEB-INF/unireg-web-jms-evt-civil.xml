@@ -53,6 +53,7 @@
 	<bean id="evtCivilEchIndividuelListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener"/>
 	<bean id="evtCivilEchMasseListener" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchListener" parent="evtCivilEchListener">
 		<property name="rethrower" ref="evtCivilEchRethrower"/>
+		<property name="rethrowDelayMinutes" value="${extprop.evtCivil.rethrowDelayOnStartup}"/>
 	</bean>
 
 	<bean id="evtCivilEchRethrower" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchRethrowerImpl">
