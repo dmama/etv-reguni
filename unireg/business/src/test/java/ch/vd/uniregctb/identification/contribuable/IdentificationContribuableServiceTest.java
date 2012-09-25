@@ -721,6 +721,74 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 
 	}
 
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testContribuableSansNAVS11NonHabitant() throws Exception {
+		final long noIndividuClaude = 151658;
+		final long noIndividuAnne = 2345;
+
+
+		class Ids {
+			Long claude;
+
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique habClaude = addNonHabitant("Jean-Pierre", "ZANOLARI", date(1954, 1, 1), Sexe.MASCULIN);
+				ids.claude = habClaude.getNumero();
+				return null;
+			}
+		});
+
+		globalTiersIndexer.sync();
+
+		assertCountDemandes(0);
+
+		// création et traitement du message d'identification
+
+		CriteresPersonne criteres = new CriteresPersonne();
+		criteres.setPrenoms("Jean-Pierre");
+		criteres.setNom("ZANOLARI");
+		criteres.setDateNaissance(date(1954, 1, 1));
+		criteres.setNAVS11("97750420110");
+
+
+		final IdentificationContribuable message = createDemandeWithEmetteurId(criteres, "3-CH-30");
+		message.setLogCreationDate(RegDate.get().asJavaDate());
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		// zanolari doit avoir été trouvée, et traitée automatiquement
+		final List<IdentificationContribuable> list = identCtbDAO.getAll();
+		assertEquals(1, list.size());
+
+		final IdentificationContribuable ic = list.get(0);
+		assertNotNull(ic);
+		assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+		assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+		final Reponse reponse = ic.getReponse();
+		assertNotNull(reponse);
+		assertNull(reponse.getErreur());
+		assertEquals(ids.claude, reponse.getNoContribuable());
+
+		// La demande doit avoir reçu une réponse automatiquement
+		assertEquals(1, messageHandler.getSentMessages().size());
+		final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+		assertEquals(ic.getId(), sent.getId());
+	}
+
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testIdentificationAvecDate1900() throws Exception {

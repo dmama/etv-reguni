@@ -1028,7 +1028,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 				return false;
 			}
 		}
-		return false;  //To change body of created methods use File | Settings | File Templates.
+		return true;  //SIFISC-6394 Si le contribuable ne possède pas un navs11 on considère le critère ok
 	}
 
 	private boolean matchNavs13(PersonnePhysique object, String criteresNAVS13) {
