@@ -20,6 +20,8 @@
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="validator" ref="declarationImpotControllerValidator"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
+		<property name="periodeImpositionService" ref="periodeImpositionService" />
+
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >

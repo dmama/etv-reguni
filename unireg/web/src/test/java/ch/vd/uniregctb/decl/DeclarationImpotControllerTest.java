@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.decl;
 
+import javax.servlet.http.HttpSession;
+
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
@@ -12,8 +14,15 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WebTestSpring3;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
+import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.supergra.FlashMessage;
+import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -21,6 +30,7 @@ import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
+import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
@@ -125,4 +135,47 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 			}
 		});
 	}
+
+
+	/**
+	 * Teste l'impossibilité d'imprimer des duplicatas en cas de problème de période d'imposition
+	 */
+	@Test
+	public void testImprimerDuplicataDIMauvaisePeriode() throws Exception {
+
+		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				CollectiviteAdministrative cedi = addCollAdm(ServiceInfrastructureService.noCEDI);
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp,null,date(2008,6,12),date(2010,7,13));
+
+				final MenageCommun menage = ensembleTiersCouple.getMenage();
+				addForPrincipal(menage, date(2008,6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION
+						, date(2010,7, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Vaulion);
+
+				final PeriodeFiscale p2010 = addPeriodeFiscale(2010);
+				final ModeleDocument modeleDocument2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
+				Declaration declaration = addDeclarationImpot(menage,p2010,date(2010,1,1),date(2010,12,31), TypeContribuable.VAUDOIS_ORDINAIRE,modeleDocument2010);
+				return declaration.getId();
+			}
+		});
+
+		request.setMethod("POST");
+		request.addParameter("idDI", diId.toString());
+		request.addParameter("selectedTypeDocument", TypeDocument.DECLARATION_IMPOT_VAUDTAX.toString());
+		request.setRequestURI("/di/duplicata.do");
+
+		// exécution de la requête
+		final ModelAndView results = handle(request, response);
+		// on test la présence du message flash
+		HttpSession session = request.getSession();
+		final FlashMessage flash =(FlashMessage) session.getAttribute("flash");
+		assertNotNull(flash);
+		final String messageAttendue = "L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable";
+		assertEquals(messageAttendue,flash.getMessage());
+
+	}
+
+
 }

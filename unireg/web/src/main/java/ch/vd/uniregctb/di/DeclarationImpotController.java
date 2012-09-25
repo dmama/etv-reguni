@@ -57,6 +57,7 @@ import ch.vd.uniregctb.di.view.ImprimerDuplicataDeclarationImpotView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.editique.EditiqueResultat;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
+import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -86,6 +87,7 @@ public class DeclarationImpotController {
 	private PlatformTransactionManager transactionManager;
 	private Validator validator;
 	private ModeleDocumentDAO modeleDocumentDAO;
+	private PeriodeImpositionService periodeImpositionService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -129,6 +131,10 @@ public class DeclarationImpotController {
 
 	public void setModeleDocumentDAO(ModeleDocumentDAO modeleDocumentDAO) {
 		this.modeleDocumentDAO = modeleDocumentDAO;
+	}
+
+	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
+		this.periodeImpositionService = periodeImpositionService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -717,9 +723,9 @@ public class DeclarationImpotController {
 
 		// Vérifie les paramètres
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallback<Object>() {
+		final String redirect = template.execute(new TxCallback<String>() {
 			@Override
-			public Object execute(TransactionStatus status) throws Exception {
+			public String execute(TransactionStatus status) throws Exception {
 				final DeclarationImpotOrdinaire di = diDAO.get(id);
 				if (di == null) {
 					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
@@ -727,9 +733,19 @@ public class DeclarationImpotController {
 
 				final Contribuable ctb = (Contribuable) di.getTiers();
 				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				//Vérification de la période d'imposition du contribuable
+
+				if (periodeImpositionService.determine(ctb, di) == null) {
+					Flash.error("L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable");
+					return "redirect:/di/editer.do?id=" + di.getId();
+				}
+
 				return null;
 			}
 		});
+		if (redirect != null) {
+			return redirect;
+		}
 
 		// On imprime le duplicata
 
