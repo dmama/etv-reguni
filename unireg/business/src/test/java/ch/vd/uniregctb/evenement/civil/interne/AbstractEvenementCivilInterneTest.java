@@ -51,14 +51,6 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		return new EvenementCivilOptions(false);
 	}
 
-	@Override
-	public void onTearDown() throws Exception {
-		super.onTearDown();
-		if (serviceCivil != null) {
-			serviceCivil.tearDown();
-		}
-	}
-
 	public EvenementFiscalService getEvenementFiscalService() {
 		return evenementFiscalService;
 	}

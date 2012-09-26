@@ -17,12 +17,7 @@ public class ProxyServicePM implements ServicePersonneMoraleService {
 	private ServicePersonneMoraleService target;
 
 	public void setUp(ServicePersonneMoraleService target) {
-		Assert.isNull(this.target);
 		this.target = target;
-	}
-
-	public void tearDown() {
-		this.target = null;
 	}
 
 	@Override

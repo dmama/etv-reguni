@@ -83,15 +83,6 @@ public class ServiceSecuriteCache implements UniregCacheInterface, ServiceSecuri
 		uniregCacheManager.unregister(this);
 	}
 
-
-	public void setUp(ServiceCivilService target) {
-		Assert.fail("Not implemented");
-	}
-
-	public void tearDown() {
-		Assert.fail("Not implemented");
-	}
-
 	private static class KeyGetCollectivitesUtilisateurVisaOperateur {
 
 		private final String visaOperateur;

@@ -53,10 +53,6 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 		this.target = target;
 	}
 
-	public void tearDown() {
-		this.target = null;
-	}
-
 	@Override
 	public List<Canton> getAllCantons() throws ServiceInfrastructureException {
 		return target.getAllCantons();

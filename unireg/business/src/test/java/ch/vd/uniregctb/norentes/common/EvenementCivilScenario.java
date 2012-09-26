@@ -42,12 +42,6 @@ public abstract class EvenementCivilScenario extends EvenementScenario {
 		serviceCivilService.setUp(new DefaultMockServiceCivil());
 	}
 
-	@Override
-	public void onFinalize() {
-		super.onFinalize();
-		serviceCivilService.tearDown();
-	}
-
 	protected void traiteEvenements(long id) throws Exception {
 		evenementCivilProcessor.traiteEvenementCivil(id);
 	}

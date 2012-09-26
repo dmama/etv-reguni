@@ -207,6 +207,9 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		}
 		try {
 			final Transaction transaction = transactionManager.getTransaction();
+			if (transaction == null) {
+				throw new IllegalArgumentException("Il n'y a pas de transaction ouverte sur le transaction manager = " + transactionManager);
+			}
 			final HashSet<Transaction> set = getRegisteredTransactionsSet();
 			if (!set.contains(transaction)) {
 				transaction.registerSynchronization(new TxInterceptor(transaction));
@@ -216,8 +219,11 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 		catch (RollbackException e) {
 			LOGGER.debug("Impossible d'engistrer l'intercepteur de transaction car la transaction est marquée rollback-only. Tant pis, on l'ignore.", e);
 		}
+		catch (IllegalArgumentException e) {
+			throw e;
+		}
 		catch (Exception e) {
-			final String message = "Impossible d'enregistrer l'intercepteur de transaction : y a-t-il une transaction d'ouverte ?";
+			final String message = "Impossible d'enregistrer l'intercepteur de transaction";
 			LOGGER.error(message, e);
 			throw new RuntimeException(message, e);
 		}

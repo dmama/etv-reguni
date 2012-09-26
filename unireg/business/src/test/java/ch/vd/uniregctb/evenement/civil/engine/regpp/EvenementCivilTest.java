@@ -166,7 +166,6 @@ public class EvenementCivilTest extends BusinessTest {
 			});
 		}
 		finally {
-			serviceCivil.tearDown();
 			cache.destroy();
 		}
 	}

@@ -4,7 +4,7 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans
 							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="norentesManager" class="ch.vd.uniregctb.norentes.common.NorentesManagerImpl" factory-method="getInstance" />
+	<bean id="norentesManager" class="ch.vd.uniregctb.norentes.common.NorentesManagerImpl"/>
 
 	<bean id="norentesScenario" abstract="true" class="ch.vd.uniregctb.norentes.common.NorentesScenario">
 		<property name="registrar" ref="norentesManager" />

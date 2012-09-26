@@ -20,65 +20,12 @@ public abstract class BusinessTest extends AbstractBusinessTest {
 	@Override
 	protected void runOnSetUp() throws Exception {
 
-		try {
-			serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
-			servicePM = getBean(ProxyServicePM.class, "servicePersonneMoraleService");
-			serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
-			serviceInfra.setUpDefault();
+		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
+		servicePM = getBean(ProxyServicePM.class, "servicePersonneMoraleService");
+		serviceInfra = getBean(ProxyServiceInfrastructureService.class, "serviceInfrastructureService");
+		serviceInfra.setUpDefault();
 
-			super.runOnSetUp();
-		}
-		catch (Exception e) {
-			if (serviceCivil != null) {
-				serviceCivil.tearDown();
-			}
-			if (servicePM != null) {
-				servicePM.tearDown();
-			}
-			if (serviceInfra != null) {
-				serviceInfra.tearDown();
-			}
-			throw e;
-		}
-		catch (Throwable t) {
-			if (serviceCivil != null) {
-				serviceCivil.tearDown();
-			}
-			if (servicePM != null) {
-				servicePM.tearDown();
-			}
-			if (serviceInfra != null) {
-				serviceInfra.tearDown();
-			}
-			throw new Exception(t);
-		}
-	}
-
-	@Override
-	public void onTearDown() throws Exception {
-
-		try {
-			super.onTearDown();
-		}
-		finally {
-			/*
-			 * Il faut l'enlever apres le onTearDown parce que le endTransaction en a besoin pour faire l'indexation lors du commit()
-			 */
-			serviceCivil.tearDown();
-			servicePM.tearDown();
-		}
-	}
-
-	@Override
-	protected void loadDatabase(String filename) throws Exception {
-		try {
-			super.loadDatabase(filename);
-		}
-		catch (Exception e) {
-			serviceCivil.tearDown();
-			servicePM.tearDown();
-			throw e;
-		}
+		super.runOnSetUp();
 	}
 
 	protected static void waitUntilRunning(JobDefinition job, Date startTime) throws Exception {

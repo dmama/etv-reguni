@@ -987,7 +987,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 		}
 		finally {
-			serviceCivil.tearDown();
 			cache.destroy();
 		}
 	}
@@ -1105,7 +1104,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 		}
 		finally {
-			serviceCivil.tearDown();
 			cache.destroy();
 		}
 	}
@@ -1215,7 +1213,6 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 			});
 		}
 		finally {
-			serviceCivil.tearDown();
 			cache.destroy();
 		}
 	}

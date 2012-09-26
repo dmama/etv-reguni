@@ -121,24 +121,7 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 			AuthenticationHelper.setCurrentOID(-1);
 		}
 
-		try {
-			super.onTearDown();
-		}
-		finally {
-
-			/*
-			 * Il faut l'enlever apres le onTearDown parce que le endTransaction en a besoin pour faire l'indexation lors du commit()
-			 */
-			if (serviceCivil != null) {
-				serviceCivil.tearDown();
-			}
-			if (servicePM != null) {
-				servicePM.tearDown();
-			}
-			if (serviceSecurite != null) {
-				serviceSecurite.tearDown();
-			}
-		}
+		super.onTearDown();
 	}
 
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -166,18 +149,8 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	 */
 	@Override
 	protected void loadDatabase(String filename) throws Exception {
-		try {
-			super.loadDatabase(filename);
-
-			indexData();
-		}
-		catch (Exception e) {
-			serviceCivil.tearDown(); // autrement les tests suivants foirent
-			servicePM.tearDown();
-			serviceSecurite.tearDown();
-			serviceInfra.tearDown();
-			throw e;
-		}
+		super.loadDatabase(filename);
+		indexData();
 	}
 
 	/**

@@ -15,6 +15,10 @@ public class ChainingInterceptor implements Interceptor {
 
 	private final List<LinkedInterceptor> chain = new ArrayList<LinkedInterceptor>();
 
+	public List<LinkedInterceptor> getChain() {
+		return chain;
+	}
+
 	public void register(LinkedInterceptor i) {
 		chain.add(i);
 	}
@@ -85,9 +89,16 @@ public class ChainingInterceptor implements Interceptor {
 		}
 	}
 
+	@Override
+	public String toString() {
+		final StringBuffer sb = new StringBuffer();
+		sb.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode()));
+		sb.append("{chain=").append(chain);
+		sb.append('}');
+		return sb.toString();
+	}
 
-
-	// Unused
+// Unused
 
 	@Override
 	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {

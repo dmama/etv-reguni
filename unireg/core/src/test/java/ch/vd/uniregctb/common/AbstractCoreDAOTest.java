@@ -199,6 +199,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				deleteFromTables(getTableNames(false));
+				hibernateTemplate.clear();
 				return null;
 			}
 		});
@@ -307,6 +308,8 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 				finally {
 					DataSourceUtils.releaseConnection(sql, dataSource);
 				}
+
+				hibernateTemplate.clear();
 				return null;
 			}
 		});

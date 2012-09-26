@@ -150,7 +150,6 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 			assertNomIndividu("Jacquard", "Martine", cache, martineNoInd);
 		}
 		finally {
-			serviceCivil.tearDown();
 			cache.destroy();
 		}
 	}

@@ -21,6 +21,10 @@ public class MockEvenementFiscalSender implements EvenementFiscalSender {
 		trace.add(evenement.toString());
 	}
 
+	public void reset() {
+		count = 0;
+	}
+
 	/**
 	 * Permet, en debug, de visualiser les événements qui sont passés
 	 */

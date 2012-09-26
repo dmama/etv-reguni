@@ -2,8 +2,6 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.List;
 
-import org.springframework.util.Assert;
-
 import ch.vd.infrastructure.model.CollectiviteAdministrative;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.securite.model.Operateur;
@@ -20,12 +18,7 @@ public class ProxyServiceSecuriteService implements ServiceSecuriteService {
 	}
 
 	public void setUp(ServiceSecuriteService target) {
-		Assert.notNull(target);
 		this.target = target;
-	}
-
-	public void tearDown() {
-		this.target = null;
 	}
 
 	@Override

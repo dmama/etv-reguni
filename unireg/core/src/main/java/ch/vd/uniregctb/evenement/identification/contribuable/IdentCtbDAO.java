@@ -60,7 +60,7 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @param typeDemande
 	 */
 
-	public List<String> getTypesMessageEtatsNonTraites(TypeDemande typeDemande);
+	public List<String> getTypesMessageEtatsNonTraites(@Nullable TypeDemande typeDemande);
 
 	/**
 	 * Récupère la liste des types de message
@@ -69,7 +69,7 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @param typeDemande
 	 */
 
-	public List<String> getTypesMessageEtatsTraites(TypeDemande typeDemande);
+	public List<String> getTypesMessageEtatsTraites(@Nullable TypeDemande typeDemande);
 
 
 	/**

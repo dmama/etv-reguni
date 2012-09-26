@@ -28,28 +28,17 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 
 public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, DisposableBean, ApplicationContextAware {
 
-	private static final NorentesManagerImpl instance = new NorentesManagerImpl();
-
 	private static final Logger LOGGER = Logger.getLogger(NorentesManagerImpl.class);
 
 	private final List<String> scenariosBeanNames = new ArrayList<String>();
-
 	private final Map<String, Collection<EtapeAttribute>> metadata = new HashMap<String, Collection<EtapeAttribute>>();
-
 	private final ArrayList<TypeEvenementCivil> evenementCivils = new ArrayList<TypeEvenementCivil>();
-
 	private TypeEvenementCivil[] evenementCivilArray = null;
-
-	NorentesContext currentNorentesContext = null;
-
-	ApplicationContext applicationContext = null;
-
-	static NorentesManager getInstance() {
-		return instance;
-	}
+	private NorentesContext currentNorentesContext = null;
+	private ApplicationContext applicationContext = null;
 
 	public void reset() {
-		setContext(null);
+		currentNorentesContext = null;
 	}
 
 	@Override
@@ -266,9 +255,7 @@ public class NorentesManagerImpl implements NorentesManager, NorentesRegistrar, 
 
 	public boolean isExistEtape( int index) {
 		NorentesContext norentesContext = getContext();
-		if (norentesContext != null)
-			return norentesContext.isExistEtape(index);
-		return false;
+		return norentesContext != null && norentesContext.isExistEtape(index);
 	}
 
 	/**

@@ -97,19 +97,19 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
     // private static final Logger LOGGER = Logger.getLogger(AbstractBusinessTest.class);
 
-    private boolean wantIndexation = false;
-    private boolean wantSynchroTache = false;
+    protected boolean wantIndexation = false;
+    protected boolean wantSynchroTache = false;
     protected TiersService tiersService;
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
-    private TacheSynchronizerInterceptor tacheSynchronizer;
+    protected TacheSynchronizerInterceptor tacheSynchronizer;
     private ValidationInterceptor validationInterceptor;
 
     @Override
     protected void runOnSetUp() throws Exception {
         tiersService = getBean(TiersService.class, "tiersService");
-        globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
-        globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+	    globalTiersSearcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
+	    globalTiersIndexer = getBean(GlobalTiersIndexer.class, "globalTiersIndexer");
         globalTiersIndexer.setOnTheFlyIndexation(wantIndexation);
         tacheSynchronizer = getBean(TacheSynchronizerInterceptor.class, "tacheSynchronizerInterceptor");
         tacheSynchronizer.setOnTheFlySynchronization(wantSynchroTache);

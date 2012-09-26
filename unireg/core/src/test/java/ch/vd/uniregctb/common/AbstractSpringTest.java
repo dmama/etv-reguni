@@ -44,11 +44,9 @@ import static org.junit.Assert.assertEquals;
 @RunWith(SpringJUnit4ClassRunner.class)
 @TransactionConfiguration(transactionManager = "transactionManager")
 @TestExecutionListeners( {
-		SingleContextTestExecutionListener.class /* <-- ce listener DOIT être le premier ! */,
 		DependencyInjectionTestExecutionListener.class,
 		DirtiesContextTestExecutionListener.class,
-		TransactionalTestExecutionListener.class
-/*, OpenSessionInTestExecutionListener.class*/})
+		TransactionalTestExecutionListener.class})
 public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 	protected PlatformTransactionManager transactionManager;
@@ -282,7 +280,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	}
 
 	protected <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action) throws Exception {
-		TransactionTemplate template = new TransactionTemplate(getTransactionManager());
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(propagation.value());
 		try {
 			return template.execute(action);

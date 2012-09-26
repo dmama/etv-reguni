@@ -55,10 +55,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 		this.service.setTarget(target);
 	}
 
-	public void tearDown() {
-		this.target = null;
-	}
-
 	@Override
 	public AdressesCivilesActives getAdresses(long noIndividu, RegDate date, boolean strict) throws DonneesCivilesException {
 		assertTargetNotNull();

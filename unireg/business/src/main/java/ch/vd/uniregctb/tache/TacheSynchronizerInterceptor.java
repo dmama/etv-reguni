@@ -90,7 +90,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		try {
 
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
-			setOnTheFlySynchronization(false); // on ignore toutes les modifications provoquées par la synchronisation des tâches elles-mêmes
+			disabled.set(true);
 			try {
 				tacheService.synchronizeTachesDIs(set);
                 tacheService.annuleTachesObsoletes(set);
@@ -101,7 +101,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			}
 			finally {
 				parent.setEnabledForThread(true);
-				setOnTheFlySynchronization(true);
+				disabled.set(false);
 				set.clear();
 			}
 		}

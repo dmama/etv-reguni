@@ -1421,6 +1421,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		cache.setListTraitementUsers(getNewValuesForTraitementUsers());
 		updateCacheTypeMessage(cache);
 
+		// pas de besoin de synchronisation parce que l'assignement est atomique en java
 		identificationContribuableCache = cache;
 	}
 
@@ -1428,11 +1429,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-
 		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-
-
-		// pas de besoin de synchronisation parce que l'assignement est atomique en java
 		return template.execute(new TransactionCallback<List<String>>() {
 			@Override
 			public List<String> doInTransaction(TransactionStatus status) {
@@ -1447,50 +1444,33 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		});
 	}
 
-	private void updateCacheTypeMessage(IdentificationContribuableCache cache) {
-		for (TypeDemande typeDemande : TypeDemande.values()) {
-			TypeMessageParEtatCache typeMessageParEtatCache = cache.getTypeMessagesParDemandeCache().get(typeDemande);
-			if (typeMessageParEtatCache == null) {
-				typeMessageParEtatCache = new TypeMessageParEtatCache();
-			}
+	private void updateCacheTypeMessage(final IdentificationContribuableCache cache) {
 
-			typeMessageParEtatCache.typeMessageNonTraites = getNewValuesForTypeMessage(typeDemande, false);
-			typeMessageParEtatCache.typeMessageTraites = getNewValuesForTypeMessage(typeDemande, true);
-
-			cache.getTypeMessagesParDemandeCache().put(typeDemande, typeMessageParEtatCache);
-
-
-		}
-
-		cache.setTypeMessageNonTraites(getNewValuesForTypeMessage(null, false));
-		cache.setTypeMessageTraites(getNewValuesForTypeMessage(null, true));
-
-	}
-
-
-	private List<String> getNewValuesForTypeMessage(final TypeDemande typeDemande, final boolean isTraite) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-
-		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-
-
-		return template.execute(new TransactionCallback<List<String>>() {
+		template.execute(new TransactionCallback<Object>() {
 			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
-				}
-				else {
-					return identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
+			public Object doInTransaction(TransactionStatus status) {
+
+				for (TypeDemande typeDemande : TypeDemande.values()) {
+					TypeMessageParEtatCache typeMessageParEtatCache = cache.getTypeMessagesParDemandeCache().get(typeDemande);
+					if (typeMessageParEtatCache == null) {
+						typeMessageParEtatCache = new TypeMessageParEtatCache();
+					}
+
+					typeMessageParEtatCache.typeMessageNonTraites = identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
+					typeMessageParEtatCache.typeMessageTraites = identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
+
+					cache.getTypeMessagesParDemandeCache().put(typeDemande, typeMessageParEtatCache);
 				}
 
+				cache.setTypeMessageNonTraites(identCtbDAO.getTypesMessageEtatsNonTraites(null));
+				cache.setTypeMessageTraites(identCtbDAO.getTypesMessageEtatsTraites(null));
+				return null;
 			}
 		});
 	}
-
-
 
 	private List<String> getNewValuesForTraitementUsers() {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);

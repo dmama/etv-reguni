@@ -14,7 +14,6 @@ import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalSender;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
@@ -34,7 +33,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 
 	public static final String NAME = "12000_02_NationaliteSuisse";
 
-	private EvenementFiscalSender evenementFiscalSender;
+	private MockEvenementFiscalSender evenementFiscalSender;
 	private AdresseService adresseService;
 
 	@Override
@@ -52,7 +51,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 		return TypeEvenementCivil.NATIONALITE_SUISSE;
 	}
 
-	public void setEvenementFiscalSender(EvenementFiscalSender evenementFiscalSender) {
+	public void setEvenementFiscalSender(MockEvenementFiscalSender evenementFiscalSender) {
 		this.evenementFiscalSender = evenementFiscalSender;
 	}
 
@@ -87,6 +86,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				addAdresse(indJulie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.PlaceSaintFrancois, new CasePostale(TexteCasePostale.CASE_POSTALE, 2133431), dateObtentionPermis, null);
 			}
 		});
+		evenementFiscalSender.reset();
 	}
 
 	@Etape(id=1, descr="Chargement du non-habitant connu au civil")
@@ -118,7 +118,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 	public void check2() {
 		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabJulie);
 
-		assertEquals(0, ((MockEvenementFiscalSender) evenementFiscalSender).count, "Aucun événement fiscal ne doit avoir été envoyé");
+		assertEquals(0, evenementFiscalSender.count, "Aucun événement fiscal ne doit avoir été envoyé");
 
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement devrait être traité");
 		assertEquals(0, evt.getErreurs().size(), "Il ne devrait y avoir aucune erreur");
