@@ -11,6 +11,7 @@
 	<bean id="abstractMouvementController" class="ch.vd.uniregctb.mouvement.AbstractMouvementController" abstract="true">
 		<property name="mouvementEditManager" ref="mouvementEditManager" />
 		<property name="mouvementMapHelper" ref="mouvementMapHelper" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 	
 	<bean id="mouvementEditContribuableController" class="ch.vd.uniregctb.mouvement.MouvementEditContribuableController" parent="abstractMouvementController">
@@ -19,6 +20,7 @@
 	<bean id="mouvementEditController" class="ch.vd.uniregctb.mouvement.MouvementEditController" parent="abstractMouvementController">
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="validator" ref="mouvementEditValidator" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	
@@ -39,6 +41,7 @@
 	<bean id="mouvementMasseController" class="ch.vd.uniregctb.mouvement.MouvementMasseController">
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="mouvementMapHelper" ref="mouvementMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 </beans>

@@ -17,6 +17,7 @@ import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 public class RapportsPrestationListController extends AbstractCommandController {
 
 	private TiersVisuManager manager;
+	private ControllerUtils controllerUtils;
 
 	public RapportsPrestationListController() {
 		setCommandClass(RapportsPrestationView.class);
@@ -31,7 +32,7 @@ public class RapportsPrestationListController extends AbstractCommandController 
 
 		final RapportsPrestationView bean = (RapportsPrestationView) command;
 		final Long id = Long.valueOf(request.getParameter("idDpi"));
-		ControllerUtils.checkAccesDossierEnLecture(id);
+		controllerUtils.checkAccesDossierEnLecture(id);
 
 		manager.fillRapportsPrestationView(id, bean);
 
@@ -41,5 +42,9 @@ public class RapportsPrestationListController extends AbstractCommandController 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setManager(TiersVisuManager manager) {
 		this.manager = manager;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 }

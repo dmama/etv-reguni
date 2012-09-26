@@ -114,6 +114,7 @@
 	<!-- ================================================================ -->
 
 	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
@@ -140,8 +141,10 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
+	<alias alias="securityProviderInterface" name="securityProviderCache"/>
+
 	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
-		<property name="provider" ref="securityProviderCache" />
+		<property name="provider" ref="securityProviderInterface" />
 	</bean>
 
 	<!-- Proxys Automatiques pour les classes advisées avec un aspect AspectJ -->

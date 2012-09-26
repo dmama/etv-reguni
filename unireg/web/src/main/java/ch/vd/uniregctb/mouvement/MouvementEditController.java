@@ -27,6 +27,7 @@ public class MouvementEditController extends AbstractMouvementController {
 	protected static final Logger LOGGER = Logger.getLogger(MouvementEditController.class);
 
 	private TacheListManager tacheListManager;
+	private ControllerUtils controllerUtils;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTacheListManager(TacheListManager tacheListManager) {
@@ -39,6 +40,10 @@ public class MouvementEditController extends AbstractMouvementController {
 		this.validator = validator;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	@InitBinder("nouveauMouvement")
 	protected final void initBinder(WebDataBinder binder) {
 		binder.setValidator(validator);
@@ -46,7 +51,7 @@ public class MouvementEditController extends AbstractMouvementController {
 
 	@RequestMapping(value ="/mouvement/edit.do", method = RequestMethod.GET)
 	public ModelAndView get(@RequestParam("numero")Long idCtb, @RequestParam(value = "idTacheTraite", required = false) Long idTache, ModelMap model) throws Exception {
-		ControllerUtils.checkAccesDossierEnLecture(idCtb);
+		controllerUtils.checkAccesDossierEnLecture(idCtb);
 		MouvementDetailView mvtDetailView;
 		if (idTache != null) {
 			mvtDetailView = mouvementEditManager.creerMvtForTacheTransmissionDossier(idCtb, idTache);
@@ -66,7 +71,7 @@ public class MouvementEditController extends AbstractMouvementController {
 			return new ModelAndView("mouvement/edit", model);
 		}
 
-		ControllerUtils.checkAccesDossierEnEcriture(nouveauMouvementInSession.getContribuable().getNumero());
+		controllerUtils.checkAccesDossierEnEcriture(nouveauMouvementInSession.getContribuable().getNumero());
 		mouvementEditManager.save(nouveauMouvementInSession);
 		if (nouveauMouvementInSession.getIdTache() == null) {
 			return new ModelAndView("redirect:edit-contribuable.do?numero=" + nouveauMouvementInSession.getContribuable().getNumero());

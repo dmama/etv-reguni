@@ -53,6 +53,7 @@ public class RapportController {
 	private ServiceCivilCacheWarmer cacheWarmer;
 	private TiersMapHelper tiersMapHelper;
 	private MessageSource messageSource;
+	private ControllerUtils controllerUtils;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -90,6 +91,10 @@ public class RapportController {
 		this.messageSource = messageSource;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	/**
 	 * Retourne les rapports d'un contribuable page par page et sous format JSON.
 	 *
@@ -119,7 +124,7 @@ public class RapportController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {
@@ -157,7 +162,7 @@ public class RapportController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {
@@ -203,7 +208,7 @@ public class RapportController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		final Tiers tiers = tiersService.getTiers(tiersId);
 		if (tiers == null) {

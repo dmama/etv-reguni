@@ -42,14 +42,17 @@ import static org.junit.Assert.fail;
  */
 public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTest {
 
+	private AddressRequestHandler handler;
+
 	@Override
 	public void onSetUp() throws Exception {
+		handler = getBean(AddressRequestHandler.class, "addressRequestHandler");
 		super.onSetUp();
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		popSecurityProvider();
+		handler.setSecurityProvider(null);
 		super.onTearDown();
 	}
 
@@ -66,7 +69,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 	public void testAddressRequestUserWithoutAccessRight() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider();
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final AddressRequest request = new AddressRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
@@ -98,7 +101,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
 		provider.setDossiersProteges(222L);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final AddressRequest request = new AddressRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
@@ -129,7 +132,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 	public void testAddressRequestOnUnknownParty() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final AddressRequest request = new AddressRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
@@ -160,7 +163,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 	public void testAddressRequestOK() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -233,7 +236,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 	public void testAddressRequestOkWithCustomHeader() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -275,7 +278,7 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 	public void testAddressRequestKO() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		// créé une personne physique avec une adresse au Kosovo qui ne possède pas de code iso et qui provoque une erreur de validation de l'adresse eCH-0010-4.
 		final Long id = doInNewTransaction(new TxCallback<Long>() {

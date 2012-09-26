@@ -64,5 +64,5 @@ public interface SecurityProviderInterface {
 	 *         <b>LECTURE</b> si l'opérateur possède un droit d'accès en lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un
 	 *         droit d'accès complet au dossier.
 	 */
-	public List<Niveau> getDroitAcces(String visa, List<Long> ids);
+	public List<Niveau> getDroitsAcces(String visa, List<Long> ids);
 }

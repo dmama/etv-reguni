@@ -45,13 +45,14 @@ public class AdresseTimelineController {
 
 	private TiersDAO dao;
 	private AdresseService adresseService;
+	protected ControllerUtils controllerUtils;
 
 	@RequestMapping(value = "/adresses/timeline.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String index(Model mav, @RequestParam(ID_PARAMETER) Long id) throws AccessDeniedException {
 
 		final AdresseTimelineView bean = new AdresseTimelineView();
-		ControllerUtils.checkAccesDossierEnLecture(id);
+		controllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
 
 		fillTimeline(bean);
@@ -163,5 +164,9 @@ public class AdresseTimelineController {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 }

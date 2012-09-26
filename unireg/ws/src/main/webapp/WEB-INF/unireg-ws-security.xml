@@ -8,6 +8,7 @@
 	</bean>
 
 	<bean id="securiteDossierService" class="ch.vd.uniregctb.security.SecuriteDossierServiceImpl">
+		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="droitAccesDAO" ref="droitAccesDAO" />
@@ -34,9 +35,7 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
-		<property name="provider" ref="securityProviderCache" />
-	</bean>
+	<alias alias="securityProviderInterface" name="securityProviderCache"/>
 
 	<!-- Filtre sur les adresses IP -->
 	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">

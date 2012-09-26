@@ -177,7 +177,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
+	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
 
 		final List<Niveau> resultat;
 
@@ -194,7 +194,7 @@ public class SecurityProviderCache implements UniregCacheInterface, SecurityProv
 			}
 		}
 		else {
-			resultat = target.getDroitAcces(visa, ids);
+			resultat = target.getDroitsAcces(visa, ids);
 		}
 
 		return resultat;

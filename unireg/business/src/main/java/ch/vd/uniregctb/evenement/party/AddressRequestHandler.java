@@ -16,7 +16,7 @@ import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -27,6 +27,7 @@ public class AddressRequestHandler implements RequestHandler<AddressRequest> {
 
 	private TiersDAO tiersDAO;
 	private AdresseService adresseService;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -36,17 +37,21 @@ public class AddressRequestHandler implements RequestHandler<AddressRequest> {
 		this.adresseService = adresseService;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@Override
 	public RequestHandlerResult handle(AddressRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
-		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
+		if (!securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}
 
-		if (SecurityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
+		if (securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
 			throw new ServiceException(new AccessDeniedExceptionInfo(
 					"L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + '.', null));
 		}

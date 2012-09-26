@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.mouvement.manager.MouvementEditManager;
 import ch.vd.uniregctb.type.Localisation;
 import ch.vd.uniregctb.type.TypeMouvement;
@@ -11,6 +12,7 @@ import ch.vd.uniregctb.type.TypeMouvement;
 public class AbstractMouvementController {
 
 	protected MouvementEditManager mouvementEditManager;
+	protected ControllerUtils controllerUtils;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setMouvementEditManager(MouvementEditManager mouvementEditManager) {
@@ -37,5 +39,9 @@ public class AbstractMouvementController {
 	@ModelAttribute("localisations")
 	private Map<Localisation, String> localisations() throws Exception {
 		return mouvementMapHelper.getMapLocalisations();
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 }

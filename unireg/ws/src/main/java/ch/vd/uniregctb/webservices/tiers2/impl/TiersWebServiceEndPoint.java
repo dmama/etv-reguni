@@ -24,7 +24,7 @@ import ch.vd.uniregctb.load.DetailedLoadMeter;
 import ch.vd.uniregctb.load.DetailedLoadMonitorable;
 import ch.vd.uniregctb.load.LoadDetail;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.tiers2.TiersWebService;
@@ -83,9 +83,14 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	private WebServiceContext context;
 
 	private TiersWebService service;
+	private SecurityProviderInterface securityProvider;
 
 	public void setService(TiersWebService service) {
 		this.service = service;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@Override
@@ -669,7 +674,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 			try {
 				checkGeneralReadAccess(params.login);
 
-				if (!SecurityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
+				if (!securityProvider.isGranted(Role.DI_QUIT_PP, params.login.userId, params.login.oid)) {
 					throw new AccessDeniedException(
 							"L'utilisateur spécifié (" + params.login.userId + '/' + params.login.oid + ") n'a pas les droits de quittancement des déclarations d'impôt ordinaires sur l'application.");
 				}
@@ -789,9 +794,9 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 * @param login l'information de login de l'utilisareur
 	 * @throws AccessDeniedException si l'utilisateur courant ne possède pas les droits de lecture
 	 */
-	private static void checkLimitedReadAccess(UserLogin login) throws AccessDeniedException {
-		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid) &&
-				!SecurityProvider.isGranted(Role.VISU_LIMITE, login.userId, login.oid)) {
+	private void checkLimitedReadAccess(UserLogin login) throws AccessDeniedException {
+		if (!securityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid) &&
+				!securityProvider.isGranted(Role.VISU_LIMITE, login.userId, login.oid)) {
 			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + '/' + login.oid
 					+ ") n'a pas les droits d'accès en lecture sur l'application.");
 		}
@@ -803,8 +808,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 * @param login l'information de login de l'utilisareur
 	 * @throws AccessDeniedException si l'utilisateur courant ne possède pas les droits de lecture
 	 */
-	private static void checkGeneralReadAccess(UserLogin login) throws AccessDeniedException {
-		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid)) {
+	private void checkGeneralReadAccess(UserLogin login) throws AccessDeniedException {
+		if (!securityProvider.isGranted(Role.VISU_ALL, login.userId, login.oid)) {
 			throw new AccessDeniedException("L'utilisateur spécifié (" + login.userId + '/' + login.oid
 					+ ") n'a pas les droits d'accès en lecture complète sur l'application.");
 		}
@@ -816,8 +821,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 * @param tiersId le tiers sur lequel on veut vérifier les droits d'accès
 	 * @throws AccessDeniedException si l'utilisateur courant ne possède pas les droits de lecture
 	 */
-	private static void checkTiersReadAccess(long tiersId) throws AccessDeniedException {
-		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
+	private void checkTiersReadAccess(long tiersId) throws AccessDeniedException {
+		final Niveau acces = securityProvider.getDroitAcces(AuthenticationHelper.getCurrentPrincipal(), tiersId);
 		if (acces == null) {
 			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + tiersId);
@@ -844,7 +849,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		Assert.isTrue(ids.size() == size);
 
-		final List<Niveau> niveaux = SecurityProvider.getDroitsAcces(ids);
+		final List<Niveau> niveaux = securityProvider.getDroitsAcces(AuthenticationHelper.getCurrentPrincipal(), ids);
 		Assert.isTrue(niveaux.size() == size);
 
 		for (int i = 0; i < ids.size(); ++i) {
@@ -883,7 +888,7 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 		}
 		Assert.isTrue(ids.size() == size);
 
-		final List<Niveau> niveaux = SecurityProvider.getDroitsAcces(ids);
+		final List<Niveau> niveaux = securityProvider.getDroitsAcces(AuthenticationHelper.getCurrentPrincipal(), ids);
 		Assert.isTrue(niveaux.size() == size);
 
 		for (int i = 0; i < ids.size(); ++i) {
@@ -908,8 +913,8 @@ public class TiersWebServiceEndPoint implements TiersWebService, DetailedLoadMon
 	 * @param tiersId le tiers sur lequel on veut vérifier les droits d'accès
 	 * @throws AccessDeniedException si l'utilisateur courant ne possède pas les droits de lecture et écriture
 	 */
-	private static void checkTiersWriteAccess(long tiersId) throws AccessDeniedException {
-		final Niveau acces = SecurityProvider.getDroitAcces(tiersId);
+	private void checkTiersWriteAccess(long tiersId) throws AccessDeniedException {
+		final Niveau acces = securityProvider.getDroitAcces(AuthenticationHelper.getCurrentPrincipal(), tiersId);
 		if (acces == null || acces == Niveau.LECTURE) {
 			throw new AccessDeniedException("L'utilisateur spécifié (" + AuthenticationHelper.getCurrentPrincipal() + '/'
 					+ AuthenticationHelper.getCurrentOID() + ") n'a pas les droits d'accès en écriture sur le tiers n° " + tiersId);

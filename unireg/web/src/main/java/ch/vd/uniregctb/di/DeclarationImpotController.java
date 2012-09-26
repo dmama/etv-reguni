@@ -88,6 +88,7 @@ public class DeclarationImpotController {
 	private Validator validator;
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private PeriodeImpositionService periodeImpositionService;
+	private ControllerUtils controllerUtils;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -137,6 +138,10 @@ public class DeclarationImpotController {
 		this.periodeImpositionService = periodeImpositionService;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -174,7 +179,7 @@ public class DeclarationImpotController {
 		final Contribuable ctb = (Contribuable) tiers;
 
 		// vérification des droits en écriture
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("command", new DeclarationListView(ctb, messageSource));
 		return "/di/lister";
@@ -200,7 +205,7 @@ public class DeclarationImpotController {
 
 		// vérification des droits en lecture
 		final Long tiersId = decl.getTiers().getId();
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		return new DeclarationView(decl, messageSource);
 	}
@@ -232,7 +237,7 @@ public class DeclarationImpotController {
 
 		// vérification des droits en écriture
 		final Long tiersId = di.getTiers().getId();
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// annulation de la déclaration
 		final Contribuable tiers = (Contribuable) di.getTiers();
@@ -275,7 +280,7 @@ public class DeclarationImpotController {
 
 		// vérification des droits en écriture
 		final Long tiersId = di.getTiers().getId();
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		// désannulation de la déclaration
 		final Contribuable tiers = (Contribuable) di.getTiers();
@@ -299,7 +304,7 @@ public class DeclarationImpotController {
 		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		final List<PeriodeImposition> ranges = manager.calculateRangesProchainesDIs(tiersId);
 		if (ranges == null || ranges.isEmpty()) {
@@ -342,7 +347,7 @@ public class DeclarationImpotController {
 		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, tiersId);
 		if (tiers == null) {
@@ -410,7 +415,7 @@ public class DeclarationImpotController {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 		final Long tiersId = view.getTiersId();
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		if (result.hasErrors()) {
 			view.setValid(false);
@@ -502,7 +507,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final AjouterEtatDeclarationView view = new AjouterEtatDeclarationView(di, messageSource);
 		model.addAttribute("command", view);
@@ -535,7 +540,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On quittance la DI
 		manager.quittancerDI(view.getId(), view.getTypeDocument(), view.getDateRetour());
@@ -566,7 +571,7 @@ public class DeclarationImpotController {
 		final DeclarationImpotOrdinaire di = (DeclarationImpotOrdinaire) etat.getDeclaration();
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On annule le quittancement
 		final EtatDeclarationRetournee retour = (EtatDeclarationRetournee) etat;
@@ -595,7 +600,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource);
 		model.addAttribute("command", view);
@@ -628,7 +633,7 @@ public class DeclarationImpotController {
 				}
 
 				final Contribuable ctb = (Contribuable) di.getTiers();
-				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 				return null;
 			}
 		});
@@ -667,7 +672,7 @@ public class DeclarationImpotController {
 				}
 
 				final Contribuable ctb = (Contribuable) di.getTiers();
-				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 				return null;
 			}
 		});
@@ -699,7 +704,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		model.addAttribute("command", new ImprimerDuplicataDeclarationImpotView(di, modeleDocumentDAO));
 		return "di/duplicata";
@@ -733,9 +738,9 @@ public class DeclarationImpotController {
 				}
 
 				final Contribuable ctb = (Contribuable) di.getTiers();
-				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-				//Vérification de la période d'imposition du contribuable
+				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
+				// Vérification de la période d'imposition du contribuable
 				if (periodeImpositionService.determine(ctb, di) == null) {
 					Flash.error("L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable");
 					return "redirect:/di/editer.do?id=" + di.getId();
@@ -781,7 +786,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On annule le délai
 
@@ -809,7 +814,7 @@ public class DeclarationImpotController {
 		}
 
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		final RegDate delaiAccordeAu = delaisService.getDateFinDelaiRetourDeclarationImpotEmiseManuellement(RegDate.get());
 		model.addAttribute("command", new AjouterDelaiDeclarationView(di, delaiAccordeAu));
@@ -844,7 +849,7 @@ public class DeclarationImpotController {
 				}
 
 				final Contribuable ctb = (Contribuable) di.getTiers();
-				ControllerUtils.checkAccesDossierEnEcriture(ctb.getId());
+				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 				return null;
 			}

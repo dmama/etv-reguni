@@ -18,7 +18,7 @@ public interface SecuriteDossierService {
 	 * base de données.
 	 * <p>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un rôle particulier. Pour cela,
-	 * il faut utiliser la méthode {@link SecurityProvider#isGranted(Role)}.
+	 * il faut utiliser la méthode {@link SecurityProviderInterface#isGranted(Role, String, int)}.
 	 *
 	 * @param tiersId
 	 *            l'id du tiers associé au dossier pour lequel on veut obtenir les droits d'accès.
@@ -33,7 +33,7 @@ public interface SecuriteDossierService {
 	 * Retourne les droits d'accès à un dossier particulier pour l'opérateur courant.
 	 * <p>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un rôle particulier. Pour cela,
-	 * il faut utiliser la méthode {@link SecurityProvider#isGranted(Role)}.
+	 * il faut utiliser la méthode {@link SecurityProviderInterface#isGranted(Role, String, int)}.
 	 *
 	 * @param tiers
 	 *            le tiers associé au dossier pour lequel on veut obtenir les droits d'accès.
@@ -46,11 +46,11 @@ public interface SecuriteDossierService {
 	 * Retourne les droits d'accès à un dossier particulier pour un opérateur particulier.
 	 * <p>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un rôle particulier. Pour cela,
-	 * il faut utiliser la méthode {@link SecurityProvider#isGranted(Role)}.
+	 * il faut utiliser la méthode {@link SecurityProviderInterface#isGranted(Role, String, int)}.
 	 *
 	 * @param visaOperateur
 	 *            le visa de l'opérateur particulier.
-	 * @param tiers
+	 * @param tiersId
 	 *            l'id du tiers associé au dossier pour lequel on veut obtenir les droits d'accès.
 	 * @return <b>null</b> si l'opérateur ne possède aucun droit d'accès au dossier; <b>LECTURE</b> si l'opérateur possède un droit d'accès
 	 *         en lecture seulement; et <b>ECRITURE</b> si l'opérateur possède un droit d'accès complet au dossier.
@@ -61,7 +61,7 @@ public interface SecuriteDossierService {
 	 * Retourne les droits d'accès à une liste de dossiers particuliers pour un opérateur particulier.
 	 * <p>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un rôle particulier. Pour cela,
-	 * il faut utiliser la méthode {@link SecurityProvider#isGranted(Role)}.
+	 * il faut utiliser la méthode {@link SecurityProviderInterface#isGranted(Role, String, int)}.
 	 *
 	 * @param visa
 	 *            le visa de l'opérateur particulier.

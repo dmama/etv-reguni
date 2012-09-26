@@ -36,6 +36,7 @@ public class CoupleController {
 	private CoupleManager coupleManager;
 	private Validator coupleValidator;
 	private PlatformTransactionManager transactionManager;
+	private ControllerUtils controllerUtils;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCoupleManager(CoupleManager coupleManager) {
@@ -50,6 +51,10 @@ public class CoupleController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 
 	@RequestMapping(value = "/create.do", method = RequestMethod.GET)
@@ -103,9 +108,9 @@ public class CoupleController {
 					final Long mcId = (info.getForceMcId() == null ? view.getMcId() : info.getForceMcId());
 					final RegDate dateDebut = (info.getForceDateDebut() == null ? view.getDateDebut() : info.getForceDateDebut());
 
-					ControllerUtils.checkAccesDossierEnEcriture(pp1Id);
-					ControllerUtils.checkAccesDossierEnEcriture(pp2Id);
-					ControllerUtils.checkAccesDossierEnEcriture(mcId);
+					controllerUtils.checkAccesDossierEnEcriture(pp1Id);
+					controllerUtils.checkAccesDossierEnEcriture(pp2Id);
+					controllerUtils.checkAccesDossierEnEcriture(mcId);
 
 					final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
 					return menage.getId();

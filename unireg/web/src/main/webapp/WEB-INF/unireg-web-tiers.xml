@@ -65,6 +65,7 @@
 
 	<bean id="rapportsPrestationListController" class="ch.vd.uniregctb.tiers.RapportsPrestationListController">
 		<property name="manager" ref="tiersVisuManager" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.ForsTimelineController">
@@ -72,11 +73,13 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="adresseTimelineController" class="ch.vd.uniregctb.tiers.timeline.AdresseTimelineController">
 		<property name="tiersDao" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="tiersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController" parent="abstractTiersController">
@@ -189,6 +192,7 @@
 	<bean id="remarqueController" class="ch.vd.uniregctb.remarque.RemarqueController">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="simulationController" class="ch.vd.uniregctb.simulation.SimulationController">

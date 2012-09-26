@@ -75,6 +75,7 @@
 	</bean>
 
 	<bean id="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormController">
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController" parent="abstractSimpleFormController">
@@ -155,6 +156,10 @@
 		<property name="diService" ref="diService"/>
 		<property name="lrService" ref="lrService"/>
 		<property name="editiqueService" ref="editiqueService"/>
+	</bean>
+
+	<bean id="controllerUtils" class="ch.vd.uniregctb.common.ControllerUtilsImpl">
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 </beans>

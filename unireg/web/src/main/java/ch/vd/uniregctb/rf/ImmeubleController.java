@@ -23,6 +23,7 @@ public class ImmeubleController {
 
 	private ImmeubleDAO immeubleDAO;
 	private MessageSource messageSource;
+	private ControllerUtils controllerUtils;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
@@ -31,6 +32,10 @@ public class ImmeubleController {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 
 	/**
@@ -69,7 +74,7 @@ public class ImmeubleController {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
-		ControllerUtils.checkAccesDossierEnLecture(ctbId);
+		controllerUtils.checkAccesDossierEnLecture(ctbId);
 
 		final int totalCount = immeubleDAO.count(ctbId);
 

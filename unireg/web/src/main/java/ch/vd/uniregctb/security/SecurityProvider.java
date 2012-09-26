@@ -13,6 +13,8 @@ import ch.vd.uniregctb.type.Niveau;
  * Provider de sécurité qui regroupe la sécurité d'IFOSec (authentification) et celle d'Unireg (accès aux dossiers) et l'expose avec une
  * interface statique.
  *
+ * FIXME (msi) supprimer celle classe statique et injecté le bean qui va bien à la place (car la référence statique pose des problèmes subtiles lors de l'utilisation de plusieurs contextes Spring en parallèle dans les tests UT)
+ *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
 public class SecurityProvider {
@@ -161,6 +163,6 @@ public class SecurityProvider {
 	public static List<Niveau> getDroitsAcces(List<Long> ids) {
 		Assert.notNull(ids);
 		final String visa = AuthenticationHelper.getCurrentPrincipal();
-		return provider.getDroitAcces(visa, ids);
+		return provider.getDroitsAcces(visa, ids);
 	}
 }

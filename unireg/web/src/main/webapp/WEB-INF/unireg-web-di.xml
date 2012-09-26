@@ -21,7 +21,7 @@
 		<property name="validator" ref="declarationImpotControllerValidator"/>
 		<property name="modeleDocumentDAO" ref="modeleDocumentDAO"/>
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
-
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="diEditManager" class="ch.vd.uniregctb.di.manager.DeclarationImpotEditManagerImpl" >

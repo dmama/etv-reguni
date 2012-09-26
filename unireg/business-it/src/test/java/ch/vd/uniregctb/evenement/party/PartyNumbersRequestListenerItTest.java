@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.junit.Test;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
@@ -34,21 +33,19 @@ import static org.junit.Assert.fail;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-@SuppressWarnings({"JavaDoc"})
-@ContextConfiguration(locations = {
-		"classpath:ut/unireg-businessit-jms.xml",
-		"classpath:ut/unireg-businessit-jms-evt-party.xml"
-})
 public class PartyNumbersRequestListenerItTest extends PartyRequestListenerItTest {
+
+	private NumbersRequestHandler handler;
 
 	@Override
 	public void onSetUp() throws Exception {
+		handler = getBean(NumbersRequestHandler.class, "numberRequestHandler");
 		super.onSetUp();
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		popSecurityProvider();
+		handler.setSecurityProvider(null);
 		super.onTearDown();
 	}
 
@@ -66,7 +63,7 @@ public class PartyNumbersRequestListenerItTest extends PartyRequestListenerItTes
 	public void testNumbersRequestUserWithoutAccessRight() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider();
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final NumbersRequest request = new NumbersRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
@@ -97,7 +94,7 @@ public class PartyNumbersRequestListenerItTest extends PartyRequestListenerItTes
 	public void testNumbersRequestOK() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -140,7 +137,7 @@ public class PartyNumbersRequestListenerItTest extends PartyRequestListenerItTes
 	public void testNumbersRequestOkWithCustomHeader() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		doInNewTransaction(new TxCallback<Long>() {
 			@Override

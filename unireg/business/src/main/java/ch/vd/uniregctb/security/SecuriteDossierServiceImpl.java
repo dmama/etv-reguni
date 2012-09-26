@@ -33,6 +33,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 	private static final Logger LOGGER = Logger.getLogger(SecuriteDossierServiceImpl.class);
 
+	private SecurityProviderInterface securityProvider;
 	private ServiceSecuriteService serviceSecurite;
 	private TiersDAO tiersDAO;
 	private DroitAccesDAO droitAccesDAO;
@@ -382,7 +383,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		}
 
 		// bypass des sécurités pour les membres de la direction de l'ACI (qui sont les seuls à posséder ces rôles)
-		if (SecurityProvider.isGranted(Role.ECRITURE_DOSSIER_PROTEGE, operateur.getCode(), ServiceInfrastructureService.noACI)) {
+		if (securityProvider.isGranted(Role.ECRITURE_DOSSIER_PROTEGE, operateur.getCode(), ServiceInfrastructureService.noACI)) {
 			if (granted == null || granted == Niveau.LECTURE) {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Promotion du niveau d'accès de [" + granted + "] à [ECRITURE] pour l'opérateur [" + operateur.getCode()
@@ -391,7 +392,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 				granted = Niveau.ECRITURE;
 			}
 		}
-		else if (SecurityProvider.isGranted(Role.LECTURE_DOSSIER_PROTEGE, operateur.getCode(), ServiceInfrastructureService.noACI)) {
+		else if (securityProvider.isGranted(Role.LECTURE_DOSSIER_PROTEGE, operateur.getCode(), ServiceInfrastructureService.noACI)) {
 			if (granted == null) {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Promotion du niveau d'accès de [null] à [LECTURE] pour l'opérateur [" + operateur.getCode()
@@ -438,6 +439,10 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 
 		// sans indication particulière -> accès en lecture/écriture total
 		return Niveau.ECRITURE;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

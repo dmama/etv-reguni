@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.common;
 
 import java.sql.SQLException;
-import java.util.Stack;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -40,8 +39,6 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -649,19 +646,5 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         ident.setCategorieIdentifiant(categorie);
         ident.setIdentifiant(identifiant);
         return tiersDAO.addAndSave(pp, ident);
-    }
-
-    private Stack<SecurityProviderInterface> securityProviderStack = new Stack<SecurityProviderInterface>();
-
-    protected void pushSecurityProvider(SecurityProviderInterface providerInterface) {
-        securityProviderStack.push(SecurityProvider.getProvider());
-
-        final SecurityProvider provider = new SecurityProvider();
-        provider.setProvider(providerInterface);
-    }
-
-    protected void popSecurityProvider() {
-        final SecurityProvider provider = new SecurityProvider();
-        provider.setProvider(securityProviderStack.pop());
     }
 }

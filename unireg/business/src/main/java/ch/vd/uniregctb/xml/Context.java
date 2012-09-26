@@ -14,6 +14,7 @@ import ch.vd.uniregctb.jms.BamMessageSender;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -54,4 +55,6 @@ public class Context {
 	public AssujettissementService assujettissementService;
 
 	public PeriodeImpositionService periodeImpositionService;
+
+	public SecurityProviderInterface securityProvider;
 }

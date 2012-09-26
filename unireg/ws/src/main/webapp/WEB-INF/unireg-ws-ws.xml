@@ -40,6 +40,7 @@
 
 	<bean id="tiersService2EndPoint" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceEndPoint">
 		<property name="service" ref="tiersService2Cache" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="tiersService2Bean" class="ch.vd.uniregctb.webservices.tiers2.impl.TiersWebServiceImpl">
@@ -87,6 +88,7 @@
 
 	<bean id="partyService3EndPoint" class="ch.vd.uniregctb.webservices.party3.impl.PartyWebServiceEndPoint">
 		<property name="service" ref="partyService3Cache" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="partyService3Impl" class="ch.vd.uniregctb.webservices.party3.impl.PartyWebServiceImpl">
@@ -132,6 +134,7 @@
 
 	<bean id="securiteServiceBean" class="ch.vd.uniregctb.webservices.securite.impl.SecuriteWebServiceImpl">
 		<property name="dao" ref="droitAccesDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 </beans>

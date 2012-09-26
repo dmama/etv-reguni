@@ -15,6 +15,7 @@ import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -46,6 +47,7 @@ public class TiersWebServiceEndPointTest extends WebserviceTest {
 		TiersWebService tiersService = getBean(TiersWebService.class, "tiersService2Bean");
 		endpoint = new TiersWebServiceEndPoint();
 		endpoint.setService(tiersService);
+		endpoint.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 	}
 
 	/**

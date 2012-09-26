@@ -68,7 +68,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUtilisateurSansDroit() throws Exception {
 
-		pushSecurityProvider(new MockSecurityProvider());
+		handler.setSecurityProvider(new MockSecurityProvider());
 		try {
 
 			final PartyRequest request = new PartyRequest();
@@ -86,7 +86,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 		provider.setDossiersProteges(4224L);
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 
 			final PartyRequest request = new PartyRequest();
@@ -117,7 +117,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -128,7 +128,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final PartyRequest request = new PartyRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -147,7 +147,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 			}
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -167,7 +167,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final PartyRequest request = new PartyRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -235,7 +235,7 @@ public class PartyRequestHandlerTest extends BusinessTest {
 			assertNull(formatted.getLine5());
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 }

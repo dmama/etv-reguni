@@ -59,7 +59,7 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
+	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
 
 		// bypass pour les tests unitaires
 		if (wantBypassUnitTest(visa)) {

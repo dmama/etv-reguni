@@ -29,7 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class CreateNonresidentRequestHandlerTest extends BusinessTest {
-
+	
 	private CreateNonresidentRequestHandler handler;
 	private static final UserLogin USER_LOGIN = new UserLogin("USER", 22);
 
@@ -43,7 +43,7 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 
 	@Test
 	public void testSansDroit() throws Exception {
-		pushSecurityProvider(new MockSecurityProvider());
+		handler.setSecurityProvider(new MockSecurityProvider());
 		final CreateNonresidentRequest request = new CreateNonresidentRequest(
 				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, NaturalPersonCategory.SWISS, 7561111111111L
 		);
@@ -54,16 +54,16 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 		catch (ServiceException e) {
 			assertTrue(e.getInfo() instanceof AccessDeniedExceptionInfo);
 		}
-		popSecurityProvider();
+		handler.setSecurityProvider(null);
 	}
 
 	@Test
 	public void testCasNormaux() throws Exception {
-		pushSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
+		handler.setSecurityProvider(new MockSecurityProvider(Role.CREATE_NONHAB));
 		for( NaturalPersonCategory category : EnumSet.allOf(NaturalPersonCategory.class)) {
 			testCasNormal(category);
 		}
-		popSecurityProvider();
+		handler.setSecurityProvider(null);
 	}
 
 	private void testCasNormal(final NaturalPersonCategory category) throws Exception {

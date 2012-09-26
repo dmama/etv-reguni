@@ -53,7 +53,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUtilisateurSansDroit() throws Exception {
 
-		pushSecurityProvider(new MockSecurityProvider());
+		handler.setSecurityProvider(new MockSecurityProvider());
 		try {
 
 			final AddressRequest request = new AddressRequest();
@@ -71,7 +71,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -83,7 +83,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 		provider.setDossiersProteges(4224L);
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 
 			final AddressRequest request = new AddressRequest();
@@ -102,7 +102,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -113,7 +113,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 		final Role[] roles = {Role.VISU_ALL};
 		final MockSecurityProvider provider = new MockSecurityProvider(roles);
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -132,7 +132,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			}
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -152,7 +152,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -217,7 +217,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			assertNull(formatted.getLine5());
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -237,7 +237,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -265,7 +265,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -285,7 +285,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -313,7 +313,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -335,7 +335,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final AddressRequest request = new AddressRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -372,7 +372,7 @@ public class AddressRequestHandlerTest extends BusinessTest {
 			assertNull(formatted.getLine5());
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 }

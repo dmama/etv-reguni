@@ -170,7 +170,7 @@ public class SecurityProviderCacheTest extends SecurityTest {
 			}
 		});
 
-		final List<Niveau> acces = cache.getDroitAcces("broubrou", Arrays.asList(ids.a, ids.b, null));
+		final List<Niveau> acces = cache.getDroitsAcces("broubrou", Arrays.asList(ids.a, ids.b, null));
 		assertNotNull(acces);
 		assertEquals(3, acces.size());
 		assertEquals(Niveau.ECRITURE, acces.get(0));

@@ -56,8 +56,8 @@ public class MouvementMasseController {
 	private static final String FOUND = "found";
 
 	private MouvementMasseManager mouvementManager;
-
 	private MouvementMapHelper mouvementMapHelper;
+	private ControllerUtils controllerUtils;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementManager(MouvementMasseManager mouvementManager) {
@@ -67,6 +67,10 @@ public class MouvementMasseController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementMapHelper(MouvementMapHelper mouvementMapHelper) {
 		this.mouvementMapHelper = mouvementMapHelper;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 
 	private static String buildRedirectPourTraitement(@Nullable String pagination) {
@@ -182,7 +186,7 @@ public class MouvementMasseController {
 		model.addAttribute(FOUND, found);
 		model.addAttribute(MONTRER_EXPORT, found != null && found.getResultSize() > 0);
 		model.addAttribute(MONTRER_INITIATEUR, noCollAdmInitiatrice == null);
-		model.addAttribute(PAGINATION, ControllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_ID));
+		model.addAttribute(PAGINATION, controllerUtils.getDisplayTagRequestParametersForPagination(request, TABLE_ID));
 		return customizer.getViewName();
 	}
 

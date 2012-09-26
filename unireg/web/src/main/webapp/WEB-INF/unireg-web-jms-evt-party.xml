@@ -33,10 +33,12 @@
 	<bean id="addressRequestHandler" class="ch.vd.uniregctb.evenement.party.AddressRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="numberRequestHandler" class="ch.vd.uniregctb.evenement.party.NumbersRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="partyRequestHandler" class="ch.vd.uniregctb.evenement.party.PartyRequestHandler">
@@ -56,10 +58,12 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandler">
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 </beans>

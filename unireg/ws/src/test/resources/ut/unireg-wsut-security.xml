@@ -33,8 +33,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
-	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
-		<property name="provider" ref="securityProviderCache" />
-	</bean>
+	<alias alias="securityProviderInterface" name="securityProviderCache"/>
 
 </beans>

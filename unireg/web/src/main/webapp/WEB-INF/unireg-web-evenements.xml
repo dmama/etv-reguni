@@ -6,8 +6,9 @@
 
 	<bean id="evtCivEchCriteriaValidator" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchCriteriaValidator" />
 
-	<bean id="evtCivController" abstract="true">
+	<bean id="evtCivController" abstract="true" class="ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">

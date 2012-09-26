@@ -49,6 +49,7 @@ public class ForsTimelineController {
 	private TiersService tiersService;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
+	private ControllerUtils controllerUtils;
 
 	@RequestMapping(value = "/fors/timeline.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
@@ -62,7 +63,7 @@ public class ForsTimelineController {
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
 		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissements, showPeriodesImposition);
-		ControllerUtils.checkAccesDossierEnLecture(id);
+		controllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
 
 		if (forPrint != null) {
@@ -237,5 +238,9 @@ public class ForsTimelineController {
 
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 }

@@ -6,6 +6,7 @@
 		<property name="coupleManager" ref="coupleManager" />
 		<property name="coupleValidator" ref="coupleValidator" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="coupleValidator" class="ch.vd.uniregctb.couple.CoupleValidator">

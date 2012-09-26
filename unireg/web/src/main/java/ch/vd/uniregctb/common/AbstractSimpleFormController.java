@@ -45,6 +45,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	public final static String PARAMETER_URL_RETOUR = "__URL_RETOUR__";
 
 	private boolean modified = false;
+	private ControllerUtils controllerUtils;
 
 	private String target;
 	private String eventArgument;
@@ -161,8 +162,8 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 * @throws AccessDeniedException
 	 *             si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
-	protected static void checkAccesDossierEnLecture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+	protected void checkAccesDossierEnLecture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 	}
 
 	/**
@@ -178,8 +179,8 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 * @throws AccessDeniedException
 	 *             si l'opérateur ne possède pas les droits d'accès suffisants.
 	 */
-	protected static void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+	protected void checkAccesDossierEnEcriture(Long tiersId) throws ObjectNotFoundException, AccessDeniedException {
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 	}
 
 	/**
@@ -258,6 +259,10 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 */
 	public void setModified(boolean modified) {
 		this.modified = modified;
+	}
+
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
 	}
 
 	/**

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.load.LoadMonitorable;
 import ch.vd.uniregctb.security.DroitAccesDAO;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.webservices.common.UserLogin;
 import ch.vd.uniregctb.webservices.common.WebServiceException;
@@ -30,6 +30,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 	private static final Logger LOGGER = Logger.getLogger(SecuriteWebServiceImpl.class);
 
 	private DroitAccesDAO dao;
+	private SecurityProviderInterface securityProvider;
 
 	private final AtomicInteger appelsEnCours = new AtomicInteger(0);
 
@@ -49,7 +50,7 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 		try {
 			login(params.login);
 			try {
-				final Niveau niveau = SecurityProvider.getDroitAcces(params.login.userId, params.numeroTiers);
+				final Niveau niveau = securityProvider.getDroitAcces(params.login.userId, params.numeroTiers);
 				return EnumHelper.coreToWeb(niveau);
 			}
 			finally {
@@ -109,5 +110,9 @@ public class SecuriteWebServiceImpl implements SecuriteWebService, LoadMonitorab
 
 	public void setDao(DroitAccesDAO dao) {
 		this.dao = dao;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

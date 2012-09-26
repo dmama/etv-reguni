@@ -52,7 +52,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHandleUtilisateurSansDroit() throws Exception {
 
-		pushSecurityProvider(new MockSecurityProvider());
+		handler.setSecurityProvider(new MockSecurityProvider());
 		try {
 
 			final NumbersRequest request = new NumbersRequest();
@@ -70,7 +70,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 
@@ -148,7 +148,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			}
 		});
 
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 		try {
 			final NumbersRequest request = new NumbersRequest();
 			final UserLogin login = new UserLogin("xxxxx", 22);
@@ -195,7 +195,7 @@ public class NumbersRequestHandlerTest extends BusinessTest {
 			}
 		}
 		finally {
-			popSecurityProvider();
+			handler.setSecurityProvider(null);
 		}
 	}
 

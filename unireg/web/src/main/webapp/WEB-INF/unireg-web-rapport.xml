@@ -57,6 +57,7 @@
 		<property name="cacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
 	<bean id="rapportListController" class="ch.vd.uniregctb.rapport.RapportListController" parent="abstractTiersListController">

@@ -29,7 +29,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -127,17 +127,21 @@ public class PartyRequestHandler implements RequestHandler<PartyRequest> {
 		context.periodeImpositionService = service;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		context.securityProvider = securityProvider;
+	}
+
 	@Override
 	public RequestHandlerResult handle(PartyRequest request) throws ServiceException {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
-		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
+		if (!context.securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}
 
-		if (SecurityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
+		if (context.securityProvider.getDroitAcces(login.getUserId(), request.getPartyNumber()) == null) {
 			throw new ServiceException(new AccessDeniedExceptionInfo(
 					"L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture sur le tiers n° " + request.getPartyNumber() + '.', null));
 		}

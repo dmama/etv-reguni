@@ -16,7 +16,7 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TypeTiers;
 import ch.vd.uniregctb.xml.ServiceException;
@@ -24,9 +24,14 @@ import ch.vd.uniregctb.xml.ServiceException;
 public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 
 	private TiersDAO tiersDAO;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@Override
@@ -34,7 +39,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
-		if (!SecurityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
+		if (!securityProvider.isGranted(Role.VISU_ALL, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}

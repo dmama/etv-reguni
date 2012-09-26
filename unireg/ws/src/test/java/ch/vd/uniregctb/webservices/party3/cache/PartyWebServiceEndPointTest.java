@@ -22,6 +22,7 @@ import ch.vd.uniregctb.common.WebserviceTest;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServiceSecurite;
 import ch.vd.uniregctb.interfaces.service.mock.MockServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -45,6 +46,7 @@ public class PartyWebServiceEndPointTest extends WebserviceTest {
 		PartyWebService partyService = getBean(PartyWebService.class, "partyService3Impl");
 		endpoint = new PartyWebServiceEndPoint();
 		endpoint.setService(partyService);
+		endpoint.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 	}
 
 	/**

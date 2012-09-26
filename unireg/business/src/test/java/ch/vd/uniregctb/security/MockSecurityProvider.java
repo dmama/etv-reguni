@@ -50,7 +50,7 @@ public class MockSecurityProvider implements SecurityProviderInterface {
 	}
 
 	@Override
-	public List<Niveau> getDroitAcces(String visa, List<Long> ids) {
+	public List<Niveau> getDroitsAcces(String visa, List<Long> ids) {
 		final List<Niveau> res = new ArrayList<Niveau>(ids.size());
 		for (Long id : ids) {
 			if (id != null) {

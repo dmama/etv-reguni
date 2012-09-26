@@ -30,6 +30,7 @@ public class RemarqueController {
 
 	private TiersDAO tiersDAO;
 	private RemarqueDAO remarqueDAO;
+	private ControllerUtils controllerUtils;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -41,6 +42,10 @@ public class RemarqueController {
 		this.remarqueDAO = remarqueDAO;
 	}
 
+	public void setControllerUtils(ControllerUtils controllerUtils) {
+		this.controllerUtils = controllerUtils;
+	}
+
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
@@ -49,7 +54,7 @@ public class RemarqueController {
 		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
-		ControllerUtils.checkAccesDossierEnLecture(tiersId);
+		controllerUtils.checkAccesDossierEnLecture(tiersId);
 
 		final List<Remarque> remarques = remarqueDAO.getRemarques(tiersId);
 
@@ -77,7 +82,7 @@ public class RemarqueController {
 		if (!canAddRemark()) {
 			throw new AccessDeniedException("Vous ne possédez par les droits IfoSec pour ajouter une remarque");
 		}
-		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
+		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 		
 		if (StringUtils.isBlank(texte)) {
 			return false;

@@ -12,7 +12,7 @@ import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -22,16 +22,21 @@ import ch.vd.uniregctb.xml.ServiceException;
 public class CreateNonresidentRequestHandler implements RequestHandler<CreateNonresidentRequest> {
 
 	private TiersDAO tiersDAO;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@Override
 	public RequestHandlerResult handle(CreateNonresidentRequest request) throws ServiceException {
 		// Vérification des droits d'accès
 		final UserLogin login = request.getLogin();
-		if (!SecurityProvider.isGranted(Role.CREATE_NONHAB, login.getUserId(), login.getOid())) {
+		if (!securityProvider.isGranted(Role.CREATE_NONHAB, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
 					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
 		}

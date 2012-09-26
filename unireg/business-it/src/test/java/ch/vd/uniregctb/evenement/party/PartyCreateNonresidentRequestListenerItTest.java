@@ -25,14 +25,17 @@ import static org.junit.Assert.fail;
  */
 public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestListenerItTest {
 
+	private CreateNonresidentRequestHandler handler;
+
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		handler = getBean(CreateNonresidentRequestHandler.class, "createNonresidentRequestHandler");
 	}
 
 	@Override
 	public void onTearDown() throws Exception {
-		popSecurityProvider();
+		handler.setSecurityProvider(null);
 		super.onTearDown();
 	}
 
@@ -50,7 +53,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 	public void testCreateNonresidentRequestUserWithoutAccessRight() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider();
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final CreateNonresidentRequest request = new CreateNonresidentRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
@@ -85,7 +88,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 	public void testCreateNonresident() throws Exception {
 
 		final MockSecurityProvider provider = new MockSecurityProvider(Role.CREATE_NONHAB);
-		pushSecurityProvider(provider);
+		handler.setSecurityProvider(provider);
 
 		final CreateNonresidentRequest request = new CreateNonresidentRequest();
 		final UserLogin login = new UserLogin("xxxxx", 22);
