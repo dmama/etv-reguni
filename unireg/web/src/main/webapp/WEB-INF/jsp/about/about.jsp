@@ -102,6 +102,7 @@
 					<li>Kamel Chabane</li>
 					<li>Ludovic Bertin</li>
 					<li>Pavel Blanco</li>
+					<li>Raphaël Carbo</li>
 					<li>Thierry Declercq</li>
 				</ul>
 			</div>
