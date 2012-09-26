@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -56,7 +57,6 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.validation.ValidationService;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
@@ -64,16 +64,13 @@ import static org.junit.Assert.assertNull;
 @SuppressWarnings({"JavaDoc"})
 public class ProduireRolesProcessorTest extends BusinessTest {
 
-	private HibernateTemplate hibernateTemplate;
 	private ProduireRolesProcessor processor;
-
-	private static final String DB_UNIT_CTB_INVALIDE = "ContribuableInvalideTest.xml";
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		final HibernateTemplate hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
@@ -91,60 +88,67 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testCreateIteratorOnContribuables() throws Exception {
 
-		loadDatabase(DB_UNIT_CTB_INVALIDE); // rodolf
+		class Ids {
+			Long paul;
+			Long incognito;
+			Long raoul;
+			Long arnold;
+			Long victor;
+			Long geo;
+			Long donald;
+			Long johnny;
+			Long tyler;
+			Long marc;
+			Long louis;
+			Long albertine;
+			Long didier;
+			Long pierre;
+			Long jean;
+			Long jeans;
+			Long popol;
+			Long rama;
+		}
+		final Ids ids = new Ids();
 
-		/*
-		 * Contribuable devant être pris en compte
-		 */
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// Contribuable devant être pris en compte
+				ids.paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne).getNumero();
+				ids.incognito = newCtbVaudoisOrdinaireDepuis2007(MockCommune.Lausanne).getNumero();
+				ids.raoul = newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune.Lausanne).getNumero();
+				ids.arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne).getNumero();
+				ids.victor = newCtbVaudoisSourcier(MockCommune.Lausanne).getNumero();
+				ids.geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne).getNumero();
+				ids.donald = newCtbHorsCantonEtDeuxImmeubles(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
+				ids.johnny = newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune.Lausanne).getNumero();
+				ids.tyler = newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune.Lausanne).getNumero();
+				ids.marc = newCtbDiplomateSuisse(MockCommune.Lausanne).getNumero();
+				ids.louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Lausanne).getNumero();
+				ids.albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne).getNumero();
+				
+				// Contribuable devant être ignorés
+				ids.didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne).getNumero();
+				ids.pierre = newCtbVaudoisOrdinairePartiHorsCantonEn1983(MockCommune.Lausanne).getNumero();
+				ids.jean = newCtbVaudoisOrdinaireAnnule(MockCommune.Lausanne).getNumero();
+				ids.jeans = newCtbHorsCantonSansForSecondaire().getNumero();
+				ids.popol = newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune.Lausanne).getNumero();
+				ids.rama = newCtbHorsCantonEtForImmeubleAnnule(MockCommune.Lausanne).getNumero();
+			}
+		});
 
-		final Contribuable paul = newCtbVaudoisOrdinaire(MockCommune.Lausanne);
-		final Contribuable incognito = newCtbVaudoisOrdinaireDepuis2007(MockCommune.Lausanne);
-		final Contribuable raoul = newCtbVaudoisOrdinairePartiHorsCantonEn2007(MockCommune.Lausanne);
-		final Contribuable arnold = newCtbVaudoisSourcierMixte(MockCommune.Lausanne);
-		final Contribuable victor = newCtbVaudoisSourcier(MockCommune.Lausanne);
-		final Contribuable geo = newCtbHorsCantonEtImmeuble(MockCommune.Lausanne);
-		final Contribuable donald = newCtbHorsCantonEtDeuxImmeubles(MockCommune.Lausanne, MockCommune.Lausanne);
-		final Contribuable johnny = newCtbHorsCantonEtImmeubleVenduEn2007(MockCommune.Lausanne);
-		final Contribuable tyler = newCtbHorsCantonEtActiviteIndStoppeeEn2007(MockCommune.Lausanne);
-		final Contribuable marc = newCtbDiplomateSuisse(MockCommune.Lausanne);
-		final Contribuable louis = newCtbVaudoisOrdinairePartiHorsCantonEtImmeuble(MockCommune.Lausanne, MockCommune.Lausanne);
-		final Contribuable albertine = newCtbVaudoisSourcierGris(MockCommune.Lausanne);
-		final Contribuable rodolf = getCtbVaudoisOrdinaireEtImmeubleInvalide();
+		// Contribuable invalide mais devant être pris en compte
+		final Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
 
 		/*
 		 * Contribuable devant être ignorés
 		 */
-
-		final Contribuable didier = newCtbVaudoisOrdinairePartiHorsCantonEn2006(MockCommune.Lausanne);
-		final Contribuable pierre = newCtbVaudoisOrdinairePartiHorsCantonEn1983(MockCommune.Lausanne);
-		final Contribuable jean = newCtbVaudoisOrdinaireAnnule(MockCommune.Lausanne);
-		final Contribuable jeans = newCtbHorsCantonSansForSecondaire();
-		final Contribuable popol = newCtbHorsCantonEtImmeubleVenduEn2005(MockCommune.Lausanne);
-		final Contribuable rama = newCtbHorsCantonEtForImmeubleAnnule(MockCommune.Lausanne);
-		assertNotNull(didier);
-		assertNotNull(pierre);
-		assertNotNull(jean);
-		assertNotNull(jeans);
-		assertNotNull(popol);
-		assertNotNull(rama);
+		final List<Long> expected =
+				Arrays.asList(ids.paul, ids.incognito, ids.raoul, ids.arnold, ids.victor, ids.geo, ids.donald, ids.johnny, ids.tyler, ids.marc, ids.louis, ids.albertine, rodolf);
 
 		final List<Long> list = processor.getIdsOfAllContribuables(2007);
 		assertNotNull(list);
-		final Iterator<Long> iter = list.iterator();
-		assertNextIs(iter, paul.getNumero());
-		assertNextIs(iter, incognito.getNumero());
-		assertNextIs(iter, raoul.getNumero());
-		assertNextIs(iter, arnold.getNumero());
-		assertNextIs(iter, victor.getNumero());
-		assertNextIs(iter, geo.getNumero());
-		assertNextIs(iter, donald.getNumero());
-		assertNextIs(iter, johnny.getNumero());
-		assertNextIs(iter, tyler.getNumero());
-		assertNextIs(iter, marc.getNumero());
-		assertNextIs(iter, louis.getNumero());
-		assertNextIs(iter, albertine.getNumero());
-		assertNextIs(iter, rodolf.getNumero());
-		assertFalse(iter.hasNext());
+		assertEquals(expected, list);
 	}
 
 	@Test
@@ -280,8 +284,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testRunAvecContribuableInvalide() throws Exception {
 
-		loadDatabase(DB_UNIT_CTB_INVALIDE); // rodolf
-		Contribuable rodolf = getCtbVaudoisOrdinaireEtImmeubleInvalide();
+		Long rodolf = newCtbVaudoisOrdinaireEtImmeubleInvalide();
 
 		final ProduireRolesResults results = processor.runPourToutesCommunes(2007, 1, null);
 		assertNotNull(results);
@@ -292,7 +295,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 
 		final Erreur erreur = results.ctbsEnErrors.get(0);
 		assertNotNull(erreur);
-		assertEquals(rodolf.getNumero().longValue(), erreur.noCtb);
+		assertEquals(rodolf.longValue(), erreur.noCtb);
 	}
 
 	@Test
@@ -997,8 +1000,17 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	/**
 	 * @return un contribuable invalide
 	 */
-	private Contribuable getCtbVaudoisOrdinaireEtImmeubleInvalide() {
-		return (Contribuable) hibernateTemplate.get(Contribuable.class, Long.valueOf(10000666));
+	private Long newCtbVaudoisOrdinaireEtImmeubleInvalide() throws Exception {
+		return doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique pp = addNonHabitant("Rodolf", "Piedbor", date(1953,12,18), Sexe.MASCULIN);
+				addForPrincipal(pp, date(1971,12,18), MotifFor.MAJORITE, MockCommune.Lausanne);
+				// le for secondaire n'est pas couvert par le for principal
+				addForSecondaire(pp, date(1920,1,1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return pp.getNumero();
+			}
+		});
 	}
 
 	/**
