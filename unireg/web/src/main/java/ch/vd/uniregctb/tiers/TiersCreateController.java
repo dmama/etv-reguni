@@ -11,7 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -50,7 +50,7 @@ public class TiersCreateController extends AbstractTiersController {
 			final NatureTiers natureParam = NatureTiers.valueOf(natureParamString);
 			if (natureParam == NatureTiers.NonHabitant) {
 				//vérifier les droits de création d'un non habitant
-				if(SecurityProvider.isGranted(Role.CREATE_NONHAB)){
+				if(SecurityHelper.isGranted(securityProvider, Role.CREATE_NONHAB)){
 					tiersView = tiersEditManager.creePersonne();
 					tiersView.setAllowed(true);
 				}
@@ -60,7 +60,7 @@ public class TiersCreateController extends AbstractTiersController {
 			}
 			else if (natureParam == NatureTiers.AutreCommunaute) {
 				//vérifier les droits de création d'une autre communauté
-				if(SecurityProvider.isGranted(Role.CREATE_AC)){
+				if(SecurityHelper.isGranted(securityProvider, Role.CREATE_AC)){
 					tiersView = tiersEditManager.creeOrganisation();
 					tiersView.setAllowed(true);
 				}
@@ -72,7 +72,7 @@ public class TiersCreateController extends AbstractTiersController {
 				String numeroCtbAssParam = request.getParameter(NUMERO_CTB_ASSOCIE_PARAMETER_NAME);
 				if (numeroCtbAssParam != null) {
 					//vérifier les droits de création d'un DPI
-					if(SecurityProvider.isGranted(Role.CREATE_DPI)){
+					if(SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)){
 						Long numeroCtbAss = Long.parseLong(numeroCtbAssParam);
 						tiersView = tiersEditManager.creeDebiteur(numeroCtbAss);
 						this.setModified(true);

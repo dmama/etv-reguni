@@ -6,6 +6,7 @@
 		<property name="immeubleDAO" ref="immeubleDAO" />
 		<property name="messageSource" ref="messageSource" />
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 </beans>

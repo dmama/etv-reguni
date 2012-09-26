@@ -36,12 +36,14 @@
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="infraService" ref="serviceInfrastructureService"/>
 		<property name="retourEditiqueControllerHelper" ref="retourEditiqueControllerHelper"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="mouvementMasseController" class="ch.vd.uniregctb.mouvement.MouvementMasseController">
 		<property name="mouvementManager" ref="mouvementMasseManager"/>
 		<property name="mouvementMapHelper" ref="mouvementMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 </beans>

@@ -29,6 +29,7 @@ import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAO;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleFeuilleDocumentView;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  * Ce contrôleur est responsable de l'ajout, de l'édition et de la suppression des feuilles sur les modèles de documents.
@@ -41,7 +42,7 @@ public class ModeleFeuilleDocumentController {
 	private MessageSource messageSource;
 	private ModeleFeuilleDocumentDAO modeleFeuilleDocumentDAO;
 	private Validator modeleFeuilleDocumentValidator;
-
+	private SecurityProviderInterface securityProvider;
 
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
@@ -59,6 +60,10 @@ public class ModeleFeuilleDocumentController {
 		this.modeleFeuilleDocumentValidator = modeleFeuilleDocumentValidator;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -69,7 +74,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String add(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, Model model) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewAdd(periodeId, modeleId);
 		model.addAttribute("command", view);
@@ -80,7 +85,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/add.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String add(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 
 		if (result.hasErrors()) {
 			return "param/feuille-add";
@@ -93,7 +98,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String edit(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 
 		final ModeleFeuilleDocumentView view = manager.createModeleFeuilleDocumentViewEdit(periodeId, modeleId, feuilleId);
 		model.addAttribute("command", view);
@@ -104,7 +109,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
 	@Transactional(rollbackFor = Throwable.class)
 	public String edit(@Valid @ModelAttribute("command") ModeleFeuilleDocumentView view, BindingResult result) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 		if (result.hasErrors()) {
 			return "param/feuille-edit";
 		}
@@ -116,7 +121,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/suppr.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class)
 	public String suppr(@RequestParam("pf") Long periodeId, @RequestParam("md") Long modeleId, @RequestParam("mfd") Long feuilleId, Model model) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 
 		try {
 			manager.deleteModeleFeuilleDocument(feuilleId);
@@ -133,7 +138,7 @@ public class ModeleFeuilleDocumentController {
 	@RequestMapping(value = "/move.do", method = RequestMethod.GET)
 	@Transactional(rollbackFor = Throwable.class)
 	public String move(@RequestParam("mfd") Long feuilleId, @RequestParam("dir") Direction direction) throws Exception {
-		Commun.verifieLesDroits();
+		Commun.verifieLesDroits(securityProvider);
 
 		final ModeleFeuilleDocument feuille = modeleFeuilleDocumentDAO.get(feuilleId);
 		if (feuille == null) {

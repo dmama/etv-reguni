@@ -23,6 +23,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tache.TacheMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -31,8 +32,8 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 	protected static final Logger LOGGER = Logger.getLogger(AbstractIdentificationController.class);
 
 	protected TacheMapHelper tacheMapHelper;
-
 	protected IdentificationMapHelper identificationMapHelper;
+	protected SecurityProviderInterface securityProvider;
 
 	public void setTacheMapHelper(TacheMapHelper tacheMapHelper) {
 		this.tacheMapHelper = tacheMapHelper;
@@ -40,6 +41,10 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 
 	public void setIdentificationMapHelper(IdentificationMapHelper identificationMapHelper) {
 		this.identificationMapHelper = identificationMapHelper;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	public AbstractIdentificationController() {

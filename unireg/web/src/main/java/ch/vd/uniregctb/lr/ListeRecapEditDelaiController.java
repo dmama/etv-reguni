@@ -12,7 +12,7 @@ import ch.vd.uniregctb.di.view.DelaiDeclarationView;
 import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 
 public class ListeRecapEditDelaiController extends AbstractListeRecapController {
 
@@ -25,7 +25,7 @@ public class ListeRecapEditDelaiController extends AbstractListeRecapController 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.LR)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.LR)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'accéder aux listes récapitulatives pour l'application Unireg");
 		}
 		String idLrParam = request.getParameter(LR_ID);

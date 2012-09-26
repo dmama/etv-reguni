@@ -19,6 +19,7 @@
 		<property name="commandClass" value="ch.vd.uniregctb.acces.parDossier.view.DossierEditRestrictionView" />
 		<property name="formView" value="acces/par-dossier/restrictions-pp" />
 		<property name="dossierEditRestrictionManager" ref="dossierEditRestrictionManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="droitAccesEditController" class="ch.vd.uniregctb.acces.parDossier.DroitAccesEditController" >
@@ -29,6 +30,7 @@
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="successView" value="common/refresh-parent" />
 		<property name="validator" ref="droitAccesEditValidator" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="droitAccesEditValidator" class="ch.vd.uniregctb.acces.parDossier.validator.DroitAccesEditValidator" >
@@ -47,10 +49,12 @@
 		<property name="formView" value="acces/par-utilisateur/select-utilisateur" />
 		<property name="successView" value="acces/par-utilisateur/restrictions-utilisateur" />
 		<property name="validator" ref="selectUtilisateurValidator" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="utilisateurEditRestrictionController" class="ch.vd.uniregctb.acces.parUtilisateur.UtilisateurEditRestrictionController" >
 		<property name="utilisateurEditRestrictionManager" ref="utilisateurEditRestrictionManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 
@@ -86,6 +90,7 @@
 		<property name="formView" value="acces/par-utilisateur/recap" />
 		<property name="utilisateurEditRestrictionManager" ref="utilisateurEditRestrictionManager" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="selectUtilisateursController" class="ch.vd.uniregctb.acces.copie.SelectUtilisateursController" >
@@ -95,6 +100,7 @@
 		<property name="successView" value="confirm-copie.do" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="validator" ref="selectUtilisateursValidator" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="selectUtilisateursValidator" class="ch.vd.uniregctb.acces.copie.validator.SelectUtilisateursValidator" >
@@ -105,6 +111,7 @@
 		<property name="commandClass" value="ch.vd.uniregctb.acces.copie.view.ConfirmCopieView" />
 		<property name="formView" value="acces/copie-transfert/recap" />
 		<property name="copieDroitAccesManager" ref="copieDroitAccesManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="copieDroitAccesManager" class="ch.vd.uniregctb.acces.copie.manager.CopieDroitAccesManagerImpl" >

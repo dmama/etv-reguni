@@ -25,7 +25,8 @@ import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
@@ -34,10 +35,15 @@ import ch.vd.uniregctb.utils.RegDateEditor;
 public class GestionBatchController extends SimpleFormController {
 
 	private BatchScheduler batchScheduler;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
 		this.batchScheduler = batchScheduler;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -77,7 +83,7 @@ public class GestionBatchController extends SimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 

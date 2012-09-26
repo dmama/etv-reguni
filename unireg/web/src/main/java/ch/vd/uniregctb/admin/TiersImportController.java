@@ -34,7 +34,8 @@ import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -61,6 +62,7 @@ public class TiersImportController {
 	private DatabaseService dbService;
 
 	private GlobalTiersIndexer globalIndexer;
+	private SecurityProviderInterface securityProvider;
 
 	/**
 	 * Cette méthode est appelée pour afficher la page qui liste les scripts DBUnit préxistants + le formulaire pour en uploader d'autres.
@@ -106,7 +108,7 @@ public class TiersImportController {
 	@RequestMapping(value = "/import", method = RequestMethod.POST)
 	public String importBuiltinScript(@RequestParam("fileName") String fileName, @RequestParam("action") String action) throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -144,7 +146,7 @@ public class TiersImportController {
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public String importUploadedScript(@Valid ScriptBean script, BindingResult result) throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -261,5 +263,9 @@ public class TiersImportController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDbService(DatabaseService dbService) {
 		this.dbService = dbService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

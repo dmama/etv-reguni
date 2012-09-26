@@ -17,7 +17,7 @@ import ch.vd.uniregctb.lr.manager.ListeRecapListManager;
 import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tracing.TracePoint;
 import ch.vd.uniregctb.tracing.TracingManager;
 
@@ -45,7 +45,7 @@ public class ListeRecapListController extends AbstractListeRecapController {
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 		ListeRecapCriteria bean = new ListeRecapCriteria();
 
-		if(!SecurityProvider.isGranted(Role.LR)){
+		if(!SecurityHelper.isGranted(securityProvider, Role.LR)){
 			TracingManager.end(tp);
 			throw new AccessDeniedException("vous n'avez pas le droit d'accéder aux listes récapitulatives pour l'application Unireg");
 		}

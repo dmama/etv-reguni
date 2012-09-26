@@ -24,7 +24,8 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.ContactImpotSource;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -54,6 +55,7 @@ public class RapportController {
 	private TiersMapHelper tiersMapHelper;
 	private MessageSource messageSource;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -95,6 +97,10 @@ public class RapportController {
 		this.controllerUtils = controllerUtils;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	/**
 	 * Retourne les rapports d'un contribuable page par page et sous format JSON.
 	 *
@@ -120,7 +126,7 @@ public class RapportController {
 	                             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
 	                             @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
@@ -158,7 +164,7 @@ public class RapportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public Object filiations(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
@@ -204,7 +210,7 @@ public class RapportController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public List<DebiteurView> debiteurs(@RequestParam("tiers") long tiersId) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_LIMITE, Role.VISU_ALL)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_LIMITE, Role.VISU_ALL)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 
@@ -220,7 +226,7 @@ public class RapportController {
 
 	private List<RapportsPage.RapportView> getRapportViews(long tiersId, boolean showHisto, boolean excludeContactImpotSource, boolean excludeRapportPrestationImposable,
 	                                                       TypeRapportEntreTiers typeRapport, ParamPagination pagination) {
-		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
+		final boolean visuAll = SecurityHelper.isGranted(securityProvider, Role.VISU_ALL);
 
 		final List<RapportsPage.RapportView> views = new ArrayList<RapportsPage.RapportView>();
 
@@ -277,7 +283,7 @@ public class RapportController {
 	}
 
 	private int getRapportsTotalCount(Tiers tiers, TypeRapportEntreTiers type, boolean showHisto, final boolean excludeContactImpotSource) {
-		final boolean visuAll = SecurityProvider.isGranted(Role.VISU_ALL);
+		final boolean visuAll = SecurityHelper.isGranted(securityProvider, Role.VISU_ALL);
 		final boolean excludePrestationImposable = DebiteurPrestationImposable.class.equals(tiers.getClass());
 		return rapportEntreTiersDAO.countBySujetAndObjet(tiers.getNumero(), !visuAll, showHisto, type, excludePrestationImposable,
 				excludeContactImpotSource);

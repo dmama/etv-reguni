@@ -29,7 +29,8 @@ import ch.vd.uniregctb.document.DocumentService;
 import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.utils.UniregModeHelper;
@@ -48,6 +49,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	private BatchScheduler batchScheduler;
 	private TiersDAO dao;
 	private PlatformTransactionManager transactionManager;
+	private SecurityProviderInterface securityProvider;
 
 	private Map<String, Action> actions = new HashMap<String, Action>();
 
@@ -61,7 +63,7 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 	@Override
 	public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -267,5 +269,9 @@ public class DatabaseDumpController extends AbstractSimpleFormController {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

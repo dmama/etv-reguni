@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -18,7 +17,7 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesSt
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 
 public class IdentificationMessagesStatsController extends AbstractIdentificationController {
 
@@ -50,7 +49,7 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 		LOGGER.debug("Start of IdentificationMessagesStatController:formBackingObject");
 
 		// on doit avoir les droits administrateurs pour ça
-		if (!SecurityProvider.isGranted(Role.MW_IDENT_CTB_ADMIN)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
 

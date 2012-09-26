@@ -32,7 +32,7 @@ import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -376,7 +376,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		view.idDpi = noDebiteur;
 		view.tiersGeneral = tiersGeneralManager.getDebiteur(debiteur, true);
-		view.editionAllowed = SecurityProvider.isGranted(Role.RT);
+		view.editionAllowed = SecurityHelper.isGranted(securityProvider, Role.RT);
 		view.rapports = rapports;
 	}
 

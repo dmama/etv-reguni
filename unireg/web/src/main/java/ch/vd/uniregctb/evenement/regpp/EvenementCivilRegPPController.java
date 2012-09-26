@@ -30,7 +30,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
@@ -38,8 +37,10 @@ import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
 import ch.vd.uniregctb.evenement.regpp.manager.EvenementCivilRegPPManager;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPCriteriaView;
 import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
+import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
@@ -56,6 +57,8 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private TiersMapHelper tiersMapHelper;
+	private SecurityProviderInterface securityProvider;
+
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
 	}
@@ -70,6 +73,10 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	@SuppressWarnings("UnusedDeclaration")
 	public void setValidator(Validator validator) {
 		this.validator = validator;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@InitBinder("evenementCriteria")
@@ -125,17 +132,23 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
 		populateModel(model, initEvenementCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/list", model);
 	}
 
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String rechercher(@ModelAttribute("evenementCriteria") @Valid EvenementCivilRegPPCriteriaView criteriaInSession,
 	                            BindingResult bindingResult,
 	                            ModelMap model ) throws AdresseException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		// Stockage des nouveau critère de recherche dans la session
 		// La recherche en elle meme est faite dans nav-list.do
 		populateModel(model, criteriaInSession,	INITIAL_PAGINATION, null, 0);
@@ -147,11 +160,15 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                         @ModelAttribute("evenementCriteria") @Valid EvenementCivilRegPPCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
 	                                         ModelMap model ) throws AdresseException 	{
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		if (bindingResult.hasErrors() ) {
 			// L'utilisateur a soumis un formulaire incorrect
 			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
@@ -170,8 +187,12 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String retourSurLaListe(@ModelAttribute("evenementPagination") ParamPagination paginationInSession ) throws AdresseException 	{
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession);
 	}
@@ -192,21 +213,33 @@ public class EvenementCivilRegPPController extends AbstractEvenementCivilControl
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		return new ModelAndView ("evenement/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		manager.forceEtatTraite(id);
 		return "redirect:/evenement/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		manager.traiteEvenementCivil(id);
 		return "redirect:/evenement/visu.do?id=" + id;
 	}

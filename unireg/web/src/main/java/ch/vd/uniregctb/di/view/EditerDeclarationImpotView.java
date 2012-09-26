@@ -14,8 +14,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -43,22 +41,23 @@ public class EditerDeclarationImpotView {
 	private Long tacheId;
 
 	// Données dépendant des droits de l'utilisateur
-	private final boolean isAllowedQuittancement = SecurityProvider.isGranted(Role.DI_QUIT_PP);
+	private boolean isAllowedQuittancement;
 	private boolean isAllowedDelai;
-	private final boolean isAllowedSommation = SecurityProvider.isGranted(Role.DI_SOM_PP);
-	private final boolean isAllowedDuplicata = SecurityProvider.isGranted(Role.DI_DUPLIC_PP);
+	private boolean isAllowedSommation;
+	private boolean isAllowedDuplicata;
 
 	public EditerDeclarationImpotView() {
 	}
 
-	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource) {
-		initReadOnlyValues(di, messageSource);
+	public EditerDeclarationImpotView(DeclarationImpotOrdinaire di, @Nullable Long tacheId, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation,
+	                                  boolean allowedDuplicata) {
+		initReadOnlyValues(di, messageSource, allowedQuittancement, allowedDelai, allowedSommation, allowedDuplicata);
 		this.typeDocument = di.getTypeDeclaration();
 		this.dateRetour = di.getDateRetour();
 		this.tacheId = tacheId;
 	}
 
-	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource) {
+	public void initReadOnlyValues(DeclarationImpotOrdinaire di, MessageSource messageSource, boolean allowedQuittancement, boolean allowedDelai, boolean allowedSommation, boolean allowedDuplicata) {
 		this.tiersId = di.getTiers().getId();
 		this.id = di.getId();
 		this.periodeFiscale = di.getDateDebut().year();
@@ -69,13 +68,16 @@ public class EditerDeclarationImpotView {
 		this.dernierEtat = getDernierEtat(di);
 		this.delais = initDelais(di);
 		this.etats = initEtats(di.getEtats(), messageSource);
-		this.isAllowedDelai = initIsAllowedDelai(this.dernierEtat);
+		this.isAllowedQuittancement = allowedQuittancement;
+		this.isAllowedDelai = initIsAllowedDelai(this.dernierEtat, allowedDelai);
+		this.isAllowedSommation = allowedSommation;
+		this.isAllowedDuplicata = allowedDuplicata;
 		this.isSommable = isSommable(di);
 		this.wasSommee = initWasSommee(di);
 	}
 
-	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat) {
-		boolean d = SecurityProvider.isGranted(Role.DI_DELAI_PP);
+	private static boolean initIsAllowedDelai(TypeEtatDeclaration dernierEtat, boolean allowedDelai) {
+		boolean d = allowedDelai;
 		if (dernierEtat != TypeEtatDeclaration.EMISE) {
 			d = false;
 		}

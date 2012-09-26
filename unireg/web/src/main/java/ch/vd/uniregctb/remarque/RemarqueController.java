@@ -18,7 +18,8 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Remarque;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -31,6 +32,7 @@ public class RemarqueController {
 	private TiersDAO tiersDAO;
 	private RemarqueDAO remarqueDAO;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -46,12 +48,16 @@ public class RemarqueController {
 		this.controllerUtils = controllerUtils;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	@ResponseBody
 	public List<RemarqueView> list(@RequestParam(value = "tiersId", required = true) Long tiersId) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 		controllerUtils.checkAccesDossierEnLecture(tiersId);
@@ -103,7 +109,7 @@ public class RemarqueController {
 	 * @return <b>vrai</b> si l'utilisateur courant peut ajouter une remarque sur le tiers courant; <b>faux</b> autrement.
 	 */
 	private boolean canAddRemark() {
-		return SecurityProvider.isAnyGranted(Role.COOR_FIN,
+		return SecurityHelper.isAnyGranted(securityProvider, Role.COOR_FIN,
 				Role.MODIF_AC,
 				Role.MODIF_VD_ORD,
 				Role.MODIF_VD_SOURC,

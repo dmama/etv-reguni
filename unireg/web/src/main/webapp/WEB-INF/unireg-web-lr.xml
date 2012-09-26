@@ -2,11 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean 	id="abstractListeRecapController"
-			parent="abstractSimpleFormEditiqueAwareController"
-			abstract="true"
-			class="ch.vd.uniregctb.lr.AbstractListeRecapController">
+	<bean id="abstractListeRecapController" parent="abstractSimpleFormEditiqueAwareController" abstract="true" class="ch.vd.uniregctb.lr.AbstractListeRecapController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="lrListController" class="ch.vd.uniregctb.lr.ListeRecapListController" parent="abstractListeRecapController">
@@ -57,6 +55,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="editiqueCompositionService" ref="editiqueCompositionService" />
 		<property name="delaisService" ref="delaisService" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="lrEditDelaiController" class="ch.vd.uniregctb.lr.ListeRecapEditDelaiController" parent="abstractListeRecapController">

@@ -27,6 +27,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >
@@ -43,10 +44,6 @@
 		<property name="validator" ref="tiersAdresseValidator" />
 	</bean>
 
-
-	
-	<bean id="adresseManager" class="ch.vd.uniregctb.tiers.manager.AdresseManagerImpl" parent="tiersManager">
-	</bean>
-
+	<bean id="adresseManager" class="ch.vd.uniregctb.tiers.manager.AdresseManagerImpl" parent="tiersManager"/>
 
 </beans>

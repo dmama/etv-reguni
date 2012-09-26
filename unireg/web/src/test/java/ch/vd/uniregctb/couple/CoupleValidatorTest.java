@@ -19,6 +19,7 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.ValidatorHelperImpl;
 import ch.vd.uniregctb.common.WebTest;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamille;
@@ -58,6 +59,7 @@ public class CoupleValidatorTest extends WebTest {
 		validator.setMetierService(metierService);
 		validator.setValidatorHelper(validatorHelper);
 		validator.setTiersService(tiersService);
+		validator.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 	}
 
 	/**

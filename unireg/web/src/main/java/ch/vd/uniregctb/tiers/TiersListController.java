@@ -15,7 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria.TypeTiers;
 import ch.vd.uniregctb.tiers.manager.TiersListManager;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -82,8 +82,8 @@ public class TiersListController extends AbstractTiersListController {
 				bean.setTypeRechercheDuNom(TiersCriteria.TypeRecherche.EST_EXACTEMENT);
 
 				//gestion des droits
-				if(!SecurityProvider.isGranted(Role.VISU_ALL)){
-					if(!SecurityProvider.isGranted(Role.VISU_LIMITE)){
+				if(!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)){
+					if(!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)){
 						throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 					}
 					bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);

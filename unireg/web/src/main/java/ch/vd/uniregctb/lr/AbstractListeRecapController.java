@@ -1,16 +1,17 @@
 package ch.vd.uniregctb.lr;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import ch.vd.uniregctb.common.AbstractSimpleFormEditiqueAwareController;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwareController {
 
 	private TiersMapHelper tiersMapHelper;
+	protected SecurityProviderInterface securityProvider;
 
 	public TiersMapHelper getTiersMapHelper() {
 		return tiersMapHelper;
@@ -18,6 +19,10 @@ public class AbstractListeRecapController extends AbstractSimpleFormEditiqueAwar
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**

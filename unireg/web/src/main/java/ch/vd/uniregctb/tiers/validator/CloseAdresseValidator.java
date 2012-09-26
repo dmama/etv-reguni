@@ -7,7 +7,8 @@ import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -23,12 +24,15 @@ public class CloseAdresseValidator implements Validator {
 
 	protected final Logger LOGGER = Logger.getLogger(CloseAdresseValidator.class);
 
-
 	private TiersService tiersService;
-
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -57,7 +61,7 @@ public class CloseAdresseValidator implements Validator {
 		final TypeAdresseTiers usage = adresseView.getUsage();
 		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
+		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, tiers);
 		if (acces == null || acces == Niveau.LECTURE) {
 			errors.reject("error.tiers.interdit");
 		}
@@ -87,11 +91,11 @@ public class CloseAdresseValidator implements Validator {
 					// [UNIREG-1292] - mise à jour selon la matrice des droits Unireg
 					if (tiers instanceof PersonnePhysique) {
 						final PersonnePhysique pp = (PersonnePhysique) tiers;
-						if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiersService.isDecede(pp)) {
+						if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD) && tiersService.isDecede(pp)) {
 							// on peut modifier l'adresse courrier d'un décédé uniquement si ont possède le rôle correspondant
 							isAllowed = true;
 						}
-						else if (SecurityProvider.isGranted(Role.ADR_PP_C) && !tiersService.isDecede(pp)) {
+						else if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C) && !tiersService.isDecede(pp)) {
 							// on peut modifier l'adresse courrier d'un non décédé uniquement si ont possède le rôle correspondant
 							isAllowed = true;
 						}
@@ -106,56 +110,56 @@ public class CloseAdresseValidator implements Validator {
 						}
 						// pour les ménages commun le droit sur les décédés est le plus contraignant
 						if (auMoinsUnDecede) {
-							if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD)) {
+							if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD)) {
 								isAllowed = true;
 							}
 						}
 						else {
-							if(SecurityProvider.isGranted(Role.ADR_PP_C)) {
+							if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C)) {
 								isAllowed = true;
 							}
 						}
 					}
 					break;
 				case DOMICILE :
-					if(SecurityProvider.isGranted(Role.ADR_PP_D))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D))
 						isAllowed = true;
 					break;
 				case POURSUITE :
-					if(SecurityProvider.isGranted(Role.ADR_P))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_P))
 						isAllowed = true;
 					break;
 				case REPRESENTATION :
-					if(SecurityProvider.isGranted(Role.ADR_PP_B))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B))
 						isAllowed = true;
 					break;
 			}
 		}
 		else if(tiers.getNatureTiers() == NatureTiers.DebiteurPrestationImposable){
 			if (usage == TypeAdresseTiers.POURSUITE) {
-				isAllowed = SecurityProvider.isGranted(Role.ADR_P);
+				isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_P);
 			}
 			else {
-				isAllowed = SecurityProvider.isGranted(Role.CREATE_DPI);
+				isAllowed = SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI);
 			}
 		}
 		else {
 			//PM
 			switch (usage) {
 				case COURRIER :
-					if(SecurityProvider.isGranted(Role.ADR_PM_C))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C))
 						isAllowed = true;
 					break;
 				case DOMICILE :
-					if(SecurityProvider.isGranted(Role.ADR_PM_D))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D))
 						isAllowed = true;
 					break;
 				case POURSUITE :
-					if(SecurityProvider.isGranted(Role.ADR_P))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_P))
 						isAllowed = true;
 					break;
 				case REPRESENTATION :
-					if(SecurityProvider.isGranted(Role.ADR_PM_B))
+					if(SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B))
 						isAllowed = true;
 					break;
 			}

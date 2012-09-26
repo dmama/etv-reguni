@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
 import static ch.vd.uniregctb.param.Commun.getPeriodeIdFromRequest;
@@ -28,11 +29,12 @@ import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 public class ParamPeriodeController extends AbstractController {
 	
 	private ParamPeriodeManager manager;
+	private SecurityProviderInterface securityProvider;
 
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		verifieLesDroits();
+		verifieLesDroits(securityProvider);
 		
 		Map<String, Object> model = new HashMap<String, Object>();
 		List<PeriodeFiscale> periodes = manager.getAllPeriodeFiscale();
@@ -151,5 +153,9 @@ public class ParamPeriodeController extends AbstractController {
 
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

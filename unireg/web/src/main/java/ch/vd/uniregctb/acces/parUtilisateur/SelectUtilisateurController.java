@@ -12,11 +12,17 @@ import ch.vd.uniregctb.acces.parUtilisateur.view.SelectUtilisateurView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 public class SelectUtilisateurController extends AbstractSimpleFormController {
 
 	protected final Logger LOGGER = Logger.getLogger(SelectUtilisateurController.class);
+	private SecurityProviderInterface securityProvider;
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
@@ -59,7 +65,7 @@ public class SelectUtilisateurController extends AbstractSimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 		throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits");
 		}
 		SelectUtilisateurView selectUtilisateurView = (SelectUtilisateurView) command;

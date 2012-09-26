@@ -26,7 +26,8 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.general.view.TypeAvatar;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -60,6 +61,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private static TiersService tiersService;
 	private static AdresseService adresseService;
 	private static PlatformTransactionManager transactionManager;
+	private static SecurityProviderInterface securityProvider;
 
 	public static final List<Action> actions;
 
@@ -168,6 +170,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		JspTagBandeauTiers.transactionManager = transactionManager;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		JspTagBandeauTiers.securityProvider = securityProvider;
+	}
+
 	private String buidHtlm() {
 
 		rowcount = 0;
@@ -270,7 +276,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 			s.append("</tr>\n");
 		}
 
-		if (showEvenementsCivils && SecurityProvider.isGranted(Role.MODIF_VD_ORD)) {
+		if (showEvenementsCivils && SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD)) {
 			final EvenementsCivilsNonTraites evtsCivilNonTraites = tiersService.getIndividusAvecEvenementsCivilsNonTraites(tiers);
 			if (evtsCivilNonTraites != null && !evtsCivilNonTraites.isEmpty()) {
 				s.append("<tr class=\"evts-civils-non-traites\"><td colspan=\"3\" width=\"100%\"><center>\n");
@@ -733,7 +739,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.TESTER, Role.ADMIN);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN);
 		}
 
 		@Override
@@ -756,7 +762,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.TESTER, Role.ADMIN);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.TESTER, Role.ADMIN);
 		}
 
 		@Override
@@ -779,7 +785,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -802,7 +808,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -825,7 +831,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -848,7 +854,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isGranted(Role.ANNUL_TIERS);
+			return SecurityHelper.isGranted(securityProvider, Role.ANNUL_TIERS);
 		}
 
 		@Override
@@ -871,7 +877,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -894,7 +900,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -917,7 +923,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
+			return SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS, Role.MODIF_HAB_DEBPUR, Role.MODIF_NONHAB_DEBPUR);
 		}
 
 		@Override
@@ -940,7 +946,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 		@Override
 		public boolean isGranted() {
-			return SecurityProvider.isGranted(Role.ANNUL_TIERS);
+			return SecurityHelper.isGranted(securityProvider, Role.ANNUL_TIERS);
 		}
 
 		@Override

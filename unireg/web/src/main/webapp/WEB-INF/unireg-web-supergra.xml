@@ -10,6 +10,7 @@
 		<property name="successView" value="entity.do"/>
 		<property name="bindOnNewForm" value="true"/>
 		<property name="manager" ref="superGraManager"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="superGraCollectionController" class="ch.vd.uniregctb.supergra.SuperGraCollectionController">
@@ -20,6 +21,7 @@
 		<property name="successView" value="coll.do"/>
 		<property name="bindOnNewForm" value="true"/>
 		<property name="manager" ref="superGraManager"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="superGraManager" class="ch.vd.uniregctb.supergra.SuperGraManagerImpl">

@@ -11,6 +11,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 /**
@@ -23,6 +24,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	public final static String URL_RETOUR_SESSION_NAME = "urlRetour";
 
 	private ParamApplicationManager paramApplicationManager;
+	protected SecurityProviderInterface securityProvider;
 
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#referenceData(javax.servlet.http.HttpServletRequest)
@@ -269,9 +271,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	/**
-	 * @param manager the manager to set
-	 */
 	@SuppressWarnings({"JavaDoc"})
 	public final void setService(TiersService service) {
 		this.service = service;
@@ -280,6 +279,10 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	@SuppressWarnings({"JavaDoc"})
 	public void setParamApplicationManager(ParamApplicationManager paramApplicationManager) {
 		this.paramApplicationManager = paramApplicationManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {

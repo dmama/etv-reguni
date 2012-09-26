@@ -17,7 +17,7 @@ import ch.vd.uniregctb.rt.manager.RapportPrestationEditManager;
 import ch.vd.uniregctb.rt.view.DebiteurListView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -46,7 +46,7 @@ public class DebiteurListController  extends  AbstractTiersListController implem
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		// vérification droit création rapport de travail
-		if (!SecurityProvider.isGranted(Role.RT)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.RT)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail");
 		}
 

@@ -2,8 +2,6 @@ package ch.vd.uniregctb.di.view;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -31,17 +29,14 @@ public class ImprimerNouvelleDeclarationImpotView {
 	private boolean dateRetourProposeeCarDeclarationRetourneeAnnuleeExiste;
 
 	// Données dépendant des droits de l'utilisateur
-	private final boolean isAllowedQuittancement = SecurityProvider.isGranted(Role.DI_QUIT_PP);
+	private boolean isAllowedQuittancement;
 	private boolean imprimable = true;
 
 	public ImprimerNouvelleDeclarationImpotView() {
 	}
 
-	public ImprimerNouvelleDeclarationImpotView(long tiersId) {
-		this.tiersId = tiersId;
-	}
-
-	public ImprimerNouvelleDeclarationImpotView(long tiersId, boolean depuisTache) {
+	public ImprimerNouvelleDeclarationImpotView(long tiersId, boolean depuisTache, boolean allowQuittancement) {
+		this.isAllowedQuittancement = allowQuittancement;
 		this.tiersId = tiersId;
 		this.depuisTache = depuisTache;
 	}

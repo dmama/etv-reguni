@@ -7,6 +7,7 @@
 		<property name="coupleValidator" ref="coupleValidator" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="coupleValidator" class="ch.vd.uniregctb.couple.CoupleValidator">
@@ -15,6 +16,7 @@
 		<property name="validatorHelper" ref="validatorHelper" />
 		<property name="metierService" ref="metierService" />
 		<property name="coupleManager" ref="coupleManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="coupleManager" class="ch.vd.uniregctb.couple.CoupleManagerImpl">

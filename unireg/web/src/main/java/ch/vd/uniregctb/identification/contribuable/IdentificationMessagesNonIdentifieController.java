@@ -13,7 +13,7 @@ import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessage
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
 public class IdentificationMessagesNonIdentifieController extends AbstractIdentificationController {
@@ -55,8 +55,8 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 				identificationMessagesEditManager.verouillerMessage(id);
 				bean = identificationMessagesEditManager.getView(id);
 				// gestion des droits
-				if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
-					if (!SecurityProvider.isGranted(Role.VISU_LIMITE)) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+					if (!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)) {
 						throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 					}
 					bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);

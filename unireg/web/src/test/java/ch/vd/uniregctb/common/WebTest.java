@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.Stack;
 
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -17,8 +16,6 @@ import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceInfrastructureService
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceSecuriteService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  * Test case abstrait permettant de tester les controlleurs Spring.
@@ -137,19 +134,5 @@ public abstract class WebTest extends AbstractBusinessTest {
 		final BeanPropertyBindingResult exception = (BeanPropertyBindingResult) mav.getModel().get(
 				"org.springframework.validation.BindingResult.command");
 		return exception;
-	}
-
-	private Stack<SecurityProviderInterface> securityProviderStack = new Stack<SecurityProviderInterface>();
-
-	protected void pushSecurityProvider(SecurityProviderInterface providerInterface) {
-		securityProviderStack.push(SecurityProvider.getProvider());
-
-		final SecurityProvider provider = new SecurityProvider();
-		provider.setProvider(providerInterface);
-	}
-
-	protected void popSecurityProvider() {
-		final SecurityProvider provider = new SecurityProvider();
-		provider.setProvider(securityProviderStack.pop());
 	}
 }

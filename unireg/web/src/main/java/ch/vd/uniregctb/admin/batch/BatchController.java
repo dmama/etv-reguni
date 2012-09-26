@@ -24,17 +24,23 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamType;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping(value = "/admin/batch/")
 public class BatchController {
 
 	private BatchScheduler batchScheduler;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
 		this.batchScheduler = batchScheduler;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@RequestMapping(value = "/running.do", method = RequestMethod.GET)
@@ -61,7 +67,7 @@ public class BatchController {
 	public String start(@RequestParam(value = "name", required = true) String jobName, @Valid BatchStartParams startParams) {
 
 		try {
-			if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+			if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 				throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 			}
 
@@ -134,7 +140,7 @@ public class BatchController {
 	public String stop(@RequestParam(value = "name", required = true) String name) {
 
 		try {
-			if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+			if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 				throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 			}
 

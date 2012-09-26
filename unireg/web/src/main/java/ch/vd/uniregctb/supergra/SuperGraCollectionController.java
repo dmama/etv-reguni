@@ -10,7 +10,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.supergra.delta.AddSubEntity;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 
@@ -27,7 +27,7 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 		final String idAsString = request.getParameter("id");
 		final String collName = request.getParameter("name");
 
-		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
 
@@ -53,7 +53,7 @@ public class SuperGraCollectionController extends SuperGraAbstractController {
 
 		final String add = request.getParameter("add");
 		
-		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
 

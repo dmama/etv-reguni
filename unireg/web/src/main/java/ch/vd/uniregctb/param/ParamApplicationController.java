@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
 import ch.vd.uniregctb.param.view.ParamApplicationView;
 import ch.vd.uniregctb.parametrage.ParametreEnum;
+import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityCheck;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping("/param/app")
@@ -26,6 +28,7 @@ public class ParamApplicationController {
 
 	private ParamApplicationManager manager;
 	private Validator validator;
+	private SecurityProviderInterface securityProvider;
 
 	public void setParamApplicationManager(
 			ParamApplicationManager paramApplicationManager) {
@@ -34,6 +37,10 @@ public class ParamApplicationController {
 
 	public void setValidator(Validator validator) {
 		this.validator = validator;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@InitBinder
@@ -49,25 +56,34 @@ public class ParamApplicationController {
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
-	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String list (Model model) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.PARAM_APP)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
 		model.addAttribute("params", manager.getForm());
 		return "param/application";
 	}
 
 	@RequestMapping(value = "/save.do", method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String save(@Valid @ModelAttribute("params") ParamApplicationView form, BindingResult bindingResult) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.PARAM_APP)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
+
 		if (bindingResult.hasErrors()) {
 			return "param/application";
 		}
+
 		manager.save(form);
 		return "redirect:list.do";
 	}
 
 	@RequestMapping(value = "/reset.do", method = RequestMethod.POST)
-	@SecurityCheck(rolesToCheck = {Role.PARAM_APP}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	public String reset() {
+		if (!SecurityHelper.isGranted(securityProvider, Role.PARAM_APP)) {
+			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
+		}
 		manager.reset();
 		return "redirect:list.do";
 	}

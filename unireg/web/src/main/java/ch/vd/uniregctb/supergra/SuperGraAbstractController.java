@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.common.CommonSimpleFormController;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.supergra.delta.AddSubEntity;
 import ch.vd.uniregctb.supergra.delta.Delta;
 
@@ -17,10 +18,15 @@ public abstract class SuperGraAbstractController extends CommonSimpleFormControl
 	protected static final String ACCESS_DENIED = "Cet écran nécessite le droit d'accès spécial Super-Gra !";
 
 	protected SuperGraManager manager;
+	protected SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setManager(SuperGraManager manager) {
 		this.manager = manager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	protected SuperGraSession getSession(HttpServletRequest request) {

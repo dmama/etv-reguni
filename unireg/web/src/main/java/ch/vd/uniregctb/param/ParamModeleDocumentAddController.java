@@ -11,6 +11,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
 import ch.vd.uniregctb.param.view.ModeleDocumentView;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
@@ -21,17 +22,18 @@ public class ParamModeleDocumentAddController extends AbstractSimpleFormControll
 
 	private ParamPeriodeManager manager;
 	private TiersMapHelper tiersMapHelper;
+	private SecurityProviderInterface securityProvider;
 
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
-		verifieLesDroits();
+		verifieLesDroits(securityProvider);
 		return manager.createModeleDocumentViewAdd(getPeriodeIdFromRequest(request));
 	}
 
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
-		verifieLesDroits();
+		verifieLesDroits(securityProvider);
 		ModeleDocumentView mfv = (ModeleDocumentView) command;
 		manager.saveModeleDocumentView(mfv);
 		return getModelAndViewToPeriode(mfv.getIdPeriode());
@@ -53,4 +55,7 @@ public class ParamModeleDocumentAddController extends AbstractSimpleFormControll
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
 }

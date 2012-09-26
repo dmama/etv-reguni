@@ -17,7 +17,8 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 
 public class RecapPersonneUtilisateurController extends AbstractSimpleFormController {
@@ -33,21 +34,18 @@ public class RecapPersonneUtilisateurController extends AbstractSimpleFormContro
 
 	private UtilisateurEditRestrictionManager utilisateurEditRestrictionManager;
 	private TiersMapHelper tiersMapHelper;
-
-	public UtilisateurEditRestrictionManager getUtilisateurEditRestrictionManager() {
-		return utilisateurEditRestrictionManager;
-	}
+	private SecurityProviderInterface securityProvider;
 
 	public void setUtilisateurEditRestrictionManager(UtilisateurEditRestrictionManager utilisateurEditRestrictionManager) {
 		this.utilisateurEditRestrictionManager = utilisateurEditRestrictionManager;
 	}
 
-	public TiersMapHelper getTiersMapHelper() {
-		return tiersMapHelper;
-	}
-
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -68,7 +66,7 @@ public class RecapPersonneUtilisateurController extends AbstractSimpleFormContro
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SEC_DOS_ECR)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour modifier la sécurité des droits");
 		}
 		String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);

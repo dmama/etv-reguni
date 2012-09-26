@@ -12,7 +12,8 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -26,6 +27,7 @@ public class VignetteController {
 	private AdresseService adresseService;
 	private ServiceInfrastructureService infraService;
 	private MessageSource messageSource;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -45,6 +47,10 @@ public class VignetteController {
 
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -72,7 +78,7 @@ public class VignetteController {
 		}
 
 		// contrôle effectué après le chargement du tiers pour éviter un exception s'il n'existe pas.
-		final Niveau acces = SecurityProvider.getDroitAcces(numero);
+		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, numero);
 		if (acces == null) {
 			return new VignetteView(String.format("Vous ne possédez pas les droits de visualisation sur le contribuable n°%s.", FormatNumeroHelper.numeroCTBToDisplay(numero)));
 		}

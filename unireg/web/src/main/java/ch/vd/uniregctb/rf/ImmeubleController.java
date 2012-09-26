@@ -15,7 +15,8 @@ import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 @Controller
 @RequestMapping(value = "/rf/immeuble")
@@ -24,6 +25,7 @@ public class ImmeubleController {
 	private ImmeubleDAO immeubleDAO;
 	private MessageSource messageSource;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setImmeubleDAO(ImmeubleDAO immeubleDAO) {
@@ -36,6 +38,10 @@ public class ImmeubleController {
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -70,7 +76,7 @@ public class ImmeubleController {
 	                          @RequestParam(value = "page", required = false, defaultValue = "1") int page,
 	                          @RequestParam(value = "pageSize", required = false, defaultValue = "10") int pageSize) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_IMMEUBLES)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_IMMEUBLES)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour visualiser les immeubles d'un contribuable");
 		}
 

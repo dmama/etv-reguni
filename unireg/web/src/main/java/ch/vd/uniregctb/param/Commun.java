@@ -7,7 +7,8 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  *
@@ -27,9 +28,9 @@ class Commun {
 
 
 
-	static void verifieLesDroits() throws AccessDeniedException {
+	static void verifieLesDroits(SecurityProviderInterface securityProvider) throws AccessDeniedException {
 		//gestion des droits
-		if(!SecurityProvider.isGranted(Role.PARAM_PERIODE)){
+		if(!SecurityHelper.isGranted(securityProvider, Role.PARAM_PERIODE)){
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec sur l'écran de paramétrisation des périodes");
 		}
 	}

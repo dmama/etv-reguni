@@ -61,7 +61,8 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
@@ -89,6 +90,7 @@ public class DeclarationImpotController {
 	private ModeleDocumentDAO modeleDocumentDAO;
 	private PeriodeImpositionService periodeImpositionService;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -142,6 +144,10 @@ public class DeclarationImpotController {
 		this.controllerUtils = controllerUtils;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	@InitBinder
 	protected void initBinder(WebDataBinder binder) {
@@ -165,7 +171,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/list.do", method = RequestMethod.GET)
 	public String list(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_DELAI_PP, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -194,7 +200,7 @@ public class DeclarationImpotController {
 	@ResponseBody
 	public DeclarationView details(@RequestParam("id") long id) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_LIMITE)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -220,7 +226,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/annuler.do", method = RequestMethod.POST)
 	public String annuler(@RequestParam("id") long id, @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.VISU_LIMITE)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -260,7 +266,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/desannuler.do", method = RequestMethod.POST)
 	public String desannuler(@RequestParam("id") long id) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.DI_DESANNUL_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DESANNUL_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de désannulation des déclarations d'impôt.");
 		}
 
@@ -301,7 +307,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/choisir.do", method = RequestMethod.GET)
 	public String choisir(@RequestParam("tiersId") long tiersId, Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -344,7 +350,7 @@ public class DeclarationImpotController {
 	                       @RequestParam(value = "depuisTache", required = false, defaultValue = "false") boolean depuisTache,
 	                       Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -358,7 +364,7 @@ public class DeclarationImpotController {
 		}
 		final Contribuable ctb = (Contribuable) tiers;
 
-		final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView(tiersId, depuisTache);
+		final ImprimerNouvelleDeclarationImpotView view = new ImprimerNouvelleDeclarationImpotView(tiersId, depuisTache, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP));
 		model.addAttribute("command", view);
 		model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 		model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
@@ -393,7 +399,7 @@ public class DeclarationImpotController {
 
 		// [UNIREG-2705] s'il existe une DI retournée annulée pour le même contribuable et la même
 		// période, alors on propose de marquer cette nouvelle DI comme déjà retournée
-		if (SecurityProvider.isGranted(Role.DI_QUIT_PP)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP)) {
 			final DeclarationImpotOrdinaire diAnnulee = findDeclarationRetourneeEtAnnulee(tiersId, periode);
 			if (diAnnulee != null) {
 				view.setDateRetour(RegDate.get());
@@ -411,7 +417,7 @@ public class DeclarationImpotController {
 	public String imprimer(@Valid @ModelAttribute("command") final ImprimerNouvelleDeclarationImpotView view, BindingResult result,
 	                       HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_EMIS_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_EMIS_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'ajout des déclarations d'impôt sur les personnes physiques.");
 		}
 		final Long tiersId = view.getTiersId();
@@ -496,7 +502,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/etat/ajouter.do", method = RequestMethod.GET)
 	public String ajouterEtat(@RequestParam("id") long id, Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -523,7 +529,7 @@ public class DeclarationImpotController {
 	public String ajouterEtat(@Valid @ModelAttribute("command") final AjouterEtatDeclarationView view, BindingResult result,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de quittancement des déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -554,7 +560,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/etat/annuler.do", method = RequestMethod.POST)
 	public String annulerEtat(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_QUIT_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
 		}
 
@@ -589,7 +595,7 @@ public class DeclarationImpotController {
 	                     @RequestParam(value = "tacheId", required = false) Long tacheId,
 	                     Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isAnyGranted(Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.DI_QUIT_PP, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -601,7 +607,8 @@ public class DeclarationImpotController {
 		final Contribuable ctb = (Contribuable) di.getTiers();
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
-		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource);
+		final EditerDeclarationImpotView view = new EditerDeclarationImpotView(di, tacheId, messageSource, SecurityHelper.isGranted(securityProvider, Role.DI_QUIT_PP),
+				SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP), SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP), SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP));
 		model.addAttribute("command", view);
 
 		return "di/editer";
@@ -613,7 +620,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/sommer.do", method = RequestMethod.POST)
 	public String sommer(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -652,7 +659,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/imprimerTO.do", method = RequestMethod.POST)
 	public String imprimerTO(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_SOM_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -693,7 +700,7 @@ public class DeclarationImpotController {
 	public String duplicata(@RequestParam("id") long id,
 	                       Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.DI_DUPLIC_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -716,7 +723,7 @@ public class DeclarationImpotController {
 	public String duplicata(@Valid @ModelAttribute("command") final ImprimerDuplicataDeclarationImpotView view,
 	                        BindingResult result, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_DUPLIC_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DUPLIC_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec pour imprimer des duplicats de déclarations d'impôt sur les personnes physiques.");
 		}
 
@@ -768,7 +775,7 @@ public class DeclarationImpotController {
 	@RequestMapping(value = "/di/delai/annuler.do", method = RequestMethod.POST)
 	public String annulerDelai(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec d'édition des délais sur les déclarations d'impôt des personnes physiques.");
 		}
 
@@ -803,7 +810,7 @@ public class DeclarationImpotController {
 	public String ajouterDelai(@RequestParam("id") long id,
 	                        Model model) throws AccessDeniedException {
 
-		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
 		}
 
@@ -827,7 +834,7 @@ public class DeclarationImpotController {
 	public String ajouterDelai(@Valid @ModelAttribute("command") final AjouterDelaiDeclarationView view,
 	                        BindingResult result, HttpServletResponse response) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.DI_DELAI_PP)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.DI_DELAI_PP)) {
 			throw new AccessDeniedException("vous n'avez pas le droit d'ajouter un delai à une DI");
 		}
 

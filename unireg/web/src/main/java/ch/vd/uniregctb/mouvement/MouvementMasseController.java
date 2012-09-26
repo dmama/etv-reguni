@@ -34,6 +34,7 @@ import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaTraitementView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseCriteriaView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseResultatRechercheView;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 @Controller
@@ -58,6 +59,7 @@ public class MouvementMasseController {
 	private MouvementMasseManager mouvementManager;
 	private MouvementMapHelper mouvementMapHelper;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementManager(MouvementMasseManager mouvementManager) {
@@ -71,6 +73,10 @@ public class MouvementMasseController {
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	private static String buildRedirectPourTraitement(@Nullable String pagination) {
@@ -240,7 +246,7 @@ public class MouvementMasseController {
 	public String reinitMouvementRetire(@RequestParam(value = ID, required = true) long idMvt,
 	                                    @RequestParam(value = PAGINATION, required = false) String pagination) throws AccessDeniedException {
 
-		MouvementDossierHelper.checkAccess();
+		MouvementDossierHelper.checkAccess(securityProvider);
 		mouvementManager.changeEtat(EtatMouvementDossier.A_TRAITER, idMvt);
 		return buildRedirectPourTraitement(pagination);
 	}
@@ -249,7 +255,7 @@ public class MouvementMasseController {
 	public String cancelMouvement(@RequestParam(value = ID, required = true) long idMvt,
 	                              @RequestParam(value = PAGINATION, required = false) String pagination) throws AccessDeniedException {
 
-		MouvementDossierHelper.checkAccess();
+		MouvementDossierHelper.checkAccess(securityProvider);
 		mouvementManager.changeEtat(EtatMouvementDossier.RETIRE, idMvt);
 		return buildRedirectPourTraitement(pagination);
 	}
@@ -258,7 +264,7 @@ public class MouvementMasseController {
 	public String inclureDansBordereau(@RequestParam(value = "tabIdsMvts") long[] idsMvts,
 	                                   @RequestParam(value = PAGINATION, required = false) String pagination) throws AccessDeniedException {
 
-		MouvementDossierHelper.checkAccess();
+		MouvementDossierHelper.checkAccess(securityProvider);
 		mouvementManager.changeEtat(EtatMouvementDossier.A_ENVOYER, idsMvts);
 		return buildRedirectPourTraitement(pagination);
 	}

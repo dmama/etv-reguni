@@ -21,7 +21,7 @@ import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesLi
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 
 public class IdentificationMessagesListTraiteController extends AbstractIdentificationController {
 
@@ -54,7 +54,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		LOGGER.debug("Start of IdentificationMessagesListTraiteController:formBackingObject");
 
 		// on doit avoir les droits de visualisation pour ça...
-		if (!SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_CELLULE_BO,
 				Role.MW_IDENT_CTB_GEST_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit de visualiser cette page");
 		}
@@ -115,17 +115,17 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
 			List<IdentificationMessagesResultView> listIdentifications = null;
-			if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false));
 			}
-			else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+			else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.NCS);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.NCS));
 			}
-			else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+			else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.IMPOT_SOURCE);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
 				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.IMPOT_SOURCE));
@@ -196,17 +196,17 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
 			//Les autres rôles ont le droit de voir tout les types de message
 			return identificationMapHelper.initMapTypeMessage(true);
 		}
-		else if (SecurityProvider.isGranted(Role.NCS_IDENT_CTB_CELLULE_BO)) {
+		else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
 
 			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
 			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.NCS);
 
 		}
-		else if (SecurityProvider.isGranted(Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+		else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 
 			//la cellule IS ne voie que les messages de type IMPOT SOURCE dont les Liste is
 			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.IMPOT_SOURCE);

@@ -59,10 +59,6 @@ public class TiersAdresseValidatorTest extends WebTest {
 			((DisposableBean) validator).destroy();
 		}
 		validator = null;
-
-		// reset le security provider pour les autres tests (ceux qui seront lancés alors que le contexte spring n'aura pas encore été ré-initialisé)
-		popSecurityProvider();
-
 		super.onTearDown();
 	}
 
@@ -85,7 +81,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 				Role.ADR_PP_B,
 				Role.ADR_P,
 				Role.ADR_PP_C_DCD};
-		pushSecurityProvider(new MockSecurityProvider(roles));
+		validator.setSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
@@ -163,7 +159,7 @@ public class TiersAdresseValidatorTest extends WebTest {
 		final RegDate dateMariage = date(2000, 1, 1);
 
 		final Role[] roles = {Role.VISU_ALL, Role.MODIF_VD_ORD, Role.ADR_PP_C};
-		pushSecurityProvider(new MockSecurityProvider(roles));
+		validator.setSecurityProvider(new MockSecurityProvider(roles));
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(false) {

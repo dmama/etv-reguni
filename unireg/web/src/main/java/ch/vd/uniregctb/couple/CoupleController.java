@@ -24,7 +24,8 @@ import ch.vd.uniregctb.common.WebTransactionException;
 import ch.vd.uniregctb.common.WebTransactionTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.TiersNumberEditor;
@@ -37,6 +38,7 @@ public class CoupleController {
 	private Validator coupleValidator;
 	private PlatformTransactionManager transactionManager;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCoupleManager(CoupleManager coupleManager) {
@@ -57,11 +59,15 @@ public class CoupleController {
 		this.controllerUtils = controllerUtils;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@RequestMapping(value = "/create.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String create(@RequestParam(value = "pp1", required = false) Long pp1Id, Model model) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -85,7 +91,7 @@ public class CoupleController {
 	@RequestMapping(value = "/create.do", method = RequestMethod.POST)
 	public String create(@Valid @ModelAttribute("command") final CoupleView view, BindingResult result) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 

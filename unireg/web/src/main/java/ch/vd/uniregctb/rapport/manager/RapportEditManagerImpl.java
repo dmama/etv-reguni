@@ -19,7 +19,7 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -133,7 +133,7 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 		//vérification droit édition du rapport pour fermeture
 		if (rapportEntreTiers instanceof RapportPrestationImposable) {
-			if (!SecurityProvider.isGranted(Role.RT)) {
+			if (!SecurityHelper.isGranted(securityProvider, Role.RT)) {
 				rapportView.setAllowed(false);
 			}
 			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;

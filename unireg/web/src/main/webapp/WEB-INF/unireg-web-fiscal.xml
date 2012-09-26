@@ -31,6 +31,7 @@
 	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
 		<property name="tiersService" ref="tiersService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="tiersForController" class="ch.vd.uniregctb.tiers.TiersForController" parent="abstractTiersController">
@@ -54,7 +55,7 @@
 		<property name="validator" ref="situationFamilleViewValidator" />
 	</bean>
 
-	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl">
+	<bean id="situationFamilleManager" class="ch.vd.uniregctb.tiers.manager.SituationFamilleManagerImpl" parent="tiersManager">
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />

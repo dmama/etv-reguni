@@ -36,8 +36,4 @@
 
 	<alias alias="securityProviderInterface" name="securityProviderCache"/>
 
-	<bean id="securityProvider" class="ch.vd.uniregctb.security.SecurityProvider">
-		<property name="provider" ref="securityProviderInterface" />
-	</bean>
-
 </beans>

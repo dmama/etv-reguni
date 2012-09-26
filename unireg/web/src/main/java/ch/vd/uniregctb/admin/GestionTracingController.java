@@ -15,7 +15,8 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tracing.TracingManager;
 
 /**
@@ -34,6 +35,7 @@ public class GestionTracingController extends AbstractSimpleFormController {
 
 	public static final String GESTION_TRACING_NAME = "gestionTracing";
 
+	private SecurityProviderInterface securityProvider;
 
 
 	/**
@@ -86,7 +88,7 @@ public class GestionTracingController extends AbstractSimpleFormController {
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 		throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -119,7 +121,8 @@ public class GestionTracingController extends AbstractSimpleFormController {
 		return mav;
 	}
 
-
-
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
 }
 

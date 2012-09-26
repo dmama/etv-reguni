@@ -4,7 +4,8 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  * Quelques méthodes bien pratiques quand on travaille avec les mouvements de dossier
@@ -27,9 +28,10 @@ public abstract class MouvementDossierHelper {
 	/**
 	 * Renvoie une exception si le rôle {@link ch.vd.uniregctb.security.Role#MVT_DOSSIER_MASSE} n'est pas associé au principal
 	 * @throws AccessDeniedException en cas d'accès interdit
+	 * @param securityProvider le security provider
 	 */
-	public static void checkAccess() throws AccessDeniedException {
-		if (!SecurityProvider.isGranted(Role.MVT_DOSSIER_MASSE)) {
+	public static void checkAccess(SecurityProviderInterface securityProvider) throws AccessDeniedException {
+		if (!SecurityHelper.isGranted(securityProvider, Role.MVT_DOSSIER_MASSE)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits de gestion des mouvements de dossiers en masse pour l'application Unireg.");
 		}
 	}

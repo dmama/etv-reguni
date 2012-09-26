@@ -60,6 +60,7 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rapport.TypeRapportEntreTiersWeb;
 import ch.vd.uniregctb.rapport.view.RapportView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.situationfamille.VueSituationFamille;
 import ch.vd.uniregctb.situationfamille.VueSituationFamilleMenageCommun;
@@ -151,6 +152,7 @@ public class TiersManager implements MessageSourceAware {
 	protected IbanValidator ibanValidator;
 	private ServicePersonneMoraleService servicePM;
 	private AutorisationManager autorisationManager;
+	protected SecurityProviderInterface securityProvider;
 
 	/**
 	 * Recupere l'individu correspondant au tiers
@@ -1267,6 +1269,10 @@ public class TiersManager implements MessageSourceAware {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAutorisationManager(AutorisationManager autorisationManager) {
 		this.autorisationManager = autorisationManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**

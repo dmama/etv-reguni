@@ -28,7 +28,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.DisableEntity;
 import ch.vd.uniregctb.supergra.delta.EnableEntity;
@@ -50,7 +50,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		final String typeAsString = request.getParameter("class");
 		final String idAsString = request.getParameter("id");
 
-		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
 
@@ -155,7 +155,7 @@ public class SuperGraEntityController extends SuperGraAbstractController {
 		final EntityView view = (EntityView) command;
 		Assert.notNull(view);
 
-		if (!SecurityProvider.isGranted(Role.SUPERGRA)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
 			throw new AccessDeniedException(ACCESS_DENIED);
 		}
 

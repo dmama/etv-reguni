@@ -17,7 +17,8 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.efacture.manager.EfactureManager;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
@@ -29,21 +30,22 @@ public class EFactureController {
 	private static final String ID_DEMANDE = "idDemande";
 	private static final String DATE_DEMANDE = "dateDemande";
 	private EfactureManager efactureManager;
+	private SecurityProviderInterface securityProvider;
 
-	private static void checkDroitVisuEfacture() {
-		if (!SecurityProvider.isAnyGranted(Role.VISU_ALL, Role.GEST_EFACTURE)) {
+	private static void checkDroitVisuEfacture(SecurityProviderInterface securityProvider) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.GEST_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour visualiser l'historique e-facture d'un contribuable");
 		}
 	}
 
-	private static void checkDroitGestionaireEfacture() {
-		if (!SecurityProvider.isAnyGranted(Role.GEST_EFACTURE)) {
+	private static void checkDroitGestionaireEfacture(SecurityProviderInterface securityProvider) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour interagir avec les états e-facture d'un contribuable");
 		}
 	}
 
-	private static void checkDroitQuittanceurEnSerie() {
-		if (!SecurityProvider.isAnyGranted(Role.GEST_QUIT_EFACTURE)) {
+	private static void checkDroitQuittanceurEnSerie(SecurityProviderInterface securityProvider) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.GEST_QUIT_EFACTURE)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec pour gérer les retours de confirmation d'inscription e-Facture");
 		}
 	}
@@ -57,13 +59,13 @@ public class EFactureController {
 	@ResponseBody
 	@RequestMapping(value = "/histo.do", method = RequestMethod.GET)
 	public DestinataireAvecHistoView histo(@RequestParam(value = CTB, required = true) long ctbId) {
-		checkDroitVisuEfacture();
+		checkDroitVisuEfacture(securityProvider);
 		return buildHistoDestinataire(ctbId);
 	}
 
 	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
 	public String edit(Model model, @RequestParam(value = CTB, required = true) long ctbId) {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final DestinataireAvecHistoView histo = buildHistoDestinataire(ctbId);
 		if (histo == null) {
 			throw new ActionException("Le contribuable ne possède aucun état e-facture avec lequel il est possible d'interagir");
@@ -75,7 +77,7 @@ public class EFactureController {
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
 	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.suspendreContribuable(ctbId);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de suspension a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -85,7 +87,7 @@ public class EFactureController {
 
 	@RequestMapping(value = "/activate.do", method = RequestMethod.POST)
 	public String activate(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.activerContribuable(ctbId);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande d'activation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -95,7 +97,7 @@ public class EFactureController {
 
 	@RequestMapping(value = "/validate.do", method = RequestMethod.POST)
 	public String validate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.accepterDemande(idDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de validation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -105,7 +107,7 @@ public class EFactureController {
 
 	@RequestMapping(value = "/refuse.do", method = RequestMethod.POST)
 	public String refuse(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.refuserDemande(idDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de refus a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -116,7 +118,7 @@ public class EFactureController {
 	@RequestMapping(value = "/wait-signature.do", method = RequestMethod.POST)
 	public String waitForSignature(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
 	                               @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE, idDemande, dateDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de confirmation d'inscription a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -127,7 +129,7 @@ public class EFactureController {
 	@RequestMapping(value = "/wait-contact.do", method = RequestMethod.POST)
 	public String waitForContact(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = ID_DEMANDE, required = true) String idDemande,
 	                             @RequestParam(value = DATE_DEMANDE, required = true) RegDate dateDemande) throws Exception {
-		checkDroitGestionaireEfacture();
+		checkDroitGestionaireEfacture(securityProvider);
 		final String businessId = efactureManager.envoyerDocumentAvecNotificationEFacture(ctbId, TypeDocument.E_FACTURE_ATTENTE_CONTACT, idDemande, dateDemande);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de prise de contact a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
@@ -142,13 +144,13 @@ public class EFactureController {
 
 	@RequestMapping(value = "/quittancement/show.do", method = RequestMethod.GET)
 	public String showQuittancementForm() {
-		checkDroitQuittanceurEnSerie();
+		checkDroitQuittanceurEnSerie(securityProvider);
 		return "efacture/form";
 	}
 
 	@RequestMapping(value = "/quittancement/beep.do", method = RequestMethod.POST)
 	public String doQuittancement(@RequestParam(value = "noctb", required = true) Long noCtb) throws Exception {
-		checkDroitQuittanceurEnSerie();
+		checkDroitQuittanceurEnSerie(securityProvider);
 		final ResultatQuittancement resultatQuittancement = efactureManager.quittancer(noCtb);
 		final String messageQuittancement = efactureManager.getMessageQuittancement(resultatQuittancement, noCtb);
 		if (resultatQuittancement.isOk()) {
@@ -162,5 +164,9 @@ public class EFactureController {
 
 	public void setEfactureManager(EfactureManager efactureManager) {
 		this.efactureManager = efactureManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

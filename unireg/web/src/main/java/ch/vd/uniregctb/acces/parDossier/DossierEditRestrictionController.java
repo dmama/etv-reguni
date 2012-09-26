@@ -16,7 +16,8 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  * @author xcifde
@@ -31,13 +32,14 @@ public class DossierEditRestrictionController extends AbstractSimpleFormControll
 	public final static String TARGET_ANNULER_RESTRICTION = "annulerRestriction";
 
 	private DossierEditRestrictionManager dossierEditRestrictionManager;
-
-	public DossierEditRestrictionManager getDossierEditRestrictionManager() {
-		return dossierEditRestrictionManager;
-	}
+	private SecurityProviderInterface securityProvider;
 
 	public void setDossierEditRestrictionManager(DossierEditRestrictionManager dossierEditRestrictionManager) {
 		this.dossierEditRestrictionManager = dossierEditRestrictionManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -46,7 +48,7 @@ public class DossierEditRestrictionController extends AbstractSimpleFormControll
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.SEC_DOS_ECR, Role.SEC_DOS_LEC)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour accéder à la sécurité des droits");
 		}
 		String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);
@@ -90,7 +92,7 @@ public class DossierEditRestrictionController extends AbstractSimpleFormControll
 		DossierEditRestrictionView dossierEditRestrictionView = (DossierEditRestrictionView) command;
 
 		if (getTarget() != null) {
-			if (TARGET_ANNULER_RESTRICTION.equals(getTarget()) && SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
+			if (TARGET_ANNULER_RESTRICTION.equals(getTarget()) && SecurityHelper.isGranted(securityProvider, Role.SEC_DOS_ECR)) {
 				String restriction = getEventArgument();
 				Long idRestriction = Long.parseLong(restriction);
 				try {

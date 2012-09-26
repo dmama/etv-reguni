@@ -13,7 +13,8 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.ValidatorHelper;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -30,6 +31,7 @@ public class CoupleValidator implements Validator {
 	private ValidatorHelper validatorHelper;
 	private MetierService metierService;
 	private CoupleManager coupleManager;
+	private SecurityProviderInterface securityProvider;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -51,6 +53,10 @@ public class CoupleValidator implements Validator {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCoupleManager(CoupleManager coupleManager) {
 		this.coupleManager = coupleManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@Override
@@ -213,24 +219,24 @@ public class CoupleValidator implements Validator {
 	 */
 	private boolean isModifGranted(Tiers tiers) {
 
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
+		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, tiers);
 		if (acces == null || acces == Niveau.LECTURE) {
 			return false;
 		}
 
-		boolean droitTout = SecurityProvider.isAnyGranted(Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS);
+		boolean droitTout = SecurityHelper.isAnyGranted(securityProvider, Role.MODIF_VD_ORD, Role.MODIF_VD_SOURC, Role.MODIF_HC_HS);
 		if (droitTout) {
 			return true;
 		}
 
 		boolean habitantVD = isSomewhatHabitantVD(tiers);
 
-		if (habitantVD && SecurityProvider.isGranted(Role.MODIF_HAB_DEBPUR)) {
+		if (habitantVD && SecurityHelper.isGranted(securityProvider, Role.MODIF_HAB_DEBPUR)) {
 			return true;
 		}
 
 		//noinspection RedundantIfStatement
-		if (!habitantVD && SecurityProvider.isGranted(Role.MODIF_NONHAB_DEBPUR)) {
+		if (!habitantVD && SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_DEBPUR)) {
 			return true;
 		}
 

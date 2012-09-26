@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.lr;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
@@ -13,7 +12,7 @@ import ch.vd.uniregctb.lr.manager.ListeRecapEditManager;
 import ch.vd.uniregctb.lr.view.ListeRecapListView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 
 public class ListeRecapEditDebiteurController extends AbstractListeRecapController{
 
@@ -34,7 +33,7 @@ public class ListeRecapEditDebiteurController extends AbstractListeRecapControll
 		if (idParam != null) {
 			Long id = Long.parseLong(idParam);
 			if (idParam != null && !"".equals(idParam)) {
-				if(SecurityProvider.isGranted(Role.LR)){
+				if(SecurityHelper.isGranted(securityProvider, Role.LR)){
 					lrListView = lrEditManager.findByNumero(id);
 				}
 				else {

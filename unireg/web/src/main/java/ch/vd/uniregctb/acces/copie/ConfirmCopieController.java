@@ -1,9 +1,8 @@
 package ch.vd.uniregctb.acces.copie;
 
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -17,7 +16,8 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 public class ConfirmCopieController extends AbstractSimpleFormController {
 
@@ -30,13 +30,14 @@ public class ConfirmCopieController extends AbstractSimpleFormController {
 	public final static String BOUTON_TRANSFERER = "transferer";
 
 	private CopieDroitAccesManager copieDroitAccesManager;
-
-	public CopieDroitAccesManager getCopieDroitAccesManager() {
-		return copieDroitAccesManager;
-	}
+	private SecurityProviderInterface securityProvider;
 
 	public void setCopieDroitAccesManager(CopieDroitAccesManager copieDroitAccesManager) {
 		this.copieDroitAccesManager = copieDroitAccesManager;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -45,7 +46,7 @@ public class ConfirmCopieController extends AbstractSimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SEC_DOS_ECR)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour modifier la sécurité des droits");
 		}
 		String noOperateurReferenceParam = request.getParameter(NUMERO_OPERATEUR_REFERENCE_PARAMETER_NAME);

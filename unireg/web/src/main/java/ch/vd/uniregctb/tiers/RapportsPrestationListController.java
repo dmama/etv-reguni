@@ -10,7 +10,8 @@ import org.springframework.web.servlet.mvc.AbstractCommandController;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.RapportsPrestationView;
 
@@ -18,6 +19,7 @@ public class RapportsPrestationListController extends AbstractCommandController 
 
 	private TiersVisuManager manager;
 	private ControllerUtils controllerUtils;
+	private SecurityProviderInterface securityProvider;
 
 	public RapportsPrestationListController() {
 		setCommandClass(RapportsPrestationView.class);
@@ -26,7 +28,7 @@ public class RapportsPrestationListController extends AbstractCommandController 
 	@Override
 	protected ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		if(!SecurityProvider.isGranted(Role.VISU_ALL)){
+		if(!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)){
 			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de consultation des débiteurs de prestations imposables");
 		}
 
@@ -46,5 +48,9 @@ public class RapportsPrestationListController extends AbstractCommandController 
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
 		this.controllerUtils = controllerUtils;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

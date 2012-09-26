@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.param;
 
-import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
-import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -10,16 +7,21 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
+
+import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
+import static ch.vd.uniregctb.param.Commun.verifieLesDroits;
 
 
 public class InitPeriodeController extends AbstractController {
 
 	private ParamPeriodeManager manager;
-	
+	private SecurityProviderInterface securityProvider;
+
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		
-		verifieLesDroits();
+		verifieLesDroits(securityProvider);
 		
 		// Creation de la periode
 		manager.initNouvellePeriodeFiscale();
@@ -32,4 +34,7 @@ public class InitPeriodeController extends AbstractController {
 		this.manager = manager;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
 }

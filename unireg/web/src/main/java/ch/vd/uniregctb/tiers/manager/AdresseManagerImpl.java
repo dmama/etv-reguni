@@ -32,7 +32,7 @@ import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -158,7 +158,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 	}
 
 	private void updateAdressesSuccessorales(AdresseView adresseView, MenageCommun tiers) throws AccessDeniedException {
-		if (!SecurityProvider.isGranted(Role.ADR_PP_C_DCD)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD)) {
 			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec pour modifier l'adresse d'un décédé.");
 		}
 

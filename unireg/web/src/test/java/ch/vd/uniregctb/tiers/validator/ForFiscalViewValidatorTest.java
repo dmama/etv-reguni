@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.WebTest;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -39,6 +40,7 @@ public class ForFiscalViewValidatorTest extends WebTest {
 		validator = new ForFiscalViewValidator();
 		validator.setTiersService(tiersService);
 		validator.setInfraService(serviceInfra);
+		validator.setSecurityProvider(getBean(SecurityProviderInterface.class, "securityProviderInterface"));
 	}
 
 	/**

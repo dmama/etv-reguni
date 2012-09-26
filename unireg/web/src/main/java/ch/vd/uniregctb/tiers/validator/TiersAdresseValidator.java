@@ -24,7 +24,8 @@ import ch.vd.uniregctb.metier.assujettissement.HorsCanton;
 import ch.vd.uniregctb.metier.assujettissement.HorsSuisse;
 import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -46,6 +47,7 @@ public class TiersAdresseValidator implements Validator {
 	private TiersService tiersService;
 	private ServiceInfrastructureService serviceInfra;
 	private AssujettissementService assujettissementService;
+	private SecurityProviderInterface securityProvider;
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
@@ -61,6 +63,10 @@ public class TiersAdresseValidator implements Validator {
 
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -132,7 +138,7 @@ public class TiersAdresseValidator implements Validator {
 		final TypeAdresseTiers usage = adresseView.getUsage();
 		final Tiers tiers = tiersService.getTiers(adresseView.getNumCTB());
 
-		final Niveau acces = SecurityProvider.getDroitAcces(tiers);
+		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, tiers);
 		if (acces == null || acces == Niveau.LECTURE) {
 			errors.reject("error.tiers.interdit");
 		}
@@ -171,11 +177,11 @@ public class TiersAdresseValidator implements Validator {
 					// [UNIREG-1292] - mise à jour selon la matrice des droits Unireg
 					if (tiers instanceof PersonnePhysique) {
 						final PersonnePhysique pp = (PersonnePhysique) tiers;
-						if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD) && tiersService.isDecede(pp)) {
+						if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD) && tiersService.isDecede(pp)) {
 							// on peut modifier l'adresse courrier d'un décédé uniquement si ont possède le rôle correspondant
 							isAllowed = true;
 						}
-						else if (SecurityProvider.isGranted(Role.ADR_PP_C) && !tiersService.isDecede(pp)) {
+						else if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C) && !tiersService.isDecede(pp)) {
 							// on peut modifier l'adresse courrier d'un non décédé uniquement si ont possède le rôle correspondant
 							isAllowed = isTiersModifiable(tiers);
 						}
@@ -190,29 +196,29 @@ public class TiersAdresseValidator implements Validator {
 						}
 						// pour les ménages commun le droit sur les décédés est le plus contraignant
 						if (auMoinsUnDecede) {
-							if (SecurityProvider.isGranted(Role.ADR_PP_C_DCD)) {
+							if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD)) {
 								isAllowed = true;
 							}
 						}
 						else {
-							if(SecurityProvider.isGranted(Role.ADR_PP_C)) {
+							if(SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C)) {
 								isAllowed = isTiersModifiable(tiers);
 							}
 						}
 					}
 					break;
 				case DOMICILE :
-					if (SecurityProvider.isGranted(Role.ADR_PP_D)) {
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D)) {
 						isAllowed = isTiersModifiable(tiers);
 					}
 					break;
 				case POURSUITE :
-					if (SecurityProvider.isGranted(Role.ADR_P)) {
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_P)) {
 						isAllowed = true;
 					}
 					break;
 				case REPRESENTATION :
-					if (SecurityProvider.isGranted(Role.ADR_PP_B)) {
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B)) {
 						isAllowed = isTiersModifiable(tiers);
 					}
 					break;
@@ -222,7 +228,7 @@ public class TiersAdresseValidator implements Validator {
 		}
 		else if(tiers.getNatureTiers() == NatureTiers.DebiteurPrestationImposable) {
 			if (usage == TypeAdresseTiers.POURSUITE) {
-				isAllowed = SecurityProvider.isGranted(Role.ADR_P);
+				isAllowed = SecurityHelper.isGranted(securityProvider, Role.ADR_P);
 			}
 			else {
 				isAllowed = isTiersModifiable(tiers);
@@ -232,20 +238,20 @@ public class TiersAdresseValidator implements Validator {
 			//PM
 			switch (usage) {
 				case COURRIER:
-					if (SecurityProvider.isGranted(Role.ADR_PM_C)) {
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C)) {
 						isAllowed = isTiersModifiable(tiers);
 					}
 					break;
 				case DOMICILE:
-					if (SecurityProvider.isGranted(Role.ADR_PM_D))
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D))
 						isAllowed = isTiersModifiable(tiers);
 					break;
 				case POURSUITE:
-					if (SecurityProvider.isGranted(Role.ADR_P))
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_P))
 						isAllowed = true;
 					break;
 				case REPRESENTATION:
-					if (SecurityProvider.isGranted(Role.ADR_PM_B))
+					if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B))
 						isAllowed = isTiersModifiable(tiers);
 					break;
 				default:
@@ -267,7 +273,7 @@ public class TiersAdresseValidator implements Validator {
 
 		try {
 			if (tiers instanceof DebiteurPrestationImposable) {
-				return SecurityProvider.isGranted(Role.CREATE_DPI);
+				return SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI);
 			}
 			else if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
 				final Contribuable ctb = (Contribuable) tiers;
@@ -277,16 +283,16 @@ public class TiersAdresseValidator implements Validator {
 				final Assujettissement assujettissementCourant = assujettissement != null ? DateRangeHelper.rangeAt(assujettissement, RegDate.get()) : null;
 				if (assujettissementCourant == null) {
 					// non-assujetti
-					return SecurityProvider.isGranted(isHabitant ? Role.MODIF_HAB_DEBPUR : Role.MODIF_NONHAB_DEBPUR);
+					return SecurityHelper.isGranted(securityProvider, isHabitant ? Role.MODIF_HAB_DEBPUR : Role.MODIF_NONHAB_DEBPUR);
 				}
 				else if (assujettissementCourant instanceof HorsCanton || assujettissementCourant instanceof HorsSuisse) {
-					return SecurityProvider.isGranted(Role.MODIF_HC_HS);
+					return SecurityHelper.isGranted(securityProvider, Role.MODIF_HC_HS);
 				}
 				else if (assujettissementCourant instanceof SourcierPur) {
-					return SecurityProvider.isGranted(Role.MODIF_VD_SOURC);
+					return SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_SOURC);
 				}
 				else {
-					return SecurityProvider.isGranted(Role.MODIF_VD_ORD);
+					return SecurityHelper.isGranted(securityProvider, Role.MODIF_VD_ORD);
 				}
 			}
 			else {

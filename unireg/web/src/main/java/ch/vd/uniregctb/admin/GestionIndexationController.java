@@ -29,7 +29,8 @@ import ch.vd.uniregctb.indexer.tiers.TiersIndexableData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tracing.TracingManager;
 
 /**
@@ -45,6 +46,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 	private IndexationManager indexationManager;
 	private ServiceCivilService serviceCivil;
 	private DataEventService dataEventService;
+	private SecurityProviderInterface securityProvider;
 
 	private static final String ACTION_PARAMETER_NAME = "action";
 	private static final String ACTION_SEARCH_VALUE = "search";
@@ -133,7 +135,7 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors) throws Exception {
 
-		if (!SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+		if (!SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec d'administration pour l'application Unireg");
 		}
 
@@ -237,6 +239,10 @@ public class GestionIndexationController extends AbstractSimpleFormController {
 
 	public void setDataEventService(DataEventService dataEventService) {
 		this.dataEventService = dataEventService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }
 

@@ -13,7 +13,7 @@ import ch.vd.uniregctb.rt.manager.RapportPrestationEditManager;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 
 public class RapportPrestationEditController  extends AbstractRapportPrestationController {
 
@@ -30,10 +30,6 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 
 	private RapportPrestationEditManager rapportPrestationEditManager;
 
-	public RapportPrestationEditManager getRapportPrestationEditManager() {
-		return rapportPrestationEditManager;
-	}
-
 	public void setRapportPrestationEditManager(RapportPrestationEditManager rapportPrestationEditManager) {
 		this.rapportPrestationEditManager = rapportPrestationEditManager;
 	}
@@ -45,7 +41,7 @@ public class RapportPrestationEditController  extends AbstractRapportPrestationC
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
 		//vérification droit création rapport de travail
-		if(!SecurityProvider.isGranted(Role.RT)){
+		if(!SecurityHelper.isGranted(securityProvider, Role.RT)){
 			throw new AccessDeniedException("Vous ne possédez pas le droit de créer un rapport de travail");
 		}
 

@@ -13,7 +13,7 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tache.manager.TacheListManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
@@ -77,8 +77,8 @@ public class TiersVisuController extends AbstractTiersController {
 
 			//vérification des droits de visualisation
 			boolean isAllowed = true;
-			if(tiersVisuView.getTiers() != null && !SecurityProvider.isGranted(Role.VISU_ALL)){
-				if(!SecurityProvider.isGranted(Role.VISU_LIMITE)){
+			if(tiersVisuView.getTiers() != null && !SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)){
+				if(!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)){
 					throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 				}
 				//pas de droits pour les inactifs, les DPI et les gris

@@ -13,7 +13,8 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -40,6 +41,7 @@ public class ForFiscalViewValidator implements Validator {
 
 	private TiersService tiersService;
 	private ServiceInfrastructureService infraService;
+	private SecurityProviderInterface securityProvider;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -260,21 +262,21 @@ public class ForFiscalViewValidator implements Validator {
 			//seul la date de fermeture et le motif de fermeture (si existant) sont éditables
 			final String msgErrorForSec = (forFiscalView.getId() == null) ? "error.motif.rattachement.interdit" : "error.tiers.interdit";
 
-			final Niveau acces = SecurityProvider.getDroitAcces(forFiscalView.getNumeroCtb());
+			final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, forFiscalView.getNumeroCtb());
 			if (acces == null || acces == Niveau.LECTURE) {
 				errors.reject("global.error.msg", "Droits insuffisants pour modifier ce tiers");
 			}
 
 			if (typeFor == TypeForFiscal.DEBITEUR_PRESTATION_IMPOSABLE) {
-				if (!SecurityProvider.isGranted(Role.CREATE_DPI)) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 					errors.rejectValue("genreImpot", "error.tiers.interdit");
 				}
 			}
 			else if (typeFor == TypeForFiscal.PRINCIPAL) {
 				//forFiscalView.getNatureTiers est tjs != MENEAGE_COMMUN (si couple => HABITANT ou NON_HABITANT
 				if (forFiscalView.getNatureTiers() == NatureTiers.Habitant) {
-					if ((isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HAB)) ||
-							(!isOrdinaire && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HAB))) {
+					if ((isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB)) ||
+							(!isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB))) {
 						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
@@ -283,10 +285,10 @@ public class ForFiscalViewValidator implements Validator {
 					if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 						isGris = true;
 					}
-					if ((isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_HCHS)) ||
-							(!isOrdinaire && !isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_HCHS)) ||
-							(isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_ORDDEP_GRIS)) ||
-							(!isOrdinaire && isGris && !SecurityProvider.isGranted(Role.FOR_PRINC_SOURC_GRIS))) {
+					if ((isOrdinaire && !isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS)) ||
+							(!isOrdinaire && !isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS)) ||
+							(isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS)) ||
+							(!isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS))) {
 						errors.rejectValue("motifRattachement", msgErrorForSec);
 					}
 				}
@@ -297,17 +299,17 @@ public class ForFiscalViewValidator implements Validator {
 			}
 			else if (typeFor == TypeForFiscal.SECONDAIRE) {
 				//pour + tard : traiter le cas des entreprises
-				if (!SecurityProvider.isGranted(Role.FOR_SECOND_PP)) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP)) {
 					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
 			else if (typeFor == TypeForFiscal.AUTRE_ELEMENT) {
-				if (!SecurityProvider.isGranted(Role.FOR_AUTRE)) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE)) {
 					errors.rejectValue("motifRattachement", msgErrorForSec);
 				}
 			}
 			else if (typeFor == TypeForFiscal.AUTRE_IMPOT) {
-				if (!SecurityProvider.isGranted(Role.FOR_AUTRE)) {
+				if (!SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE)) {
 					errors.rejectValue("genreImpot", (forFiscalView.getId() == null) ? "error.genre.impot.interdit" : "error.tiers.interdit");
 				}
 			}
@@ -404,5 +406,9 @@ public class ForFiscalViewValidator implements Validator {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 }

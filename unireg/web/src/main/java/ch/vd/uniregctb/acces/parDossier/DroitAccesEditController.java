@@ -17,7 +17,8 @@ import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.DroitAccesException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.TypeDroitAcces;
 
@@ -30,6 +31,7 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 	private DossierEditRestrictionManager dossierEditRestrictionManager;
 
 	private TiersMapHelper tiersMapHelper;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDossierEditRestrictionManager(DossierEditRestrictionManager dossierEditRestrictionManager) {
@@ -41,6 +43,10 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	private static final String NUMERO_PARAMETER_NAME = "numero";
 
 	/**
@@ -49,7 +55,7 @@ public class DroitAccesEditController extends AbstractSimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SEC_DOS_ECR)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour modifier la sécurité des droits");
 		}
 		final String numeroParam = request.getParameter(NUMERO_PARAMETER_NAME);

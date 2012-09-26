@@ -29,7 +29,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.security.SecurityProvider;
 import ch.vd.uniregctb.utils.RegDateEditor;
 
 /**
@@ -153,7 +152,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p>
 	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode
-	 * {@link SecurityProvider#isGranted(ch.vd.uniregctb.security.Role)} sont nécessaires en complément.
+	 * {@link ch.vd.uniregctb.security.SecurityHelper#isGranted(ch.vd.uniregctb.security.SecurityProviderInterface, ch.vd.uniregctb.security.Role)} sont nécessaires en complément.
 	 *
 	 * @param tiersId
 	 *            le tiers dont on veut vérifier les droits d'accès au dossier.
@@ -170,7 +169,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
 	 * <p>
 	 * <b>Attention !</b> Cette méthode ne vérifie pas les droits IFOSec. Un ou plusieurs appels à la méthode
-	 * {@link SecurityProvider#isGranted(ch.vd.uniregctb.security.Role)} sont nécessaires en complément.
+	 * {@link ch.vd.uniregctb.security.SecurityHelper#isGranted(ch.vd.uniregctb.security.SecurityProviderInterface, ch.vd.uniregctb.security.Role)} sont nécessaires en complément.
 	 *
 	 * @param tiersId
 	 *            le tiers dont on veut vérifier les droits d'accès au dossier.

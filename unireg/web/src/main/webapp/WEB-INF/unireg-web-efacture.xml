@@ -4,6 +4,7 @@
 
 	<bean id="efactureController" class="ch.vd.uniregctb.efacture.EFactureController">
 		<property name="efactureManager" ref="efactureManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="efactureManager" class="ch.vd.uniregctb.efacture.manager.EfactureManagerImpl">

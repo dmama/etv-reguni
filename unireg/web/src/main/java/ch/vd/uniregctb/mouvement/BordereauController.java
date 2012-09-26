@@ -29,6 +29,7 @@ import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseDetailBordereauView;
 import ch.vd.uniregctb.mouvement.view.MouvementMasseImpressionBordereauxView;
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.type.Localisation;
 import ch.vd.uniregctb.type.TypeMouvement;
 
@@ -54,10 +55,9 @@ public class BordereauController {
 	private static final Pattern COLL_ADM_PARAM_PATTERN = Pattern.compile("([0-9]{1,18})/([0-9]{1,9})");
 
 	private MouvementMasseManager mouvementManager;
-
 	private ServiceInfrastructureService infraService;
-
 	private RetourEditiqueControllerHelper retourEditiqueControllerHelper;
+	private SecurityProviderInterface securityProvider;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementManager(MouvementMasseManager mouvementManager) {
@@ -72,6 +72,10 @@ public class BordereauController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRetourEditiqueControllerHelper(RetourEditiqueControllerHelper retourEditiqueControllerHelper) {
 		this.retourEditiqueControllerHelper = retourEditiqueControllerHelper;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	@RequestMapping(value = "/a-imprimer.do", method = RequestMethod.GET)
@@ -164,7 +168,7 @@ public class BordereauController {
 	                                       @RequestParam(value = TYPE) final TypeMouvement typeMouvement,
 	                                       HttpServletResponse response) throws IOException, AccessDeniedException {
 
-		MouvementDossierHelper.checkAccess();
+		MouvementDossierHelper.checkAccess(securityProvider);
 
 		try {
 			final RetourEditiqueControllerHelper.TraitementRetourEditique erreur = new RetourEditiqueControllerHelper.TraitementRetourEditique() {
@@ -214,7 +218,7 @@ public class BordereauController {
 	public String validerReceptionBordereau(@RequestParam(value = SELECTION) long[] idMouvementsValides,
 	                                        @RequestParam(value = ID) long bordereauId) throws AccessDeniedException {
 
-		MouvementDossierHelper.checkAccess();
+		MouvementDossierHelper.checkAccess(securityProvider);
 		mouvementManager.receptionnerMouvementsEnvoi(idMouvementsValides);
 		return String.format("redirect:/mouvement/bordereau/detail-reception.do?%s=%d", ID, bordereauId);
 	}

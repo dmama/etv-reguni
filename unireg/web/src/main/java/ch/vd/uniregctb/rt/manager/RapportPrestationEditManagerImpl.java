@@ -17,7 +17,8 @@ import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
 import ch.vd.uniregctb.rt.view.DebiteurListView;
 import ch.vd.uniregctb.rt.view.RapportPrestationView;
 import ch.vd.uniregctb.rt.view.SourcierListView;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -47,10 +48,8 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	private RapportEntreTiersDAO rapportEntreTiersDAO;
 
 	private MessageSource messageSource;
+	private SecurityProviderInterface securityProvider;
 
-	public RapportEntreTiersDAO getRapportEntreTiersDAO() {
-		return rapportEntreTiersDAO;
-	}
 
 	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
 		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
@@ -78,6 +77,10 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -227,7 +230,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 	@Transactional(readOnly = true)
 	public Niveau getAccessLevel(long tiersId) {
 		final Tiers tiers = tiersService.getTiers(tiersId);
-		return SecurityProvider.getDroitAcces(tiers);
+		return SecurityHelper.getDroitAcces(securityProvider, tiers);
 	}
 
 	@Override

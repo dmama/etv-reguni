@@ -106,6 +106,10 @@
 		<property name="service" ref="serviceInfrastructureService" />
 	</bean>
 
+	<bean id="jspTagBatchForm" class="ch.vd.uniregctb.taglibs.JspTagBatchForm">
+		<property name="securityProvider" ref="securityProviderInterface" />
+	</bean>
+
 	<bean id="jspTagInfraEditor" class="ch.vd.uniregctb.taglibs.formInput.InfrastructureEditor">
 		<constructor-arg>
 			<null />
@@ -131,6 +135,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">

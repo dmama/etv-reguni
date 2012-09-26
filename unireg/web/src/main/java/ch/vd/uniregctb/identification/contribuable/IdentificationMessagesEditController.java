@@ -15,7 +15,7 @@ import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessage
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AbstractTiersListController;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 
@@ -70,8 +70,8 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 					identificationMessagesEditManager.verouillerMessage(id);
 					bean = identificationMessagesEditManager.getView(id);
 					//gestion des droits
-					if (!SecurityProvider.isGranted(Role.VISU_ALL)) {
-						if (!SecurityProvider.isGranted(Role.VISU_LIMITE)) {
+					if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+						if (!SecurityHelper.isGranted(securityProvider, Role.VISU_LIMITE)) {
 							throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 						}
 						bean.setTypeVisualisation(TiersCriteria.TypeVisualisation.LIMITEE);
@@ -137,11 +137,11 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			if (TARGET_IDENTIFIER.equals(getTarget())) {
 				String idCtbAsString = getEventArgument();
 				Long idCtb = Long.parseLong(idCtbAsString);
-				if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
+				if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MAN_EXPERT);
 				}
-				else if (SecurityProvider.isAnyGranted(Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO,Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+				else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
 							Etat.TRAITE_MANUELLEMENT);
 				}

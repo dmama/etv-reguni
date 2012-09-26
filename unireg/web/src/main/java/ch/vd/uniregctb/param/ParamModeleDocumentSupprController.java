@@ -12,6 +12,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
 import ch.vd.uniregctb.param.manager.ParamPeriodeManager;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 import static ch.vd.uniregctb.param.Commun.getModelAndViewToPeriode;
 import static ch.vd.uniregctb.param.Commun.getModeleIdFromRequest;
@@ -23,7 +24,8 @@ public class ParamModeleDocumentSupprController extends AbstractController {
 
 	private ParamPeriodeManager manager;
 	private MessageSource messageSource;
-	
+	private SecurityProviderInterface securityProvider;
+
 	public void setMessageSource(MessageSource messageSource) {
 		this.messageSource = messageSource;
 	}
@@ -31,10 +33,14 @@ public class ParamModeleDocumentSupprController extends AbstractController {
 	public void setManager(ParamPeriodeManager manager) {
 		this.manager = manager;
 	}
-	
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
+	}
+
 	@Override
 	protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
-		verifieLesDroits();
+		verifieLesDroits(securityProvider);
 		
 		ModelAndView mav = getModelAndViewToPeriode(getPeriodeIdFromRequest(request));
 		

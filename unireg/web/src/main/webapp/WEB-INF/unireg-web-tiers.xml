@@ -6,6 +6,7 @@
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="service" ref="tiersService" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersListController">
@@ -20,6 +21,7 @@
 	<bean id="autorisationManager" class="ch.vd.uniregctb.tiers.manager.AutorisationManagerImpl">
 		<property name="tiersService" ref="tiersService" />
 		<property name="serviceCivil" ref="serviceCivilService" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="tiersCriteriaValidator" class="ch.vd.uniregctb.tiers.validator.TiersCriteriaValidator" />
@@ -32,6 +34,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="messageSource" ref="messageSource" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="validationController" class="ch.vd.uniregctb.validation.ValidationController">
@@ -66,6 +69,7 @@
 	<bean id="rapportsPrestationListController" class="ch.vd.uniregctb.tiers.RapportsPrestationListController">
 		<property name="manager" ref="tiersVisuManager" />
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="tiersTimelineController" class="ch.vd.uniregctb.tiers.timeline.ForsTimelineController">
@@ -111,6 +115,7 @@
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="ibanValidator" ref="ibanValidator" />
 		<property name="autorisationManager" ref="autorisationManager" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 
 	<bean id="tiersEditManager" class="ch.vd.uniregctb.tiers.manager.TiersEditManagerImpl"  parent="tiersManager">
@@ -193,6 +198,7 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="simulationController" class="ch.vd.uniregctb.simulation.SimulationController">

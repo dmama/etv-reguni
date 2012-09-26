@@ -1,10 +1,9 @@
 package ch.vd.uniregctb.acces.copie;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.validation.BindException;
@@ -15,7 +14,8 @@ import ch.vd.uniregctb.acces.parUtilisateur.SelectUtilisateurController;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.TypeOperation;
 
@@ -24,6 +24,7 @@ public class SelectUtilisateursController extends AbstractSimpleFormController {
 	protected final Logger LOGGER = Logger.getLogger(SelectUtilisateurController.class);
 
 	private TiersMapHelper tiersMapHelper;
+	private SecurityProviderInterface securityProvider;
 
 	public TiersMapHelper getTiersMapHelper() {
 		return tiersMapHelper;
@@ -31,6 +32,10 @@ public class SelectUtilisateursController extends AbstractSimpleFormController {
 
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	public static final String TYPE_OPERATION_MAP_NAME = "typesOperation";
@@ -55,7 +60,7 @@ public class SelectUtilisateursController extends AbstractSimpleFormController {
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 
-		if (!SecurityProvider.isGranted(Role.SEC_DOS_ECR)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.SEC_DOS_ECR)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec pour modifier la sécurité des droits");
 		}
 		

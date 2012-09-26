@@ -10,7 +10,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -67,8 +67,8 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 		final SituationFamilleView situationFamilleView = new SituationFamilleView();
 		situationFamilleView.setNumeroCtb(numeroCtb);
 
-		if ((contribuable instanceof PersonnePhysique || contribuable instanceof MenageCommun) && SecurityProvider.isGranted(Role.SIT_FAM)
-				&& SecurityProvider.getDroitAcces(contribuable) != null && isSituationFamilleActive(contribuable)) {
+		if ((contribuable instanceof PersonnePhysique || contribuable instanceof MenageCommun) && SecurityHelper.isGranted(securityProvider, Role.SIT_FAM)
+				&& SecurityHelper.getDroitAcces(securityProvider, contribuable) != null && isSituationFamilleActive(contribuable)) {
 
 			situationFamilleView.setEditable(true);
 			if (contribuable instanceof MenageCommun) {

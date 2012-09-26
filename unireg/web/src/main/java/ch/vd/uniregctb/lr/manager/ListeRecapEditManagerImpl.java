@@ -43,7 +43,8 @@ import ch.vd.uniregctb.lr.view.ListeRecapDetailView;
 import ch.vd.uniregctb.lr.view.ListeRecapListView;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -83,17 +84,8 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 	private EditiqueCompositionService editiqueCompositionService;
 
 	private DelaisService delaisService;
+	private SecurityProviderInterface securityProvider;
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#getEvenementFiscalService()
-	 */
-	public EvenementFiscalService getEvenementFiscalService() {
-		return evenementFiscalService;
-	}
-
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#setEvenementFiscalService(ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService)
-	 */
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
 	}
@@ -102,30 +94,10 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		this.editiqueCompositionService = editiqueCompositionService;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#getLrDAO()
-	 */
-	public ListeRecapitulativeDAO getLrDAO() {
-		return lrDAO;
-	}
-
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#setLrDAO(ch.vd.uniregctb.declaration.ListeRecapitulativeDAO)
-	 */
 	public void setLrDAO(ListeRecapitulativeDAO lrDAO) {
 		this.lrDAO = lrDAO;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#getTiersDAO()
-	 */
-	public TiersDAO getTiersDAO() {
-		return tiersDAO;
-	}
-
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#setTiersDAO(ch.vd.uniregctb.tiers.TiersDAO)
-	 */
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
 	}
@@ -138,48 +110,28 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		this.tiersGeneralManager = tiersGeneralManager;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#getTiersService()
-	 */
 	public TiersService getTiersService() {
 		return tiersService;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#setTiersService(ch.vd.uniregctb.tiers.TiersService)
-	 */
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#getLrService()
-	 */
-	public ListeRecapService getLrService() {
-		return lrService;
-	}
-
-	/**
-	 * @see ch.vd.uniregctb.lr.manager.www#setLrService(ch.vd.uniregctb.declaration.source.ListeRecapService)
-	 */
 	public void setLrService(ListeRecapService lrService) {
 		this.lrService = lrService;
-	}
-
-	public PeriodeFiscaleDAO getPeriodeFiscaleDAO() {
-		return periodeFiscaleDAO;
 	}
 
 	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO periodeFiscaleDAO) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 	}
 
-	public DelaisService getDelaisService() {
-		return delaisService;
-	}
-
 	public void setDelaisService(DelaisService delaisService) {
 		this.delaisService = delaisService;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		this.securityProvider = securityProvider;
 	}
 
 	/**
@@ -214,7 +166,7 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 
 	private void setDroitLR(ListeRecapDetailView lrEditView, DebiteurPrestationImposable dpi) {
-		if(SecurityProvider.isGranted(Role.LR)) {
+		if(SecurityHelper.isGranted(securityProvider, Role.LR)) {
 			lrEditView.setAllowedDelai(true);
 		} else {
 			lrEditView.setAllowedDelai(false);
@@ -598,8 +550,6 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 
 	/**
 	 * Persiste en base et indexe le tiers modifie
-	 *
-	 * @param lrEditView
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)

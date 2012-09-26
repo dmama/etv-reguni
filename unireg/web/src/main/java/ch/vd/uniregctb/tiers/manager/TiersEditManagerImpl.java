@@ -18,7 +18,7 @@ import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -310,7 +310,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityProvider.isGranted(Role.COOR_FIN)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
 			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
 		}
 		tiersView.setAllowedOnglet(allowedOnglet);
@@ -331,7 +331,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityProvider.isGranted(Role.COOR_FIN)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
 			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
 		}
 		tiersView.setAllowedOnglet(allowedOnglet);
@@ -389,7 +389,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		final Map<String, Boolean> allowedOnglet = initAllowedOnglet();
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityProvider.isGranted(Role.COOR_FIN)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
 			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
 		}
 		allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
@@ -471,7 +471,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				final Contribuable ctbAss = (Contribuable) getTiersDAO().get(tiersView.getNumeroCtbAssocie());
 
 				//ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ctbAss, dpi);
-				//getTiersDAO().getHibernateTemplate().merge(contact);
 				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpiFromView, ctbAss);
 
 				final DebiteurPrestationImposable dpiRtr = (DebiteurPrestationImposable) tiersDAO.get(rapport.getObjetId());

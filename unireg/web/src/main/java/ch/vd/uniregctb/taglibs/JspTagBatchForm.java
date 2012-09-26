@@ -22,7 +22,8 @@ import ch.vd.uniregctb.scheduler.JobParamFile;
 import ch.vd.uniregctb.scheduler.JobParamOfficeImpot;
 import ch.vd.uniregctb.scheduler.JobParamRegDate;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityProvider;
+import ch.vd.uniregctb.security.SecurityHelper;
+import ch.vd.uniregctb.security.SecurityProviderInterface;
 
 /**
  * Tag jsp permettant d'afficher le nom d'un batch et le formulaire permettant de saisir les paramètres et de démarrer le batch.
@@ -34,6 +35,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 	private static final long serialVersionUID = 5881995361738706324L;
 
 	private GestionJob job;
+	private static SecurityProviderInterface securityProvider;
 
 	@Override
 	public int doStartTag() throws JspException {
@@ -88,7 +90,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 			if (displayedCount == 0) {
 				b.append("<tr><td>(ce batch ne possède pas de paramètre)</td></tr>");
 			}
-			if (SecurityProvider.isAnyGranted(Role.ADMIN, Role.TESTER)) {
+			if (SecurityHelper.isAnyGranted(securityProvider, Role.ADMIN, Role.TESTER)) {
 
 				// [SIFISC-145] doit-on pouvoir lancer ce batch directement depuis l'IHM ?
 				if (job.getJobDefinition().isWebStartable()) {
@@ -357,5 +359,9 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 	public void setJob(GestionJob job) {
 		this.job = job;
+	}
+
+	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
+		JspTagBatchForm.securityProvider = securityProvider;
 	}
 }
