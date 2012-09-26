@@ -59,7 +59,7 @@ public class ListeContribuablesResidentsSansForVaudoisProcessor extends ListesPr
 
 		    @Override
 		    public ListeContribuablesResidentsSansForVaudoisResults createResults(RegDate dateTraitement) {
-		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService);
+		        return new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nbThreads, tiersService, adresseService);
 		    }
 
 		    @Override

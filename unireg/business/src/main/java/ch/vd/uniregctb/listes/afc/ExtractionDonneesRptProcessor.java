@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -38,10 +39,11 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 	private final TiersDAO tiersDAO;
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final AdresseService adresseService;
 
 	public ExtractionDonneesRptProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                                     TiersDAO tiersDAO, ServiceInfrastructureService infraService, AssujettissementService assujettissementService,
-	                                     PeriodeImpositionService periodeImpositionService) {
+	                                     PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
@@ -50,6 +52,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 		this.infraService = infraService;
 		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
+		this.adresseService = adresseService;
 	}
 
 	public ExtractionDonneesRptResults run(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, @Nullable StatusManager s) {
@@ -86,7 +89,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 
 			@Override
 			public ExtractionDonneesRptResults createResults(RegDate dateTraitement) {
-				return new ExtractionDonneesRptFortuneResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService);
+				return new ExtractionDonneesRptFortuneResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService, adresseService);
 			}
 		});
 	}
@@ -100,7 +103,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 
 			@Override
 			public ExtractionDonneesRptResults createResults(RegDate dateTraitement) {
-				return new ExtractionDonneesRptRevenuSourcePureResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService);
+				return new ExtractionDonneesRptRevenuSourcePureResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, adresseService);
 			}
 		});
 	}
@@ -115,7 +118,7 @@ public class ExtractionDonneesRptProcessor extends ListesProcessor<ExtractionDon
 
 			@Override
 			public ExtractionDonneesRptResults createResults(RegDate dateTraitement) {
-				return new ExtractionDonneesRptRevenuOrdinaireResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService);
+				return new ExtractionDonneesRptRevenuOrdinaireResults(dateTraitement, pf, nbThreads, tiersService, infraService, assujettissementService, periodeImpositionService, adresseService);
 			}
 		});
 	}

@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Contient les données brutes permettant de générer le document de rapport de l'exécution du processeur.
@@ -54,8 +56,8 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -68,8 +70,8 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -119,7 +121,8 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public DeterminationDIsResults(int annee, RegDate dateTraitement) {
+	public DeterminationDIsResults(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
 	}
@@ -138,52 +141,52 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	}
 
 	public void addErrorCtbInvalide(Contribuable ctb) {
-		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CTB_INVALIDE, null));
+		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CTB_INVALIDE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addCtbErrorDonneesIncoherentes(Contribuable ctb, String details) {
-		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DONNEES_INCOHERENTES, details));
+		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DONNEES_INCOHERENTES, details, getNom(ctb.getNumero())));
 	}
 
 	@Override
 	public void addErrorException(Long idCtb, Exception e) {
-		erreurs.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
+		erreurs.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage(), getNom(idCtb)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
+		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage(), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorDeclarationCollision(Contribuable ctb, String details) {
-		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.COLLISION_DECLARATION, details));
+		erreurs.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.COLLISION_DECLARATION, details, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnorePasAssujetti(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.PAS_ASSUJETTI, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.PAS_ASSUJETTI, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreTacheEnvoiDejaExistante(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.TACHE_ENVOI_DEJA_EXISTANTE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreTacheAnnulationDejaExistante(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.TACHE_ANNULATION_DEJA_EXISTANTE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.TACHE_ANNULATION_DEJA_EXISTANTE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDiplomate(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DIPLOMATE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DIPLOMATE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDeclarationOptionnelle(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.OPTIONNELLE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.OPTIONNELLE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDeclarationDejaExistante(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DECL_DEJA_EXISTANTE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DECL_DEJA_EXISTANTE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDeclarationRemplaceeParNote(Contribuable ctb) {
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.REMPLACEE_PAR_NOTE, null));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.REMPLACEE_PAR_NOTE, null, getNom(ctb.getNumero())));
 	}
 
 	@Override

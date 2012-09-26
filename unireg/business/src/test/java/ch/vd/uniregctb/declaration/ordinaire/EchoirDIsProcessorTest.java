@@ -7,6 +7,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
@@ -29,6 +30,7 @@ import static org.junit.Assert.fail;
 public class EchoirDIsProcessorTest extends BusinessTest {
 
 	private EchoirDIsProcessor processor;
+	private AdresseService adresseService;
 
 	private final static String DB_UNIT_DATA_FILE = "classpath:ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml";
 
@@ -38,9 +40,10 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager);
+		processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, diService, transactionManager, tiersService, adresseService);
 
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
@@ -55,7 +58,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDINull() {
 		try {
-			processor.traiterDI(null, new EchoirDIsResults(date(2000, 1, 1)));
+			processor.traiterDI(null, new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -68,7 +71,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testTraiterDIInexistante() {
 		try {
-			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsResults(date(2000, 1, 1)));
+			processor.traiterDI(new IdentifiantDeclaration(12345L,12L,0), new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -96,7 +99,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 		try {
 			DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 			IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
-			processor.traiterDI(ident, new EchoirDIsResults(date(2000, 1, 1)));
+			processor.traiterDI(ident, new EchoirDIsResults(date(2000, 1, 1), tiersService, adresseService));
 			fail();
 		}
 		catch (IllegalArgumentException e) {
@@ -124,7 +127,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement);
+		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
 		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
 		processor.traiterDI(ident, rapport);
@@ -280,7 +283,7 @@ public class EchoirDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement);
+		final EchoirDIsResults rapport = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
 		DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, id);
 		IdentifiantDeclaration ident = new IdentifiantDeclaration(di.getId(),di.getTiers().getNumero(),0);
 		processor.traiterDI(ident, rapport);

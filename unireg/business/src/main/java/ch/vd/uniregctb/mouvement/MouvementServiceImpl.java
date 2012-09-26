@@ -9,6 +9,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.editique.EditiqueCompositionService;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -26,6 +27,7 @@ public class MouvementServiceImpl implements MouvementService {
 	private PlatformTransactionManager transactionManager;
 	private EditiqueCompositionService editiqueService;
 	private AssujettissementService assujettissementService;
+	private AdresseService adresseService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -58,13 +60,17 @@ public class MouvementServiceImpl implements MouvementService {
 		this.assujettissementService = assujettissementService;
 	}
 
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
 	/**
 	 * Détermine les mouvements de dossiers pour une année
 	 */
 	@Override
 	public DeterminerMouvementsDossiersEnMasseResults traiteDeterminationMouvements(RegDate dateTraitement, boolean archivesSeulement, StatusManager statusManager)  {
 		final DeterminerMouvementsDossiersEnMasseProcessor processor =
-				new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService);
+				new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService, adresseService);
 		return processor.run(dateTraitement, archivesSeulement, statusManager);
 	}
 

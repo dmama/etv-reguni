@@ -29,6 +29,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -94,8 +95,9 @@ public class EnvoiDIsEnMasseProcessor {
 
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
-	private final int tailleLot;
+	private final AdresseService adresseService;
 
+	private final int tailleLot;
 	private RegDate dateExclusionDecedes;
 
 	private static class Cache {
@@ -118,7 +120,7 @@ public class EnvoiDIsEnMasseProcessor {
 	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
 	                                PlatformTransactionManager transactionManager, ParametreAppService parametreService,
-	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+	                                ServiceCivilCacheWarmer serviceCivilCacheWarmer, AdresseService adresseService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -129,6 +131,7 @@ public class EnvoiDIsEnMasseProcessor {
 		this.transactionManager = transactionManager;
 		this.parametreService = parametreService;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+		this.adresseService = adresseService;
 		this.dateExclusionDecedes = null;
 		Assert.isTrue(tailleLot > 0);
 	}
@@ -142,7 +145,7 @@ public class EnvoiDIsEnMasseProcessor {
 		if (exclureDecedes) {
 			dateExclusionDecedes = getDateDebutExclusion(anneePeriode);
 		}
-		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes);
+		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes, tiersService, adresseService);
 
 		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
 		if (categorie.getTypeDocument() != null) {
@@ -157,7 +160,7 @@ public class EnvoiDIsEnMasseProcessor {
 
 				@Override
 				public EnvoiDIsResults createSubRapport() {
-					return new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes);
+					return new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes, tiersService, adresseService);
 				}
 
 				@Override
@@ -806,8 +809,6 @@ public class EnvoiDIsEnMasseProcessor {
 		 *
 		 * @param ids
 		 *            les ids des contribuable dont on recherche les déclarations
-		 * @param range
-		 *            la période de recherche des déclaration
 		 * @return une liste des déclarations trouvées
 		 */
 		@SuppressWarnings("unchecked")

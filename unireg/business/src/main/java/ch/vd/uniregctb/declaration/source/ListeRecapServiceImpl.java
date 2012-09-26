@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -67,6 +68,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	private ImpressionSommationLRHelper helperSommationLR;
 
 	private TiersService tiersService;
+	private AdresseService adresseService;
 
 	@Override
 	public InputStream getCopieConformeSommationLR(DeclarationImpotSource lr) throws EditiqueException {
@@ -82,7 +84,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 */
 	@Override
 	public EnvoiLRsResults imprimerAllLR(RegDate dateFinPeriode, StatusManager status) throws Exception {
-		final EnvoiLRsEnMasseProcessor processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, this);
+		final EnvoiLRsEnMasseProcessor processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, tiersService, adresseService);
 		return processor.run(dateFinPeriode, status);
 	}
 
@@ -91,7 +93,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 */
 	@Override
 	public EnvoiSommationLRsResults sommerAllLR(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTraitement, StatusManager status) {
-		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService);
+		final EnvoiSommationLRsEnMasseProcessor processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersService, adresseService);
 		return processor.run(categorie, dateFinPeriode, dateTraitement, status);
 	}
 
@@ -298,7 +300,8 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 	 */
 	@Override
 	public DeterminerLRsEchuesResults determineLRsEchues(int periodeFiscale, RegDate dateTraitement, StatusManager status) throws Exception {
-		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService, tiersService);
+		final DeterminerLRsEchuesProcessor processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, this, delaisService, tiersDAO, listeRecapDAO, evenementFiscalService, tiersService,
+				adresseService);
 		return processor.run(periodeFiscale, dateTraitement, status);
 	}
 
@@ -392,5 +395,9 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 }

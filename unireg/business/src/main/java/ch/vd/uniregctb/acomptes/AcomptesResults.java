@@ -10,6 +10,7 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
@@ -140,8 +141,8 @@ public class AcomptesResults extends ListesResults<AcomptesResults> {
 		}
 	}
 
-    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService, AssujettissementService assujettissementService) {
-        super(dateTraitement, nombreThreads, tiersService);
+    public AcomptesResults(RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, TiersService tiersService, AssujettissementService assujettissementService, AdresseService adresseService) {
+        super(dateTraitement, nombreThreads, tiersService, adresseService);
         this.anneeFiscale = anneeFiscale;
 	    this.assujettissementService = assujettissementService;
     }

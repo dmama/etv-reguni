@@ -1476,7 +1476,7 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	@Override
 	public FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status) {
-		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
+		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, adresseService);
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
 	}
 
@@ -2672,7 +2672,7 @@ public class MetierServiceImpl implements MetierService {
 
 	@Override
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, serviceInfra);
+		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, tiersService, serviceInfra);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
 

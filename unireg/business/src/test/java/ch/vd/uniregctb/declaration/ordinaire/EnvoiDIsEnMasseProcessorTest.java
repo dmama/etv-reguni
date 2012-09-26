@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -70,6 +71,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	private EnvoiDIsEnMasseProcessor processor;
 	private HibernateTemplate hibernateTemplate;
 	private ParametreAppService parametreAppService;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -84,12 +86,13 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
-				diService, 100, transactionManager, parametreAppService, serviceCivilCacheWarmer);
+				diService, 100, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
@@ -266,7 +269,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2008, 1, 23);
-		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
+		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
 		final DeclarationsCache cache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
 		final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tache);
 
@@ -430,7 +433,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final RegDate dateTraitement = date(2009, 1, 15);
 				final List<Long> idsCtb = Arrays.asList(ids.marcId);
 
-				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
+				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
 				processor.setRapport(rapport);
 				processor.traiterBatch(idsCtb, 2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
 				return null;
@@ -526,7 +529,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			final RegDate dateTraitement = date(2009, 1, 15);
 			final DeclarationsCache cache = processor.new DeclarationsCache(2008, idsList);
 
-			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null);
+			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
 			processor.setRapport(rapport);
 
 			// Le tiers sans exclusion

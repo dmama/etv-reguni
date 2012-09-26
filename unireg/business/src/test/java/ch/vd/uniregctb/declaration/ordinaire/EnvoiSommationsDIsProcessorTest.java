@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
@@ -42,6 +43,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	private DelaisService delaisService;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -52,7 +54,9 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		diDao = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService);
+		adresseService = getBean(AdresseService.class, "adresseService");
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
+				adresseService);
 	}
 
 	@Test
@@ -479,7 +483,8 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService) {
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
+				adresseService) {
 			@Override
 			protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 				throw new RuntimeException("Exception de test");

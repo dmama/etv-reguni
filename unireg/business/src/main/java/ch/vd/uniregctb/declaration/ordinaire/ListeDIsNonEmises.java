@@ -6,8 +6,10 @@ import java.util.List;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 
@@ -80,8 +82,8 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 	private final List<LigneRapport> diNonEmises = new ArrayList<LigneRapport>();
 
 
-	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement) {
-		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null);
+	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, tiersService, adresseService);
 	}
 
 

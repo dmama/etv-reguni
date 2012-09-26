@@ -25,6 +25,7 @@ import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Job qui permet de tester la cohérence des données d'un point de vue Unireg.
@@ -53,6 +54,7 @@ public class ValidationJob extends JobDefinition {
 	private ParametreAppService paramService;
 	private ValidationService validationService;
 	private PeriodeImpositionService periodeImpositionService;
+	private TiersService tiersService;
 
 	public ValidationJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -121,6 +123,10 @@ public class ValidationJob extends JobDefinition {
 		this.periodeImpositionService = periodeImpositionService;
 	}
 
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -137,7 +143,8 @@ public class ValidationJob extends JobDefinition {
 		final List<Long> ids = getCtbIds(statusManager);
 
 		// Processing des contribuables
-		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict);
+		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict, tiersService,
+				adresseService);
 		processAll(ids, results, nbThreads, statusManager);
 		results.end();
 

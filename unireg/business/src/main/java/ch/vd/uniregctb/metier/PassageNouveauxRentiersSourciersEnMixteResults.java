@@ -8,7 +8,9 @@ import org.hibernate.exception.ConstraintViolationException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<Long, PassageNouveauxRentiersSourciersEnMixteResults> {
 
@@ -72,7 +74,8 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 
 	public boolean interrompu;
 
-	PassageNouveauxRentiersSourciersEnMixteResults(RegDate dateTraitement) {
+	PassageNouveauxRentiersSourciersEnMixteResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

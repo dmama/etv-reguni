@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
@@ -32,6 +33,7 @@ import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 /**
@@ -50,6 +52,8 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	private RapportService rapportService;
 	private TacheSynchronizerInterceptor tacheSynchronizerInterceptor;
 	private ValidationInterceptor validationInterceptor;
+	private TiersService tiersService;
+	private AdresseService adresseService;
 
 	public CorrectionEtatDeclarationJob(int order, String description) {
 		super(NAME, CATEGORIE, order, description);
@@ -75,6 +79,14 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
 		this.validationInterceptor = validationInterceptor;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	@Override
@@ -114,14 +126,14 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 
 	private CorrectionEtatDeclarationResults traiteDeclarations(final StatusManager status, List<Long> ids) {
 
-		final CorrectionEtatDeclarationResults rapportFinal = new CorrectionEtatDeclarationResults();
+		final CorrectionEtatDeclarationResults rapportFinal = new CorrectionEtatDeclarationResults(tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, CorrectionEtatDeclarationResults> t =
 				new BatchTransactionTemplate<Long, CorrectionEtatDeclarationResults>(ids, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		t.execute(rapportFinal, new BatchCallback<Long, CorrectionEtatDeclarationResults>() {
 			@Override
 			public CorrectionEtatDeclarationResults createSubRapport() {
-				return new CorrectionEtatDeclarationResults();
+				return new CorrectionEtatDeclarationResults(tiersService, adresseService);
 			}
 
 			@Override

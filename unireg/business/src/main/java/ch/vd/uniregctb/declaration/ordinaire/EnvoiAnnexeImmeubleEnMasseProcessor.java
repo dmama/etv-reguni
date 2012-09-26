@@ -14,6 +14,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
@@ -54,6 +55,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final AdresseService adresseService;
 
 	private final int tailleLot;
 
@@ -85,7 +87,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 	public EnvoiAnnexeImmeubleEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                           PeriodeFiscaleDAO periodeDAO, DeclarationImpotService diService, int tailleLot,
 	                                           PlatformTransactionManager transactionManager,
-	                                           ServiceCivilCacheWarmer serviceCivilCacheWarmer, PeriodeImpositionService periodeImpositionService) {
+	                                           ServiceCivilCacheWarmer serviceCivilCacheWarmer, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.tiersService = tiersService;
 		this.hibernateTemplate = hibernateTemplate;
 		this.modeleDAO = modeleDAO;
@@ -95,6 +97,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		this.transactionManager = transactionManager;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.periodeImpositionService = periodeImpositionService;
+		this.adresseService = adresseService;
 		Assert.isTrue(tailleLot > 0);
 	}
 
@@ -103,7 +106,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		Assert.isTrue(rapport == null);
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax);
+		final EnvoiAnnexeImmeubleResults rapportFinal = new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax, tiersService, adresseService);
 
 		// Traite les contribuables par lots
 		final BatchTransactionTemplate<ContribuableAvecImmeuble, EnvoiAnnexeImmeubleResults> template =
@@ -113,7 +116,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 
 			@Override
 			public EnvoiAnnexeImmeubleResults createSubRapport() {
-				return new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax);
+				return new EnvoiAnnexeImmeubleResults(anneePeriode, dateTraitement, "", nbMax, tiersService, adresseService);
 			}
 
 			@Override

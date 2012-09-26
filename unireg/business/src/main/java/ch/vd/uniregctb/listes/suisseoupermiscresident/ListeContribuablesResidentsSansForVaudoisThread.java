@@ -49,7 +49,7 @@ public class ListeContribuablesResidentsSansForVaudoisThread extends ListesThrea
 	public ListeContribuablesResidentsSansForVaudoisThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
 	                                                       TiersDAO tiersDAO, TiersService tiersService, AdresseService adresseService, ServiceInfrastructureService serviceInfrastructure, ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
 		super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-				new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService));
+				new ListeContribuablesResidentsSansForVaudoisResults(dateTraitement, nombreThreads, tiersService, adresseService));
 		this.dateTraitement = dateTraitement;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;

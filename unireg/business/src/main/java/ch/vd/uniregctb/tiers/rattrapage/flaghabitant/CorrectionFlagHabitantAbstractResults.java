@@ -2,7 +2,9 @@ package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
 import java.util.Comparator;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public abstract class CorrectionFlagHabitantAbstractResults<T extends CorrectionFlagHabitantAbstractResults> extends JobResults<Long, T> {
 
@@ -79,6 +81,10 @@ public abstract class CorrectionFlagHabitantAbstractResults<T extends Correction
 		public String getComplementInfo() {
 			return messageException;
 		}
+	}
+
+	protected CorrectionFlagHabitantAbstractResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 	}
 
 	public boolean isInterrupted() {

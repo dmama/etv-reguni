@@ -5,9 +5,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
@@ -36,8 +38,8 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 
 		public final RegDate dateFin;
 
-		public Traite(long noCtb, PeriodiciteDecompte periodicite, RegDate dateDebut, RegDate dateFin) {
-			super(noCtb, null, periodicite.toString());
+		public Traite(long noCtb, PeriodiciteDecompte periodicite, RegDate dateDebut, RegDate dateFin, String nomCtb) {
+			super(noCtb, null, periodicite.toString(), nomCtb);
 			this.periodicite = periodicite;
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
@@ -52,8 +54,8 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, ErreurType raison, String details) {
-			super(noCtb, null, details);
+		public Erreur(long noCtb, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, null, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -74,7 +76,8 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	public int nbLrSemestriellesTraitees;
 	public int nbLrAnnuellesTraitees;
 
-	public EnvoiLRsResults(RegDate dateTraitement, RegDate dateFinPeriode) {
+	public EnvoiLRsResults(RegDate dateTraitement, RegDate dateFinPeriode, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 		this.dateFinPeriode = dateFinPeriode;
 	}
@@ -110,7 +113,7 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 				++ nbLrAnnuellesTraitees;
 				break;
 		}
-		LRTraitees.add(new Traite(dpi.getNumero(), periodicite, dateDebut, dateFin));
+		LRTraitees.add(new Traite(dpi.getNumero(), periodicite, dateDebut, dateFin, getNom(dpi.getNumero())));
 	}
 
 	public void addDebiteur(DebiteurPrestationImposable dpi) {
@@ -118,11 +121,11 @@ public class EnvoiLRsResults extends JobResults<Long, EnvoiLRsResults> {
 	}
 
 	public void addErrorLRCollision(DebiteurPrestationImposable dpi, String details) {
-		LREnErreur.add(new Erreur(dpi.getNumero(), ErreurType.COLLISION_LR, details));
+		LREnErreur.add(new Erreur(dpi.getNumero(), ErreurType.COLLISION_LR, details, getNom(dpi.getNumero())));
 	}
 
 	public void addOnCommitException(Long dpiId, Exception e) {
-		LREnErreur.add(new Erreur(dpiId, ErreurType.ROLLBACK, e.getMessage()));
+		LREnErreur.add(new Erreur(dpiId, ErreurType.ROLLBACK, e.getMessage(), getNom(dpiId)));
 	}
 
 	public String getMoisFinPeriode() {

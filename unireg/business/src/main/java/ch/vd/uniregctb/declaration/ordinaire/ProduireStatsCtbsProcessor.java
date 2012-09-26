@@ -20,6 +20,7 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -59,21 +60,23 @@ public class ProduireStatsCtbsProcessor {
 	private final TiersService tiersService;
 	private final PlatformTransactionManager transactionManager;
 	private final AssujettissementService assujettissementService;
+	private final AdresseService adresseService;
 
 	public ProduireStatsCtbsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService, TiersService tiersService, PlatformTransactionManager transactionManager,
-	                                  AssujettissementService assujettissementService) {
+	                                  AssujettissementService assujettissementService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 		this.assujettissementService = assujettissementService;
+		this.adresseService = adresseService;
 	}
 
 	public StatistiquesCtbs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
 
 		final StatusManager status = statusManager != null ? statusManager : new LoggingStatusManager(LOGGER);
 
-		final StatistiquesCtbs rapportFinal = new StatistiquesCtbs(anneePeriode, dateTraitement);
+		final StatistiquesCtbs rapportFinal = new StatistiquesCtbs(anneePeriode, dateTraitement, tiersService, adresseService);
 
 		status.setMessage(String.format("Début de la production des statistiques des contribuables assujettis : période fiscale = %d.", anneePeriode));
 
@@ -84,7 +87,7 @@ public class ProduireStatsCtbsProcessor {
 
 			@Override
 			public StatistiquesCtbs createSubRapport() {
-				return new StatistiquesCtbs(anneePeriode, dateTraitement);
+				return new StatistiquesCtbs(anneePeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

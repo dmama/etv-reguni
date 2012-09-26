@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -102,8 +103,8 @@ public class ListeAssujettisResults extends ListesResults<ListeAssujettisResults
 	}
 
 	public ListeAssujettisResults(RegDate dateTraitement, int nombreThreads, int anneeFiscale, boolean avecSourciersPurs, boolean seulementAssujettisFinAnnee, TiersService tiersService,
-	                              AssujettissementService assujettissementService) {
-		super(dateTraitement, nombreThreads, tiersService);
+	                              AssujettissementService assujettissementService, AdresseService adresseService) {
+		super(dateTraitement, nombreThreads, tiersService, adresseService);
 		this.anneeFiscale = anneeFiscale;
 		this.avecSourciersPurs = avecSourciersPurs;
 		this.seulementAssujettisFinAnnee = seulementAssujettisFinAnnee;

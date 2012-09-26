@@ -17,10 +17,12 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class EvenementExterneProcessorImpl implements EvenementExterneProcessor {
 	private static final int BATCH_SIZE = 100;
@@ -31,11 +33,13 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private EvenementExterneService evenementExterneService;
 	private PlatformTransactionManager transactionManager;
 	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<TraiterEvenementExterneResult>();
+	private TiersService tiersService;
+	private AdresseService adresseService;
 
 	@Override
 	public TraiterEvenementExterneResult traiteEvenementsExternes(final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement);
+		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement, tiersService, adresseService);
 		status.setMessage("Récupération des evenements externes à traiter...");
 		final List<Long> ids = recupererEvenementATraiter();
 
@@ -47,7 +51,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 			@Override
 			public TraiterEvenementExterneResult createSubRapport() {
-				return new TraiterEvenementExterneResult(dateTraitement);
+				return new TraiterEvenementExterneResult(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override
@@ -150,5 +154,13 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 }

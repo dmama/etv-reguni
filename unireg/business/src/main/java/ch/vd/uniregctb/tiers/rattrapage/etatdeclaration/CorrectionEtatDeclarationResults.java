@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class CorrectionEtatDeclarationResults extends JobResults<Long, CorrectionEtatDeclarationResults> {
@@ -44,8 +46,8 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 
 	public static class Erreur extends Info {
 
-		public Erreur(long noCtb, Integer officeImpotID, Exception exception) {
-			super(noCtb, officeImpotID, exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage());
+		public Erreur(long noCtb, Integer officeImpotID, Exception exception, String nomCtb) {
+			super(noCtb, officeImpotID, exception.getMessage() == null ? exception.getClass().getSimpleName() : exception.getMessage(), nomCtb);
 		}
 
 		@Override
@@ -61,6 +63,10 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
+	public CorrectionEtatDeclarationResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
+
 	public void addEtatsAvantTraitement(Collection<EtatDeclaration> etats) {
 		nbDeclarationsTotal++;
 		nbEtatsTotal += (etats == null ? 0 : etats.size());
@@ -72,7 +78,7 @@ public class CorrectionEtatDeclarationResults extends JobResults<Long, Correctio
 
 	@Override
 	public void addErrorException(Long idCtb, Exception e) {
-		erreurs.add(new Erreur(idCtb, null, e));
+		erreurs.add(new Erreur(idCtb, null, e, getNom(idCtb)));
 	}
 
 	@Override

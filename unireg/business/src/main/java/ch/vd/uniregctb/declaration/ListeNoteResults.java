@@ -30,7 +30,8 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 
 	private static final Logger LOGGER = Logger.getLogger(ListeNoteResults.class);
 
-	public ListeNoteResults(RegDate dateTraitement) {
+	public ListeNoteResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -256,7 +257,8 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 	public final List<InfoContribuableAvecNote> listeContribuableAvecNote = new ArrayList<InfoContribuableAvecNote>();
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 
-	public ListeNoteResults(RegDate dateTraitement, int periode) {
+	public ListeNoteResults(RegDate dateTraitement, int periode, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 		this.periode = periode;
 	}

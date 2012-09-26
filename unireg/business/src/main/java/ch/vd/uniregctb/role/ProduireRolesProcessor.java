@@ -308,7 +308,7 @@ public class ProduireRolesProcessor {
 
 			@Override
 			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesCommunesResults(anneePeriode, nbThreads, today);
+				return new ProduireRolesCommunesResults(anneePeriode, nbThreads, today, tiersService, adresseService);
 			}
 
 			@Override
@@ -343,7 +343,7 @@ public class ProduireRolesProcessor {
 
 			@Override
 			public ProduireRolesCommunesResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
-				return new ProduireRolesCommunesResults(anneePeriode, noOfsCommune, nbThreads, today);
+				return new ProduireRolesCommunesResults(anneePeriode, noOfsCommune, nbThreads, today, tiersService, adresseService);
 			}
 
 			@Override
@@ -438,7 +438,7 @@ public class ProduireRolesProcessor {
 
 				@Override
 				public ProduireRolesOIDsResults creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal) {
-					return new ProduireRolesOIDsResults(anneePeriode, oid, nbThreads, today);
+					return new ProduireRolesOIDsResults(anneePeriode, oid, nbThreads, today, tiersService, adresseService);
 				}
 
 				@Override

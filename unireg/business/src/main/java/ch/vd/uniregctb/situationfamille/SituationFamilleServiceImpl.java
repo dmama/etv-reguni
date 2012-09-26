@@ -20,6 +20,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.StatusManager;
@@ -59,6 +60,7 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 	/** Service des événements fiscaux */
 	private EvenementFiscalService evenementFiscalService;
+	private AdresseService adresseService;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -82,6 +84,10 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -552,13 +558,13 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	@Override
 	public ReinitialiserBaremeDoubleGainResults reinitialiserBaremeDoubleGain(RegDate dateTraitement, StatusManager statusManager) {
 		ReinitialiserBaremeDoubleGainProcessor processor = new ReinitialiserBaremeDoubleGainProcessor(this, hibernateTemplate,
-				transactionManager);
+				transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, statusManager);
 	}
 
 	@Override
 	public ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil,situationFamilleDAO,tiersService,transactionManager);
+		ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil,situationFamilleDAO,tiersService,transactionManager, adresseService);
 		return processor.run(dateTraitement,nbThreads,status);
 	}
 }

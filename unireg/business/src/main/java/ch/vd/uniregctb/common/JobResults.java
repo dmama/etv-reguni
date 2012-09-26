@@ -6,11 +6,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Classe de base des containers de résultats pour les rapports d'exécution des batchs
@@ -28,11 +28,11 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 		public final String details;
 		public final String nomCtb;
 
-		public Info(long noCtb, Integer officeImpotID, String details) {
+		public Info(long noCtb, @Nullable Integer officeImpotID, String details, String nomCtb) {
 			this.noCtb = noCtb;
 			this.officeImpotID = officeImpotID;
 			this.details = details;
-			this.nomCtb = getNom(noCtb);
+			this.nomCtb = nomCtb;
 		}
 
 		public abstract String getDescriptionRaison();
@@ -49,21 +49,8 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 		}
 	}
 
-	private static AdresseService adresseService;
-	private static HibernateTemplate hibernateTemplate;
-
-	public void setAdresseService(AdresseService adresseService) {
-		JobResults.adresseService = adresseService;
-	}
-
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		JobResults.hibernateTemplate = hibernateTemplate;
-	}
-
-	protected static void checkServices() {
-		Assert.notNull(adresseService);
-		Assert.notNull(hibernateTemplate);
-	}
+	private AdresseService adresseService;
+	private TiersService tiersService;
 
 	/**
 	 * Retourne le nom et le prénom du contribuable spécifié. S'il s'agit d'un contribuable ménage commun et que les deux parties sont connues, la liste retournée contient les deux noms des parties.
@@ -71,11 +58,11 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	 * @param noCtb le numéro de contribuable
 	 * @return une liste avec 1 nom (majorité des cas) ou 2 noms (contribuables ménage commun)
 	 */
-	private static List<String> getNoms(long noCtb) {
+	private List<String> getNoms(long noCtb) {
 
 		List<String> noms;
 
-		final Tiers tiers = hibernateTemplate.get(Tiers.class, noCtb);
+		final Tiers tiers = tiersService.getTiers(noCtb);
 		if (tiers == null) {
 			noms = Collections.emptyList();
 		}
@@ -98,7 +85,11 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	 * @param noCtb le numéro de contribuable
 	 * @return le nom et le prénom du contribuable.
 	 */
-	private static String getNom(long noCtb) {
+	protected String getNom(@Nullable Long noCtb) {
+
+		if (noCtb == null) {
+			return StringUtils.EMPTY;
+		}
 
 		final String nom;
 
@@ -135,7 +126,9 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	 */
 	public long endTime = 0;
 
-	public JobResults() {
+	protected JobResults(TiersService tiersService, AdresseService adresseService) {
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 		this.startTime = System.currentTimeMillis();
 	}
 

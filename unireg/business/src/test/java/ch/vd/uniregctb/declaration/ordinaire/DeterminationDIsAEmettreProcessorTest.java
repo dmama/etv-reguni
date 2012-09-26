@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -68,6 +69,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	private DeterminationDIsAEmettreProcessor service;
 	private TacheDAO tacheDAO;
 	private PeriodeImpositionService periodeImpositionService;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -79,9 +81,11 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		final ParametreAppService parametres = getBean(ParametreAppService.class, "parametreAppService");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService);
+		service = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService, periodeImpositionService,
+				adresseService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		final Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
@@ -609,7 +613,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
 		final Contribuable tyler = createHorsCantonAvecFinActiviteIndependante(dateFin);
 		{
-			final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 30));
+			final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 30), tiersService, adresseService);
 			service.setRapport(rapport);
 			assertZeroDeclaration(service.determineDetailsEnvoi(tyler, 2007)); // déclaration remplacée par une note à l'administration fiscale
 			assertEquals(1, rapport.ignores.size());
@@ -1179,7 +1183,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addDeclarationImpot(malko, periode2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, model2007);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(malko, periode2007);
 
@@ -1220,7 +1224,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		addTacheAnnulDI(TypeEtatTache.EN_INSTANCE, date(2007, 3, 21), di, malko, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008, 1, 15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(malko, periode2007);
 
@@ -1252,7 +1256,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(eric, periode2007);
 
@@ -1294,7 +1298,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(arnold, periode2007);
 
@@ -1335,7 +1339,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(eric, periode2007);
 
@@ -1375,7 +1379,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(eric, periode2007);
 
@@ -1414,7 +1418,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, eric, Qualification.AUTOMATIQUE, 0, colAdm);
 		hibernateTemplate.flush();
 
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(eric, periode2007);
 
@@ -1453,7 +1457,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 		di.setAnnule(true);
 		hibernateTemplate.flush();
 
-		final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15));
+		final DeterminationDIsResults rapport = new DeterminationDIsResults(2007, date(2008,1,15), tiersService, adresseService);
 		service.setRapport(rapport);
 		service.traiterContribuable(eric, periode2007);
 
@@ -1492,7 +1496,7 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	}
 
 	private void assertTraitementContribuable(int nbTraites, int nbEnErreur, int nbIgnores, long ctbId, PeriodeFiscale periodeFiscale) throws DeclarationException, AssujettissementException {
-		DeterminationDIsResults rapport = new DeterminationDIsResults(2008, date(2009, 1, 15));
+		DeterminationDIsResults rapport = new DeterminationDIsResults(2008, date(2009, 1, 15), tiersService, adresseService);
 		service.setRapport(rapport);
 		final Contribuable ctb = (Contribuable) hibernateTemplate.get(Contribuable.class, ctbId);
 		assertNotNull(ctb);

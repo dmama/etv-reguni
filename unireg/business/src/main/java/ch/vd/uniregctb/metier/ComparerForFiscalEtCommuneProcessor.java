@@ -28,6 +28,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ComparerForFiscalEtCommuneProcessor {
 
@@ -38,16 +39,18 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
+	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private static final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<ComparerForFiscalEtCommuneResults>();
 
 	public ComparerForFiscalEtCommuneProcessor(TiersDAO tiersDAO, PlatformTransactionManager transactionManager, AdresseService aService,
-	                                           ServiceInfrastructureService serviceInfra) {
+	                                           TiersService tiersService, ServiceInfrastructureService serviceInfra) {
 
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.adresseService = aService;
+		this.tiersService = tiersService;
 		this.serviceInfra = serviceInfra;
 
 	}
@@ -56,7 +59,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 	public ComparerForFiscalEtCommuneResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ComparerForFiscalEtCommuneResults rapportFinal = new ComparerForFiscalEtCommuneResults(dateTraitement);
+		final ComparerForFiscalEtCommuneResults rapportFinal = new ComparerForFiscalEtCommuneResults(dateTraitement, tiersService, adresseService);
 		status.setMessage("Récupération des contribuables à analyser...");
 		final List<Long> ids = recupererContribuableAAnalyser();
 
@@ -68,7 +71,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 
 			@Override
 			public ComparerForFiscalEtCommuneResults createSubRapport() {
-				return new ComparerForFiscalEtCommuneResults(dateTraitement);
+				return new ComparerForFiscalEtCommuneResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

@@ -8,6 +8,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesThread;
 import ch.vd.uniregctb.common.StatusManager;
@@ -19,10 +20,10 @@ public class AcomptesThread extends ListesThread<AcomptesResults> {
 
     public AcomptesThread(BlockingQueue<List<Long>> queue, RegDate dateTraitement, int nombreThreads, Integer anneeFiscale, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
                           TiersService tiersService, StatusManager status, AtomicInteger compteur, PlatformTransactionManager transactionManager,
-                          TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, AssujettissementService assujettissementService) {
+                          TiersDAO tiersDAO, HibernateTemplate hibernateTemplate, AssujettissementService assujettissementService, AdresseService adresseService) {
 
         super(queue, status, compteur, serviceCivilCacheWarmer, transactionManager, tiersDAO, hibernateTemplate,
-                new AcomptesResults(dateTraitement, nombreThreads, anneeFiscale, tiersService, assujettissementService));
+                new AcomptesResults(dateTraitement, nombreThreads, anneeFiscale, tiersService, assujettissementService, adresseService));
     }
 
 }

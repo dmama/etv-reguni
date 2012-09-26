@@ -6,9 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -31,8 +33,8 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -129,7 +131,8 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 	public final List<Erreur> disEnErrors = new ArrayList<Erreur>();
 	public final Map<Key, Value> stats = new HashMap<Key, Value>();
 
-	public StatistiquesDIs(int annee, RegDate dateTraitement) {
+	public StatistiquesDIs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
 	}
@@ -148,12 +151,12 @@ public class StatistiquesDIs extends JobResults<Long, StatistiquesDIs> {
 		final Tiers tiers = di.getTiers();
 		final Long numero = (tiers == null ? null : tiers.getNumero());
 		final Integer oid = (tiers == null ? null : tiers.getOfficeImpotId());
-		disEnErrors.add(new Erreur(numero != null ? numero : -1, oid, ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(numero != null ? numero : -1, oid, ErreurType.EXCEPTION, e.getMessage(), getNom(numero != null ? numero : -1)));
 	}
 
 	@Override
 	public void addErrorException(Long numero, Exception e) {
-		disEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage(), getNom(numero)));
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.NomPrenom;
@@ -90,13 +91,16 @@ public class ImportImmeublesProcessor {
 	private final TiersService tiersService;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
+	private final AdresseService adresseService;
 
-	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService) {
+	public ImportImmeublesProcessor(HibernateTemplate hibernateTemplate, ImmeubleDAO immeubleDAO, PlatformTransactionManager transactionManager, TiersDAO tiersDAO, TiersService tiersService,
+	                                AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.immeubleDAO = immeubleDAO;
 		this.tiersDAO = tiersDAO;
 		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -110,7 +114,7 @@ public class ImportImmeublesProcessor {
 	public ImportImmeublesResults run(InputStream csvStream, String encoding, @Nullable StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ImportImmeublesResults rapportFinal = new ImportImmeublesResults();
+		final ImportImmeublesResults rapportFinal = new ImportImmeublesResults(tiersService, adresseService);
 
 		removeAllImmeubles(status);
 		importAllImmeubles(csvStream, encoding, status, rapportFinal);
@@ -168,7 +172,7 @@ public class ImportImmeublesProcessor {
 
 			@Override
 			public ImportImmeublesResults createSubRapport() {
-				return new ImportImmeublesResults();
+				return new ImportImmeublesResults(tiersService, adresseService);
 			}
 
 			@Override

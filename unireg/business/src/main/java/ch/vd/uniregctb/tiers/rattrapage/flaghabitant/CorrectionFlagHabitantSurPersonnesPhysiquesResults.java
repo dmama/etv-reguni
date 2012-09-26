@@ -6,7 +6,9 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class CorrectionFlagHabitantSurPersonnesPhysiquesResults extends CorrectionFlagHabitantAbstractResults<CorrectionFlagHabitantSurPersonnesPhysiquesResults> {
 
@@ -15,6 +17,10 @@ public class CorrectionFlagHabitantSurPersonnesPhysiquesResults extends Correcti
 	private final List<ContribuableInfo> nouveauxNonHabitants = new LinkedList<ContribuableInfo>();
 
 	private final List<ContribuableErreur> erreurs = new LinkedList<ContribuableErreur>();
+
+	public CorrectionFlagHabitantSurPersonnesPhysiquesResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
 
 	public void addHabitantChangeEnNonHabitant(PersonnePhysique pp) {
 		nouveauxNonHabitants.add(new ContribuableInfo(pp.getNumero(), Message.PP_NOUVEAU_NON_HABITANT));

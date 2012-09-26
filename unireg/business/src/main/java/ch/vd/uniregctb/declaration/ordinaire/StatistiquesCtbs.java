@@ -7,8 +7,10 @@ import java.util.Map;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 
@@ -29,8 +31,8 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -149,7 +151,8 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
 	public final Map<Key, Value> stats = new HashMap<Key, Value>();
 
-	public StatistiquesCtbs(int annee, RegDate dateTraitement) {
+	public StatistiquesCtbs(int annee, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateTraitement = dateTraitement;
 	}
@@ -167,12 +170,12 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 	public void addErrorException(Contribuable ctb, Exception e) {
 		Long numero = (ctb == null ? null : ctb.getNumero());
 		Integer officeImpotId = (ctb == null ? null : ctb.getOfficeImpotId());
-		ctbsEnErrors.add(new Erreur(numero != null ? numero : -1, officeImpotId, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(numero != null ? numero : -1, officeImpotId, ErreurType.EXCEPTION, e.getMessage(), getNom(numero != null ? numero : -1)));
 	}
 
 	@Override
 	public void addErrorException(Long numero, Exception e) {
-		ctbsEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(numero, null, ErreurType.EXCEPTION, e.getMessage(), getNom(numero)));
 	}
 
 	@Override

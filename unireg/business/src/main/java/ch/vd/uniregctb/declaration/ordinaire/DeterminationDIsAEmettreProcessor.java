@@ -26,6 +26,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -69,6 +70,7 @@ public class DeterminationDIsAEmettreProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final ValidationService validationService;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final AdresseService adresseService;
 
 	private final ThreadLocal<DeterminationDIsResults> rapport = new ThreadLocal<DeterminationDIsResults>();
 
@@ -76,7 +78,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 	public DeterminationDIsAEmettreProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO, TacheDAO tacheDAO,
 	                                         ParametreAppService parametres, TiersService tiersService, PlatformTransactionManager transactionManager,
-	                                         ValidationService validationService, PeriodeImpositionService periodeImpositionService) {
+	                                         ValidationService validationService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.tacheDAO = tacheDAO;
@@ -85,6 +87,7 @@ public class DeterminationDIsAEmettreProcessor {
 		this.transactionManager = transactionManager;
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
+		this.adresseService = adresseService;
 	}
 
 	public DeterminationDIsResults run(final int anneePeriode, final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) throws DeclarationException {
@@ -92,7 +95,7 @@ public class DeterminationDIsAEmettreProcessor {
 		checkParams(anneePeriode, dateTraitement);
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final DeterminationDIsResults rapportFinal = new DeterminationDIsResults(anneePeriode, dateTraitement);
+		final DeterminationDIsResults rapportFinal = new DeterminationDIsResults(anneePeriode, dateTraitement, tiersService, adresseService);
 
 		status.setMessage("Récupération des contribuables à traiter...");
 
@@ -106,7 +109,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 			@Override
 			public DeterminationDIsResults createSubRapport() {
-				return new DeterminationDIsResults(anneePeriode, dateTraitement);
+				return new DeterminationDIsResults(anneePeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

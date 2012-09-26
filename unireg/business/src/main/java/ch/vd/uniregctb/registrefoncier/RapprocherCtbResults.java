@@ -10,7 +10,9 @@ import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, RapprocherCtbResults> {
 
@@ -33,8 +35,8 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 
 			this.raison = raison;
 		}
@@ -54,7 +56,8 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	public final List<ProprietaireRapproche> listeRapproche = new LinkedList<ProprietaireRapproche>();
 	public boolean interrompu;
 
-	public RapprocherCtbResults(RegDate dateTraitement) {
+	public RapprocherCtbResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -66,7 +69,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	@Override
 	public void addErrorException(ProprietaireFoncier p, Exception e) {
 		++ nbCtbsTotal;
-		ctbsEnErreur.add(new Erreur(p.getNumeroContribuable(), null, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErreur.add(new Erreur(p.getNumeroContribuable(), null, ErreurType.EXCEPTION, e.getMessage(), getNom(p.getNumeroContribuable())));
 	}
 
 	@Override
@@ -103,7 +106,7 @@ public class RapprocherCtbResults extends JobResults<ProprietaireFoncier, Rappro
 	 * @param details éventuelle description plus précise du problème
 	 */
 	public void addError(ProprietaireFoncier p, ErreurType raison, @Nullable String details) {
-		ctbsEnErreur.add(new Erreur(p.getNumeroContribuable(), null, raison, details));
+		ctbsEnErreur.add(new Erreur(p.getNumeroContribuable(), null, raison, details, getNom(p.getNumeroContribuable())));
 	}
 
 	public Map<ProprietaireRapproche.CodeRetour, Integer> getStats() {

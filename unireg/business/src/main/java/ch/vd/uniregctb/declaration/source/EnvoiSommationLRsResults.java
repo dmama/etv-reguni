@@ -6,10 +6,12 @@ import java.util.List;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 
 public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationLRsResults> {
@@ -18,8 +20,8 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 
 		private final DateRange periodeLr;
 
-		public Traite(long noCtb, DeclarationImpotSource lr) {
-			super(noCtb, null, DateRangeHelper.toDisplayString(lr));
+		public Traite(long noCtb, DeclarationImpotSource lr, String nomCtb) {
+			super(noCtb, null, DateRangeHelper.toDisplayString(lr), nomCtb);
 			this.periodeLr = new DateRangeHelper.Range(lr.getDateDebut(), lr.getDateFin());
 		}
 
@@ -48,8 +50,8 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 		public final ErreurType raison;
 		public final DateRange periodeLr;
 		
-		public Erreur(long noCtb, DeclarationImpotSource lr, ErreurType raison, String details) {
-			super(noCtb, null, details);
+		public Erreur(long noCtb, DeclarationImpotSource lr, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, null, details, nomCtb);
 			this.periodeLr = lr != null ? new DateRangeHelper.Range(lr.getDateDebut(), lr.getDateFin()) : null;
 			this.raison = raison;
 		}
@@ -72,7 +74,8 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 	public final List<Erreur> sommationLREnErreurs = new ArrayList<Erreur>();   //sommation LR KO
 	public boolean interrompu;
 	
-	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTrait) {
+	public EnvoiSommationLRsResults(CategorieImpotSource categorie, RegDate dateFinPeriode, RegDate dateTrait, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.categorie = categorie;
 		this.dateFinPeriode = dateFinPeriode;
 		this.dateTraitement = dateTrait;
@@ -87,14 +90,14 @@ public class EnvoiSommationLRsResults extends JobResults<IdentifiantDeclaration,
 
 	@Override
 	public void addErrorException(IdentifiantDeclaration element, Exception e) {
-		sommationLREnErreurs.add(new Erreur(element.getNumeroTiers(), null, ErreurType.ROLLBACK, e.getMessage()));
+		sommationLREnErreurs.add(new Erreur(element.getNumeroTiers(), null, ErreurType.ROLLBACK, e.getMessage(), getNom(element.getNumeroTiers())));
 	}
 
 	public void addLRSommee(DebiteurPrestationImposable dpi, DeclarationImpotSource lr) {
-		lrSommees.add(new Traite(dpi.getNumero(), lr));
+		lrSommees.add(new Traite(dpi.getNumero(), lr, getNom(dpi.getNumero())));
 	}
 	
 	public void addError(DebiteurPrestationImposable dpi, DeclarationImpotSource lr, Exception e) {
-		sommationLREnErreurs.add(new Erreur(dpi.getNumero(), lr, ErreurType.EXCEPTION, e.getMessage()));
+		sommationLREnErreurs.add(new Erreur(dpi.getNumero(), lr, ErreurType.EXCEPTION, e.getMessage(), getNom(dpi.getNumero())));
 	}
 }

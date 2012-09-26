@@ -3,10 +3,14 @@ package ch.vd.uniregctb.situationfamille;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Résultats détaillés du batch de réinitialisation des barèmes double-gain.
@@ -47,8 +51,8 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 		public final ErreurType raison;
 		public final long situationId;
 
-		public Erreur(long noCtb, Integer officeImpotID, long situationId, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, long situationId, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 			this.situationId = situationId;
 		}
@@ -63,8 +67,8 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 		public final IgnoreType raison;
 		public final long situationId;
 
-		public Ignore(long noCtb, Integer officeImpotID, long situationId, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, long situationId, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 			this.situationId = situationId;
 		}
@@ -100,7 +104,8 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 
 	public boolean interrompu;
 
-	public ReinitialiserBaremeDoubleGainResults(RegDate dateTraitement) {
+	public ReinitialiserBaremeDoubleGainResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -114,13 +119,13 @@ public class ReinitialiserBaremeDoubleGainResults extends JobResults<Long, Reini
 		++nbSituationsTotal;
 		final Tiers tiers = situation.getContribuable();
 		situationsIgnorees.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), situation.getId(),
-				IgnoreType.BAREME_NON_DOUBLE_GAIN, message));
+				IgnoreType.BAREME_NON_DOUBLE_GAIN, message, getNom(tiers.getNumero())));
 	}
 
 	@Override
 	public void addErrorException(Long situationDI, Exception e) {
 		++nbSituationsTotal;
-		situationsEnErrors.add(new Erreur(0, null, situationDI, ErreurType.EXCEPTION, e.getMessage()));
+		situationsEnErrors.add(new Erreur(0, null, situationDI, ErreurType.EXCEPTION, e.getMessage(), StringUtils.EMPTY));
 	}
 
 	@Override

@@ -7,7 +7,9 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long, DeterminerMouvementsDossiersEnMasseResults> {
 
@@ -112,7 +114,8 @@ public class DeterminerMouvementsDossiersEnMasseResults extends JobResults<Long,
 
 	private boolean interrompu;
 
-	public DeterminerMouvementsDossiersEnMasseResults(RegDate dateTraitement, boolean archivesSeulement) {
+	public DeterminerMouvementsDossiersEnMasseResults(RegDate dateTraitement, boolean archivesSeulement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 		this.archivesSeulement = archivesSeulement;
 	}

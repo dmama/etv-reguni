@@ -5,9 +5,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Contient les données brutes permettant de générer le document de rapport de l'exécution du processeur.
@@ -51,8 +53,8 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -65,8 +67,8 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -99,7 +101,8 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 	public final List<Erreur> errors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public DemandeDelaiCollectiveResults(int annee, RegDate dateDelai, List<Long> ctbsIds, RegDate dateTraitement) {
+	public DemandeDelaiCollectiveResults(int annee, RegDate dateDelai, List<Long> ctbsIds, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = annee;
 		this.dateDelai = dateDelai;
 		this.ctbsIds = ctbsIds;
@@ -113,44 +116,44 @@ public class DemandeDelaiCollectiveResults extends JobResults<Long, DemandeDelai
 
 	@Override
 	public void addErrorException(Long idCtb, Exception e) {
-		errors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
+		errors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage(), getNom(idCtb)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage(), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorCtbSansDI(Contribuable ctb) {
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CONTRIBUABLE_SANS_DI, null));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CONTRIBUABLE_SANS_DI, null, getNom(ctb.getNumero())));
 	}
 
 	public void addErrorDIAnnulee(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_ANNULEE, buildDeclarationDetails(di)));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_ANNULEE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorDIRetournee(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_RETOURNEE, buildDeclarationDetails(di)));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_RETOURNEE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorDISommee(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_SOMMEE, buildDeclarationDetails(di)));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_SOMMEE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorDIEchue(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_ECHUE, buildDeclarationDetails(di)));
+		errors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.DI_ECHUE, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDIDelaiSuperieur(Declaration di) {
 		final Contribuable ctb = (Contribuable) di.getTiers();
-		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DELAI_DEJA_SUPERIEUR, buildDeclarationDetails(di)));
+		ignores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DELAI_DEJA_SUPERIEUR, buildDeclarationDetails(di), getNom(ctb.getNumero())));
 	}
 
 	public void addErrorCtbInconnu(Long id) {
-		errors.add(new Erreur(id, null, ErreurType.CTB_INCONNU, null));
+		errors.add(new Erreur(id, null, ErreurType.CTB_INCONNU, null, getNom(id)));
 	}
 
 	@Override

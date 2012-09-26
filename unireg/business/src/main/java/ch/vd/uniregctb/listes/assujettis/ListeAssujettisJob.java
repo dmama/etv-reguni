@@ -9,6 +9,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
@@ -39,6 +40,7 @@ public class ListeAssujettisJob extends JobDefinition {
 	private TiersDAO tiersDAO;
 	private RapportService rapportService;
 	private AssujettissementService assujettissementService;
+	private AdresseService adresseService;
 
 	public ListeAssujettisJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -88,7 +90,8 @@ public class ListeAssujettisJob extends JobDefinition {
 		final RegDate dateTraitement = getDateTraitement(params);
 		final StatusManager statusManager = getStatusManager();
 
-		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
+		final ListeAssujettisProcessor proc = new ListeAssujettisProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService,
+				adresseService);
 		final ListeAssujettisResults results = proc.run(dateTraitement, nbThreads, pf, avecSrcPurs, seultAssujettisFinAnnee, statusManager);
 
 		// Produit le rapport dans une transaction read-write
@@ -138,6 +141,10 @@ public class ListeAssujettisJob extends JobDefinition {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setAssujettissementService(AssujettissementService assujettissementService) {
 		this.assujettissementService = assujettissementService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	@Override

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTachesEnInstanceParOID> {
 
@@ -90,8 +92,8 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 	}
 
 
-	public ListeTachesEnInstanceParOID(RegDate dateTraitement) {
-		super(dateTraitement);
+	public ListeTachesEnInstanceParOID(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(dateTraitement, tiersService, adresseService);
 	}
 
 	@Override

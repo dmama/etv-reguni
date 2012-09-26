@@ -5,9 +5,11 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSituationFamilleResults> {
 	public boolean isInterrompu() {
@@ -63,7 +65,8 @@ public class ComparerSituationFamilleResults extends JobResults<Long, ComparerSi
 	public int nbSituationTotal;
 	public final RegDate dateTraitement;
 
-	public ComparerSituationFamilleResults(RegDate dateTraitement) {
+	public ComparerSituationFamilleResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

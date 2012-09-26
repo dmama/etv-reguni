@@ -32,6 +32,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -97,6 +98,7 @@ public class TacheServiceImpl implements TacheService {
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
 	private Map<Integer, TacheStats> tacheStatsPerOid = new HashMap<Integer, TacheStats>();
+	private AdresseService adresseService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTacheDAO(TacheDAO tacheDAO) {
@@ -116,6 +118,10 @@ public class TacheServiceImpl implements TacheService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParametres(ParametreAppService parametres) {
 		this.parametres = parametres;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	@Override
@@ -1175,7 +1181,8 @@ public class TacheServiceImpl implements TacheService {
 
 	@Override
 	public ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
-		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, serviceInfra, transactionManager);
+		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, serviceInfra, transactionManager, tiersService,
+				adresseService);
 		return processor.run(dateTraitement, status);
 	}
 

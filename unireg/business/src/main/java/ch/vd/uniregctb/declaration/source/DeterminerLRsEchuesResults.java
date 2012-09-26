@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -219,7 +220,8 @@ public class DeterminerLRsEchuesResults extends JobResults<DeterminerLRsEchuesRe
 	public final List<ResultDebiteurNonTraite> ignores = new ArrayList<ResultDebiteurNonTraite>();
 	public final List<ResultErreurDebiteur> erreurs = new ArrayList<ResultErreurDebiteur>();
 
-	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement, TiersService tiersService) {
+	public DeterminerLRsEchuesResults(int periodeFiscale, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.periodeFiscale = periodeFiscale;
 		this.dateTraitement = dateTraitement;
 		this.tiersService = tiersService;

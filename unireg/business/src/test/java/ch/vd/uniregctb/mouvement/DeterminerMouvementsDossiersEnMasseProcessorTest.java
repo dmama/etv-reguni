@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -32,6 +33,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	private TiersDAO tiersDAO;
 	private MouvementDossierDAO mouvementDossierDAO;
 	private AssujettissementService assujettissementService;
+	private AdresseService adresseService;
 
 	private static final long noIndMarieParlotte = 1235125L;
 	private static final RegDate dateNaissance = RegDate.get(1970, 3, 12);
@@ -54,6 +56,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		mouvementDossierDAO = getBean(MouvementDossierDAO.class, "mouvementDossierDAO");
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -75,7 +78,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 	}
 
 	private DeterminerMouvementsDossiersEnMasseProcessor createProcessor() {
-		return new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService);
+		return new DeterminerMouvementsDossiersEnMasseProcessor(tiersService, tiersDAO, mouvementDossierDAO, hibernateTemplate, transactionManager, assujettissementService, adresseService);
 	}
 
 	@Test
@@ -86,7 +89,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final Map<Integer, CollectiviteAdministrative> caCache = new HashMap<Integer, CollectiviteAdministrative>();
@@ -105,7 +108,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
@@ -125,7 +128,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
@@ -147,7 +150,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
@@ -170,7 +173,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = true;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
@@ -193,7 +196,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
@@ -214,7 +217,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
@@ -235,7 +238,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
@@ -259,7 +262,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = true;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDemenagement = RegDate.get(dateTraitement.year() - 1, 6, 30);
@@ -335,7 +338,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateArrivee = RegDate.get(dateTraitement.year() - 1, 2, 12);
@@ -363,7 +366,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate datePremierDemenagement = RegDate.get(dateTraitement.year() - 2, 6, 30);
@@ -392,7 +395,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateSeparation = RegDate.get(dateTraitement.year() - 1, 6, 25);
@@ -422,7 +425,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate dateDepartHC = date(dateTraitement.year() - 7, 8, 30);
@@ -462,7 +465,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, dateMajorite, MotifFor.MAJORITE, MockCommune.Lausanne);
@@ -523,7 +526,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final RegDate dateTraitement = RegDate.get();
 		final boolean archivesSeulement = false;
 		final DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles ranges = new DeterminerMouvementsDossiersEnMasseProcessor.RangesUtiles(dateTraitement);
-		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults results = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		final Contribuable ctb = addHabitant(noIndMarieParlotte);
 		final RegDate datePermisC = date(dateTraitement.year() - 1, 6, 12);

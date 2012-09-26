@@ -41,13 +41,14 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 	private OuvertureForsContribuablesMajeursProcessor processor;
 	//Mock permettant de lever des exceptions de traitements
 	private MockOuvertureForsContribuablesMajeursProcessor mockProcessor;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 		final GlobalTiersSearcher searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 
@@ -83,7 +84,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -124,7 +125,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -193,7 +194,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 				h.setOfficeImpotId(18);
 				ids.jean = h.getNumero();
 				// Lancement du batch
-				final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+				final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 				processor.rapport = rapport;
 				processor.traiteHabitant(h.getNumero(), dateTraitement);
 				return rapport;
@@ -235,7 +236,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -298,7 +299,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		addForPrincipal(h, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Lausanne);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -340,7 +341,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -386,7 +387,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h2 = addHabitant(noIndividu2);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h1.getNumero(), dateTraitement);
 		processor.traiteHabitant(h2.getNumero(), dateTraitement);
@@ -434,7 +435,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		mockProcessor.rapport = rapport;
 		mockProcessor.traiteHabitant(h1.getNumero(), dateTraitement);
 
@@ -476,7 +477,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 
@@ -517,7 +518,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 
 		// pour des raisons de validation, on va dire que l'on se place à un jour où la commune de Gressy est
@@ -579,7 +580,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		final PersonnePhysique h = addHabitant(noIndividu);
 
 		// Lancement du batch
-		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement);
+		final OuvertureForsResults rapport = new OuvertureForsResults(dateTraitement, tiersService, adresseService);
 		processor.rapport = rapport;
 		processor.traiteHabitant(h.getNumero(), dateTraitement);
 

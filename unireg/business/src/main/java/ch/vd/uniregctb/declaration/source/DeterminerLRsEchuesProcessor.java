@@ -21,6 +21,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -50,9 +51,11 @@ public class DeterminerLRsEchuesProcessor {
 	private final ListeRecapitulativeDAO lrDAO;
 	private final EvenementFiscalService evenementFiscalService;
 	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	public DeterminerLRsEchuesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, ListeRecapService lrService,
-	                                    DelaisService delaisService, TiersDAO tiersDAO, ListeRecapitulativeDAO lrDAO, EvenementFiscalService evenementFiscalService, TiersService tiersService) {
+	                                    DelaisService delaisService, TiersDAO tiersDAO, ListeRecapitulativeDAO lrDAO, EvenementFiscalService evenementFiscalService, TiersService tiersService,
+	                                    AdresseService adresseService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
@@ -61,6 +64,7 @@ public class DeterminerLRsEchuesProcessor {
 		this.lrDAO = lrDAO;
 		this.evenementFiscalService = evenementFiscalService;
 		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public DeterminerLRsEchuesResults run(final int periodeFiscale, final RegDate dateTraitement, StatusManager status) {
@@ -72,7 +76,7 @@ public class DeterminerLRsEchuesProcessor {
 
 		s.setMessage("Récupération des listes récapitulatives...");
 
-		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService);
+		final DeterminerLRsEchuesResults rapportFinal = new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService, adresseService);
 		final DateRange pf = new DateRangeHelper.Range(RegDate.get(periodeFiscale, 1, 1), RegDate.get(periodeFiscale, 12, 31));
 
 		// liste de toutes les débiteurs à passer en revue
@@ -97,7 +101,7 @@ public class DeterminerLRsEchuesProcessor {
 
 			@Override
 			public DeterminerLRsEchuesResults createSubRapport() {
-				return new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService);
+				return new DeterminerLRsEchuesResults(periodeFiscale, dateTraitement, tiersService, adresseService);
 			}
 		});
 

@@ -3687,7 +3687,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public ExclureContribuablesEnvoiResults setDateLimiteExclusion(List<Long> ctbIds, RegDate dateLimite, StatusManager s) {
-        ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager);
+        ExclureContribuablesEnvoiProcessor processor = new ExclureContribuablesEnvoiProcessor(hibernateTemplate, transactionManager, this, adresseService);
         return processor.run(ctbIds, dateLimite, s);
     }
 
@@ -3696,7 +3696,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager) {
-        final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager);
+        final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);
         return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
     }
 
@@ -3705,7 +3705,7 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public CorrectionFlagHabitantSurMenagesResults corrigeFlagHabitantSurMenagesCommuns(int nbThreads, StatusManager statusManager) {
-        final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager);
+        final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);
         return processor.corrigeFlagSurMenages(nbThreads);
     }
 

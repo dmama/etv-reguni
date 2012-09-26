@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -21,10 +22,12 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 	public static final Logger LOGGER = Logger.getLogger(CorrectionFlagHabitantProcessorTest.class);
 
 	private static final long INDIVIDU = 1234;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
+		adresseService = getBean(AdresseService.class, "adresseService");
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
@@ -66,7 +69,7 @@ public class CorrectionFlagHabitantProcessorTest extends BusinessTest {
 
 	private CorrectionFlagHabitantSurPersonnesPhysiquesResults runProcessorPersonnesPhysiques(int nbThreads) {
 		final StatusManager statusManager = new LoggingStatusManager(LOGGER);
-		final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, tiersService, transactionManager, statusManager);
+		final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, tiersService, transactionManager, statusManager, adresseService);
 		return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
 	}
 

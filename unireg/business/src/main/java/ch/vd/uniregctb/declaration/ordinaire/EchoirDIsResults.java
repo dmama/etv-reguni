@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirDIsResults> {
 
@@ -29,8 +31,8 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 		public final ErreurType raison;
 		public final long diId;
 
-		public Erreur(long noCtb, Integer officeImpotID, long diId, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, long diId, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 			this.diId = diId;
 		}
@@ -67,7 +69,8 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 
 	public boolean interrompu;
 
-	public EchoirDIsResults(RegDate dateTraitement) {
+	public EchoirDIsResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -80,13 +83,13 @@ public class EchoirDIsResults extends JobResults<IdentifiantDeclaration, EchoirD
 	public void addErrorEtatIncoherent(DeclarationImpotOrdinaire di, String message) {
 		++nbDIsTotal;
 		final Tiers tiers = di.getTiers();
-		disEnErrors.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message));
+		disEnErrors.add(new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), di.getId(), ErreurType.ETAT_DECLARATION_INCOHERENT, message, getNom(tiers.getNumero())));
 	}
 
 	@Override
 	public void addErrorException(IdentifiantDeclaration ident, Exception e) {
 		++nbDIsTotal;
-		disEnErrors.add(new Erreur(ident.getNumeroTiers(), ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage()));
+		disEnErrors.add(new Erreur(ident.getNumeroTiers(), ident.getNumeroOID(), ident.getIdDeclaration(), ErreurType.EXCEPTION, e.getMessage(), getNom(ident.getNumeroTiers())));
 	}
 
 	@Override

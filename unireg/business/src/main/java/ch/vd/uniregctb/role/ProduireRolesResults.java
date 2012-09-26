@@ -78,8 +78,8 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -92,8 +92,8 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -507,7 +507,8 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement) {
+	public ProduireRolesResults(int anneePeriode, int nbThreads, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = anneePeriode;
 		this.nbThreads = nbThreads;
 		this.dateTraitement = dateTraitement;
@@ -527,11 +528,11 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 	}
 
 	public void addErrorCtbInvalide(Contribuable ctb) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CTB_INVALIDE, null));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.CTB_INVALIDE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addErrorErreurAssujettissement(Contribuable ctb, String details) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.ASSUJETTISSEMENT, details));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.ASSUJETTISSEMENT, details, getNom(ctb.getNumero())));
 	}
 
 	private static String buildErrorMessage(Exception e) {
@@ -546,23 +547,23 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 
 	@Override
 	public void addErrorException(Long id, Exception e) {
-		ctbsEnErrors.add(new Erreur(id, null, ErreurType.EXCEPTION, buildErrorMessage(e)));
+		ctbsEnErrors.add(new Erreur(id, null, ErreurType.EXCEPTION, buildErrorMessage(e), getNom(id)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, buildErrorMessage(e)));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, buildErrorMessage(e), getNom(ctb.getNumero())));
 	}
 
 	public void addCtbIgnoreDonneesIncoherentes(Contribuable ctb, String details) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DONNEES_INCOHERENTES, details));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DONNEES_INCOHERENTES, details, getNom(ctb.getNumero())));
 	}
 
 	public void addCtbIgnoreDiplomateSuisse(Contribuable ctb) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DIPLOMATE_SUISSE, null));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DIPLOMATE_SUISSE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addCtbIgnoreSourcierGris(Contribuable ctb) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.SOURCIER_GRIS, null));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.SOURCIER_GRIS, null, getNom(ctb.getNumero())));
 	}
 
 	@Override

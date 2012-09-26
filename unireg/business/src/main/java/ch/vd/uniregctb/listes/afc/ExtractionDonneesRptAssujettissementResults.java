@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.declaration.ordinaire.ForsList;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -35,8 +36,8 @@ public abstract class ExtractionDonneesRptAssujettissementResults extends Extrac
 	private AssujettissementService assujettissementService;
 
 	public ExtractionDonneesRptAssujettissementResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
-	                                                   AssujettissementService assujettissementService) {
-		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+	                                                   AssujettissementService assujettissementService, AdresseService adresseService) {
+		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService, adresseService);
 		this.assujettissementService = assujettissementService;
 	}
 

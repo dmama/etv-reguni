@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ImportImmeublesResults extends JobResults<String, ImportImmeublesResults> {
 
@@ -175,6 +177,10 @@ public class ImportImmeublesResults extends JobResults<String, ImportImmeublesRe
 	public final List<AVerifier> averifier = new ArrayList<AVerifier>();
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
+
+	public ImportImmeublesResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
 
 	public void incNbLignes() {
 		++nbLignes;

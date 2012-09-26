@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -46,8 +47,8 @@ public class ListeContribuablesResidentsSansForVaudoisResults extends ListesResu
 		}
 	}
 
-	public ListeContribuablesResidentsSansForVaudoisResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService) {
-		super(dateTraitement, nombreThreads, tiersService);
+	public ListeContribuablesResidentsSansForVaudoisResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService, AdresseService adresseService) {
+		super(dateTraitement, nombreThreads, tiersService, adresseService);
 	}
 
 	@Override

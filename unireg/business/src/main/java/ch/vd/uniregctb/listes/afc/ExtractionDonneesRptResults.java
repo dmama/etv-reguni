@@ -15,6 +15,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.ListesResults;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -159,8 +160,8 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 		}
 	}
 
-	public ExtractionDonneesRptResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService) {
-		super(dateTraitement, nbThreads, tiersService);
+	public ExtractionDonneesRptResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService, AdresseService adresseService) {
+		super(dateTraitement, nbThreads, tiersService, adresseService);
 		this.periodeFiscale = periodeFiscale;
 		this.infraService = infraService;
 	}

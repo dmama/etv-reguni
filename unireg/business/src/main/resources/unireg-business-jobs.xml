@@ -315,6 +315,7 @@
 		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer"/>
 		<property name="tiersDAO" ref="tiersDAO"/>
 		<property name="assujettissementService" ref="assujettissementService"/>
+		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
     <bean id="validationJob" parent="schedulerJob" class="ch.vd.uniregctb.validation.ValidationJob">
@@ -327,6 +328,7 @@
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="validationService" ref="validationService"/>
 		<property name="periodeImpositionService" ref="periodeImpositionService"/>
+		<property name="tiersService" ref="tiersService"/>
     </bean>
 
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.ListeTachesEnInstanceParOIDJob">
@@ -415,6 +417,8 @@
 		<property name="rapportService" ref="rapportService"/>
 		<property name="tacheSynchronizerInterceptor" ref="tacheSynchronizerInterceptor"/>
 		<property name="validationInterceptor" ref="validationInterceptor"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
 	<bean id="migregCoquillesPMJob" parent="schedulerJob" class="ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM">
@@ -424,6 +428,8 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="rapportService" ref="rapportService"/>
 		<property name="servicePM" ref="servicePersonneMoraleService" />
+		<property name="tiersService" ref="tiersService"/>
+		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
 	<bean id="insertEmployeurFictifEmpAciJob" parent="schedulerJob" class="ch.vd.uniregctb.database.InsertEmployeurFictifEmpAciJob">

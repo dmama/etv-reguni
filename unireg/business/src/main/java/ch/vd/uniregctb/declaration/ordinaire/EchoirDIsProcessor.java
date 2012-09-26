@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -27,6 +28,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.parametrage.DelaisService;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -46,12 +48,17 @@ public class EchoirDIsProcessor {
 	private final DelaisService delaisService;
 	private final DeclarationImpotService diService;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
-	public EchoirDIsProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService, PlatformTransactionManager transactionManager) {
+	public EchoirDIsProcessor(HibernateTemplate hibernateTemplate, DelaisService delaisService, DeclarationImpotService diService, PlatformTransactionManager transactionManager,
+	                          TiersService tiersService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.delaisService = delaisService;
 		this.diService = diService;
 		this.transactionManager = transactionManager;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public EchoirDIsResults run(final RegDate dateTraitement, StatusManager s) throws DeclarationException {
@@ -60,7 +67,7 @@ public class EchoirDIsProcessor {
 
 		status.setMessage("Récupération des déclarations d'impôt...");
 
-		final EchoirDIsResults rapportFinal = new EchoirDIsResults(dateTraitement);
+		final EchoirDIsResults rapportFinal = new EchoirDIsResults(dateTraitement, tiersService, adresseService);
 		final List<IdentifiantDeclaration> dis = retrieveListDIsSommeesCandidates(dateTraitement);
 
 		status.setMessage("Analyse des déclarations d'impôt...");
@@ -70,7 +77,7 @@ public class EchoirDIsProcessor {
 
 			@Override
 			public EchoirDIsResults createSubRapport() {
-				return new EchoirDIsResults(dateTraitement);
+				return new EchoirDIsResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

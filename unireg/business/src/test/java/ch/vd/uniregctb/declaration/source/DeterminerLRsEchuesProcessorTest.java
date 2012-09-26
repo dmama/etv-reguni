@@ -8,6 +8,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclarationEchue;
@@ -35,8 +36,9 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final ListeRecapitulativeDAO lrDAO = getBean(ListeRecapitulativeDAO.class, "lrDAO");
 		final EvenementFiscalService evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 
-		processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersDAO, lrDAO, evenementFiscalService, tiersService);
+		processor = new DeterminerLRsEchuesProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersDAO, lrDAO, evenementFiscalService, tiersService, adresseService);
 	}
 
 	@Test

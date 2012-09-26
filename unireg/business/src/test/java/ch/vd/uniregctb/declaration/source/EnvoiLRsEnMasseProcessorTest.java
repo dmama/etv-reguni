@@ -6,6 +6,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -27,10 +28,11 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		lrService = getBean(ListeRecapService.class, "lrService");
+		final ListeRecapService lrService = getBean(ListeRecapService.class, "lrService");
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main pour pouvoir accéder aux méthodes protégées
-		processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService);
+		processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, tiersService, adresseService);
 	}
 
 	/**

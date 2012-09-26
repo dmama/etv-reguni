@@ -8,6 +8,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
@@ -28,12 +29,15 @@ public class CorrectionFlagHabitantProcessor {
 	private final TiersService tiersService;
 	private final StatusManager statusManager;
 	private final PlatformTransactionManager transactionManager;
+	private final AdresseService adresseService;
 
-	public CorrectionFlagHabitantProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager, StatusManager statusManager) {
+	public CorrectionFlagHabitantProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager, StatusManager statusManager,
+	                                       AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.transactionManager = transactionManager;
 		this.statusManager = statusManager;
+		this.adresseService = adresseService;
 	}
 
 	private List<Long> getIdsPPAvecFlagHabitantPasDroit() {
@@ -58,7 +62,7 @@ public class CorrectionFlagHabitantProcessor {
 
 	public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagSurPersonnesPhysiques(int nbThreads) {
 
-		final CorrectionFlagHabitantSurPersonnesPhysiquesResults rapportFinal = new CorrectionFlagHabitantSurPersonnesPhysiquesResults();
+		final CorrectionFlagHabitantSurPersonnesPhysiquesResults rapportFinal = new CorrectionFlagHabitantSurPersonnesPhysiquesResults(tiersService, adresseService);
 
 		statusManager.setMessage("Phase 1 : Identification des personnes physiques concernées");
 		final List<Long> ids = getIdsPPAvecFlagHabitantPasDroit();
@@ -73,7 +77,7 @@ public class CorrectionFlagHabitantProcessor {
 
 				@Override
 				public CorrectionFlagHabitantSurPersonnesPhysiquesResults createSubRapport() {
-					return new CorrectionFlagHabitantSurPersonnesPhysiquesResults();
+					return new CorrectionFlagHabitantSurPersonnesPhysiquesResults(tiersService, adresseService);
 				}
 
 				@Override
@@ -120,7 +124,7 @@ public class CorrectionFlagHabitantProcessor {
 
 	public CorrectionFlagHabitantSurMenagesResults corrigeFlagSurMenages(int nbThreads) {
 
-		final CorrectionFlagHabitantSurMenagesResults rapportFinal = new CorrectionFlagHabitantSurMenagesResults();
+		final CorrectionFlagHabitantSurMenagesResults rapportFinal = new CorrectionFlagHabitantSurMenagesResults(tiersService, adresseService);
 
 		// la phase 1 est "PP seules"
 		traiteMenagesVaudoisSansMembreHabitant(nbThreads, rapportFinal, 2);
@@ -168,7 +172,7 @@ public class CorrectionFlagHabitantProcessor {
 
 					@Override
 					public CorrectionFlagHabitantSurMenagesResults createSubRapport() {
-						return new CorrectionFlagHabitantSurMenagesResults();
+						return new CorrectionFlagHabitantSurMenagesResults(tiersService, adresseService);
 					}
 
 					@Override

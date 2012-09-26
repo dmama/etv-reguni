@@ -20,6 +20,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.ListesResults;
@@ -60,9 +61,10 @@ public class AcomptesProcessorTest extends BusinessTest {
 		final TiersDAO tiersDAO = getBean(TiersDAOImpl.class, "tiersDAO");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
+		processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService, adresseService);
 	}
 
 	@Test

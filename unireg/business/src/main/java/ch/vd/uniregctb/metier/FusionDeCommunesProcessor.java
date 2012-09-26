@@ -23,6 +23,7 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
@@ -57,17 +58,20 @@ public class FusionDeCommunesProcessor {
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final ValidationService validationService;
+	private final AdresseService adresseService;
 
 	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<Class<? extends ForFiscal>, Strategy>();
 
 	protected FusionDeCommunesResults rapport;
 
-	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra, ValidationService validationService) {
+	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra,
+	                                 ValidationService validationService, AdresseService adresseService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceInfra = serviceInfra;
 		this.validationService = validationService;
+		this.adresseService = adresseService;
 
 		this.strategies.put(ForFiscalPrincipal.class, new ForPrincipalStrategy());
 		this.strategies.put(ForFiscalSecondaire.class, new ForSecondaireStrategy());
@@ -105,7 +109,7 @@ public class FusionDeCommunesProcessor {
 		// Vérification de l'existence des commnues
 		checkNoOfs(anciensNoOfs, nouveauNoOfs, dateFusion);
 
-		final FusionDeCommunesResults rapportFinal = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapportFinal = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 
 		final List<Long> list = getListTiersTouchesParFusion(anciensNoOfs, dateFusion);
 
@@ -116,7 +120,7 @@ public class FusionDeCommunesProcessor {
 
 			@Override
 			public FusionDeCommunesResults createSubRapport() {
-				return new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+				return new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

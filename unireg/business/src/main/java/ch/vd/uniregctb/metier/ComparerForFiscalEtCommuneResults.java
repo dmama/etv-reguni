@@ -5,8 +5,10 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ComparerForFiscalEtCommuneResults extends JobResults<Long, ComparerForFiscalEtCommuneResults> {
 	public boolean isInterrompu() {
@@ -60,7 +62,8 @@ public class ComparerForFiscalEtCommuneResults extends JobResults<Long, Comparer
 	public int nbCtbTotal;
 	public final RegDate dateTraitement;
 
-	public ComparerForFiscalEtCommuneResults(RegDate dateTraitement) {
+	public ComparerForFiscalEtCommuneResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

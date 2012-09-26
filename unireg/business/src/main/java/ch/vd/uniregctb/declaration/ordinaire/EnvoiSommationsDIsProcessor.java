@@ -19,6 +19,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -60,6 +61,7 @@ public class EnvoiSommationsDIsProcessor  {
 	private final TiersService tiersService;
 	private final AssujettissementService assujettissementService;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final AdresseService adresseService;
 
 	public EnvoiSommationsDIsProcessor(
 			HibernateTemplate hibernateTemplate,
@@ -68,7 +70,7 @@ public class EnvoiSommationsDIsProcessor  {
 			DeclarationImpotService diService,
 			TiersService tiersService,
 			PlatformTransactionManager transactionManager,
-			AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService) {
+			AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.declarationImpotOrdinaireDAO = declarationImpotOrdinaireDAO;
 		this.delaisService = delaisService;
@@ -77,6 +79,7 @@ public class EnvoiSommationsDIsProcessor  {
 		this.transactionManager = transactionManager;
 		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
+		this.adresseService = adresseService;
 	}
 
 	protected boolean isSourcierPur(DeclarationImpotOrdinaire di, List<Assujettissement> assujettissements) {
@@ -105,7 +108,7 @@ public class EnvoiSommationsDIsProcessor  {
 		}
 		final StatusManager status = statusManager;
 
-		final EnvoiSommationsDIsResults rapportFinal = new EnvoiSommationsDIsResults();
+		final EnvoiSommationsDIsResults rapportFinal = new EnvoiSommationsDIsResults(tiersService, adresseService);
 		rapportFinal.setDateTraitement(dateTraitement);
 		rapportFinal.setMiseSousPliImpossible(miseSousPliImpossible);
 		rapportFinal.setNombreMaxSommations(nombreMax);
@@ -125,7 +128,7 @@ public class EnvoiSommationsDIsProcessor  {
 
 			@Override
 			public EnvoiSommationsDIsResults createSubRapport() {
-				return new EnvoiSommationsDIsResults();
+				return new EnvoiSommationsDIsResults(tiersService, adresseService);
 			}
 
 			@Override

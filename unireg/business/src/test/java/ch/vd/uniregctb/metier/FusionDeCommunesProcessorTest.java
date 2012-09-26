@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
@@ -44,6 +45,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 	private ValidationService validationService;
 	private FusionDeCommunesProcessor processor;
+	private AdresseService adresseService;
 	private Set<Integer> anciensNoOfs;
 	private int nouveauNoOfs;
 	private RegDate dateFusion;
@@ -55,9 +57,10 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		validationService = getBean(ValidationService.class, "validationService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService);
+		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, adresseService);
 
 		// Annexion de Croy et Vaulion par Romainmôtier (scénario prophétique et stimulant)
 		anciensNoOfs = new HashSet<Integer>();
@@ -244,7 +247,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -273,7 +276,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -315,7 +318,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -363,7 +366,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -408,7 +411,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -452,7 +455,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -512,7 +515,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -575,7 +578,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 
@@ -610,7 +613,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			}
 		});
 
-		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement);
+		final FusionDeCommunesResults rapport = new FusionDeCommunesResults(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, tiersService, adresseService);
 		processor.setRapport(rapport);
 		processor.traiteTiers(id, anciensNoOfs, nouveauNoOfs, dateFusion);
 

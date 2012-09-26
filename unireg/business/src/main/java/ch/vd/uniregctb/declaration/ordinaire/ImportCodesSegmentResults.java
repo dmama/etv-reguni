@@ -8,8 +8,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.NatureTiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSegment, ImportCodesSegmentResults> {
 
@@ -80,6 +82,10 @@ public class ImportCodesSegmentResults extends JobResults<ContribuableAvecCodeSe
 	private final List<Erreur> erreurs = new LinkedList<Erreur>();
 	private final List<Ignore> ignores = new LinkedList<Ignore>();
 	private boolean interrompu = false;
+
+	public ImportCodesSegmentResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
 
 	@Override
 	public void addErrorException(ContribuableAvecCodeSegment element, Exception e) {

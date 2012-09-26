@@ -17,12 +17,14 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class IdentifierContribuableProcessor {
 
@@ -32,21 +34,26 @@ public class IdentifierContribuableProcessor {
 	private final IdentificationContribuableService identService;
 	private final IdentCtbDAO identCtbDAO;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<IdentifierContribuableResults> rapport = new ThreadLocal<IdentifierContribuableResults>();
 
-	public IdentifierContribuableProcessor(IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager) {
+	public IdentifierContribuableProcessor(IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager, TiersService tiersService,
+	                                       AdresseService adresseService) {
 
 		this.identCtbDAO = identCtbDAO;
 		this.transactionManager = transactionManager;
 		this.identService = identService;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 
 	public IdentifierContribuableResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s, Long idMessage) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final IdentifierContribuableResults rapportFinal = new IdentifierContribuableResults(dateTraitement);
+		final IdentifierContribuableResults rapportFinal = new IdentifierContribuableResults(dateTraitement, tiersService, adresseService);
 		status.setMessage("Récupération des messages de demande d'identification à traiter...");
 
 		final List<Long> ids = recupererMessageATraiter(idMessage);
@@ -59,7 +66,7 @@ public class IdentifierContribuableProcessor {
 
 			@Override
 			public IdentifierContribuableResults createSubRapport() {
-				return new IdentifierContribuableResults(dateTraitement);
+				return new IdentifierContribuableResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

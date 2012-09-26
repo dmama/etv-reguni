@@ -21,6 +21,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.JobResults;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Job de migration des coquilles vides des PMs ([UNIREG-2612]).
@@ -46,6 +48,8 @@ public class MigrationCoquillesPM extends JobDefinition {
 	private HibernateTemplate hibernateTemplate;
 	private RapportService rapportService;
 	private ServicePersonneMoraleService servicePM;
+	private TiersService tiersService;
+	private AdresseService adresseService;
 
 	public MigrationCoquillesPM(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -61,6 +65,14 @@ public class MigrationCoquillesPM extends JobDefinition {
 
 	public void setRapportService(RapportService rapportService) {
 		this.rapportService = rapportService;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -134,7 +146,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 
 	private MigrationResults migrate(List<Long> ids, final StatusManager status, final RegDate dateTraitement) {
 
-		final MigrationResults rapportFinal = new MigrationResults(dateTraitement);
+		final MigrationResults rapportFinal = new MigrationResults(dateTraitement, tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, MigrationResults> template =
 				new BatchTransactionTemplate<Long, MigrationResults>(ids, 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
@@ -142,7 +154,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 
 			@Override
 			public MigrationResults createSubRapport() {
-				return new MigrationResults(dateTraitement);
+				return new MigrationResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override
@@ -191,8 +203,8 @@ public class MigrationCoquillesPM extends JobDefinition {
 		public static class Erreur extends Info {
 			public final ErreurType raison;
 
-			public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-				super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+			public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+				super((noCtb == null ? 0 : noCtb), officeImpotID, details, nomCtb);
 				this.raison = raison;
 			}
 
@@ -202,7 +214,8 @@ public class MigrationCoquillesPM extends JobDefinition {
 			}
 		}
 
-		public MigrationResults(RegDate dateTraitement) {
+		public MigrationResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+			super(tiersService, adresseService);
 			this.dateTraitement = dateTraitement;
 		}
 
@@ -230,7 +243,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 
 		@Override
 		public void addErrorException(Long element, Exception e) {
-			erreurs.add(new Erreur(element, null, ErreurType.EXCEPTION, e.getMessage()));
+			erreurs.add(new Erreur(element, null, ErreurType.EXCEPTION, e.getMessage(), getNom(element)));
 		}
 
 		@Override

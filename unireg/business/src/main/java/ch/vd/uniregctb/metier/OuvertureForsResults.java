@@ -8,8 +8,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 
 public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults> {
@@ -43,8 +45,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 
 		public final ModeImposition modeImposition;
 
-		public Traite(long noCtb, Integer officeImpotID, ModeImposition modeImposition) {
-			super(noCtb, officeImpotID, null);
+		public Traite(long noCtb, Integer officeImpotID, ModeImposition modeImposition, String nomCtb) {
+			super(noCtb, officeImpotID, null, nomCtb);
 			this.modeImposition = modeImposition;
 		}
 
@@ -57,8 +59,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -77,7 +79,8 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	public final List<Erreur> habitantEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public OuvertureForsResults(RegDate dateTraitement) {
+	public OuvertureForsResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 
@@ -92,43 +95,43 @@ public class OuvertureForsResults extends JobResults<Long, OuvertureForsResults>
 	}
 
 	public void addHabitantTraite(PersonnePhysique h, Integer officeImpotId, ModeImposition modeImposition) {
-		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, modeImposition));
+		habitantTraites.add(new Traite(h.getNumero(), officeImpotId, modeImposition, getNom(h.getNumero())));
 	}
 
 	public void addUnknownException(PersonnePhysique h, Exception e) {
 		if (e instanceof ServiceInfrastructureException) {
-			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.INFRA_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.INFRA_EXCEPTION, e.getMessage(), getNom(h.getNumero())));
 		}
 		else if (e instanceof ConstraintViolationException) {
-			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(h.getNumero(), null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage(), getNom(h.getNumero())));
 		}
 		else{
-			habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(h.getNumero())));
 		}
 	}
 
 	public void addUnknownException(Long habitantId, Exception e) {
-		habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+		habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
 	}
 
 	public void addOnCommitException(Long habitantId, Exception e) {
 		if (e instanceof ValidationException) {
-			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.VALIDATION_APRES_OUVERTURE, e.getMessage()));
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.VALIDATION_APRES_OUVERTURE, e.getMessage(), getNom(habitantId)));
 		}
 		else if (e instanceof ServiceInfrastructureException) {
-			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.INFRA_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.INFRA_EXCEPTION, e.getMessage(), getNom(habitantId)));
 		}
 		else if (e instanceof ConstraintViolationException) {
-			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.CONSTRAINT_VIOLATION_EXCEPTION, e.getMessage(), getNom(habitantId)));
 		}
 		else {
-			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+			habitantEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
 		}
 	}
 
 	public void addOuvertureForsException(OuvertureForsException e) {
 		final PersonnePhysique h = e.getHabitant();
-		habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), e.getType(), e.getMessage()));
+		habitantEnErrors.add(new Erreur(h.getNumero(), h.getOfficeImpotId(), e.getType(), e.getMessage(), getNom(h.getNumero())));
 	}
 
 	@Override

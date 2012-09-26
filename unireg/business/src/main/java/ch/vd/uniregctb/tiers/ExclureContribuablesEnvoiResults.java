@@ -3,7 +3,10 @@ package ch.vd.uniregctb.tiers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 
 public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureContribuablesEnvoiResults> {
@@ -40,8 +43,8 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -54,8 +57,8 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -76,7 +79,8 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 
 	public boolean interrompu;
 
-	public ExclureContribuablesEnvoiResults(List<Long> ctbsIds, RegDate dateLimiteExclusion) {
+	public ExclureContribuablesEnvoiResults(List<Long> ctbsIds, RegDate dateLimiteExclusion, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.ctbsIds = ctbsIds;
 		this.dateLimiteExclusion = dateLimiteExclusion;
 	}
@@ -84,17 +88,17 @@ public class ExclureContribuablesEnvoiResults extends JobResults<Long, ExclureCo
 	@Override
 	public void addErrorException(Long ctbID, Exception e) {
 		++nbCtbsTotal;
-		ctbsEnErrors.add(new Erreur(0, null, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(0, null, ErreurType.EXCEPTION, e.getMessage(), StringUtils.EMPTY));
 	}
 
 	public void addErrorCtbInconnu(long ctbID) {
 		++nbCtbsTotal;
-		ctbsEnErrors.add(new Erreur(ctbID, null, ErreurType.CTB_INCONNU, ""));
+		ctbsEnErrors.add(new Erreur(ctbID, null, ErreurType.CTB_INCONNU, "", getNom(ctbID)));
 	}
 
 	public void addIgnoreDateLimiteExistante(Contribuable ctb, String message) {
 		++nbCtbsTotal;
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DATE_LIMITE_EXISTANTE, message));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DATE_LIMITE_EXISTANTE, message, getNom(ctb.getNumero())));
 	}
 
 	@Override

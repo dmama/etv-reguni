@@ -6,8 +6,10 @@ import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Résultats détaillés de l'exécution du job de fusion de communes.
@@ -46,8 +48,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Erreur(long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -60,8 +62,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -83,7 +85,8 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	public final List<Erreur> tiersEnErrors = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public FusionDeCommunesResults(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement) {
+	public FusionDeCommunesResults(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateFusion = dateFusion;
 		this.anciensNoOfs = anciensNoOfs;
 		this.nouveauNoOfs = nouveauNoOfs;
@@ -102,15 +105,15 @@ public class FusionDeCommunesResults extends JobResults<Long, FusionDeCommunesRe
 	}
 
 	public void addOnCommitException(Long habitantId, Exception e) {
-		tiersEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage()));
+		tiersEnErrors.add(new Erreur(habitantId, null, ErreurType.UNKNOWN_EXCEPTION, e.getMessage(), getNom(habitantId)));
 	}
 
 	public void addTiersInvalide(Long tiersId, ValidationException e) {
-		tiersEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage()));
+		tiersEnErrors.add(new Erreur(tiersId, null, ErreurType.VALIDATION, e.getMessage(), getNom(tiersId)));
 	}
 
 	public void addTiersIgnoreDejaSurCommuneResultante(Tiers tiers) {
-		tiersIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.FORS_DEJA_SUR_COMMUNE_RESULTANTE, null));
+		tiersIgnores.add(new Ignore(tiers.getNumero(), tiers.getOfficeImpotId(), IgnoreType.FORS_DEJA_SUR_COMMUNE_RESULTANTE, null, getNom(tiers.getNumero())));
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
@@ -55,6 +56,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ValidationService validationService;
 	private final PeriodeImpositionService periodeImpositionService;
+	private final AdresseService adresseService;
 
 	private DeterminationDIsAEmettreProcessor determinationDIsAEmettreProcessor;
 	private EnvoiDIsEnMasseProcessor envoiDIsEnMasseProcessor;
@@ -64,7 +66,8 @@ public class ProduireListeDIsNonEmisesProcessor {
 	public ProduireListeDIsNonEmisesProcessor(HibernateTemplate hibernateTemplate, PeriodeFiscaleDAO periodeDAO,
 	                                          ModeleDocumentDAO modeleDocumentDAO, TacheDAO tacheDAO, TiersService tiersService, DelaisService delaisService,
 	                                          DeclarationImpotService diService, PlatformTransactionManager transactionManager, ParametreAppService parametres,
-	                                          ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService, PeriodeImpositionService periodeImpositionService) {
+	                                          ServiceCivilCacheWarmer serviceCivilCacheWarmer, ValidationService validationService, PeriodeImpositionService periodeImpositionService,
+	                                          AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.periodeDAO = periodeDAO;
 		this.modeleDocumentDAO = modeleDocumentDAO;
@@ -77,17 +80,19 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
 		this.periodeImpositionService = periodeImpositionService;
+		this.adresseService = adresseService;
 	}
 
 	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres, serviceCivilCacheWarmer);
-		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
-				periodeImpositionService);
+		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres,
+				serviceCivilCacheWarmer, adresseService);
+		this.determinationDIsAEmettreProcessor =new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
+				periodeImpositionService, adresseService);
 
-		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement);
+		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
 
 		status.setMessage("Récupération des contribuables à vérifier...");
 
@@ -99,7 +104,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 			@Override
 			public ListeDIsNonEmises createSubRapport() {
-				return new ListeDIsNonEmises(anneePeriode, dateTraitement);
+				return new ListeDIsNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

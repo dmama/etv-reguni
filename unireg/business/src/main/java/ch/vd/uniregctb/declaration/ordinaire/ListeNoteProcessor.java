@@ -65,7 +65,7 @@ public class ListeNoteProcessor {
 	public ListeNoteResults run(final RegDate dateTraitement, final int annee, int nbThreads, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement, annee);
+		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement, annee, tiersService, adresseService);
 		status.setMessage("Récupération des contribuables ...");
 		mapInfo = recupererContribuables(annee);
 		List<Long> ids = new ArrayList(mapInfo.keySet());
@@ -78,7 +78,7 @@ public class ListeNoteProcessor {
 
 			@Override
 			public ListeNoteResults createSubRapport() {
-				return new ListeNoteResults(dateTraitement);
+				return new ListeNoteResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

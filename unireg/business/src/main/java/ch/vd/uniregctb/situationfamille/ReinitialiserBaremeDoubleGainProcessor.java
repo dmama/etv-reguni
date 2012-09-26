@@ -15,6 +15,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
 /**
@@ -39,14 +41,18 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 	private final SituationFamilleService service;
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	private ReinitialiserBaremeDoubleGainResults rapport;
 
 	public ReinitialiserBaremeDoubleGainProcessor(SituationFamilleService service, HibernateTemplate hibernateTemplate,
-			PlatformTransactionManager transactionManager) {
+	                                              PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.service = service;
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public ReinitialiserBaremeDoubleGainResults run(final RegDate dateTraitement, StatusManager s) {
@@ -58,7 +64,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 		status.setMessage("Début du traitement des situations de famille...");
 
-		final ReinitialiserBaremeDoubleGainResults rapportFinal = new ReinitialiserBaremeDoubleGainResults(dateTraitement);
+		final ReinitialiserBaremeDoubleGainResults rapportFinal = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults> template = new BatchTransactionTemplate<Long, ReinitialiserBaremeDoubleGainResults>(dis, BATCH_SIZE, Behavior.REPRISE_AUTOMATIQUE,
 				transactionManager, status, hibernateTemplate);
@@ -66,7 +72,7 @@ public class ReinitialiserBaremeDoubleGainProcessor {
 
 			@Override
 			public ReinitialiserBaremeDoubleGainResults createSubRapport() {
-				return new ReinitialiserBaremeDoubleGainResults(dateTraitement);
+				return new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

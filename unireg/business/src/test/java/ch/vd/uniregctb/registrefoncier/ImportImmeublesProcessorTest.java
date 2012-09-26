@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
@@ -37,7 +38,8 @@ public class ImportImmeublesProcessorTest extends BusinessTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService);
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		processor = new ImportImmeublesProcessor(hibernateTemplate, getBean(ImmeubleDAO.class, "immeubleDAO"), transactionManager, tiersDAO, tiersService, adresseService);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override

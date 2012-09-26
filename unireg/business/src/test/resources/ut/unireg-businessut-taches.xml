@@ -14,6 +14,7 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 </beans>

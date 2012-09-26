@@ -212,7 +212,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final DeterminationDIsAEmettreProcessor processer = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-				parametres, tiersService, transactionManager, validationService, periodeImpositionService);
+				parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
 		return processer.run(anneePeriode, dateTraitement, nbThreads, status);
 	}
 
@@ -225,7 +225,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 			throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer);
+				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService);
 		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
 	}
 
@@ -233,7 +233,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EnvoiAnnexeImmeubleResults envoyerAnnexeImmeubleEnMasse(int anneePeriode, RegDate dateTraitement,
 	                                                               List<ContribuableAvecImmeuble> listeCtb, int nbMax, StatusManager status) throws DeclarationException {
 		final EnvoiAnnexeImmeubleEnMasseProcessor processor = new EnvoiAnnexeImmeubleEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
-				this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService);
+				this, tailleLot, transactionManager, serviceCivilCacheWarmer, periodeImpositionService, adresseService);
 		return processor.run(anneePeriode, listeCtb, nbMax, dateTraitement, status);
 	}
 
@@ -243,7 +243,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public StatistiquesDIs produireStatsDIs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
-		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO, assujettissementService);
+		final ProduireStatsDIsProcessor processor = new ProduireStatsDIsProcessor(hibernateTemplate, infraService, transactionManager, diDAO, assujettissementService, tiersService, adresseService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -253,7 +253,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public StatistiquesCtbs produireStatsCtbs(int anneePeriode, RegDate dateTraitement, StatusManager status) throws DeclarationException {
 
-		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService);
+		final ProduireStatsCtbsProcessor processor = new ProduireStatsCtbsProcessor(hibernateTemplate, infraService, tiersService, transactionManager, assujettissementService, adresseService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -264,7 +264,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public ListeDIsNonEmises produireListeDIsNonEmises(Integer anneePeriode, RegDate dateTraitement, StatusManager status)
 			throws DeclarationException {
 		final ProduireListeDIsNonEmisesProcessor processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDAO,
-				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService, periodeImpositionService);
+				tacheDAO, tiersService, delaisService, this, transactionManager, parametres, serviceCivilCacheWarmer, validationService, periodeImpositionService, adresseService);
 		return processor.run(anneePeriode, dateTraitement, status);
 	}
 
@@ -274,7 +274,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public EchoirDIsResults echoirDIsHorsDelai(RegDate dateTraitement, StatusManager status) throws DeclarationException {
-		final EchoirDIsProcessor processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, this, transactionManager);
+		final EchoirDIsProcessor processor = new EchoirDIsProcessor(hibernateTemplate, delaisService, this, transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, status);
 	}
 
@@ -445,7 +445,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	public EnvoiSommationsDIsResults envoyerSommations(RegDate dateTraitement, boolean miseSousPliImpossible, int nombreMax, StatusManager statusManager) {
 		final DeclarationImpotService diService = this;
 		EnvoiSommationsDIsProcessor processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDAO, delaisService, diService, tiersService, transactionManager, assujettissementService,
-				periodeImpositionService);
+				periodeImpositionService, adresseService);
 		return processor.run(dateTraitement, miseSousPliImpossible, nombreMax, statusManager);
 	}
 
@@ -506,7 +506,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	@Override
 	public DemandeDelaiCollectiveResults traiterDemandeDelaiCollective(List<Long> ids, int annee, RegDate dateDelai,
 	                                                                   RegDate dateTraitement, StatusManager s) {
-		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager);
+		DemandeDelaiCollectiveProcessor processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(ids, annee, dateDelai, dateTraitement, s);
 	}
 
@@ -629,7 +629,7 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	
 	@Override
 	public ImportCodesSegmentResults importerCodesSegment(List<ContribuableAvecCodeSegment> input, StatusManager s) {
-		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService);
+		final ImportCodesSegmentProcessor processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(input, s);
 	}
 }

@@ -4,6 +4,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -25,6 +26,7 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 	private ServiceInfrastructureService infraService;
 	private AssujettissementService assujettissementService;
 	private PeriodeImpositionService periodeImpositionService;
+	private AdresseService adresseService;
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
@@ -58,6 +60,10 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 		this.periodeImpositionService = periodeImpositionService;
 	}
 
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
 	/**
 	 * Extrait la liste des données de référence RPT de la période fiscale donnée
 	 * @param dateTraitement date d'exécution de l'extraction
@@ -69,7 +75,7 @@ public class ExtractionDonneesRptServiceImpl implements ExtractionDonneesRptServ
 	@Override
 	public ExtractionDonneesRptResults produireExtraction(RegDate dateTraitement, int pf, TypeExtractionDonneesRpt mode, int nbThreads, StatusManager statusManager) {
 		final ExtractionDonneesRptProcessor proc = new ExtractionDonneesRptProcessor(hibernateTemplate, transactionManager, tiersService, serviceCivilCacheWarmer, tiersDAO, infraService,
-				assujettissementService, periodeImpositionService);
+				assujettissementService, periodeImpositionService, adresseService);
 		return proc.run(dateTraitement, pf, mode, nbThreads, statusManager);
 	}
 }

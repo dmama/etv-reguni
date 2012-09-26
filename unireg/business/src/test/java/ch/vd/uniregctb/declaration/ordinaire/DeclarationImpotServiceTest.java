@@ -21,6 +21,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.StatusManager;
@@ -87,6 +88,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	private Long idOidLausanne;
 	private Long idAci;
 	private PeriodeImpositionService periodeImpositionService;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -109,6 +111,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final EvenementDeclarationSender evenementDeclarationSender = new MockEvenementDeclarationSender();
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final AssujettissementService assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 		serviceCivil.setUp(new DefaultMockServiceCivil());
 
@@ -211,7 +214,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			final Contribuable john = hibernateTemplate.get(Contribuable.class, ids.johnId);
 
 			DeterminationDIsAEmettreProcessor processor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO,
-					parametres, tiersService, transactionManager, validationService, periodeImpositionService);
+					parametres, tiersService, transactionManager, validationService, periodeImpositionService, adresseService);
 
 			// Lance et interrompt l'envoi en masse après 2 contribuables (message de démarrage + message d'envoi de la DI d'eric)
 			InterruptingStatusManager status = new InterruptingStatusManager(2);

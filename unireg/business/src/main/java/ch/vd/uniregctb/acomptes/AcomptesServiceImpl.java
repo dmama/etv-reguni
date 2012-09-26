@@ -4,6 +4,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -18,6 +19,7 @@ public class AcomptesServiceImpl implements AcomptesService {
 	private PlatformTransactionManager transactionManager;
 	private TiersDAO tiersDAO;
 	private AssujettissementService assujettissementService;
+	private AdresseService adresseService;
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTiersService(TiersService tiersService) {
@@ -49,9 +51,13 @@ public class AcomptesServiceImpl implements AcomptesService {
 		this.assujettissementService = assujettissementService;
 	}
 
+	public void setAdresseService(AdresseService adresseService) {
+		this.adresseService = adresseService;
+	}
+
 	@Override
 	public AcomptesResults produireAcomptes(RegDate dateTraitement, int nbThreads, Integer annee, StatusManager statusManager) {
-		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService);
+		final AcomptesProcessor processor = new AcomptesProcessor(hibernateTemplate, tiersService, serviceCivilCacheWarmer, transactionManager, tiersDAO, assujettissementService, adresseService);
 		return processor.run(dateTraitement, nbThreads, annee, statusManager);
 	}
 }

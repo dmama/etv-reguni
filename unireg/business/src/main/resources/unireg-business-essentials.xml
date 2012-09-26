@@ -99,6 +99,7 @@
 		<property name="evenementFiscalService" ref="evenementFiscalService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 	<bean id="lrService" class="ch.vd.uniregctb.declaration.source.ListeRecapServiceImpl" lazy-init="true">
@@ -114,6 +115,7 @@
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="helperSommationLR" ref="impressionSommationLRHelper" />
 		<property name="tiersService" ref="tiersService" />
+		<property name="adresseService" ref="adresseService" />
 	</bean>
 
 	<bean id="diService" class="ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotServiceImpl">

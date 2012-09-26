@@ -11,9 +11,11 @@ import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsResults> {
 
@@ -118,6 +120,10 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	private final List<Info> disContribuablesSourcierPur = new ArrayList<Info>();
 	private final List<Info> disContribuablesIndigents = new ArrayList<Info>();
 	private final List<Info> disOptionnelles = new ArrayList<Info>();
+
+	public EnvoiSommationsDIsResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
 
 	@Override
 	public void addAll(EnvoiSommationsDIsResults right) {

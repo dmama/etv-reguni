@@ -8,6 +8,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -27,12 +28,16 @@ public class ExclureContribuablesEnvoiProcessor {
 
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	private ExclureContribuablesEnvoiResults rapport;
 
-	public ExclureContribuablesEnvoiProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager) {
+	public ExclureContribuablesEnvoiProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public ExclureContribuablesEnvoiResults run(final List<Long> ctbIds, final RegDate dateLimite, StatusManager s) {
@@ -41,7 +46,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 		status.setMessage("Début du traitement...");
 
-		final ExclureContribuablesEnvoiResults rapportFinal = new ExclureContribuablesEnvoiResults(ctbIds, dateLimite);
+		final ExclureContribuablesEnvoiResults rapportFinal = new ExclureContribuablesEnvoiResults(ctbIds, dateLimite, tiersService, adresseService);
 
 		final BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults> template = new BatchTransactionTemplate<Long, ExclureContribuablesEnvoiResults>(ctbIds, BATCH_SIZE,
 				Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
@@ -49,7 +54,7 @@ public class ExclureContribuablesEnvoiProcessor {
 
 			@Override
 			public ExclureContribuablesEnvoiResults createSubRapport() {
-				return new ExclureContribuablesEnvoiResults(ctbIds, dateLimite);
+				return new ExclureContribuablesEnvoiResults(ctbIds, dateLimite, tiersService, adresseService);
 			}
 
 			@Override

@@ -6,9 +6,16 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
+import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.tiers.TiersService;
+
 public class CorrectionFlagHabitantSurMenagesResults extends CorrectionFlagHabitantAbstractResults<CorrectionFlagHabitantSurMenagesResults> {
 
 	private final List<ContribuableErreur> erreurs = new LinkedList<ContribuableErreur>();
+
+	public CorrectionFlagHabitantSurMenagesResults(TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
+	}
 
 	public void sort() {
 		Collections.sort(erreurs, COMPARATOR);

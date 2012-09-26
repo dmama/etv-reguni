@@ -26,7 +26,7 @@ public class UNIREG1472 {
 		final AssujettissementService assujettissementService = new AssujettissementServiceImpl();
 		final PeriodeImpositionServiceImpl periodeImpositionService = new PeriodeImpositionServiceImpl();
 		periodeImpositionService.setAssujettissementService(assujettissementService);
-		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService);
+		processor = new EnvoiSommationsDIsProcessor(null, null, null,null, null, null, assujettissementService, periodeImpositionService, null);
 	}
 	
 	@Test

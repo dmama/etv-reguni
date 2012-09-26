@@ -2063,7 +2063,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 	@Override
 	public ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, adresseTiersDAO, serviceInfra, transactionManager);
+		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, adresseTiersDAO, serviceInfra, transactionManager, tiersService);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
 }

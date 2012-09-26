@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -22,6 +23,7 @@ import ch.vd.uniregctb.declaration.DelaiDeclaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -40,14 +42,18 @@ public class DemandeDelaiCollectiveProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final PeriodeFiscaleDAO periodeFiscaleDAO;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	private DemandeDelaiCollectiveResults rapport;
 
 	public DemandeDelaiCollectiveProcessor(PeriodeFiscaleDAO periodeFiscaleDAO, HibernateTemplate hibernateTemplate,
-			PlatformTransactionManager transactionManager) {
+	                                       PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.periodeFiscaleDAO = periodeFiscaleDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -61,7 +67,7 @@ public class DemandeDelaiCollectiveProcessor {
 			final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final DemandeDelaiCollectiveResults rapportFinal = new DemandeDelaiCollectiveResults(annee, dateDelai, ids, dateTraitement);
+		final DemandeDelaiCollectiveResults rapportFinal = new DemandeDelaiCollectiveResults(annee, dateDelai, ids, dateTraitement, tiersService, adresseService);
 
 		checkParams(annee);
 
@@ -72,7 +78,7 @@ public class DemandeDelaiCollectiveProcessor {
 
 			@Override
 			public DemandeDelaiCollectiveResults createSubRapport() {
-				return new DemandeDelaiCollectiveResults(annee, dateDelai, ids, dateTraitement);
+				return new DemandeDelaiCollectiveResults(annee, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

@@ -5,6 +5,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ResolutionAdresseResults extends JobResults<Long, ResolutionAdresseResults> {
 	public RegDate getDateTraitement() {
@@ -49,7 +50,8 @@ public class ResolutionAdresseResults extends JobResults<Long, ResolutionAdresse
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public ResolutionAdresseResults(RegDate dateTraitement) {
+	public ResolutionAdresseResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

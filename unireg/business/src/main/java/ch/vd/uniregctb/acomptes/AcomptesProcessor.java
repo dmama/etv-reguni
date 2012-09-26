@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -31,19 +32,21 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 	private final TiersDAO tiersDAO;
 	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final AssujettissementService assujettissementService;
+	private final AdresseService adresseService;
 
 	public AcomptesProcessor(HibernateTemplate hibernateTemplate,
 	                         TiersService tiersService,
 	                         ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                         PlatformTransactionManager transactionManager,
 	                         TiersDAO tiersDAO,
-	                         AssujettissementService assujettissementService) {
+	                         AssujettissementService assujettissementService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.assujettissementService = assujettissementService;
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -58,13 +61,13 @@ public class AcomptesProcessor extends ListesProcessor<AcomptesResults, Acomptes
 
 			@Override
 			public AcomptesResults createResults(RegDate dateTraitement) {
-				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService, assujettissementService);
+				return new AcomptesResults(dateTraitement, nbThreads, annee, tiersService, assujettissementService, adresseService);
 			}
 
 			@Override
 			public AcomptesThread createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new AcomptesThread(queue, dateTraitement, nbThreads, annee, serviceCivilCacheWarmer, tiersService,
-						status, compteur, transactionManager, tiersDAO, hibernateTemplate, assujettissementService);
+						status, compteur, transactionManager, tiersDAO, hibernateTemplate, assujettissementService, adresseService);
 			}
 
 			@Override

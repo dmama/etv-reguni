@@ -10,6 +10,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -44,9 +45,10 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
 
 		processor = new ProduireListeDIsNonEmisesProcessor(hibernateTemplate, periodeDAO, modeleDocumentDAO, tacheDAO, tiersService, delaisService, diService, transactionManager, parametreAppService, serviceCivilCacheWarmer, validationService,
-				periodeImpositionService);
+				periodeImpositionService, adresseService);
 	}
 
 	@Test

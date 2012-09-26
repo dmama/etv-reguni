@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class TraiterEvenementExterneResult extends JobResults<Long, TraiterEvenementExterneResult> {
 
@@ -58,7 +60,8 @@ public class TraiterEvenementExterneResult extends JobResults<Long, TraiterEvene
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public TraiterEvenementExterneResult(RegDate dateTraitement) {
+	public TraiterEvenementExterneResult(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

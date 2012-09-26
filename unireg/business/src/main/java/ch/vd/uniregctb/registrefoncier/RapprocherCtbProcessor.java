@@ -66,7 +66,7 @@ public class RapprocherCtbProcessor {
 
 		status.setMessage("Début du Rapprochement ...");
 
-		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement);
+		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement, tiersService, adresseService);
 		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template =
 				new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
 						nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
@@ -76,7 +76,7 @@ public class RapprocherCtbProcessor {
 
 			@Override
 			public RapprocherCtbResults createSubRapport() {
-				return new RapprocherCtbResults(dateTraitement);
+				return new RapprocherCtbResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

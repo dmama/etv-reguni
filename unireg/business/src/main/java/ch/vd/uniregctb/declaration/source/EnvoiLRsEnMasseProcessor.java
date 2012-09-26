@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -26,6 +27,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 
 public class EnvoiLRsEnMasseProcessor {
@@ -37,12 +39,16 @@ public class EnvoiLRsEnMasseProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final HibernateTemplate hibernateTemplate;
 	private final ListeRecapService lrService;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	public EnvoiLRsEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-	                                ListeRecapService lrService) {
+	                                ListeRecapService lrService, TiersService tiersService, AdresseService adresseService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -56,7 +62,7 @@ public class EnvoiLRsEnMasseProcessor {
 		final StatusManager s = status;
 
 		final RegDate dateTraitement = RegDate.get();
-		final EnvoiLRsResults rapportFinal = new EnvoiLRsResults(dateTraitement, dateFinPeriode);
+		final EnvoiLRsResults rapportFinal = new EnvoiLRsResults(dateTraitement, dateFinPeriode, tiersService, adresseService);
 
 		// Liste de tous les DPI à passer en revue
 		final List<Long> list = getListDPI();
@@ -69,7 +75,7 @@ public class EnvoiLRsEnMasseProcessor {
 
 			@Override
 			public EnvoiLRsResults createSubRapport() {
-				return new EnvoiLRsResults(dateTraitement, dateFinPeriode);
+				return new EnvoiLRsResults(dateTraitement, dateFinPeriode, tiersService, adresseService);
 			}
 
 			@Override

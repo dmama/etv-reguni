@@ -17,6 +17,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -36,24 +37,27 @@ public class ComparerSituationFamilleProcessor {
 	private final ServiceCivilService serviceCivil;
 	private final PlatformTransactionManager transactionManager;
 	private final SituationFamilleDAO situationFamilleDAO;
+	private final AdresseService adresseService;
 	private final TiersService tiersService;
 	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<ComparerSituationFamilleResults>();
 
-	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil,SituationFamilleDAO situationFamilleDAO,TiersService tiersService, PlatformTransactionManager transactionManager) {
+	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, SituationFamilleDAO situationFamilleDAO, TiersService tiersService, PlatformTransactionManager transactionManager,
+	                                         AdresseService adresseService) {
 
 		this.serviceCivil = serviceCivil;
 		this.transactionManager = transactionManager;
 		this.situationFamilleDAO = situationFamilleDAO;
 		this.tiersService = tiersService;
 
+		this.adresseService = adresseService;
 	}
 
 
 	public ComparerSituationFamilleResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ComparerSituationFamilleResults rapportFinal = new ComparerSituationFamilleResults(dateTraitement);
+		final ComparerSituationFamilleResults rapportFinal = new ComparerSituationFamilleResults(dateTraitement, tiersService, adresseService);
 		status.setMessage("Récupération des Situations de familles à comparer...");
 		final List<Long> ids = recupererSituationFamilleAComparer();
 
@@ -65,7 +69,7 @@ public class ComparerSituationFamilleProcessor {
 
 			@Override
 			public ComparerSituationFamilleResults createSubRapport() {
-				return new ComparerSituationFamilleResults(dateTraitement);
+				return new ComparerSituationFamilleResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

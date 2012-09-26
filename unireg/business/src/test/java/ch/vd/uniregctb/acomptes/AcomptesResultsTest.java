@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -23,11 +24,13 @@ public class AcomptesResultsTest extends BusinessTest {
 	private static final RegDate dateOuvertureForSecondaire = RegDate.get(1998,5,12);
 
 	private AssujettissementService assujettissementService;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		assujettissementService = getBean(AssujettissementService.class, "assujettissementService");
+		adresseService = getBean(AdresseService.class, "adresseService");
 	}
 
 	@Test
@@ -35,7 +38,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	public void testCalculerInfoAssujettissementHC() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService, adresseService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);
@@ -51,7 +54,7 @@ public class AcomptesResultsTest extends BusinessTest {
 	public void testCalculerInfoAssujettissementHS() {
 
 		final int annee = dateTraitement.year();
-		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService);
+		final AcomptesResults results = new AcomptesResults(dateTraitement, 1, annee, tiersService, assujettissementService, adresseService);
 
 		final PersonnePhysique pp = new PersonnePhysique(false);
 		pp.setNumero(12345678L);

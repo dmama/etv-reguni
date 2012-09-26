@@ -90,7 +90,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 		final StatusManager s = status;
 
-		final OuvertureForsResults rapportFinal = new OuvertureForsResults(dateReference);
+		final OuvertureForsResults rapportFinal = new OuvertureForsResults(dateReference, tiersService, adresseService);
 
 		// boucle principale sur les habitants à traiter
 		final List<Long> list = getListHabitantsSansForPrincipal(dateReference);
@@ -101,7 +101,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 
 			@Override
 			public OuvertureForsResults createSubRapport() {
-				return new OuvertureForsResults(dateReference);
+				return new OuvertureForsResults(dateReference, tiersService, adresseService);
 			}
 
 			@Override

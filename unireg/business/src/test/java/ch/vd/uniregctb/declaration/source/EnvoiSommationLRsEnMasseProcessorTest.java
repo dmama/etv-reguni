@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
@@ -36,6 +37,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	private ListeRecapitulativeDAO lrDAO;
 
 	private EnvoiSommationLRsEnMasseProcessor processor;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -43,10 +45,11 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 		lrService = getBean(ListeRecapService.class, "lrService");
 		delaisService = getBean(DelaisService.class, "delaisService");
 		lrDAO = getBean(ListeRecapitulativeDAO.class,"lrDAO");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
 
 		// création du processeur à la main pour pouvoir accéder aux méthodes protégées
-		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService);
+		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersService, adresseService);
 	}
 
 	/**
@@ -248,7 +251,7 @@ public class EnvoiSommationLRsEnMasseProcessorTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testErreurException() throws Exception {
 		// processeur qui fait boom! au traitement d'une LR
-		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService) {
+		processor = new EnvoiSommationLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, delaisService, tiersService, adresseService) {
 			@Override
 			protected void traiteLR(DeclarationImpotSource lr, RegDate dateTraitement, EnvoiSommationLRsResults rapport) throws Exception {
 				throw new RuntimeException("Exception de test!");

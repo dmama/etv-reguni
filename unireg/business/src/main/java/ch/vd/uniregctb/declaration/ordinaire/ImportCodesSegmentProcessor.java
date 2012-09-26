@@ -13,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -32,17 +33,19 @@ public class ImportCodesSegmentProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
-	public ImportCodesSegmentProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService) {
+	public ImportCodesSegmentProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public ImportCodesSegmentResults run(List<ContribuableAvecCodeSegment> input, @Nullable StatusManager s) {
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
 
-		final ImportCodesSegmentResults rapportFinal = new ImportCodesSegmentResults();
+		final ImportCodesSegmentResults rapportFinal = new ImportCodesSegmentResults(tiersService, adresseService);
 		final BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults> batchTemplate = new BatchTransactionTemplate<ContribuableAvecCodeSegment, ImportCodesSegmentResults>(input, BATCH_SIZE, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, status, hibernateTemplate);
 		batchTemplate.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<ContribuableAvecCodeSegment, ImportCodesSegmentResults>() {
 			@Override
@@ -54,7 +57,7 @@ public class ImportCodesSegmentProcessor {
 
 			@Override
 			public ImportCodesSegmentResults createSubRapport() {
-				return new ImportCodesSegmentResults();
+				return new ImportCodesSegmentResults(tiersService, adresseService);
 			}
 		});
 

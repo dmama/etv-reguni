@@ -19,6 +19,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -40,6 +41,7 @@ import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisDepense;
 import ch.vd.uniregctb.metier.assujettissement.VaudoisOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -54,20 +56,25 @@ public class ProduireStatsDIsProcessor {
 	private final PlatformTransactionManager transactionManager;
 	private final DeclarationImpotOrdinaireDAO diDAO;
 	private final AssujettissementService assujettissementService;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	public ProduireStatsDIsProcessor(HibernateTemplate hibernateTemplate, ServiceInfrastructureService infraService,
-	                                 PlatformTransactionManager transactionManager, DeclarationImpotOrdinaireDAO diDAO, AssujettissementService assujettissementService) {
+	                                 PlatformTransactionManager transactionManager, DeclarationImpotOrdinaireDAO diDAO, AssujettissementService assujettissementService, TiersService tiersService,
+	                                 AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.infraService = infraService;
 		this.transactionManager = transactionManager;
 		this.diDAO = diDAO;
 		this.assujettissementService = assujettissementService;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public StatistiquesDIs run(final int anneePeriode, final RegDate dateTraitement, StatusManager statusManager) throws DeclarationException {
 
 		final StatusManager status = statusManager != null ? statusManager : new LoggingStatusManager(LOGGER);
-		final StatistiquesDIs rapportFinal = new StatistiquesDIs(anneePeriode, dateTraitement);
+		final StatistiquesDIs rapportFinal = new StatistiquesDIs(anneePeriode, dateTraitement, tiersService, adresseService);
 
 		status.setMessage(String.format("Début de la production des statistiques des déclaration d'impôts ordinaires : période fiscale = %d.", anneePeriode));
 
@@ -77,7 +84,7 @@ public class ProduireStatsDIsProcessor {
 
 			@Override
 			public StatistiquesDIs createSubRapport() {
-				return new StatistiquesDIs(anneePeriode, dateTraitement);
+				return new StatistiquesDIs(anneePeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -33,16 +34,18 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 	private HibernateTemplate hibernateTemplate;
 	private DemandeDelaiCollectiveProcessor processor;
 	private final RegDate dateTraitement = RegDate.get();
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
 		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		adresseService = getBean(AdresseService.class, "adresseService");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager);
+		processor = new DemandeDelaiCollectiveProcessor(periodeDAO, hibernateTemplate, transactionManager, tiersService, adresseService);
 	}
 
 	@Test
@@ -62,7 +65,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 
 		{
 			// TEST : un tiers sans déclaration pour 2009.
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
 			assertEquals(0, rapport.traites.size());
@@ -90,7 +93,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - Le délai est d'abord null
 			// - une fois le délai accordé, le délai est au au 01.09.2010
 
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
 			assertEquals(1, rapport.traites.size());
@@ -105,7 +108,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// - le délai ne doit pas etre ajouté
 			// - le délai est toujours au 01.09.2010
 
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 8, 31)));
 			assertEquals(0, rapport.traites.size());
@@ -120,7 +123,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// Resultat attendu :
 			// - le délai ne doit pas etre ajouté
 			// - le délai est toujours au 01.09.2010
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(dateDelai));
 			assertEquals(0, rapport.traites.size());
@@ -135,7 +138,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			// Resultat attendu :
 			// - le délai doit etre ajouté
 			// - le délai est maintenant au 02.09.2010
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 9, 2)));
 			assertEquals(1, rapport.traites.size());
@@ -153,7 +156,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			final EtatDeclaration etatSomme = newEtatDeclaration(TypeEtatDeclaration.SOMMEE);
 			etatSomme.setDateObtention(date(2010,7,18));
 			d.addEtat(etatSomme);
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
 			assertEquals(0, rapport.traites.size());
@@ -169,7 +172,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 			final EtatDeclaration etatEchu = newEtatDeclaration(TypeEtatDeclaration.ECHUE);
 			etatEchu.setDateObtention(date(2010,8,17));
 			d.addEtat(etatEchu);
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
 			assertEquals(0, rapport.traites.size());
@@ -190,7 +193,7 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 		{
 
 
-			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement);
+			final DemandeDelaiCollectiveResults rapport = new DemandeDelaiCollectiveResults(2009, dateDelai, ids, dateTraitement, tiersService, adresseService);
 			processor.setRapport(rapport);
 			processor.accorderDelaiDeclaration(mrKong, 2009, newDelaiDeclaration(date(2010, 12, 4)));
 			assertEquals(0, rapport.traites.size());

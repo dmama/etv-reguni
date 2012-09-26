@@ -12,6 +12,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ListesProcessor;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -30,15 +31,17 @@ public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisRes
 	private final PlatformTransactionManager transactionManager;
 	private final TiersDAO tiersDAO;
 	private final AssujettissementService assujettissementService;
+	private final AdresseService adresseService;
 
 	public ListeAssujettisProcessor(HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
-	                                PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AssujettissementService assujettissementService) {
+	                                PlatformTransactionManager transactionManager, TiersDAO tiersDAO, AssujettissementService assujettissementService, AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.transactionManager = transactionManager;
 		this.tiersDAO = tiersDAO;
 		this.assujettissementService = assujettissementService;
+		this.adresseService = adresseService;
 	}
 
 	public ListeAssujettisResults run(RegDate dateTraitement, final int nbThreads, final int anneeFiscale, final boolean avecSourciersPurs,
@@ -55,13 +58,13 @@ public class ListeAssujettisProcessor extends ListesProcessor<ListeAssujettisRes
 
 			@Override
 			public ListeAssujettisResults createResults(RegDate dateTraitement) {
-				return new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService, assujettissementService);
+				return new ListeAssujettisResults(dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee, tiersService, assujettissementService, adresseService);
 			}
 
 			@Override
 			public ListeAssujettisThreads createThread(LinkedBlockingQueue<List<Long>> queue, RegDate dateTraitement, StatusManager status, AtomicInteger compteur, HibernateTemplate hibernateTemplate) {
 				return new ListeAssujettisThreads(queue, status, compteur, dateTraitement, nbThreads, anneeFiscale, avecSourciersPurs, seulementAssujettisFinAnnee,
-				                                  serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, assujettissementService);
+				                                  serviceCivilCacheWarmer, tiersService, transactionManager, tiersDAO, hibernateTemplate, assujettissementService, adresseService);
 			}
 		});
 	}

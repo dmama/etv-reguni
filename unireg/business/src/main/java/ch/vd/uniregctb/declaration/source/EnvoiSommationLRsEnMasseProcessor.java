@@ -16,6 +16,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
@@ -25,6 +26,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -38,13 +40,17 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 	private final HibernateTemplate hibernateTemplate;
 	private final ListeRecapService lrService;
 	private final DelaisService delaisService;
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 	public EnvoiSommationLRsEnMasseProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate,
-			ListeRecapService lrService, DelaisService delaisService) {
+	                                         ListeRecapService lrService, DelaisService delaisService, TiersService tiersService, AdresseService adresseService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.lrService = lrService;
 		this.delaisService = delaisService;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	/**
@@ -63,7 +69,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 		}
 		final StatusManager s = status;
 
-		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement);
+		final EnvoiSommationLRsResults rapportFinal = new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement, tiersService, adresseService);
 
 		// liste de toutes les LR à passer en revue
 		final List<IdentifiantDeclaration> list = getListIdLRs(dateFinPeriode, dateTraitement, categorie);
@@ -74,7 +80,7 @@ private final Logger LOGGER = Logger.getLogger(EnvoiLRsEnMasseProcessor.class);
 
 			@Override
 			public EnvoiSommationLRsResults createSubRapport() {
-				return new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement);
+				return new EnvoiSommationLRsResults(categorie, dateFinPeriode, dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

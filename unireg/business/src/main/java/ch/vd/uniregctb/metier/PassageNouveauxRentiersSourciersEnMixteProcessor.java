@@ -85,7 +85,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		}
 		final StatusManager s = statusManager;
 
-		final PassageNouveauxRentiersSourciersEnMixteResults rapportFinal = new PassageNouveauxRentiersSourciersEnMixteResults(dateTraitement);
+		final PassageNouveauxRentiersSourciersEnMixteResults rapportFinal = new PassageNouveauxRentiersSourciersEnMixteResults(dateTraitement, tiersService, adresseService);
 
 		final List<Long> list = getListPotentielsNouveauxRentiersSourciers(dateTraitement);
 
@@ -96,7 +96,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 			@Override
 			public PassageNouveauxRentiersSourciersEnMixteResults createSubRapport() {
-				return new PassageNouveauxRentiersSourciersEnMixteResults(dateTraitement);
+				return new PassageNouveauxRentiersSourciersEnMixteResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

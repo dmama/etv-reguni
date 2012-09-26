@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.Erreur;
 import ch.vd.uniregctb.situationfamille.ReinitialiserBaremeDoubleGainResults.ErreurType;
@@ -37,6 +38,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 
 	private ReinitialiserBaremeDoubleGainProcessor processor;
 	private SituationFamilleDAO dao;
+	private AdresseService adresseService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -44,8 +46,9 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 
 		SituationFamilleService service = getBean(SituationFamilleService.class, "situationFamilleService");
 		dao = getBean(SituationFamilleDAO.class, "situationFamilleDAO");
+		adresseService = getBean(AdresseService.class, "adresseService");
 
-		processor = new ReinitialiserBaremeDoubleGainProcessor(service, hibernateTemplate, transactionManager);
+		processor = new ReinitialiserBaremeDoubleGainProcessor(service, hibernateTemplate, transactionManager, tiersService, adresseService);
 	}
 
 	@Test
@@ -89,7 +92,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement);
+		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 
 		processor.setRapport(rapport);
 		processor.traiterSituation(id, dateTraitement);
@@ -137,7 +140,7 @@ public class ReinitialiserBaremeDoubleGainProcessorTest extends BusinessTest {
 			}
 		});
 
-		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement);
+		final ReinitialiserBaremeDoubleGainResults rapport = new ReinitialiserBaremeDoubleGainResults(dateTraitement, tiersService, adresseService);
 
 		processor.setRapport(rapport);
 		processor.traiterSituation(ids.situation, dateTraitement);

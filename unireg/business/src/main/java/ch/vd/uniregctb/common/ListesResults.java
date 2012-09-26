@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -62,7 +63,8 @@ public abstract class ListesResults<T extends ListesResults<T>> extends JobResul
         }
     }
 
-    public ListesResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService) {
+    public ListesResults(RegDate dateTraitement, int nombreThreads, TiersService tiersService, AdresseService adresseService) {
+	    super(tiersService, adresseService);
         this.dateTraitement = dateTraitement;
 	    this.nombreThreads = nombreThreads;
 	    this.tiersService = tiersService;

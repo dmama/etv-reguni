@@ -5,10 +5,12 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.LotContribuables;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long, R> {
 
@@ -47,8 +49,8 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public static class Erreur extends Info {
 		public final ErreurType raison;
 
-		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details) {
-			super((noCtb == null ? 0 : noCtb), officeImpotID, details);
+		public Erreur(Long noCtb, Integer officeImpotID, ErreurType raison, String details, String nomCtb) {
+			super((noCtb == null ? 0 : noCtb), officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -61,8 +63,8 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public static class Ignore extends Info {
 		public final IgnoreType raison;
 
-		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details) {
-			super(noCtb, officeImpotID, details);
+		public Ignore(long noCtb, Integer officeImpotID, IgnoreType raison, String details, String nomCtb) {
+			super(noCtb, officeImpotID, details, nomCtb);
 			this.raison = raison;
 		}
 
@@ -90,7 +92,9 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede) {
+	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede, TiersService tiersService,
+	                       AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.annee = annee;
 		this.categorie = categorie;
 		this.dateTraitement = dateTraitement;
@@ -110,38 +114,38 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 
 	@Override
 	public void addErrorException(Long idCtb, Exception e) {
-		ctbsEnErrors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(idCtb, null, ErreurType.EXCEPTION, e.getMessage(), getNom(idCtb)));
 	}
 
 	public void addErrorException(Contribuable ctb, Exception e) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage()));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage(), getNom(ctb.getNumero())));
 	}
 
 	public void addRollback(LotContribuables lot, Exception e) {
 		List<Long> ids = lot.ids;
 		for (Long id : ids) {
-			ctbsRollback.add(new Erreur(id, null, ErreurType.ROLLBACK, e.getMessage()));
+			ctbsRollback.add(new Erreur(id, null, ErreurType.ROLLBACK, e.getMessage(), getNom(id)));
 		}
 	}
 	public void addErrorDICollision(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.COLLISION_DI, details));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.COLLISION_DI, details, getNom(ctb.getNumero())));
 	}
 
 	public void addErrorForGestionNul(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
-		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.FOR_GESTION_NUL, details));
+		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.FOR_GESTION_NUL, details, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreDIDejaExistante(Contribuable ctb, RegDate dateDebut, RegDate dateFin) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DI_DEJA_EXISTANTE, null));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DI_DEJA_EXISTANTE, null, getNom(ctb.getNumero())));
 	}
 
 	public void addIgnoreCtbExclu(Contribuable ctb, RegDate dateDebut, RegDate dateFin, RegDate dateLimiteExclusion) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Date limite de l'exclusion = "
-				+ RegDateHelper.dateToDisplayString(dateLimiteExclusion)));
+				+ RegDateHelper.dateToDisplayString(dateLimiteExclusion), getNom(ctb.getNumero())));
 	}
 
 public void addIgnoreCtbExcluDecede(Contribuable ctb, RegDate dateDebut, RegDate dateFin) {
-		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Décédé en fin d'année"));
+		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Décédé en fin d'année", getNom(ctb.getNumero())));
 	}
 
 

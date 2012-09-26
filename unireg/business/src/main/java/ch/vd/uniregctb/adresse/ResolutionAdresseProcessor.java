@@ -24,6 +24,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class ResolutionAdresseProcessor {
 
@@ -34,20 +35,23 @@ public class ResolutionAdresseProcessor {
 	private final AdresseTiersDAO adressetiersDAO;
 	private final ServiceInfrastructureService infraService;
 	private final PlatformTransactionManager transactionManager;
+	private final TiersService tiersService;
 	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<ResolutionAdresseResults>();
 
-	public ResolutionAdresseProcessor(AdresseService adresseService, AdresseTiersDAO adressetiersDAO, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager) {
+	public ResolutionAdresseProcessor(AdresseService adresseService, AdresseTiersDAO adressetiersDAO, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager,
+	                                  TiersService tiersService) {
 		this.adresseService = adresseService;
 		this.adressetiersDAO = adressetiersDAO;
 		this.infraService = infraService;
 		this.transactionManager = transactionManager;
+		this.tiersService = tiersService;
 	}
 
 	public ResolutionAdresseResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-		final ResolutionAdresseResults rapportFinal = new ResolutionAdresseResults(dateTraitement);
+		final ResolutionAdresseResults rapportFinal = new ResolutionAdresseResults(dateTraitement, tiersService, adresseService);
 		status.setMessage("Récupération des adresses à résoudre...");
 		final List<Long> ids = recupererAdresseATraiter();
 
@@ -59,7 +63,7 @@ public class ResolutionAdresseProcessor {
 
 			@Override
 			public ResolutionAdresseResults createSubRapport() {
-				return new ResolutionAdresseResults(dateTraitement);
+				return new ResolutionAdresseResults(dateTraitement, tiersService, adresseService);
 			}
 
 			@Override

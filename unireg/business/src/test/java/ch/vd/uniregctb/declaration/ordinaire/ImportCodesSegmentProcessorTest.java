@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
@@ -31,7 +32,8 @@ public class ImportCodesSegmentProcessorTest extends BusinessTest {
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService);
+		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
+		processor = new ImportCodesSegmentProcessor(hibernateTemplate, transactionManager, tiersService, adresseService);
 	}
 
 	@Test

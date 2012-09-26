@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.tiers.TiersService;
 
 public class IdentifierContribuableResults extends JobResults<Long, IdentifierContribuableResults> {
 	public RegDate getDateTraitement() {
@@ -69,7 +71,8 @@ public class IdentifierContribuableResults extends JobResults<Long, IdentifierCo
 	public final List<Erreur> erreurs = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public IdentifierContribuableResults(RegDate dateTraitement) {
+	public IdentifierContribuableResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
+		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
 	}
 

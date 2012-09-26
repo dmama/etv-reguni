@@ -20,6 +20,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
@@ -51,15 +52,17 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final AssujettissementService assujettissementService;
+	private final AdresseService adresseService;
 
 	public DeterminerMouvementsDossiersEnMasseProcessor(TiersService tiersService, TiersDAO tiersDAO, MouvementDossierDAO mouvementDossierDAO, HibernateTemplate hibernateTemplate,
-	                                                    PlatformTransactionManager transactionManager, AssujettissementService assujettissementService) {
+	                                                    PlatformTransactionManager transactionManager, AssujettissementService assujettissementService, AdresseService adresseService) {
 		this.tiersService = tiersService;
 		this.tiersDAO = tiersDAO;
 		this.mouvementDossierDAO = mouvementDossierDAO;
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 		this.assujettissementService = assujettissementService;
+		this.adresseService = adresseService;
 	}
 
 	protected static class RangesUtiles {
@@ -84,7 +87,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 	public DeterminerMouvementsDossiersEnMasseResults run(final RegDate dateTraitement, final boolean archivesSeulement, StatusManager s) {
 
 		final StatusManager status = (s != null ? s : new LoggingStatusManager(LOGGER));
-		final DeterminerMouvementsDossiersEnMasseResults rapportFinal = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+		final DeterminerMouvementsDossiersEnMasseResults rapportFinal = new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 
 		status.setMessage("Récupération des contribuables...");
 		final List<Long> ctbs = getListeIdsContribuablesAvecFors();
@@ -99,7 +102,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessor {
 
 			@Override
 			public DeterminerMouvementsDossiersEnMasseResults createSubRapport() {
-				return new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement);
+				return new DeterminerMouvementsDossiersEnMasseResults(dateTraitement, archivesSeulement, tiersService, adresseService);
 			}
 
 			@Override

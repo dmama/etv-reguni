@@ -47,7 +47,7 @@ public class ListesNominativesResults extends ListesResults<ListesNominativesRes
 
 	public ListesNominativesResults(RegDate dateTraitement, int nombreThreads, TypeAdresse typeAdressesIncluses, boolean avecContribuablesPP, boolean avecContribuablesPM, boolean avecDebiteurs,
 	                                TiersService tiersService, AdresseService adresseService) {
-        super(dateTraitement, nombreThreads, tiersService);
+        super(dateTraitement, nombreThreads, tiersService, adresseService);
         this.typeAdressesIncluses = typeAdressesIncluses;
 	    this.avecContribuablesPP = avecContribuablesPP;
 		this.avecContribuablesPM = avecContribuablesPM;

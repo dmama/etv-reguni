@@ -11,6 +11,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -40,8 +41,8 @@ public abstract class ExtractionDonneesRptPeriodeImpositionResults extends Extra
 	private final PeriodeImpositionService periodeImpositionService;
 
 	public ExtractionDonneesRptPeriodeImpositionResults(RegDate dateTraitement, int periodeFiscale, int nbThreads, TiersService tiersService, ServiceInfrastructureService infraService,
-	                                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService) {
-		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService);
+	                                                    AssujettissementService assujettissementService, PeriodeImpositionService periodeImpositionService, AdresseService adresseService) {
+		super(dateTraitement, periodeFiscale, nbThreads, tiersService, infraService, adresseService);
 		this.assujettissementService = assujettissementService;
 		this.periodeImpositionService = periodeImpositionService;
 	}

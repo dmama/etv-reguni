@@ -13,9 +13,11 @@ import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
+import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessor {
@@ -28,23 +30,26 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 	private final PlatformTransactionManager transactionManager;
 
 	private final ServiceInfrastructureService serviceInfrastructureService;
-
-
+	private final TiersService tiersService;
+	private final AdresseService adresseService;
 
 
 	public ProduireListeTachesEnInstanceParOIDProcessor(HibernateTemplate hibernateTemplate,
-			ServiceInfrastructureService serviceInfrastructureService, PlatformTransactionManager transactionManager) {
+	                                                    ServiceInfrastructureService serviceInfrastructureService, PlatformTransactionManager transactionManager, TiersService tiersService,
+	                                                    AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
 
 		this.serviceInfrastructureService = serviceInfrastructureService;
+		this.tiersService = tiersService;
+		this.adresseService = adresseService;
 	}
 
 	public ListeTachesEnInstanceParOID run(final RegDate dateTraitement, StatusManager s) throws Exception {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
-		final ListeTachesEnInstanceParOID rapportFinal = new ListeTachesEnInstanceParOID(dateTraitement);
+		final ListeTachesEnInstanceParOID rapportFinal = new ListeTachesEnInstanceParOID(dateTraitement, tiersService, adresseService);
 
 		status.setMessage("Récupération des OID à vérifier...");
 
