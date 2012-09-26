@@ -407,7 +407,6 @@ public class DeclarationImpotController {
 		ControllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		if (result.hasErrors()) {
-			view.setValid(false);
 			model.addAttribute("typesDeclarationImpot", tiersMapHelper.getTypesDeclarationImpot());
 			model.addAttribute("typesAdresseRetour", tiersMapHelper.getTypesAdresseRetour());
 			return "di/imprimer";

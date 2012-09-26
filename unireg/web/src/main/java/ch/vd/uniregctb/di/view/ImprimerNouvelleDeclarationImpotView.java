@@ -33,7 +33,6 @@ public class ImprimerNouvelleDeclarationImpotView {
 	// Données dépendant des droits de l'utilisateur
 	private final boolean isAllowedQuittancement = SecurityProvider.isGranted(Role.DI_QUIT_PP);
 	private boolean imprimable = true;
-	private boolean valid = true;
 
 	public ImprimerNouvelleDeclarationImpotView() {
 	}
@@ -148,14 +147,6 @@ public class ImprimerNouvelleDeclarationImpotView {
 	}
 
 	public boolean isOuverte() {
-		return dateDebutPeriodeImposition != null && dateDebutPeriodeImposition.year() == RegDate.get().year();
-	}
-
-	public void setValid(boolean valid) {
-		this.valid = valid;
-	}
-
-	public boolean isValid() {
-		return valid;
+		 return periodeFiscale == RegDate.get().year();
 	}
 }
