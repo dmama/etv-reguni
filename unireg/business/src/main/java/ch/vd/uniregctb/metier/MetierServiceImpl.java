@@ -1664,7 +1664,7 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 		else {
-			throw new MetierServiceException("La date de séparation n'est pas correcte");
+			throw new MetierServiceException("La date de séparation n'est pas correcte car elle ne correspond pas à la date de clôture des rapports d'appartenance ménage.");
 		}
 		/*
 		 * Si appelé depuis l'IHM, vérifie que la situation de famille depuis la séparation n'a pas été surchargée

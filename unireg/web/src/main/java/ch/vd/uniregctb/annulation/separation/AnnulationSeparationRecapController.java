@@ -12,7 +12,10 @@ import org.springframework.web.servlet.view.RedirectView;
 import ch.vd.uniregctb.annulation.separation.manager.AnnulationSeparationRecapManager;
 import ch.vd.uniregctb.annulation.separation.view.AnnulationSeparationRecapView;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.common.ActionException;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.deces.DecesRecapController;
+import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.MenageCommun;
 
 public class AnnulationSeparationRecapController extends AbstractSimpleFormController {
@@ -91,7 +94,22 @@ public class AnnulationSeparationRecapController extends AbstractSimpleFormContr
 			checkAccesDossierEnEcriture(annulationSeparationRecapView.getSecondePersonne().getNumero());
 		}
 
-		MenageCommun menage = annulationSeparationRecapManager.save(annulationSeparationRecapView);
-		return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + menage.getNumero(), true));
+		try {
+			MenageCommun menage = annulationSeparationRecapManager.save(annulationSeparationRecapView);
+			return new ModelAndView( new RedirectView("/tiers/visu.do?id=" + menage.getNumero(), true));
+		}
+		catch (MetierServiceException e) {
+			final StringBuilder b = new StringBuilder();
+			b.append("Exception lors de l'annulation de la séparation du ménage composé ");
+			if (annulationSeparationRecapView.getSecondePersonne() != null) {
+				b.append("des tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getPremierePersonne().getNumero()));
+				b.append(" et ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getSecondePersonne().getNumero()));
+			}
+			else {
+				b.append("du tiers ").append(FormatNumeroHelper.numeroCTBToDisplay(annulationSeparationRecapView.getPremierePersonne().getNumero()));
+			}
+			LOGGER.error(b.toString(), e);
+			throw new ActionException(e.getMessage());
+		}
 	}
 }
