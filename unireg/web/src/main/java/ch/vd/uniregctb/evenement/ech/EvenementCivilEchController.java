@@ -39,10 +39,8 @@ import ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController;
 import ch.vd.uniregctb.evenement.ech.manager.EvenementCivilEchManager;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchCriteriaView;
 import ch.vd.uniregctb.evenement.ech.view.EvenementCivilEchElementListeRechercheView;
-import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
-import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.security.SecurityCheck;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -60,14 +58,8 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	private static final WebParamPagination INITIAL_PAGINATION = new WebParamPagination(1, PAGE_SIZE, DEFAULT_FIELD, false);
 
 	private TiersMapHelper tiersMapHelper;
-	private SecurityProviderInterface securityProvider;
-
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
-	}
-
-	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
-		this.securityProvider = securityProvider;
 	}
 
 	private EvenementCivilEchManager manager;
@@ -138,25 +130,17 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	}
 
 	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView effacerFormulaireDeRecherche(ModelMap model) {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		populateModel(model, initEvenementEchCriteria(), INITIAL_PAGINATION, null, 0);
 		return new ModelAndView("evenement/ech/list", model);
 	}
 
 	@RequestMapping(value = "/rechercher.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String rechercher(@ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                            BindingResult bindingResult,
 	                            ModelMap model ) throws AdresseException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		// Stockage des nouveau critère de recherche dans la session
 		// La recherche en elle meme est faite dans nav-list.do
 		populateModel(model, criteriaInSession,	INITIAL_PAGINATION,	null, 0);
@@ -168,26 +152,18 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	}
 
 	@RequestMapping(value = "/list.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String retourSurLaListe(@ModelAttribute("evenementEchPagination") ParamPagination paginationInSession ) throws AdresseException 	{
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		// Redirect vers nav-list.do  avec en parametre la pagination en session
 		return buildNavListRedirect(paginationInSession);
 	}
 
 	@RequestMapping(value = "/nav-list.do", method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView navigationDansLaListe(HttpServletRequest request,
 	                                         @ModelAttribute("evenementEchCriteria") @Valid EvenementCivilEchCriteriaView criteriaInSession,
 	                                         BindingResult bindingResult,
 	                                         ModelMap model) throws AdresseException 	{
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		if (bindingResult.hasErrors() ) {
 			// L'utilisateur a soumis un formulaire incorrect
 			populateModel(model, criteriaInSession, INITIAL_PAGINATION, null, 0);
@@ -221,33 +197,21 @@ public class EvenementCivilEchController extends AbstractEvenementCivilControlle
 	}
 
 	@RequestMapping(value = {"/visu.do"}, method = RequestMethod.GET)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected ModelAndView onGetEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		return new ModelAndView ("evenement/ech/visu", "command", manager.get(id));
 	}
 
 	@RequestMapping(value = {"/forcer.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onForcerEvenementCivil(@RequestParam("id") Long id) throws AdresseException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		manager.forceEvenement(id);
 		return "redirect:/evenement/ech/visu.do?id=" + id;
 	}
 
 	@RequestMapping(value = {"/recycler.do"}, method = RequestMethod.POST)
+	@SecurityCheck(rolesToCheck = {Role.EVEN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String onRecyclerEvenementCivil(@RequestParam("id")  Long id) throws AdresseException, EvenementCivilException {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.EVEN)) {
-			throw new AccessDeniedException(ACCESS_DENIED_MESSAGE);
-		}
-
 		boolean recycle = manager.recycleEvenementCivil(id);
 		if (recycle) {
 			Flash.message("Événement recyclé");

@@ -14,7 +14,6 @@
 	<bean id="paramApplicationController"  class="ch.vd.uniregctb.param.ParamApplicationController">
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
 		<property name="validator" ref="paramApplicationValidator" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="paramApplicationValidator" class="ch.vd.uniregctb.param.validator.ParamApplicationValidator">

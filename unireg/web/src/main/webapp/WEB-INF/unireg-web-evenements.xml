@@ -9,13 +9,11 @@
 	<bean id="evtCivController" abstract="true" class="ch.vd.uniregctb.evenement.common.AbstractEvenementCivilController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="controllerUtils" ref="controllerUtils"/>
-		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="evtCivRegPPController" class="ch.vd.uniregctb.evenement.regpp.EvenementCivilRegPPController" parent="evtCivController">
 		<property name="validator" ref="evtCivCriteriaValidator" />
 		<property name="manager" ref="evtCivRegPPManager" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="evtCivEchController" class="ch.vd.uniregctb.evenement.ech.EvenementCivilEchController" parent="evtCivController">
