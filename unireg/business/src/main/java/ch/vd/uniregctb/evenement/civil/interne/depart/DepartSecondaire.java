@@ -16,7 +16,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -103,17 +102,13 @@ public class DepartSecondaire extends Depart {
 	@Override
 	protected void doHandleFermetureFors(PersonnePhysique pp, Contribuable ctb, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 		Audit.info(getNumeroEvenement(), "Traitement du départ secondaire");
-		handleDepartResidenceSecondaire(ctb, dateFermeture, motifFermeture);
+		handleDepartResidenceSecondaire(pp, ctb, dateFermeture, motifFermeture);
 	}
 
 	/**
 	 * Traite un depart d'une residence secondaire
-	 *
-	 * @param contribuable
-	 * @param dateFermeture
-	 * @param motifFermeture
 	 */
-	private void handleDepartResidenceSecondaire(Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
+	private void handleDepartResidenceSecondaire(PersonnePhysique pp, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
 
 		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		// For principal est sur la commune de départ d'une résidence secondaire
@@ -124,12 +119,7 @@ public class DepartSecondaire extends Depart {
 
 		if (forPrincipal != null && forPrincipal.getNumeroOfsAutoriteFiscale().equals(getNumeroOfsEntiteForAnnonce())) {
 
-			final ServiceInfrastructureService serviceInfra = context.getServiceInfra();
-			Commune commune = null;
-			if (estEnSuisse()) {
-				commune = getNouvelleCommune();
-			}
-
+			final Commune commune = (estEnSuisse() ? getNouvelleCommune() : null);
 			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
 
 			// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
@@ -141,13 +131,14 @@ public class DepartSecondaire extends Depart {
 				getService().closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
 
 				// l'individu a sa residence principale en suisse
-				if (estEnSuisse()) {
+				if (commune != null) {
 					if (commune.isVaudoise()) {
 						//Ces cas sont detectées en amont et mis en erreur
 					}
 					else {
 						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
 						openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
+						context.getTiersService().changeHabitantenNH(pp);
 					}
 				}
 				else if (ffp != null) {
@@ -155,6 +146,7 @@ public class DepartSecondaire extends Depart {
 					final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
 					final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
+					context.getTiersService().changeHabitantenNH(pp);
 				}
 			}
 		}

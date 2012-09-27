@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
@@ -53,6 +53,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings({"JavaDoc"})
 public class DepartTest extends AbstractEvenementCivilInterneTest {
@@ -354,14 +355,14 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		Tiers tiers = tiersDAO.get(26012004L);
 		ForFiscalPrincipal forFiscalPrincipalOuvert = tiers.getForFiscalPrincipalAt(dateArrivee);
 
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalOuvert.getTypeAutoriteFiscale());
-		Assert.assertTrue(communeArrivee.getNoOFS() == forFiscalPrincipalOuvert.getNumeroOfsAutoriteFiscale());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, forFiscalPrincipalOuvert.getTypeAutoriteFiscale());
+		assertTrue(communeArrivee.getNoOFS() == forFiscalPrincipalOuvert.getNumeroOfsAutoriteFiscale());
 
 
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(tiers);
-		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
-		Assert.assertTrue("Absence d'événement de type femeture de for", findEvenementFermetureFor(lesEvenements, departCharles));
+		assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		assertTrue("Absence d'événement de type femeture de for", findEvenementFermetureFor(lesEvenements, departCharles));
 
 	}
 
@@ -384,11 +385,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		handleDepart(depart, collector, collector);
 
-		Assert.assertEquals(1, collector.getErreurs().size());
+		assertEquals(1, collector.getErreurs().size());
 
 		final EvenementCivilErreur erreur = collector.getErreurs().get(0);
-		Assert.assertNotNull(erreur);
-		Assert.assertEquals("Adresse de résidence avant départ inconnue", erreur.getMessage());
+		assertNotNull(erreur);
+		assertEquals("Adresse de résidence avant départ inconnue", erreur.getMessage());
 	}
 
 	/**
@@ -402,7 +403,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		LOGGER.debug("Test départ individu seul...");
 		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1234, DATE_EVENEMENT, true, null, true);
 		depart.checkCompleteness(collector, collector);
-		Assert.assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
+		assertTrue("individu célibataire : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu seul : OK");
 
 	}
@@ -420,7 +421,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		final DepartPrincipal depart = (DepartPrincipal) createValidDepart(1235, DATE_EVENEMENT, true, null, true);
 		depart.checkCompleteness(collector, collector);
-		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
+		assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu marié seul : OK");
 
 	}
@@ -438,11 +439,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		DepartPrincipal depart = (DepartPrincipal) createValidDepart(1236, DATE_EVENEMENT, true, null, true);
 		depart.checkCompleteness(collector, collector);
-		Assert.assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
+		assertTrue("individu célibataire marié seul : ca n'aurait pas du causer une erreur", collector.getErreurs().isEmpty());
 		LOGGER.debug("Test départ individu marié  : OK");
 	}
 
-	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, Integer overrideNoOfsCommuneAnnonce, boolean isRegPP) throws Exception {
+	private Depart createValidDepart(long noIndividu, RegDate dateEvenement, boolean principale, @Nullable Integer overrideNoOfsCommuneAnnonce, boolean isRegPP) throws Exception {
 
 		final Individu individu = serviceCivil.getIndividu(noIndividu, null);
 
@@ -560,7 +561,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		depart.validate(collector, collector);
 
-		Assert.assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La date de départ est différente"));
+		assertTrue("Le départ est antérieur à la date de fin de validité de l'adresse actuelle, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La date de départ est différente"));
 		LOGGER.debug("Test départ antérieur à la date de fin de validité de l'adresse actuelle : OK");
 	}
 
@@ -577,10 +578,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		try {
 			Depart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, MockCommune.Cossonay, true);
-			Assert.fail("On attendait une exception parce que la  nouvelle commune est dans le canton de Vaud");
+			fail("On attendait une exception parce que la  nouvelle commune est dans le canton de Vaud");
 		}
 		catch (EvenementCivilException e) {
-			Assert.assertEquals("La nouvelle commune est toujours dans le canton de Vaud", e.getMessage());
+			assertEquals("La nouvelle commune est toujours dans le canton de Vaud", e.getMessage());
 		}
 
 		LOGGER.debug("Test nouvelle commune hors canton : OK");
@@ -599,7 +600,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		Depart depart = createValidDepart(NUMERO_INDIVIDU_SEUL, DATE_EVENEMENT, true, MockCommune.Lausanne.getNoOFS(), true);
 		depart.validate(collector, collector);
-		Assert.assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La commune d'annonce"));
+		assertTrue("La commune d'anonce et differente de celle de la dernière adresse, une erreur aurait du être déclenchée", findMessage(collector.getErreurs(), "La commune d'annonce"));
 		LOGGER.debug("Test commune d'annonce principale : OK");
 
 	}
@@ -620,13 +621,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
-		Assert.assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
-		Assert.assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
+		assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
+		assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
-		Assert.assertTrue("Absence d'événement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
+		assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		assertTrue("Absence d'événement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
 
 	}
 	/**
@@ -645,13 +646,13 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
 
-		Assert.assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
-		Assert.assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
+		assertTrue("Pas de nouveau for fiscal ouvert", forFiscalPrincipal.getDateDebut() == depart.getDate().getOneDayAfter());
+		assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
 		LOGGER.debug("Test de traitement d'un événement de départ vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
-		Assert.assertTrue("Absence d'evenement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
+		assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		assertTrue("Absence d'evenement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
 	}
 
 	@Test
@@ -659,7 +660,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 	public void testHandleDepartHCFinAnnee() throws Exception {
 		final Depart depart = createValidDepart(NO_IND_ALBERT, DATE_EVENEMENT_FIN_ANNEE, true, null, true);
 		final ForFiscalPrincipal ffp = handleDepart(depart);
-		Assert.assertEquals("Le for HC aurait dû être ouvert encore l'année du départ", DATE_EVENEMENT_FIN_ANNEE.getOneDayAfter(), ffp.getDateDebut());
+		assertEquals("Le for HC aurait dû être ouvert encore l'année du départ", DATE_EVENEMENT_FIN_ANNEE.getOneDayAfter(), ffp.getDateDebut());
 	}
 
 	/**
@@ -678,17 +679,17 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
 		ForFiscalPrincipal forFiscalPrincipalFerme = tiers.getForFiscalPrincipalAt(depart.getDate());
-		Assert.assertEquals(MotifFor.DEPART_HC, forFiscalPrincipalFerme.getMotifFermeture());
+		assertEquals(MotifFor.DEPART_HC, forFiscalPrincipalFerme.getMotifFermeture());
 
-		Assert.assertNotNull(forFiscalPrincipal.getMotifOuverture());
-		Assert.assertEquals(depart.getDate().getOneDayAfter(), forFiscalPrincipal.getDateDebut());
-		Assert.assertEquals(Integer.valueOf(MockCommune.Zurich.getNoOFS()), forFiscalPrincipal.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
+		assertNotNull(forFiscalPrincipal.getMotifOuverture());
+		assertEquals(depart.getDate().getOneDayAfter(), forFiscalPrincipal.getDateDebut());
+		assertEquals(Integer.valueOf(MockCommune.Zurich.getNoOFS()), forFiscalPrincipal.getNumeroOfsAutoriteFiscale());
+		assertEquals(forFiscalPrincipalFerme.getModeImposition(), forFiscalPrincipal.getModeImposition());
 		LOGGER.debug("Test de traitement d'un événement de départ residence secondaire vaudois OK");
 
 		Collection<EvenementFiscal> lesEvenements = evenementFiscalService.getEvenementsFiscaux(forFiscalPrincipalFerme.getTiers());
-		Assert.assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
-		Assert.assertTrue("Absence d'evenement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
+		assertNotNull("Pas d'événement fiscal engendré", lesEvenements);
+		assertTrue("Absence d'evenement de type femeture de for", findEvenementFermetureFor(lesEvenements, depart));
 
 	}
 
@@ -860,7 +861,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepart(depart, collector, collector);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)",
 				pp.getNumero());
@@ -870,14 +871,14 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(2, ff.size());
+		assertNotNull(ff);
+		assertEquals(2, ff.size());
 
 		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-		Assert.assertNotNull(ffp);
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(dateDepart, ffp.getDateDebut());
+		assertNotNull(ffp);
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(dateDepart, ffp.getDateDebut());
 	}
 
 	/**
@@ -914,11 +915,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(0, ff.size());
+		assertNotNull(ff);
+		assertEquals(0, ff.size());
 	}
 
 	/**
@@ -957,16 +958,16 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(1, ff.size());
+		assertNotNull(ff);
+		assertEquals(1, ff.size());
 
 		final ForFiscal ffp = ff.iterator().next();
-		Assert.assertNotNull(ffp);
-		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
-		Assert.assertTrue(ffp.isAnnule());
+		assertNotNull(ffp);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		assertTrue(ffp.isAnnule());
 	}
 
 	/**
@@ -1004,26 +1005,26 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		try {
 			handleDepart(depart, collector, collector);
-			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+			fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
-			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+			assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(1, ff.size());
+		assertNotNull(ff);
+		assertEquals(1, ff.size());
 
 		final ForFiscal ffp = ff.iterator().next();
-		Assert.assertNotNull(ffp);
-		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
-		Assert.assertFalse(ffp.isAnnule());
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(date(2007, 12, 31), ffp.getDateFin());
+		assertNotNull(ffp);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		assertFalse(ffp.isAnnule());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(date(2007, 12, 31), ffp.getDateFin());
 	}
 
 	/**
@@ -1061,26 +1062,26 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		try {
 			handleDepart(depart, collector, collector);
-			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+			fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
-			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+			assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(1, ff.size());
+		assertNotNull(ff);
+		assertEquals(1, ff.size());
 
 		final ForFiscal ffp = ff.iterator().next();
-		Assert.assertNotNull(ffp);
-		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
-		Assert.assertFalse(ffp.isAnnule());
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertNull(ffp.getDateFin());
+		assertNotNull(ffp);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		assertFalse(ffp.isAnnule());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertNull(ffp.getDateFin());
 	}
 
 	/**
@@ -1121,34 +1122,34 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final MessageCollector collector = buildMessageCollector();
 		try {
 			handleDepart(depart, collector, collector);
-			Assert.fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
+			fail("On attendait une exception parce que la commune de départ n'a pas pu être trouvée");
 		}
 		catch (EvenementCivilException e) {
-			Assert.assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
+			assertEquals("La commune de départ n'a pas été trouvée", e.getMessage());
 		}
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(0, ff.size());
+		assertNotNull(ff);
+		assertEquals(0, ff.size());
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(pp, null);
 		final MenageCommun mc = ensemble.getMenage();
-		Assert.assertNotNull(mc);
+		assertNotNull(mc);
 
 		final Set<ForFiscal> ffmc = mc.getForsFiscaux();
-		Assert.assertNotNull(ffmc);
-		Assert.assertEquals(1, ffmc.size());
+		assertNotNull(ffmc);
+		assertEquals(1, ffmc.size());
 
 		final ForFiscal ffp = ffmc.iterator().next();
-		Assert.assertNotNull(ffp);
-		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
-		Assert.assertFalse(ffp.isAnnule());
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertNull(ffp.getDateFin());
+		assertNotNull(ffp);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		assertFalse(ffp.isAnnule());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertNull(ffp.getDateFin());
 	}
 
 	/**
@@ -1193,31 +1194,32 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(1, ff.size());
+		assertNotNull(ff);
+		assertEquals(1, ff.size());
 
 		final ForFiscal ffp = ff.iterator().next();
-		Assert.assertNotNull(ffp);
-		Assert.assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
-		Assert.assertFalse(ffp.isAnnule());
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Leysin.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin());
+		assertNotNull(ffp);
+		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
+		assertFalse(ffp.isAnnule());
+		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Leysin.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin());
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(pp, null);
 		final MenageCommun mc = ensemble.getMenage();
-		Assert.assertNotNull(mc);
+		assertNotNull(mc);
 		final Set<ForFiscal> ffmc = mc.getForsFiscaux();
-		Assert.assertNotNull(ffmc);
-		Assert.assertEquals(0, ffmc.size());
+		assertNotNull(ffmc);
+		assertEquals(0, ffmc.size());
 	}
 
 	/**
 	 * [UNIREG-1921] En cas de départ secondaire d'une commune vaudoise alors que l'adresse de domicile est hors-canton,
 	 * le for vaudois doit se fermer...
+	 * [SIFISC-5970] ...et la personne physique doit passer non-habitante
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -1253,18 +1255,77 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepartSimple(depart);
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
-		Assert.assertNotNull(pp);
+		assertNotNull(pp);
 
 		final Set<ForFiscal> ff = pp.getForsFiscaux();
-		Assert.assertNotNull(ff);
-		Assert.assertEquals(2, ff.size());
+		assertNotNull(ff);
+		assertEquals(2, ff.size());
 
 		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-		Assert.assertNotNull(ffp);
-		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
-		Assert.assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
-		Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+		assertNotNull(ffp);
+		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
+		assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+
+		// [SIFISC-5970] la personne physique doit maintenant être non-habitante
+		assertFalse(pp.isHabitantVD());
+	}
+
+	/**
+	 * [UNIREG-1921] En cas de départ secondaire d'une commune vaudoise alors que l'adresse de domicile est hors-Suisse,
+	 * le for vaudois doit se fermer...
+	 * [SIFISC-5970] ...et la personne physique doit passer non-habitante
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDepartSecondaireAvecResidencePrincipaleHS() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				addAdresse(ind, TypeAdresseCivil.COURRIER, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, null, "Vlamverdam", "Gröeg", MockPays.Danemark, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place des fors
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+				return null;
+			}
+		});
+
+		// résumons-nous :
+		// 1. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens
+		// 2. il faudrait que le for principal soit fermé et passe au Danemark
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null, true);
+		handleDepartSimple(depart);
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+
+		final Set<ForFiscal> ff = pp.getForsFiscaux();
+		assertNotNull(ff);
+		assertEquals(2, ff.size());
+
+		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+		assertNotNull(ffp);
+		assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+		assertEquals(MockPays.Danemark.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+		assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+
+		// [SIFISC-5970] la personne physique doit maintenant être non-habitante
+		assertFalse(pp.isHabitantVD());
 	}
 
 	/**
@@ -1523,10 +1584,10 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertFalse("Une erreur est survenue lors du traitement du départ", collector.hasErreurs());
 
 		PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		Assert.assertNotNull(tiers);
+		assertNotNull(tiers);
 
 		ForFiscalPrincipal forFiscalPrincipal = tiers.getForFiscalPrincipalAt(depart.getDate().getOneDayAfter());
-		Assert.assertNotNull("Le contribuable n'a aucun for fiscal", forFiscalPrincipal);
+		assertNotNull("Le contribuable n'a aucun for fiscal", forFiscalPrincipal);
 
 		return forFiscalPrincipal;
 	}
@@ -1547,7 +1608,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 			for (EvenementCivilErreur erreur : collector.getErreurs()) {
 				LOGGER.error("Erreur trouvée : " + erreur.getMessage());
 			}
-			Assert.fail("Une erreur est survenue lors du traitement du départ");
+			fail("Une erreur est survenue lors du traitement du départ");
 		}
 	}
 
