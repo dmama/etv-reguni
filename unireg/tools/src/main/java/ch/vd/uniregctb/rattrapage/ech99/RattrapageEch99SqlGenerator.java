@@ -21,11 +21,19 @@ import ch.vd.uniregctb.common.CsvHelper;
 public class RattrapageEch99SqlGenerator {
 
 	private static final String USER = "[RattrapageEch99]";
+	private static final int DEFAULT_BATCH_SIZE = 100;
 
 	public static void main(String[] args) throws Exception {
 		final Configuration cfg = new Configuration();
 		cfg.setClassForTemplateLoading(RattrapageEch99SqlGenerator.class, "/");
 		cfg.setObjectWrapper(new DefaultObjectWrapper());
+
+		int batchSize;
+		try {
+			batchSize = Integer.parseInt(args[2]);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			batchSize = DEFAULT_BATCH_SIZE;
+		}
 
 		BufferedReader input = null;
 		Writer out = null;
@@ -37,8 +45,15 @@ public class RattrapageEch99SqlGenerator {
 			root.put("USER", USER);
 			String dataLine = input.readLine();
 			while (dataLine != null) {
-				evtIds.add(dataLine);
-				dataLine = input.readLine();
+				StringBuilder sb = new StringBuilder(batchSize * 20);
+				for (int i = 0; i < batchSize && dataLine != null; i++) {
+					sb.append(dataLine);
+					dataLine = input.readLine();
+					if (i < batchSize - 1 && dataLine != null) {
+						sb.append(", ");
+					}
+				}
+				evtIds.add(sb.toString());
 			}
 			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/rattrapage.sql.ftl", "UTF-8");
 			out = new OutputStreamWriter(new FileOutputStream(args[1]),CsvHelper.CHARSET);

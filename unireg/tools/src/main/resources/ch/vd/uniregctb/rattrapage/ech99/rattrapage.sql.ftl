@@ -2,7 +2,7 @@
 
 <#list EVT_IDS as ID>
 -----------------------------------
--- Rattrapage de l'evenement ${ID}
+-- Rattrapage des evenements: ${ID}
 -----------------------------------
 
 update
@@ -13,7 +13,7 @@ set
   log_muser = '${USER}',
   commentaire_traitement = 'Traitement automatique de l''evenement issue d''un ech99: reindexation des donnees civils du contribuable'
 where
-  id = ${ID}
+  id in (${ID})
   and etat = 'EN_ERREUR'
   and annulation_date is null;
 
@@ -21,9 +21,9 @@ where
 update
   <@SchemaPrefix/>TIERS t
 set
-  index_dirty=1,
+  index_dirty = 1,
   log_mdate = CURRENT_TIMESTAMP,
-  log_muser = 'EvtCivil-${ID}'
+  log_muser = '${USER}'
 where
   annulation_date is null
   and exists (
@@ -31,7 +31,7 @@ where
     from <@SchemaPrefix/>EVENEMENT_CIVIL_ECH e
     where
 	  t.numero_individu = e.no_individu
-      and e.id = ${ID}
+      and e.id in (${ID})
       and e.etat = 'TRAITE');
 
 </#list>
