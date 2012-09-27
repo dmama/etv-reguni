@@ -1,22 +1,21 @@
-<#macro SchemaPrefix></#macro>
-
-<#list EVT_IDS as ID>
------------------------------------
--- Rattrapage des evenements: ${ID}
------------------------------------
-
+<#macro SchemaPrefix>UNIREG.</#macro>
+--------------------------------------------------
+-- Rattrapage des événements civils émis par ech99
+-- Nombre total d'événements: ${TOTAL}
+-- script généré le: ${DATE?datetime}
+--------------------------------------------------
+<#list LIST_OF_IDS as IDS>
 update
   <@SchemaPrefix/>EVENEMENT_CIVIL_ECH
 set
-  etat='TRAITE',
+  etat='FORCE',
   log_mdate = CURRENT_TIMESTAMP,
   log_muser = '${USER}',
-  commentaire_traitement = 'Traitement automatique de l''evenement issue d''un ech99: reindexation des donnees civils du contribuable'
+  commentaire_traitement = 'Forçage automatique de l''événement issue d''un ech99: reindexation des données civils du contribuable'
 where
-  id in (${ID})
+  id in (${IDS})
   and etat = 'EN_ERREUR'
   and annulation_date is null;
-
 
 update
   <@SchemaPrefix/>TIERS t
@@ -31,7 +30,7 @@ where
     from <@SchemaPrefix/>EVENEMENT_CIVIL_ECH e
     where
 	  t.numero_individu = e.no_individu
-      and e.id in (${ID})
-      and e.etat = 'TRAITE');
+      and e.id in (${IDS})
+      and e.etat = 'FORCE');
 
 </#list>

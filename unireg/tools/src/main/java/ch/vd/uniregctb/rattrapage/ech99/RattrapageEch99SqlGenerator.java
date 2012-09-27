@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import ch.vd.uniregctb.common.CsvHelper;
 public class RattrapageEch99SqlGenerator {
 
 	private static final String USER = "[RattrapageEch99]";
-	private static final int DEFAULT_BATCH_SIZE = 100;
+	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	public static void main(String[] args) throws Exception {
 		final Configuration cfg = new Configuration();
@@ -39,22 +40,26 @@ public class RattrapageEch99SqlGenerator {
 		Writer out = null;
 		try {
 			input = new BufferedReader(new InputStreamReader(new FileInputStream(args[0]), CsvHelper.CHARSET));
-			final Map<String, Object> root = new HashMap<String, Object>(2);
+			final Map<String, Object> root = new HashMap<String, Object>(4);
 			final List<String> evtIds = new ArrayList<String>();
-			root.put("EVT_IDS", evtIds);
+			root.put("DATE", new Date());
+			root.put("LIST_OF_IDS", evtIds);
 			root.put("USER", USER);
 			String dataLine = input.readLine();
+			int evtTotal = 0;
 			while (dataLine != null) {
-				StringBuilder sb = new StringBuilder(batchSize * 20);
+				StringBuilder ids = new StringBuilder(batchSize * 12);
 				for (int i = 0; i < batchSize && dataLine != null; i++) {
-					sb.append(dataLine);
+					ids.append(dataLine);
+					evtTotal++;
 					dataLine = input.readLine();
 					if (i < batchSize - 1 && dataLine != null) {
-						sb.append(", ");
+						ids.append(", ");
 					}
 				}
-				evtIds.add(sb.toString());
+				evtIds.add(ids.toString());
 			}
+			root.put("TOTAL", evtTotal);
 			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/rattrapage.sql.ftl", "UTF-8");
 			out = new OutputStreamWriter(new FileOutputStream(args[1]),CsvHelper.CHARSET);
 			temp.process(root, out);
