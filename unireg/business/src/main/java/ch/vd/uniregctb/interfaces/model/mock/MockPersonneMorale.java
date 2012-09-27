@@ -51,6 +51,7 @@ public class MockPersonneMorale implements PersonneMorale {
 	private List<AssujettissementPM> assujettissementsLIFD = new ArrayList<AssujettissementPM>();
 	private List<ForPM> forsFiscauxPrincipaux = new ArrayList<ForPM>();
 	private List<ForPM> forsFiscauxSecondaires = new ArrayList<ForPM>();
+	private List<Mandat> mandats = new ArrayList<Mandat>();
 
 	public static final MockPersonneMorale NestleSuisse = new MockPersonneMorale(27769, "Nestlé Suisse S.A.", "S.A.", "Myriam Steiner", RegDate.get(1996, 12, 18), null);
 	public static final MockPersonneMorale BCV = new MockPersonneMorale(20222, "Banque Cantonale Vaudoise", "S.A.", "Daniel Kuffer", RegDate.get(1901, 1, 1), null);
@@ -409,6 +410,10 @@ public class MockPersonneMorale implements PersonneMorale {
 		return numeroIPMRO;
 	}
 
+	public void addCompteBancaire(MockCompteBancaire compte) {
+		comptesBancaires.add(compte);
+	}
+
 	@Override
 	public List<CompteBancaire> getComptesBancaires() {
 		return comptesBancaires;
@@ -558,9 +563,13 @@ public class MockPersonneMorale implements PersonneMorale {
 		this.forsFiscauxSecondaires = forsFiscauxSecondaires;
 	}
 
+	public void addMandat(MockMandat mandat) {
+		this.mandats.add(mandat);
+	}
+
 	@Override
 	public List<Mandat> getMandats() {
-		return null;
+		return mandats;
 	}
 
 	@Override

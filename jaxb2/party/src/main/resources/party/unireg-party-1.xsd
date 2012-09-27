@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.6 - 27 septembre 2012 - ajouté les dates de début et de fin de validité sur les comptes bancaires [SIFISC-3373] -->
 <!-- v1.5 - 18 septembre 2012 - ajouté les délais sur les déclarations -->
 <!-- v1.4 - 25 juin 2012 - ajouté le type 'partyPartType' -->
 <!-- v1.2 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
@@ -344,9 +345,36 @@
 						<jxb:property>
 							<jxb:javadoc>Le numéro de tiers du titulaire du compte.
 								Dans le cas d'un tiers de type personne physique ou ménage-commun, ce numéro est toujours égal au numéro du tiers. Dans le cas d'un tiers personne morale, ce numéro est
-								égal au numéro de la PM lorsqu'il s'agit du compte bancaire PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à celui
-								du mandataire.
+								égal au numéro de la PM lorsqu'il s'agit du compte bancaire de la PM elle-même; et inversément, lorsqu'il s'agit du compte bancaire du mandataire, ce numéro est égal à
+								celui du mandataire.
 							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité du compte. Dans certains cas cette information n'est pas disponible et la date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité du compte. Si l'adresse est toujours active, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>

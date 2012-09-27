@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.webservices.party3.BatchParty;
@@ -20,6 +21,7 @@ import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.PartyWebService;
 import ch.vd.unireg.webservices.party3.SetAutomaticReimbursementBlockingRequest;
 import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.party.address.v1.Address;
 import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
@@ -27,9 +29,14 @@ import ch.vd.unireg.xml.party.address.v1.OrganisationMailAddressInfo;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
+import ch.vd.unireg.xml.party.v1.BankAccount;
+import ch.vd.unireg.xml.party.v1.Party;
 import ch.vd.uniregctb.common.WebserviceTest;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
+import ch.vd.uniregctb.interfaces.model.TypeMandataire;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
+import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -148,7 +155,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-2302]
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMorale() throws Exception {
 
 		final long noBCV = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -195,7 +201,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la fiduciaire Jal Holding utilise bien les trois lignes de la raison sociale et non pas la raison sociale abbrégée.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMorale2() throws Exception {
 
 		final long noJal = MockPersonneMorale.JalHolding.getNumeroEntreprise();
@@ -242,7 +247,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-1974] Vérifie que l'adresse de la PM Evian-Russie tient bien sur 6 lignes et que le complément d'adresse est ignoré
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetAdresseEnvoiPersonneMoraleOptionnaliteComplement() throws Exception {
 
 		final long noEvian = MockPersonneMorale.EvianRussie.getNumeroEntreprise();
@@ -293,7 +297,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs vaudoides possèdent bien le type d'autorité 'commune vaudoise'.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMVaudoise() throws Exception {
 
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -330,7 +333,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-canton possèdent bien le type d'autorité 'commune hors-canton'.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMHorsCanton() throws Exception {
 
 		final long noPM = MockPersonneMorale.BanqueCoopBale.getNumeroEntreprise();
@@ -367,7 +369,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	 * [UNIREG-2641] Vérifie que les fors fiscaux des PMs hors-Suisse possèdent bien le type d'autorité 'pays hors-Suisse'.
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetForFiscauxPMHorsSuisse() throws Exception {
 
 		final long noPM = MockPersonneMorale.KhatAnstalt.getNumeroEntreprise();
@@ -401,7 +402,6 @@ public class PartyWebServicePMTest extends WebserviceTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchPartyRequestAvecMelangePersonnesPhysiquesEtMorales() throws Exception {
 
 		final long noPM = MockPersonneMorale.BCV.getNumeroEntreprise();
@@ -437,6 +437,70 @@ public class PartyWebServicePMTest extends WebserviceTest {
 		assertEquals(2, tiersRendus.size());
 		assertTrue(tiersRendus.contains(noPM));
 		assertTrue(tiersRendus.contains(ppId));
+	}
+
+	/**
+	 * [SIFISC-3373] Vérifie que les comptes bancaires des mandataires des PMs possèdent bien des dates de début/fin renseignées.
+	 */
+	@Test
+	public void testGetComptesBancairesPM() throws Exception {
+
+		final long noPM = 56346;
+		final long noMandataire = 2223334;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noMandataire, date(1934,3,2), "Antoine", "de Bellevache", true);
+			}
+		});
+
+		servicePM.setUp(new MockServicePM() {
+			@Override
+			protected void init() {
+				final MockPersonneMorale pm = new MockPersonneMorale(noPM, "Groland Corp", "S.A.", "Ehud Mollo", date(1996, 12, 18), null);
+				addCompteBancaire(pm, CompteBancaire.Format.SPECIFIQUE_CH, "1-12345-56", "La Poste");
+				addMandatCCP(pm, date(2000, 1, 1), date(2003, 12, 31), "3-24343-22", noMandataire, TypeMandataire.INDIVIDU);
+				addPM(pm);
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				return addEntreprise(noPM).getNumero();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber((int) noPM);
+		params.getParts().add(PartyPart.BANK_ACCOUNTS);
+
+		// appel du service
+		final Party party = service.getParty(params);
+		assertNotNull(party);
+		assertInstanceOf(Corporation.class, party);
+		final Corporation corp = (Corporation) party;
+
+		// vérification des comptes bancaires renvoyés
+		final List<BankAccount> accounts = corp.getBankAccounts();
+		assertNotNull(accounts);
+		assertEquals(2, accounts.size());
+
+		final BankAccount account0 = accounts.get(0);
+		assertNotNull(account0);
+		assertEquals("1-12345-56", account0.getAccountNumber());
+		assertNull(account0.getDateFrom()); // il n'y a pas de dates de validité sur le compte bancaire stocké sur la PM elle-même
+		assertNull(account0.getDateTo());
+		assertEquals(noPM, account0.getOwnerPartyNumber());
+
+		final BankAccount account1 = accounts.get(1);
+		assertNotNull(account1);
+		assertEquals("3-24343-22", account1.getAccountNumber());
+		assertEquals(new Date(2000, 1, 1), account1.getDateFrom()); // il doit y avoir des dates de validité pour les comptes bancaires de type "mandataire"
+		assertEquals(new Date(2003, 12, 31), account1.getDateTo());
+		assertEquals(noMandataire, account1.getOwnerPartyNumber());
 	}
 }
 

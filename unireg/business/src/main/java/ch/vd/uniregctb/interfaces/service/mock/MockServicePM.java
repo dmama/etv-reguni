@@ -15,13 +15,18 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
+import ch.vd.unireg.interfaces.infra.mock.MockInstitutionFinanciere;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
 import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
+import ch.vd.uniregctb.interfaces.model.TypeMandataire;
 import ch.vd.uniregctb.interfaces.model.mock.MockAdresseEntreprise;
+import ch.vd.uniregctb.interfaces.model.mock.MockCompteBancaire;
 import ch.vd.uniregctb.interfaces.model.mock.MockFormeJuridique;
+import ch.vd.uniregctb.interfaces.model.mock.MockMandat;
 import ch.vd.uniregctb.interfaces.model.mock.MockPersonneMorale;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleBase;
 import ch.vd.uniregctb.type.TypeAdressePM;
@@ -147,5 +152,25 @@ public abstract class MockServicePM extends ServicePersonneMoraleBase {
 
 	public static boolean isActive(AdresseEntreprise adresse, RegDate date) {
 		return RegDateHelper.isBetween(date, adresse.getDateDebutValidite(), adresse.getDateFinValidite(), NullDateBehavior.LATEST);
+	}
+
+	protected static void addCompteBancaire(MockPersonneMorale pm, CompteBancaire.Format format, String numero, String nomInstitution) {
+		final MockCompteBancaire compte = new MockCompteBancaire();
+		compte.setFormat(format);
+		compte.setNumero(numero);
+		compte.setNomInstitution(nomInstitution);
+		pm.addCompteBancaire(compte);
+	}
+
+	protected static void addMandatCCP(MockPersonneMorale pm, RegDate dateDebut, RegDate dateFin, String ccp, long noMandataire, TypeMandataire typeMandataire) {
+		final MockMandat mandat = new MockMandat();
+		mandat.setCode("T"); // tous les autres types de mandats sont ignorés
+		mandat.setDateDebut(dateDebut);
+		mandat.setDateFin(dateFin);
+		mandat.setCCP(ccp);
+		mandat.setNumeroInstitutionFinanciere(MockInstitutionFinanciere.Postfinance.getCode().longValue());
+		mandat.setNumeroMandataire(noMandataire);
+		mandat.setTypeMandataire(typeMandataire);
+		pm.addMandat(mandat);
 	}
 }

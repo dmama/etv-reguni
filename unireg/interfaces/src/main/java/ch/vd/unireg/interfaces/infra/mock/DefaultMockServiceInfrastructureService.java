@@ -39,6 +39,7 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 		forceLoad(MockLocalite.class);
 		forceLoad(MockRue.class);
 		forceLoad(MockCollectiviteAdministrative.class);
+		forceLoad(MockInstitutionFinanciere.class);
 
 		copyFrom(staticInstance);
 	}
@@ -65,5 +66,9 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 
 	public static void addColAdm(MockCollectiviteAdministrative collectiviteAdministrative) {
 		staticInstance.add(collectiviteAdministrative);
+	}
+
+	public static void addInstitutionFinanciere(MockInstitutionFinanciere instit) {
+		staticInstance.add(instit);
 	}
 }

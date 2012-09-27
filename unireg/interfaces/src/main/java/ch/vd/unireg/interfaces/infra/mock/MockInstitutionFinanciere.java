@@ -1,8 +1,10 @@
-package ch.vd.uniregctb.interfaces.model.mock;
+package ch.vd.unireg.interfaces.infra.mock;
 
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 
 public class MockInstitutionFinanciere implements InstitutionFinanciere {
+
+	public static final MockInstitutionFinanciere Postfinance = new MockInstitutionFinanciere(6081, null, "Postfach", "8759 Netstal", "9110", null, null, "Postfinance");
 
 	private Integer code;
 	private String adresse1;
@@ -12,6 +14,21 @@ public class MockInstitutionFinanciere implements InstitutionFinanciere {
 	private String noCompte;
 	private String noIdentificationDTA;
 	private String nomInstitutionFinanciere;
+
+	public MockInstitutionFinanciere() {
+	}
+
+	public MockInstitutionFinanciere(Integer code, String adresse1, String adresse2, String adresse3, String noClearing, String noCompte, String noIdentificationDTA, String nomInstitutionFinanciere) {
+		this.code = code;
+		this.adresse1 = adresse1;
+		this.adresse2 = adresse2;
+		this.adresse3 = adresse3;
+		this.noClearing = noClearing;
+		this.noCompte = noCompte;
+		this.noIdentificationDTA = noIdentificationDTA;
+		this.nomInstitutionFinanciere = nomInstitutionFinanciere;
+		DefaultMockServiceInfrastructureService.addInstitutionFinanciere(this);
+	}
 
 	@Override
 	public Integer getCode() {

@@ -61,6 +61,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	protected final Map<Integer, OfficeImpot> oidByNoOfsCommune = new HashMap<Integer, OfficeImpot>();
 	protected final Map<Integer, OfficeImpot> oidByNoColAdm = new HashMap<Integer, OfficeImpot>();
 	protected Map<Integer, List<MockLienCommuneBatiment>> batimentsParEgid = null;
+	protected final Map<Integer, InstitutionFinanciere> institutionFinancieres = new HashMap<Integer, InstitutionFinanciere>();
 
 	public MockServiceInfrastructureService() {
 		init();
@@ -84,6 +85,9 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		}
 		for (Map.Entry<Integer, OfficeImpot> entry : right.oidByNoColAdm.entrySet()) {
 			this.oidByNoColAdm.put(entry.getKey(), entry.getValue());
+		}
+		for (Map.Entry<Integer, InstitutionFinanciere> entry : right.institutionFinancieres.entrySet()) {
+			this.institutionFinancieres.put(entry.getKey(), entry.getValue());
 		}
 	}
 
@@ -432,9 +436,13 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		return list;
 	}
 
+	public void add(InstitutionFinanciere instit) {
+		institutionFinancieres.put(instit.getCode(), instit);
+	}
+
 	@Override
 	public InstitutionFinanciere getInstitutionFinanciere(int id) throws ServiceInfrastructureException {
-		return null;
+		return institutionFinancieres.get(id);
 	}
 
 	@Override

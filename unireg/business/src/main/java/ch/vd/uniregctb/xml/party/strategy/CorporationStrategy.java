@@ -37,6 +37,7 @@ import ch.vd.unireg.xml.party.taxresidence.v1.TaxationAuthorityType;
 import ch.vd.unireg.xml.party.v1.AccountNumberFormat;
 import ch.vd.unireg.xml.party.v1.BankAccount;
 import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.uniregctb.interfaces.model.CompteBancaire;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.PartPM;
@@ -165,7 +166,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	private List<BankAccount> calculateBankAccounts(ch.vd.uniregctb.interfaces.model.PersonneMorale pmHost, Context context) {
 
 		// on tient du compte du compte bancaire de la PM elle-même
-		List<BankAccount> list = account2web(pmHost.getComptesBancaires());
+		List<BankAccount> list = account2web(pmHost.getNumeroEntreprise(), pmHost.getComptesBancaires());
 
 		// [UNIREG-2106] on ajoute les comptes bancaires des mandats de type 'T'
 		final List<Mandat> mandats = pmHost.getMandats();
@@ -175,6 +176,8 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 				if (m.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 
 					BankAccount cb = new BankAccount();
+					cb.setDateFrom(DataHelper.coreToXML(m.getDateDebut())); // [SIFISC-3373]
+					cb.setDateTo(DataHelper.coreToXML(m.getDateFin()));
 					cb.setOwnerPartyNumber((int) m.getNumeroMandataire());
 
 					// on rempli les informations à partir du mandataire
@@ -294,7 +297,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 	}
 
 	@NotFound
-	private static List<BankAccount> account2web(List<ch.vd.uniregctb.interfaces.model.CompteBancaire> comptes) {
+	private static List<BankAccount> account2web(long numeroEntreprise, List<CompteBancaire> comptes) {
 		if (comptes == null || comptes.isEmpty()) {
 			return Collections.emptyList();
 		}
@@ -304,6 +307,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 			compte.setFormat(EnumHelper.coreToXML(c.getFormat()));
 			compte.setAccountNumber(c.getNumero());
 			compte.setBankName(c.getNomInstitution());
+			compte.setOwnerPartyNumber((int) numeroEntreprise); // il s'agit du compte bancaire de la PM elle-même
 			list.add(compte);
 		}
 		return list;
