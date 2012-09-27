@@ -27,12 +27,14 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);
+				individu.getEtatsCivils().clear();
 				if (etat1 != null) {
 					addEtatCivil(individu, range1.getDateDebut(), range1.getDateFin(), etat1);
 				}
 				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
+				individuCorrige.getEtatsCivils().clear();
 				if (etat2 != null) {
 					addEtatCivil(individuCorrige, range2.getDateDebut(), range2.getDateFin(), etat2);
 				}
@@ -77,7 +79,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, null, null);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (disparition)");
 	}
 
 	@Test
@@ -91,7 +93,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (apparition)");
 	}
 
 	@Test
@@ -121,7 +123,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (dates)");
 	}
 
 	@Test
@@ -136,28 +138,6 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
-	}
-
-	@Test
-	public void testSansAucunEtatCivil() throws Exception {
-		final long noIndividu = 367315L;
-		final long noEvt1 = 4326784234L;
-		final long noEvt2 = 54378436574L;
-
-		serviceCivil.setUp(new MockServiceCivil() {
-			@Override
-			protected void init() {
-				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Juste", true);
-				individu.getEtatsCivils().clear();
-				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
-
-				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
-				individuCorrige.getEtatsCivils().clear();
-				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
-			}
-		});
-
-		assertNeutre(strategy, noEvt1, noEvt2);
+		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (dates)");
 	}
 }

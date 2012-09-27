@@ -172,7 +172,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : date de naissance.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : date de naissance (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -304,7 +304,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : date de décès.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : date de décès (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -374,7 +374,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : nationalité.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : nationalité (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -444,7 +444,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : permis.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : permis (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -514,7 +514,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de résidence principale.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de résidence principale (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -585,7 +585,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de résidence secondaire.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de résidence secondaire (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -657,7 +657,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : relations.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : relations (conjoints (apparition)).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -671,7 +671,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 	}
 
 	@Test(timeout = 10000L)
-	public void testModificationPlusieursAttributs() throws Exception {
+	public void  testModificationPlusieursAttributs() throws Exception {
 
 		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {
 			@Override
@@ -729,7 +729,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : date de naissance, état civil, relations.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Les éléments suivants ont été modifiés par la correction : date de naissance (apparition), état civil (dates), relations (conjoints (apparition)).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);
@@ -948,7 +948,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
-				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de contact.", evt.getCommentaireTraitement());
+				Assert.assertEquals("L'élément suivant a été modifié par la correction : adresse de contact (apparition).", evt.getCommentaireTraitement());
 
 				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
 				Assert.assertNotNull(erreurs);

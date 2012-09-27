@@ -17,6 +17,7 @@ import ch.vd.uniregctb.type.TypePermis;
 public class PermisComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUT = "permis";
+	private static final String DATES = "dates";
 
 	@Nullable
 	private static Permis getPermisC(List<Permis> list) {
@@ -50,21 +51,32 @@ public class PermisComparisonStrategy implements IndividuComparisonStrategy {
 	    final PermisList permis2 = corrige.getIndividu().getPermis();
 	    final boolean hasPermit1 = hasPermitAtAll(permis1);
 	    final boolean hasPermit2 = hasPermitAtAll(permis2);
+	    final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 	    boolean neutre = true;
 	    if (hasPermit1 || hasPermit2) {
 		    if (hasPermit1 != hasPermit2) {
 			    // information présente d'un côté, mais pas de l'autre...
+			    IndividuComparisonHelper.fillMonitorWithApparitionDisparition(hasPermit2, monitor, ATTRIBUT);
 			    neutre = false;
 		    }
 		    else {
 			    // ici, on a des permis des deux côtés... mais quels sont-ils ?
 			    final Permis p1 = getPermisC(permis1);
 			    final Permis p2 = getPermisC(permis2);
-			    neutre = (p1 == null && p2 == null) || IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(p1, p2);
+			    if (p1 != null && p2 != null) {
+				    neutre = IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(p1, p2, monitor, DATES);
+			    }
+			    else if (p1 != null || p2 != null) {
+				    neutre = false;
+			    }
+			    if (!neutre) {
+				    IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
+			    }
 		    }
-	    }
-	    if (!neutre) {
-		    msg.set(ATTRIBUT);
+
+		    if (!neutre) {
+			    msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+		    }
 	    }
 	    return neutre;
     }

@@ -16,6 +16,7 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 public class NationaliteComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUT = "nationalité";
+	private static final String DATES = "dates";
 
 	private static enum StatutNationalite {
 		AUCUNE,
@@ -62,22 +63,39 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 
 		// La spécification dit qu'il faut détecter le passage de "nationalité inconnue" à "nationalité connue" et vice-versa (= statut de la nationalité),
-		// et que dans le cas où les nationalités existaient et changent, seule les changements sur la nationalité suisse sont importants
+		// et que dans le cas où les nationalités existaient et changent, seuls les changements sur la nationalité suisse sont importants
 		final List<Nationalite> origNationalites = originel.getIndividu().getNationalites();
 		final List<Nationalite> corNationalites = corrige.getIndividu().getNationalites();
 		final StatutNationalite origStatus = getNationalityStatus(origNationalites);
 		final StatutNationalite corStatus = getNationalityStatus(corNationalites);
-		boolean sansImpact = origStatus == corStatus;
-		if (sansImpact) {
+		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
+		boolean neutre = true;
+		if (origStatus != corStatus) {
+			if (origStatus == StatutNationalite.AUCUNE || corStatus == StatutNationalite.AUCUNE) {
+				IndividuComparisonHelper.fillMonitorWithApparitionDisparition(origStatus == StatutNationalite.AUCUNE, monitor, ATTRIBUT);
+			}
+			else {
+				IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
+			}
+			neutre = false;
+		}
+		else {
 			// filtrons les nationalités étrangères pour ne garder que la nationalité suisse et comparons les dates
 			final Nationalite origSuisse = getNationaliteSuisse(origNationalites);
 			final Nationalite corSuisse = getNationaliteSuisse(corNationalites);
-			sansImpact = IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(origSuisse, corSuisse);
+			if (origSuisse != null && corSuisse != null) {
+				neutre = IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(origSuisse, corSuisse, monitor, DATES);
+			}
+			else if (origSuisse != null || corSuisse != null) {
+				neutre = false;
+			}
+			if (!neutre) {
+				IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
+			}
 		}
-
-		if (!sansImpact) {
-			msg.set(ATTRIBUT);
+		if (!neutre) {
+			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
 		}
-		return sansImpact;
+		return neutre;
 	}
 }

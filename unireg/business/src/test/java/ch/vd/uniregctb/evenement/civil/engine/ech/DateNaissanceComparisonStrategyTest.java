@@ -89,7 +89,7 @@ public class DateNaissanceComparisonStrategyTest extends AbstractIndividuCompari
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, date, null);
-		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance (disparition)");
 	}
 
 	@Test
@@ -101,6 +101,6 @@ public class DateNaissanceComparisonStrategyTest extends AbstractIndividuCompari
 		final long noEvtCorrection = 4367823452374L;
 
 		setupCivil(noIndividu, noEvtOriginel, noEvtCorrection, null, date);
-		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance");
+		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de naissance (apparition)");
 	}
 }

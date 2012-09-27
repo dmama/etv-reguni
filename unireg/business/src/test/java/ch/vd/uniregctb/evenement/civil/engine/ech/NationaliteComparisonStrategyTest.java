@@ -271,7 +271,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), pays, noEvt2, new DateRangeHelper.Range(debut2, fin), pays);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (dates)");
 	}
 
 	@Test
@@ -286,7 +286,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), pays, noEvt2, new DateRangeHelper.Range(debut, fin2), pays);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (dates)");
 	}
 
 	@Test
@@ -300,7 +300,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (apparition)");
 	}
 
 	@Test
@@ -314,7 +314,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), pays);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (apparition)");
 	}
 
 	@Test
@@ -328,7 +328,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, null, null);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (disparition)");
 	}
 
 	@Test
@@ -342,6 +342,6 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), pays, noEvt2, null, null);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (disparition)");
 	}
 }

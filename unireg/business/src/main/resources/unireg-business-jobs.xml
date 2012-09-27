@@ -125,6 +125,15 @@
 		<property name="rapportService" ref="rapportService"/>
 	</bean>
 
+	<bean id="evenementCivilEchCorrectionDumpJob" parent="schedulerJob" class="ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchCorrectionDumpJob">
+		<constructor-arg value="203"/>
+		<constructor-arg value="Dump des différences civiles reçues dans des événements de correction"/>
+		<property name="serviceCivil" ref="serviceCivilService"/>
+		<property name="serviceInfra" ref="serviceInfrastructureService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
     <bean id="editiqueListeRecapJob" parent="schedulerJob" class="ch.vd.uniregctb.editique.batch.EditiqueListeRecapJob">
         <constructor-arg value="300"/>
         <property name="listeRecapService" ref="lrService"/>

@@ -12,6 +12,7 @@ import ch.vd.uniregctb.common.DataHolder;
 public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUT = "état civil";
+	private static final String DATES = "dates";
 
     @Override
 	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
@@ -19,10 +20,23 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	    // -> on peut se baser sur l'état civil "courant"
 	    final EtatCivil ecOriginel = originel.getIndividu().getEtatCivilCourant();
 	    final EtatCivil ecCorrige = corrige.getIndividu().getEtatCivilCourant();
-	    if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(ecOriginel, ecCorrige) || (ecOriginel != ecCorrige && ecOriginel.getTypeEtatCivil() != ecCorrige.getTypeEtatCivil())) {
-		    msg.set(ATTRIBUT);
-		    return false;
+	    final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
+	    boolean neutre = true;
+	    if (ecOriginel != null && ecCorrige != null) {
+		    neutre = ecOriginel.getTypeEtatCivil() == ecCorrige.getTypeEtatCivil() &&
+				     IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(ecOriginel, ecCorrige, monitor, DATES);
+		    if (!neutre) {
+			    IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
+		    }
 	    }
-	    return true;
+	    else if (ecOriginel != null || ecCorrige != null) {
+		    IndividuComparisonHelper.fillMonitorWithApparitionDisparition(ecOriginel == null, monitor, ATTRIBUT);
+		    neutre = false;
+	    }
+
+	    if (!neutre) {
+		    msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+		}
+	    return neutre;
     }
 }

@@ -93,7 +93,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (apparition)");
 	}
 
 	@Test
@@ -112,7 +112,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 			}
 		}, noEvt2, null);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (disparition)");
 	}
 
 	@Test
@@ -206,7 +206,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt1 = 3278456435L;
 		final long noEvt2 = 43757536526L;
 		final int egid1 = MockBatiment.Villette.BatimentCheminDeCreuxBechet.getEgid();
-		final int egid2 = 1;
+		final int egid2 = MockBatiment.Epesses.BatimentChDuMont.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
@@ -224,7 +224,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune)");
 	}
 
 	@Test
@@ -277,7 +277,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (apparition))");
 	}
 
 	@Test
@@ -303,7 +303,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (disparition))");
 	}
 
 	@Test
@@ -330,7 +330,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
 
 	@Test
@@ -357,7 +357,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
 
 	@Test
@@ -438,7 +438,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (commune))");
 	}
 
 	@Test
@@ -519,7 +519,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (commune))");
 	}
 
 	@Test
@@ -546,7 +546,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (type))");
 	}
 
 	@Test
@@ -573,7 +573,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (type))");
 	}
 
 	@Test
@@ -599,7 +599,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (apparition))");
 	}
 
 	@Test
@@ -625,7 +625,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (apparition))");
 	}
 
 	@Test
@@ -651,7 +651,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (disparition))");
 	}
 
 	@Test
@@ -677,7 +677,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		           }
 		);
 
-		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut());
+		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (disparition))");
 	}
 
 	@Test

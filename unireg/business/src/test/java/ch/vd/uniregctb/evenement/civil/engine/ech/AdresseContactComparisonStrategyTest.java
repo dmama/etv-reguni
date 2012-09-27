@@ -115,7 +115,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Chabadabada", "Rue du pont de bois", "1234", "12", "Parlabas", null));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (titre)");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de fer", "1234", "12", "Parlabas", null));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (rue)");
 	}
 
 	@Test
@@ -155,7 +155,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1235", "12", "Parlabas", null));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro postal)");
 	}
 
 	@Test
@@ -175,7 +175,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "24", "Parlabas", null));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro)");
 	}
 
 	@Test
@@ -195,7 +195,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", null));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (localité)");
 	}
 
 	@Test
@@ -215,7 +215,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2001, 1, 1), date(2009, 12, 10))));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
 	@Test
@@ -235,7 +235,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9))));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
 	@Test
@@ -250,7 +250,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Paricy", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 9))));
 			           }
 		           });
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (apparition)");
 	}
 
 	@Test
@@ -265,6 +265,6 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 				           individu.getAdresses().add(buildAdresse(TypeAdresseCivil.COURRIER, "Monsieur Tartempion", "Rue du pont de bois", "1234", "12", "Parlabas", new DateRangeHelper.Range(date(2000, 1, 1), date(2009, 12, 10))));
 			           }
 		           }, noEvt2, null);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (disparition)");
 	}
 }

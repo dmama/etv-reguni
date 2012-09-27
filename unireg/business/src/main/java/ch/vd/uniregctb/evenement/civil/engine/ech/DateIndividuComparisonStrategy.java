@@ -16,11 +16,23 @@ public abstract class DateIndividuComparisonStrategy implements IndividuComparis
 	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		final RegDate dateOriginel = getDate(originel);
 		final RegDate dateCorrige = getDate(corrige);
-		if (!areDatesIdentiques(dateOriginel, dateCorrige)) {
-			msg.set(getNomAttribut());
-			return false;
+		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
+		boolean neutre = true;
+		if (dateOriginel != null && dateCorrige != null) {
+			if (!areDatesIdentiques(dateOriginel, dateCorrige)) {
+				IndividuComparisonHelper.fillMonitor(monitor, getNomAttribut());
+				neutre = false;
+			}
 		}
-		return true;
+		else if (dateOriginel != null || dateCorrige != null) {
+			IndividuComparisonHelper.fillMonitorWithApparitionDisparition(dateOriginel == null, monitor, getNomAttribut());
+			neutre = false;
+		}
+
+		if (!neutre) {
+			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+		}
+		return neutre;
 	}
 
 	/**

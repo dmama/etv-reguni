@@ -14,11 +14,18 @@ import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 /**
  * Comparateur d'individu basé sur les adresses de résidence (tant principales que secondaires) de l'individu
  */
 public abstract class AdresseResidenceComparisonStrategy implements IndividuComparisonStrategy {
+
+	private static final String TYPE = "type";
+	private static final String COMMUNE = "commune";
+	private static final String DATES = "dates";
+	private static final String LOCALISATION_PRECEDENTE = "localisation précédente";
+	private static final String LOCALISATION_SUIVANTE = "localisation suivante";
 
 	private static final Comparator<LocalisationType> TYPE_LOCALISATION_COMPARATOR = new IndividuComparisonHelper.DefaultComparator<LocalisationType>(true);
 
@@ -35,10 +42,16 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 
 	private static final IndividuComparisonHelper.Equalator<Localisation> LOCALISATION_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Localisation>() {
 		@Override
-		protected boolean areNonNullEqual(@NotNull Localisation o1, @NotNull Localisation o2) {
+		protected boolean areNonNullEqual(@NotNull Localisation o1, @NotNull Localisation o2, @Nullable IndividuComparisonHelper.FieldMonitor monitor, @Nullable String fieldName) {
 			boolean equal = o1.getType() == o2.getType();
-			if (equal && o1.getType() == LocalisationType.CANTON_VD) {
-				equal = IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(o1.getNoOfs(), o2.getNoOfs());
+			if (!equal) {
+				IndividuComparisonHelper.fillMonitor(monitor, TYPE);
+			}
+			else if (o1.getType() == LocalisationType.CANTON_VD) {
+				equal = IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(o1.getNoOfs(), o2.getNoOfs(), monitor, COMMUNE);
+			}
+			if (!equal) {
+				IndividuComparisonHelper.fillMonitor(monitor, fieldName);
 			}
 			return equal;
 		}
@@ -65,25 +78,20 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 		}
 	};
 
+	private static final IndividuComparisonHelper.Equalator<TypeAdresseCivil> TYPE_ADRESSE_EQUALATOR = new IndividuComparisonHelper.DefaultEqualator<TypeAdresseCivil>();
+
 	private final IndividuComparisonHelper.Equalator<Adresse> ADRESSE_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<Adresse>() {
 		@Override
-		protected boolean areNonNullEqual(@NotNull Adresse o1, @NotNull Adresse o2) {
-			if (o1.getTypeAdresse() != o2.getTypeAdresse()) {
-				return false;
+		protected boolean areNonNullEqual(@NotNull Adresse o1, @NotNull Adresse o2, @Nullable IndividuComparisonHelper.FieldMonitor monitor, @Nullable String fieldName) {
+			boolean equal = TYPE_ADRESSE_EQUALATOR.areEqual(o1.getTypeAdresse(), o2.getTypeAdresse(), monitor, TYPE);
+			equal = equal && IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2, monitor, DATES);
+			equal = equal && IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(getNoOfsCommune(o1), getNoOfsCommune(o2), monitor, COMMUNE);
+			equal = equal && LOCALISATION_EQUALATOR.areEqual(o1.getLocalisationPrecedente(), o2.getLocalisationPrecedente(), monitor, LOCALISATION_PRECEDENTE);
+			equal = equal && LOCALISATION_EQUALATOR.areEqual(o1.getLocalisationSuivante(), o2.getLocalisationSuivante(), monitor, LOCALISATION_SUIVANTE);
+			if (!equal) {
+				IndividuComparisonHelper.fillMonitor(monitor, fieldName);
 			}
-			if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2) ) {
-				return false;
-			}
-			if (!IndividuComparisonHelper.INTEGER_EQUALATOR.areEqual(getNoOfsCommune(o1), getNoOfsCommune(o2))) {
-				return false;
-			}
-			if (!LOCALISATION_EQUALATOR.areEqual(o1.getLocalisationPrecedente(), o2.getLocalisationPrecedente())) {
-				return false;
-			}
-			if (!LOCALISATION_EQUALATOR.areEqual(o1.getLocalisationSuivante(), o2.getLocalisationSuivante())) {
-				return false;
-			}
-			return true;
+			return equal;
 		}
 	};
 
@@ -123,10 +131,11 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 
 	@Override
 	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		final List<Adresse> resOriginelles = extractAdressesResidence(originel.getIndividu().getAdresses());
 		final List<Adresse> resCorrigees = extractAdressesResidence(corrige.getIndividu().getAdresses());
-		if (!IndividuComparisonHelper.areContentsEqual(resOriginelles, resCorrigees, ADRESSE_COMPARATOR, ADRESSE_EQUALATOR)) {
-			msg.set(getAttribute());
+		if (!IndividuComparisonHelper.areContentsEqual(resOriginelles, resCorrigees, ADRESSE_COMPARATOR, ADRESSE_EQUALATOR, monitor, getAttribute())) {
+			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
 			return false;
 		}
 		return true;

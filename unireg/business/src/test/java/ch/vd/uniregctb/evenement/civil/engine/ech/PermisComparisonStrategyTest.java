@@ -107,7 +107,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut1, fin), type, noEvt2, new DateRangeHelper.Range(debut2, fin), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (dates)");
 	}
 
 	@Test
@@ -137,7 +137,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin1), type, noEvt2, new DateRangeHelper.Range(debut, fin2), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (dates)");
 	}
 
 	@Test
@@ -166,7 +166,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, null, null, noEvt2, new DateRangeHelper.Range(debut, fin), type);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (apparition)");
 	}
 
 	@Test
@@ -180,6 +180,6 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		final long noEvt2 = 54378436574L;
 
 		setupCivil(noIndividu, noEvt1, new DateRangeHelper.Range(debut, fin), type, noEvt2, null, null);
-		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
+		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (disparition)");
 	}
 }

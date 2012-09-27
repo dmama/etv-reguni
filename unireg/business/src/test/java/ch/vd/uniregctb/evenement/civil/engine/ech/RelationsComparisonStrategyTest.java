@@ -345,7 +345,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILS);
 			}
 		});
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (apparition))");
 	}
 
 	@Test
@@ -362,7 +362,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.PERE);
 			}
 		});
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (apparition))");
 	}
 
 	@Test
@@ -379,7 +379,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.CONJOINT);
 			}
 		});
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (apparition))");
 	}
 
 	@Test
@@ -396,7 +396,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersEnfant(individu, range, noEnfant, TypeRelationVersIndividu.FILLE);
 			}
 		}, idEvt2, null);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (disparition))");
 	}
 
 	@Test
@@ -413,7 +413,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersParent(individu, range, noParent, TypeRelationVersIndividu.MERE);
 			}
 		}, idEvt2, null);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (disparition))");
 	}
 
 	@Test
@@ -430,7 +430,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				addRelationVersConjoint(individu, range, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE);
 			}
 		}, idEvt2, null);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (disparition))");
 	}
 
 	@Test
@@ -453,7 +453,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersEnfant(individu, range, noEnfant2, TypeRelationVersIndividu.FILS);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants)");
 	}
 
 	@Test
@@ -498,7 +498,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersParent(individu, range, noParent2, TypeRelationVersIndividu.PERE);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents)");
 	}
 
 	@Test
@@ -521,7 +521,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersConjoint(individu, range, noConjoint2, TypeRelationVersIndividu.CONJOINT);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints)");
 	}
 
 	@Test
@@ -544,7 +544,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersEnfant(individu, range2, noEnfant, TypeRelationVersIndividu.FILS);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
 	}
 
 	@Test
@@ -568,7 +568,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 			           }
 		           }
 		);
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
 	}
 
 	@Test
@@ -591,7 +591,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.MERE);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
 	@Test
@@ -614,7 +614,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersParent(individu, range2, noParent, TypeRelationVersIndividu.PERE);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
 	@Test
@@ -637,7 +637,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.PARTENAIRE_ENREGISTRE);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (dates))");
 	}
 
 	@Test
@@ -660,6 +660,6 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				           addRelationVersConjoint(individu, range2, noConjoint, TypeRelationVersIndividu.CONJOINT);
 			           }
 		           });
-		assertNonNeutre(strategy, idEvt1, idEvt2, "relations");
+		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (dates))");
 	}
 }

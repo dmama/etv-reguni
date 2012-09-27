@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.Comparator;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
@@ -14,6 +15,10 @@ import ch.vd.uniregctb.common.DataHolder;
 public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final String ATTRIBUT = "relations";
+	private static final String DATES = "dates";
+	private static final String CONJOINTS = "conjoints";
+	private static final String ENFANTS = "enfants";
+	private static final String PARENTS = "parents";
 
 	private static final Comparator<RelationVersIndividu> RELATION_COMPARATOR = new IndividuComparisonHelper.NullableComparator<RelationVersIndividu>(true) {
 		@Override
@@ -28,19 +33,25 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 
 	private static final IndividuComparisonHelper.Equalator<RelationVersIndividu> RELATION_EQUALATOR = new IndividuComparisonHelper.NullableEqualator<RelationVersIndividu>() {
 		@Override
-		protected boolean areNonNullEqual(@NotNull RelationVersIndividu o1, @NotNull RelationVersIndividu o2) {
+		protected boolean areNonNullEqual(@NotNull RelationVersIndividu o1, @NotNull RelationVersIndividu o2, @Nullable IndividuComparisonHelper.FieldMonitor monitor, @Nullable String fieldName) {
 			// on se fiche du sexe de l'autre personne (enfant, parent, conjoint..)
-			return IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2) && o1.getNumeroAutreIndividu() == o2.getNumeroAutreIndividu();
+			if (!IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(o1, o2, monitor, DATES) || o1.getNumeroAutreIndividu() != o2.getNumeroAutreIndividu()) {
+				IndividuComparisonHelper.fillMonitor(monitor, fieldName);
+				return false;
+			}
+			return true;
 		}
 	};
 
 	@Override
 	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
 		// les différences de relations sont à chercher dans les conjoints et les filiations
-		if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getConjoints(), corrige.getIndividu().getConjoints(), RELATION_COMPARATOR, RELATION_EQUALATOR)
-				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getEnfants(), corrige.getIndividu().getEnfants(), RELATION_COMPARATOR, RELATION_EQUALATOR)
-				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getParents(), corrige.getIndividu().getParents(), RELATION_COMPARATOR, RELATION_EQUALATOR)) {
-			msg.set(ATTRIBUT);
+		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
+		if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getConjoints(), corrige.getIndividu().getConjoints(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, CONJOINTS)
+				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getEnfants(), corrige.getIndividu().getEnfants(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, ENFANTS)
+				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getParents(), corrige.getIndividu().getParents(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, PARENTS)) {
+			IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
+			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
 			return false;
 		}
 		return true;
