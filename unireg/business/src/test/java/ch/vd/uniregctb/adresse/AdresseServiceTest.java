@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -42,6 +43,7 @@ import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.FormulePolitesse;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TexteCasePostale;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
@@ -7969,4 +7971,74 @@ public class AdresseServiceTest extends BusinessTest {
 		assertAdresse(date(2002, 1, 1), null, "Echallens", SourceType.CIVILE, false, adresses.domicile.get(1));
 		assertAdresse(date(2001, 1, 1), null, "*** adresse résolution exception ***", SourceType.FISCALE, false, adresses.domicile.get(2));
 	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdressesEnvoiDetailleComplete() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1987, 2, 12), null, MockRue.CossonayVille.AvenueDuFuniculaire);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+
+		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+		assertNotNull(adresse0);
+		assertFalse(adresse0.isIncomplete());
+		assertEquals(date(1987, 2, 12), adresse0.getDateDebut());
+		assertEquals("Madame", adresse0.getLigne1());
+		assertEquals("Frida Labruyère", adresse0.getLigne2());
+		assertEquals("Avenue du Funiculaire", adresse0.getLigne3());
+		assertEquals("1304 Cossonay-Ville", adresse0.getLigne4());
+
+	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdressesEnvoiDetailleeCompleteAvecCasePostale() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
+		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
+		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1987, 2, 12), null,MockLocalite.CossonayVille.getNoOrdre(),casePostale);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+
+		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+		assertNotNull(adresse0);
+		assertFalse(adresse0.isIncomplete());
+		assertEquals(date(1987, 2, 12), adresse0.getDateDebut());
+		assertEquals("Madame", adresse0.getLigne1());
+		assertEquals("Frida Labruyère", adresse0.getLigne2());
+		assertEquals("Case Postale 5123", adresse0.getLigne3());
+		assertEquals("1304 Cossonay-Ville", adresse0.getLigne4());
+
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdressesEnvoiDetailleePaysInconnue() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
+		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
+		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(1987, 2, 12), null,null,null,MockPays.PaysInconnu);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+
+		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+		assertNotNull(adresse0);
+		assertTrue(adresse0.isIncomplete());
+
+
+	}
+
+
 }

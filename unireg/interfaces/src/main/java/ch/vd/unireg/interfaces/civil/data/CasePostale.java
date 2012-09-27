@@ -18,6 +18,7 @@ public class CasePostale implements Serializable {
 
 	private static final long serialVersionUID = 2958384367125929556L;
 
+	public static final CasePostale VIDE = new CasePostale(TexteCasePostale.CASE_POSTALE,null,null);
 	private TexteCasePostale type;
 	private Integer numero;
 	private Integer npa;

@@ -13,6 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
@@ -432,16 +433,38 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     }
 
     protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue) {
-        AdresseSuisse adresse = new AdresseSuisse();
-        adresse.setDateDebut(debut);
-        adresse.setDateFin(fin);
-        adresse.setUsage(usage);
-        adresse.setNumeroRue(rue.getNoRue());
-        adresse.setNumeroOrdrePoste(rue.getLocalite().getNPA());
-        adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
-        return adresse;
+       return  addAdresseSuisse(tiers, usage, debut,fin,rue,null);
     }
 
+	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, MockRue rue,CasePostale casePostale) {
+		AdresseSuisse adresse = new AdresseSuisse();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setUsage(usage);
+		adresse.setNumeroRue(rue.getNoRue());
+		if(casePostale!=null){
+			adresse.setTexteCasePostale(casePostale.getType());
+			adresse.setNumeroCasePostale(casePostale.getNumero());
+		}
+		adresse.setNumeroOrdrePoste(rue.getLocalite().getNPA());
+		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
+		return adresse;
+	}
+
+	// adresse suisse sans rue
+	protected AdresseSuisse addAdresseSuisse(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, Integer noOrdre,CasePostale casePostale) {
+		AdresseSuisse adresse = new AdresseSuisse();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setUsage(usage);
+		if(casePostale!=null){
+			adresse.setTexteCasePostale(casePostale.getType());
+			adresse.setNumeroCasePostale(casePostale.getNumero());
+		}
+		adresse.setNumeroOrdrePoste(noOrdre);
+		adresse = (AdresseSuisse) tiersDAO.addAndSave(tiers, adresse);
+		return adresse;
+	}
     protected AdresseCivile addAdresseCivil(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, TypeAdresseCivil type) {
 	    AdresseCivile adresse = new AdresseCivile();
         adresse.setDateDebut(debut);
@@ -454,16 +477,25 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 
     protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
                                                    Pays pays) {
-        AdresseEtrangere adresse = new AdresseEtrangere();
-        adresse.setDateDebut(debut);
-        adresse.setDateFin(fin);
-        adresse.setUsage(usage);
-        adresse.setRue(rue);
-        adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
-        adresse.setNumeroOfsPays(pays.getNoOFS());
-        adresse = (AdresseEtrangere) tiersDAO.addAndSave(tiers, adresse);
-        return adresse;
+        return addAdresseEtrangere(tiers,usage,debut,fin,rue,numeroPostalEtLocalite,pays,null);
     }
+
+	protected AdresseEtrangere addAdresseEtrangere(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, @Nullable String rue, @Nullable String numeroPostalEtLocalite,
+	                                               Pays pays,CasePostale casePostale) {
+		AdresseEtrangere adresse = new AdresseEtrangere();
+		adresse.setDateDebut(debut);
+		adresse.setDateFin(fin);
+		adresse.setUsage(usage);
+		adresse.setRue(rue);
+		adresse.setNumeroPostalLocalite(numeroPostalEtLocalite);
+		if(casePostale!=null){
+			adresse.setTexteCasePostale(casePostale.getType());
+			adresse.setNumeroCasePostale(casePostale.getNumero());
+		}
+		adresse.setNumeroOfsPays(pays.getNoOFS());
+		adresse = (AdresseEtrangere) tiersDAO.addAndSave(tiers, adresse);
+		return adresse;
+	}
 
     protected AdresseAutreTiers addAdresseAutreTiers(Tiers tiers, TypeAdresseTiers usage, RegDate debut, @Nullable RegDate fin, TypeAdresseTiers autreType, Tiers autreTiers) {
         AdresseAutreTiers adresse = new AdresseAutreTiers();
