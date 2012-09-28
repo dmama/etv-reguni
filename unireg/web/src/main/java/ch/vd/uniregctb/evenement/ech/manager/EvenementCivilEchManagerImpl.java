@@ -125,7 +125,7 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
             final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
             final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
             try {
-                evenementNotificationQueue.post(evt.getNumeroIndividu(), true);
+                evenementNotificationQueue.postManual(evt.getNumeroIndividu(), true);
                 individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
             } finally {
                 evenementProcessor.unregisterListener(listnerHandle);

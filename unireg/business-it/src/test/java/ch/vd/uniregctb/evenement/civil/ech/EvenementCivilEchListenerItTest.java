@@ -57,7 +57,7 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 			}
 
 			@Override
-			public EvenementCivilEch handleEvent(EvenementCivilEch event) throws EvenementCivilException {
+			public EvenementCivilEch handleEvent(EvenementCivilEch event, Mode mode) throws EvenementCivilException {
 				evenementsRecus.add(event);
 				return event;
 			}

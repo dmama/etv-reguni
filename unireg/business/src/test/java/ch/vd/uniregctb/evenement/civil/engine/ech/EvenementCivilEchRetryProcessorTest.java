@@ -111,7 +111,15 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public void post(Long noIndividu, boolean immediate) {
+			public void postBatch(Long noIndividu, boolean immediate) {
+				// traitement immédiat
+				for (Listener listener : listeners.values()) {
+					listener.onIndividuTraite(noIndividu);
+				}
+			}
+
+			@Override
+			public void postManual(Long noIndividu, boolean immediate) {
 				// traitement immédiat
 				for (Listener listener : listeners.values()) {
 					listener.onIndividuTraite(noIndividu);

@@ -33,6 +33,8 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
+import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandler.Mode;
+
 /**
  * Listener des événements civils au format e-CH envoyés par RCPers au travers de l'ESB
  */
@@ -137,7 +139,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			// de rejetter en erreur (ou exception) le message entrant...
 
 			try {
-				receptionHandler.handleEvent(event);
+				receptionHandler.handleEvent(event, Mode.BATCH);
 			}
 			catch (Exception e) {
 				// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...

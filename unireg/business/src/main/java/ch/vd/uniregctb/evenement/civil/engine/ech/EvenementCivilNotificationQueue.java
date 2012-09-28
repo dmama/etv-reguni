@@ -46,15 +46,27 @@ public interface EvenementCivilNotificationQueue {
 	}
 
 	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue
+	 * Méthode utilisée pour ajouter des éléments à la queue des traitments batchs.
+	 * A utiliser pour les traitements de masse.
+	 *
 	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
 	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
 	 * @throws NullPointerException en cas de paramètre <code>null</code>
 	 */
-	void post(Long noIndividu, boolean immediate);
+	void postBatch(Long noIndividu, boolean immediate);
 
 	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue en bloc (le décalage sera forcément appliqué)
+	 * Méthode utilisée pour ajouter des éléments à la queue des traitments manuels.
+	 * A utiliser pour les traitements initiés par une utilisateur humain.
+	 *
+	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
+	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
+	 * @throws NullPointerException en cas de paramètre <code>null</code>
+	 */
+	void postManual(Long noIndividu, boolean immediate);
+
+	/**
+	 * Méthode utilisée pour ajouter des éléments à la queue des traitements batch en bloc (le décalage sera forcément appliqué)
 	 * @param nosIndividus collections de numéros d'individus à poster
 	 */
 	void postAll(Collection<Long> nosIndividus);

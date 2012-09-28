@@ -9,6 +9,8 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
 
+import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandler.Mode;
+
 @ManagedResource
 public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBean, InitializingBean {
 
@@ -97,7 +99,7 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@Override
 	@ManagedOperation
 	public void treatPersonsEvents(long noIndividu) {
-		monitor.demanderTraitementQueue(noIndividu, true);
+		monitor.demanderTraitementQueue(noIndividu, true, Mode.MANUAL);
 	}
 
 	@Override

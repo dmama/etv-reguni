@@ -71,8 +71,15 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public void demanderTraitementQueue(long noIndividu, boolean immediate) {
-		notificationQueue.post(noIndividu, immediate);
+	public void demanderTraitementQueue(long noIndividu, boolean immediate, Mode mode) {
+		switch (mode){
+		case BATCH:
+			notificationQueue.postBatch(noIndividu, immediate);
+		case MANUAL:
+			notificationQueue.postManual(noIndividu, immediate);
+		default:
+			throw new RuntimeException("unknown mode: " + mode);
+		}
 	}
 
 	@Override
@@ -103,7 +110,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public EvenementCivilEch handleEvent(EvenementCivilEch event) throws EvenementCivilException {
+	public EvenementCivilEch handleEvent(EvenementCivilEch event, Mode mode) throws EvenementCivilException {
 		// récupération de l'individu
 		final long noIndividu = evtCivilService.getNumeroIndividuPourEvent(event);
 
@@ -111,7 +118,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
         event = evtCivilService.assigneNumeroIndividu(event, noIndividu);
 
 		// notification du moteur de traitement
-		demanderTraitementQueue(noIndividu, false);
+		demanderTraitementQueue(noIndividu, false, mode);
 		return event;
 	}
 

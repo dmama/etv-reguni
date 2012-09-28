@@ -6,7 +6,12 @@ import java.util.concurrent.TimeUnit;
 public class MockEvenementCivilNotificationQueue implements EvenementCivilNotificationQueue {
 
 	@Override
-	public void post(Long noIndividu, boolean immediate) {
+	public void postBatch(Long noIndividu, boolean immediate) {
+		// nothing
+	}
+
+	@Override
+	public void postManual(Long noIndividu, boolean immediate) {
 		// nothing
 	}
 

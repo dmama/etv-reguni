@@ -75,11 +75,11 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		final EvenementCivilNotificationQueueImpl queue = buildQueue(0);
 		Assert.assertEquals(0, queue.getInflightCount());
-		queue.post(noIndividuSans, false);
+		queue.postBatch(noIndividuSans, false);
 		Assert.assertEquals(1, queue.getInflightCount());
-		queue.post(noIndividu, false);
+		queue.postBatch(noIndividu, false);
 		Assert.assertEquals(2, queue.getInflightCount());
-		queue.post(noIndividu, false);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
+		queue.postBatch(noIndividu, false);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
 		Assert.assertEquals(2, queue.getInflightCount());
 
 		// première récupération : individu sans événement -> collection vide
@@ -247,7 +247,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		final EvenementCivilNotificationQueueImpl queue = buildQueue(1);        // 1 seconde
 		Assert.assertEquals(0, queue.getInflightCount());
-		queue.post(noIndividu, false);
+		queue.postBatch(noIndividu, false);
 
 		// après 800ms, on ne devrait toujours rien voir
 		Thread.sleep(800);
@@ -278,7 +278,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		final EvenementCivilNotificationQueueImpl queue = buildQueue(2);      // si on attend le délai, on fait exploser le timeout du test
 		Assert.assertEquals(0, queue.getInflightCount());
-		queue.post(noIndividu, true);
+		queue.postBatch(noIndividu, true);
 
 		// le poll doit recevoir l'événement immédiatement
 		final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -303,8 +303,8 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		final EvenementCivilNotificationQueueImpl queue = buildQueue(1);        // 1 seconde
 		Assert.assertEquals(0, queue.getInflightCount());
-		queue.post(noIndividu, false);
-		queue.post(noIndividu, true);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
+		queue.postBatch(noIndividu, false);
+		queue.postBatch(noIndividu, true);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
 
 		// après 800ms, on ne devrait toujours rien voir
 		Thread.sleep(800);
@@ -360,7 +360,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Collections.shuffle(random);
 				final long start = System.nanoTime();
 				for (Long no : random) {
-					queue.post(no, false);
+					queue.postBatch(no, false);
 				}
 
 				final long end = System.nanoTime();

@@ -61,7 +61,7 @@ public class EvenementCivilEchRethrowerTest extends BusinessTest {
 			}
 
 			@Override
-			public EvenementCivilEch handleEvent(EvenementCivilEch event) throws EvenementCivilException {
+			public EvenementCivilEch handleEvent(EvenementCivilEch event, Mode mode) throws EvenementCivilException {
 				found.add(event);
 				return event;
 			}

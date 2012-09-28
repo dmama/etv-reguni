@@ -117,7 +117,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		try {
 			// notification d'arrivée d'événement sur l'individu
-			queue.post(noIndividu, false);
+			queue.postBatch(noIndividu, false);
 
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (jobDone) {
