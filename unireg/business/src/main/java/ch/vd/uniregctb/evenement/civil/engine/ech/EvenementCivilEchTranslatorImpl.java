@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchSourceHelper;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.arrivee.AnnulationArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulation.deces.AnnulationDecesTranslationStrategy;
@@ -284,6 +285,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@NotNull
 	private EvenementCivilEchTranslationStrategy getStrategy(EvenementCivilEch event) throws EvenementCivilException {
+
+		// TODO [ech99] jde : à enlever dès que possible...
+		if (EvenementCivilEchSourceHelper.isFromEch99(event)) {
+			return ech99Strategy;
+		}
+
 		final EventTypeKey key = new EventTypeKey(event);
 		final EvenementCivilEchTranslationStrategy strategy = getStrategy(key);
 		if (strategy == null) {
@@ -302,10 +309,15 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		return strategies.get(key);
 	}
 
+	private EvenementCivilEchTranslationStrategy ech99Strategy;
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
 		strategies = buildStrategies(context, parameters);
+
+		// TODO [ech99] jde : à enlever dès que possible
+		ech99Strategy = new EvenementCivilEchIssuDe99Strategy(tiersService);
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

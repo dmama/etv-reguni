@@ -40,8 +40,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchListener.class);
 
-	private static final String DEFAULT_BUSINESS_USER = "JMSEvtCivil-SansVisa";
-
 	private final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
 	private final AtomicInteger nombreMessagesErreurs = new AtomicInteger(0);
 	private final AtomicInteger nombreMessagesExceptions = new AtomicInteger(0);
@@ -87,9 +85,8 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		final long start = System.nanoTime();
 		try {
 			final Source content = message.getBodyAsSource();
-			final String visaMutation = StringUtils.trimToNull(message.getBusinessUser());
-
-			AuthenticationHelper.pushPrincipal(visaMutation != null ? visaMutation : DEFAULT_BUSINESS_USER);
+			final String visaMutation = EvenementCivilEchSourceHelper.getVisaCreation(message);
+			AuthenticationHelper.pushPrincipal(visaMutation);
 			try {
 				onEvenementCivil(content);
 			}
