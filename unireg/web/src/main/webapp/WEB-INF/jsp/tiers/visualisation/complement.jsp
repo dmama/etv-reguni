@@ -94,19 +94,25 @@
 		<display:table name="command.complement.autresComptesBancaires" id="compte" pagesize="10" class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 			<display:setProperty name="paging.banner.all_items_found" value=""/>
 			<display:setProperty name="paging.banner.one_item_found" value=""/>
-			<display:column sortable ="true" titleKey="label.complement.numeroTitulaire">
+			<display:column titleKey="label.date.debut">
+					<unireg:regdate regdate="${compte.dateDebut}"/>
+			</display:column>
+			<display:column titleKey="label.date.fin">
+					<unireg:regdate regdate="${compte.dateFin}"/>
+			</display:column>
+			<display:column titleKey="label.complement.numeroTitulaire">
 					<unireg:numCTB numero="${compte.numeroTiersTitulaire}" link="true"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.titulaireCompte">
+			<display:column titleKey="label.complement.titulaireCompte">
 					<c:out value="${compte.titulaireCompteBancaire}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.numeroCCP">
+			<display:column titleKey="label.complement.numeroCCP">
 					<c:out value="${compte.numeroCCP}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.numeroCompteBancaire">
+			<display:column titleKey="label.complement.numeroCompteBancaire">
 					<c:out value="${compte.numeroCompteBancaire}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.numeroIBAN">
+			<display:column titleKey="label.complement.numeroIBAN">
 					<c:out value="${compte.iban}"/>
 					<c:if test="${compte.ibanValidationMessage != null}">
 						<span class="global-error">
@@ -114,10 +120,10 @@
 						</span>
 					</c:if>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.nomInstitutionFinanciere">
+			<display:column titleKey="label.complement.nomInstitutionFinanciere">
 					<c:out value="${compte.nomInstitutionCompteBancaire}"/>
 			</display:column>
-			<display:column sortable ="true" titleKey="label.complement.bicSwift">
+			<display:column titleKey="label.complement.bicSwift">
 					<c:out value="${compte.adresseBicSwift}"/>
 			</display:column>
 		</display:table>

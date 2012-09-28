@@ -1,6 +1,14 @@
 package ch.vd.uniregctb.tiers.view;
 
-public class CompteBancaireView {
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.NullDateBehavior;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+
+@SuppressWarnings("UnusedDeclaration")
+public class CompteBancaireView implements DateRange {
+	private RegDate dateDebut;
+	private RegDate dateFin;
 	private Long numeroTiersTitulaire;
 	private String titulaireCompteBancaire;
 	private String numeroCCP;
@@ -13,8 +21,10 @@ public class CompteBancaireView {
 	public CompteBancaireView() {
 	}
 
-	public CompteBancaireView(Long numeroTiersTitulaire, String titulaireCompte, String numeroCCP, String numeroCompteBancaire, String nomInstitutionCompteBancaire, String iban,
-	                          String ibanValidationMessage, String adresseBicSwift) {
+	public CompteBancaireView(RegDate dateDebut, RegDate dateFin, Long numeroTiersTitulaire, String titulaireCompte, String numeroCCP, String numeroCompteBancaire, String nomInstitutionCompteBancaire,
+	                          String iban, String ibanValidationMessage, String adresseBicSwift) {
+		this.dateDebut = dateDebut;
+		this.dateFin = dateFin;
 		this.numeroTiersTitulaire = numeroTiersTitulaire;
 		this.titulaireCompteBancaire = titulaireCompte;
 		this.numeroCCP = numeroCCP;
@@ -23,6 +33,22 @@ public class CompteBancaireView {
 		this.iban = iban;
 		this.ibanValidationMessage = ibanValidationMessage;
 		this.adresseBicSwift = adresseBicSwift;
+	}
+
+	public RegDate getDateDebut() {
+		return dateDebut;
+	}
+
+	public void setDateDebut(RegDate dateDebut) {
+		this.dateDebut = dateDebut;
+	}
+
+	public RegDate getDateFin() {
+		return dateFin;
+	}
+
+	public void setDateFin(RegDate dateFin) {
+		this.dateFin = dateFin;
 	}
 
 	public Long getNumeroTiersTitulaire() {
@@ -87,5 +113,10 @@ public class CompteBancaireView {
 
 	public void setAdresseBicSwift(String adresseBicSwift) {
 		this.adresseBicSwift = adresseBicSwift;
+	}
+
+	@Override
+	public boolean isValidAt(RegDate date) {
+		return RegDateHelper.isBetween(date, dateDebut, dateFin, NullDateBehavior.LATEST);
 	}
 }

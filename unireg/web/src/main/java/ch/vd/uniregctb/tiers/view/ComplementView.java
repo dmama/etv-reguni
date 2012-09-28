@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.tiers.view;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.interfaces.model.CompteBancaire;
@@ -62,8 +62,8 @@ public class ComplementView {
 					for (CompteBancaire compte : comptes) {
 						if (compte.getFormat() == CompteBancaire.Format.IBAN) {
 							final String ibanValidationMessage = verifierIban(compte.getNumero(), ibanValidator); // [UNIREG-2582]
-							autresComptesBancaires
-									.add(new CompteBancaireView(tiers.getNumero(), pm.getTitulaireCompte(), null, null, compte.getNomInstitution(), compte.getNumero(), ibanValidationMessage, null));
+							autresComptesBancaires.add(new CompteBancaireView(null, null, tiers.getNumero(), pm.getTitulaireCompte(), null, null, compte.getNomInstitution(), compte.getNumero(),
+									ibanValidationMessage, null));
 						}
 						else {
 							final String numero = compte.getNumero();
@@ -77,8 +77,8 @@ public class ComplementView {
 								numeroCCP = null;
 								numeroCompteBancaire = numero;
 							}
-							autresComptesBancaires
-									.add(new CompteBancaireView(tiers.getNumero(), pm.getTitulaireCompte(), numeroCCP, numeroCompteBancaire, compte.getNomInstitution(), null, null, null));
+							autresComptesBancaires.add(new CompteBancaireView(null, null, tiers.getNumero(), pm.getTitulaireCompte(), numeroCCP, numeroCompteBancaire, compte.getNomInstitution(),
+									null, null, null));
 						}
 					}
 				}
@@ -86,16 +86,19 @@ public class ComplementView {
 				final List<Mandat> mandats = pm.getMandats();
 				if (mandats != null) {
 					for (Mandat mandat : mandats) {
-						if (RegDateHelper.isBetween(null, mandat.getDateDebut(), mandat.getDateFin(), NullDateBehavior.LATEST)) {
+						if (mandat.getCode().equals("T")) { // on ignore tous les autres types de mandataire
 							if (StringUtils.isNotBlank(mandat.getCompteBancaire()) || StringUtils.isNotBlank(mandat.getCCP()) || StringUtils.isNotBlank(mandat.getIBAN())) {
 								final String nomInstitutionFinanciere = getNomInstitution(mandat.getNumeroInstitutionFinanciere(), serviceInfra);
 								final String ibanValidationMessage = verifierIban(mandat.getIBAN(), ibanValidator); // [UNIREG-2582]
-								autresComptesBancaires.add(new CompteBancaireView(mandat.getNumeroMandataire(), pm.getTitulaireCompte(), mandat.getCCP(), mandat.getCompteBancaire(),
-										nomInstitutionFinanciere, mandat.getIBAN(), ibanValidationMessage, mandat.getBicSwift()));
+								autresComptesBancaires.add(new CompteBancaireView(mandat.getDateDebut(), mandat.getDateFin(), mandat.getNumeroMandataire(), pm.getTitulaireCompte(), mandat.getCCP(),
+										mandat.getCompteBancaire(), nomInstitutionFinanciere, mandat.getIBAN(), ibanValidationMessage, mandat.getBicSwift()));
 							}
 						}
 					}
 				}
+
+				Collections.sort(autresComptesBancaires, new DateRangeComparator<CompteBancaireView>());
+				Collections.reverse(autresComptesBancaires);
 			}
 		}
 		else {
@@ -114,7 +117,7 @@ public class ComplementView {
 			// compte bancaire
 			final String iban = tiers.getNumeroCompteBancaire();
 			final String ibanValidationMessage = verifierIban(iban, ibanValidator); // [UNIREG-2582]
-			compteBancaire = new CompteBancaireView(tiers.getNumero(), tiers.getTitulaireCompteBancaire(), null, null, null, iban, ibanValidationMessage, tiers.getAdresseBicSwift());
+			compteBancaire = new CompteBancaireView(null, null, tiers.getNumero(), tiers.getTitulaireCompteBancaire(), null, null, null, iban, ibanValidationMessage, tiers.getAdresseBicSwift());
 
 			if (tiers instanceof PersonnePhysique) {
 				final PersonnePhysique pp = (PersonnePhysique) tiers;
