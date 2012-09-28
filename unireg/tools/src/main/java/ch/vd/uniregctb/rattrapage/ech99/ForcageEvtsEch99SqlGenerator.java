@@ -19,14 +19,14 @@ import freemarker.template.Template;
 
 import ch.vd.uniregctb.common.CsvHelper;
 
-public class RattrapageEch99SqlGenerator {
+public class ForcageEvtsEch99SqlGenerator {
 
 	private static final String USER = "[RattrapageEch99]";
 	private static final int DEFAULT_BATCH_SIZE = 1000;
 
 	public static void main(String[] args) throws Exception {
 		final Configuration cfg = new Configuration();
-		cfg.setClassForTemplateLoading(RattrapageEch99SqlGenerator.class, "/");
+		cfg.setClassForTemplateLoading(ForcageEvtsEch99SqlGenerator.class, "/");
 		cfg.setObjectWrapper(new DefaultObjectWrapper());
 
 		int batchSize;
@@ -60,7 +60,7 @@ public class RattrapageEch99SqlGenerator {
 				evtIds.add(ids.toString());
 			}
 			root.put("TOTAL", evtTotal);
-			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/rattrapage.sql.ftl", "UTF-8");
+			final Template temp = cfg.getTemplate("ch/vd/uniregctb/rattrapage/ech99/forcage-evts.sql.ftl", "UTF-8");
 			out = new OutputStreamWriter(new FileOutputStream(args[1]),CsvHelper.CHARSET);
 			temp.process(root, out);
 			out.flush();

@@ -1,6 +1,10 @@
 <#macro SchemaPrefix>UNIREG.</#macro>
 --------------------------------------------------
--- Rattrapage des événements civils émis par ech99
+--           Rattrapage SQL ech99
+--
+-- Forçage des événements issus d'un ech99
+-- + réindexation des individus concernés
+--
 -- Nombre total d'événements: ${TOTAL}
 -- script généré le: ${DATE?datetime}
 --------------------------------------------------
