@@ -32,7 +32,7 @@
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
-				<img src="../images/consult_off.gif" title="${delai.logModifUser}-<fmt:formatDate value="${delai.logModifDate}" pattern="dd.MM.yyyy HH:mm:ss"/>" />
+				<unireg:consulterLog entityNature="DelaiDeclaration" entityId="${delai.id}"/>
 			</c:if>
 			<c:if test="${depuisTache == null && command.allowedDelai && page == 'edit'}">
 				<c:if test="${(!delai.annule) && (!delai.first)}">

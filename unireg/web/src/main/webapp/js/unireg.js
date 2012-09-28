@@ -2627,10 +2627,7 @@ var Decl = {
 				else {
 					html += '<input type="checkbox" disabled="disabled">';
 				}
-				html += '</td>';
-				var logModifDate = d.logModifDate ? new Date(d.logModifDate) : null;
-				html += '<td>' + RegDate.format(d.dateTraitement) + '</td><td style="action"><img src="../images/consult_off.gif" title="' + d.logModifUser + '-' +
-					DateUtils.toNormalString(logModifDate) + '"></td></tr>';
+				html += '</td><td>' + Link.consulterLog('DelaiDeclaration', d.id) + '</td></tr>';
 			}
 			html += '</tbody></table></fieldset>\n';
 		}

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.uniregctb.adresse.AdresseTiersDAO;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.DelaiDeclarationDAO;
 import ch.vd.uniregctb.declaration.EtatDeclarationDAO;
 import ch.vd.uniregctb.declaration.ListeRecapitulativeDAO;
 import ch.vd.uniregctb.declaration.PeriodiciteDAO;
@@ -42,6 +43,7 @@ public class ConsultLogController {
 	private IdentCtbDAO identCtbDAO;
 	private PeriodiciteDAO periodiciteDAO;
 	private EtatDeclarationDAO etatDeclarationDAO;
+	private DelaiDeclarationDAO delaiDeclarationDAO;
 	private ImmeubleDAO immeubleDAO;
 
 	public final static String NATURE_FOR_PARAMETER_VALUE = "ForFiscal";
@@ -50,7 +52,7 @@ public class ConsultLogController {
 	public final static String NATURE_ADRESSE_PARAMETER_VALUE = "AdresseTiers";
 	public final static String NATURE_DI_PARAMETER_VALUE = "DI";
 	public final static String NATURE_LR_PARAMETER_VALUE = "LR";
-	public final static String NATURE_DELAI_PARAMETER_VALUE = "Delai";
+	public final static String NATURE_DELAI_PARAMETER_VALUE = "DelaiDeclaration";
 	public final static String NATURE_ETAT_PARAMETER_VALUE = "EtatDeclaration";
 	public final static String NATURE_TIERS_PARAMETER_VALUE = "Tiers";
 	public final static String NATURE_MOUVEMENT_PARAMETER_VALUE = "MouvementDossier";
@@ -113,6 +115,9 @@ public class ConsultLogController {
 		}
 		else if (nature.equals(NATURE_ETAT_PARAMETER_VALUE)) {
 			objet = etatDeclarationDAO.get(id);
+		}
+		else if (nature.equals(NATURE_DELAI_PARAMETER_VALUE)) {
+			objet = delaiDeclarationDAO.get(id);
 		}
 		else if (nature.equals(NATURE_IMMEUBLE)) {
 			objet = immeubleDAO.get(id);
@@ -193,6 +198,10 @@ public class ConsultLogController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEtatDeclarationDAO(EtatDeclarationDAO etatDeclarationDAO) {
 		this.etatDeclarationDAO = etatDeclarationDAO;
+	}
+
+	public void setDelaiDeclarationDAO(DelaiDeclarationDAO delaiDeclarationDAO) {
+		this.delaiDeclarationDAO = delaiDeclarationDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
