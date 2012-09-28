@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.di.view;
 
+import java.util.Date;
+
 import org.springframework.context.MessageSource;
 
 import ch.vd.registre.base.date.RegDate;
@@ -15,6 +17,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 
 	private Long id;
 	private RegDate dateObtention;
+	private Date logCreationDate;
 	private boolean annule;
 	private TypeEtatDeclaration etat;
 	private String etatMessage;
@@ -34,6 +37,7 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 	public EtatDeclarationView(EtatDeclaration etat, MessageSource messageSource) {
 		this.id = etat.getId();
 		this.dateObtention = etat.getDateObtention();
+		this.logCreationDate = etat.getLogCreationDate();
 		this.annule = etat.isAnnule();
 		this.etat = etat.getEtat();
 		this.etatMessage = messageSource.getMessage("option.etat.avancement." + this.etat.name(), null, WebContextUtils.getDefaultLocale());
@@ -93,7 +97,12 @@ public class EtatDeclarationView implements Comparable<EtatDeclarationView>, Ann
 
 	@Override
 	public int compareTo(EtatDeclarationView o) {
-		// du plus récent au plus ancient
-		return -1 * dateObtention.compareTo(o.dateObtention);
+		if (this.dateObtention == o.dateObtention) {
+			return -1 * logCreationDate.compareTo(o.logCreationDate);
+		}
+		else {
+			// du plus récent au plus ancient
+			return -1 * dateObtention.compareTo(o.dateObtention);
+		}
 	}
 }
