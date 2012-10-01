@@ -75,8 +75,10 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 		switch (mode){
 		case BATCH:
 			notificationQueue.postBatch(noIndividu, immediate);
+			break;
 		case MANUAL:
 			notificationQueue.postManual(noIndividu, immediate);
+			break;
 		default:
 			throw new RuntimeException("unknown mode: " + mode);
 		}

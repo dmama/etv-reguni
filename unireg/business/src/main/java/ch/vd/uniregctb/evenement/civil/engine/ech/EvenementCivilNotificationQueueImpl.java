@@ -7,12 +7,13 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.context.Lifecycle;
-import org.springframework.context.SmartLifecycle;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
@@ -58,22 +59,22 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
  * et le moment où la méthode {@link #post(Long, boolean) post} vérifie sa présence... mais cela devrait se produire moins souvent.
  */
 @SuppressWarnings("JavadocReference") // TODO FRED M-à-J Javadoc et suppression du suppressWarning
-public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue, SmartLifecycle {
+public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotificationQueue, InitializingBean, DisposableBean {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilNotificationQueueImpl.class);
 
 	private final BlockingQueue<DelayedIndividu> batchQueue = new DelayQueue<DelayedIndividu>();
 	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<DelayedIndividu>();
 	private final BlockingQueue<DelayedIndividu> finalQueue = new ArrayBlockingQueue<DelayedIndividu>(20);
-	private final ReentrantLock lockBatch = new ReentrantLock();
-	private final ReentrantLock lockManual = new ReentrantLock();
+	private final ReentrantLock batchLock = new ReentrantLock();
+	private final ReentrantLock manualLock = new ReentrantLock();
+	private final AtomicInteger totalInHatches = new AtomicInteger(0);
 
-	private final ServingHatch batchHatch = new ServingHatch(batchQueue, finalQueue);
-	private final ServingHatch manualHatch = new ServingHatch(manualQueue, finalQueue);
+	private final ServingHatch batchHatch = new ServingHatch("batchHatch", batchQueue, totalInHatches, finalQueue);
+	private final ServingHatch manualHatch = new ServingHatch("manualHatch", manualQueue, totalInHatches, finalQueue);
 
 	private EvenementCivilEchService evtCivilService;
 	private final long delayNs;
-	private boolean running;
 
 	public EvenementCivilNotificationQueueImpl(int delayInSeconds) {
 		if (delayInSeconds < 0) {
@@ -81,8 +82,6 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		}
 		LOGGER.info(String.format("Traitement des événements civils e-CH artificiellement décalé de %d seconde%s.", delayInSeconds, delayInSeconds > 1 ? "s" : ""));
 		delayNs = TimeUnit.SECONDS.toNanos(delayInSeconds);
-		new Thread(batchHatch,"BatchHatch").start();
-		new Thread(manualHatch,"ManualHatch").start();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -95,38 +94,19 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	}
 
 	@Override
-	public boolean isAutoStartup() {
-		return true;
-	}
-
-	@Override
-	public void stop(Runnable callback) {
-		stop();
-		callback.run();
-	}
-
-	@Override
-	public void start() {
-		batchHatch.start();
+	public void afterPropertiesSet() throws Exception {
 		manualHatch.start();
-		running = true;
+		batchHatch.start();
 	}
 
 	@Override
-	public void stop() {
-		batchHatch.stop();
-		manualHatch.stop();
-		running = false;
-	}
-
-	@Override
-	public boolean isRunning() {
-		return running;
-	}
-
-	@Override
-	public int getPhase() {
-		return Integer.MAX_VALUE;
+	public void destroy() throws Exception {
+		if (manualHatch != null) {
+			manualHatch.stopServing();
+		}
+		if (batchHatch != null) {
+			batchHatch.stopServing();
+		}
 	}
 
 	private class DelayedIndividu implements Delayed {
@@ -173,37 +153,37 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 
 	@Override
 	public void postBatch(Long noIndividu, boolean immediate) {
-		lockBatch.lock();
+		batchLock.lock();
 		try {
 			internalPost(noIndividu, immediate, batchQueue);
 		}
 		finally {
-			lockBatch.unlock();
+			batchLock.unlock();
 		}
 	}
 
 	@Override
 	public void postManual(Long noIndividu, boolean immediate) {
-		lockManual.lock();
+		manualLock.lock();
 		try {
 			internalPost(noIndividu, immediate, manualQueue);
 		}
 		finally {
-			lockManual.unlock();
+			manualLock.unlock();
 		}
 	}
 
 	@Override
 	public void postAll(Collection<Long> nosIndividus) {
 		if (nosIndividus != null && nosIndividus.size() > 0) {
-			lockBatch.lock();
+			batchLock.lock();
 			try {
 				for (Long noIndividu : nosIndividus) {
 					internalPost(noIndividu, false, batchQueue);
 				}
 			}
 			finally {
-				lockBatch.unlock();
+				batchLock.unlock();
 			}
 		}
 	}
@@ -211,10 +191,10 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 	/**
 	 * L'appelant doit impérativement possédé le verrou associé à la queue passée en paramétre
 	 * @param noIndividu numéro d'individu à poster dans la queue interne
-	 * @param queue
+	 * @param queue la queue ou poster, manuel ou batch
 	 */
 	private void internalPost(Long noIndividu, boolean immediate, BlockingQueue<DelayedIndividu> queue) {
-		Assert.isTrue(lockManual.isHeldByCurrentThread() && queue == manualQueue || lockBatch.isHeldByCurrentThread() && queue == batchQueue);
+		Assert.isTrue(manualLock.isHeldByCurrentThread() && queue == manualQueue || batchLock.isHeldByCurrentThread() && queue == batchQueue);
 
 		if (noIndividu == null) {
 			throw new NullPointerException("noIndividu");
@@ -226,12 +206,13 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 		if (immediate) {
 			// on ne veut pas accélérer le traitement d'un individu déjà en attente (pour s'assurer que, le cas échéant, le service civil
 			// vu au travers de son web-service est bien à jour, voir SIREF-2016)
-			if (!queue.contains(elt)) {
+			if (!queue.contains(elt) && !finalQueue.contains(elt)) {
 				queue.add(elt);
 			}
 		}
 		else {
 			queue.remove(elt);
+			finalQueue.remove(elt);
 			queue.add(elt);
 		}
 	}
@@ -256,33 +237,29 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 
 	@Override
 	public int getInflightCount() {
-		return batchQueue.size() + manualQueue.size() + finalQueue.size();
+		return batchQueue.size() + manualQueue.size() + finalQueue.size() + totalInHatches.get();
 	}
 
-	private static class ServingHatch implements Runnable, Lifecycle {
+	private static class ServingHatch extends Thread {
 
 		private static final int HATCH_TIMEOUT = 100; // ms
 
 		private BlockingQueue<DelayedIndividu> queue;
 		private BlockingQueue<DelayedIndividu> finalQueue;
-		private boolean started = false;
+		private AtomicInteger totalInHatches;
 		private boolean stopped = false;
 
-		private ServingHatch(BlockingQueue<DelayedIndividu> queue, BlockingQueue<DelayedIndividu> finalQueue) {
+
+		private ServingHatch(String threadName, BlockingQueue<DelayedIndividu> queue, AtomicInteger totalInHatches, BlockingQueue<DelayedIndividu> finalQueue) {
+			super(threadName);
 			this.queue = queue;
+			this.totalInHatches = totalInHatches;
 			this.finalQueue = finalQueue;
 		}
 
 		@Override
 		public void run() {
 			LOGGER.info("Démarrage du thread: " + Thread.currentThread().getName());
-
-			while (!started) {
-				try {
-					Thread.sleep(HATCH_TIMEOUT);
-				}
-				catch (InterruptedException ignored) {}
-			}
 
 			// On fait le passe-plat de la queue d'origine à la queue finale
 			DelayedIndividu evt = null;
@@ -292,29 +269,24 @@ public class EvenementCivilNotificationQueueImpl implements EvenementCivilNotifi
 						evt = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 					}
 					if (evt != null) {
+						totalInHatches.incrementAndGet();
 						boolean offerAccepted = finalQueue.offer(evt, HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 						if (offerAccepted) {
 							evt = null;
+							totalInHatches.decrementAndGet();
 						}
 					}
 				}
-				catch (InterruptedException ignored) {}
+				catch (InterruptedException e) {
+					LOGGER.error(Thread.currentThread().getName() + " interrompu", e);
+					stopServing();
+				}
 			}
 		}
 
-		@Override
-		public void start() {
-			this.started = true;
+		public void stopServing() {
+			stopped = true;
 		}
 
-		@Override
-		public void stop() {
-			this.stopped = true;
-		}
-
-		@Override
-		public boolean isRunning() {
-			return started && !stopped;
-		}
 	}
 }

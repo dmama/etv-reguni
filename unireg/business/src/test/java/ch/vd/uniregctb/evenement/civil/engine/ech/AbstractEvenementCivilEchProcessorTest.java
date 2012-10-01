@@ -35,6 +35,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 			processor.afterPropertiesSet();
 			processor.start();
 		}
+		queue.afterPropertiesSet();
 	}
 
 	protected boolean buildProcessorOnSetup() {
@@ -47,6 +48,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 			processor.stop();
 			processor = null;
 		}
+		queue.destroy();
 		super.onTearDown();
 	}
 	
