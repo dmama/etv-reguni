@@ -18,26 +18,27 @@
 
 <#list LIST as INDIV>
 update
-	<@SchemaPrefix/>tiers
+	<@SchemaPrefix/>tiers t1
 set
 	nh_nom = <@StrOrNull INDIV.OfficialName/>,
 	nh_prenom = <@StrOrNull INDIV.Call/>,
 	nh_sexe = <@SexOrNull INDIV.Sex/>,
 	nh_no_ofs_commune_origine = <@NumOrNull INDIV.OriginOfsId/>,
 	log_mdate = CURRENT_TIMESTAMP,
-	log_muser = '${USER}'
+	log_muser = '${USER}',
+	index_dirty = 1
 where
 	numero_individu = ${INDIV.ID}
 	and annulation_date is null
 	and not exists (
 		select
-			numero from <@SchemaPrefix/>tiers
+			numero from <@SchemaPrefix/>tiers t2
 		where
-			numero_individu = ${INDIV.ID}
-			and nh_nom <@EqStrOrIsNull INDIV.OfficialName/>
-			and nh_prenom <@EqStrOrIsNull INDIV.Call/>
-			and nh_sexe <@EqSexOrIsNull INDIV.Sex/>
-			and nh_no_ofs_commune_origine <@EqNumOrIsNull INDIV.OriginOfsId/>
-			and annulation_date is null);
+			t2.numero = t1.numero
+			and t2.nh_nom <@EqStrOrIsNull INDIV.OfficialName/>
+			and t2.nh_prenom <@EqStrOrIsNull INDIV.Call/>
+			and t2.nh_sexe <@EqSexOrIsNull INDIV.Sex/>
+			and t2.nh_no_ofs_commune_origine <@EqNumOrIsNull INDIV.OriginOfsId/>
+			and t2.annulation_date is null);
 
 </#list>
