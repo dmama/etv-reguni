@@ -50,7 +50,8 @@ public class RcPersServiceTest {
 		assertEquals("António", person.getUpiPerson().getValuesStoredUnderAhvvn().getPerson().getFirstNames());
 
 		// vue des communes vaudoises
-		assertEquals("Maia", person.getIdentity().getPersonIdentification().getOfficialName());
+		final String officialName = person.getIdentity().getPersonIdentification().getOfficialName();
+		assertEquals("MAIA", officialName.toUpperCase()); // on ignore la casse parce que cette valeur change souvent lors des reprises de données
 		assertEquals("Antonio", person.getIdentity().getCallName());
 	}
 
