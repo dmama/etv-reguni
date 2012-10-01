@@ -33,9 +33,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 		void doWithNewQueueDelayedBy(int delayedBy, Callback cb) throws Exception {
 			final EvenementCivilNotificationQueueImpl queue = new EvenementCivilNotificationQueueImpl(delayedBy);
+			queue.setEvtCivilService(serviceCivil);
+			queue.afterPropertiesSet();
 			try {
-				queue.setEvtCivilService(serviceCivil);
-				queue.afterPropertiesSet();
 				cb.execute(queue);
 			} finally {
 				queue.destroy();
@@ -331,6 +331,50 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(info);
 				Assert.assertEquals(noIndividu, info.noIndividu);
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testPostManual() throws Exception {
+
+		final long noIndividuBase = 100000L;
+		final int nbEvtsBatch = 500;
+		final long noIndividuTemoin = 99999L;
+
+		// préparation des événements dans la base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				long l = 1;
+				for (; l <= nbEvtsBatch; l++) {
+					addEvenementCivil(l, noIndividuBase + l , date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				}
+				addEvenementCivil(l + 1, noIndividuTemoin, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				return null;
+			}
+		});
+
+		// envois dans la queue
+		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
+			@Override
+			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+				Assert.assertEquals(0, queue.getInflightCount());
+				long l = 1;
+				for (; l < nbEvtsBatch; l++) {
+					queue.postBatch(noIndividuBase + l, false);
+				}
+				queue.postManual(noIndividuTemoin, false);
+
+				for (l = 1; l < nbEvtsBatch; l++) {
+					final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
+					Assert.assertNotNull(info);
+					if (info.noIndividu == noIndividuTemoin) {
+						LOGGER.info("Témoin sorti en position " + l);
+						return;
+					}
+				}
+				Assert.fail("L'individu Témoin devrait sortir avant la fin du traitement de la totalité des evts batch");
 			}
 		});
 	}
