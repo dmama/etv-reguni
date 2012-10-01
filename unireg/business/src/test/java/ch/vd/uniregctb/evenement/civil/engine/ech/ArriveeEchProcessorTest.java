@@ -432,7 +432,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testArriveesAnterieurCouple() throws Exception {
 
 		final long noLui = 246L;
@@ -558,7 +558,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testRetourCoupleApresDepart() throws Exception {
 
 		final long noLui = 246L;
@@ -714,7 +714,6 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
-
 	@Test(timeout = 10000L)
 	public void testArriveeNumeroOfsCommuneInconnue() throws Exception {
 
@@ -826,7 +825,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	/**
 	 * [SIFISC-5286] Vérifie que l'arrivée dans une commune vaudoise avec une localisation précédente vaudoise (mais pas d'adresse correspondante) sur pour individu inconnu dans Unireg lève bien une erreur.
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testHandleArriveeIndividuInconnuAvecLocalisationPrecedenteDansCommuneVaudoise() throws Exception {
 
 		final Long noInd = 324543L;
@@ -880,8 +879,6 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
-
-
 
 	@Test(timeout = 10000L)
 	public void testArriveeHCAncienNonHabitantSIFISC6032() throws Exception {
