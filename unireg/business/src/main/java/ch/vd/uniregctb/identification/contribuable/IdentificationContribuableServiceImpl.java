@@ -768,7 +768,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			Assert.notNull(demande, "Le message ne contient aucune demande.");
 
 			final CriteresPersonne criteresPersonne = demande.getPersonne();
-			Assert.notNull(demande, "Le message ne contient aucune critère sur la personne à identifier.");
+			Assert.notNull(demande, "Le message ne contient aucun critère sur la personne à identifier.");
 
 			final List<PersonnePhysique> list = identifie(criteresPersonne);
 			if (list.size() == 1) {
@@ -1386,7 +1386,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 		}
 		else {
-			LOGGER.info(String.format("Le message %s ne contient aucune critère sur la personne à identifier, il est passé en traitement manuel.", message.getId()));
+			LOGGER.info(String.format("Le message %s ne contient aucun critère sur la personne à identifier, il est passé en traitement manuel.", message.getId()));
 			//Dans le cas d'un message en exception,non traité automatiquement, on le met a traiter manuellement et on envoie une notification d'attente
 			//si besoin
 			if (Etat.EXCEPTION == message.getEtat()) {
