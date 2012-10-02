@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="SHORTCUT ICON" href="<c:url value="images/favicon.ico"/>"/>
+    <link rel="SHORTCUT ICON" href="<c:url value="img/favicon.ico"/>"/>
     <title>404 Page Not Found</title>
     <style type="text/css">
         body {

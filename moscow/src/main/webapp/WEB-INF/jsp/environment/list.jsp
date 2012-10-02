@@ -14,9 +14,8 @@
 			</form>
 		</div>
 
-  		<p>Les environnements suivants sont configurés <a href="#" id="addLink">(ajouter)</a> :</p>
-
-		<display:table name="${environments}" id="env" class="ui-widget ui-widget-content" requestURI="/environment/list.do">
+		<display:table name="${environments}" id="env" class="table table-striped" requestURI="/environment/list.do">
+			<display:caption>Les environnements suivants sont configurés</display:caption>
 			<display:column sortable="true" title="Id">
 				<c:out value="${env.id}" />
 			</display:column>
@@ -24,17 +23,17 @@
 				<c:out value="${env.name}" />
 			</display:column>
 			<display:column sortable="false">
-				<a href="edit.do?id=${env.id}">editer</a> |
+				<button class="btn btn-mini" onclick="window.location='edit.do?id=${env.id}';">editer</button>
 				<form action="del.do" method="POST" style="display:inline;">
-					<input type="hidden" name="id" value="${env.id}"/>
-					<a href="del.do" onclick="$(this).parent().submit(); return false;">supprimer</a>
+					<button class="btn btn-mini btn-danger" name="id" type="submit" value="${env.id}">supprimer</button>
 				</form>
 			</display:column>
 		</display:table>
 
-		<script>
+		<a href="#" id="addLink" class="btn btn-primary">Ajouter un environnement</a>
+
+		<script type="text/javascript">
 			$(function() {
-				$('table.ui-widget thead tr').addClass('ui-widget-header');
 				$('#addDialog').dialog({
 						title: "Ajout d'un nouvel environnement",
 						autoOpen: false,
