@@ -26,7 +26,28 @@ public class MockEvenementCivilNotificationQueue implements EvenementCivilNotifi
 	}
 
 	@Override
-	public int getInflightCount() {
+	public int getTotalCount() {
 		return 0;
 	}
+
+	@Override
+	public int getInBatchQueueCount() {
+		return 0;
+	}
+
+	@Override
+	public int getInManualQueueCount() {
+		return 0;
+	}
+
+	@Override
+	public int getInFinalQueueCount() {
+		return 0;
+	}
+
+	@Override
+	public int getInHatchesCount() {
+		return 0;
+	}
+
 }

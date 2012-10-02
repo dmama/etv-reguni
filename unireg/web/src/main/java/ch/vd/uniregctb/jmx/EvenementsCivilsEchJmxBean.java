@@ -35,7 +35,18 @@ public interface EvenementsCivilsEchJmxBean {
 	@ManagedAttribute(description = "Total number of individuals currently waiting to be processed")
 	int getNbIndividualsAwaitingTreatment();
 	
+	@ManagedAttribute(description = "Total number of individuals currently waiting in the batch queue")
+	int getNbIndividualsAwaitingInBatchQueue();
+
+	@ManagedAttribute(description = "Total number of individuals currently waiting in the manual queue")
+	int getNbIndividualsAwaitingInManualQueue();
+
+	@ManagedAttribute(description = "Total number of individuals currently moving to the final queue")
+	int getNbIndividualsMovingToFinalQueue();
+
+	@ManagedAttribute(description = "Total number of individuals currently waiting in the final queue")
+	int getNbIndividualsAwaitingInFinalQueue();
+
 	@ManagedOperation(description = "Ask for (re-)treatment of the individual's event queue")
 	void treatPersonsEvents(long noIndividu);
-
 }

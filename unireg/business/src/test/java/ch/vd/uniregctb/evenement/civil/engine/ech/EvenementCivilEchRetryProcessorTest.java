@@ -142,9 +142,31 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
-			public int getInflightCount() {
+			public int getTotalCount() {
 				throw new NotImplementedException();
 			}
+
+			@Override
+			public int getInBatchQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public int getInManualQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public int getInFinalQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public int getInHatchesCount() {
+				throw new NotImplementedException();
+			}
+
+
 		}
 		final IntegratedQueueAndProcessor queueProcessor = new IntegratedQueueAndProcessor();
 		final EvenementCivilEchRetryProcessorImpl retry = new EvenementCivilEchRetryProcessorImpl();

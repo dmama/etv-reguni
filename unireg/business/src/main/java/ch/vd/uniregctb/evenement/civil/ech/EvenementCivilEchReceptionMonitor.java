@@ -12,15 +12,23 @@ public interface EvenementCivilEchReceptionMonitor {
 	int getNombreEvenementsNonIgnores();
 
 	/**
-	 * @return le nombre d'individus actuellement en attente dans la queue des événements à traiter
-	 */
-	int getNombreIndividusEnAttenteDeTraitement();
-
-	/**
 	 * Méthode utilisée dans les tests "live" pour re-demander le traitement de la queue d'événements de l'individu donné
 	 * @param noIndividu identifiant de l'individu dont on veut relancer le traitement
 	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
-	 * @param mode
+	 * @param mode traitement batch ou manuel
 	 */
 	void demanderTraitementQueue(long noIndividu, boolean immediate, EvenementCivilEchReceptionHandler.Mode mode);
+
+	/**
+	 * @return le nombre d'individus actuellement en attente de traitement de ses événements
+	 */
+	int getNombreIndividusEnAttenteDeTraitement();
+
+	int getNombreIndividusEnAttenteDansLaQueueManuelle();
+
+	int getNombreIndividusEnAttenteDansLaQueueBatch();
+
+	int getNombreIndividusEnTransitionVersLaQueueFinale();
+
+	int getNombreIndividusEnAttenteDansLaQueueFinale();
 }

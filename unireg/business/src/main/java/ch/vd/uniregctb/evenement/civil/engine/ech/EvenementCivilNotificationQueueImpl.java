@@ -71,6 +71,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	private final BlockingQueue<DelayedIndividu> finalQueue = new ArrayBlockingQueue<DelayedIndividu>(20);
 	private final ReentrantLock batchLock = new ReentrantLock();
 	private final ReentrantLock manualLock = new ReentrantLock();
+	private final AtomicInteger totalCount = new AtomicInteger(0);
 	private final AtomicInteger totalInHatches = new AtomicInteger(0);
 
 	private final ServingHatch batchHatch = new ServingHatch("batchHatch", batchQueue, totalInHatches, finalQueue);
@@ -211,12 +212,16 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 			// vu au travers de son web-service est bien à jour, voir SIREF-2016)
 			if (!queue.contains(elt) && !finalQueue.contains(elt)) {
 				queue.add(elt);
+				totalCount.incrementAndGet();
 			}
 		}
 		else {
-			queue.remove(elt);
-			finalQueue.remove(elt);
+			boolean rem1 = queue.remove(elt);
+			boolean rem2 = finalQueue.remove(elt);
 			queue.add(elt);
+			if (!rem1 && !rem2) {
+				totalCount.incrementAndGet();
+			}
 		}
 	}
 
@@ -226,6 +231,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		if (elt != null) {
 			// 1. trouve tous les événements civils de cet individu qui sont dans un état A_TRAITER, EN_ATTENTE, EN_ERREUR
 			// 2. tri de ces événements par date, puis type d'événement
+			totalCount.decrementAndGet();
 			return new Batch(elt.noIndividu, buildLotsEvenementsCivils(elt.noIndividu));
 		}
 
@@ -239,9 +245,30 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	}
 
 	@Override
-	public int getInflightCount() {
-		return batchQueue.size() + manualQueue.size() + finalQueue.size() + totalInHatches.get();
+	public int getTotalCount() {
+		return totalCount.get();
 	}
+
+	@Override
+	public int getInBatchQueueCount() {
+		return batchQueue.size();
+	}
+
+	@Override
+	public int getInManualQueueCount() {
+		return manualQueue.size();
+	}
+
+	@Override
+	public int getInFinalQueueCount() {
+		return finalQueue.size();
+	}
+
+	@Override
+	public int getInHatchesCount() {
+		return totalInHatches.get();
+	}
+
 
 	private static class ServingHatch extends Thread {
 
@@ -268,11 +295,14 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 			DelayedIndividu evt = null;
 			while (!stopped) {
 				try {
+					boolean evtWasNull = evt == null;
 					if (evt == null) {
 						evt = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 					}
-					if (evt != null) {
+					if (evt != null && evtWasNull) {
 						totalInHatches.incrementAndGet();
+					}
+					if (evt != null) {
 						boolean offerAccepted = finalQueue.offer(evt, HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
 						if (offerAccepted) {
 							evt = null;

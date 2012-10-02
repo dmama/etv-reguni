@@ -67,7 +67,27 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 
 	@Override
 	public int getNombreIndividusEnAttenteDeTraitement() {
-		return notificationQueue.getInflightCount();
+		return notificationQueue.getTotalCount();
+	}
+
+	@Override
+	public int getNombreIndividusEnAttenteDansLaQueueBatch() {
+		return notificationQueue.getInBatchQueueCount();
+	}
+
+	@Override
+	public int getNombreIndividusEnAttenteDansLaQueueManuelle() {
+		return notificationQueue.getInManualQueueCount();
+	}
+
+	@Override
+	public int getNombreIndividusEnTransitionVersLaQueueFinale() {
+		return notificationQueue.getInHatchesCount();
+	}
+
+	@Override
+	public int getNombreIndividusEnAttenteDansLaQueueFinale() {
+		return notificationQueue.getInFinalQueueCount();
 	}
 
 	@Override

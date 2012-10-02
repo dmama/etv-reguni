@@ -71,7 +71,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
 				Assert.assertNull(queue.poll(20, TimeUnit.MILLISECONDS));
 			}
@@ -104,16 +104,13 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postBatch(noIndividuSans, false);
-				Thread.sleep(500);
-				Assert.assertEquals(1, queue.getInflightCount());
+				Assert.assertEquals(1, queue.getTotalCount());
 				queue.postBatch(noIndividu, false);
-				Thread.sleep(500);
-				Assert.assertEquals(2, queue.getInflightCount());
+				Assert.assertEquals(2, queue.getTotalCount());
 				queue.postBatch(noIndividu, false);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
-				Thread.sleep(500);
-				Assert.assertEquals(2, queue.getInflightCount());
+				Assert.assertEquals(2, queue.getTotalCount());
 
 				// première récupération : individu sans événement -> collection vide
 				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -121,7 +118,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
 				Assert.assertEquals(0, infoSans.contenu.size());
-				Assert.assertEquals(1, queue.getInflightCount());
+				Assert.assertEquals(1, queue.getTotalCount());
 
 				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
 				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -129,7 +126,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
 				Assert.assertNotNull(infoAvec.contenu);
 				Assert.assertEquals(5, infoAvec.contenu.size());
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				{
 					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
 					Assert.assertEquals(1L, evtCivilInfo.getId());
@@ -203,9 +200,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postAll(Arrays.asList(noIndividuSans, noIndividu, noIndividu));
-				Assert.assertEquals(2, queue.getInflightCount());
+				Assert.assertEquals(2, queue.getTotalCount());
 
 				// première récupération : individu sans événement -> collection vide
 				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -213,7 +210,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
 				Assert.assertEquals(0, infoSans.contenu.size());
-				Assert.assertEquals(1, queue.getInflightCount());
+				Assert.assertEquals(1, queue.getTotalCount());
 
 				// deuxième récupération : individu avec événements -> collection avec 3 éléments (seulements les événements non traités)
 				final EvenementCivilNotificationQueue.Batch infoAvec = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -221,7 +218,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividu, infoAvec.noIndividu);
 				Assert.assertNotNull(infoAvec.contenu);
 				Assert.assertEquals(5, infoAvec.contenu.size());
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				{
 					final EvenementCivilEchBasicInfo evtCivilInfo = infoAvec.contenu.get(0);
 					Assert.assertEquals(1L, evtCivilInfo.getId());
@@ -288,7 +285,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postBatch(noIndividu, false);
 
 				// après 800ms, on ne devrait toujours rien voir
@@ -324,7 +321,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(2, new QueueTemplate.Callback() { // si on attend le délai, on fait exploser le timeout du test
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postBatch(noIndividu, true);
 
 				// le poll doit recevoir l'événement immédiatement
@@ -359,7 +356,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				long l = 1;
 				for (; l < nbEvtsBatch; l++) {
 					queue.postBatch(noIndividuBase + l, false);
@@ -397,7 +394,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
 			@Override
 			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
-				Assert.assertEquals(0, queue.getInflightCount());
+				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postBatch(noIndividu, false);
 				queue.postBatch(noIndividu, true);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
 
@@ -514,7 +511,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		LOGGER.info(String.format("Feeding ended after %dms", TimeUnit.NANOSECONDS.toMillis(endFeeding - start)));
 
 		// wait for the queue to be empty
-		while (queue.getInflightCount() != 0) {
+		while (queue.getTotalCount() != 0) {
 			Thread.sleep(100);
 		}
 

@@ -50,6 +50,30 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 
 	@Override
 	@ManagedAttribute
+	public int getNbIndividualsAwaitingInBatchQueue() {
+		return monitor.getNombreIndividusEnAttenteDansLaQueueBatch();
+	}
+
+	@Override
+	@ManagedAttribute
+	public int getNbIndividualsAwaitingInManualQueue() {
+		return monitor.getNombreIndividusEnAttenteDansLaQueueManuelle();
+	}
+
+	@Override
+	@ManagedAttribute
+	public int getNbIndividualsMovingToFinalQueue() {
+		return monitor.getNombreIndividusEnTransitionVersLaQueueFinale();
+	}
+
+	@Override
+	@ManagedAttribute
+	public int getNbIndividualsAwaitingInFinalQueue() {
+		return monitor.getNombreIndividusEnAttenteDansLaQueueFinale();
+	}
+
+	@Override
+	@ManagedAttribute
 	public int getNbManualEventsReceived() {
 		return individuelListener.getNombreMessagesRecus();
 	}

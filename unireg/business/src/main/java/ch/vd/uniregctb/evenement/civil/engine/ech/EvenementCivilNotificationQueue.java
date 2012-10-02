@@ -83,5 +83,26 @@ public interface EvenementCivilNotificationQueue {
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue
 	 */
-	int getInflightCount();
+	int getTotalCount();
+
+	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "batch"
+	 */
+	int getInBatchQueueCount();
+
+	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "manual"
+	 */
+	int getInManualQueueCount();
+
+	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "final"
+	 */
+	int getInFinalQueueCount();
+
+	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement en transition entre
+	 * la queue manual ou batch et la queue finale
+	 */
+	int getInHatchesCount();
 }
