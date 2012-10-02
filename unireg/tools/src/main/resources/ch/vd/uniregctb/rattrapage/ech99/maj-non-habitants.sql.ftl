@@ -30,6 +30,7 @@ set
 where
 	numero_individu = ${INDIV.ID}
 	and annulation_date is null
+	and pp_habitant = 0
 	and not exists (
 		select
 			numero from <@SchemaPrefix/>tiers t2

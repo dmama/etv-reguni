@@ -18,7 +18,7 @@ set
   commentaire_traitement = 'Forçage automatique de l''événement issu d''un eCH-0099 : réindexation des données civiles du contribuable'
 where
   id in (${IDS})
-  and etat = 'EN_ERREUR'
+  and etat IN ('EN_ERREUR', 'EN_ATTENTE')
   and annulation_date is null;
 
 update
