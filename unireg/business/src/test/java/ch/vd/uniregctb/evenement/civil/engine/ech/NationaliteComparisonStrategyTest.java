@@ -42,7 +42,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -56,7 +56,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeNationaliteSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -70,7 +70,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeNationaliteApatride() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -84,7 +84,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeNationalitePaysInconnu() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -98,7 +98,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansNationalite() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -109,7 +109,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPaysEtrangersDifferents() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -124,7 +124,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApatrideVersPaysEtranger() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -139,7 +139,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApatrideVersPaysInconnu() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -154,7 +154,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApatrideVersSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -169,7 +169,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPaysInconnuVersPaysEtranger() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -184,7 +184,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPaysInconnuVersApatride() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -199,7 +199,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPaysInconnuVersSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -214,7 +214,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPaysEtrangerVersSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -229,7 +229,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSuisseVersPaysEtranger() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -244,7 +244,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesDifferentesSurPaysEtranger() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -259,7 +259,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesDebutDifferentesSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -274,7 +274,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesFinDifferentesSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -289,7 +289,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionSeuleNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -303,7 +303,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionSeuleNationaliteSuisse() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -317,7 +317,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionSeuleNationaliteEtrangere() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -331,7 +331,7 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 		assertNonNeutre(strategy, noEvt1, noEvt2, "nationalité (disparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionSeuleNationaliteSuisse() throws Exception {
 
 		final long noIndividu = 367315L;

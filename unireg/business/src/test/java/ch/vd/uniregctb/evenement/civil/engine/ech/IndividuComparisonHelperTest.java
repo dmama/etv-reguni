@@ -10,7 +10,7 @@ import ch.vd.uniregctb.common.WithoutSpringTest;
 
 public class IndividuComparisonHelperTest  extends WithoutSpringTest {
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAreContentsEqual() throws Exception {
 
 		Assert.assertTrue(IndividuComparisonHelper.areContentsEqual(null, null, IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
@@ -28,7 +28,7 @@ public class IndividuComparisonHelperTest  extends WithoutSpringTest {
 		Assert.assertFalse(IndividuComparisonHelper.areContentsEqual(Arrays.asList(1, 2, 3, 4), Arrays.asList(1, 2, 3), IndividuComparisonHelper.INTEGER_COMPARATOR, IndividuComparisonHelper.INTEGER_EQUALATOR, null, null));
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testFieldMonitorOnAreContentsEqual() throws Exception {
 		{
 			final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();

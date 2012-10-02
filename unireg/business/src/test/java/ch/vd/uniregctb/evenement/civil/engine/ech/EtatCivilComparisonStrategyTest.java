@@ -43,7 +43,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeEtatCivil() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -57,7 +57,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansEtatCivil() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -68,7 +68,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEtatCivilDisparu() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -82,7 +82,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (disparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEtatCivilApparu() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -96,7 +96,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEtatCivilTypeDifferent() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -111,7 +111,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEtatCivilDatesDebutDifferentes() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -126,7 +126,7 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvt1, noEvt2, "état civil (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEtatCivilDatesFinDifferentes() throws Exception {
 
 		final long noIndividu = 367315L;

@@ -43,7 +43,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		return adr;
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansAdresse() throws Exception {
 
 		final long noIndividu = 1236745674L;
@@ -54,7 +54,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansAdresseResidenceInteressante() throws Exception {
 
 		final long noIndividu = 1236745674L;
@@ -76,7 +76,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -96,7 +96,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -115,7 +115,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (disparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -140,7 +140,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemesAdresses() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -170,7 +170,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemesAdressesMelangees() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -200,7 +200,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEgid() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -227,7 +227,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEgidSansChangementDeCommune() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -254,7 +254,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionEgid() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -280,7 +280,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionEgid() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -306,7 +306,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (commune (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDateDebut() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -333,7 +333,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDateFin() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -360,7 +360,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationPrecedenteOfsHS() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -387,7 +387,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationPrecedenteOfsHC() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -414,7 +414,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationPrecedenteOfsVD() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -441,7 +441,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (commune))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationSuivanteOfsHS() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -468,7 +468,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationSuivanteOfsHC() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -495,7 +495,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationSuivanteOfsVD() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -522,7 +522,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (commune))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationPrecedenteType() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -549,7 +549,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (type))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testLocalisationSuivanteType() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -576,7 +576,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (type))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionLocalisationPrecedente() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -602,7 +602,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionLocalisationSuivante() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -628,7 +628,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionLocalisationPrecedente() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -654,7 +654,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation précédente (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionLocalisationSuivante() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -680,7 +680,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		assertNonNeutre(strategy, noEvt1, noEvt2, getNomAttribut() + " (localisation suivante (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMelangeAdressesSecondaireEtPrincipale() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;

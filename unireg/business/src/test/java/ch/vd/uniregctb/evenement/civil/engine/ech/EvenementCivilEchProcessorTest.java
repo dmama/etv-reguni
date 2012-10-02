@@ -514,7 +514,7 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		// alors la méthode traiterEvenements() ne reviendra jamais et c'est le timeout du test qui va sauter
 	}
 	
-	@Test
+	@Test(timeout = 10000L)
 	public void testListenerHandleUsage() throws Exception {
 		// handle null
 		try {

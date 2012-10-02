@@ -66,7 +66,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		return hibernateTemplate.merge(evt);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testRecupVide() throws Exception {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
@@ -379,7 +379,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testImmediateDejaPresent() throws Exception {
 
 		final long noIndividu = 243523L;

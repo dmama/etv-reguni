@@ -45,7 +45,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartCelibataireHorsSuisse() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -119,7 +119,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartDestinationNonRenseignee() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -184,7 +184,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartDestinationInconnue() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -259,7 +259,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartDestinationNonIdentifiable() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -336,7 +336,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartCelibataireHorsCanton() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -405,7 +405,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	}
 
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaire() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -464,7 +464,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	}
 
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireDestinationInconnue() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -522,7 +522,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartVaudois() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -583,7 +583,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartVaudois_SIFISC_4912() throws Exception {
 		//Les départs vaudois doivent être ignorée
 
@@ -645,7 +645,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartDepuisFractionDeCommune_SIFISC_6068() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -704,7 +704,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 
 
 	//Test le cas d'un depart vaudois en secondaire avec une destination inconnue
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireAvecForPrincipal() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -782,7 +782,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	}
 	//Vérifie que les démenagements vaudois secondaires avec présence d'un for principal vont bien en erreur avec le message approprié
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireVaudoisForPrincipal() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -849,7 +849,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testNettoyageCacheAvantDecisionStrategie() throws Exception {
 
 		final long noIndividu = 12546744578L;
@@ -981,7 +981,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	}
 
 	//Test le cas d'un depart vaudois en secondaire avec une destination en secondaire
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireVersSecondaire() throws Exception {
 
 		final long noIndividu = 126673246L;
@@ -1051,7 +1051,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartPrincipalAvecDateFinAdresseDifferenteSansDecalageAdmis() throws Exception {
 
 		final long noIndividu = 467425267L;
@@ -1124,7 +1124,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartPrincipalAvecDateFinAdresseDifferenteMaisAcceptable() throws Exception {
 
 		final long noIndividu = 467425267L;
@@ -1190,7 +1190,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartPrincipalAvecDateFinAdresseTropDifferente() throws Exception {
 
 		final long noIndividu = 467425267L;
@@ -1263,7 +1263,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartSecondaireAvecDateFinAdresseDifferenteMaisAcceptable() throws Exception {
 		final long noIndividu = 467425267L;
 		final RegDate dateArrivee = date(2000, 1, 1);
@@ -1329,7 +1329,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartSecondaireAvecDateFinAdresseTropDifferente() throws Exception {
 		final long noIndividu = 467425267L;
 		final RegDate dateArrivee = date(2000, 1, 1);
@@ -1406,7 +1406,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 	 * Cas d'un couple d'anciens habitants (HS) dont un des membres revient seul (mais toujours marié) et repart
 	 * --> vérification de l'endroit où est ouvert le for du couple après le deuxième départ
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDepartIndividuMarieAvecConjointDejaHorsSuisse() throws Exception {
 
 		final long noIndividuLui = 346L;

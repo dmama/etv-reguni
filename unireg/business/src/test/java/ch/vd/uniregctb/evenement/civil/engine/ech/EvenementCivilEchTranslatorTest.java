@@ -46,7 +46,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		translator.afterPropertiesSet();
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testCouvertureStrategies() throws Exception {
 		final Set<TypeEvenementCivilEch> typesIgnores = new HashSet<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.TESTING));
 		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
@@ -60,7 +60,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 		}
 	}
 	
-	@Test
+	@Test(timeout = 10000L)
 	public void testStrategyOverride() throws Exception {
 
 		// vérifier que les tests qui utiliseront la méthode de strategy override seront bien appelés sur la bonne stratégie

@@ -90,7 +90,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	 *
 	 * @throws Exception ..
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDivorce2MariésSeulsQuiAuraitDuEtreUnMenageCommun () throws Exception {
 
 		final long noMadame = 46215611L;
@@ -191,7 +191,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	 *  Relation entre les Individus unidirectionnelle.
 	 * @throws Exception ..
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDivorceMenageCommunAvecRelationDeMariageUnidirectionnelDansLeCivil () throws Exception {
 
 		final long noMadame = 46215611L;
@@ -307,7 +307,7 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	}
 
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDivorceConjointNonHabitant() throws Exception {
 
 		final long noMadame = 46215611L;
@@ -366,13 +366,13 @@ public class DivorceEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	 *
 	 * @throws Exception ..
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivilMarieSeul() throws Exception {
 		// On fait le test avec un marié seul: evt -> OK
 		testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil(false);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDivorceHabitantEtAncienHabitantCelibataireDansLeCivilMenageNormal() throws Exception {
 		// On fait le test avec un menage "normal" : evt -> KO
 		testDivorceHabitantEtAncienHabitantCelibataireDansLeCivil(true);

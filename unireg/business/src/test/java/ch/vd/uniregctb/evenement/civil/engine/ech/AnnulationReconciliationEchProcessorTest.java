@@ -112,7 +112,7 @@ public class AnnulationReconciliationEchProcessorTest extends AbstractEvenementC
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAnnulationReconciliationRedondante() throws Exception {
 
 		final long noIndividuLui = 36712456523468L;

@@ -38,7 +38,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		return false;
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSeulementCorrectionsAcceptees() throws Exception {
 		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
 			for (ActionEvenementCivilEch action : Arrays.asList(ActionEvenementCivilEch.PREMIERE_LIVRAISON, ActionEvenementCivilEch.ANNULATION)) {
@@ -891,7 +891,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testModificationAdresseContact() throws Exception {
 
 		buildStrategyOverridingTranslatorAndProcessor(true, new StrategyOverridingCallback() {

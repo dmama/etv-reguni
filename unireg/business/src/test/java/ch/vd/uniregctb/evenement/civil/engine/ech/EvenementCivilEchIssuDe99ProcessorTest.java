@@ -32,7 +32,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		super.runOnSetUp();
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testHabitant() throws Exception {
 
 		final long noIndividu = 3467843L;
@@ -137,7 +137,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		}
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testNonHabitant() throws Exception {
 
 		final long noIndividu = 3467843L;

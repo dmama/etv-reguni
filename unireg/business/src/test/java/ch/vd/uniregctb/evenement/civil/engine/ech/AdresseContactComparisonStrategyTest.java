@@ -31,7 +31,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		return adr;
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansAdresses() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -41,7 +41,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansAdressesContact() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -58,7 +58,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeAdresseCourrierSansRange() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -78,7 +78,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemeAdresseCourrierAvecRange() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -98,7 +98,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreTitre() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -118,7 +118,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (titre)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreRue() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -138,7 +138,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (rue)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreNumeroPostal() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -158,7 +158,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro postal)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreNumero() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -178,7 +178,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (numéro)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreLocalite() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -198,7 +198,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (localité)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreDateDebut() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -218,7 +218,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAutreDateFin() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -238,7 +238,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;
@@ -253,7 +253,7 @@ public class AdresseContactComparisonStrategyTest extends AbstractAdresseCompari
 		assertNonNeutre(strategy, noEvt1, noEvt2, "adresse de contact (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionAdresse() throws Exception {
 		final long noIndividu = 1236745674L;
 		final long noEvt1 = 3278456435L;

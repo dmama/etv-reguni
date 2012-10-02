@@ -33,7 +33,7 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansChangementInfoSexeConnue() throws Exception {
 
 		final long noIndividu = 367423526L;
@@ -44,7 +44,7 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementInfoSexeConnue() throws Exception {
 
 		final long noIndividu = 367423526L;
@@ -55,7 +55,7 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 		assertNonNeutre(strategy, noEvt1, noEvt2, "sexe");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansChangementInfoSexeInconnue() throws Exception {
 
 		final long noIndividu = 367423526L;
@@ -66,7 +66,7 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionInfoSexe() throws Exception {
 
 		final long noIndividu = 367423526L;
@@ -77,7 +77,7 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 		assertNonNeutre(strategy, noEvt1, noEvt2, "sexe");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionInfoSexe() throws Exception {
 
 		final long noIndividu = 367423526L;

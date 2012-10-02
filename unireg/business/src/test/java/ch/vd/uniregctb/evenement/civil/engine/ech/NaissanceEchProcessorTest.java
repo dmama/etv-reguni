@@ -332,7 +332,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMereConnueMaisInvalideAuCivil() throws Exception {
 
 		final long noIndividu = 54678215611L;
@@ -385,7 +385,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMereConnueMaisPereInvalideAuCivil() throws Exception {
 
 		final long noIndividu = 54678215611L;

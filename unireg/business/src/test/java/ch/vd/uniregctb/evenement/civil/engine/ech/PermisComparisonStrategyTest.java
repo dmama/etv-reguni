@@ -41,7 +41,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemePermis() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -55,7 +55,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansPermis() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -66,7 +66,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testTypesDifferentsDontC() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -81,7 +81,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNonNeutre(strategy, noEvt1, noEvt2, "permis");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testTypesDifferentsSansC() throws Exception {
 		final long noIndividu = 367315L;
 		final RegDate debut = date(2000, 1, 1);
@@ -95,7 +95,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesDebutDifferentesPermisC() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -110,7 +110,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesDebutDifferentesPermisNonC() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -125,7 +125,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesFinDifferentesPermisC() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -140,7 +140,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (dates)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDatesFinDifferentesPermisNonC() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -155,7 +155,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNeutre(strategy, noEvt1, noEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparition() throws Exception {
 
 		final long noIndividu = 367315L;
@@ -169,7 +169,7 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 		assertNonNeutre(strategy, noEvt1, noEvt2, "permis (apparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparition() throws Exception {
 
 		final long noIndividu = 367315L;

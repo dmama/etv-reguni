@@ -62,7 +62,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		individu.getConjoints().add(buildRelation(range, noConjoint, typeRelation));
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansRelations() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -73,7 +73,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesEnfants() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -102,7 +102,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesEnfantsMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -131,7 +131,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesEnfantsEtMemesDatesMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -159,7 +159,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesParents() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -188,7 +188,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesParentsMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -217,7 +217,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesParentsEtMemesDatesMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -245,7 +245,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesConjoints() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -274,7 +274,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesConjointsMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -303,7 +303,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAvecMemesConjointsEtMemesDatesMelanges() throws Exception {
 
 		final long noIndividu = 6374237L;
@@ -331,7 +331,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant = 43678454L;
@@ -348,7 +348,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -365,7 +365,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparitionConjoint() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noConjoint = 43678454L;
@@ -382,7 +382,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (apparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant = 43678454L;
@@ -399,7 +399,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -416,7 +416,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparitionConjoint() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noConjoint = 43678454L;
@@ -433,7 +433,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (disparition))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant1 = 43678454L;
@@ -456,7 +456,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementSexeEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant = 43678454L;
@@ -478,7 +478,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, idEvt1, idEvt2);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent1 = 43678454L;
@@ -501,7 +501,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementConjoint() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noConjoint1 = 43678454L;
@@ -524,7 +524,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateDebutEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant = 43678454L;
@@ -547,7 +547,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateFinEnfant() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noEnfant = 43678454L;
@@ -571,7 +571,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (enfants (dates))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateDebutParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -594,7 +594,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateFinParent() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noParent = 43678454L;
@@ -617,7 +617,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (parents (dates))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateDebutConjoint() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noConjoint = 43678454L;
@@ -640,7 +640,7 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, idEvt1, idEvt2, "relations (conjoints (dates))");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testChangementDateFinConjoint() throws Exception {
 		final long noIndividu = 6374237L;
 		final long noConjoint = 43678454L;

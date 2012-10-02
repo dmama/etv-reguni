@@ -49,7 +49,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		return hibernateTemplate.merge(evt);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testNeToucheARienSiPasAnnulation() throws Exception {
 
 		final long noIndividu = 4256673246L;
@@ -117,7 +117,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testNeToucheARienSiPasAnnulationMaisToutEnAttente() throws Exception {
 
 		final long noIndividu = 4256673246L;
@@ -187,7 +187,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testNeToucheARienSiAnnulationMaisOriginalTraite() throws Exception {
 
 		final long noIndividu = 4256673246L;
@@ -257,7 +257,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testCasSimpleAnnulationSurEvenementEnErreur() throws Exception {
 
 		final long noIndividu = 2784262L;
@@ -324,7 +324,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAnnulationDeCorrectionSurEvenementEnErreur() throws Exception {
 
 		final long noIndividu = 2784262L;
@@ -407,7 +407,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAnnulationEtCorrectionSurEvenementEnErreur() throws Exception {
 
 		final long noIndividu = 2784262L;
@@ -476,7 +476,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testAnnulationEtCorrectionSurEvenementEnErreurAvecChangementDeDateDansCorrection() throws Exception {
 
 		final long noIndividu = 2784262L;
@@ -546,7 +546,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testPlusieursAnnulationsEtAutres() throws Exception {
 
 		final long noIndividu = 23784623L;
@@ -745,7 +745,7 @@ public class ErrorPostProcessingAnnulationImpactStrategyTest extends BusinessTes
 		check.run();
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testEffacementErreursAvecMarquageRedondant() throws Exception {
 
 		final long noIndividu = 2784262L;

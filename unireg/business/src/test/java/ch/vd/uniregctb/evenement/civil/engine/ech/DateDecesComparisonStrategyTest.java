@@ -33,7 +33,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		});
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testMemesDates() throws Exception {
 
 		final RegDate date = date(2012, 4, 12);
@@ -45,7 +45,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, noEvtOriginel, noEvtCorrection);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testSansDate() throws Exception {
 
 		final long noIndividu = 2367345623L;
@@ -56,7 +56,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNeutre(strategy, noEvtOriginel, noEvtCorrection);
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testUnJourDifference() throws Exception {
 
 		final RegDate date1 = date(2012, 4, 12);
@@ -69,7 +69,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de décès");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testUnAnDifference() throws Exception {
 
 		final RegDate date1 = date(2012, 4, 12);
@@ -82,7 +82,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de décès");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testDisparition() throws Exception {
 
 		final RegDate date = date(2012, 4, 12);
@@ -94,7 +94,7 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 		assertNonNeutre(strategy, noEvtOriginel, noEvtCorrection, "date de décès (disparition)");
 	}
 
-	@Test
+	@Test(timeout = 10000L)
 	public void testApparition() throws Exception {
 
 		final RegDate date = date(2012, 4, 12);
