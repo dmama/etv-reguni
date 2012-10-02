@@ -334,8 +334,6 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-
-
 	@Test(timeout = 10000L)
 	public void testDepartCelibataireHorsCanton() throws Exception {
 
@@ -404,7 +402,6 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-
 	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaire() throws Exception {
 
@@ -462,7 +459,6 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 	}
-
 
 	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireDestinationInconnue() throws Exception {
@@ -702,7 +698,6 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 		});
 	}
 
-
 	//Test le cas d'un depart vaudois en secondaire avec une destination inconnue
 	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireAvecForPrincipal() throws Exception {
@@ -780,8 +775,8 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			}
 		});
 	}
-	//Vérifie que les démenagements vaudois secondaires avec présence d'un for principal vont bien en erreur avec le message approprié
 
+	//Vérifie que les démenagements vaudois secondaires avec présence d'un for principal vont bien en erreur avec le message approprié
 	@Test(timeout = 10000L)
 	public void testDepartResidenceSecondaireVaudoisForPrincipal() throws Exception {
 
@@ -1490,6 +1485,76 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertNull(ffp.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockPays.Allemagne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testDepartDepuisFraction() throws Exception {
+
+		final long noIndividu = 132748428L;
+		final RegDate dateNaissance = date(1956, 12, 5);
+		final RegDate dateDepart = date(2012, 5, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Collins", "Felipe", Sexe.MASCULIN);
+				addNationalite(ind, MockPays.Suisse, dateNaissance, null);
+
+				final MockAdresse adr = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateNaissance, dateDepart);
+				adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Fraction.LeSentier);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ HS
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(12323L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});
