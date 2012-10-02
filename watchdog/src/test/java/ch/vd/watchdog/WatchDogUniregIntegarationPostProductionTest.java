@@ -22,12 +22,9 @@ public class WatchDogUniregIntegarationPostProductionTest extends WatchDogTest {
 
 	public void testIntegrationPostProductionConnectivite() throws Exception {
 		LOGGER.info("Vérification de la connectivité de Unireg en intégration de post-production...");
-		final HtmlPage page = (HtmlPage) webClient.getPage(new URL(
-				"https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status.do"));
-		assertNotNull(page);
-		assertStatus("OK", page, "serviceCivilStatus");
-		assertStatus("OK", page, "serviceInfraStatus");
-		assertStatus("OK", page, "serviceSecuriteStatus");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/civil.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/infra.do");
+		assertJsonStatus("OK", "https://validation.portail.etat-de-vaud.ch/fiscalite/dev-unireg/web/admin/status/securite.do");
 		// SIPF, SIPF, SIIIIIIIIIIIIIIIIIIIIPF !!! assertStatus("OK", page, "bvrPlusStatus");
 	}
 }
