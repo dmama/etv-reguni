@@ -290,7 +290,6 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		@Override
 		public void run() {
 			LOGGER.info("Démarrage du thread: " + Thread.currentThread().getName());
-
 			// On fait le passe-plat de la queue d'origine à la queue finale
 			DelayedIndividu evt = null;
 			while (!stopped) {
@@ -315,6 +314,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 					stopServing();
 				}
 			}
+			LOGGER.info("Arrêt du thread: " + Thread.currentThread().getName());
 		}
 
 		public void stopServing() {

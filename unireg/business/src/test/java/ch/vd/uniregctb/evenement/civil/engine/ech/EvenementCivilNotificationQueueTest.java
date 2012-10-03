@@ -522,4 +522,43 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		LOGGER.info(String.format("Polling ended after %dms", TimeUnit.NANOSECONDS.toMillis(endPolling - start)));
 		queue.destroy();
 	}
+
+	@SuppressWarnings("ConstantConditions")
+	@Test(timeout = 2000L)
+	public void testQueueInterruptability() throws Exception {
+		Thread queueThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
+						@Override
+						void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+							Thread.sleep(3000); // fait échouer le test en timeout si va au bout du sleep
+						}
+					});
+				}
+				catch (InterruptedException ignored) {
+					// On ignore c'est dans le deroulement normal du test
+				} catch (Exception e){
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		queueThread.start();
+		Thread.sleep(500); // Temporisation pour être sure que les threads de ServingHatch soient démarré
+		Thread manualHatchThread = null;
+		Thread batchHatchThread = null;
+		for (Thread t : Thread.getAllStackTraces().keySet()) {
+			if (t.getName().equals("manualHatch")) manualHatchThread = t;
+			if (t.getName().equals("batchHatch")) batchHatchThread = t;
+		}
+		manualHatchThread.interrupt();
+		batchHatchThread.interrupt();
+		manualHatchThread.join();
+		batchHatchThread.join();
+		queueThread.interrupt();
+		queueThread.join();
+	}
+
+
 }
