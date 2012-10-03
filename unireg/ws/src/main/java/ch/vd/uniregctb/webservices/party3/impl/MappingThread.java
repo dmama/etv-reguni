@@ -18,7 +18,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -39,9 +38,9 @@ public class MappingThread implements Runnable {
 
 	private final Map<Long, Object> results = new HashMap<Long, Object>();
 	private final MutableBoolean processingDone = new MutableBoolean(false);
+	private RuntimeException processingException;
 
 	public long loadTiersTime;
-	public long warmIndividusTime;
 	public long mapTiersTime;
 
 	public MappingThread(Set<Long> ids, RegDate date, Set<PartyPart> parts, Context context, MapCallback callback) {
@@ -72,6 +71,10 @@ public class MappingThread implements Runnable {
 					});
 				}
 			});
+		}
+		catch (RuntimeException e) {
+			LOGGER.warn(e, e);
+			processingException = e;
 		}
 		finally {
 			synchronized (processingDone) {
@@ -126,34 +129,6 @@ public class MappingThread implements Runnable {
 		loadTiersTime = System.nanoTime() - start;
 		LOGGER.trace("Chargement des tiers - end");
 
-		// précharge la liste des individus (dans la mesure du possible)
-		if (context.serviceCivilService.isWarmable()) {
-
-			LOGGER.trace("Préchargement des individus - start");
-			start = System.nanoTime();
-
-			final Set<Long> numerosIndividus = context.tiersDAO.getNumerosIndividu(idsFull, false);
-			if (!numerosIndividus.isEmpty()) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant
-				try {
-					final AttributeIndividu[] attributs;
-					if (parts != null && parts.contains(PartyPart.ADDRESSES)) {
-						attributs = new AttributeIndividu[]{AttributeIndividu.ADRESSES, AttributeIndividu.PERMIS};
-					}
-					else {
-						attributs = new AttributeIndividu[]{AttributeIndividu.PERMIS};
-					}
-					// date=null => parce qu'on s'intéresse à l'historique complete de l'individu
-					context.serviceCivilService.getIndividus(numerosIndividus, null, attributs); // chauffe le cache
-				}
-				catch (Exception e) {
-					LOGGER.warn("Impossible de précharger le lot d'individus [" + numerosIndividus + "].", e);
-				}
-			}
-
-			warmIndividusTime = System.nanoTime() - start;
-			LOGGER.trace("Préchargement des individus - end");
-		}
-
 		LOGGER.trace("Mapping des tiers - start");
 		start = System.nanoTime();
 
@@ -164,6 +139,10 @@ public class MappingThread implements Runnable {
 
 		mapTiersTime = System.nanoTime() - start;
 		LOGGER.trace("Mapping des tiers - end");
+	}
+
+	public RuntimeException getProcessingException() {
+		return processingException;
 	}
 
 	public Map<Long, Object> getResults() {

@@ -651,11 +651,6 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@Override
 	public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
-
-		if (tiersIds.size() > 1000) {
-			throw new IllegalArgumentException("Il n'est pas possible de spécifier plus de 1'000 ids");
-		}
-
 		return getHibernateTemplate().executeWithNativeSession(new GetNumerosIndividusCallback(tiersIds, includesComposantsMenage));
 	}
 

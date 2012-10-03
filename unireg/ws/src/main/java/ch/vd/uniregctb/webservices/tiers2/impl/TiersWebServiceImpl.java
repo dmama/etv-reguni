@@ -525,7 +525,6 @@ public class TiersWebServiceImpl implements TiersWebService {
 
 		final Map<Long, Object> results = new HashMap<Long, Object>();
 		long loadTiersTime = 0;
-		long warmIndividusTime = 0;
 		long mapTiersTime = 0;
 
 		// on découpe le travail sur plusieurs threads
@@ -536,9 +535,13 @@ public class TiersWebServiceImpl implements TiersWebService {
 			final MappingThread t = new MappingThread(allIds, date, parts, context, callback);
 			t.run();
 
+			final RuntimeException e = t.getProcessingException();
+			if (e != null) {
+				throw new RuntimeException("Exception [" + e.getMessage() + "] dans le thread de mapping du getBatchTiers", e);
+			}
+
 			results.putAll(t.getResults());
 			loadTiersTime += t.loadTiersTime;
-			warmIndividusTime += t.warmIndividusTime;
 			mapTiersTime += t.mapTiersTime;
 		}
 		else {
@@ -562,19 +565,23 @@ public class TiersWebServiceImpl implements TiersWebService {
 					// thread interrompu: il ne tourne plus, rien de spécial à faire en fait.
 					LOGGER.warn("Le thread " + Thread.currentThread().getId() + " a été interrompu", e);
 				}
+
+				final RuntimeException e = t.getProcessingException();
+				if (e != null) {
+					throw new RuntimeException("Exception [" + e.getMessage() + "] dans le thread de mapping du getBatchTiers", e);
+				}
+
 				results.putAll(t.getResults());
 
 				loadTiersTime += t.loadTiersTime;
-				warmIndividusTime += t.warmIndividusTime;
 				mapTiersTime += t.mapTiersTime;
 			}
 		}
 
-		long totalTime = loadTiersTime + warmIndividusTime + mapTiersTime;
+		long totalTime = loadTiersTime + mapTiersTime;
 
 		if (totalTime > 0 && LOGGER.isDebugEnabled()) {
-			LOGGER.debug(String.format("temps d'exécution: chargement des tiers=%d%%, préchargement des individus=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime,
-					warmIndividusTime * 100 / totalTime, mapTiersTime * 100 / totalTime));
+			LOGGER.debug(String.format("temps d'exécution: chargement des tiers=%d%%, mapping des tiers=%d%%", loadTiersTime * 100 / totalTime, mapTiersTime * 100 / totalTime));
 		}
 
 		if (results.isEmpty()) {

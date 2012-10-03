@@ -37,9 +37,9 @@ public class MappingThread implements Runnable {
 
 	private final Map<Long, Object> results = new HashMap<Long, Object>();
 	private final MutableBoolean processingDone = new MutableBoolean(false);
+	private RuntimeException processingException;
 
 	public long loadTiersTime;
-	public long warmIndividusTime;
 	public long mapTiersTime;
 
 	public MappingThread(Set<Long> ids, RegDate date, Set<TiersPart> parts, Context context, MapCallback callback) {
@@ -70,6 +70,10 @@ public class MappingThread implements Runnable {
 					});
 				}
 			});
+		}
+		catch (RuntimeException e) {
+			LOGGER.warn(e, e);
+			processingException = e;
 		}
 		finally {
 			synchronized (processingDone) {
@@ -124,18 +128,6 @@ public class MappingThread implements Runnable {
 		loadTiersTime = System.nanoTime() - start;
 		LOGGER.trace("Chargement des tiers - end");
 
-		// précharge la liste des individus (dans la mesure du possible)
-		if (context.serviceCivilService.isWarmable()) {
-
-			LOGGER.trace("Préchargement des individus - start");
-			start = System.nanoTime();
-
-			BusinessHelper.warmIndividus(idsFull, parts, context, false);
-
-			warmIndividusTime = System.nanoTime() - start;
-			LOGGER.trace("Préchargement des individus - end");
-		}
-
 		LOGGER.trace("Mapping des tiers - start");
 		start = System.nanoTime();
 
@@ -146,6 +138,10 @@ public class MappingThread implements Runnable {
 
 		mapTiersTime = System.nanoTime() - start;
 		LOGGER.trace("Mapping des tiers - end");
+	}
+
+	public RuntimeException getProcessingException() {
+		return processingException;
 	}
 
 	public Map<Long, Object> getResults() {
