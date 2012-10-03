@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseEtrangere;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -1817,6 +1818,39 @@ public class TiersDAOTest extends CoreDAOTest {
 			assertEquals(1, active.size());
 			assertTrue(active.contains(ids.autre0));
 		}
+	}
+
+	// [SIFISC-6494] Vérifie que la limite Oracle de 1000 numéros ne s'applique pas (plus) à la méthode getNumerosIndividus
+	@Test
+	public void testGetNumerosIndividu() throws Exception {
+
+		final int SIZE = 1020;
+
+		final List<Long> ids = doInNewTransaction(new TxCallback<List<Long>>() {
+			@Override
+			public List<Long> execute(TransactionStatus status) throws Exception {
+				final List<Long> ids = new ArrayList<Long>(SIZE);
+				for (int i = 0; i < SIZE; ++i) {
+					PersonnePhysique pp = new PersonnePhysique(i);
+					pp = hibernateTemplate.merge(pp);
+					ids.add(pp.getId());
+				}
+				return ids;
+			}
+		});
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Set<Long> numeros = tiersDAO.getNumerosIndividu(ids, false);
+				assertNotNull(numeros);
+				assertEquals(SIZE, numeros.size());
+
+				for (int i = 0; i < SIZE; ++i) {
+					assertTrue(numeros.contains((long) i));
+				}
+			}
+		});
 	}
 
 	@SuppressWarnings({"unchecked", "UnusedAssignment"})
