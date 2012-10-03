@@ -78,9 +78,15 @@
 		<property name="lrService" ref="lrService" />
 		<property name="diService" ref="diService" />
 		<property name="bamMessageSender" ref="bamMessageSender" />
+		<property name="threadPool" ref="wsThreadPool" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
 		<property name="assujettissementService" ref="assujettissementService" />
 		<property name="periodeImpositionService" ref="periodeImpositionService" />
+	</bean>
+
+	<bean id="wsThreadPool" class="org.springframework.scheduling.concurrent.ThreadPoolExecutorFactoryBean">
+		<property name="corePoolSize" value="10"/> <!-- nombre minimum de threads -->
+		<property name="maxPoolSize" value="20"/> <!-- nombre maximum de threads -->
 	</bean>
 
 	<bean id="partyService3Cache" class="ch.vd.uniregctb.webservices.party3.cache.PartyWebServiceCache">
