@@ -153,6 +153,11 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		public int hashCode() {
 			return (int) (noIndividu ^ (noIndividu >>> 32));
 		}
+
+		@Override
+		public String toString() {
+			return "Individu{no=" + noIndividu + '}';
+		}
 	}
 
 	@Override
@@ -269,15 +274,14 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		return totalInHatches.get();
 	}
 
-
 	private static class ServingHatch extends Thread {
 
 		private static final int HATCH_TIMEOUT = 100; // ms
 
-		private BlockingQueue<DelayedIndividu> queue;
-		private BlockingQueue<DelayedIndividu> finalQueue;
-		private AtomicInteger totalInHatches;
-		private boolean stopped = false;
+		private final BlockingQueue<DelayedIndividu> queue;
+		private final BlockingQueue<DelayedIndividu> finalQueue;
+		private final AtomicInteger totalInHatches;
+		private volatile boolean stopped = false;
 
 
 		private ServingHatch(String threadName, BlockingQueue<DelayedIndividu> queue, AtomicInteger totalInHatches, BlockingQueue<DelayedIndividu> finalQueue) {
@@ -289,37 +293,43 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 		@Override
 		public void run() {
-			LOGGER.info("Démarrage du thread: " + Thread.currentThread().getName());
-			// On fait le passe-plat de la queue d'origine à la queue finale
-			DelayedIndividu evt = null;
-			while (!stopped) {
-				try {
-					boolean evtWasNull = evt == null;
-					if (evt == null) {
-						evt = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
-					}
-					if (evt != null && evtWasNull) {
-						totalInHatches.incrementAndGet();
-					}
-					if (evt != null) {
-						boolean offerAccepted = finalQueue.offer(evt, HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
-						if (offerAccepted) {
-							evt = null;
-							totalInHatches.decrementAndGet();
+			LOGGER.info("Démarrage du thread: " + getName());
+			try {
+				// On fait le passe-plat de la queue d'origine à la queue finale
+				DelayedIndividu individu = null;
+				while (!stopped) {
+					try {
+						final boolean evtWasNull = (individu == null);
+						if (individu == null) {
+							individu = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+						}
+						if (individu != null && evtWasNull) {
+							totalInHatches.incrementAndGet();
+						}
+						if (individu != null) {
+							final boolean offerAccepted = finalQueue.offer(individu, HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+							if (offerAccepted) {
+								individu = null;
+								totalInHatches.decrementAndGet();
+							}
 						}
 					}
-				}
-				catch (InterruptedException e) {
-					LOGGER.error(Thread.currentThread().getName() + " interrompu", e);
-					stopServing();
+					catch (InterruptedException e) {
+						LOGGER.error(getName() + " interrompu", e);
+						stopServing();
+					}
+					catch (RuntimeException e) {
+						LOGGER.error("Exception dans le thread " + getName() + " pour l'individu " + individu, e);
+					}
 				}
 			}
-			LOGGER.info("Arrêt du thread: " + Thread.currentThread().getName());
+			finally {
+				LOGGER.info("Arrêt du thread: " + getName());
+			}
 		}
 
 		public void stopServing() {
 			stopped = true;
 		}
-
 	}
 }
