@@ -69,7 +69,7 @@ public class AdresseSupplementaireAdapter extends AdresseAdapter {
 	public CasePostale getCasePostale() {
 		final TexteCasePostale cp = adresse.getTexteCasePostale();
 		final Integer no = adresse.getNumeroCasePostale();
-		if (cp == null || no == null) {
+		if (cp == null) {
 			return null;
 		}
 		Integer npa = null;

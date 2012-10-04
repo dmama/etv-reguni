@@ -83,7 +83,7 @@ public abstract class AdresseSupplementaire extends AdresseTiers {
 	 * Dans la plupart des cas, le texte "Case postale" ou "Boîte postale" suffit.
 	 * Longueur maximum selon eCH-0010 : 15
 	 */
-	private TexteCasePostale texteCasePostale = TexteCasePostale.CASE_POSTALE;
+	private TexteCasePostale texteCasePostale;
 
 	@Column(name = "TEXTE_CASE_POSTALE", length = LengthConstants.ADRESSE_TYPESUPPLEM)
 	@Type(type = "ch.vd.uniregctb.hibernate.TexteCasePostaleUserType")

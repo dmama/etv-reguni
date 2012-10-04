@@ -505,6 +505,8 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	public String getFormattedCasePostale() {
 		if (numeroCasePostale != null && texteCasePostale != null) {
 			return texteCasePostale.format(numeroCasePostale);
+		} else if (numeroCasePostale == null && texteCasePostale != null){
+			return texteCasePostale.format();
 		}
 		return "";
 	}
