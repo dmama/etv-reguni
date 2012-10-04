@@ -3,8 +3,6 @@ package ch.vd.uniregctb.couple;
 import javax.validation.Valid;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -18,10 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.uniregctb.common.ControllerUtils;
-import ch.vd.uniregctb.common.WebTransactionException;
-import ch.vd.uniregctb.common.WebTransactionTemplate;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -36,7 +31,6 @@ public class CoupleController {
 
 	private CoupleManager coupleManager;
 	private Validator coupleValidator;
-	private PlatformTransactionManager transactionManager;
 	private ControllerUtils controllerUtils;
 	private SecurityProviderInterface securityProvider;
 
@@ -48,11 +42,6 @@ public class CoupleController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setCoupleValidator(Validator coupleValidator) {
 		this.coupleValidator = coupleValidator;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
 	}
 
 	public void setControllerUtils(ControllerUtils controllerUtils) {
@@ -88,6 +77,7 @@ public class CoupleController {
 		binder.registerCustomEditor(Long.class, "mcId", new TiersNumberEditor(true));
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/create.do", method = RequestMethod.POST)
 	public String create(@Valid @ModelAttribute("command") final CoupleView view, BindingResult result) throws Exception {
 
@@ -99,33 +89,21 @@ public class CoupleController {
 			return "couple/create";
 		}
 
-		final Long menageId;
-		try {
-			final WebTransactionTemplate template = new WebTransactionTemplate(transactionManager, result);
-			menageId = template.execute(new TxCallback<Long>() {
-				@Override
-				public Long execute(TransactionStatus status) throws Exception {
-					// on détermine quelques informations sur le futur ménage commun
-					final CoupleManager.CoupleInfo info = coupleManager.determineInfoFuturCouple(view.getPp1Id(), view.getPp2Id(), view.getMcId());
+		// on détermine quelques informations sur le futur ménage commun
+		final CoupleManager.CoupleInfo info = coupleManager.determineInfoFuturCouple(view.getPp1Id(), view.getPp2Id(), view.getMcId());
 
-					// on récupère les paramètres de la requête, en forçant si nécessaire les valeurs qui vont bien
-					final Long pp1Id = view.getPp1Id();
-					final Long pp2Id = view.getPp2Id();
-					final Long mcId = (info.getForceMcId() == null ? view.getMcId() : info.getForceMcId());
-					final RegDate dateDebut = (info.getForceDateDebut() == null ? view.getDateDebut() : info.getForceDateDebut());
+		// on récupère les paramètres de la requête, en forçant si nécessaire les valeurs qui vont bien
+		final Long pp1Id = view.getPp1Id();
+		final Long pp2Id = view.getPp2Id();
+		final Long mcId = (info.getForceMcId() == null ? view.getMcId() : info.getForceMcId());
+		final RegDate dateDebut = (info.getForceDateDebut() == null ? view.getDateDebut() : info.getForceDateDebut());
 
-					controllerUtils.checkAccesDossierEnEcriture(pp1Id);
-					controllerUtils.checkAccesDossierEnEcriture(pp2Id);
-					controllerUtils.checkAccesDossierEnEcriture(mcId);
+		controllerUtils.checkAccesDossierEnEcriture(pp1Id);
+		controllerUtils.checkAccesDossierEnEcriture(pp2Id);
+		controllerUtils.checkAccesDossierEnEcriture(mcId);
 
-					final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
-					return menage.getId();
-				}
-			});
-		}
-		catch (WebTransactionException e) {
-			return "couple/create";
-		}
+		final MenageCommun menage = coupleManager.sauverCouple(pp1Id, pp2Id, mcId, dateDebut, info.getType(), info.getEtatCivil(), view.getRemarque());
+		final Long menageId = menage.getId();
 
 		return "redirect:/tiers/visu.do?id=" + menageId;
 	}

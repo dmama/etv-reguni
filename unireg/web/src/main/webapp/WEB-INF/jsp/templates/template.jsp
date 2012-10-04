@@ -306,8 +306,8 @@
 
 					<h1><tiles:getAsString name='title' ignore='true'/></h1>
 					<div id="globalErrors">
+						<c:set var="globalErrorCount" value="0"/>
 						<spring:hasBindErrors name="command">
-							<c:set var="globalErrorCount" value="0"/>
 							<c:if test="${errors.globalErrorCount > 0}">
 								<c:forEach var="error" items="${errors.globalErrors}">
 									<c:if test="${unireg:startsWith(error.code, 'global.error')}">
@@ -315,19 +315,31 @@
 									</c:if>
 								</c:forEach>
 							</c:if>
-							<c:if test="${globalErrorCount > 0}">
-								<table class="action_error" cellspacing="0" cellpadding="0" border="0">
-									<tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
-									<tr><td class="details"><ul>
-									<c:forEach var="error" items="${errors.globalErrors}">
-										<c:if test="${unireg:startsWith(error.code, 'global.error')}">
-											<li class="err"><spring:message message="${error}" /></li>
-										</c:if>
-									</c:forEach>
-									</ul></td></tr>
-								</table>
-							</c:if>
 						</spring:hasBindErrors>
+						<%--@elvariable id="actionErrors" type="ch.vd.uniregctb.common.ActionMessageList"--%>
+						<c:if test="${actionErrors != null && not empty actionErrors}">
+							<c:set var="globalErrorCount" value="${globalErrorCount + fn:length(actionErrors)}"/>
+						</c:if>
+						<c:if test="${globalErrorCount > 0}">
+							<table class="action_error" cellspacing="0" cellpadding="0" border="0">
+								<tr><td class="heading"><fmt:message key="label.action.problemes.detectes"/></td></tr>
+								<tr><td class="details"><ul>
+									<spring:hasBindErrors name="command">
+										<c:forEach var="error" items="${errors.globalErrors}">
+											<c:if test="${unireg:startsWith(error.code, 'global.error')}">
+												<li class="err"><spring:message message="${error}" /></li>
+											</c:if>
+										</c:forEach>
+									</spring:hasBindErrors>
+									<c:if test="${actionErrors != null}">
+										<c:forEach var="error" items="${actionErrors}">
+											<li class="<c:out value='${error.displayClass}'/>"><c:out value="${error.message}"/></li>
+										</c:forEach>
+										<c:set target="${actionErrors}" property="active" value="false"/>
+									</c:if>
+								</ul></td></tr>
+							</table>
+						</c:if>
 					</div>
 					<div class="workaround_IE6_bug">
 						<tiles:getAsString name='body' />

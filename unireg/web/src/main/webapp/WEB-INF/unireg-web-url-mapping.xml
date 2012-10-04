@@ -226,6 +226,11 @@
 		<property name="order" value="11"/> <!-- pour prendre la précédence sur le urlMappingExceptionResolver -->
 	</bean>
 
+	<!--Pour catcher les erreurs de validation et d'action automatiquement et les afficher sur la dernière page -->
+	<bean class="ch.vd.uniregctb.servlet.ActionExceptionResolver">
+		<property name="order" value="19"/> <!-- pour prendre la précédence sur le urlMappingExceptionResolver -->
+	</bean>
+
 	<!-- Exception resolver par défaut -->
 	<bean id="urlMappingExceptionResolver" class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
 		<property name="order" value="20"/>
