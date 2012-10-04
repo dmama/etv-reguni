@@ -445,7 +445,9 @@
 			form.rue.readOnly = '';
 			$('#rue').removeClass("readonly");
 			$('#rue').autocomplete("disable");
-			$('#rue').val('');
+			if ($('#rue').val() == '^^^ entrez une localité ^^^') { // [SIFISC-6339] on ne resette la rue que pour supprimer le placeholder
+				$('#rue').val('');
+			}
 		}
 	}
 
