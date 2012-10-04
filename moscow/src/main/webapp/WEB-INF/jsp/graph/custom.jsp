@@ -149,7 +149,7 @@
 				var height = $('#height').val().replace(/[^0-9]*/g, '');
 
 				var filters = [];
-				$('#filters li').each(function (index, element) {
+				$('#filters > div').each(function (index, element) {
 					var dim = $(element).attr('id').substring(6);
 					var val = $("select", element).val();
 					filters.push(dim + ':' + val);
