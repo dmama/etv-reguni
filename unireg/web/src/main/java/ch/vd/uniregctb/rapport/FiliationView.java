@@ -25,7 +25,7 @@ public class FiliationView {
 		final PersonnePhysique autrePersonnePhysique = filiation.getAutrePersonnePhysique();
 		if (autrePersonnePhysique == null) {
 			this.numeroAutreTiers = null;
-			this.messageAutreTiersAbsent = "Impossible de trouver la personne qui corresponds à l'individu n°" + filiation.getAutreIndividu().getNoTechnique();
+			this.messageAutreTiersAbsent = "Impossible de trouver le contribuable qui correspond à l'individu n°" + filiation.getAutreIndividu().getNoTechnique();
 		}
 		else {
 			this.numeroAutreTiers = autrePersonnePhysique.getNumero();
