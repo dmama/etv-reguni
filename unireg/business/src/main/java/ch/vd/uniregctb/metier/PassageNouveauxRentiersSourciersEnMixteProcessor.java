@@ -110,10 +110,10 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 			@Override
 			public void afterTransactionCommit() {
-				int percent = (100 * rapportFinal.nbSourciersTotal) / list.size();
+				int percent = (100 * rapportFinal.getNbSourciersTotal()) / list.size();
 				s.setMessage(String.format(
 						"%d sourciers traités sur %d (convertis = %s, erreurs = %s, conjoints ignorés = %s, hors-suisse = %s, trop jeune = %s)",
-						rapportFinal.nbSourciersTotal, list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
+						rapportFinal.getNbSourciersTotal(), list.size(), rapportFinal.sourciersConvertis.size(), rapportFinal.sourciersEnErreurs.size(), rapportFinal.nbSourciersConjointsIgnores,
 						rapportFinal.nbSourciersHorsSuisse, rapportFinal.nbSourciersTropJeunes), percent);
 			}
 		});
@@ -133,9 +133,9 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	}
 
 	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, Set<Long> conjointAIgnorer) {
-
 		// On préchauffe le cache des individus, si possible
-		if (serviceCivil.isWarmable()) {
+		// On évite de le faire pour les batchs de taille 1 (reprise sur batch avec une erreur),ça ne sert à rien.
+		if (serviceCivil.isWarmable() && batch.size() > 1) {
 			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
 			if (!numeroIndividus.isEmpty()) {
 				serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.ADRESSES);
@@ -150,17 +150,16 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	}
 
 	private void traiteSourcier(Long id, RegDate dateReference, Set<Long> conjointAIgnorer) {
-		PersonnePhysique sourcier = hibernateTemplate.get(PersonnePhysique.class, id);
-		++rapport.nbSourciersTotal;
-		// traitement du sourcier
 		try {
+			PersonnePhysique sourcier = hibernateTemplate.get(PersonnePhysique.class, id);
+			// traitement du sourcier
 			traiteSourcier(sourcier, dateReference, conjointAIgnorer);
 		}
 		catch (PassageNouveauxRentiersSourciersEnMixteException e) {
 			rapport.addPassageNouveauxRentiersSourciersEnMixteException(e);
 		}
 		catch (Exception e) {
-			LOGGER.error("Erreur inconnue en traitant le sourcier n° " + sourcier.getNumero(), e);
+			LOGGER.error("Erreur inconnue en traitant le sourcier n° " + id, e);
 			rapport.addUnknownException(id, e);
 		}
 	}

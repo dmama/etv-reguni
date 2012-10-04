@@ -64,7 +64,7 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 
 	public final RegDate dateTraitement;
 
-	public int nbSourciersTotal;
+	private int nbSourciersTotal;
 	public int nbSourciersTropJeunes;
 	public int nbSourciersHorsSuisse;
 	public int nbSourciersConjointsIgnores;
@@ -77,6 +77,10 @@ public class PassageNouveauxRentiersSourciersEnMixteResults extends JobResults<L
 	PassageNouveauxRentiersSourciersEnMixteResults(RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.dateTraitement = dateTraitement;
+	}
+
+	public int getNbSourciersTotal() {
+		return nbSourciersTropJeunes + nbSourciersHorsSuisse + nbSourciersConjointsIgnores + sourciersConvertis.size() + sourciersEnErreurs.size();
 	}
 
 	@Override

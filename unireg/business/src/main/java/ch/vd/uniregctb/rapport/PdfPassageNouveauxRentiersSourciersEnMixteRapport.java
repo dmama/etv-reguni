@@ -55,7 +55,7 @@ public class PdfPassageNouveauxRentiersSourciersEnMixteRapport  extends PdfRappo
 				document.addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 					@Override
 					public void fillTable(PdfTableSimple table) throws DocumentException {
-						table.addLigne("Nombre total de sourciers candidats:", String.valueOf(results.nbSourciersTotal));
+						table.addLigne("Nombre total de sourciers candidats:", String.valueOf(results.getNbSourciersTotal()));
 						table.addLigne("Nombre de sourciers convertis (Total de fors Mixte 1 ouverts):", String.valueOf(results.sourciersConvertis.size()));
 						table.addLigne("Nombre de sourciers convertis via leur conjoint:", String.valueOf(results.nbSourciersConjointsIgnores));
 						table.addLigne("Nombre de sourciers non-convertis car trop jeunes :", String.valueOf(results.nbSourciersTropJeunes));
