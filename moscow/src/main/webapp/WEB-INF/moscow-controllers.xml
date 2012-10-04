@@ -38,6 +38,7 @@
 
 
 	<bean id="indexController" class="ch.vd.moscow.controller.index.IndexController">
+		<property name="dao" ref="dao" />
 	</bean>
 
 	<bean id="errorController" class="ch.vd.moscow.controller.ErrorController">
