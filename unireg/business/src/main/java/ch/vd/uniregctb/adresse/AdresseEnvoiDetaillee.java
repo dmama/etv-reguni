@@ -355,11 +355,11 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	public boolean isIncomplete() {
 
 		final boolean rueVideOuInconnue = rueEtNumero == null || RueEtNumero.VIDE.equals(rueEtNumero);
-		final boolean casePostaleVideOuInconnue = casePostale == null || CasePostale.VIDE.equals(casePostale);
+		final boolean casePostaleInconnue = casePostale == null;
 		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
 		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
 
-		return (rueVideOuInconnue && casePostaleVideOuInconnue) || localiteVideOuInconnue || paysVideOuInconnue;
+		return (rueVideOuInconnue && casePostaleInconnue) || localiteVideOuInconnue || paysVideOuInconnue;
 
 
 	}
