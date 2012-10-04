@@ -34,7 +34,7 @@
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="firstName" type="cnr-req:nameType">
+					<xs:element name="firstName" type="cnr-req:nameType" minOccurs="0">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
