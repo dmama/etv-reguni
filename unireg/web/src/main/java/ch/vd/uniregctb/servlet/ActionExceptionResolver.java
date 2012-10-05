@@ -13,7 +13,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.uniregctb.common.ActionErrors;
 import ch.vd.uniregctb.common.ActionException;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.metier.MetierServiceException;
 
 /**
@@ -65,11 +64,6 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			for (String s : ae.getWarnings()) {
 				ActionErrors.addWarning(s);
 			}
-			mav = new ModelAndView("redirect:" + referrer);
-		}
-		else if (ex instanceof ObjectNotFoundException) {
-			LOGGER.debug("ObjectNotFound exception catched -> redisplaying form : " + ex.getMessage());
-			ActionErrors.addError(ex.getMessage());
 			mav = new ModelAndView("redirect:" + referrer);
 		}
 		else if (ex instanceof MetierServiceException) {
