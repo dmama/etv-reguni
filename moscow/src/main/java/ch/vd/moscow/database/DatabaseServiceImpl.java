@@ -219,7 +219,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		try {
 			reader = new BufferedReader(new InputStreamReader(new FileInputStream(filename)));
 			Boolean isTodayLog = importStream(environment, reader, filename, status);
-			return isTodayLog == null || isTodayLog;
+			return isTodayLog == null || isTodayLog || !fileNameIsDated(filename);
 		}
 		catch (Exception e) {
 			throw new RuntimeException(e);
@@ -228,7 +228,15 @@ public class DatabaseServiceImpl implements DatabaseService {
 			safeClose(reader);
 		}
 	}
-	
+
+	/**
+	 * @param filename a filename
+	 * @return <b>true</b> if filename contains a date (e.g. 'ws-access.log.2012-04-03'); <b>false</b> otherwise.
+	 */
+	static boolean fileNameIsDated(String filename) {
+		return filename.matches(".*[\\d]{4}-\\d\\d-\\d\\d.*");
+	}
+
 	private static class ImportContext {
 
 		private DAO dao;

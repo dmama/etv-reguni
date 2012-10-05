@@ -11,7 +11,9 @@ import ch.vd.moscow.data.Call;
 import ch.vd.moscow.data.Environment;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class DataBaseServiceTest extends MoscowTest {
 
@@ -167,6 +169,23 @@ public class DataBaseServiceTest extends MoscowTest {
 			assertCall("dev", "tiers2.read", "tao-ba", "GetTiersHisto", 396L, calls.get(18));
 			assertCall("dev", "tiers2.read", "tao-ba", "GetTiersHisto", 0L, calls.get(19));
 		}
+	}
+
+	@Test
+	public void testFileNameIsDated() throws Exception {
+
+		assertFalse(DatabaseServiceImpl.fileNameIsDated("ws-access.log"));
+		assertFalse(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregVA01.log"));
+		assertFalse(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPP01.log"));
+		assertFalse(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPR01.log"));
+
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access.log.2012-08-21"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregVA01.log.2012-09-25"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregVA01.log.2012-09-24.lzma"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPP01.log.2012-09-25"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPP01.log.2012-09-24.lzma"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPR01.log.2012-09-25"));
+		assertTrue(DatabaseServiceImpl.fileNameIsDated("ws-access-cat_uniregPR01.log.2012-09-24.lzma"));
 	}
 
 	private static void assertCall(String environment, String service, String user, String method, long latency, Call call) {
