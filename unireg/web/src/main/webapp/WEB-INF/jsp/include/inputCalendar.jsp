@@ -8,7 +8,8 @@
 <spring:bind path="${path}">
 	<input type="text" name="${status.expression}" value="${status.value}" id="${id}" size="10" maxlength ="10" class="date ${inputFieldClass}"
 		<c:if test="${param.onChange != null && not empty param.onChange }">onchange="<c:out value="${param.onChange}"/>(this);"</c:if>
-		<c:if test="${param.onkeyup  != null && not empty param.onkeyup  }">onkeyup= "<c:out value="${param.onkeyup}" />(this);"</c:if> />
+		<c:if test="${param.onkeyup  != null && not empty param.onkeyup  }">onkeyup="<c:out value="${param.onkeyup}" />(this);"</c:if>
+		<c:if test="${param.tabindex != null && not empty param.tabindex  }">tabindex="<c:out value="${param.tabindex}"/>"</c:if> />
 	<script>
 		$(function() {
 			$('#${id}').datepicker({

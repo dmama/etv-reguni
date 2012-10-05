@@ -74,6 +74,7 @@
 				<jsp:param name="path" value="tiers.dateNaissance" />
 				<jsp:param name="id" value="dateNaissance"  />
 				<jsp:param name="onChange" value="dateNaissance_OnChange"/>
+				<jsp:param name="tabindex" value="6"/>
 			</jsp:include>
 		</td>
 	</tr>
@@ -82,14 +83,14 @@
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.date.deces" />&nbsp;:</td>
 		<td width="50%">
-			<form:input path="tiers.dateDeces" id="tiers.dateDeces" readonly="true"/>
+			<unireg:regdate regdate="${command.tiers.dateDeces}"/>
 		</td>
 	</tr>
 	<tr
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.numero.registre.etranger" />&nbsp;:</td>
 		<td width="50%">
-			<form:input path="identificationPersonne.numRegistreEtranger" tabindex="11" id="tiers_numRegistreEtranger" 
+			<form:input path="identificationPersonne.numRegistreEtranger" tabindex="7" id="tiers_numRegistreEtranger"
 			cssErrorClass="input-with-errors" size="20" maxlength="13" />
 			<form:errors path="identificationPersonne.numRegistreEtranger" cssClass="error" />
 			<span class="jTip formInfo" title="<c:url value="/htm/numRegistreEtranger.htm?width=375"/>" id="numRegistre">?</span>
@@ -100,7 +101,7 @@
 		class="<unireg:nextRowClass/>">
 		<td width="50%"><fmt:message key="label.categorie.etranger" />&nbsp;:</td>
 		<td width="50%">
-			<form:select path="tiers.categorieEtranger" tabindex="12" >
+			<form:select path="tiers.categorieEtranger" tabindex="8" >
 				<form:option value=""></form:option>
 				<form:options items="${categoriesEtrangers}" />
 			</form:select>
@@ -122,6 +123,7 @@
 				<jsp:param name="path" value="tiers.dateDebutValiditeAutorisation" />
 				<jsp:param name="id" value="dateDebutValiditeAutorisation"  />
 				<jsp:param name="onChange" value="dateDebutValiditeAutorisation_OnChange"/>
+				<jsp:param name="tabindex" value="9"/>
 			</jsp:include>
 		</td>
 	</tr>
@@ -131,7 +133,7 @@
 		<td width="50%"><fmt:message key="label.nationalite" />&nbsp;:</td>
 		<td width="50%">
 			<form:hidden path="tiers.numeroOfsNationalite" id="tiers_numeroOfsNationalite" />
-			<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="13" size="20" />
+			<form:input path="libelleOfsPaysOrigine" id="tiers_libelleOfsPaysOrigine" cssErrorClass="input-with-errors" tabindex="10" size="20" />
 			<script>
 				$(function() {
 					Autocomplete.infra('etatOuTerritoire', '#tiers_libelleOfsPaysOrigine', true, function(item) {
@@ -147,7 +149,7 @@
 		<td width="50%"><fmt:message key="label.commune.origine" />&nbsp;:</td>
 		<td width="50%">
 			<form:hidden path="tiers.numeroOfsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine" />
-			<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="14" size="20" />
+			<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="11" size="20" />
 			<script>
 				$(function() {
 					Autocomplete.infra('commune', '#tiers_libelleOfsCommuneOrigine', true, function(item) {
