@@ -93,13 +93,7 @@ fieldset, fieldset.information {
 
 th.sortable {
 	cursor: pointer;
-	background-repeat: no-repeat;
-	background-image: url(arrow_off.png);
-	background-position: right;
-	padding-top: 0;
-	padding-right: 20px;
-	padding-bottom: 1px;
-	padding-left: 4px;
+	padding: 0 20px 1px 4px;
 	color: #336CA6;
 }
 
@@ -111,18 +105,6 @@ th.sortable:hover {
 th.sorted {
 	background-repeat: no-repeat;
 	background-position: right;
-}
-
-th.order1 {
-	background-image: url(arrow_down.png);
-}
-
-th.order2 {
-	background-image: url(arrow_up.png);
-}
-
-tr.odd {
-
 }
 
 tr.even {
@@ -160,14 +142,6 @@ tr.horscanton {
 	display: inline;
 	cursor: pointer;
 	background-repeat: no-repeat;
-}
-
-.excel {
-	background-image: url(excel.png);
-}
-
-.pdf {
-	background-image: url(pdf.png);
 }
 
 .json {
@@ -255,7 +229,7 @@ p {
 
 table {
 	width: 100%;
-	border-spacing: 0px;
+	border-spacing: 0;
 }
 
 tr {
@@ -317,10 +291,7 @@ td.code {
 }
 
 fieldset {
-	margin-top: 10px;
-	margin-left: 2px;
-	margin-right: 2px;
-	margin-bottom: 2px;
+	margin: 10px 2px 2px;
 	border: 1px solid #cdcdcd;
 }
 
@@ -569,125 +540,15 @@ span.calendar {
 	display: none;
 }
 
-
-a.calendar {
-	background-image: url(calendar_off.gif);
-}
-a.calendar:hover {
-	background-image: url(calendar_on.gif);
-}
-
-
-a.add {
-	background-image: url(add_button_off.gif);
-}
-
-a.add:hover {
-	background-image: url(add_button_on.gif);
-}
-
-a.copy {
-	background-image: url(copy_button_off.gif);
-}
-
-a.copy:hover {
-	background-image: url(copy_button_on.gif);
-}
-
 .correctionOrigine {
 	font-style: italic;
 	font-size: 8pt;
-}
-
-a.correction {
-	background-image: url(correction_off.gif);
-}
-
-a.correction:hover {
-	background-image: url(correction_on.gif);
-}
-
-a.detail {
-	background-image: url(detail_off.gif);
-}
-
-a.detail:hover {
-	background-image: url(detail_on.gif);
-}
-
-a.consult {
-	background-image: url(consult_off.gif);
-}
-
-a.consult:hover {
-	background-image: url(consult_on.gif);
-}
-
-a.historique {
-	background-image: url(historique_off.gif);
-	float: right;
-}
-
-a.historique:hover {
-	background-image: url(historique_on.gif);
-}
-
-a.download {
-	background-image: url(download_off.gif);
-}
-
-a.download:hover {
-	background-image: url(download_on.gif);
-}
-
-a.delete {
-	background-image: url(delete_off.gif);
-	float:right;
-}
-a.delete:hover {
-	background-image: url(delete_on.gif);
 }
 
 legend a.delete:hover {
 	background-repeat: no-repeat;
 	z-index: 500;
 	text-decoration: none;
-}
-
-a.undelete {
-	background-image: url(undelete_off.gif);
-	float:right;
-}
-a.undelete:hover {
-	background-image: url(undelete_on.gif);
-}
-
-a.selectionner {
-	background-image: url(selectionner_on.gif);
-}
-a.selectionner:hover {
-	background-image: url(selectionner_on.gif);
-}
-
-a.edit {
-	background-image: url(edit_off.gif);
-}
-a.edit:hover {
-	background-image: url(edit_on.gif);
-}
-
-a.notes {
-	background-image: url(notes_button_off.gif);
-}
-a.notes:hover {
-	background: url(notes_button_on.gif);
-}
-
-a.replay {
-	background-image: url(replay_button_off.gif);
-}
-a.replay:hover {
-	background-image: url(replay_button_on.gif);
 }
 
 /* ------ unireg.css --------*/
@@ -712,19 +573,15 @@ legend a.delete {
 	float: left;
 }
 
-.complements, .civil, .fiscal, .tiers, .menage, entreprises{
+.complements, .civil, .fiscal, .tiers, .menage {
 	border: 1px solid #bcbcbc;
 	padding: 10px;
 	position: relative;
 	top: 10px;
 	z-index: 1;
-	margin-top: -11px;
-	margin-right: 0px;
-	margin-bottom: 10px;
-	margin-left: 0px;
+	margin: -11px 0 10px;
 	display: block;
 	float: left;
-	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 	width: 100%;
 }
@@ -735,13 +592,9 @@ legend a.delete {
 	position: relative;
 	top: 10px;
 	z-index: 1;
-	margin-top: -11px;
-	margin-right: 0px;
-	margin-bottom: 10px;
-	margin-left: 0px;
+	margin: -11px 0 10px;
 	display: block;
 	float: left;
-	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 	width: 100%;
 }
@@ -756,7 +609,6 @@ legend a.delete {
 	z-index: 1;
 	display: inherit;
 	float: left;
-	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;
 }
 
@@ -773,27 +625,11 @@ legend a.delete {
 	float: right;
 	bottom: 38px;
 	left: 11px;
-	background-color: #EFEFEF;
+	background: #EFEFEF no-repeat right center;
 	z-index: 2;
-	background-image: url(delete_on.gif);
-	background-repeat: no-repeat;
-	background-position: right center;
-	padding-top: 5px;
-	padding-right: 20px;
-	padding-bottom: 5px;
-	padding-left: 5px;
-	border-top-width: thin;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-top-style: solid;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #000000;
-	border-right-color: #000000;
+	padding: 5px 20px 5px 5px;
+	border: thin solid #000000;
 	border-bottom-color: #EFEFEF;
-	border-left-color: #000000;
 }
 
 .groupes-evenement {
@@ -809,7 +645,6 @@ legend a.delete {
 	z-index: 1;
 	display: inline;
 	float: left;
-	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;
 	width: 21%;
 	position: relative;
