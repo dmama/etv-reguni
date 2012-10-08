@@ -392,7 +392,8 @@
 						</manifest>
 						<manifestEntries>
 			             	<Implementation-Build>${buildNumber}</Implementation-Build>
-			            </manifestEntries>
+							<Application-Version>${pom.version}</Application-Version>
+						</manifestEntries>
 					</archive>
 					<dependentWarExcludes>**/hibernate.cfg.xml,**/web.xml</dependentWarExcludes>
 					<webResources>
