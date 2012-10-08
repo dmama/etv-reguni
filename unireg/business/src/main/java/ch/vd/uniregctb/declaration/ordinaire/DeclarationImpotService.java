@@ -4,6 +4,8 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
@@ -159,10 +161,11 @@ public interface DeclarationImpotService {
 	 *
 	 * @param contribuable
 	 * @param di
+	 * @param tacheId Non-<code>null</code> si l'annulation de la DI est l'objet du traitement d'une tâche, auquel cas c'est l'ID de cette tâche
 	 * @param dateEvenement
 	 * @return
 	 */
-	DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement);
+	DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, @Nullable Long tacheId, RegDate dateEvenement);
 
 	/**
 	 * Désannule une déclaration d'impôt qui est annulée. Cette opération, outre de désannuler la déclaration, émet les événements fiscaux et DI qui vont bien.

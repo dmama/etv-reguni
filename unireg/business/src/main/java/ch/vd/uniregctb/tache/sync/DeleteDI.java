@@ -44,7 +44,7 @@ public class DeleteDI extends SynchronizeAction {
 		if (directAnnulation) {
 			// Voir la spécification "Engendrer une tâche en instance" : lorsqu'une DI émise ou sommée (mais pas retournée ni échue) doit être annulée,
 			// on l'annule immédiatement (généralisation des cas particuliers des départs HC, des mariages et des divorces).
-			context.diService.annulationDI(context.contribuable, declaration, RegDate.get());
+			context.diService.annulationDI(context.contribuable, declaration, null, RegDate.get());
 		}
 		else {
 			final TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(TypeEtatTache.EN_INSTANCE, null, context.contribuable, declaration, context.collectivite);

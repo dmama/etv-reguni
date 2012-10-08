@@ -219,12 +219,12 @@ public class DeclarationImpotController {
 	/**
 	 * Annuler une déclaration d'impôt ordinaire.
 	 *
-	 * @param id          l'id de la déclaration d'impôt ordinaire à annuler
-	 * @param depuisTache vrai si l'annulation de la déclaration d'impôt a été appelée depuis l'écran des tâches
+	 * @param id      l'id de la déclaration d'impôt ordinaire à annuler
+	 * @param tacheId si l'annulation de la déclaration d'impôt a été appelée depuis l'écran des tâches, l'ID de la tâche...
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	@RequestMapping(value = "/di/annuler.do", method = RequestMethod.POST)
-	public String annuler(@RequestParam("id") long id, @RequestParam(value = "depuisTache", defaultValue = "false") boolean depuisTache) throws AccessDeniedException {
+	public String annuler(@RequestParam("id") long id, @RequestParam(value = "tacheId", required = false) Long tacheId) throws AccessDeniedException {
 
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.VISU_LIMITE)) {
 			throw new AccessDeniedException("vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
@@ -247,9 +247,9 @@ public class DeclarationImpotController {
 
 		// annulation de la déclaration
 		final Contribuable tiers = (Contribuable) di.getTiers();
-		diService.annulationDI(tiers, di, RegDate.get());
+		diService.annulationDI(tiers, di, tacheId, RegDate.get());
 
-		if (depuisTache) {
+		if (tacheId != null) {
 			return "redirect:/tache/list.do";
 		}
 		else {

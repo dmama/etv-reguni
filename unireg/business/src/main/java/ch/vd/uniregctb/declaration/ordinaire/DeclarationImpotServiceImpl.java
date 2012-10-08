@@ -45,10 +45,12 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tache;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
+import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class DeclarationImpotServiceImpl implements DeclarationImpotService {
@@ -396,13 +398,23 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 *
 	 * @param contribuable  le contribuable qui possède la déclaration à annuler
 	 * @param di            la déclaration qui doit être annulée
+	 * @param tacheId       Non-<code>null</code> si l'annulation de la DI est l'objet du traitement d'une tâche, auquel cas c'est l'ID de cette tâche
 	 * @param dateEvenement la date d'annulation
 	 * @return la déclaration nouvellement annulée
 	 */
 	@Override
-	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, RegDate dateEvenement) {
+	public DeclarationImpotOrdinaire annulationDI(Contribuable contribuable, DeclarationImpotOrdinaire di, @Nullable Long tacheId, RegDate dateEvenement) {
 		di.setAnnule(true);
 		evenementFiscalService.publierEvenementFiscalAnnulationDI(contribuable, di, dateEvenement);
+
+		// traitement de la tâche...
+		if (tacheId != null) {
+			final Tache tache = tacheDAO.get(tacheId);
+			if (tache != null && !tache.isAnnule() && tache.getEtat() != TypeEtatTache.TRAITE) {
+				tache.setEtat(TypeEtatTache.TRAITE);
+			}
+		}
+
 		try {
 			// [SIFISC-3103] Pour les périodes fiscales avant 2011, on n'envoie aucun événement d'annulation de DI (pour le moment, il ne s'agit que d'ADDI)
 			final int pf = di.getPeriode().getAnnee();
