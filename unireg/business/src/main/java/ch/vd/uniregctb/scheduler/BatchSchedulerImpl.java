@@ -130,7 +130,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
 	@Override
-	public JobDefinition startJob(String jobName, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
+	public JobDefinition startJob(String jobName, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 		Assert.notNull(jobName, "Pas de nom de Job défini");
 
 		LOGGER.info("Lancement du job <" + jobName + '>');
@@ -139,7 +139,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		return startJob(job, params);
 	}
 
-	private void scheduleJob(JobDefinition job, Map<String, Object> params, Trigger trigger) throws SchedulerException {
+	private void scheduleJob(JobDefinition job, @Nullable Map<String, Object> params, Trigger trigger) throws SchedulerException {
 
 		// Renseignement de l'authentication
 		final Authentication auth = AuthenticationHelper.getAuthentication();
@@ -174,7 +174,7 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 	}
 
-	private JobDefinition startJob(JobDefinition job, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
+	private JobDefinition startJob(JobDefinition job, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException {
 
 		Assert.notNull(scheduler, "Le scheduler est NULL");
 		Assert.isTrue(!scheduler.isShutdown(), "Le scheduler a été stoppé");

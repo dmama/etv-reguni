@@ -55,7 +55,7 @@ public interface BatchScheduler {
 	 * @throws SchedulerException         en cas d'erreur de scheduling Quartz
 	 * @throws JobAlreadyStartedException si le job est déjà démarré
 	 */
-	JobDefinition startJob(String jobName, Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException;
+	JobDefinition startJob(String jobName, @Nullable Map<String, Object> params) throws JobAlreadyStartedException, SchedulerException;
 
 	/**
 	 * @return la map des jobs enregistrés

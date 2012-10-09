@@ -59,6 +59,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
+import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -72,6 +73,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableServiceImpl.class);
 
+	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
+
 	private GlobalTiersSearcher searcher;
 	private TiersDAO tiersDAO;
 	private IdentCtbDAO identCtbDAO;
@@ -80,18 +83,13 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private ServiceInfrastructureService infraService;
 	private IdentificationContribuableMessageHandler messageHandler;
 	private PlatformTransactionManager transactionManager;
-	private static final String REPARTITION_INTERCANTONALE = "ssk-3001-000101";
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
 	private IdentificationContribuableCache identificationContribuableCache;
-
+	private BatchScheduler batchScheduler;
 
 	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
 		this.identificationContribuableHelper = identificationContribuableHelper;
-	}
-
-	public PlatformTransactionManager getTransactionManager() {
-		return transactionManager;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -130,11 +128,16 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
+	public void setBatchScheduler(BatchScheduler batchScheduler) {
+		this.batchScheduler = batchScheduler;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
-		updateCriteres();
-		LOGGER.info("Préchargement terminé.");
+		if (batchScheduler.getJob(UpdateCriteresIdentificationJob.NAME) != null) { // le job n'existe pas forcément dans les contextes de test
+			LOGGER.info("Démarrage du job de préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
+			batchScheduler.startJob(UpdateCriteresIdentificationJob.NAME, null);
+		}
 	}
 
 
@@ -310,9 +313,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	/**
 	 * Permet de qualifier une tentative d'identification à partir du contenu d'une liste de personne return vrai si la liste contient une seul entrée, faux sinon.
-	 *
-	 * @param list
-	 * @return
 	 */
 	private boolean isIdentificationOK(List<PersonnePhysique> list) {
 		return (list != null && list.size() == 1);
