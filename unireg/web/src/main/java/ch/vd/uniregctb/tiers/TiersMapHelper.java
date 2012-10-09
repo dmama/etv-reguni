@@ -431,7 +431,7 @@ public class TiersMapHelper extends CommonMapHelper {
 	public Map<TypeDocument, String> getTypesDeclarationImpotPourParam() {
 
 		if (mapTypesDeclarationImpotPourParam == null) {
-			mapTypesDeclarationImpotPourParam = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class);
+			mapTypesDeclarationImpotPourParam = initMapEnum(ApplicationConfig.masterKeyTypeDeclarationImpot, TypeDocument.class,TypeDocument.E_FACTURE_ATTENTE_CONTACT, TypeDocument.E_FACTURE_ATTENTE_SIGNATURE);
 		}
 		return mapTypesDeclarationImpotPourParam;
 	}
