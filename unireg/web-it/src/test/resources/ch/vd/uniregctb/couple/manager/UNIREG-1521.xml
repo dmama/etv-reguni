@@ -4587,7 +4587,7 @@
       <value>1</value>
       <value>0</value>
       <value><![CDATA[Chemin de la Tavallaz]]></value>
-      <value>CASE_POSTALE</value>
+	  <null/>
       <null/>
       <null/>
       <null/>
@@ -4617,7 +4617,7 @@
       <value>1</value>
       <value>0</value>
       <null/>
-      <value>CASE_POSTALE</value>
+	  <null/>
       <null/>
       <null/>
       <null/>
