@@ -104,8 +104,14 @@
 
 			<!-- Annulation DI -->
 			<c:if test="${command.allowedSommation}">
-				<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"
-				                 action="/di/annuler.do" method="post" params='{id:${command.id},tacheId:${command.tacheId}}'/>
+				<c:if test="${command.tacheId != null}">
+					<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"
+					                 action="/di/annuler.do" method="post" params='{id:${command.id},tacheId:${command.tacheId}}'/>
+				</c:if>
+				<c:if test="${command.tacheId == null}">
+					<unireg:buttonTo name="Annuler déclaration" confirm="Voulez-vous vraiment annuler cette déclaration d'impôt ?"
+					                 action="/di/annuler.do" method="post" params='{id:${command.id}}'/>
+				</c:if>
 			</c:if>
 		</div>
 
