@@ -51,7 +51,8 @@ public class ImmeubleDAOImpl extends GenericDAOImpl<Immeuble, Long> implements I
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// [SIFISC-4216] affichage par nom de commune puis numéro d'immeuble croissants
-				final Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId order by i.nomCommune, i.numero");
+				// [SIFISC-6316] ajouté le tri par date de dernière mutation décroissante
+				final Query query = session.createQuery("from Immeuble as i where i.contribuable.id = :propId order by i.nomCommune asc, i.numero asc, i.dateDerniereMutation desc");
 				query.setParameter("propId", proprietaireId);
 
 				final int firstResult = pagination.getSqlFirstResult();
