@@ -101,8 +101,8 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	}
 
 	/**
-	 * [SIFISC-5325] Le message d'erreur qui sort dans le rapport d'exécution du batch de sommation des DI doit
-	 * indiquer clairement si l'individu n'a pas été trouvé dans le registre civil et que c'est ça qui pose problème
+	 * [SIFISC-5325] Le message d'erreur qui sort dans le rapport d'exécution du batch de sommation des DI doit indiquer clairement si l'individu n'a pas été trouvé dans le registre civil et que c'est ça
+	 * qui pose problème
 	 */
 	@Test
 	public void testExceptionRecueQuandIndividuNonPresentDansRegistreCivil() throws Exception {
@@ -112,7 +112,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				// persone !
+				// personne !
 			}
 		});
 
@@ -133,7 +133,8 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 					Assert.fail("Devrait exploser car l'individu n'est pas dans le registre civil...");
 				}
 				catch (EditiqueException e) {
-					final String expectedMessage = String.format("Exception lors de l'identification de la provenance de l'adresse (Impossible de trouver l'individu n°%d)", noIndividu);
+					final String expectedMessage =
+							String.format("Exception lors du calcul de l'affranchissement de l'adresse du tiers %d (Impossible de trouver l'individu n°%d)", pp.getNumero(), noIndividu);
 					Assert.assertEquals(expectedMessage, e.getMessage());
 				}
 				return null;

@@ -79,10 +79,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 	private static final String CODE_DOCUMENT_DEP = "DI_DP";
 
 	private ServiceInfrastructureService infraService;
-	private AdresseService adresseService;
-	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
-	private EditiqueHelper editiqueHelper;
 
 	public ImpressionDeclarationImpotOrdinaireHelperImpl() {
 	}
@@ -164,32 +161,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		cleRgp.setAnneeFiscale(Integer.toString(annePeriode));
 
 		final Tiers tiers = informationDocument.getTiers();
-		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
-
-			String idEnvoi = "";
-			//SIFISC-4146
-			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
-			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
-			if (!adresseEnvoiDetaillee.isIncomplete()) {
-				idEnvoi = "";
-			}
-			else {
-				// [UNIREG-1257] tenir compte de l'OID valide durant la période de validité de la déclaration
-				final RegDate datePeriode = informationDocument.getDateReference();
-				final Integer officeImpotId = tiersService.getOfficeImpotIdAt(tiers, datePeriode);
-				if (officeImpotId != null) {
-					idEnvoi = officeImpotId.toString();
-				}
-			}
-			infoDocument.setIdEnvoi(idEnvoi);
-			editiqueHelper.remplitAffranchissement(infoDocument, adresseEnvoiDetaillee);
-		}
-		catch (Exception e) {
-			String message = "Exception lors de l'identification de la provenance de l'adresse";
-			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + tiers.getNumero(), e);
-			throw new EditiqueException(message);
-		}
+		remplitAffranchissement(infoDocument, tiers, informationDocument.getDateReference(), false);
 		infoDocument.setVersion(VERSION);
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
@@ -957,23 +929,11 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 
 	}
 
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
 	}
 
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
-
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
-	}
-
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
 	}
 }

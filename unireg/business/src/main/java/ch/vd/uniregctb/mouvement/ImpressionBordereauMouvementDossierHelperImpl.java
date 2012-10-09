@@ -31,7 +31,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
 
 /**
  * Impression éditique d'un bordereau de mouvements de dossier
@@ -43,18 +42,7 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 	private static final String VERSION = "1.0";
 	private static final String TITRE = "Bordereau d'envoi des dossiers";
 
-	private EditiqueHelper editiqueHelper;
-
-	private TiersService tiersService;
 	private ServiceInfrastructureService infraService;
-
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;

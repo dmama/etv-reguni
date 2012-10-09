@@ -42,7 +42,6 @@ import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.MotifFor;
 
@@ -52,14 +51,8 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 	private static final String CODE_DOC_NOUVEAU_DOSSIER = "FIC_OUV_DOS";
 	private static final String VERSION = "1.0";
 
-	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
 	private ServiceInfrastructureService serviceInfrastructureService;
-	private EditiqueHelper editiqueHelper;
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
 
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
@@ -67,10 +60,6 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
-
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
 	}
 
 	/**

@@ -35,7 +35,6 @@ import ch.vd.service.sipf.wsdl.sipfbvrplus_v1.BvrReponse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -43,7 +42,6 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -82,19 +80,9 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	private static final String CODE_DOC_SOMMATION_LR_LTN = "SLR_SLTN";
 
 	private BVRPlusClient bvrPlusClient;
-	private EditiqueHelper editiqueHelper;
-	private AdresseService adresseService;
 
 	public void setBvrPlusClient(BVRPlusClient bvrPlusClient) {
 		this.bvrPlusClient = bvrPlusClient;
-	}
-
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
 	}
 
 	@Override
@@ -375,8 +363,8 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 			bvrstd.setVerseParLigne6(adresseEnvoi.getLigne6());
 		}
 		catch (AdresseException e) {
-			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + dpi.getNumero(), e);
-			throw new EditiqueException("Exception lors de l'identification de la provenance de l'adresse");
+			LOGGER.error("Exception lors du calcul de l'adresse du tiers " + dpi.getNumero(), e);
+			throw new EditiqueException("Exception lors du calcul de l'adresse du tiers " + dpi.getNumero() + " : " + e.getMessage());
 		}
 		bvrstd.setLigneCodage(bvrReponse.getLigneCodage());
 

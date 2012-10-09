@@ -17,7 +17,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -32,7 +31,6 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 import static noNamespace.InfoDocumentDocument1.InfoDocument;
@@ -49,8 +47,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 
 	private ServiceInfrastructureService infraService;
-	private AdresseService adresseService;
-	private TiersService tiersService;
 
 
 	/**
@@ -392,15 +388,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		remplitAffranchissement(infoDocument, adresse);
 	}
 
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
 	}
 }

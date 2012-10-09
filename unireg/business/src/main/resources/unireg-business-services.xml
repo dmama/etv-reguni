@@ -168,66 +168,50 @@
 
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
 
-	<bean id="editiqueHelper" class="ch.vd.uniregctb.editique.impl.EditiqueHelperImpl">
-		<property name="infraService" ref="serviceInfrastructureService" />
+	<bean id="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.EditiqueAbstractHelper" abstract="true">
 		<property name="adresseService" ref="adresseService" />
-		<property name="tiersService" ref="tiersService" />		
-	</bean>
-
-	<bean id="impressionNouveauxDossiersHelper" class="ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="situationFamilleService" ref="situationFamilleService" />
 		<property name="editiqueHelper" ref="editiqueHelper" />
 	</bean>
 
-	<bean id="impressionTaxationOfficeHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionTaxationOfficeHelperImpl">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="tiersService" ref="tiersService" />
-		<property name="situationFamilleService" ref="situationFamilleService" />
-		<property name="editiqueHelper" ref="editiqueHelper" />
-	</bean>
-
-	<bean id="impressionDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelperImpl">
+	<bean id="editiqueHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.editique.impl.EditiqueHelperImpl">
 		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="tiersService" ref="tiersService" />
+	</bean>
+
+	<bean id="impressionNouveauxDossiersHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="impressionTaxationOfficeHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionTaxationOfficeHelperImpl">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
+	</bean>
+
+	<bean id="impressionDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelperImpl">
+		<property name="infraService" ref="serviceInfrastructureService" />
+		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 	
-	<bean id="impressionSommationDIHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
-		<property name="tiersService" ref="tiersService" />
+	<bean id="impressionSommationDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelperImpl">
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
 		<property name="delaisService" ref="delaisService" />		 
 	</bean>
 	
-	<bean id="impressionConfirmationDelaiHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
-	</bean>
+	<bean id="impressionConfirmationDelaiHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperImpl"/>
 	
 	<bean id="printPCLService" class="ch.vd.uniregctb.editique.print.PrintPCLServiceImpl">
 	</bean>
 
-	<bean id="impressionLRHelper" class="ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
+	<bean id="impressionLRHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelperImpl">
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>
 
-	<bean id="impressionSommationLRHelper" class="ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
+	<bean id="impressionSommationLRHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelperImpl">
 		<property name="bvrPlusClient" ref="bvrPlusClient" />
 	</bean>
 
-	<bean id="impressionEfactureHelper" class="ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper" />
-		<property name="adresseService" ref="adresseService" />
-	</bean>
+	<bean id="impressionEfactureHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.efacture.ImpressionDocumentEfactureHelperImpl"/>
 
 	<bean id="efactureEventHandler" class="ch.vd.uniregctb.efacture.EFactureEventHandlerImpl">
 		<property name="eFactureService" ref="efactureService"/>
@@ -264,9 +248,7 @@
 		<property name="adresseService" ref="adresseService"/>
 	</bean>
 
-	<bean id="impressionBordereauMouvementDossierHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperImpl">
-		<property name="editiqueHelper" ref="editiqueHelper"/>
-		<property name="tiersService" ref="tiersService"/>
+	<bean id="impressionBordereauMouvementDossierHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.mouvement.ImpressionBordereauMouvementDossierHelperImpl">
 		<property name="infraService" ref="serviceInfrastructureService"/>
 	</bean>
 

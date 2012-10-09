@@ -33,7 +33,6 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
-import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
@@ -43,7 +42,6 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
@@ -56,14 +54,8 @@ public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper i
 	private static final String CODE_DOC_CHEMISE_TO = "CHEM_TO";
 	private static final String VERSION = "1.0";
 
-	private TiersService tiersService;
 	private SituationFamilleService situationFamilleService;
 	private ServiceInfrastructureService serviceInfrastructureService;
-	private EditiqueHelper editiqueHelper;
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
 
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
@@ -71,10 +63,6 @@ public class ImpressionTaxationOfficeHelperImpl extends EditiqueAbstractHelper i
 
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
-
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
 	}
 
 	@Override

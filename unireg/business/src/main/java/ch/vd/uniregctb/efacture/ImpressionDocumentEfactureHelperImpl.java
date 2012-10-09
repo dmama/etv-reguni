@@ -14,19 +14,15 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
-import ch.vd.uniregctb.editique.impl.EditiqueHelperImpl;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.type.TypeDocument;
 
 public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper implements ImpressionDocumentEfactureHelper {
 	private static final String VERSION_XSD = "1.0";
-	private EditiqueHelperImpl editiqueHelper;
-	private AdresseService adresseService;
 
 	@Override
 	public String construitIdDocument(Integer annee, Integer numeroDoc, Tiers tiers) {
@@ -73,7 +69,8 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper
 	}
 
 	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionDocumentEfactureParams params) {
-		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(params.getTypeDocument()), params.getTiers().getNumero(), construitIdArchivageDocument(params), RegDate.get(params.getDateTraitement()));
+		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(params.getTypeDocument()), params.getTiers().getNumero(), construitIdArchivageDocument(params),
+				RegDate.get(params.getDateTraitement()));
 	}
 
 	@Override
@@ -148,13 +145,5 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper
 		infoDocument.setVersion(VERSION_XSD);
 		editiqueHelper.remplitAffranchissement(infoDocument, params.getTiers());
 		return infoDocument;
-	}
-
-	public void setEditiqueHelper(EditiqueHelperImpl editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
 	}
 }

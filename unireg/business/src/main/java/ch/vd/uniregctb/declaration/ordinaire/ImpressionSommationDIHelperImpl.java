@@ -29,9 +29,7 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Localite;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -55,9 +53,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 	private static final Logger LOGGER = Logger.getLogger(ImpressionSommationDIHelperImpl.class);
 
-	private EditiqueHelper editiqueHelper;
-	private AdresseService adresseService;
-	private TiersService tiersService;
 	private ServiceInfrastructureService serviceInfrastructureService;
 	private DelaisService delaisService;
 
@@ -190,35 +185,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		infoDocument.setLogo(LOGO_CANTON);
 		infoDocument.setPopulations(POPULATION_PP);
 
-		try {
-			AdresseEnvoiDetaillee adresseEnvoiDetaillee = adresseService.getAdresseEnvoi(params.getDi().getTiers(), null, TypeAdresseFiscale.COURRIER, false);
-			//SIFISC-4146
-			// seuls les cas d'adresse incomplète doivent partir aux OIDs,
-			// les autres ne doivent pas avoir le champ idEnvoi renseigné et donc doivent avoir une zone d'affranchissement correcte
-			String idEnvoi = "";
-			if (!adresseEnvoiDetaillee.isIncomplete() && !params.isMiseSousPliImpossible()) {
-				idEnvoi = "";
-			} else {
-				final Integer officeImpotId = tiersService.getOfficeImpotId(params.getDi().getTiers());
-				if (officeImpotId != null) {
-					idEnvoi = officeImpotId.toString();
-				} else {
-					LOGGER.warn("OID null");
-				}
-			}
-			infoDocument.setIdEnvoi(idEnvoi);
-			editiqueHelper.remplitAffranchissement(infoDocument, adresseEnvoiDetaillee);
-		}
-		catch (EditiqueException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			final String originalMessage = StringUtils.trimToNull(e.getMessage());
-			final String originalMessagePart = originalMessage != null ? String.format(" (%s)", originalMessage) : StringUtils.EMPTY;
-			final String message = String.format("Exception lors de l'identification de la provenance de l'adresse%s", originalMessagePart);
-			LOGGER.error("Exception lors de l'identification de la provenance de l'adresse du tiers " + params.getDi().getTiers().getNumero(), e);
-			throw new EditiqueException(message, e);
-		}
+		remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
 
 		final CleRgp cleRgp = infoDocument.addNewCleRgp();
 		cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
@@ -318,17 +285,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		);
 	}
 
-	public void setEditiqueHelper(EditiqueHelper editiqueHelper) {
-		this.editiqueHelper = editiqueHelper;
-	}
-
-	public void setAdresseService(AdresseService adresseService) {
-		this.adresseService = adresseService;
-	}
-
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
-	}
 	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 	}
