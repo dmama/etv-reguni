@@ -77,15 +77,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 		final MockSecurityProvider provider = sansDroit ? new MockSecurityProvider() : new MockSecurityProvider(Role.CREATE_NONHAB);
 		handler.setSecurityProvider(provider);
 
-		final CreateNonresidentRequest request = new CreateNonresidentRequest();
-		final UserLogin login = new UserLogin("xxxxx", 22);
-		request.setLogin(login);
-		request.setCategory(NaturalPersonCategory.SWISS);
-		request.setDateOfBirth(new Date(1980,1,1));
-		request.setFirstName(sansPrenom ? null : "Pala");
-		request.setGender(Sex.MALE);
-		request.setLastName("Nabit");
-		request.setSocialNumber(7561212121212L);
+		final CreateNonresidentRequest request = createRequest(sansPrenom);
 
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
@@ -98,4 +90,44 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 		CreateNonresidentResponse res = (CreateNonresidentResponse) parseResponse(getEsbMessage(getOutputQueue()));
 		assertNotNull("Le non-habitant devrait être créé", res.getNumber());
 	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testMessageNonConformeNeDoitPasPartirEnDLQ() throws Exception {
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.CREATE_NONHAB);
+		handler.setSecurityProvider(provider);
+		final CreateNonresidentRequest request = createRequest(false);
+		final String xmlRequeteSansBaliseLogin = requestToString(request).replaceAll("^(.*)(<[^<]*login>.*</[^<]*login>)(.*)$", "$1$3");
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				getEsbMessageFactory().setValidator(null); // desactivation du validateur, c'est le but du test d'envoyer un truc pourri
+				sendTextMessage(getInputQueue(), xmlRequeteSansBaliseLogin, getOutputQueue());
+				return null;
+			}
+		});
+		try {
+			parseResponse(getEsbMessage(getOutputQueue()));
+		} catch (ServiceException e) {
+			assertContains("UnmarshalException", e.getMessage());
+			return;
+		}
+		fail();
+	}
+
+	private CreateNonresidentRequest createRequest(boolean sansPrenom) {
+		final CreateNonresidentRequest request = new CreateNonresidentRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setCategory(NaturalPersonCategory.SWISS);
+		request.setDateOfBirth(new Date(1980,1,1));
+		request.setFirstName(sansPrenom ? null : "Pala");
+		request.setGender(Sex.MALE);
+		request.setLastName("Nabit");
+		request.setSocialNumber(7561212121212L);
+		return request;
+	}
+
+
+
 }

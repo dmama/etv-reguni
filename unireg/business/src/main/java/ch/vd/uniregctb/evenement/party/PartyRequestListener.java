@@ -4,6 +4,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.bind.UnmarshalException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -42,6 +43,7 @@ import ch.vd.unireg.xml.event.party.v1.Request;
 import ch.vd.unireg.xml.event.party.v1.Response;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
+import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
@@ -87,19 +89,22 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 
 	private void onMessage(EsbMessage message) throws Exception {
 
-		// on décode la requête
-		final Request request = parse(message.getBodyAsSource());
-
-		LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
-
-		// on traite la requête
 		RequestHandlerResult result;
 		try {
+			// on décode la requête
+			final Request request = parse(message.getBodyAsSource());
+			LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
+			// on traite la requête
 			result = handle(request);
 		}
 		catch (ServiceException e) {
 			final ExceptionResponse r = new ExceptionResponse();
 			r.setExceptionInfo(e.getInfo());
+			result = new RequestHandlerResult(r);
+		} catch (UnmarshalException e) {
+			String msg = String.format("UnmarshalException raised in Unireg while parsing message {businessId: %s}", message.getBusinessId());
+			LOGGER.error(msg, e);
+			final ExceptionResponse r = new ExceptionResponse(new TechnicalExceptionInfo(msg, null));
 			result = new RequestHandlerResult(r);
 		}
 
