@@ -36,7 +36,7 @@
 				<tbody>
 					<unireg:nextRowClass reset="1"/>
 					<tr class="<unireg:nextRowClass/>">
-						<td><fmt:message key="label.info.service.civil"/> (<c:out value="${serviceCivilName}"/>) :</td>
+						<td><fmt:message key="label.info.service.civil"/> :</td>
 						<td id="serviceCivilStatus"><img src="<c:url value="/images/loading.gif"/>" /></td>
 					</tr>
 					<tr class="<unireg:nextRowClass/>">

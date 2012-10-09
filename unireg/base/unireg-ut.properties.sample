@@ -69,9 +69,6 @@ testprop.jms.queue.evtCivilEch=unireg.test.evtRegCivilEch-${testprop.jdbc.userna
 # Configuration d'Unireg
 #
 
-# Type de service civil (regpp ou rcpers)
-testprop.service.civil.source=rcpers
-
 # Hibernate
 testprop.hibernate.hbm2ddl.mode=update
 

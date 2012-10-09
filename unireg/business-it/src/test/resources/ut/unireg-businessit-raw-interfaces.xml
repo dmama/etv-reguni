@@ -4,23 +4,13 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilServiceHost" class="ch.vd.unireg.interfaces.civil.host.ServiceCivilServiceHostInterfaces">
-		<property name="serviceCivil" ref="_serviceCivil" />
-	</bean>
-
 	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
 		<property name="client" ref="rcPersClient" />
 		<property name="infraService" ref="serviceInfrastructureRaw"/>
 	</bean>
 
-	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.ServiceCivilMarshaller">
-		<property name="modeHelper" ref="uniregModeHelper"/>
-		<property name="regpp" ref="serviceCivilServiceHost" />
-		<property name="rcpers" ref="serviceCivilRcPers" />
-	</bean>
-
 	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceMarshaller" />
+		<property name="target" ref="serviceCivilRcPers" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 

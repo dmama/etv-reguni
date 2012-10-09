@@ -46,7 +46,6 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
@@ -71,7 +70,6 @@ import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
-import ch.vd.uniregctb.identification.individus.IdentificationIndividusNonMigresResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
@@ -79,8 +77,8 @@ import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
-import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
+import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
@@ -128,7 +126,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportDetermDIs" + results.annee;
-		final String description = String.format("Rapport du job de détermination des DIs à émettre pour l'année %d. Date de traitement = %s", results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String description = String.format("Rapport du job de détermination des DIs à émettre pour l'année %d. Date de traitement = %s", results.annee, RegDateHelper.dateToDisplayString(
+				results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -178,7 +177,7 @@ public class RapportServiceImpl implements RapportService {
 
 		final String nom = "RapportEnvoiAnnexeImmeuble" + results.annee;
 		final String description = String.format("Rapport d'exécution du job d'envoi des annexes immeubles en masse pour l'année %d. Date de traitement = %s.",
-				                                 results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement));
+				results.annee, RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -548,7 +547,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "ReinitDoubleGain" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job de réinitialisation des barèmes double-gain. Date de traitement = %s.", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String description = String.format("Rapport d'exécution du job de réinitialisation des barèmes double-gain. Date de traitement = %s.",
+				RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -1018,28 +1018,6 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
 					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
-					document.write(results, nom, description, dateGeneration, os, status);
-				}
-			});
-		}
-		catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public IdentificationIndividusNonMigresRapport generateRapport(final IdentificationIndividusNonMigresResults results, StatusManager s) {
-		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
-
-		final String nom = "RapportIdentIndividusNonMigres";
-		final String description = "Rapport d'exécution du job d'identification d'individus non migrés.";
-		final Date dateGeneration = DateHelper.getCurrentDate();
-
-		try {
-			return docService.newDoc(IdentificationIndividusNonMigresRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<IdentificationIndividusNonMigresRapport>() {
-				@Override
-				public void writeDoc(IdentificationIndividusNonMigresRapport doc, OutputStream os) throws Exception {
-					final PdfIdentIndividusNonMigresRapport document = new PdfIdentIndividusNonMigresRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

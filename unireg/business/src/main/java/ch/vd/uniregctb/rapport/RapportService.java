@@ -37,7 +37,6 @@ import ch.vd.uniregctb.document.EnvoiSommationsDIsRapport;
 import ch.vd.uniregctb.document.ExclureContribuablesEnvoiRapport;
 import ch.vd.uniregctb.document.ExtractionDonneesRptRapport;
 import ch.vd.uniregctb.document.FusionDeCommunesRapport;
-import ch.vd.uniregctb.document.IdentificationIndividusNonMigresRapport;
 import ch.vd.uniregctb.document.IdentifierContribuableRapport;
 import ch.vd.uniregctb.document.ImportCodesSegmentRapport;
 import ch.vd.uniregctb.document.ImportImmeublesRapport;
@@ -62,15 +61,14 @@ import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
-import ch.vd.uniregctb.identification.individus.IdentificationIndividusNonMigresResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
 import ch.vd.uniregctb.listes.assujettis.ListeAssujettisResults;
 import ch.vd.uniregctb.listes.listesnominatives.ListesNominativesResults;
 import ch.vd.uniregctb.listes.suisseoupermiscresident.ListeContribuablesResidentsSansForVaudoisResults;
 import ch.vd.uniregctb.metier.ComparerForFiscalEtCommuneResults;
 import ch.vd.uniregctb.metier.FusionDeCommunesResults;
-import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
+import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
@@ -426,6 +424,4 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ImportImmeublesRapport generateRapport(ImportImmeublesResults results, StatusManager status);
-
-	IdentificationIndividusNonMigresRapport generateRapport(IdentificationIndividusNonMigresResults results, StatusManager statusManager);
 }

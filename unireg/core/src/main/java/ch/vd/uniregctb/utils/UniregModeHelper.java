@@ -19,7 +19,6 @@ public class UniregModeHelper implements InitializingBean {
 	private static boolean testMode = false;
 	private static boolean standalone = false;
 	private static String environnement;
-	private static String serviceCivilSource;
 
 	/**
 	 * @return true si la efacture est activée
@@ -44,15 +43,6 @@ public class UniregModeHelper implements InitializingBean {
 
 	public static String getEnvironnement() {
 		return environnement;
-	}
-
-	public String getServiceCivilSource() {
-		return serviceCivilSource;
-	}
-
-	@SuppressWarnings("UnusedDeclaration")
-	public void setServiceCivilSource(String source) {
-		UniregModeHelper.serviceCivilSource = source;
 	}
 
 	public void setTestMode(String v) {

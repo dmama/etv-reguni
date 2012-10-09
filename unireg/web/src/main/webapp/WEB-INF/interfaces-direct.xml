@@ -29,25 +29,14 @@
 	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.service.ServiceCivilLoggerImpl"/>
 	<alias alias="serviceCivilInterceptor" name="serviceCivilLogger"/>
 
-	<bean id="serviceCivilServiceHost" class="ch.vd.unireg.interfaces.civil.host.ServiceCivilServiceHostInterfaces">
-		<property name="serviceCivil" ref="_serviceCivil" />
-		<property name="interceptor" ref="serviceCivilInterceptor"/>
-	</bean>
-
 	<bean id="serviceCivilRcPers" class="ch.vd.unireg.interfaces.civil.rcpers.ServiceCivilRCPers">
 		<property name="client" ref="rcPersClient" />
 		<property name="infraService" ref="serviceInfrastructureRaw"/>
 		<property name="interceptor" ref="serviceCivilInterceptor"/>
 	</bean>
 
-	<bean id="serviceCivilServiceMarshaller" class="ch.vd.unireg.interfaces.civil.ServiceCivilMarshaller">
-		<property name="modeHelper" ref="uniregModeHelper"/>
-		<property name="regpp" ref="serviceCivilServiceHost" />
-		<property name="rcpers" ref="serviceCivilRcPers" />
-	</bean>
-
 	<bean id="serviceCivilServiceTracing" class="ch.vd.unireg.interfaces.civil.ServiceCivilTracing">
-		<property name="target" ref="serviceCivilServiceMarshaller" />
+		<property name="target" ref="serviceCivilRcPers" />
 		<property name="statsService" ref="statsService" />
 	</bean>
 
@@ -101,17 +90,6 @@
 		<property name="lookupHomeOnStartup" value="false"/>
 		<property name="refreshHomeOnConnectFailure" value="true"/>
 		<property name="businessInterface" value="ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal"/>
-		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
-	</bean>
-
-	<!-- Bean client serviceCivil -->
-	<bean name="_serviceCivil" class="${host-interfaces.ejb-proxy-class}">
-		<property name="jndiName" value="ejb/ch.vd.registre.civil.service.ServiceCivil-${host-interfaces.version-short}"/>
-		<property name="cacheSessionBean" value="${extprop.host-interfaces.cacheSessionBean}"/>
-		<property name="resourceRef" value="false"/>
-		<property name="lookupHomeOnStartup" value="false"/>
-		<property name="refreshHomeOnConnectFailure" value="true"/>
-		<property name="businessInterface" value="ch.vd.registre.civil.service.ServiceCivil"/>
 		<property name="jndiTemplate" ref="ejbJndiTemplate"/>
 	</bean>
 

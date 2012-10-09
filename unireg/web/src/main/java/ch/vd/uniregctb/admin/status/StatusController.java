@@ -17,7 +17,6 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
-import ch.vd.uniregctb.utils.UniregModeHelper;
 
 /**
  * Ce contrôleur affiche des informations sur le status de l'application. Il est donc en read-only.
@@ -33,7 +32,6 @@ public class StatusController {
 	private GlobalTiersSearcher globalSearcher;
 	private CacheManager cacheManager;
 	private StatsService statsService;
-	private UniregModeHelper modeHelper;
 
 	private ServiceChecker serviceCivilChecker;
 	private ServiceChecker serviceInfraChecker;
@@ -58,11 +56,6 @@ public class StatusController {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setStatsService(StatsService statsService) {
 		this.statsService = statsService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setModeHelper(UniregModeHelper modeHelper) {
-		this.modeHelper = modeHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -93,7 +86,6 @@ public class StatusController {
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)
 	@RequestMapping(value = "/admin/status.do", method = RequestMethod.GET)
 	public String status(Model model) {
-		model.addAttribute("serviceCivilName", modeHelper.getServiceCivilSource());
 		model.addAttribute("indexCount", getIndexCount());
 		model.addAttribute("tiersCount", getTiersCount());
 		model.addAttribute("cacheStatus", getCacheStatus());
