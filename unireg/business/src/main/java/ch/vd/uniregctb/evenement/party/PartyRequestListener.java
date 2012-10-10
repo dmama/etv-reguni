@@ -101,8 +101,9 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 			final ExceptionResponse r = new ExceptionResponse();
 			r.setExceptionInfo(e.getInfo());
 			result = new RequestHandlerResult(r);
-		} catch (UnmarshalException e) {
-			String msg = String.format("UnmarshalException raised in Unireg while parsing message {businessId: %s}", message.getBusinessId());
+		}
+		catch (UnmarshalException e) {
+			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not valid", message.getBusinessId());
 			LOGGER.error(msg, e);
 			final ExceptionResponse r = new ExceptionResponse(new TechnicalExceptionInfo(msg, null));
 			result = new RequestHandlerResult(r);
