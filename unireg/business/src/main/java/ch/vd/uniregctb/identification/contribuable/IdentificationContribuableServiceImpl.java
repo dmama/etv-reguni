@@ -784,7 +784,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 				if (Demande.ModeIdentificationType.SANS_MANUEL == demande.getModeIdentification()) {
 					String contenuMessage = "Aucun contribuable n’a été trouvé avec l’identification automatique et l’identification manuelle n’a pas été demandée";
-					Erreur erreur = new Erreur(TypeErreur.METIER, "01", contenuMessage);
+					Erreur erreur = new Erreur(TypeErreur.METIER, IdentificationContribuable.ErreurMessage.AUCUNE_CORRESSPONDANCE.getCode(), contenuMessage);
 					nonIdentifie(message, erreur);
 
 				}
