@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +26,6 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @param typeDemande
 	 * @return
 	 */
-
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                             boolean nonTraiteAndSuspendu, @Nullable TypeDemande typeDemande);
 
@@ -39,110 +39,37 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @param typeDemande
 	 * @return
 	 */
-
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
 	                 @Nullable TypeDemande typeDemande);
 
 
 	/**
-	 * Récupère la liste des types de message quel que soit l'etat
-	 *
-	 * @return
+	 * @return une structure de données qui permet de savoir quels sont les types de messages utilisés par type de demande et par etat
 	 */
-
-	public List<String> getTypesMessage();
-
+	public Map<TypeDemande, Map<IdentificationContribuable.Etat, List<String>>> getTypesMessages();
 
 	/**
-	 * Récupère la liste des types de message avec un état non traité
-	 *
-	 * @return
-	 * @param typeDemande
+	 * @return la liste des émetteurs par etat de la demande d'identification
 	 */
-
-	public List<String> getTypesMessageEtatsNonTraites(@Nullable TypeDemande typeDemande);
+	public Map<IdentificationContribuable.Etat, List<String>> getEmetteursIds();
 
 	/**
-	 * Récupère la liste des types de message
-	 *
-	 * @return
-	 * @param typeDemande
+	 * @return la liste des émetteurs par état de la demande d'identification
 	 */
-
-	public List<String> getTypesMessageEtatsTraites(@Nullable TypeDemande typeDemande);
-
+	public Map<IdentificationContribuable.Etat, List<Integer>> getPeriodesFiscales();
 
 	/**
-	 * Récupère la liste des émetteurs
-	 *
-	 * @return
-	 */
-	public List<String> getEmetteursId();
-
-	/**
-	 * Récupère la liste des émetteurs pour les messages non traités
-	 *
-	 * @return
-	 */
-	public List<String> getEmetteursIdEtatsNonTraites();
-
-	/**
-	 * Récupère la liste des émetteurs pour les messages traités
-	 *
-	 * @return
-	 */
-	public List<Integer> getPeriodeEtatsTraites();
-
-
-	/**
-	 * Récupère la liste des périodes quel que soit l'état
-	 *
-	 * @return
-	 */
-	public List<Integer> getPeriodes();
-
-	/**
-	 * Récupère la liste des périodes pour les messages non traités
-	 *
-	 * @return
-	 */
-	public List<Integer> getPeriodeEtatsNonTraites();
-
-	/**
-	 * Récupère la liste des périodes pour les messages traités
-	 *
-	 * @return
-	 */
-	public List<String> getEmetteursIdEtatsTraites();
-
-
-	/**Recupère la lliste des utilisateurs ayant effectué un traitement
-	 *
-	 * @return
+	 * @return la liste des utilisateurs ayant effectué un traitement
 	 */
 	public List<String> getTraitementUser();
 
-	/**Retourne la liste des états des messages non traités
-	 *
-	 * @return
+	/**
+	 * @return  la liste des états des messages non traités
 	 */
-	public List<IdentificationContribuable.Etat> getListeEtatsMessagesNonTraites();
+	public Map<IdentificationContribuable.Etat, List<IdentificationContribuable.Etat>> getEtats();
 
-	/**Retourne la liste des états des messages traités
-	 *
-	 * @return
+	/**
+	 * @return la liste des types de priorité des messages non traitées
 	 */
-	public List<IdentificationContribuable.Etat> getListeEtatsMessagesTraites();
-
-
-	/**Retourne la liste des types de priorité des messages non traitées
-	 *
-	 */
-	public List<Demande.PrioriteEmetteur> getListePrioriteMessagesNonTraites();
-
-
-	/**Retourne la liste des types de priorité des messages traitées
-	 *
-	 */
-	public List<Demande.PrioriteEmetteur> getListePrioriteMessagesTraites();
+	public Map<IdentificationContribuable.Etat, List<Demande.PrioriteEmetteur>> getPriorites();
 }

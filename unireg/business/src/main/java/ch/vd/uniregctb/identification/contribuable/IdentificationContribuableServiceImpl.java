@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
@@ -85,7 +86,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private PlatformTransactionManager transactionManager;
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
-	private IdentificationContribuableCache identificationContribuableCache;
+	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
 	private BatchScheduler batchScheduler;
 
 	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
@@ -1411,65 +1412,62 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	@Override
 	public synchronized void updateCriteres() {
-		 IdentificationContribuableCache cache = new IdentificationContribuableCache();
-		cache.setEmetteurIdsNonTraites(getNewValuesForEmetteurIds(false));
-		cache.setEmetteurIdsTraites(getNewValuesForEmetteurIds(true));
-		cache.setPeriodeFiscalesNonTraites(getNewValuesForPeriodesFiscales(false));
-		cache.setPeriodeFiscalesTraites(getNewValuesForPeriodesFiscales(true));
-		cache.setEtatMessageNonTraites(getNewValuesForEtatMessage(false));
-		cache.setEtatMessageTraites(getNewValuesForEtatMessage(true));
+		final IdentificationContribuableCache cache = new IdentificationContribuableCache();
+		fillNewValuesForEmetteurIds(cache);
+		fillNewValuesForPeriodesFiscales(cache);
+		fillNewValuesForEtatsMessages(cache);
+		fillNewValuesForTypesMessages(cache);
 		cache.setListTraitementUsers(getNewValuesForTraitementUsers());
-		updateCacheTypeMessage(cache);
 
 		// pas de besoin de synchronisation parce que l'assignement est atomique en java
 		identificationContribuableCache = cache;
 	}
 
-	private List<String> getNewValuesForEmetteurIds(final boolean isTraite) {
+	private static interface CustomValueFiller<T> {
+		Map<Etat, List<T>> getValuesParEtat(IdentCtbDAO dao);
+		void fillCache(IdentificationContribuableCache cache, Map<Etat, List<T>> values);
+	}
+
+	private <T> void fillValues(IdentificationContribuableCache cache, final CustomValueFiller<T> filler) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
-
-		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-		return template.execute(new TransactionCallback<List<String>>() {
+		final Map<Etat, List<T>> map = template.execute(new TransactionCallback<Map<Etat, List<T>>>() {
 			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getEmetteursIdEtatsTraites();
-				}
-				else {
-					return identCtbDAO.getEmetteursIdEtatsNonTraites();
-				}
+			public Map<Etat, List<T>> doInTransaction(TransactionStatus transactionStatus) {
+				return filler.getValuesParEtat(identCtbDAO);
+			}
+		});
 
+		// assignation des valeurs
+		filler.fillCache(cache, map);
+	}
+
+	private void fillNewValuesForEmetteurIds(IdentificationContribuableCache cache) {
+		fillValues(cache, new CustomValueFiller<String>() {
+			@Override
+			public Map<Etat, List<String>> getValuesParEtat(IdentCtbDAO dao) {
+				return dao.getEmetteursIds();
+			}
+
+			@Override
+			public void fillCache(IdentificationContribuableCache cache, Map<Etat, List<String>> values) {
+				cache.setEmetteursIds(values);
 			}
 		});
 	}
 
-	private void updateCacheTypeMessage(final IdentificationContribuableCache cache) {
-
+	private void fillNewValuesForTypesMessages(final IdentificationContribuableCache cache) {
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 
-		template.execute(new TransactionCallback<Object>() {
+		final Map<TypeDemande, Map<Etat, List<String>>> map = template.execute(new TransactionCallback<Map<TypeDemande, Map<Etat, List<String>>>>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
-
-				for (TypeDemande typeDemande : TypeDemande.values()) {
-					TypeMessageParEtatCache typeMessageParEtatCache = cache.getTypeMessagesParDemandeCache().get(typeDemande);
-					if (typeMessageParEtatCache == null) {
-						typeMessageParEtatCache = new TypeMessageParEtatCache();
-					}
-
-					typeMessageParEtatCache.typeMessageNonTraites = identCtbDAO.getTypesMessageEtatsNonTraites(typeDemande);
-					typeMessageParEtatCache.typeMessageTraites = identCtbDAO.getTypesMessageEtatsTraites(typeDemande);
-
-					cache.getTypeMessagesParDemandeCache().put(typeDemande, typeMessageParEtatCache);
-				}
-
-				cache.setTypeMessageNonTraites(identCtbDAO.getTypesMessageEtatsNonTraites(null));
-				cache.setTypeMessageTraites(identCtbDAO.getTypesMessageEtatsTraites(null));
-				return null;
+			public Map<TypeDemande, Map<Etat, List<String>>> doInTransaction(TransactionStatus status) {
+				return identCtbDAO.getTypesMessages();
 			}
 		});
+
+		cache.setTypesMessages(map);
 	}
 
 	private List<String> getNewValuesForTraitementUsers() {
@@ -1485,90 +1483,43 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		});
 	}
 
-
-	private List<Integer> getNewValuesForPeriodesFiscales(final boolean isTraite) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-
-		return template.execute(new TransactionCallback<List<Integer>>() {
+	private void fillNewValuesForPeriodesFiscales(IdentificationContribuableCache cache) {
+		fillValues(cache, new CustomValueFiller<Integer>() {
 			@Override
-			public List<Integer> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getPeriodeEtatsTraites();
-				}
-				else {
-					return identCtbDAO.getPeriodeEtatsNonTraites();
-				}
+			public Map<Etat, List<Integer>> getValuesParEtat(IdentCtbDAO dao) {
+				return dao.getPeriodesFiscales();
+			}
 
+			@Override
+			public void fillCache(IdentificationContribuableCache cache, Map<Etat, List<Integer>> map) {
+				cache.setPeriodesFiscales(map);
 			}
 		});
 	}
 
-
-	private List<Etat> getNewValuesForEtatMessage(final boolean isTraite) {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
-		// on est appelé dans un thread Quartz -> pas de transaction ouverte par défaut
-
-		return template.execute(new TransactionCallback<List<Etat>>() {
-			@Override
-			public List<Etat> doInTransaction(TransactionStatus status) {
-				if (isTraite) {
-					return identCtbDAO.getListeEtatsMessagesTraites();
-				}
-				else {
-					return identCtbDAO.getListeEtatsMessagesNonTraites();
-				}
-
-			}
-		});
-	}
-
-
-
 	@Override
-	public List<String> getEmetteursId(boolean traite) {
-		if (traite) {
-			return identificationContribuableCache.getEmetteurIdsTraites();
-		}
-		else {
-			return identificationContribuableCache.getEmetteurIdsNonTraites();
-		}
+	public Collection<String> getEmetteursId(IdentificationContribuableEtatFilter filter) {
+		return identificationContribuableCache.getEmetteurIds(filter);
 	}
 
 	@Override
-	public List<String> getTypeMessages(TypeDemande typeDemande, boolean traite) {
+	public Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter) {
+		return identificationContribuableCache.getTypesMessages(filter);
+	}
+
+	@Override
+	public Collection<String> getTypeMessages(TypeDemande typeDemande, IdentificationContribuableEtatFilter filter) {
 		if (typeDemande != null) {
-
-			if (traite) {
-				return identificationContribuableCache.getTypeMessagesParDemandeCache().get(typeDemande).typeMessageTraites;
-			}
-			else {
-				return identificationContribuableCache.getTypeMessagesParDemandeCache().get(typeDemande).typeMessageNonTraites;
-			}
+			return identificationContribuableCache.getTypesMessagesParTypeDemande(typeDemande, filter);
 		}
-		else{
-
-			if (traite) {
-				return identificationContribuableCache.getTypeMessageTraites();
-			}
-			else {
-				return identificationContribuableCache.getTypeMessageNonTraites();
-			}
+		else {
+			return getTypesMessages(filter);
 		}
 	}
 
 	@Override
-	public List<Integer> getPeriodesFiscales(boolean traite) {
-		if (traite) {
-			return identificationContribuableCache.getPeriodeFiscalesTraites();
-		}
-		else {
-			return identificationContribuableCache.getPeriodeFiscalesNonTraites();
-		}
+	public Collection<Integer> getPeriodesFiscales(IdentificationContribuableEtatFilter filter) {
+		return identificationContribuableCache.getPeriodesFiscales(filter);
 	}
 
 	@Override
@@ -1576,14 +1527,23 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		return identificationContribuableCache.getListTraitementUsers();
 	}
 
+	private void fillNewValuesForEtatsMessages(IdentificationContribuableCache cache) {
+		fillValues(cache, new CustomValueFiller<Etat>() {
+			@Override
+			public Map<Etat, List<Etat>> getValuesParEtat(IdentCtbDAO dao) {
+				return dao.getEtats();
+			}
+
+			@Override
+			public void fillCache(IdentificationContribuableCache cache, Map<Etat, List<Etat>> map) {
+				cache.setEtats(map);
+			}
+		});
+	}
+
 	@Override
-	public List<Etat> getListeEtatsMessages(boolean traite) {
-		if (traite) {
-			return identificationContribuableCache.getEtatMessageTraites();
-		}
-		else {
-			return identificationContribuableCache.getEtatMessageNonTraites();
-		}
+	public Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter) {
+		return identificationContribuableCache.getEtats(filter);
 	}
 
 	private String traduireBusinessUser(String user) {
@@ -1593,14 +1553,5 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		}
 
 		return visaUser;
-	}
-
-	public List<String> getEmetteurIdsTraites() {
-		return identificationContribuableCache.getEmetteurIdsTraites();
-	}
-
-
-	public List<String> getEmetteurIdsNonTraites() {
-		return identificationContribuableCache.getEmetteurIdsNonTraites();
 	}
 }

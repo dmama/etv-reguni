@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -138,24 +139,32 @@ public interface IdentificationContribuableService {
 
 	/**
 	 * Récupère les valeurs des id emetteurs
-	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return emetteurs ids
 	 */
-	public List<String> getEmetteursId(boolean traite);
+	public Collection<String> getEmetteursId(IdentificationContribuableEtatFilter filter);
+
+	/**
+	 * Récupère les valeurs des types de messages
+	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
+	 * @return emetteurs ids
+	 */
+	public Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter);
+
 	/**
 	 * Récupère les valeurs des types de messages en fonction des types de demande
 	 * @param typeDemande MELDEWESEN, NCS, IMPOT_SOURCE
-	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return emetteurs ids
 	 */
-	public List<String> getTypeMessages(TypeDemande typeDemande, boolean traite);
+	public Collection<String> getTypeMessages(TypeDemande typeDemande, IdentificationContribuableEtatFilter filter);
 
 	/**
 	 * Récupère les valeurs des Périodes fiscales
-	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return periodes fiscales
 	 */
-	public List<Integer> getPeriodesFiscales(boolean traite);
+	public Collection<Integer> getPeriodesFiscales(IdentificationContribuableEtatFilter filter);
 
 	/**
 	 * Récupère les ids des users ayant traiter des messages
@@ -165,8 +174,8 @@ public interface IdentificationContribuableService {
 
 	/**
 	 * Récupère les états des messages
-	 * @param traite A <b>Vrai</b>si on ne prend en consideration que les messages traites <b>Faux</b> sinon
+	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
 	 * @return liste des états
 	 */
-	public List<Etat> getListeEtatsMessages(boolean traite);
+	public Collection<Etat> getEtats(IdentificationContribuableEtatFilter filter);
 }

@@ -141,7 +141,6 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 	@Override
 	protected Map<Integer, String> initMapPeriodeFiscale() {
 		return identificationMapHelper.initMapPeriodeFiscale();
-
 	}
 
 }

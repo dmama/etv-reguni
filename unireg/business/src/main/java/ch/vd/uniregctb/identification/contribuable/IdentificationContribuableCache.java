@@ -1,7 +1,11 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,83 +13,79 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 
 public class IdentificationContribuableCache {
-	private List<String> emetteurIdsNonTraites = new ArrayList<String>();
 
-	private List<Integer> periodeFiscalesNonTraites = new ArrayList<Integer>();
+	private Map<IdentificationContribuableEtatFilter, Collection<String>> emetteursIds;
+	private Map<IdentificationContribuableEtatFilter, Collection<Integer>> periodesFiscales;
+	private Map<IdentificationContribuableEtatFilter, Collection<IdentificationContribuable.Etat>> etats;
 
-	private List<String> emetteurIdsTraites = new ArrayList<String>();
-
-	private List<Integer> periodeFiscalesTraites = new ArrayList<Integer>();
-
-	private List<String> typeMessageNonTraites = new ArrayList<String>();
-
-	private List<String> typeMessageTraites = new ArrayList<String>();
-
-	private Map<TypeDemande, TypeMessageParEtatCache> typeMessagesParDemandeCache = new HashMap<TypeDemande, TypeMessageParEtatCache>();
+	private Map<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>> typesMessagesParTypeDemande = new EnumMap<TypeDemande, Map<IdentificationContribuableEtatFilter, Collection<String>>>(TypeDemande.class);
 
 	private List<String> listTraitementUsers = new ArrayList<String>();
 
-	private List<IdentificationContribuable.Etat> etatMessageNonTraites = new ArrayList<IdentificationContribuable.Etat>();
-
-	private List<IdentificationContribuable.Etat> etatMessageTraites = new ArrayList<IdentificationContribuable.Etat>();
-
-
-
-
 	public IdentificationContribuableCache() {
-
+		emetteursIds = Collections.emptyMap();
+		periodesFiscales = Collections.emptyMap();
+		etats = Collections.emptyMap();
 	}
 
-	public List<String> getEmetteurIdsNonTraites() {
-		return emetteurIdsNonTraites;
+	private static <T> Collection<T> findValues(Map<IdentificationContribuableEtatFilter, Collection<T>> all, IdentificationContribuableEtatFilter filter) {
+		final Collection<T> col = all.get(filter);
+		return col != null ? col : Collections.<T>emptyList();
 	}
 
-	public void setEmetteurIdsNonTraites(List<String> emetteurIdsNonTraites) {
-		this.emetteurIdsNonTraites = emetteurIdsNonTraites;
+	private static <T> Map<IdentificationContribuableEtatFilter, Collection<T>> buildDataStructureFromMap(Map<IdentificationContribuable.Etat, List<T>> map) {
+		final Map<IdentificationContribuableEtatFilter, Collection<T>> ds = new EnumMap<IdentificationContribuableEtatFilter, Collection<T>>(IdentificationContribuableEtatFilter.class);
+		for (IdentificationContribuableEtatFilter filter : IdentificationContribuableEtatFilter.values()) {
+
+			// récupération des valeurs associées à tous les états filtrés
+			final Collection<T> collectionToFill = new LinkedList<T>();
+			for (Map.Entry<IdentificationContribuable.Etat, List<T>> entry : map.entrySet()) {
+				final IdentificationContribuable.Etat etat = entry.getKey();
+				if (filter.isIncluded(etat)) {
+					collectionToFill.addAll(entry.getValue());
+				}
+			}
+
+			// suppression des doublons et assignation à la collection
+			ds.put(filter, new HashSet<T>(collectionToFill));
+		}
+
+		return ds;
 	}
 
-	public List<Integer> getPeriodeFiscalesNonTraites() {
-		return periodeFiscalesNonTraites;
+	public void setEmetteursIds(Map<IdentificationContribuable.Etat, List<String>> emetteursIds) {
+		this.emetteursIds = buildDataStructureFromMap(emetteursIds);
 	}
 
-	public void setPeriodeFiscalesNonTraites(List<Integer> periodeFiscalesNonTraites) {
-		this.periodeFiscalesNonTraites = periodeFiscalesNonTraites;
+	public Collection<String> getEmetteurIds(IdentificationContribuableEtatFilter filter) {
+		return findValues(emetteursIds, filter);
 	}
 
-	public List<String> getEmetteurIdsTraites() {
-		return emetteurIdsTraites;
+	public void setPeriodesFiscales(Map<IdentificationContribuable.Etat, List<Integer>> periodesFiscales) {
+		this.periodesFiscales = buildDataStructureFromMap(periodesFiscales);
 	}
 
-	public void setEmetteurIdsTraites(List<String> emetteurIdsTraites) {
-		this.emetteurIdsTraites = emetteurIdsTraites;
+	public Collection<Integer> getPeriodesFiscales(IdentificationContribuableEtatFilter filter) {
+		return findValues(periodesFiscales, filter);
 	}
 
-	public List<Integer> getPeriodeFiscalesTraites() {
-		return periodeFiscalesTraites;
+	public void setTypesMessages(Map<TypeDemande, Map<IdentificationContribuable.Etat, List<String>>> typesMessages) {
+		for (Map.Entry<TypeDemande, Map<IdentificationContribuable.Etat, List<String>>> entry : typesMessages.entrySet()) {
+			this.typesMessagesParTypeDemande.put(entry.getKey(), buildDataStructureFromMap(entry.getValue()));
+		}
 	}
 
-	public void setPeriodeFiscalesTraites(List<Integer> periodeFiscalesTraites) {
-		this.periodeFiscalesTraites = periodeFiscalesTraites;
+	public Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter) {
+		final List<String> accumulator = new LinkedList<String>();
+		for (TypeDemande typeDemande : TypeDemande.values()) {
+			accumulator.addAll(getTypesMessagesParTypeDemande(typeDemande, filter));
+		}
+		return new HashSet<String>(accumulator);
 	}
 
-	public List<String> getTypeMessageNonTraites() {
-		return typeMessageNonTraites;
-	}
-
-	public void setTypeMessageNonTraites(List<String> typeMessageNonTraites) {
-		this.typeMessageNonTraites = typeMessageNonTraites;
-	}
-
-	public List<String> getTypeMessageTraites() {
-		return typeMessageTraites;
-	}
-
-	public void setTypeMessageTraites(List<String> typeMessageTraites) {
-		this.typeMessageTraites = typeMessageTraites;
-	}
-
-	public Map<TypeDemande, TypeMessageParEtatCache> getTypeMessagesParDemandeCache() {
-		return typeMessagesParDemandeCache;
+	public Collection<String> getTypesMessagesParTypeDemande(TypeDemande typeDemande, IdentificationContribuableEtatFilter filter) {
+		final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(typeDemande);
+		return typesMessages != null ? findValues(typesMessages, filter) : Collections.<String>emptyList();
 	}
 
 	public List<String> getListTraitementUsers() {
@@ -96,19 +96,11 @@ public class IdentificationContribuableCache {
 		this.listTraitementUsers = listTraitementUsers;
 	}
 
-	public List<IdentificationContribuable.Etat> getEtatMessageNonTraites() {
-		return etatMessageNonTraites;
+	public void setEtats(Map<IdentificationContribuable.Etat, List<IdentificationContribuable.Etat>> map) {
+		this.etats = buildDataStructureFromMap(map);
 	}
 
-	public void setEtatMessageNonTraites(List<IdentificationContribuable.Etat> etatMessageNonTraites) {
-		this.etatMessageNonTraites = etatMessageNonTraites;
-	}
-
-	public List<IdentificationContribuable.Etat> getEtatMessageTraites() {
-		return etatMessageTraites;
-	}
-
-	public void setEtatMessageTraites(List<IdentificationContribuable.Etat> etatMessageTraites) {
-		this.etatMessageTraites = etatMessageTraites;
+	public Collection<IdentificationContribuable.Etat> getEtats(IdentificationContribuableEtatFilter filter) {
+		return findValues(etats, filter);
 	}
 }

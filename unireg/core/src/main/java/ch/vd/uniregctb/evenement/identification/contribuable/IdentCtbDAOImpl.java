@@ -4,7 +4,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.EnumMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,9 +31,6 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	private static final Logger LOGGER = Logger.getLogger(IdentCtbDAOImpl.class);
 
 	private static final String TOUS = "TOUS";
-
-	private static final String clauseMessagesNonTraites = " where identificationContribuable.etat in('A_EXPERTISER','A_EXPERTISER_SUSPENDU','A_TRAITER_MANUELLEMENT','A_TRAITER_MAN_SUSPENDU') ";
-	private static final String clauseMessagesTraitees = " where identificationContribuable.etat in('TRAITE_AUTOMATIQUEMENT','NON_IDENTIFIE','TRAITE_MANUELLEMENT','TRAITE_MAN_EXPERT')";
 
 	public IdentCtbDAOImpl() {
 		super(IdentificationContribuable.class);
@@ -132,87 +133,111 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return count;
 	}
 
-
-	@Override
-	public List<String> getTypesMessageEtatsNonTraites(@Nullable TypeDemande typeDemande) {
-		String query = " select distinct identificationContribuable.demande.typeMessage" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
-		if (typeDemande != null) {
-			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + '\'';
-		}
-		return getHibernateTemplate().find(query);
+	public Map<TypeDemande, Map<Etat, List<String>>> getTypesMessages() {
+		final String hql = "select distinct i.demande.typeMessage, i.demande.typeDemande, i.etat from IdentificationContribuable i";
+		return getHibernateTemplate().executeWithNewSession(new HibernateCallback<Map<TypeDemande, Map<Etat, List<String>>>>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public Map<TypeDemande, Map<Etat, List<String>>> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(hql);
+				final Map<TypeDemande, Map<Etat, List<String>>> globalMap = new EnumMap<TypeDemande, Map<Etat, List<String>>>(TypeDemande.class);
+				final Iterator<Object[]> iter = query.iterate();
+				while (iter.hasNext()) {
+					final Object[] row = iter.next();
+					final String typeMessage = (String) row[0];
+					final TypeDemande typeDemande = (TypeDemande) row[1];
+					final Etat etat = (Etat) row[2];
+					Map<Etat, List<String>> mapPourTypeDonne = globalMap.get(typeDemande);
+					if (mapPourTypeDonne == null) {
+						mapPourTypeDonne = new EnumMap<Etat, List<String>>(Etat.class);
+						globalMap.put(typeDemande, mapPourTypeDonne);
+					}
+					List<String> typesMessages = mapPourTypeDonne.get(etat);
+					if (typesMessages == null) {
+						typesMessages = new LinkedList<String>();
+						mapPourTypeDonne.put(etat, typesMessages);
+					}
+					typesMessages.add(typeMessage);
+				}
+				return globalMap;
+			}
+		});
 	}
 
-	@Override
-	public List<String> getTypesMessageEtatsTraites(@Nullable TypeDemande typeDemande) {
-		String query = " select distinct identificationContribuable.demande.typeMessage" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
-		if (typeDemande != null) {
-			query = query + "and identificationContribuable.demande.typeDemande ='" + typeDemande.name() + '\'';
-		}
-		return getHibernateTemplate().find(query);
+	private static interface Unmarshaller<T> {
+		T buildValue(Object o);
 	}
 
+	private static final Unmarshaller<Integer> INTEGER_UNMARSHALLER = new Unmarshaller<Integer>() {
+		@Override
+		public Integer buildValue(Object o) {
+			return ((Number) o).intValue();
+		}
+	};
+
+	private static final Unmarshaller<String> STRING_UNMARSHALLER = new Unmarshaller<String>() {
+		@Override
+		public String buildValue(Object o) {
+			return (String) o;
+		}
+	};
+
+	private static final Unmarshaller<Etat> ETAT_UNMARSHALLER = new Unmarshaller<Etat>() {
+		@Override
+		public Etat buildValue(Object o) {
+			return (Etat) o;
+		}
+	};
+
+	private static final Unmarshaller<PrioriteEmetteur> PRIORITE_UNMARSHALLER = new Unmarshaller<PrioriteEmetteur>() {
+		@Override
+		public PrioriteEmetteur buildValue(Object o) {
+			return (PrioriteEmetteur) o;
+		}
+	};
 
 	/**
-	 * Récupère la liste des types de message
-	 *
-	 * @return
+	 * Récupère la liste des valeurs d'un champ particulier par état de la demande d'identification
+	 * @param champHql le nom du champ à récupérer (ex : i.demande.typeMessage)
+	 * @param unmarshaller transformateur d'objet en valeur typée
+	 * @param <T> le type du champ spécifique
+	 * @return la map de répartition trouvée
 	 */
+	private <T> Map<Etat, List<T>> getDonneesParEtat(String champHql, final Unmarshaller<T> unmarshaller) {
+		final String hql = "select distinct " + champHql + ", i.etat from IdentificationContribuable i";
+		return getHibernateTemplate().executeWithNewSession(new HibernateCallback<Map<Etat, List<T>>>() {
+			@SuppressWarnings("unchecked")
+			@Override
+			public Map<Etat, List<T>> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createQuery(hql);
+				final Map<Etat, List<T>> map = new EnumMap<Etat, List<T>>(Etat.class);
+				final Iterator<Object[]> iterator = query.iterate();
+				while (iterator.hasNext()) {
+					final Object[] row = iterator.next();
+					final T value = unmarshaller.buildValue(row[0]);
+					final Etat etat = (Etat) row[1];
+					List<T> ids = map.get(etat);
+					if (ids == null) {
+						ids = new LinkedList<T>();
+						map.put(etat, ids);
+					}
+					ids.add(value);
+				}
+				return map;
+			}
+		});
+	}
+
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<String> getTypesMessage() {
-		String query = " select distinct identificationContribuable.demande.typeMessage from IdentificationContribuable identificationContribuable";
-		return getHibernateTemplate().find(query);
+	public Map<Etat, List<String>> getEmetteursIds() {
+		return getDonneesParEtat("i.demande.emetteurId", STRING_UNMARSHALLER);
 	}
 
-	/**
-	 * Récupère la liste des émetteurs
-	 *
-	 * @return
-	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<String> getEmetteursId() {
-		String query = " select distinct identificationContribuable.demande.emetteurId from IdentificationContribuable identificationContribuable";
-		return getHibernateTemplate().find(query);
-	}
-
-	@Override
-	public List<String> getEmetteursIdEtatsNonTraites() {
-		String query = " select distinct identificationContribuable.demande.emetteurId" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
-		return getHibernateTemplate().find(query);
-	}
-
-
-	@Override
-	public List<String> getEmetteursIdEtatsTraites() {
-		String query = " select distinct identificationContribuable.demande.emetteurId" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
-		return getHibernateTemplate().find(query);
-	}
-
-	@Override
-	public List<Integer> getPeriodeEtatsTraites() {
-		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
-		return getHibernateTemplate().find(query);
-	}
-
-	@Override
-	public List<Integer> getPeriodes() {
-		String query = " select distinct identificationContribuable.demande.periodeFiscale from IdentificationContribuable identificationContribuable";
-		return getHibernateTemplate().find(query);
-	}
-
-	@Override
-	public List<Integer> getPeriodeEtatsNonTraites() {
-
-		String query = " select distinct identificationContribuable.demande.periodeFiscale" +
-				" from IdentificationContribuable identificationContribuable" +
-				clauseMessagesNonTraites;
-		return getHibernateTemplate().find(query);
+	public Map<Etat, List<Integer>> getPeriodesFiscales() {
+		return getDonneesParEtat("i.demande.periodeFiscale", INTEGER_UNMARSHALLER);
 	}
 
 	@Override
@@ -224,39 +249,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 	@Override
-	public List<Etat> getListeEtatsMessagesNonTraites() {
-		String query = " select distinct identificationContribuable.etat" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
-		return getHibernateTemplate().find(query);
+	public Map<Etat, List<Etat>> getEtats() {
+		return getDonneesParEtat("i.etat", ETAT_UNMARSHALLER);
 	}
 
 	@Override
-	public List<Etat> getListeEtatsMessagesTraites() {
-		String query = " select distinct identificationContribuable.etat" +
-				" from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
-		return getHibernateTemplate().find(query);
+	public Map<IdentificationContribuable.Etat, List<Demande.PrioriteEmetteur>> getPriorites() {
+		return getDonneesParEtat("i.demande.prioriteEmetteur", PRIORITE_UNMARSHALLER);
 	}
-
-	@Override
-	public List<PrioriteEmetteur> getListePrioriteMessagesNonTraites() {
-		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-				"from IdentificationContribuable identificationContribuable" + clauseMessagesNonTraites;
-		return getHibernateTemplate().find(query);
-	}
-
-	@Override
-	public List<PrioriteEmetteur> getListePrioriteMessagesTraites() {
-		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-				"from IdentificationContribuable identificationContribuable" + clauseMessagesTraitees;
-		return getHibernateTemplate().find(query);
-	}
-
-	public List<PrioriteEmetteur> getListePriorite() {
-		String query = " select distinct identificationContribuable.demande.prioriteEmetteur " +
-				"from IdentificationContribuable identificationContribuable";
-		return getHibernateTemplate().find(query);
-	}
-
 
 	/**
 	 * Construit la clause Where
@@ -608,6 +608,4 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		return queryWhere;
 	}
-
-
 }

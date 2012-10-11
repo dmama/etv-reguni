@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.identification.contribuable;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumMap;
@@ -11,41 +12,23 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.jetbrains.annotations.Nullable;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
 import ch.vd.uniregctb.common.CommonMapHelper;
 import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 
-	private IdentCtbDAO identCtbDAO;
-
 	private IdentificationContribuableService identCtbService;
-
-
-	private Map<PrioriteEmetteur, String> mapPrioriteEmetteur;
-
-	private Map<String, String> mapTypeMessage;
 
 	private Map<ErreurMessage, String> mapErreurMessage;
 
-	private Map<String, String> mapEmetteur;
-
-	private Map<String, String> mapUser;
-
 	private Map<Etat, String> mapEtatMessage;
-
-	private PlatformTransactionManager transactionManager;
 
 	/**
 	 * Le nom de l'attribut utilise pour la liste des types d'identification
@@ -83,18 +66,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public static final String PERIODE_FISCALE_MAP_NAME = "periodesFiscales";
 
-	public void setIdentCtbDAO(IdentCtbDAO identCtbDAO) {
-		this.identCtbDAO = identCtbDAO;
-	}
-
 	public void setIdentCtbService(IdentificationContribuableService identCtbService) {
 		this.identCtbService = identCtbService;
 	}
-
-	public void setTransactionManager(PlatformTransactionManager transactionManager) {
-		this.transactionManager = transactionManager;
-	}
-
 
 	/**
 	 * Initialise la map des priorités émetteurs
@@ -132,17 +106,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatEnCoursMessage() {
-
 		final Map<Etat, String> etatsMessages = initMapEtatMessage(false);
-
-		if (etatsMessages.containsKey(Etat.A_EXPERTISER_SUSPENDU)) {
-			etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
-		}
-
-		if (etatsMessages.containsKey(Etat.A_TRAITER_MAN_SUSPENDU)) {
-			etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
-		}
-
+		etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
+		etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
 		return etatsMessages;
 	}
 
@@ -164,10 +130,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une map
 	 */
 	public Map<Etat, String> initMapEtatMessage(final boolean isTraite) {
-
-
 		final Map<Etat, String> mapEtat = new EnumMap<Etat, String>(Etat.class);
-		final List<Etat> typesMessage = identCtbService.getListeEtatsMessages(isTraite);
+		final Collection<Etat> typesMessage = identCtbService.getEtats(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 
 		for (Etat etat : typesMessage) {
 			String libelleEtat = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyEtatMessage + etat);
@@ -183,22 +147,12 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapTypeMessage() {
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final List<String> typesMessage = template.execute(new TransactionCallback<List<String>>() {
-			@Override
-			public List<String> doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getTypesMessage();
-			}
-		});
-
+		final Collection<String> typesMessage = identCtbService.getTypesMessages(IdentificationContribuableEtatFilter.TOUS);
 		for (String typeMessage : typesMessage) {
-			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
+			final String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
-
 		return sortMapAccordingToValues(mapMessage);
 	}
 
@@ -210,15 +164,12 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapTypeMessage(final boolean isTraite, @Nullable final TypeDemande typeDemande) {
-
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final List<String> typesMessage = identCtbService.getTypeMessages(typeDemande, isTraite);
-
+		final Collection<String> typesMessage = identCtbService.getTypeMessages(typeDemande, isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 		for (String typeMessage : typesMessage) {
-			String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
+			final String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
-
 		return sortMapAccordingToValues(mapMessage);
 	}
 
@@ -268,7 +219,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
 		final Map<String, String> allEmetteur = new TreeMap<String, String>(new StringComparator(false, false, false, null));
-		final List<String> emetteurs = identCtbService.getEmetteursId(isTraite);
+		final Collection<String> emetteurs = identCtbService.getEmetteursId(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 
 		for (String emetteur : emetteurs) {
 			allEmetteur.put(emetteur, emetteur);
@@ -297,7 +248,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale(final boolean isTraite) {
 		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
-		final List<Integer> periodes = identCtbService.getPeriodesFiscales(isTraite);
+		final Collection<Integer> periodes = identCtbService.getPeriodesFiscales(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 
 		for (Integer periode : periodes) {
 			allPeriodeFiscale.put(periode, Integer.toString(periode));
@@ -314,14 +265,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Integer, String> initMapPeriodeFiscale() {
 		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.setReadOnly(true);
-		final List<Integer> periodes = template.execute(new TransactionCallback<List<Integer>>() {
-			@Override
-			public List<Integer> doInTransaction(TransactionStatus status) {
-				return identCtbDAO.getPeriodes();
-			}
-		});
+		final Collection<Integer> periodes = identCtbService.getPeriodesFiscales(IdentificationContribuableEtatFilter.TOUS);
 
 		for (Integer periode : periodes) {
 			allPeriodeFiscale.put(periode, Integer.toString(periode));
@@ -332,7 +276,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 	public Map<String, Object> getMaps(final boolean isTraite) {
 		final Map<String, Object> data = new HashMap<String, Object>(7);
-		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale());
+		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale(isTraite));
 		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(isTraite));
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
 		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage());
