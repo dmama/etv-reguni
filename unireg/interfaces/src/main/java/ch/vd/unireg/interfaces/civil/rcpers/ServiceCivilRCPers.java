@@ -25,6 +25,8 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.IndividuRCPers;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.NationaliteRCPers;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.wsclient.rcpers.RcPersClient;
 import ch.vd.uniregctb.common.BatchIterator;
@@ -221,6 +223,28 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			return new IndividuApresEvenement(individu, dateEvt, type, action, refMessageId);
 		}
 		return null;
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+
+		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), date, false);
+		if (list == null || list.getNumberOfResults().intValue() == 0) {
+			return null;
+		}
+
+		if (list.getNumberOfResults().intValue() > 1) {
+			throw new ServiceCivilException("Plusieurs individus trouvés avec le même numéro d'individu = " + noIndividu);
+		}
+
+		Nationalite nationalite = null;
+
+		final Person person = list.getListOfResults().getResult().get(0).getPerson();
+		if (person != null) {
+			nationalite = NationaliteRCPers.get(person, infraService);
+		}
+
+		return nationalite;
 	}
 
 	@Override

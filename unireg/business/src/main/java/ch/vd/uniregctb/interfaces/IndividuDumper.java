@@ -97,7 +97,7 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("enfants=").append(dumpRelationsVersIndividus(individu.getEnfants(), ignoreBugs, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("etatsCivils=").append(dumpEtatsCivils(individu.getEtatsCivils(), depth + 1)).append(", \n");
 		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("nationalites=").append(dumpNationalites(individu.getNationalites(), ignoreSpecific, depth + 1)).append(", \n");
+			s.append(tab(depth + 1)).append("derniereNationalite=").append(IndividuDumper.dumpNationalite(individu.getDerniereNationalite(), ignoreSpecific, depth + 1)).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("noAvs11=").append(dumpAVS11(individu.getNoAVS11(), validateAVS, individu.getDateNaissance(), individu.getSexe() == Sexe.MASCULIN)).append(", \n");
 		s.append(tab(depth + 1)).append("noTechnique=").append(individu.getNoTechnique()).append(", \n");
@@ -240,28 +240,6 @@ public abstract class IndividuDumper {
 		s.append("Origine{\n");
 		s.append(tab(depth + 1)).append("nomLieu=").append(origine.getNomLieu()).append(", \n");
 		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpNationalites(List<Nationalite> list, boolean ignoreSpecific, int depth) {
-		if (list == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("[");
-		boolean first = true;
-		for (Nationalite nationalite : list) {
-			if (first) {
-				first = false;
-			}
-			else {
-				s.append(", ");
-			}
-			s.append(dumpNationalite(nationalite, ignoreSpecific, depth + 1));
-		}
-		s.append("]");
 
 		return s.toString();
 	}

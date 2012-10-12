@@ -46,7 +46,6 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -315,29 +314,16 @@ public class TiersServiceImpl implements TiersService {
 		    throw new IndividuNotFoundException(habitant.getNumeroIndividu());
 	    }
 
-        // nationalité (on ne garde qu'une nationalité au hasard, sachant que si l'une est Suisse, elle a priorité)
-        final Collection<Nationalite> nationalites = individu.getNationalites();
-        if (nationalites != null) {
-            Pays pays = null;
-            for (Nationalite nationalite : nationalites) {
-                if (nationalite.getDateFin() == null) {
-                    if (pays == null) {
-                        pays = nationalite.getPays();
-                    } else if (!pays.isSuisse()) {
-                        pays = nationalite.getPays();
-                    }
-                }
-            }
-            if (pays != null) {
-                habitant.setNumeroOfsNationalite(pays.getNoOFS());
-            } else {
-                habitant.setNumeroOfsNationalite(null);
-            }
-        } else {
-            habitant.setNumeroOfsNationalite(null);
-        }
+	    // nationalité
+	    final Nationalite nationalite = individu.getDerniereNationalite();
+	    if (nationalite != null) {
+		    habitant.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+	    }
+	    else {
+		    habitant.setNumeroOfsNationalite(null);
+	    }
 
-        //permis
+	    //permis
         final Permis dernierPermis = individu.getPermis().getPermisActif(null);
         if (dernierPermis != null) {
             habitant.setCategorieEtranger(CategorieEtranger.valueOf(dernierPermis.getTypePermis()));
@@ -612,22 +598,22 @@ public class TiersServiceImpl implements TiersService {
         final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), date,
                 AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 
-        /* A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ? */
-        // TODO (msi) utiliser la méthode isSuisse() !
-        boolean nationaliteSuisse = false;
-        boolean nationalitesEtrangeres = false;
-        if (individu.getNationalites() != null) {
-            final Collection<Nationalite> nationalites = individu.getNationalites();
-            for (Nationalite nationalite : nationalites) {
-                if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST)) {
-                    if ((nationalite.getDateFin() == null) && (nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)) {
-                        nationaliteSuisse = true;
-                    } else if ((nationalite.getDateFin() == null) && (nationalite.getPays().getNoOFS() != ServiceInfrastructureService.noOfsSuisse)) {
-                        nationalitesEtrangeres = true;
-                    }
-                }
-            }
-        }
+        // A-t-il une nationalité suisse en cours et/ou des nationalites étrangères ?
+	    final Nationalite nationalite;
+	    if (date == null)  {
+		    nationalite = individu.getDerniereNationalite();
+	    }
+	    else {
+		    nationalite = serviceCivilService.getNationaliteAt(individu.getNoTechnique(), date);
+	    }
+
+	    boolean nationaliteSuisse = false;
+	    boolean nationalitesEtrangeres = false;
+	    if (nationalite != null) {
+	        final int noOFS = nationalite.getPays().getNoOFS();
+	        nationaliteSuisse = noOFS == ServiceInfrastructureService.noOfsSuisse;
+	        nationalitesEtrangeres = noOFS != ServiceInfrastructureService.noPaysInconnu;
+	    }
 
         /* Nationalité suisse : il est suisse */
         if (nationaliteSuisse) {
@@ -687,37 +673,27 @@ public class TiersServiceImpl implements TiersService {
         return permis.getTypePermis() == TypePermis.ETABLISSEMENT && permis.getDateAnnulation() == null;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException {
+	@Override
+	public boolean isSuisse(PersonnePhysique pp, RegDate date) throws TiersException {
 
-        if (pp.isHabitantVD()) {
-            final long numeroIndividu = pp.getNumeroIndividu();
-            final Collection<Nationalite> nationalites = getServiceCivilService().getNationalites(numeroIndividu, date);
-            if (nationalites != null && !nationalites.isEmpty()) {
-                for (Nationalite nationalite : nationalites) {
-                    if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST) &&
-                            (nationalite.getDateFin() == null || nationalite.getDateFin().isAfterOrEqual(date)) &&
-                            nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse)
-                        return true;
-                }
-            } else {
-                throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + numeroIndividu);
-            }
-        } else {
-            final Integer numeroOfsNationalite = pp.getNumeroOfsNationalite();
-            if (numeroOfsNationalite == null) {
-                throw new TiersException("La nationalité du contribuable " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " est inconnue");
-            }
-            return (numeroOfsNationalite == ServiceInfrastructureService.noOfsSuisse);
-        }
+		if (pp.isHabitantVD()) {
+			final long numeroIndividu = pp.getNumeroIndividu();
+			final Nationalite nationalite = serviceCivilService.getNationaliteAt(numeroIndividu, date);
+			if (nationalite == null) {
+				throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + numeroIndividu);
+			}
+			return nationalite.getPays().getNoOFS() == ServiceInfrastructureService.noOfsSuisse;
+		}
+		else {
+			final Integer numeroOfsNationalite = pp.getNumeroOfsNationalite();
+			if (numeroOfsNationalite == null) {
+				throw new TiersException("La nationalité du contribuable " + FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()) + " est inconnue");
+			}
+			return (numeroOfsNationalite == ServiceInfrastructureService.noOfsSuisse);
+		}
+	}
 
-        return false;
-    }
-
-    /**
+	/**
      * {@inheritDoc}
      */
     @Override
@@ -729,20 +705,18 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public boolean isSuisse(Individu individu, RegDate date) throws TiersException {
-        if (date == null) date = RegDate.get();
-        final Collection<Nationalite> nationalites = individu.getNationalites();
-        if (nationalites == null || nationalites.isEmpty()) {
+    public boolean isSuisse(Individu individu, @Nullable RegDate date) throws TiersException {
+	    final Nationalite nationalite;
+        if (date == null)  {
+	        nationalite = individu.getDerniereNationalite();
+        }
+	    else {
+	        nationalite = serviceCivilService.getNationaliteAt(individu.getNoTechnique(), date);
+        }
+        if (nationalite == null) {
             throw new TiersException("Impossible de déterminer la nationalité de l'individu n°" + individu.getNoTechnique());
         }
-        for (Nationalite nationalite : nationalites) {
-            if (RegDateHelper.isBeforeOrEqual(nationalite.getDateDebut(), date, NullDateBehavior.EARLIEST) &&
-                    (nationalite.getDateFin() == null || nationalite.getDateFin().isAfterOrEqual(date))
-                    && (nationalite.getPays().isSuisse())) {
-                return true;
-            }
-        }
-        return false;
+        return nationalite.getPays().isSuisse();
     }
 
 

@@ -100,16 +100,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	public void step1() {
 	}
 
-	protected void setNationalite(MockIndividu ind, RegDate debut, @Nullable RegDate fin, MockPays pays) {
-		final ArrayList<Nationalite> nationalites = new ArrayList<Nationalite>();
-		final MockNationalite nati = new MockNationalite();
-		nati.setDateDebutValidite(debut);
-		nati.setDateFinValidite(fin);
-		nati.setPays(pays);
-		nationalites.add(nati);
-		ind.setNationalites(nationalites);
-	}
-
 	/**
 	 * Ajoute un invidu à la map des individus.
 	 *
@@ -177,10 +167,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		// Adoptions et reconnaissances
 		final List<AdoptionReconnaissance> adoptions = new ArrayList<AdoptionReconnaissance>();
 		individu.setAdoptionsReconnaissances(adoptions);
-
-		// Nationalités
-		final List<Nationalite> nationalites = new ArrayList<Nationalite>();
-		individu.setNationalites(nationalites);
 
 		// Conjoints
 		individu.setConjoints(new ArrayList<RelationVersIndividu>());
@@ -772,6 +758,26 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		return evenementsMap.get(eventId);
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+		final MockIndividu ind = individusMap.get(noIndividu);
+		if (ind == null) {
+			return null;
+		}
+		final List<Nationalite> nationalites = ind.getNationalites();
+		if (nationalites == null || nationalites.isEmpty()) {
+			return null;
+		}
+		// plusieurs nationalités peuvent être valides en même temps. On prend la plus récente dans ce cas-là.
+		for (int i = nationalites.size() - 1; i >= 0; --i) {
+			final Nationalite n = nationalites.get(i);
+			if (n.isValidAt(date)) {
+				return n;
+			}
+		}
+		return null;
 	}
 
 	@Override

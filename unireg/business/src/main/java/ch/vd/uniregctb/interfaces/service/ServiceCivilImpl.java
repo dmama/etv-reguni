@@ -114,14 +114,8 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public final Collection<Nationalite> getNationalites(long noIndividu, RegDate date) {
-
-		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.NATIONALITE);
-		if (individu == null) {
-			return null;
-		}
-
-		return individu.getNationalites();
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+		return target.getNationaliteAt(noIndividu, date);
 	}
 
 	@Override

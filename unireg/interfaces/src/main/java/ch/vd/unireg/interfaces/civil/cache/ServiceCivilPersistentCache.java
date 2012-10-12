@@ -22,6 +22,7 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.ObjectKey;
@@ -241,6 +242,12 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
 		// on ne cache pas ce genre d'info
 		return target.getIndividuFromEvent(eventId);
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+		// on ne cache pas ce genre d'info
+		return target.getNationaliteAt(noIndividu, date);
 	}
 
 	@Override

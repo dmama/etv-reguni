@@ -50,7 +50,7 @@ public class Ec_1000_04_NaissanceAndFiliationScenario extends EvenementCivilScen
 			@Override
 			public void init() {
 				MockIndividu pierre = addIndividu(123, dateNaissance, "Durand", "Pierre", true);
-				setNationalite(pierre, RegDate.get(2008, 4, 12), null, MockPays.Suisse);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(2008, 4, 12), null);
 			}
 		});
 	}

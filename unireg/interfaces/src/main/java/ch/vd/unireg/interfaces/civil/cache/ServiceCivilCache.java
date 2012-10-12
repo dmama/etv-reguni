@@ -27,6 +27,7 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilServiceWrapper;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.CompletePartsCallback;
 import ch.vd.uniregctb.cache.EhCacheStats;
@@ -281,6 +282,60 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 		return target.getIndividuFromEvent(eventId);
 	}
 
+	private static class GetNationaliteAtKey implements Serializable {
+
+		private static final long serialVersionUID = -8330033881804405010L;
+
+		private final long noIndividu;
+		private final RegDate date;
+
+		private GetNationaliteAtKey(long noIndividu, RegDate date) {
+			this.noIndividu = noIndividu;
+			this.date = date;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final GetIndividuKey that = (GetIndividuKey) o;
+
+			if (noIndividu != that.noIndividu) return false;
+			//noinspection RedundantIfStatement
+			if (date != null ? !date.equals(that.date) : that.date != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = (int) (noIndividu ^ (noIndividu >>> 32));
+			result = 31 * result + (date != null ? date.hashCode() : 0);
+			return result;
+		}
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+
+		final Nationalite nationalite;
+
+		final GetNationaliteAtKey key = new GetNationaliteAtKey(noIndividu, date);
+		final Element element = cache.get(key);
+		if (element == null) {
+			// l'élément n'est pas en cache, on le récupère et on l'insère
+			nationalite = target.getNationaliteAt(noIndividu, date);
+			cache.put(new Element(key, nationalite));
+		}
+		else {
+			// l'élément est en cache
+			nationalite = (Nationalite) element.getValue();
+		}
+
+		return nationalite;
+	}
+
 	@Override
 	public void ping() throws ServiceCivilException {
 		target.ping();
@@ -315,6 +370,10 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			if (k instanceof GetIndividuKey) {
 				GetIndividuKey ki = (GetIndividuKey) k;
 				remove = (ki.noIndividu == numero);
+			}
+			else if (k instanceof GetNationaliteAtKey) {
+				GetNationaliteAtKey kn = (GetNationaliteAtKey) k;
+				remove = (kn.noIndividu == numero);
 			}
 			if (remove) {
 				cache.remove(k);

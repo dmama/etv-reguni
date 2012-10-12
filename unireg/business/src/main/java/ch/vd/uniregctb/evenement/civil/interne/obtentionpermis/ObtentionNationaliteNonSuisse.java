@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.audit.Audit;
@@ -43,14 +44,14 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
 		// il faut mettre à jour la nationalité chez nous
 		if (pp != null && !pp.isHabitantVD()) {
-			for (Nationalite nationalite : getIndividu().getNationalites()) {
-				if (getDate().equals(nationalite.getDateDebut())) {
-					pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
-					Audit.info(getNumeroEvenement(), String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'",
-							getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()), nationalite.getPays().getNomMinuscule()));
-					break;
-				}
+			final Nationalite nationalite = context.getServiceCivil().getNationaliteAt(getNoIndividu(), getDate());
+			if (nationalite == null) {
+				throw new EvenementCivilException("L'individu n°" + getNoIndividu() + " ne possède pas de nationalité à la date = " + RegDateHelper.dateToDisplayString(getDate()));
 			}
+			pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+			Audit.info(getNumeroEvenement(),
+					String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'", getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
+							nationalite.getPays().getNomMinuscule()));
 		}
 
 		Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");

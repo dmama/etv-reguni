@@ -11,6 +11,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.uniregctb.stats.ServiceTracing;
 import ch.vd.uniregctb.stats.StatsService;
 
@@ -97,6 +98,27 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 				@Override
 				public String toString() {
 					return String.format("eventId=%d", eventId);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(final long noIndividu, @Nullable final RegDate date) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getNationaliteAt(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getNationaliteAt", new Object() {
+				@Override
+				public String toString() {
+					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));
 				}
 			});
 		}

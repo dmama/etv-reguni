@@ -14,6 +14,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.Tutelle;
@@ -129,10 +130,9 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Collection getNationalites(long noTechniqueIndividu, RegDate date) {
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
 		assertTargetNotNull();
-		return service.getNationalites(noTechniqueIndividu, date);
+		return service.getNationaliteAt(noIndividu, date);
 	}
 
 	@Override

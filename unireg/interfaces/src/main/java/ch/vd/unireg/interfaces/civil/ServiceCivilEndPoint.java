@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 
 /**
  * Façade du service civil raw à utiliser pour exposer le service civil en spring remoting.
@@ -60,6 +61,18 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 		}
 		catch (RuntimeException e) {
 			LOGGER.error("Exception dans getIndividuFromEvent(eventId=" + eventId + ") : " + getMessage(e), e);
+			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
+			throw new ServiceCivilException(getMessage(e));
+		}
+	}
+
+	@Override
+	public Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date) {
+		try {
+			return target.getNationaliteAt(noIndividu, date);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception dans getNationaliteAt(noIndividu=" + noIndividu + ",date=" + date + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
 			throw new ServiceCivilException(getMessage(e));
 		}

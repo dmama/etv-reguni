@@ -173,12 +173,8 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertNotNull(origine1);
 		assertEquals("Yvorne", origine1.getNomLieu());
 
-		// On vérifie les nationalités
-		final List<Nationalite> nationalites = individu.getNationalites();
-		assertNotNull(nationalites);
-		assertEquals(1, nationalites.size());
-
-		final Nationalite nationalite = nationalites.get(0);
+		// On vérifie la nationalité
+		final Nationalite nationalite = individu.getDerniereNationalite();
 		assertNotNull(nationalite);
 		// RCPers n'expose pas les dates de début/fin sur les nationalités : assertEquals(date(1974, 3, 22), nationalite.getDateDebutValidite());
 		// RCPers n'expose pas les dates de début/fin sur les nationalités : assertNull(nationalite.getDateFinValidite());

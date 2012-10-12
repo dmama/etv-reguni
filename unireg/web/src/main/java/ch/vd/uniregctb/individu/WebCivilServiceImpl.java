@@ -95,7 +95,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		traitePermis(indSource.getNoTechnique(), indCible);
 		traiteEtatCivil(indSource, indCible);
 		traiteOrigine(indSource.getNoTechnique(), indCible);
-		traiteNationalite(indSource.getNoTechnique(), indCible);
+		traiteNationalite(indSource, indCible);
 		return indCible;
 	}
 
@@ -174,20 +174,10 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	/**
 	 * Nationalite
 	 */
-	private void traiteNationalite(Long numeroIndividu, IndividuView indCible) {
-
-		final Collection<Nationalite> nationalites = serviceCivilService.getNationalites(numeroIndividu, null);
-		if (nationalites != null && !nationalites.isEmpty()) {
-			final StringBuilder b = new StringBuilder();
-			for (Nationalite nationalite : nationalites) {
-				if (nationalite.getDateFin() == null) {
-					if (b.length() > 0) {
-						b.append(", ");
-					}
-					b.append(nationalite.getPays().getNomMinuscule());
-				}
-			}
-			indCible.setNationalite(b.toString());
+	private void traiteNationalite(Individu individu, IndividuView indCible) {
+		final Nationalite nationalite = individu.getDerniereNationalite();
+		if (nationalite != null) {
+			indCible.setNationalite(nationalite.getPays().getNomMinuscule());
 		}
 	}
 

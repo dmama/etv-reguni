@@ -62,7 +62,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 			protected void init() {
 
 				indAdrienne = addIndividu(noIndAdrienne, dateNaissance , "Pittet", "Adrienne", false);
-				setNationalite(indAdrienne, dateNaissance, null, MockPays.Suisse);
+				addNationalite(indAdrienne, MockPays.Suisse, dateNaissance, null);
 				addAdresse(indAdrienne, TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDuMoulinet, null,
 						null, null);
 			}

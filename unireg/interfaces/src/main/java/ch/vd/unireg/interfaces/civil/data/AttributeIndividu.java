@@ -50,7 +50,7 @@ public enum AttributeIndividu {
 		public EnumAttributeIndividu toEAI() {
 			return EnumAttributeIndividu.PERMIS;
 		}},
-	NATIONALITE {
+	NATIONALITE { // TODO (msi) supprimer cette part
 		@Override
 		public EnumAttributeIndividu toEAI() {
 			return EnumAttributeIndividu.NATIONALITE;

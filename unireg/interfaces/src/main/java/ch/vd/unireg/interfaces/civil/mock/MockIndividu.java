@@ -74,6 +74,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nouveauNoAVS = right.nouveauNoAVS;
 		this.numeroRCE = right.numeroRCE;
 		this.sexe = right.sexe;
+		this.nationalites = right.nationalites;
 
 		copyPartsFrom(right, parts);
 		limitPartsToBeforeDate(upTo, parts);
@@ -240,7 +241,18 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.etatsCivils = etatsCivils;
 	}
 
+	public void addNationalite(Nationalite nationalite) {
+		this.nationalites.add(nationalite);
+	}
+
 	@Override
+	public Nationalite getDerniereNationalite() {
+		if (nationalites != null && !nationalites.isEmpty()) {
+			return nationalites.get(nationalites.size() - 1);
+		}
+		return null;
+	}
+
 	public List<Nationalite> getNationalites() {
 		return nationalites;
 	}
@@ -348,9 +360,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
-			nationalites = individu.getNationalites();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = individu.getOrigines();
@@ -623,9 +632,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 			etatsCivils = etatsCivilsTemp;
 		}
 
-		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
-			nationalites = buildLimitedCollectionBeforeDate(nationalites, date, NATIONALITE_LIMITATOR);
-		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			List<Permis> limited = buildLimitedCollectionBeforeDate(permis, date, PERMIS_LIMITATOR);
 			permis = (limited == null ? null : new MockPermisList(permis.getNumeroIndividu(), limited));

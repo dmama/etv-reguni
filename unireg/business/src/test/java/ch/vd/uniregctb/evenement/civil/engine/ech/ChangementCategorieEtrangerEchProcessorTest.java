@@ -40,7 +40,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final RegDate dateNaissance = date(1964, 3, 12);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Suzuki", "Tsetsuko", false);
 				addPermis(ind, TypePermis.SEJOUR, dateArrivee, null, false);
-				setNationalite(ind, dateNaissance, null, MockPays.Japon);
+				addNationalite(ind, MockPays.Japon, dateNaissance, null);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
 		});
@@ -119,7 +119,7 @@ public class ChangementCategorieEtrangerEchProcessorTest extends AbstractEveneme
 				final RegDate dateNaissance = date(1964, 3, 12);
 				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Suzuki", "Tsetsuko", false);
 				addPermis(ind, TypePermis.COURTE_DUREE, dateArrivee, null, false);
-				setNationalite(ind, dateNaissance, null, MockPays.Japon);
+				addNationalite(ind, MockPays.Japon, dateNaissance, null);
 				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.CheminDeRiondmorcel, null, dateArrivee, null);
 			}
 		});

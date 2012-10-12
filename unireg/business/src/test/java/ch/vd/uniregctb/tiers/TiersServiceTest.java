@@ -2318,21 +2318,21 @@ public class TiersServiceTest extends BusinessTest {
 		{
 			MockIndividu ind = new MockIndividu();
 			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.Suisse, 1)));
-			assertTrue(tiersService.isSuisse(ind, RegDate.get(2000, 1, 1)));
+			assertTrue(tiersService.isSuisse(ind, null));
 		}
 
 		// individu avec nationalité française
 		{
 			MockIndividu ind = new MockIndividu();
 			ind.setNationalites(Arrays.<Nationalite>asList(new MockNationalite(null, null, MockPays.France, 1)));
-			assertFalse(tiersService.isSuisse(ind, RegDate.get(2000, 1, 1)));
+			assertFalse(tiersService.isSuisse(ind, null));
 		}
 
 		// [UNIREG-1588] individu sans nationalité
 		{
 			try {
 				MockIndividu ind = new MockIndividu();
-				tiersService.isSuisse(ind, RegDate.get(2000, 1, 1));
+				tiersService.isSuisse(ind, null);
 				fail();
 			}
 			catch (TiersException e) {
@@ -2342,7 +2342,7 @@ public class TiersServiceTest extends BusinessTest {
 			try {
 				MockIndividu ind = new MockIndividu();
 				ind.setNationalites(Collections.<Nationalite>emptyList());
-				tiersService.isSuisse(ind, RegDate.get(2000, 1, 1));
+				tiersService.isSuisse(ind, null);
 				fail();
 			}
 			catch (TiersException e) {

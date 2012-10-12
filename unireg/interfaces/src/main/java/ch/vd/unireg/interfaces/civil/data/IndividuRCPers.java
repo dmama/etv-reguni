@@ -65,7 +65,7 @@ public class IndividuRCPers implements Individu, Serializable {
 	private List<RelationVersIndividu> parents;
 	private List<RelationVersIndividu> conjoints;
 	private PermisList permis;
-	private List<Nationalite> nationalites;
+	private Nationalite derniereNationalite;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
 	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, ServiceInfrastructureRaw infraService) {
@@ -132,7 +132,7 @@ public class IndividuRCPers implements Individu, Serializable {
 			this.permis = initPermis(this.noTechnique, person.getCurrentResidencePermit());
 		}
 
-		this.nationalites = initNationalites(person, infraService);
+		this.derniereNationalite = initNationalite(person, infraService);
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
@@ -157,6 +157,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = right.naissance;
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.etatsCivils = right.etatsCivils;
+		this.derniereNationalite = right.derniereNationalite;
 
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			this.adresses = right.adresses;
@@ -169,9 +170,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = right.enfants;
-		}
-		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
-			nationalites = right.nationalites;
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = right.origines;
@@ -257,13 +255,11 @@ public class IndividuRCPers implements Individu, Serializable {
 		return null;
 	}
 
-	private static List<Nationalite> initNationalites(Person person, ServiceInfrastructureRaw infraService) {
+	private static Nationalite initNationalite(Person person, ServiceInfrastructureRaw infraService) {
 		if (person == null) {
 			return null;
 		}
-		final List<Nationalite> list = new ArrayList<Nationalite>();
-		list.add(NationaliteRCPers.get(person, infraService));
-		return list;
+		return NationaliteRCPers.get(person, infraService);
 	}
 
 	private static PermisListRcPers initPermis(long numeroIndividu, ResidencePermit permis) {
@@ -583,8 +579,8 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public List<Nationalite> getNationalites() {
-		return nationalites;
+	public Nationalite getDerniereNationalite() {
+		return derniereNationalite;
 	}
 
 	@Override
@@ -635,9 +631,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
 			enfants = individu.getEnfants();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.NATIONALITE)) {
-			nationalites = individu.getNationalites();
 		}
 		if (parts != null && parts.contains(AttributeIndividu.ORIGINE)) {
 			origines = individu.getOrigines();

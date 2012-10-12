@@ -273,7 +273,7 @@ public interface TiersService {
      * @return <b>vrai</b> si l'individu possède la nationalité Suisse à la date spécifiée; <b>faux</b> autrement.
      * @throws TiersException si la nationalite ne peut être déterminée
      */
-    public boolean isSuisse(Individu individu, RegDate date) throws TiersException;
+    public boolean isSuisse(Individu individu, @Nullable RegDate date) throws TiersException;
 
     /**
      * L'individu est-t-il avec permis C en cours de validité ?

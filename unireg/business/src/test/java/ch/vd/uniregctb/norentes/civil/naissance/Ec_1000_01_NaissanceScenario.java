@@ -53,7 +53,7 @@ public class Ec_1000_01_NaissanceScenario extends EvenementCivilScenario {
 			@Override
 			public void init() {
 				MockIndividu pierre = addIndividu(123, dateNaissance, "Durand", "Pierre", true);
-				setNationalite(pierre, RegDate.get(2008, 4, 12), null, MockPays.Suisse);
+				addNationalite(pierre, MockPays.Suisse, RegDate.get(2008, 4, 12), null);
 				addAdresse(pierre, TypeAdresseCivil.PRINCIPALE, "Av de Recordon", "1", 1012, MockLocalite.Lausanne, null, RegDate.get(2008, 4, 12), null);
 			}
 		});

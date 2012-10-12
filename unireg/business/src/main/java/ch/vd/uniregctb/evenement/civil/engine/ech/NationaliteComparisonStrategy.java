@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.List;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,36 +23,24 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 		CONNUE
 	}
 
-	private static StatutNationalite getNationalityStatus(List<Nationalite> liste) {
-		boolean foundInconnue = false;
-		boolean foundApatride = false;
-		for (Nationalite nat : liste) {
-			final int ofs = nat.getPays().getNoOFS();
-			if (ofs == ServiceInfrastructureService.noPaysInconnu) {
-				foundInconnue = true;
-			}
-			else if (ofs == ServiceInfrastructureService.noPaysApatride) {
-				foundApatride = true;
-			}
-			else {
-				return StatutNationalite.CONNUE;
-			}
+	private static StatutNationalite getNationalityStatus(Nationalite nat) {
+		if (nat == null) {
+			return StatutNationalite.AUCUNE;
 		}
-		if (foundApatride) {
+		final int ofs = nat.getPays().getNoOFS();
+		if ((ofs == ServiceInfrastructureService.noPaysApatride)) {
 			return StatutNationalite.APATRIDE;
 		}
-		else if (foundInconnue) {
+		else if ((ofs == ServiceInfrastructureService.noPaysInconnu)) {
 			return StatutNationalite.INCONNUE;
 		}
-		return StatutNationalite.AUCUNE;
+		return StatutNationalite.CONNUE;
 	}
 
 	@Nullable
-	private static Nationalite getNationaliteSuisse(List<Nationalite> liste) {
-		for (Nationalite n : liste) {
-			if (n.getPays().isSuisse()) {
-				return n;
-			}
+	private static Nationalite getNationaliteSuisse(@Nullable Nationalite n) {
+		if (n != null && n.getPays().isSuisse()) {
+			return n;
 		}
 		return null;
 	}
@@ -64,10 +50,10 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 
 		// La spécification dit qu'il faut détecter le passage de "nationalité inconnue" à "nationalité connue" et vice-versa (= statut de la nationalité),
 		// et que dans le cas où les nationalités existaient et changent, seuls les changements sur la nationalité suisse sont importants
-		final List<Nationalite> origNationalites = originel.getIndividu().getNationalites();
-		final List<Nationalite> corNationalites = corrige.getIndividu().getNationalites();
-		final StatutNationalite origStatus = getNationalityStatus(origNationalites);
-		final StatutNationalite corStatus = getNationalityStatus(corNationalites);
+		final Nationalite origNationalite = originel.getIndividu().getDerniereNationalite();
+		final Nationalite corNationalite = corrige.getIndividu().getDerniereNationalite();
+		final StatutNationalite origStatus = getNationalityStatus(origNationalite);
+		final StatutNationalite corStatus = getNationalityStatus(corNationalite);
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		boolean neutre = true;
 		if (origStatus != corStatus) {
@@ -81,8 +67,8 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 		}
 		else {
 			// filtrons les nationalités étrangères pour ne garder que la nationalité suisse et comparons les dates
-			final Nationalite origSuisse = getNationaliteSuisse(origNationalites);
-			final Nationalite corSuisse = getNationaliteSuisse(corNationalites);
+			final Nationalite origSuisse = getNationaliteSuisse(origNationalite);
+			final Nationalite corSuisse = getNationaliteSuisse(corNationalite);
 			if (origSuisse != null && corSuisse != null) {
 				neutre = IndividuComparisonHelper.RANGE_EQUALATOR.areEqual(origSuisse, corSuisse, monitor, DATES);
 			}

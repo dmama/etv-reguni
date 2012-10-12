@@ -52,7 +52,7 @@ public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 			@Override
 			protected void init() {
 				indAntoine = addIndividu(noIndAntoine,dateNaissance , "Lenormand", "Antoine", true);
-				setNationalite(indAntoine, dateNaissance, null, MockPays.Suisse);
+				addNationalite(indAntoine, MockPays.Suisse, dateNaissance, null);
 				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, dateArriveeLeSentier.getOneDayBefore());
 				addAdresse(indAntoine, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateArriveeLeSentier, null);
 			}

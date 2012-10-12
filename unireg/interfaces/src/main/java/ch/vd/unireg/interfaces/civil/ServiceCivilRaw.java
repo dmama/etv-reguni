@@ -9,6 +9,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
 
 public interface ServiceCivilRaw {
 
@@ -53,6 +54,17 @@ public interface ServiceCivilRaw {
 	 * @return l'individu correspondant à l'état juste après le traitement civil de l'événement, ou <code>null</code> si l'id ne correspond à rien
 	 */
 	IndividuApresEvenement getIndividuFromEvent(long eventId);
+
+	/**
+	 * Retourne la nationalité d'un individu à une date donnée.
+	 * <p/>
+	 * <b>Note:</b> la nationalité est une des rares informations non-historisée sur les individus exposés par RcPers. C'est pourquoi cette méthode existe.
+	 *
+	 * @param noIndividu le numéro technique de l'individu.
+	 * @param date       la date de référence
+	 * @return la nationalité de l'individu à la date demandée; ou <b>null</b> si l'individu n'existe pas.
+	 */
+	Nationalite getNationaliteAt(long noIndividu, @Nullable RegDate date);
 
 	/**
 	 * Méthode qui permet de tester que le service civil répond bien. Cette méthode est insensible aux caches.
