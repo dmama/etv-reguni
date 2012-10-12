@@ -92,7 +92,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 		AppartenanceMenage derniereAppartenance = null;
 		for (RapportEntreTiers rapport : rapports) {
 			if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage) {
-				if (derniereAppartenance == null || RegDateHelper.isBefore(rapport.getDateDebut(), derniereAppartenance.getDateDebut(), NullDateBehavior.EARLIEST)) {
+				if (derniereAppartenance == null || RegDateHelper.isAfter(rapport.getDateDebut(), derniereAppartenance.getDateDebut(), NullDateBehavior.EARLIEST)) {
 					derniereAppartenance = (AppartenanceMenage) rapport;
 				}
 			}

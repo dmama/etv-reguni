@@ -1637,6 +1637,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			long menageTermineCauseDecesPrincipal;
 			long menageTermineCauseDecesConjoint;
 			long menageTermineCauseDecesComourants;
+			long menageSeparePuisReconcilie;
 		}
 		final Ids ids = new Ids();
 
@@ -1680,6 +1681,13 @@ public class PartyWebServiceTest extends WebserviceTest {
 				dalila.setDateDeces(dateFin);
 				final EnsembleTiersCouple comourant = addEnsembleTiersCouple(samson, dalila, date(1970, 5, 1), dateFin);
 				ids.menageTermineCauseDecesComourants = comourant.getMenage().getId();
+
+				final PersonnePhysique patrick = addNonHabitant("Patrick", "Espol", date(1934, 3, 12), Sexe.MASCULIN);
+				final PersonnePhysique monique = addNonHabitant("Monique", "Espol", date(1936, 8, 22), Sexe.FEMININ);
+				final EnsembleTiersCouple menageSeparePuisReconcilie = addEnsembleTiersCouple(patrick, monique, date(1970, 5, 1), dateFin);
+				addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), patrick, dateFin.addMonths(3), null, false);
+				addAppartenanceMenage(menageSeparePuisReconcilie.getMenage(), monique, dateFin.addMonths(3), null, false);
+				ids.menageSeparePuisReconcilie = menageSeparePuisReconcilie.getMenage().getId();
 				return null;
 			}
 		});
@@ -1802,6 +1810,22 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(CommonHouseholdStatus.ENDED_BY_DEATH, status);
 		}
 
+		// ménage séparé puis réconcilié
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.menageSeparePuisReconcilie);
+			params.getParts().add(PartyPart.HOUSEHOLD_MEMBERS);
+
+			final Party party = service.getParty(params);
+			assertNotNull(party);
+			assertInstanceOf(CommonHousehold.class, party);
+
+			final CommonHousehold hh = (CommonHousehold) party;
+			final CommonHouseholdStatus status = hh.getStatus();
+			assertNotNull(status);
+			assertEquals(CommonHouseholdStatus.ACTIVE, status);
+		}
 	}
 
 	/**
