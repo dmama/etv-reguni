@@ -71,8 +71,9 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
+		final boolean withRelations = parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
 		final List<Relationship> relations;
-		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
+		if (withRelations) {
 			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), null, true);
 			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
 				if (rel.getListOfResults().getResult().size() > 1) {
@@ -90,7 +91,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		final Person person = list.getListOfResults().getResult().get(0).getPerson();
-		final Individu individu = IndividuRCPers.get(person, relations, true, infraService);
+		final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
 		if (individu != null) {
 			long actual = individu.getNoTechnique();
 			if (noIndividu != actual) {
@@ -126,8 +127,9 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		// il faut demander les relations entre individus dans un appel séparé
+		final boolean withRelations = parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS);
 		final Map<Long, List<Relationship>> allRelations;
-		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
+		if (withRelations) {
 			final ListOfRelations rel = getRelationsSafely(nosIndividus, null, true);
 			if (rel != null && rel.getListOfResults().getResult() != null) {
 				allRelations = new HashMap<Long, List<Relationship>>();
@@ -155,7 +157,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 			final Person person = personRes.getPerson();
 			if (person != null) {
 				final List<Relationship> relations = allRelations == null ? null : allRelations.get(IndividuRCPers.getNoIndividu(person));
-				final Individu individu = IndividuRCPers.get(person, relations, true, infraService);
+				final Individu individu = IndividuRCPers.get(person, relations, true, withRelations, infraService);
 				individus.add(individu);
 			}
 		}
@@ -220,7 +222,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		final Event ref = client.getEvent(eventId);
 		if (ref != null) {
 			final Event.PersonAfterEvent personAfterEvent = ref.getPersonAfterEvent();
-			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, infraService);
+			final Individu individu = IndividuRCPers.get(personAfterEvent.getPerson(), personAfterEvent.getRelations(), false, true, infraService);
 			final EventIdentification idtf = ref.getIdentification();
 			final Long refMessageId = idtf.getReferenceMessageId();
 			final RegDate dateEvt = XmlUtils.xmlcal2regdate(idtf.getDate());

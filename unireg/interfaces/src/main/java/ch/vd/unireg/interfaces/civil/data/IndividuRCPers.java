@@ -70,15 +70,15 @@ public class IndividuRCPers implements Individu, Serializable {
 	private Nationalite derniereNationalite;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
 
-	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, ServiceInfrastructureRaw infraService) {
+	public static Individu get(Person target, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
 		if (target == null) {
 			return null;
 		}
 
-		return new IndividuRCPers(target, relations, history, infraService);
+		return new IndividuRCPers(target, relations, history, withRelations, infraService);
 	}
 
-	public IndividuRCPers(Person person, @Nullable List<Relationship> relations, boolean history, ServiceInfrastructureRaw infraService) {
+	public IndividuRCPers(Person person, @Nullable List<Relationship> relations, boolean history, boolean withRelations, ServiceInfrastructureRaw infraService) {
 		this.noTechnique = getNoIndividu(person);
 
 		final Identity identity = person.getIdentity();
@@ -138,7 +138,7 @@ public class IndividuRCPers implements Individu, Serializable {
 
 		// avec RcPers, toutes les parts sont systématiquement retournées, à l'exception des relations qui doivent être demandées explicitement
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
-		if (relations == null) {
+		if (!withRelations) {
 			this.availableParts.remove(AttributeIndividu.CONJOINTS);
 			this.availableParts.remove(AttributeIndividu.ENFANTS);
 			this.availableParts.remove(AttributeIndividu.PARENTS);

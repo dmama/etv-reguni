@@ -320,7 +320,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
 
 		// on vérifie que les valeurs historisées sont bien lues
-		final Individu ind = IndividuRCPers.get(person, relations, true, infraService);
+		final Individu ind = IndividuRCPers.get(person, relations, true, true, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
 		assertEquals("Jean", ind.getPrenom());
@@ -385,7 +385,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		relations.add(newRelation(date(1989, 5, 1), null, 562841L, TypeRelation.VERS_CONJOINT));
 
 		// on vérifie que les valeurs courantes sont bien lues
-		final Individu ind = IndividuRCPers.get(person, relations, false, infraService);
+		final Individu ind = IndividuRCPers.get(person, relations, false, true, infraService);
 		assertNotNull(ind);
 		assertEquals(123345L, ind.getNoTechnique());
 		assertEquals("Jean", ind.getPrenom());
