@@ -40,6 +40,9 @@
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.v1" />
 		</jxb:schemaBindings>
+		<jxb:bindings node="//xs:complexType[@name='partyType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
+		</jxb:bindings>
 	</jxb:bindings>
 
 	<jxb:bindings schemaLocation="party/unireg-party-debtor-1.xsd">
@@ -48,6 +51,7 @@
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='debtorPeriodicityType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -66,6 +70,7 @@
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='familyStatusType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -117,6 +122,7 @@
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='relationBetweenPartiesType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -126,6 +132,13 @@
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='taxDeclarationType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxDeclarationStatusType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
+		</jxb:bindings>
+		<jxb:bindings node="//xs:complexType[@name='taxDeclarationDeadlineType']">
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
 		</jxb:bindings>
 	</jxb:bindings>
 
@@ -135,6 +148,7 @@
 		</jxb:schemaBindings>
 		<jxb:bindings node="//xs:complexType[@name='taxResidenceType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>
+			<inheritance:implements>ch.vd.unireg.xml.common.v1.Cancelable</inheritance:implements>
 		</jxb:bindings>
 		<jxb:bindings node="//xs:complexType[@name='managingTaxResidenceType']">
 			<inheritance:implements>ch.vd.unireg.xml.common.v1.DateRange</inheritance:implements>

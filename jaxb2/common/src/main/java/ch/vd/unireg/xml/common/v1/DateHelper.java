@@ -62,6 +62,8 @@ public abstract class DateHelper {
 
 	/**
 	 * Trouve et retourne la période valide à une date donnée dans une collection de périodes. Les périodes sont supposées ne pas se chevaucher.
+	 * <p/>
+	 * <b>Note :</b> les périodes annulées ne sont pas prises en compte (voir l'interface {@link Cancelable}).
 	 *
 	 * @param ranges une collection de périodes
 	 * @param date   une date utilisée comme critère de recherche
@@ -72,7 +74,8 @@ public abstract class DateHelper {
 		T range = null;
 		if (ranges != null) {
 			for (T r : ranges) {
-				if (isDateInRange(r, date)) {
+				boolean canceled = (r instanceof Cancelable && ((Cancelable) r).getCancellationDate() != null);
+				if (!canceled && isDateInRange(r, date)) {
 					range = r;
 					break;
 				}
@@ -83,6 +86,8 @@ public abstract class DateHelper {
 
 	/**
 	 * Trouve et retourne toutes les périodes valides à une date donnée dans une collection de périodes. Les périodes de la collection peuvent se chevaucher.
+	 * <p/>
+	 * <b>Note :</b> les périodes annulées ne sont pas prises en compte (voir l'interface {@link Cancelable}).
 	 *
 	 * @param ranges une collection de périodes
 	 * @param date   une date utilisée comme critère de recherche
@@ -93,7 +98,8 @@ public abstract class DateHelper {
 		List<T> list = null;
 		if (ranges != null) {
 			for (T r : ranges) {
-				if (isDateInRange(r, date)) {
+				boolean canceled = (r instanceof Cancelable && ((Cancelable) r).getCancellationDate() != null);
+				if (!canceled && isDateInRange(r, date)) {
 					if (list == null) {
 						list = new ArrayList<T>();
 					}
