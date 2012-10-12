@@ -29,6 +29,7 @@ import ch.vd.uniregctb.cache.ObjectKey;
 import ch.vd.uniregctb.cache.PersistentCache;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
+import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.stats.StatsService;
@@ -152,7 +153,9 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 		if (value == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
 			individu = target.getIndividu(noIndividu, parties);
-			cache.put(key, new IndividuCacheValueWithParts(partiesSet, individu));
+			assertPartsPresence(individu, partiesSet);
+			final Set<AttributeIndividu> effectiveParts = individu == null ? partiesSet : individu.getAvailableParts(); // le service peut retourner plus de parts que demandé, autant les stocker tout de suite
+			cache.put(key, new IndividuCacheValueWithParts(effectiveParts, individu));
 		}
 		else {
 			// l'élément est en cache, on s'assure qu'on a toutes les parties nécessaires
@@ -219,7 +222,9 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 				map.put(no, ind);
 				// Met-à-jour le cache
 				final GetIndividuKey key = new GetIndividuKey(no);
-				final IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(partiesSet, ind);
+				assertPartsPresence(ind, partiesSet);
+				final Set<AttributeIndividu> effectiveParts = ind.getAvailableParts(); // le service peut retourner plus de parts que demandé, autant les stocker tout de suite
+				final IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(effectiveParts, ind);
 				cache.put(key, value);
 			}
 		}
@@ -251,6 +256,12 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	@Override
 	public void ping() throws ServiceCivilException {
 		target.ping();
+	}
+
+	private static void assertPartsPresence(Individu individu, Set<AttributeIndividu> partiesSet) {
+		if (individu != null && partiesSet != null && !individu.getAvailableParts().containsAll(partiesSet)) {
+			throw new ProgrammingException("L'individu ne contient pas toutes les parties demandées !");
+		}
 	}
 
 	/**
