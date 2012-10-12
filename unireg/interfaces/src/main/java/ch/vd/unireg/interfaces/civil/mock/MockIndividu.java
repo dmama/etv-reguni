@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
-import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.EtatCivilList;
@@ -58,7 +59,64 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		Collections.addAll(this.availableParts, AttributeIndividu.values());
 	}
 
-	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts, RegDate upTo) {
+	public MockIndividu(MockIndividu right, @NotNull RegDate upTo) {
+		super(right, right.availableParts);
+		this.prenom = right.prenom;
+		this.autresPrenoms = right.autresPrenoms;
+		this.nom = right.nom;
+		this.nomNaissance = right.nomNaissance;
+		this.dateDeces = right.dateDeces;
+		this.dateNaissance = right.dateNaissance;
+		this.dateArriveeVD = right.dateArriveeVD;
+		this.etatsCivils = right.etatsCivils;
+		this.conjoints = right.conjoints;
+		this.noTechnique = right.noTechnique;
+		this.noAVS11 = right.noAVS11;
+		this.nouveauNoAVS = right.nouveauNoAVS;
+		this.numeroRCE = right.numeroRCE;
+		this.origines = right.origines;
+		this.sexe = right.sexe;
+		this.nationalites = right.nationalites;
+		this.tutelle = right.tutelle;
+
+		this.adoptionsReconnaissances = right.adoptionsReconnaissances;
+		this.parents = right.parents;
+		this.enfants = right.enfants;
+		this.conjoints = right.conjoints;
+		this.etatsCivils = right.etatsCivils;
+		this.permis = right.permis;
+		limitHistoTo(upTo);
+
+		this.availableParts.addAll(right.availableParts);
+	}
+
+	private void limitHistoTo(RegDate date) {
+
+		if (getAdresses() != null) {
+			setAdresses(CollectionLimitator.limit(getAdresses(), date, CollectionLimitator.ADRESSE_LIMITATOR));
+		}
+		if (adoptionsReconnaissances != null) {
+			adoptionsReconnaissances = CollectionLimitator.limit(adoptionsReconnaissances, date, CollectionLimitator.ADOPTION_LIMITATOR);
+		}
+		if (parents != null) {
+			parents = CollectionLimitator.limit(parents, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (enfants != null) {
+			enfants = CollectionLimitator.limit(enfants, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (conjoints != null) {
+			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (etatsCivils != null) {
+			etatsCivils = new FreezableEtatCivilList(CollectionLimitator.limit(etatsCivils, date, CollectionLimitator.ETAT_CIVIL_LIMITATOR), true);
+		}
+		if (permis != null) {
+			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
+			permis = (limited == null ? null : new MockPermisList(permis.getNumeroIndividu(), limited));
+		}
+	}
+
+	public MockIndividu(MockIndividu right, Set<AttributeIndividu> parts) {
 		super(right, parts);
 		this.prenom = right.prenom;
 		this.autresPrenoms = right.autresPrenoms;
@@ -77,7 +135,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.nationalites = right.nationalites;
 
 		copyPartsFrom(right, parts);
-		limitPartsToBeforeDate(upTo, parts);
 
 		if (parts != null) {
 			this.availableParts.addAll(parts);
@@ -377,7 +434,7 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 
 	@Override
 	public MockIndividu clone(Set<AttributeIndividu> parts) {
-		return cloneUntil(parts, RegDate.getLateDate());
+		return new MockIndividu(this, parts);
 	}
 
 	@Override
@@ -385,66 +442,9 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		return availableParts;
 	}
 
-	public MockIndividu cloneUntil(Set<AttributeIndividu> parts, RegDate date) {
-		return new MockIndividu(this, parts, date);
-	}
-
-	private static interface Limitator<T> {
-		boolean keep(T element, RegDate date);
-	}
-
-	private static final Limitator<AdoptionReconnaissance> ADOPTION_LIMITATOR = new Limitator<AdoptionReconnaissance>() {
-		@Override
-		public boolean keep(AdoptionReconnaissance element, RegDate date) {
-			return (element.getDateAdoption() != null && element.getDateAdoption().isBeforeOrEqual(date))
-					|| (element.getDateReconnaissance() != null && element.getDateReconnaissance().isBeforeOrEqual(date));
-		}
-	};
-	private static final Limitator<RelationVersIndividu> ENFANT_LIMITATOR = new Limitator<RelationVersIndividu>() {
-		@Override
-		public boolean keep(RelationVersIndividu element, RegDate date) {
-			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
-		}
-	};
-	private static final Limitator<Nationalite> NATIONALITE_LIMITATOR = new Limitator<Nationalite>() {
-		@Override
-		public boolean keep(Nationalite element, RegDate date) {
-			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
-		}
-	};
-	private static final Limitator<Permis> PERMIS_LIMITATOR = new Limitator<Permis>() {
-		@Override
-		public boolean keep(Permis element, RegDate date) {
-			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
-		}
-	};
-	private static final Limitator<Adresse> ADRESSE_LIMITATOR = new Limitator<Adresse>() {
-		@Override
-		public boolean keep(Adresse element, RegDate date) {
-			return element.getDateDebut() == null || element.getDateDebut().isBeforeOrEqual(date);
-		}
-	};
-
-	private static <T> List<T> buildLimitedCollectionBeforeDate(Collection<T> original, RegDate date, Limitator<T> limitator) {
-		if (original == null) {
-			return null;
-		}
-		else if (original.isEmpty()) {
-			return Collections.emptyList();
-		}
-		else {
-			final List<T> limited = new ArrayList<T>(original);
-			if (date != null) {
-			final Iterator<T> iter = limited.iterator();
-				while (iter.hasNext()) {
-					final T element = iter.next();
-					if (!limitator.keep(element, date)) {
-						iter.remove();
-					}
-				}
-			}
-			return Collections.unmodifiableList(limited.size() == original.size() ? new ArrayList<T>(original) : limited);
-		}
+	@Override
+	public Individu cloneUpTo(@NotNull RegDate date) {
+		return new MockIndividu(this, date);
 	}
 
 	private static final class FreezableEtatCivilList extends EtatCivilListImpl {
@@ -607,37 +607,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		@Override
 		public ListIterator<EtatCivil> listIterator(int index) {
 			return new FreezableListIterator(super.listIterator(index));
-		}
-	}
-
-	private void limitPartsToBeforeDate(RegDate date, Set<AttributeIndividu> parts) {
-		if (parts != null && parts.contains(AttributeIndividu.ADOPTIONS)) {
-			adoptionsReconnaissances = buildLimitedCollectionBeforeDate(adoptionsReconnaissances, date, ADOPTION_LIMITATOR);
-		}
-		if (parts != null && parts.contains(AttributeIndividu.ENFANTS)) {
-			enfants = buildLimitedCollectionBeforeDate(enfants, date, ENFANT_LIMITATOR);
-		}
-		if (etatsCivils != null && !etatsCivils.isEmpty()) {
-			final FreezableEtatCivilList etatsCivilsTemp = new FreezableEtatCivilList(etatsCivils, false);
-			if (date != null) {
-				final Iterator<EtatCivil> iterator = etatsCivilsTemp.iterator();
-				while (iterator.hasNext()) {
-					final EtatCivil etatCivil = iterator.next();
-					if (etatCivil.getDateDebut() != null && etatCivil.getDateDebut().isAfter(date)) {
-						iterator.remove();
-					}
-				}
-			}
-			etatsCivilsTemp.freeze();
-			etatsCivils = etatsCivilsTemp;
-		}
-
-		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
-			List<Permis> limited = buildLimitedCollectionBeforeDate(permis, date, PERMIS_LIMITATOR);
-			permis = (limited == null ? null : new MockPermisList(permis.getNumeroIndividu(), limited));
-		}
-		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
-			setAdresses(buildLimitedCollectionBeforeDate(getAdresses(), date, ADRESSE_LIMITATOR));
 		}
 	}
 }

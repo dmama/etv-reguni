@@ -30,24 +30,24 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) {
 		try {
-			return target.getIndividu(noIndividu, date, parties);
+			return target.getIndividu(noIndividu, parties);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getIndividu(noIndividu=" + noIndividu + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : " + getMessage(e), e);
+			LOGGER.error("Exception dans getIndividu(noIndividu=" + noIndividu + ",parties=" + Arrays.toString(parties) + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
 			throw new ServiceCivilException(getMessage(e));
 		}
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
 		try {
-			return target.getIndividus(nosIndividus, date, parties);
+			return target.getIndividus(nosIndividus, parties);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getIndividus(nosIndividu=" + Arrays.toString(nosIndividus.toArray()) + ",date=" + date + ",parties=" + Arrays.toString(parties) + ") : "
+			LOGGER.error("Exception dans getIndividus(nosIndividu=" + Arrays.toString(nosIndividus.toArray()) + ",parties=" + Arrays.toString(parties) + ") : "
 					+ getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
 			throw new ServiceCivilException(getMessage(e));

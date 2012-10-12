@@ -155,7 +155,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 	}
 
 	private static void assertNomIndividu(String nom, String prenom, ServiceCivilCache cache, final long noIndividu) {
-		final Individu individu = cache.getIndividu(noIndividu, null, AttributeIndividu.PARENTS); // on demande toujours la même part que pour le traitement de l'événement, pour éviter des effers de bord au niveau du cache
+		final Individu individu = cache.getIndividu(noIndividu, AttributeIndividu.PARENTS); // on demande toujours la même part que pour le traitement de l'événement, pour éviter des effers de bord au niveau du cache
 		assertNotNull(individu);
 		assertEquals(prenom, individu.getPrenom());
 		assertEquals(nom, individu.getNom());

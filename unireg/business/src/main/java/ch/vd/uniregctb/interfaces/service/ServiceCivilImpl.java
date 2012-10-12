@@ -302,12 +302,28 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 
 	@Override
 	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
-		return target.getIndividu(noIndividu, date, parties);
+		final Individu individu = target.getIndividu(noIndividu, parties);
+		if (date == null || individu == null) {
+			return individu;
+		}
+		else {
+			return individu.cloneUpTo(date);
+		}
 	}
 
 	@Override
 	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
-		return target.getIndividus(nosIndividus, date, parties);
+		final List<Individu> list = target.getIndividus(nosIndividus, parties);
+		if (date == null) {
+			return list;
+		}
+		else {
+			final List<Individu> l = new ArrayList<Individu>(list.size());
+			for (Individu individu : list) {
+				l.add(individu.cloneUpTo(date));
+			}
+			return l;
+		}
 	}
 
 	@Override

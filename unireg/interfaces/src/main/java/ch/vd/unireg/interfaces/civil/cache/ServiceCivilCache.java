@@ -140,14 +140,12 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 
 	private static class GetIndividuKey implements Serializable {
 
-		private static final long serialVersionUID = -1748046591127116308L;
+		private static final long serialVersionUID = -5800763396635503970L;
 
 		private final long noIndividu;
-		private final RegDate date;
 
-		private GetIndividuKey(long noIndividu, RegDate date) {
+		private GetIndividuKey(long noIndividu) {
 			this.noIndividu = noIndividu;
-			this.date = date;
 		}
 
 		@Override
@@ -156,19 +154,13 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final GetIndividuKey that = (GetIndividuKey) o;
+			return noIndividu == that.noIndividu;
 
-			if (noIndividu != that.noIndividu) return false;
-			//noinspection RedundantIfStatement
-			if (date != null ? !date.equals(that.date) : that.date != null) return false;
-
-			return true;
 		}
 
 		@Override
 		public int hashCode() {
-			int result = (int) (noIndividu ^ (noIndividu >>> 32));
-			result = 31 * result + (date != null ? date.hashCode() : 0);
-			return result;
+			return (int) (noIndividu ^ (noIndividu >>> 32));
 		}
 	}
 
@@ -176,16 +168,16 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(final long noIndividu, @Nullable final RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
-		final GetIndividuKey key = new GetIndividuKey(noIndividu, date);
+		final GetIndividuKey key = new GetIndividuKey(noIndividu);
 		final Element element = cache.get(key);
 		if (element == null) {
 			// l'élément n'est pas en cache, on le récupère et on l'insère
-			individu = target.getIndividu(noIndividu, date, parties);
+			individu = target.getIndividu(noIndividu, parties);
 			assertPartsPresence(individu, partiesSet);
 			final Set<AttributeIndividu> effectiveParts = individu == null ? partiesSet : individu.getAvailableParts(); // le service peut retourner plus de parts que demandé, autant les stocker tout de suite
 			IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(effectiveParts, individu);
@@ -199,7 +191,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 				@Override
 				public Individu getDeltaValue(Set<AttributeIndividu> delta) {
 					// on complète la liste des parts à la volée
-					final Individu ind = target.getIndividu(noIndividu, date, setToArray(delta));
+					final Individu ind = target.getIndividu(noIndividu, setToArray(delta));
 					if (ind == null) {
 						throw new ServiceCivilException("Le service civil ne trouve pas l'individu n°" + noIndividu + " alors que des données le concernant pré-existent dans le cache !");
 					}
@@ -220,7 +212,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 
@@ -229,7 +221,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 
 		// Récupère les individus dans le cache
 		for (Long no : nosIndividus) {
-			final GetIndividuKey key = new GetIndividuKey(no, date);
+			final GetIndividuKey key = new GetIndividuKey(no);
 			final Element element = cache.get(key);
 			if (element == null) {
 				// l'élément n'est pas dans le cache -> on doit le demander au service civil
@@ -251,12 +243,12 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 
 		// Effectue l'appel au service pour les individus non-cachés
 		if (!uncached.isEmpty()) {
-			final List<Individu> list = target.getIndividus(uncached, date, parties);
+			final List<Individu> list = target.getIndividus(uncached, parties);
 			for (Individu ind : list) {
 				final long no = ind.getNoTechnique();
 				map.put(no, ind);
 				// Met-à-jour le cache
-				final GetIndividuKey key = new GetIndividuKey(no, date);
+				final GetIndividuKey key = new GetIndividuKey(no);
 				assertPartsPresence(ind, partiesSet);
 				final Set<AttributeIndividu> effectiveParts = ind.getAvailableParts(); // le service peut retourner plus de parts que demandé, autant les stocker tout de suite
 				final IndividuCacheValueWithParts value = new IndividuCacheValueWithParts(effectiveParts, ind);
@@ -299,7 +291,7 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 			if (this == o) return true;
 			if (o == null || getClass() != o.getClass()) return false;
 
-			final GetIndividuKey that = (GetIndividuKey) o;
+			final GetNationaliteAtKey that = (GetNationaliteAtKey) o;
 
 			if (noIndividu != that.noIndividu) return false;
 			//noinspection RedundantIfStatement

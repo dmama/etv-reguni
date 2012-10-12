@@ -725,7 +725,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) {
 		final MockIndividu individu = getIndividu(noIndividu);
 		if (individu != null && !individu.isNonHabitantNonRenvoye()) {
 			// on fait la copie avec les parts demandées seulements
@@ -736,7 +736,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 			else {
 				parts = new HashSet<AttributeIndividu>(Arrays.asList(parties));
 			}
-			return new MockIndividu(individu, parts, date);
+			return new MockIndividu(individu, parts);
 		}
 		else {
 			return null;
@@ -744,10 +744,10 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
 		final List<Individu> individus = new ArrayList<Individu>(nosIndividus.size());
 		for (Long noIndividu : nosIndividus) {
-			final Individu individu = getIndividu(noIndividu, date, parties);
+			final Individu individu = getIndividu(noIndividu, parties);
 			if (individu != null) {
 				individus.add(individu);
 			}

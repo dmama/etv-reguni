@@ -59,9 +59,9 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) {
 
-		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), date, true);
+		final ListOfPersons list = getPersonsSafely(Arrays.asList(noIndividu), null, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return null;
 		}
@@ -73,7 +73,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		// il faut demander les relations entre individus dans un appel séparé
 		final List<Relationship> relations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), date, true);
+			final ListOfRelations rel = getRelationsSafely(Arrays.asList(noIndividu), null, true);
 			if (rel != null && rel.getListOfResults().getResult() != null && !rel.getListOfResults().getResult().isEmpty()) {
 				if (rel.getListOfResults().getResult().size() > 1) {
 					throw new ServiceCivilException("Plusieurs relations d'individu trouvés avec le même numéro d'individu = " + noIndividu);
@@ -100,7 +100,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		if (interceptor != null) {
-			interceptor.afterGetIndividu(individu, noIndividu, date, parties);
+			interceptor.afterGetIndividu(individu, noIndividu, parties);
 		}
 
 		return individu;
@@ -118,9 +118,9 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
 
-		final ListOfPersons list = getPersonsSafely(nosIndividus, date, true);
+		final ListOfPersons list = getPersonsSafely(nosIndividus, null, true);
 		if (list == null || list.getNumberOfResults().intValue() == 0) {
 			return Collections.emptyList();
 		}
@@ -128,7 +128,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		// il faut demander les relations entre individus dans un appel séparé
 		final Map<Long, List<Relationship>> allRelations;
 		if (parties != null && containsAny(parties, AttributeIndividu.PARENTS, AttributeIndividu.ENFANTS, AttributeIndividu.CONJOINTS)) {
-			final ListOfRelations rel = getRelationsSafely(nosIndividus, date, true);
+			final ListOfRelations rel = getRelationsSafely(nosIndividus, null, true);
 			if (rel != null && rel.getListOfResults().getResult() != null) {
 				allRelations = new HashMap<Long, List<Relationship>>();
 				for (ListOfRelations.ListOfResults.Result relRes : rel.getListOfResults().getResult()) {
@@ -161,13 +161,16 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 
 		if (interceptor != null) {
-			interceptor.afterGetIndividus(individus, nosIndividus, date, parties);
+			interceptor.afterGetIndividus(individus, nosIndividus, parties);
 		}
 
 		return individus;
 	}
 
-	private ListOfPersons getPersonsSafely(Collection<Long> ids, RegDate date, boolean withHistory) {
+	private ListOfPersons getPersonsSafely(Collection<Long> ids, @Nullable RegDate date, boolean withHistory) {
+		if (date != null && withHistory) {
+			throw new IllegalArgumentException("Il n'est pas possible de spécifier à la fois une date de validité et de demander l'historique complet d'un individu");
+		}
 		try {
 			ListOfPersons list = null;
 			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(ids, NB_PARAMS_MAX_PAR_GET);
@@ -188,7 +191,10 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 		}
 	}
 
-	private ListOfRelations getRelationsSafely(Collection<Long> nosIndividus, RegDate date, boolean withHistory) {
+	private ListOfRelations getRelationsSafely(Collection<Long> nosIndividus, @Nullable RegDate date, boolean withHistory) {
+		if (date != null && withHistory) {
+			throw new IllegalArgumentException("Il n'est pas possible de spécifier à la fois une date de validité et de demander l'historique complet des relations d'un individu");
+		}
 		try {
 			ListOfRelations list = null;
 			final BatchIterator<Long> batches = new StandardBatchIterator<Long>(nosIndividus, NB_PARAMS_MAX_PAR_GET);
@@ -249,7 +255,7 @@ public class ServiceCivilRCPers implements ServiceCivilRaw {
 
 	@Override
 	public void ping() throws ServiceCivilException {
-		final Individu individu = getIndividu(611836, null); // Francis Perroset
+		final Individu individu = getIndividu(611836); // Francis Perroset
 		if (individu == null) {
 			throw new ServiceCivilException("L'individu n°611836 est introuvable");
 		}

@@ -16,7 +16,7 @@ public interface ServiceCivilRaw {
 	public static final String SERVICE_NAME = "ServiceCivil";
 
 	/**
-	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, identifié par le numéro en paramètre.
+	 * Retourne l'individu identifié par le numéro en paramètre avec son historique complet.
 	 * <p/>
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants :
 	 * <ul>
@@ -28,11 +28,10 @@ public interface ServiceCivilRaw {
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param date       la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
 	 */
-	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, AttributeIndividu... parties);
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
@@ -40,11 +39,10 @@ public interface ServiceCivilRaw {
 	 * <b>Attention !</b> L'ordre des individus retourné ne correspond pas forcément à celui des numéros d'individu spécifiés.
 	 *
 	 * @param nosIndividus les numéros d'individus demandés
-	 * @param date         la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties);
 
 	/**
 	 * Renvoie un individu correspondant à l'événement donné

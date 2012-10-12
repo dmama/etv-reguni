@@ -38,11 +38,11 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, @Nullable final RegDate date, final AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
-			return target.getIndividu(noIndividu, date, parties);
+			return target.getIndividu(noIndividu, parties);
 		}
 		catch (RuntimeException e) {
 			t = e;
@@ -52,19 +52,19 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			tracing.end(time, t, "getIndividu", new Object() {
 				@Override
 				public String toString() {
-					return String.format("noIndividu=%d, date=%s, parties=%s", noIndividu, ServiceTracing.toString(date), ServiceTracing.toString(parties));
+					return String.format("noIndividu=%d, parties=%s", noIndividu, ServiceTracing.toString(parties));
 				}
 			});
 		}
 	}
 
 	@Override
-	public List<Individu> getIndividus(final Collection<Long> nosIndividus, @Nullable final RegDate date, final AttributeIndividu... parties) {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final AttributeIndividu... parties) {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final List<Individu> list = target.getIndividus(nosIndividus, date, parties);
+			final List<Individu> list = target.getIndividus(nosIndividus, parties);
 			items = list == null ? 0 : list.size();
 			return list;
 		}
@@ -76,7 +76,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			tracing.end(time, t, "getIndividus", items, new Object() {
 				@Override
 				public String toString() {
-					return String.format("nosIndividus=%s, date=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(date), ServiceTracing.toString(parties));
+					return String.format("nosIndividus=%s, parties=%s", ServiceTracing.toString(nosIndividus), ServiceTracing.toString(parties));
 				}
 			});
 		}

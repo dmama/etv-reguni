@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -152,6 +154,14 @@ public interface Individu extends EntiteCivile {
 	 * @return un nouvel individu.
 	 */
 	Individu clone(Set<AttributeIndividu> parts);
+
+	/**
+	 * Clone l'individu en gardant uniquement l'historique des données jusqu'à une certaine date.
+	 *
+	 * @param date la limite jusqu'à laquelle les données doivent être gardées.
+	 * @return un nouvel individu.
+	 */
+	Individu cloneUpTo(@NotNull RegDate date);
 
 	/**
 	 * @return l'ensemble des parts effectivement renseignées sur l'individu. Ces parts peuvent différer des parts explicitement demandées, car certaines implémentations renseignent systématiquement

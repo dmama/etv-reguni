@@ -16,6 +16,7 @@ import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
 import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.HistoryContact;
@@ -32,6 +33,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.civil.rcpers.EvdHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
@@ -186,6 +188,61 @@ public class IndividuRCPers implements Individu, Serializable {
 
 		if (parts != null) {
 			this.availableParts.addAll(parts);
+		}
+	}
+
+	public IndividuRCPers(IndividuRCPers right, @NotNull RegDate date) {
+		this.noTechnique = right.noTechnique;
+		this.prenom = right.getPrenom();
+		this.autresPrenoms = right.getAutresPrenoms();
+		this.nom = right.getNom();
+		this.nomNaissance = right.getNomNaissance();
+		this.noAVS11 = right.getNoAVS11();
+		this.nouveauNoAVS = right.nouveauNoAVS;
+		this.numeroRCE = right.numeroRCE;
+		this.sexe = right.sexe;
+		this.deces = right.deces;
+		this.naissance = right.naissance;
+		this.dateArriveeVD = right.dateArriveeVD;
+		this.origines = right.origines;
+		this.derniereNationalite = right.derniereNationalite;
+		this.tutelle = right.tutelle;
+
+		this.adresses = right.adresses;
+		this.adoptions = right.adoptions;
+		this.parents = right.parents;
+		this.enfants = right.enfants;
+		this.conjoints = right.conjoints;
+		this.etatsCivils = right.etatsCivils;
+		this.permis = right.permis;
+		limitHistoTo(date);
+
+		this.availableParts.addAll(right.availableParts);
+	}
+
+	private void limitHistoTo(RegDate date) {
+
+		if (adresses != null) {
+			adresses = CollectionLimitator.limit(adresses, date, CollectionLimitator.ADRESSE_LIMITATOR);
+		}
+		if (adoptions != null) {
+			adoptions = CollectionLimitator.limit(adoptions, date, CollectionLimitator.ADOPTION_LIMITATOR);
+		}
+		if (parents != null) {
+			parents = CollectionLimitator.limit(parents, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (enfants != null) {
+			enfants = CollectionLimitator.limit(enfants, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (conjoints != null) {
+			conjoints = CollectionLimitator.limit(conjoints, date, CollectionLimitator.RELATION_LIMITATOR);
+		}
+		if (etatsCivils != null) {
+			etatsCivils = new EtatCivilListRCPers(CollectionLimitator.limit(etatsCivils, date, CollectionLimitator.ETAT_CIVIL_LIMITATOR));
+		}
+		if (permis != null) {
+			final List<Permis> limited = CollectionLimitator.limit(permis, date, CollectionLimitator.PERMIS_LIMITATOR);
+			permis = (limited == null ? null : new PermisListRcPers(permis.getNumeroIndividu(), limited));
 		}
 	}
 
@@ -653,6 +710,11 @@ public class IndividuRCPers implements Individu, Serializable {
 	@Override
 	public Individu clone(Set<AttributeIndividu> parts) {
 		return new IndividuRCPers(this, parts);
+	}
+
+	@Override
+	public Individu cloneUpTo(@NotNull RegDate date) {
+		return new IndividuRCPers(this, date);
 	}
 
 	@Override
