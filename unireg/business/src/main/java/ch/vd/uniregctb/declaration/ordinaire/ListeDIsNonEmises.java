@@ -3,9 +3,10 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -39,24 +40,12 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 			return nbCtb;
 		}
 
-		public void setNbCtb(String nbCtb) {
-			this.nbCtb = nbCtb;
-		}
-
 		public String getRaison() {
 			return raison;
 		}
 
-		public void setRaison(String raison) {
-			this.raison = raison;
-		}
-
 		public String getDetails() {
 			return details;
-		}
-
-		public void setDetails(String details) {
-			this.details = details;
 		}
 
 		public String getDateDebut() {
@@ -87,7 +76,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 	}
 
 
-	public void addNonEmisePourRaisonInconnue(Long noCtb, RegDate dateDebut, RegDate dateFin) {
+	public void addNonEmisePourRaisonInconnue(Long noCtb, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		diNonEmises.add(
 				new LigneRapport(
 						String.valueOf(noCtb),
@@ -139,7 +128,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 	}
 
 	@Override
-	public void addErrorForGestionNul(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
+	public void addErrorForGestionNul(Contribuable ctb, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, String details) {
 		diNonEmises.add(
 				new LigneRapport(
 						String.valueOf(ctb.getId()),
@@ -192,53 +181,6 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 						"",
 						"La tâche pour l'envoi de la DI est entrain d'être traîtée !",
 						"Le batch d'envoi des DIs tourne en même temps que le batch de creation de la liste des DIs non émises ?!?"
-				)
-		);
-	}
-
-	public void addContribuableInvalide(Long ctbId, ValidationResults results) {
-		StringBuilder sbErr = null;
-		for (String err : results.getErrors()) {
-			if (sbErr == null) {
-				sbErr = new StringBuilder("ERREURS : ");
-			}
-			else {
-				sbErr.append(", ");
-			}
-			sbErr.append(err);
-		}
-		StringBuilder sbWarn = null;
-		for (String warn : results.getWarnings()) {
-			if (sbWarn == null) {
-				sbWarn = new StringBuilder("AVERTISSEMENTS : ");
-			}
-			else {
-				sbWarn.append(", ");
-			}
-			sbWarn.append(warn);
-		}
-
-		String messageDetail;
-		if (sbErr != null && sbWarn == null) {
-			messageDetail = sbErr.toString();
-		}
-		else if (sbErr == null && sbWarn != null) {
-			messageDetail = sbWarn.toString();
-		}
-		else if (sbErr != null && sbWarn != null) {
-			messageDetail = sbErr.toString() + " - " + sbWarn.toString();
-		}
-		else {
-			messageDetail = "";
-		}
-
-		diNonEmises.add(
-				new LigneRapport(
-						String.valueOf(ctbId),
-						"",
-						"",
-						"Ce contribuable n'est pas valide",
-						messageDetail
 				)
 		);
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
@@ -83,7 +84,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 		this.adresseService = adresseService;
 	}
 
-	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, StatusManager s) throws DeclarationException {
+	public ListeDIsNonEmises run(final int anneePeriode, final RegDate dateTraitement, @Nullable StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -182,22 +183,22 @@ public class ProduireListeDIsNonEmisesProcessor {
 			ExistenceResults<TacheEnvoiDeclarationImpot> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
 			if (res == null) {
 				rapport.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
+				return;
 			}
-			else {
-				tache = res.getObject();
-				switch (tache.getEtat()) {
-				case EN_COURS:
-					// Reellement ce cas ne devrait pas se produire ...
-					rapport.addEntrainDEtreEmise(contribuable.getId());
-					return;
-				case EN_INSTANCE:
-					rapport.addTacheNonTraitee(contribuable.getId());
-					return;
-				case TRAITE:
-					// Cas ou la tache à était traité et la DI non émises, il va falloir simuler !
-					tache.setEtat(TypeEtatTache.EN_INSTANCE);
-					break;
-				}
+
+			tache = res.getObject();
+			switch (tache.getEtat()) {
+			case EN_COURS:
+				// Reellement ce cas ne devrait pas se produire ...
+				rapport.addEntrainDEtreEmise(contribuable.getId());
+				return;
+			case EN_INSTANCE:
+				rapport.addTacheNonTraitee(contribuable.getId());
+				return;
+			case TRAITE:
+				// Cas ou la tache à était traité et la DI non émises, il va falloir simuler !
+				tache.setEtat(TypeEtatTache.EN_INSTANCE);
+				break;
 			}
 		}
 

@@ -69,7 +69,6 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
                     table.addLigne("Nombre d'indigents traités:", String.valueOf(results.ctbsIndigents.size()));
                     table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
                     table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
-                    table.addLigne("Nombre de contribuables rollback", String.valueOf(results.ctbsRollback.size()));
 	                table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
                     table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
                 }
@@ -109,15 +108,6 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             String contenu = asCsvFile(results.ctbsEnErrors, filename, status);
             String titre = "Liste des contribuables en erreur";
             String listVide = "(aucun contribuable en erreur)";
-            addListeDetaillee(writer, titre, listVide, filename, contenu);
-        }
-
-        // CTBs rollback
-        {
-            String filename = "contribuables_rollback.csv";
-            String contenu = asCsvFile(results.ctbsRollback, filename, status);
-            String titre = "Liste des contribuables rollback";
-            String listVide = "(aucun contribuable rollback)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 

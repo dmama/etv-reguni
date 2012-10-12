@@ -83,7 +83,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(0, results.ctbsTraites.size());
 			Assert.assertEquals(1, results.nbCtbsTotal);
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());
@@ -94,7 +93,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(0, results.ctbsTraites.size());
 			Assert.assertEquals(1, results.nbCtbsTotal);
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());
@@ -105,7 +103,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(0, results.ctbsTraites.size());
 			Assert.assertEquals(0, results.nbCtbsTotal);
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());
@@ -140,7 +137,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(1, results.ctbsTraites.size());
 			Assert.assertEquals(1, results.nbCtbsTotal);
 			Assert.assertEquals(1, results.getNombreDeDIsNonEmises());
@@ -151,7 +147,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(1, results.ctbsTraites.size());
 			Assert.assertEquals(1, results.nbCtbsTotal);
 			Assert.assertEquals(1, results.getNombreDeDIsNonEmises());
@@ -162,7 +157,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 			Assert.assertEquals(0, results.ctbsEnErrors.size());
 			Assert.assertEquals(0, results.ctbsIgnores.size());
 			Assert.assertEquals(0, results.ctbsIndigents.size());
-			Assert.assertEquals(0, results.ctbsRollback.size());
 			Assert.assertEquals(0, results.ctbsTraites.size());
 			Assert.assertEquals(0, results.nbCtbsTotal);
 			Assert.assertEquals(0, results.getNombreDeDIsNonEmises());

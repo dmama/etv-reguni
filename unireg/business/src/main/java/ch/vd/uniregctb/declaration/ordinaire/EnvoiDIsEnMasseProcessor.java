@@ -27,7 +27,6 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
@@ -289,43 +288,39 @@ public class EnvoiDIsEnMasseProcessor {
 
 	/**
 	 * Crée un iterateur sur les tâches d'envoi des DIs en instance.
-	 * <p>
+	 * <p/>
 	 * [UNIREG-1791] on traite les tâches les plus récentes en premier (tache.id DESC)
 	 *
 	 * @return itérateur sur les tiers
 	 */
 	protected Iterator<TacheEnvoiDeclarationImpot> createIteratorOnTaches(final int annee, final TypeContribuable typeContribuable,
-			final TypeDocument typeDocument, final List<Long> ids) {
+	                                                                      final TypeDocument typeDocument, final List<Long> ids) {
 
 		final RegDate debutAnnee = RegDate.get(annee, 1, 1);
 		final RegDate finAnnee = RegDate.get(annee, 12, 31);
 
-		final Iterator<TacheEnvoiDeclarationImpot> i = hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpot>>() {
-					@Override
-					public Iterator<TacheEnvoiDeclarationImpot> doInHibernate(Session session) throws HibernateException {
-						FlushMode mode = session.getFlushMode();
-						try {
-							/*
-							 * On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà
-							 * modifiées concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
-							 */
-							session.setFlushMode(FlushMode.MANUAL);
-							final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
-							queryObject.setParameter("typeContribuable", typeContribuable.name());
-							queryObject.setParameter("typeDocument", typeDocument.name());
-							queryObject.setParameterList("ids", ids);
-							queryObject.setParameter("debutPeriode", debutAnnee.index());
-							queryObject.setParameter("finPeriode", finAnnee.index());
-							//noinspection unchecked
-							return queryObject.iterate();
-						}
-						finally {
-							session.setFlushMode(mode);
-						}
-					}
-				});
-
-		return i;
+		return hibernateTemplate.execute(new HibernateCallback<Iterator<TacheEnvoiDeclarationImpot>>() {
+			@Override
+			public Iterator<TacheEnvoiDeclarationImpot> doInHibernate(Session session) throws HibernateException {
+				FlushMode mode = session.getFlushMode();
+				try {
+					// On traite toutes les tâches d'un lot de contribuables à la fois : il ne peut pas y avoir de tâches déjà modifiées
+					// concernant les contribuables spécifiés et on peut donc sans risque ne pas flusher la session.
+					session.setFlushMode(FlushMode.MANUAL);
+					final Query queryObject = session.createQuery(queryTacheEnvoiEnInstance);
+					queryObject.setParameter("typeContribuable", typeContribuable.name());
+					queryObject.setParameter("typeDocument", typeDocument.name());
+					queryObject.setParameterList("ids", ids);
+					queryObject.setParameter("debutPeriode", debutAnnee.index());
+					queryObject.setParameter("finPeriode", finAnnee.index());
+					//noinspection unchecked
+					return queryObject.iterate();
+				}
+				finally {
+					session.setFlushMode(mode);
+				}
+			}
+		});
 	}
 
 	/**
@@ -409,7 +404,7 @@ public class EnvoiDIsEnMasseProcessor {
 		// Voir le use-case "SCU-ExclureContribuablesEnvoiDI"
 		final RegDate dateLimiteExclusion = contribuable.getDateLimiteExclusionEnvoiDeclarationImpot();
 		if (dateLimiteExclusion != null && dateTraitement.isBeforeOrEqual(dateLimiteExclusion)) {
-			rapport.addIgnoreCtbExclu(contribuable, tache.getDateDebut(), tache.getDateFin(), dateLimiteExclusion);
+			rapport.addIgnoreCtbExclu(contribuable, dateLimiteExclusion);
 			return false;
 		}
 
@@ -433,13 +428,12 @@ public class EnvoiDIsEnMasseProcessor {
 			}
 		}
 		//UNIREG-1952
-		else if( dateExclusionDecedes!=null && estDecedeEnFinDannee(contribuable,tache.getDateFin())){
+		else if (dateExclusionDecedes != null && estDecedeEnFinDannee(contribuable, tache.getDateFin())) {
 			//rapport
-			rapport.addIgnoreCtbExcluDecede(contribuable, tache.getDateDebut(), tache.getDateFin());
+			rapport.addIgnoreCtbExcluDecede(contribuable);
 			return false;
 		}
 		else {
-
 			// [UNIREG-1852] les contribuables indigents décédés dans l'année doivent être traités comme les autres contribuables.
 			final boolean estIndigentNonDecede = (estIndigent(contribuable, tache.getDateFin()) && !estDecede(contribuable, tache.getDateFin()));
 			if (estIndigentNonDecede) {
@@ -457,23 +451,23 @@ public class EnvoiDIsEnMasseProcessor {
 		return true;
 	}
 
-	/**Permet de savoir
+	/**
+	 * Permet de savoir si le contribuable est décédé au 31 décembre de l'année spécifiée par la date
 	 *
-	 * @param contribuable
-	 * @param date
-	 * @return
+	 * @param contribuable un contribuable
+	 * @param date         la date à partir de laquelle est extraite l'année à tester
+	 * @return <b>vrai</b> si le contribuable est décédée; <b>faux</b> autrement.
 	 */
 	private boolean estDecedeEnFinDannee(Contribuable contribuable, final RegDate date) {
 		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(date);
 
-		RegDate dateFinExclusion = RegDate.get(date.year(),12,31);
-		if(forPrincipal!=null){
-			 if(RegDateHelper.isBetween(forPrincipal.getDateFin(),dateExclusionDecedes,dateFinExclusion, NullDateBehavior.LATEST)){
+		final RegDate dateFinExclusion = RegDate.get(date.year(), 12, 31);
+		if (forPrincipal != null) {
+			if (RegDateHelper.isBetween(forPrincipal.getDateFin(), dateExclusionDecedes, dateFinExclusion, NullDateBehavior.LATEST)) {
 				return (forPrincipal.getMotifFermeture() == MotifFor.VEUVAGE_DECES);
-			 }
+			}
 		}
 		return false;
-
 	}
 
 	private RegDate getDateDebutExclusion(int anneePeriode) {
@@ -775,23 +769,6 @@ public class EnvoiDIsEnMasseProcessor {
 	}
 
 	/**
-	 * Représente un lot de contribuables à traiter
-	 */
-	protected static class LotContribuables {
-		public final int annee;
-		public final TypeContribuable typeContribuable;
-		public final TypeDocument typeDocument;
-		public final List<Long> ids;
-
-		public LotContribuables(int annee, TypeContribuable typeContribuable, TypeDocument typeDocument, List<Long> ids) {
-			this.annee = annee;
-			this.typeContribuable = typeContribuable;
-			this.typeDocument = typeDocument;
-			this.ids = ids;
-		}
-	}
-
-	/**
 	 * Cache qui contient toutes les déclarations existantes pendant une période donnée, pour un interval de contribuables donné.
 	 */
 	protected class DeclarationsCache {
@@ -807,9 +784,7 @@ public class EnvoiDIsEnMasseProcessor {
 		/**
 		 * Retourne les déclarations qui existent (= intersectent) dans la période spécifiée.
 		 *
-		 * @param ids
-		 *            les ids des contribuable dont on recherche les déclarations
-		 * @return une liste des déclarations trouvées
+		 * @param ids les ids des contribuable dont on recherche les déclarations
 		 */
 		@SuppressWarnings("unchecked")
 		protected void initMap(final List<Long> ids) {
@@ -923,69 +898,6 @@ public class EnvoiDIsEnMasseProcessor {
 			}
 
 			return list;
-		}
-	}
-
-	/**
-	 * Iterateur qui retourne des lots de contribuables de taille fixe.
-	 */
-	protected class LotContribuablesIterator implements Iterator<LotContribuables> {
-
-		private final int annee;
-		private final TypeContribuable typeContribuable;
-		private final TypeDocument typeDocument;
-		private int idCourant;
-		private final int taille;
-
-		private final List<Long> idsList;
-		private LotContribuables next;
-
-		public LotContribuablesIterator(int annee, TypeContribuable typeContribuable, TypeDocument typeDocument, RegDate dateTraitement,
-				int taille, Long noCtbMin, Long noCtbMax,boolean exclureDecede) {
-			this.annee = annee;
-			this.typeContribuable = typeContribuable;
-			this.typeDocument = typeDocument;
-			this.idsList = createListOnContribuableIds(annee, typeContribuable, typeDocument, noCtbMin, noCtbMax);
-			this.idCourant = 0;
-			this.taille = taille;
-			this.next = null;
-		}
-
-		@Override
-		public boolean hasNext() {
-			calcNext();
-			return next != null;
-		}
-
-		private void calcNext() {
-
-			List<Long> ids = new ArrayList<Long>(taille);
-			int count = 0;
-
-			// cherche la prochaine plage contenant 'taille' contribuables
-			while (count < taille && idCourant < idsList.size()) {
-				final Long id = idsList.get(idCourant);
-				ids.add(id);
-				count++;
-				idCourant++;
-			}
-
-			if (count > 0) {
-				next = new LotContribuables(annee, typeContribuable, typeDocument, ids);
-			}
-			else {
-				next = null;
-			}
-		}
-
-		@Override
-		public LotContribuables next() {
-			return next;
-		}
-
-		@Override
-		public void remove() {
-			throw new NotImplementedException();
 		}
 	}
 }

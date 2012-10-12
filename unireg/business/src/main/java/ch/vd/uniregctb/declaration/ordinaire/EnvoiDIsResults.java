@@ -3,11 +3,12 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
-import ch.vd.uniregctb.declaration.ordinaire.EnvoiDIsEnMasseProcessor.LotContribuables;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -89,11 +90,10 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final List<Long> ctbsIndigents = new ArrayList<Long>();
 	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
-	public final List<Erreur> ctbsRollback = new ArrayList<Erreur>();
 	public boolean interrompu;
 
-	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, Long noCtbMin, Long noCtbMax, RegDate dateExclureDecede, TiersService tiersService,
-	                       AdresseService adresseService) {
+	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
+	                       TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.categorie = categorie;
@@ -121,17 +121,11 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.EXCEPTION, e.getMessage(), getNom(ctb.getNumero())));
 	}
 
-	public void addRollback(LotContribuables lot, Exception e) {
-		List<Long> ids = lot.ids;
-		for (Long id : ids) {
-			ctbsRollback.add(new Erreur(id, null, ErreurType.ROLLBACK, e.getMessage(), getNom(id)));
-		}
-	}
 	public void addErrorDICollision(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.COLLISION_DI, details, getNom(ctb.getNumero())));
 	}
 
-	public void addErrorForGestionNul(Contribuable ctb, RegDate dateDebut, RegDate dateFin, String details) {
+	public void addErrorForGestionNul(Contribuable ctb, @Nullable RegDate dateDebut, @Nullable RegDate dateFin, String details) {
 		ctbsEnErrors.add(new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), ErreurType.FOR_GESTION_NUL, details, getNom(ctb.getNumero())));
 	}
 
@@ -139,16 +133,17 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.DI_DEJA_EXISTANTE, null, getNom(ctb.getNumero())));
 	}
 
-	public void addIgnoreCtbExclu(Contribuable ctb, RegDate dateDebut, RegDate dateFin, RegDate dateLimiteExclusion) {
+	public void addIgnoreCtbExclu(Contribuable ctb, RegDate dateLimiteExclusion) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Date limite de l'exclusion = "
 				+ RegDateHelper.dateToDisplayString(dateLimiteExclusion), getNom(ctb.getNumero())));
 	}
 
-public void addIgnoreCtbExcluDecede(Contribuable ctb, RegDate dateDebut, RegDate dateFin) {
+	public void addIgnoreCtbExcluDecede(Contribuable ctb) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Décédé en fin d'année", getNom(ctb.getNumero())));
 	}
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addAll(R rapport) {
 		if (rapport != null) {
