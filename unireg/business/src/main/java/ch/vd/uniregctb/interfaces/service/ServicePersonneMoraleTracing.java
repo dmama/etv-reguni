@@ -50,32 +50,42 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public List<Long> getAllIds() {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getAllIds();
+			final List<Long> ids = target.getAllIds();
+			if (ids != null) {
+				items = ids.size();
+			}
+			return ids;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getAllIds", null);
+			tracing.end(time, t, "getAllIds", items, null);
 		}
 	}
 
 	@Override
 	public PersonneMorale getPersonneMorale(final Long id, final PartPM... parts) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getPersonneMorale(id, parts);
+			final PersonneMorale pm = target.getPersonneMorale(id, parts);
+			if (pm != null) {
+				items = 1;
+			}
+			return pm;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getPersonneMorale", new Object() {
+			tracing.end(time, t, "getPersonneMorale", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d, parts=%s", id, ServiceTracing.toString(parts));
@@ -111,16 +121,21 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public Etablissement getEtablissement(final long id) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getEtablissement(id);
+			final Etablissement et = target.getEtablissement(id);
+			if (et != null) {
+				items = 1;
+			}
+			return et;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getEtablissement", new Object() {
+			tracing.end(time, t, "getEtablissement", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("id=%d", id);
@@ -156,16 +171,21 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public AdressesPM getAdresses(final long noEntreprise, final RegDate date) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getAdresses(noEntreprise, date);
+			final AdressesPM adresses = target.getAdresses(noEntreprise, date);
+			if (adresses != null) {
+				items = 1;
+			}
+			return adresses;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getAdresses", new Object() {
+			tracing.end(time, t, "getAdresses", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noEntreprise=%d, date=%s", noEntreprise, ServiceTracing.toString(date));
@@ -177,16 +197,21 @@ public class ServicePersonneMoraleTracing implements ServicePersonneMoraleServic
 	@Override
 	public AdressesPMHisto getAdressesHisto(final long noEntreprise) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getAdressesHisto(noEntreprise);
+			final AdressesPMHisto adressesHisto = target.getAdressesHisto(noEntreprise);
+			if (adressesHisto != null) {
+				items = 1;
+			}
+			return adressesHisto;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getAdressesHisto", new Object() {
+			tracing.end(time, t, "getAdressesHisto", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noEntreprise=%d", noEntreprise);

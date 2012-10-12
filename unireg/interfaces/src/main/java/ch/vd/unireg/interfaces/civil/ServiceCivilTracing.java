@@ -40,16 +40,21 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	@Override
 	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getIndividu(noIndividu, parties);
+			final Individu ind = target.getIndividu(noIndividu, parties);
+			if (ind != null) {
+				items = 1;
+			}
+			return ind;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividu", new Object() {
+			tracing.end(time, t, "getIndividu", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, parties=%s", noIndividu, ServiceTracing.toString(parties));
@@ -85,16 +90,21 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	@Override
 	public IndividuApresEvenement getIndividuFromEvent(final long eventId) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getIndividuFromEvent(eventId);
+			final IndividuApresEvenement ind = target.getIndividuFromEvent(eventId);
+			if (ind != null) {
+				items = 1;
+			}
+			return ind;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividuFromEvent", new Object() {
+			tracing.end(time, t, "getIndividuFromEvent", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("eventId=%d", eventId);
@@ -106,16 +116,21 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	@Override
 	public Nationalite getNationaliteAt(final long noIndividu, @Nullable final RegDate date) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getNationaliteAt(noIndividu, date);
+			final Nationalite nat = target.getNationaliteAt(noIndividu, date);
+			if (nat != null) {
+				items = 1;
+			}
+			return nat;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getNationaliteAt", new Object() {
+			tracing.end(time, t, "getNationaliteAt", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("noIndividu=%d, date=%s", noIndividu, ServiceTracing.toString(date));

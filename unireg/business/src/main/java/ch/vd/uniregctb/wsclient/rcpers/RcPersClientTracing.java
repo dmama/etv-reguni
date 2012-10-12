@@ -108,16 +108,21 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	@Override
 	public Event getEvent(final long eventId) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getEvent(eventId);
+			final Event event = target.getEvent(eventId);
+			if (event != null) {
+				items = 1;
+			}
+			return event;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getEvent", new Object() {
+			tracing.end(time, t, "getEvent", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("eventId=%d", eventId);
@@ -133,17 +138,23 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	                                      final Integer nationalityCountryId, final String town,
 	                                      final String passportName, final String otherNames, final RegDate birthDateFrom, final RegDate birthDateTo) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.findPersons(sex, firstNames, officialName, swissZipCode, municipalityId, dataSource, contains, history, originalName, alliancePartnershipName, aliasName,
-					nationalityStatus, nationalityCountryId, town, passportName, otherNames, birthDateFrom, birthDateTo);
+			final ListOfFoundPersons list =
+					target.findPersons(sex, firstNames, officialName, swissZipCode, municipalityId, dataSource, contains, history, originalName, alliancePartnershipName, aliasName,
+							nationalityStatus, nationalityCountryId, town, passportName, otherNames, birthDateFrom, birthDateTo);
+			if (list != null) {
+				items = list.getNumberOfResults().intValue();
+			}
+			return list;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "findPersons", new Object() {
+			tracing.end(time, t, "findPersons", items, new Object() {
 				@Override
 				public String toString() {
 					StringBuilder s = new StringBuilder();

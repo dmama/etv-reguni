@@ -36,16 +36,21 @@ public class EFactureClientTracing implements EFactureClient, InitializingBean, 
 	@Override
 	public PayerWithHistory getHistory(final long payerBusinessId, final String billerId) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getHistory(payerBusinessId, billerId);
+			final PayerWithHistory histo = target.getHistory(payerBusinessId, billerId);
+			if (histo != null) {
+				items = 1;
+			}
+			return histo;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getHistory", new Object() {
+			tracing.end(time, t, "getHistory", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("payerBusinessId=%d, billerId=%s", payerBusinessId, billerId);
