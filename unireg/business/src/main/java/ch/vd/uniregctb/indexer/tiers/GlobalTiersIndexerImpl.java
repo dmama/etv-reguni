@@ -208,11 +208,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	@Override
 	public int indexAllDatabase() throws IndexerException {
-		return indexAllDatabase(null, 1, Mode.FULL, true, true, false);
+		return indexAllDatabase(null, 1, Mode.FULL, true);
 	}
 
 	@Override
-	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus) throws
+	public int indexAllDatabase(@Nullable StatusManager statusManager, int nbThreads, Mode mode, boolean prefetchPMs) throws
 			IndexerException {
 
 		if (statusManager == null) {
@@ -231,7 +231,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		final DeltaIds deltaIds = getIdsToIndex(mode);
 
 		try {
-			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchIndividus, prefetchPMs, prefetchAllPartsIndividus, statusManager);
+			int nbIndexed = indexMultithreads(deltaIds.toAdd, nbThreads, mode, prefetchPMs, statusManager);
 			remove(deltaIds.toRemove, statusManager);
 
 			// [SIFISC-1184] on détecte et supprime les doublons une fois l'indexation effectuée
@@ -297,16 +297,15 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		}
 	}
 
-	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus, StatusManager statusManager) throws Exception {
+	private int indexMultithreads(List<Long> list, int nbThreads, Mode mode, boolean prefetchPMs, StatusManager statusManager) throws Exception {
 
-		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode
-				+ (prefetchIndividus ? " avec" : " sans") + " préchargement des individus");
+		LOGGER.info("ASYNC indexation de " + list.size() + " tiers par " + nbThreads + " threads en mode " + mode);
 
 		final TimeLog timeLog = new TimeLog();
 		timeLog.start();
 
 		final int queueSizeByThread = TiersIndexerWorker.BATCH_SIZE;
-		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread, prefetchIndividus, prefetchPMs, prefetchAllPartsIndividus);
+		final MassTiersIndexer asyncIndexer = createMassTiersIndexer(nbThreads, mode, queueSizeByThread, prefetchPMs);
 
 		final int size = list.size();
 
@@ -383,13 +382,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 * @param nbThreads                 le nombre de threads pour l'indexation en parallèle
 	 * @param mode                      le mode d'indexation
 	 * @param queueSizeByThread         la taille maximale de la queue par thread
-	 * @param prefetchIndividus         <b>vrai</b> si le cache des individus doit être préchauffé par lot; <b>faux</b> autrement.
 	 * @param prefetchPMs               <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
-	 * @param prefetchAllPartsIndividus <b>vrai</b> si toutes les parts des individus doivent être préchargée; <b>faux autrement</b>
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
-	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchIndividus, boolean prefetchPMs, boolean prefetchAllPartsIndividus) {
-		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, prefetchIndividus, prefetchAllPartsIndividus, serviceCivilService, prefetchPMs, tiersDAO, servicePM);
+	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchPMs) {
+		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilService, prefetchPMs, tiersDAO, servicePM);
 	}
 
 	/**
