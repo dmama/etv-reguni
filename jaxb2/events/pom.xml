@@ -162,7 +162,7 @@
 						<goals>
 							<goal>run</goal>
 						</goals>
-						<phase>site</phase>
+						<phase>install</phase>
 						<configuration>
 							<tasks>
 								<property name="compile_classpath" refid="maven.compile.classpath"/>
@@ -186,7 +186,11 @@
 										 splitindex="true"
 										 use="true"
 										 version="true" >
-									<fileset dir="target/generated-sources/xjc/ch/vd/unireg" defaultexcludes="yes">
+									<fileset dir="target/generated-sources/xjc/" defaultexcludes="yes">
+										<include name="**/*.java"/>
+										<exclude name="**/ObjectFactory.java"/>
+									</fileset>
+									<fileset dir="../common/src/main/java/ch/vd/unireg/xml/common" defaultexcludes="yes">
 										<include name="**/*.java"/>
 										<exclude name="**/ObjectFactory.java"/>
 									</fileset>
