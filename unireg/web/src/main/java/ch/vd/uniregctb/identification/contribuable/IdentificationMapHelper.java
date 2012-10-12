@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.ui.Model;
 
@@ -216,15 +217,16 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 
 	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
-
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
-		final Map<String, String> allEmetteur = new TreeMap<String, String>(new StringComparator(false, false, false, null));
+		// [SIFISC-5847] Il ne faut pas tenir compte des espaces initiaux dans le tri et l'affichage des libellés
+		final Map<String, String> allEmetteurs = new TreeMap<String, String>(new StringComparator(false, false, false, null));
 		final Collection<String> emetteurs = identCtbService.getEmetteursId(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 
 		for (String emetteur : emetteurs) {
-			allEmetteur.put(emetteur, emetteur);
+			final String libelle = StringUtils.trimToEmpty(emetteur);
+			allEmetteurs.put(emetteur, libelle);
 		}
-		return allEmetteur;
+		return sortMapAccordingToValues(allEmetteurs);
 	}
 
 	public Map<ErreurMessage, String> initErreurMessage() {
