@@ -37,10 +37,11 @@
 					<schemaDirectory>src/main/resources</schemaDirectory>
 					<catalog>src/main/resources/catalog.xml</catalog>
 					<schemaIncludes>
-						<include>eVD-0026-1-0.xsd</include>
+						<include>main.xsd</include>
 					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
+						<include>ech-bindings.xml</include>
 						<include>bindings.xml</include>
 					</bindingIncludes>
 					<args>

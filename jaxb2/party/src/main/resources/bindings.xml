@@ -8,38 +8,7 @@
 			  xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd
 			  http://jaxb2-commons.dev.java.net/namespace-prefix http://java.net/projects/jaxb2-commons/sources/svn/content/namespace-prefix/trunk/src/main/resources/prefix-namespace-schema.xsd">
 
-	<!-- unireg-jaxb2-common -->
-
-	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.vd.unireg.xml.common.v1" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="common-1" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<!-- unireg-jaxb2-ech -->
-
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0010/4/eCH-0010-4-0.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.ech.ech0010.v4" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="eCH-0010-4" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0044/2/eCH-0044-2-0.xsd">
-		<jxb:schemaBindings>
-			<jxb:package name="ch.ech.ech0044.v2" />
-		</jxb:schemaBindings>
-		<jxb:bindings>
-			<namespace:prefix name="eCH-0044-2" />
-		</jxb:bindings>
-	</jxb:bindings>
-
-	<!-- unireg-jaxb2-party -->
+	<!-- local XSDs -->
 
 	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-1.xsd">
 		<jxb:schemaBindings>
@@ -86,7 +55,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-person-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.person.v1" />
 		</jxb:schemaBindings>
@@ -95,7 +64,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-corporation-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.corporation.v1" />
 		</jxb:schemaBindings>
@@ -119,7 +88,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="party/unireg-party-administrativeauthority-1.xsd">
+	<jxb:bindings schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.vd.unireg.xml.party.adminauth.v1" />
 		</jxb:schemaBindings>

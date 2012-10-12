@@ -37,23 +37,13 @@
 					<schemaDirectory>src/main/resources</schemaDirectory>
 					<catalog>src/main/resources/catalog.xml</catalog>
 					<schemaIncludes>
-						<include>event/di/evenementDeclarationImpot-input-1.xsd</include>
-						<include>event/di/evenementDeclarationImpot-output-1.xsd</include>
-						<include>event/party/address-request-1.xsd</include>
-						<include>event/party/address-response-1.xsd</include>
-						<include>event/party/numbers-request-1.xsd</include>
-						<include>event/party/numbers-response-1.xsd</include>
-						<include>event/party/party-request-1.xsd</include>
-						<include>event/party/party-response-1.xsd</include>
-						<include>event/party/create-nonresident-request-1.xsd</include>
-						<include>event/party/create-nonresident-response-1.xsd</include>
-						<include>event/rt/rapport-travail-request-1.xsd</include>
-						<include>event/rt/rapport-travail-response-1.xsd</include>
-						<include>event/lr/evtListe-1.xsd</include>
-						<include>event/lr/evtQuittanceListe-v1.xsd</include>
+						<include>main.xsd</include>
 					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
+						<include>common-bindings.xml</include>
+						<include>ech-bindings.xml</include>
+						<include>party-bindings.xml</include>
 						<include>bindings.xml</include>
 					</bindingIncludes>
 					<args>

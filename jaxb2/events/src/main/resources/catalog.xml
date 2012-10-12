@@ -8,7 +8,6 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd" uri="event/rt/rapport-travail-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd" uri="event/rt/rapport-travail-response-1.xsd"/>
 
-
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd" uri="event/party/address-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd" uri="event/party/address-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-request-1.xsd" uri="event/party/numbers-request-1.xsd"/>
@@ -19,6 +18,9 @@
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd" uri="event/party/party-response-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd" uri="event/party/create-nonresident-request-1.xsd"/>
 	<system systemId="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd" uri="event/party/create-nonresident-response-1.xsd"/>
+
+	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd" uri="event/lr/evtListe-1.xsd"/>
+	<system systemId="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd" uri="event/lr/evtQuittanceListe-v1.xsd"/>
 
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/party" catalog="../../../../party/src/main/resources/catalog.xml" />
 	<delegateSystem systemIdStartString="http://ressources.etat-de-vaud.ch/fiscalite/registre/" catalog="../../../../common/src/main/resources/catalog.xml" />

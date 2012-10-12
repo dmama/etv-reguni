@@ -42,12 +42,12 @@
 					<schemaDirectory>src/main/resources</schemaDirectory>
 					<catalog>src/main/resources/catalog.xml</catalog>
 					<schemaIncludes>
-						<include>party/unireg-party-person-1.xsd</include>
-						<include>party/unireg-party-corporation-1.xsd</include>
-						<include>party/unireg-party-administrativeauthority-1.xsd</include>
+						<include>main.xsd</include>
 					</schemaIncludes>
 					<bindingDirectory>src/main/resources</bindingDirectory>
 					<bindingIncludes>
+						<include>ech-bindings.xml</include>
+						<include>common-bindings.xml</include>
 						<include>bindings.xml</include>
 					</bindingIncludes>
 					<args>
