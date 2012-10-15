@@ -450,15 +450,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		// - le NPA de l’adresse contenue dans le message est un NPA du canton d’où provient le message
 		verifierEtMettreAJourContribuable(message, personne);
 
-		String user = AuthenticationHelper.getCurrentPrincipal();
+		final String user = AuthenticationHelper.getCurrentPrincipal();
 
-		Reponse reponse = new Reponse();
+		final Reponse reponse = new Reponse();
 		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setNoContribuable(personne.getNumero());
 		reponse.setNoMenageCommun(mcId);
 
-
-		IdentificationContribuable messageReponse = new IdentificationContribuable();
+		final IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());
 		messageReponse.setHeader(message.getHeader());
 		messageReponse.setNbContribuablesTrouves(1);
@@ -470,9 +469,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		message.setReponse(reponse);
 		message.setEtat(etat);
 		message.setDateTraitement(DateHelper.getCurrentDate());
-
 		message.setTraitementUser(user);
-		message.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		LOGGER.info("Le message n°" + messageReponse.getId() + " est passé dans l'état [" + etat
 				+ "]. Numéro du contribuable trouvé = " + personne.getNumero());
@@ -606,21 +603,22 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		final Etat etat = Etat.NON_IDENTIFIE; // par définition
 
-		Reponse reponse = new Reponse();
+		final String user = AuthenticationHelper.getCurrentPrincipal();
+		final Reponse reponse = new Reponse();
 		reponse.setDate(DateHelper.getCurrentDate());
 		reponse.setErreur(erreur);
-		IdentificationContribuable messageReponse = new IdentificationContribuable();
+		final IdentificationContribuable messageReponse = new IdentificationContribuable();
 		messageReponse.setId(message.getId());
 		messageReponse.setHeader(message.getHeader());
 		messageReponse.setNbContribuablesTrouves(0);
 		messageReponse.setReponse(reponse);
 		messageReponse.setEtat(etat);
+		messageReponse.getHeader().setBusinessUser(traduireBusinessUser(user));
 
 		message.setNbContribuablesTrouves(0);
 		message.setReponse(reponse);
 		message.setEtat(etat);
 		message.setDateTraitement(DateHelper.getCurrentDate());
-		String user = AuthenticationHelper.getCurrentPrincipal();
 		message.setTraitementUser(user);
 
 		if (LOGGER.isDebugEnabled()) {
