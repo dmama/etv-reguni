@@ -2548,7 +2548,7 @@ var Decl = {
 				info += '<td width="25%">&nbsp;</td><td width="25%">&nbsp;</td></tr></table></fieldset>\n';
 
 				var delais = Decl._buildDelaisTable(di.delais);
-				var etats = Decl._buidlEtatsTable(di.etats);
+				var etats = Decl._buidlEtatsTable(di.etats, false);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
 				dialog.html(info + delais + etats);
@@ -2584,7 +2584,7 @@ var Decl = {
 				info += '<tr class="even"><td width="50%">Date fin période&nbsp;:</td><td width="50%">' + RegDate.format(lr.dateFin) + '</td></tr></table></fieldset>\n';
 
 				var delais = Decl._buildDelaisTable(lr.delais);
-				var etats = Decl._buidlEtatsTable(lr.etats);
+				var etats = Decl._buidlEtatsTable(lr.etats, true);
 
 				var dialog = Dialog.create_dialog_div('details-di-dialog');
 				dialog.html(info + delais + etats);
@@ -2634,11 +2634,15 @@ var Decl = {
 		return html;
 	},
 
-	_buidlEtatsTable: function (etats) {
+	_buidlEtatsTable: function (etats, lr) {
 		var html = '';
 		if (etats) {
 			html = '<fieldset><legend><span>Etats</span></legend>';
-			html += '<table id="etat" class="display"><thead><tr><th>Date</th><th>Etat</th><th>Source</th><th></th></tr></thead><tbody>';
+			html += '<table id="etat" class="display"><thead><tr><th>Date</th><th>Etat</th>';
+			if (!lr) { // SIFISC-6593 - On n'affiche pas la colonne source pour les LR
+				html += '<th>Source</th>';
+			}
+			html += '<th></th></tr></thead><tbody>';
 			for (var i in etats) {
 				var e = etats[i];
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
@@ -2652,11 +2656,15 @@ var Decl = {
 						'" onclick="Link.tempSwap(this, \'#disabled-copie-sommation-' + e.id + '\');">&nbsp;</a>';
 					html += '<span class="pdf-grayed" id="disabled-copie-sommation-' + e.id + '" style="display:none;">&nbsp;</span>';
 				}
-				html += '</td><td>';
-				if (e.etat == 'RETOURNEE') {
-					html += StringUtils.escapeHTML(e.sourceMessage);
+				html += '</td>';
+				if (!lr) { // SIFISC-6593 - On n'affiche pas la colonne source pour les LR
+					html += '<td>';
+					if (e.etat == 'RETOURNEE') {
+						html += StringUtils.escapeHTML(e.sourceMessage);
+					}
+					html += '</td>';
 				}
-				html += '</td><td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
+				html += '<td>' + Link.consulterLog('EtatDeclaration', e.id) + '</td></tr>';
 			}
 		}
 		return html;
