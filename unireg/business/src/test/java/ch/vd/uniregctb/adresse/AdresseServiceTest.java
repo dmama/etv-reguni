@@ -27,6 +27,7 @@ import ch.vd.uniregctb.interfaces.service.mock.DefaultMockServicePM;
 import ch.vd.uniregctb.interfaces.service.mock.MockServicePM;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -8038,6 +8039,108 @@ public class AdresseServiceTest extends BusinessTest {
 		assertTrue(adresse0.isIncomplete());
 
 
+	}
+
+	/**
+	 * Test de non-régression pour le cas SIFISC-6523. Où une adresse supplémentaire annulée sans date de fin
+	 * est suceptible de déclencher un warning de validité sur les dates de fin des autres adresses, elles,
+	 * non-annulées.
+	 *
+	 * Les données du test recréent le problème du ménage 623.160.03 décrit dans SIFISC-6523
+	 *
+	 * @throws Exception  si le test a regressé
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testNonRegressionSIFISC6523() throws Exception {
+		final long noPaul = 123456;
+		final long noZoe = 123457;
+		final long noCurateur = 888888;
+		/*
+		 * Crée les données du mock service civil
+		 */
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				MockIndividu paul = addIndividu(noPaul, date(1917, 11, 2), "Dupont", "Paul", true);
+				MockIndividu zoe = addIndividu(noZoe, date(1919, 11, 2), "Dupont", "Zoe", false);
+				MockIndividu curateur = addIndividu(noCurateur, date(1919, 11, 2), "Curateur", "Michel", true);
+
+
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.RueDeLaFaiencerie, null, null, date(2008, 9, 25));
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 9, 26), date(2008, 12, 31));
+				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.CheminDesMuguets, null, date(2009, 1, 1), null);
+
+				addAdresse(zoe, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.RueDeLaFaiencerie, null, null, date(2008, 9, 25));
+				addAdresse(zoe, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 9, 26), date(2008, 12, 31));
+				addAdresse(zoe, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.CheminDesMuguets, null, date(2009, 1, 1), null);
+
+				addAdresse(curateur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeLaGare, null, null, date(2008, 6, 1));
+				addAdresse(curateur, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 6, 2), null);
+
+				marieIndividus(paul, zoe, date(1976, 7, 1));
+			}
+		});
+
+		// Crée un habitant avec deux adresses fiscales surchargées
+		PersonnePhysique paul = new PersonnePhysique(true);
+		paul.setNumeroIndividu(noPaul);
+		{
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setDateDebut(date(2010, 3, 16));
+			adresse.setDateFin(null);
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setPermanente(true);
+			adresse.setNumeroMaison("3");
+			adresse.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+			adresse.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+			paul.addAdresseTiers(adresse);
+		}
+
+		final AdresseSuisse adresseAnnulee = new AdresseSuisse();
+		adresseAnnulee.setAnnulationUser("toto");
+		adresseAnnulee.setAnnulationDate(date(2009, 8, 13).asJavaDate());
+		adresseAnnulee.setDateDebut(date(2009, 7, 8));
+		adresseAnnulee.setDateFin(null);
+		adresseAnnulee.setUsage(TypeAdresseTiers.COURRIER);
+		adresseAnnulee.setPermanente(false);
+		adresseAnnulee.setNumeroMaison("3");
+		adresseAnnulee.setNumeroRue(MockRue.Lausanne.AvenueDeBeaulieu.getNoRue());
+		adresseAnnulee.setNumeroOrdrePoste(MockLocalite.Lausanne.getNoOrdre());
+		paul.addAdresseTiers(adresseAnnulee);
+
+		final long paulId = tiersDAO.save(paul).getNumero();
+		PersonnePhysique zoe = new PersonnePhysique(true);
+		zoe.setNumeroIndividu(noZoe);
+		zoe.addAdresseTiers(adresseAnnulee);
+		final long zoeId = tiersDAO.save(zoe).getNumero();
+		MenageCommun mc = tiersService.createEnsembleTiersCouple((PersonnePhysique)tiersDAO.get(paulId), (PersonnePhysique)tiersDAO.get(zoeId), date(1976, 1, 7), date(2010, 1, 7)).getMenage();
+		{
+			AdresseSuisse adresse = new AdresseSuisse();
+			adresse.setDateDebut(date(2009, 7, 8));
+			adresse.setDateFin(null);
+			adresse.setPermanente(true);
+			adresse.setUsage(TypeAdresseTiers.COURRIER);
+			adresse.setNumeroMaison("3");
+			adresse.setNumeroRue(MockRue.Bex.RouteDuBoet.getNoRue());
+			adresse.setNumeroOrdrePoste(MockLocalite.Bex.getNoOrdre());
+			mc.addAdresseTiers(adresse);
+		}
+		final long menageId = tiersDAO.save(mc).getNumero();
+
+		PersonnePhysique curateur = new PersonnePhysique(true);
+		curateur.setNumeroIndividu(noCurateur);
+		final long curateurId = tiersDAO.save(curateur).getNumero();
+		tiersService.addRapport(
+				new Curatelle(date(2009, 6, 24), date(2010, 1, 5), (PersonnePhysique)tiersDAO.get(zoeId), tiersDAO.get(curateurId), null),
+				(PersonnePhysique)tiersDAO.get(zoeId),
+				(PersonnePhysique)tiersDAO.get(curateurId));
+		tiersService.addRapport(new Curatelle(date(2009, 6, 24), date(2010, 1, 11), (PersonnePhysique)tiersDAO.get(paulId), tiersDAO.get(curateurId), null),
+				(PersonnePhysique)tiersDAO.get(paulId),
+				(PersonnePhysique)tiersDAO.get(curateurId));
+
+		adresseService.getAdressesFiscalHisto(tiersDAO.get(mc.getNumero()), true);
+		// Test OK si on sort de là sans lever d'exception
 	}
 
 

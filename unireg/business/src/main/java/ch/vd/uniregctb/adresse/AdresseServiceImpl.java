@@ -1383,9 +1383,17 @@ public class AdresseServiceImpl implements AdresseService {
 	 * @throws AdresseException en cas de problème dans le traitement
 	 */
 	private static void verifieCoherenceAdresses(List<AdresseGenerique> adresses, String descriptionContexte, Tiers tiers) throws AdresseException {
-		final int size = adresses.size();
+		// [SIFISC-6523] On retire de la verification de coherence les adresses annulées
+		final List<AdresseGenerique> adressesNonAnnulees = new ArrayList<AdresseGenerique>(adresses.size());
+		for (AdresseGenerique adr : adresses) {
+			if (!adr.isAnnule()) {
+				adressesNonAnnulees.add(adr);
+			}
+		}
+
+		final int size = adressesNonAnnulees.size();
 		for (int i = 0; i < size; ++i) {
-			final AdresseGenerique adresse = adresses.get(i);
+			final AdresseGenerique adresse = adressesNonAnnulees.get(i);
 			// [UNIREG-1097] la première adresse peut avoir une date de début nulle, et la dernière peut avoir une date de fin nulle.
 			final ValidationResults validationResult = ValidationHelper.validate(adresse, (i == 0), (i == size - 1));
 			if (validationResult.hasErrors()) {
