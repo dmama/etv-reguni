@@ -8066,7 +8066,6 @@ public class AdresseServiceTest extends BusinessTest {
 				MockIndividu zoe = addIndividu(noZoe, date(1919, 11, 2), "Dupont", "Zoe", false);
 				MockIndividu curateur = addIndividu(noCurateur, date(1919, 11, 2), "Curateur", "Michel", true);
 
-
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.RueDeLaFaiencerie, null, null, date(2008, 9, 25));
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, date(2008, 9, 26), date(2008, 12, 31));
 				addAdresse(paul, TypeAdresseCivil.COURRIER, MockRue.YverdonLesBains.CheminDesMuguets, null, date(2009, 1, 1), null);
@@ -8133,15 +8132,13 @@ public class AdresseServiceTest extends BusinessTest {
 		final long curateurId = tiersDAO.save(curateur).getNumero();
 		tiersService.addRapport(
 				new Curatelle(date(2009, 6, 24), date(2010, 1, 5), (PersonnePhysique)tiersDAO.get(zoeId), tiersDAO.get(curateurId), null),
-				(PersonnePhysique)tiersDAO.get(zoeId),
-				(PersonnePhysique)tiersDAO.get(curateurId));
+				tiersDAO.get(zoeId),
+				tiersDAO.get(curateurId));
 		tiersService.addRapport(new Curatelle(date(2009, 6, 24), date(2010, 1, 11), (PersonnePhysique)tiersDAO.get(paulId), tiersDAO.get(curateurId), null),
-				(PersonnePhysique)tiersDAO.get(paulId),
-				(PersonnePhysique)tiersDAO.get(curateurId));
+				tiersDAO.get(paulId),
+				tiersDAO.get(curateurId));
 
-		adresseService.getAdressesFiscalHisto(tiersDAO.get(mc.getNumero()), true);
+		adresseService.getAdressesFiscalHisto(tiersDAO.get(menageId), true);
 		// Test OK si on sort de là sans lever d'exception
 	}
-
-
 }
