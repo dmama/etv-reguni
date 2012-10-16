@@ -21,7 +21,7 @@ import ch.vd.uniregctb.common.XmlUtils;
  */
 public class Demande {
 
-	private static final String AVS13 = "AVS13";
+	static final String AVS13 = "AVS13";
 
 	/**
 	 * Seule la distinction entre inscription et désinscription nous intéresse, pas vrai ?
@@ -108,7 +108,8 @@ public class Demande {
 
 	private static class EmailValidator {
 
-		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+([.+][_A-Za-z0-9-]+)*@[A-Za-z][A-Za-z0-9-]*(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+
 		private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
 		private EmailValidator() {}
