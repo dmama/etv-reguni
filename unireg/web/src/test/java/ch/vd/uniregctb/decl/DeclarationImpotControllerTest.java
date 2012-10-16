@@ -8,6 +8,7 @@ import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
@@ -120,7 +121,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		request.addParameter("dateFinPeriodeImposition", "31.12.2007");
 		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.toString());
 		request.addParameter("typeAdresseRetour", TypeAdresseRetour.CEDI.toString());
-		request.addParameter("delaiAccorde", "15.10.2012");
+		request.addParameter("delaiAccorde", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
 		request.setRequestURI("/di/imprimer.do");
 
 		// exécution de la requête
