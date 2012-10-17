@@ -172,7 +172,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 * @throws org.springframework.transaction.TransactionException
 	 *          en cas d'erreur de transaction
 	 */
-	public boolean execute(@Nullable final R rapportFinal, final BatchCallback<E, R> action) throws TransactionException {
+	public boolean execute(@Nullable final BatchResults<E, R> rapportFinal, final BatchCallback<E, R> action) throws TransactionException {
 
 		final boolean reprise = (behavior == Behavior.REPRISE_AUTOMATIQUE);
 		boolean processNextBatch = true;
@@ -231,7 +231,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 
 	/**
-	 * Une classe pour stocker le retour de la méthode {@link BatchTransactionTemplate#executeInTransaction(ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback}
+	 * Une classe pour stocker le retour de la méthode {@link BatchTransactionTemplate#executeInTransaction(ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback, java.util.List, boolean, BatchResults)}
 	 *
 	 * @author xsifnr
 	 */
@@ -271,7 +271,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	 *
 	 * @return <code>true</code> si le processus s'est bien déroulé et que la transaction est committée; <code>false</code> si la transaction a été rollée-back.
 	 */
-	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, @Nullable final R rapportFinal) {
+	private ExecuteInTransactionResult executeInTransaction(final BatchCallback<E, R> action, final List<E> batch, boolean willRetry, @Nullable final BatchResults<E, R> rapportFinal) {
 
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.debug("Execution en transaction du batch = " + batch);
@@ -343,7 +343,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 		return r;
 	}
 
-	private void addErrorExceptionInNewSession(final R rapportFinal, final E elt, final Exception e) {
+	private void addErrorExceptionInNewSession(final BatchResults<E, R> rapportFinal, final E elt, final Exception e) {
 		hibernateTemplate.executeWithNewSession(new HibernateCallback<Object>() {
 			@Override
 			@SuppressWarnings({"unchecked"})

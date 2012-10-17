@@ -11,12 +11,12 @@ public interface BatchResults<E, R extends BatchResults> {
 	 * @param element l'élément processé au moment du rollback
 	 * @param e       l'exception levée
 	 */
-	public abstract void addErrorException(E element, Exception e);
+	void addErrorException(E element, Exception e);
 
 	/**
 	 * Ajoute tous les résultats de droite aux résultats courant.
 	 *
 	 * @param right les résultats à ajouter
 	 */
-	public abstract void addAll(R right);
+	void addAll(R right);
 }

@@ -23,7 +23,7 @@ public class SynchronizedFactory {
 	 * @return un proxy dont les méthodes publiques sont synchronisées.
 	 */
 	@SuppressWarnings({"unchecked"})
-	public static <T> T makeSynchronized(Class<?> ifCls, T object) {
+	public static <T> T makeSynchronized(Class<T> ifCls, T object) {
 		return (T) Proxy.newProxyInstance(
 				object.getClass().getClassLoader(),
 				new Class<?>[]{ifCls},

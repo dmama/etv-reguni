@@ -40,8 +40,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	 * @param hibernateTemplate  le template Hibernate Spring
 	 */
 	public ParallelBatchTransactionTemplate(List<E> elements, int batchSize, int nbThreads, BatchTransactionTemplate.Behavior behavior, PlatformTransactionManager transactionManager,
-	                                        StatusManager statusManager,
-	                                        HibernateTemplate hibernateTemplate) {
+	                                        StatusManager statusManager, HibernateTemplate hibernateTemplate) {
 		this.elements = ListUtils.split(elements, batchSize);
 		this.nbThreads = nbThreads;
 		this.transactionManager = transactionManager;
@@ -87,7 +86,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	public boolean execute(R rapportFinal, final BatchTransactionTemplate.BatchCallback<E, R> action) throws TransactionException {
 		try {
 			// on wrappe le rapport autour d'un proxy qui va synchroniser les appels aux méthodes publiques : de cette manière on peut le passer sans soucis aux threads de processing.
-			final R syncRapport = (rapportFinal == null ? null : SynchronizedFactory.makeSynchronized(BatchResults.class, rapportFinal));
+			@SuppressWarnings("unchecked") final BatchResults<E, R> syncRapport = (rapportFinal == null ? null : SynchronizedFactory.makeSynchronized(BatchResults.class, rapportFinal));
 			return executeParallel(syncRapport, action);
 		}
 		catch (InterruptedException e) {
@@ -96,7 +95,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 		}
 	}
 
-	private boolean executeParallel(R rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action) throws InterruptedException {
+	private boolean executeParallel(BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action) throws InterruptedException {
 
 		// Démarre les threads
 		final List<BatchThread> threads = new ArrayList<BatchThread>(nbThreads);
@@ -181,13 +180,13 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	private class BatchThread extends Thread {
 
 		private final String principal;
-		private final R rapportFinal;
+		private final BatchResults<E, R> rapportFinal;
 		private final BatchTransactionTemplate.BatchCallback<E, R> action;
 		private final BlockingQueueIterator iterator = new BlockingQueueIterator();
 
 		private boolean interruptedItself = false;
 
-		private BatchThread(R rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action, String principal) {
+		private BatchThread(BatchResults<E, R> rapportFinal, BatchTransactionTemplate.BatchCallback<E, R> action, String principal) {
 			this.rapportFinal = rapportFinal;
 			this.action = action;
 			this.principal = principal;
