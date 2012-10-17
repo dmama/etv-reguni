@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -103,19 +104,13 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertTrue("Av. d'Ouchy 24C".equals(principale0.getRue()) || "Avenue d'Ouchy".equals(principale0.getRue()));
 		assertEquals("1006", principale0.getNumeroPostal());
 		assertEquals("Lausanne", principale0.getLocalite());
-		if (principale0.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
-			assertLocalisation(LocalisationType.CANTON_VD, 5633, principale0.getLocalisationPrecedente());
-		}
-		if (principale0.getLocalisationSuivante() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
-			assertLocalisation(LocalisationType.CANTON_VD, 5498, principale0.getLocalisationSuivante());
-		}
+		assertLocalisation(LocalisationType.HORS_SUISSE, MockPays.PaysInconnu.getNoOFS(), principale0.getLocalisationPrecedente());
+		assertNull(principale0.getLocalisationSuivante());
 
 		final Adresse principale1 = principales.get(1);
 		assertNotNull(principale1);
 		assertAdresseCivile(date(2010, 1, 15), null, "Rue Jean-Louis-de-Bons", "1006", "Lausanne", 885742, principale1);
-		if (principale1.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
-			assertLocalisation(LocalisationType.CANTON_VD, 5652, principale1.getLocalisationPrecedente());
-		}
+		assertNull(principale1.getLocalisationPrecedente());
 		assertNull(principale1.getLocalisationSuivante());
 
 		// On vérifie les adresses courrier
