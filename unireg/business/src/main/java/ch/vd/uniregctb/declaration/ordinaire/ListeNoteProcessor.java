@@ -68,12 +68,12 @@ public class ListeNoteProcessor {
 		final ListeNoteResults rapportFinal = new ListeNoteResults(dateTraitement, annee, tiersService, adresseService);
 		status.setMessage("Récupération des contribuables ...");
 		mapInfo = recupererContribuables(annee);
-		List<Long> ids = new ArrayList(mapInfo.keySet());
+		final List<Long> ids = new ArrayList<Long>(mapInfo.keySet());
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ListeNoteResults>
 				template = new ParallelBatchTransactionTemplate<Long, ListeNoteResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
+																						transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ListeNoteResults>() {
 
 			@Override
