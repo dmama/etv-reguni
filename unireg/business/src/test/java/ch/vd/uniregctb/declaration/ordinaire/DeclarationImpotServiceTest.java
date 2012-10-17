@@ -708,7 +708,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(3, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // erik, olrik + ramon
+				assertResults(3, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // erik, olrik + ramon
 				return null;
 			}
 		});
@@ -731,7 +731,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // guillaume
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // guillaume
 				return null;
 			}
 		});
@@ -747,7 +747,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, null)); // paul
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_DEPENSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // paul
 				return null;
 			}
 		});
@@ -763,7 +763,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, null));   // george
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));   // george
 				return null;
 			}
 		});
@@ -779,7 +779,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // jean
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // jean
 				return null;
 			}
 		});
@@ -795,7 +795,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // jacques
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_ACTIND_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // jacques
 				return null;
 			}
 		});
@@ -811,7 +811,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(2, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, null)); // bruno + mitt
+				assertResults(2, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null)); // bruno + mitt
 				return null;
 			}
 		});
@@ -836,7 +836,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, null)); // personne !
+				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HS_VAUDTAX, null, null, 100, date(2008, 1, 20), false, 1, null)); // personne !
 				return null;
 			}
 		});
@@ -847,7 +847,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.DIPLOMATE_SUISSE, null, null, 100, date(2008, 1, 20), false, null)); // marc
+				assertResults(0, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.DIPLOMATE_SUISSE, null, null, 100, date(2008, 1, 20), false, 1, null)); // marc
 				return null;
 			}
 		});
@@ -944,7 +944,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				// limite à 1 le nombre de DI envoyée
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1, date(2008, 1, 20), false, null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1, date(2008, 1, 20), false, 1, null));
 				return null;
 			}
 		});
@@ -1006,7 +1006,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, ids.ericId, ids.ericId, 100, date(2008, 1, 20), false, 1, null));
 				return null;
 			}
 		});
@@ -1082,7 +1082,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				InterruptingStatusManager s = new InterruptingStatusManager(2);
 				service.setTailleLot(1);
-				assertResults(taille, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, s));
+				assertResults(taille, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, s));
 				return null;
 			}
 		});
@@ -1162,7 +1162,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 
 				// Lance et provoque le crash de l'envoi en masse sur la DI de john
-				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, null));
+				assertResults(1, service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 100, date(2008, 1, 20), false, 1, null));
 				return null;
 			}
 		});
@@ -1247,7 +1247,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 
 		// traite les trois habitants dans autant de lots séparés, et lève une exception sur le traitement de Jacques
 		service.setTailleLot(1);
-		service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, RegDate.get(), false, status);
+		service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, RegDate.get(), false, 1, status);
 		service.setTailleLot(100);
 
 		doInNewTransaction(new TxCallback<Object>() {
@@ -1390,7 +1390,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				EnvoiDIsResults r = service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, null);
+				EnvoiDIsResults r = service.envoyerDIsEnMasse(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 100, date(2008, 1, 20), false, 1, null);
 				assertResults(2, 1, 1, 1, r);
 				return null;
 			}

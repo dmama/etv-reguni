@@ -83,6 +83,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public final Long noCtbMin;
 	public final Long noCtbMax;
 	public final RegDate dateExclureDecede;
+	public final int nbThreads;
 
 	// Données de processing
 	public int nbCtbsTotal;
@@ -93,7 +94,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public boolean interrompu;
 
 	public EnvoiDIsResults(int annee, CategorieEnvoiDI categorie, RegDate dateTraitement, int nbMax, @Nullable Long noCtbMin, @Nullable Long noCtbMax, @Nullable RegDate dateExclureDecede,
-	                       TiersService tiersService, AdresseService adresseService) {
+	                       int nbThreads, TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
 		this.annee = annee;
 		this.categorie = categorie;
@@ -102,6 +103,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		this.noCtbMin = noCtbMin;
 		this.noCtbMax = noCtbMax;
 		this.dateExclureDecede = dateExclureDecede;
+		this.nbThreads = nbThreads;
 	}
 
 	public void addCtbTraites(Long noCtb) {
@@ -141,7 +143,6 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public void addIgnoreCtbExcluDecede(Contribuable ctb) {
 		ctbsIgnores.add(new Ignore(ctb.getNumero(), ctb.getOfficeImpotId(), IgnoreType.CTB_EXCLU, "Décédé en fin d'année", getNom(ctb.getNumero())));
 	}
-
 
 	@SuppressWarnings("unchecked")
 	@Override

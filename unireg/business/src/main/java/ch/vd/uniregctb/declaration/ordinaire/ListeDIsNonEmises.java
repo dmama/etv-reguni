@@ -72,7 +72,7 @@ public class ListeDIsNonEmises extends EnvoiDIsResults<ListeDIsNonEmises> {
 
 
 	public ListeDIsNonEmises(int anneePeriode, RegDate dateTraitement, TiersService tiersService, AdresseService adresseService) {
-		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, tiersService, adresseService);
+		super(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 1000000, null, null, null, 1, tiersService, adresseService);
 	}
 
 

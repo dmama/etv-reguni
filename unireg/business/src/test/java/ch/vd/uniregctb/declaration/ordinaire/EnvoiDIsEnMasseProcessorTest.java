@@ -68,6 +68,8 @@ import static org.junit.Assert.fail;
 @SuppressWarnings({"JavaDoc"})
 public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
+	private static final int TAILLE_LOT = 100;
+
 	private EnvoiDIsEnMasseProcessor processor;
 	private HibernateTemplate hibernateTemplate;
 	private ParametreAppService parametreAppService;
@@ -92,7 +94,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO, delaisService,
-				diService, 100, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService);
+				diService, TAILLE_LOT, transactionManager, parametreAppService, serviceCivilCacheWarmer, adresseService);
 
 		// évite de logger plein d'erreurs pendant qu'on teste le comportement du processor
 		Logger serviceLogger = Logger.getLogger(DeclarationImpotServiceImpl.class);
@@ -269,12 +271,12 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2008, 1, 23);
-		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
-		final DeclarationsCache cache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
-		final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tache);
+		final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+		final DeclarationsCache dcache = processor.new DeclarationsCache(2007, Arrays.asList(ids.ctb));
+		final EnvoiDIsEnMasseProcessor.Cache cache = processor.initCache(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final TacheEnvoiDeclarationImpot tache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tache);
 
-		processor.setRapport(rapport);
-		assertNull(processor.creeDI(tache, cache, false));
+		assertNull(processor.creeDI(tache, rapport, cache, dcache, false));
 	}
 
 	@Test
@@ -433,9 +435,8 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 				final RegDate dateTraitement = date(2009, 1, 15);
 				final List<Long> idsCtb = Arrays.asList(ids.marcId);
 
-				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
-				processor.setRapport(rapport);
-				processor.traiterBatch(idsCtb, 2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
+				final EnvoiDIsResults rapport = new EnvoiDIsResults(2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
+				processor.traiterBatch(idsCtb, rapport, 2007, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement);
 				return null;
 			}
 		});
@@ -527,27 +528,24 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 			idsList.add(ids.jacquesId);
 
 			final RegDate dateTraitement = date(2009, 1, 15);
-			final DeclarationsCache cache = processor.new DeclarationsCache(2008, idsList);
+			final DeclarationsCache dcache = processor.new DeclarationsCache(2008, idsList);
+			final EnvoiDIsEnMasseProcessor.Cache cache = processor.initCache(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
-			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, tiersService, adresseService);
-			processor.setRapport(rapport);
+			final EnvoiDIsResults rapport = new EnvoiDIsResults(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, dateTraitement, 10, null, null, null, 1, tiersService, adresseService);
 
 			// Le tiers sans exclusion
-			final TacheEnvoiDeclarationImpot tacheMarc = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(
-					TacheEnvoiDeclarationImpot.class, ids.tacheMarcId);
-			assertTrue(processor.traiterTache(tacheMarc, dateTraitement, cache));
+			final TacheEnvoiDeclarationImpot tacheMarc = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tacheMarcId);
+			assertTrue(processor.traiterTache(tacheMarc, dateTraitement, rapport, cache, dcache));
 			assertEmpty(rapport.ctbsIgnores);
 
 			// Le tiers avec une exclusion passée
-			final TacheEnvoiDeclarationImpot tacheJean = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(
-					TacheEnvoiDeclarationImpot.class, ids.tacheJeanId);
-			assertTrue(processor.traiterTache(tacheJean, dateTraitement, cache));
+			final TacheEnvoiDeclarationImpot tacheJean = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tacheJeanId);
+			assertTrue(processor.traiterTache(tacheJean, dateTraitement, rapport, cache, dcache));
 			assertEmpty(rapport.ctbsIgnores);
 
 			// Le tiers avec une exclusion dans le futur -> doit être exclu
-			final TacheEnvoiDeclarationImpot tacheJacques = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(
-					TacheEnvoiDeclarationImpot.class, ids.tacheJacquesId);
-			assertFalse(processor.traiterTache(tacheJacques, dateTraitement, cache));
+			final TacheEnvoiDeclarationImpot tacheJacques = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.tacheJacquesId);
+			assertFalse(processor.traiterTache(tacheJacques, dateTraitement, rapport, cache, dcache));
 			assertEquals(1, rapport.ctbsIgnores.size());
 			final Ignore ignore = (Ignore) rapport.ctbsIgnores.get(0);
 			assertEquals(IgnoreType.CTB_EXCLU, ignore.raison);
@@ -607,12 +605,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -624,7 +617,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals("La tâche [id=" + ids.premiereTacheId + ", période=2008.01.01-2008.12.31] est en conflit avec 1 déclaration(s) d'impôt pré-existante(s) sur le contribuable [" + ids.marcId +
 				"]. Aucune nouvelle déclaration n'est créée et la tâche reste en instance.", erreur.details);
 
-		final TacheEnvoiDeclarationImpot premiereTache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.premiereTacheId);
+		final TacheEnvoiDeclarationImpot premiereTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.premiereTacheId);
 		assertEquals(TypeEtatTache.EN_INSTANCE, premiereTache.getEtat());
 
 		// la seconde tâche est traitée
@@ -632,7 +625,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, traites.size());
 		assertEquals(ids.marcId, traites.get(0));
 
-		final TacheEnvoiDeclarationImpot secondeTache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
+		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
 		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
@@ -729,12 +722,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -746,7 +734,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals("La tâche [id=" + ids.premiereTacheId + ", période=2008.01.01-2008.07.31] est en conflit avec 1 déclaration(s) d'impôt pré-existante(s) sur le contribuable [" + ids.marcId +
 				"]. Aucune nouvelle déclaration n'est créée et la tâche reste en instance.", erreur.details);
 
-		final TacheEnvoiDeclarationImpot premiereTache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.premiereTacheId);
+		final TacheEnvoiDeclarationImpot premiereTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.premiereTacheId);
 		assertEquals(TypeEtatTache.EN_INSTANCE, premiereTache.getEtat());
 
 		// la seconde tâche est traitée
@@ -754,7 +742,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(1, traites.size());
 		assertEquals(ids.marcId, traites.get(0));
 
-		final TacheEnvoiDeclarationImpot secondeTache = (TacheEnvoiDeclarationImpot) hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
+		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
 		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
@@ -812,12 +800,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -875,12 +858,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1141,12 +1119,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1208,12 +1181,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 		assertEquals(1, results.ctbsIgnores.size());
@@ -1274,12 +1242,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, true, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1338,12 +1301,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 
 		final RegDate dateTraitement = date(2009, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(2008, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1402,12 +1360,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1455,12 +1408,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1507,12 +1455,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.HC_IMMEUBLE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1564,12 +1507,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1624,12 +1562,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 
 		final RegDate dateTraitement = date(annee + 1, 1, 15);
-		final EnvoiDIsResults results = doInNewTransaction(new TxCallback<EnvoiDIsResults>() {
-			@Override
-			public EnvoiDIsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, null);
-			}
-		});
+		final EnvoiDIsResults results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_COMPLETE, null, null, 1000, dateTraitement, false, 1, null);
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
@@ -1655,4 +1588,58 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		});
 	}
 
+	/**
+	 * Test de 10*TAILLE_LOT contribuables répartis sur 7 threads
+	 */
+	@Test
+	public void testMultithread() throws Exception {
+
+		final int annee = 2011;
+		final int nbCtbs = 10 * TAILLE_LOT;
+		final int nbThreads = 7;
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addCollAdm(MockCollectiviteAdministrative.ACI);
+				addCedi();
+				final CollectiviteAdministrative oid = addCollAdm(MockOfficeImpot.OID_LAUSANNE_OUEST);
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				for (int i = 0 ; i < nbCtbs ; ++ i) {
+					final String prenom = "Jean-" + Integer.toString(i + 1);
+					final PersonnePhysique pp = addNonHabitant(prenom, "Dupont", null, Sexe.MASCULIN);
+					final RegDate ouverture = date(annee, 1, 1).addDays(i / 7);
+					addForPrincipal(pp, ouverture, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
+					addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, RegDate.get().addDays(1), ouverture, date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, null, null, oid);
+				}
+				return null;
+			}
+		});
+
+		final EnvoiDIsResults<EnvoiDIsResults> results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
+		assertNotNull(results);
+		assertEquals(nbCtbs, results.ctbsTraites.size());
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				for (Long ctbId : results.ctbsTraites) {
+					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ctbId);
+					final String prenom = pp.getPrenom();
+					assertTrue(prenom.startsWith("Jean-"));
+					final int index = Integer.parseInt(prenom.substring(5)) - 1;
+					final List<Declaration> dis = pp.getDeclarationsForPeriode(annee, false);
+					final String message = "Contribuable " + pp.getNumero() + " (" + index + ")";
+					assertEquals(message, 1, dis.size());
+					assertNotNull(message, dis.get(0));
+					assertEquals(message, date(annee, 1, 1).addDays(index / 7), dis.get(0).getDateDebut());
+					assertEquals(message, date(annee, 12, 31), dis.get(0).getDateFin());
+				}
+				return null;
+			}
+		});
+	}
 }

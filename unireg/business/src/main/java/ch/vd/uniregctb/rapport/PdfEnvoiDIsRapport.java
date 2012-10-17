@@ -43,6 +43,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
                     table.addLigne("Période fiscale considérée :", String.valueOf(results.annee));
                     table.addLigne("Catégorie de contribuables :", results.categorie.getDescription());
                     table.addLigne("Nombre maximum d'envois :", String.valueOf(results.nbMax));
+	                table.addLigne("Nombre de threads :", String.valueOf(results.nbThreads));
 	                table.addLigne("Numéro de contribuable minimal :", results.noCtbMin == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMin));
 	                table.addLigne("Numéro de contribuable maximal :", results.noCtbMax == null ? "-" : FormatNumeroHelper.numeroCTBToDisplay(results.noCtbMax));
 	                if(results.dateExclureDecede!=null){

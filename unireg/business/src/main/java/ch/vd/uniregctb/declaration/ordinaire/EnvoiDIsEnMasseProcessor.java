@@ -31,10 +31,10 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.LoggingStatusManager;
+import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -67,14 +67,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
 
 public class EnvoiDIsEnMasseProcessor {
 
-	final Logger LOGGER = Logger.getLogger(EnvoiDIsEnMasseProcessor.class);
-
-	//
-	// FD - 03.03.2009 :
-	// L'agrégation des documents est fait par l'éditique
-	// C'est pourquoi cette partie du code est commentée
-	//
-	// private static final int EDITIQUE_BATCH_SIZE = 5000;
+	private static final Logger LOGGER = Logger.getLogger(EnvoiDIsEnMasseProcessor.class);
 
 	private final TiersService tiersService;
 
@@ -99,7 +92,7 @@ public class EnvoiDIsEnMasseProcessor {
 	private final int tailleLot;
 	private RegDate dateExclusionDecedes;
 
-	private static class Cache {
+	protected static class Cache {
 		public final CollectiviteAdministrative cedi;
 		public final CollectiviteAdministrative aci;
 		public final PeriodeFiscale periode;
@@ -112,9 +105,6 @@ public class EnvoiDIsEnMasseProcessor {
 			this.aci = aci;
 		}
 	}
-
-	private Cache cache;
-	private EnvoiDIsResults rapport;
 
 	public EnvoiDIsEnMasseProcessor(TiersService tiersService, HibernateTemplate hibernateTemplate, ModeleDocumentDAO modeleDAO,
 	                                PeriodeFiscaleDAO periodeDAO, DelaisService delaisService, DeclarationImpotService diService, int tailleLot,
@@ -135,16 +125,14 @@ public class EnvoiDIsEnMasseProcessor {
 		Assert.isTrue(tailleLot > 0);
 	}
 
-	public EnvoiDIsResults run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
-	                           final RegDate dateTraitement, final boolean exclureDecedes, @Nullable StatusManager s) throws DeclarationException {
-
-		Assert.isTrue(rapport == null); // Un rapport non null signifirait que l'appel a été fait par le batch des DI non émises
+	public EnvoiDIsResults<EnvoiDIsResults> run(final int anneePeriode, final CategorieEnvoiDI categorie, @Nullable final Long noCtbMin, @Nullable final Long noCtbMax, final int nbMax,
+	                           final RegDate dateTraitement, final boolean exclureDecedes, final int nbThreads, @Nullable StatusManager s) throws DeclarationException {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		if (exclureDecedes) {
 			dateExclusionDecedes = getDateDebutExclusion(anneePeriode);
 		}
-		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax,dateExclusionDecedes, tiersService, adresseService);
+		final EnvoiDIsResults rapportFinal = new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes, nbThreads, tiersService, adresseService);
 
 		// certains contribuables ne recoivent pas de DI du canton (par exemple les diplomates suisses)
 		if (categorie.getTypeDocument() != null) {
@@ -153,19 +141,17 @@ public class EnvoiDIsEnMasseProcessor {
 			final List<Long> ids = createListOnContribuableIds(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), noCtbMin, noCtbMax);
 
 			// Traite les contribuables par lots
-			final BatchTransactionTemplate<Long, EnvoiDIsResults> template = new BatchTransactionTemplate<Long, EnvoiDIsResults>(ids, tailleLot, Behavior.REPRISE_AUTOMATIQUE,
-					transactionManager, status, hibernateTemplate);
+			final ParallelBatchTransactionTemplate<Long, EnvoiDIsResults> template = new ParallelBatchTransactionTemplate<Long, EnvoiDIsResults>(ids, tailleLot, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
+			                                                                                                                                     transactionManager, status, hibernateTemplate);
 			template.execute(rapportFinal, new BatchCallback<Long, EnvoiDIsResults>() {
 
 				@Override
 				public EnvoiDIsResults createSubRapport() {
-					return new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes, tiersService, adresseService);
+					return new EnvoiDIsResults(anneePeriode, categorie, dateTraitement, nbMax, noCtbMin, noCtbMax, dateExclusionDecedes, nbThreads, tiersService, adresseService);
 				}
 
 				@Override
 				public boolean doInTransaction(List<Long> batch, EnvoiDIsResults r) throws Exception {
-					rapport = r;
-
 					status.setMessage("Traitement du batch [" + batch.get(0) + "; " + batch.get(batch.size() - 1) + "] ...", percent);
 
 					if (nbMax > 0 && rapportFinal.nbCtbsTotal + batch.size() >= nbMax) {
@@ -175,7 +161,7 @@ public class EnvoiDIsEnMasseProcessor {
 					}
 
 					if (!batch.isEmpty()) {
-						traiterBatch(batch, anneePeriode, categorie, dateTraitement);
+						traiterBatch(batch, r, anneePeriode, categorie, dateTraitement);
 					}
 
 					return !rapportFinal.interrompu && (nbMax <= 0 || rapportFinal.nbCtbsTotal + batch.size() < nbMax);
@@ -198,38 +184,31 @@ public class EnvoiDIsEnMasseProcessor {
 	}
 
 	/**
-	 * Pour le testing uniquement !
-	 */
-	protected void setRapport(EnvoiDIsResults rapport) {
-		this.rapport = rapport;
-	}
-
-	/**
 	 * Traite tout le batch des contribuables, un par un.
 	 *
 	 * @param ids            les ids des contribuables à traiter
+	 * @param rapport        le rapport en cours de construction
 	 * @param anneePeriode   l'année fiscale considérée
 	 * @param categorie      la catégorie de contribuable considérée
 	 * @param dateTraitement la date de traitement
 	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void traiterBatch(List<Long> ids, int anneePeriode, CategorieEnvoiDI categorie, RegDate dateTraitement)
-			throws DeclarationException {
+	protected void traiterBatch(List<Long> ids, EnvoiDIsResults rapport, int anneePeriode, CategorieEnvoiDI categorie, RegDate dateTraitement) throws DeclarationException {
 
 		rapport.nbCtbsTotal += ids.size();
 
-		initCache(anneePeriode, categorie);
+		final Cache cache = initCache(anneePeriode, categorie);
 		final DeclarationsCache dcache = new DeclarationsCache(anneePeriode, ids);
 
 		// pré-chauffage du cache des individus du civil
 		if (serviceCivilCacheWarmer != null) {
-			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, AttributeIndividu.ADRESSES);
+			serviceCivilCacheWarmer.warmIndividusPourTiers(ids, null, AttributeIndividu.ADRESSES, AttributeIndividu.ENFANTS);
 		}
 
 		final Iterator<TacheEnvoiDeclarationImpot> iter = createIteratorOnTaches(anneePeriode, categorie.getTypeContribuable(), categorie.getTypeDocument(), ids);
 		while (iter.hasNext()) {
 			final TacheEnvoiDeclarationImpot tache = iter.next();
-			traiterTache(tache, dateTraitement, dcache);
+			traiterTache(tache, dateTraitement, rapport, cache, dcache);
 		}
 
 		dcache.clear();
@@ -242,10 +221,10 @@ public class EnvoiDIsEnMasseProcessor {
 	 * @param categorie      la catégorie de contribuable considérée
 	 * @throws DeclarationException en cas d'erreur dans le traitement d'un contribuable.
 	 */
-	protected void initCache(int anneePeriode, CategorieEnvoiDI categorie) throws DeclarationException {
+	protected Cache initCache(int anneePeriode, CategorieEnvoiDI categorie) throws DeclarationException {
 
 		// Récupère le CEDI
-		CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
+		final CollectiviteAdministrative cedi = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noCEDI);
 		if (cedi == null) {
 			throw new DeclarationException("Impossible de charger le centre d'enregistrement des déclarations d'impôt (CEDI).");
 		}
@@ -256,19 +235,19 @@ public class EnvoiDIsEnMasseProcessor {
 		}
 
 		// Récupère la période fiscale
-		PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
+		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
 		if (periode == null) {
 			throw new DeclarationException("La période fiscale [" + anneePeriode + "] n'existe pas dans la base de données.");
 		}
 
 		// Récupère le modèle de document
-		ModeleDocument modele = modeleDAO.getModelePourDeclarationImpotOrdinaire(periode, categorie.getTypeDocument());
+		final ModeleDocument modele = modeleDAO.getModelePourDeclarationImpotOrdinaire(periode, categorie.getTypeDocument());
 		if (modele == null) {
 			throw new DeclarationException("Impossible de trouver le modèle de document pour une déclaration d'impôt pour la période ["
 					+ periode.getAnnee() + "] et le type de document [" + categorie.getTypeDocument().name() + "].");
 		}
 
-		cache = new Cache(cedi, aci, modele, periode);
+		return new Cache(cedi, aci, modele, periode);
 	}
 
 	final private static String queryTacheEnvoiEnInstance = // ------------------------------
@@ -391,12 +370,11 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @return <b>vrai</b> si la tâche a été traitée, <b>faux</b> autrement
 	 */
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache) throws DeclarationException {
-		return traiterTache(tache, dateTraitement, dcache, false);
+	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache) throws DeclarationException {
+		return traiterTache(tache, dateTraitement, rapport, cache, dcache, false);
 	}
 
-	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache, boolean simul)
-			throws DeclarationException {
+	protected boolean traiterTache(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
 		final Long numeroCtb = contribuable.getNumero();
@@ -437,12 +415,12 @@ public class EnvoiDIsEnMasseProcessor {
 			// [UNIREG-1852] les contribuables indigents décédés dans l'année doivent être traités comme les autres contribuables.
 			final boolean estIndigentNonDecede = (estIndigent(contribuable, tache.getDateFin()) && !estDecede(contribuable, tache.getDateFin()));
 			if (estIndigentNonDecede) {
-				if (envoyerDIIndigent(tache, dateTraitement, dcache, simul)) {
+				if (envoyerDIIndigent(tache, dateTraitement, rapport, cache, dcache, simul)) {
 					tache.setEtat(TypeEtatTache.TRAITE);
 				}
 			}
 			else {
-				if (envoyerDINormal(tache, dateTraitement, dcache, simul)) {
+				if (envoyerDINormal(tache, dateTraitement, rapport, cache, dcache, simul)) {
 					tache.setEtat(TypeEtatTache.TRAITE);
 				}
 			}
@@ -481,15 +459,17 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @param tache          la tâche à traiter
 	 * @param dateTraitement la date d'émission et de retour de la déclaration d'impôt
+	 * @param rapport        le rapport en cours de construction
+	 * @param cache          le cache local des données de type structurel (cedi, aci,...)
 	 * @param dcache         la cache des données qui vont bien
 	 * @param simul          <b>vrai</b> s'il s'agit d'une simulation; <b>faux</b> dans le cas normal.
 	 * @return <b>vrai</b> si la tâche a été traitée, c'est-à-dire que la déclaration a été envoyée; <b>faux</b> en cas de problème.
 	 * @throws ch.vd.uniregctb.declaration.DeclarationException
 	 *          en cas d'exception
 	 */
-	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDIIndigent(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		final DeclarationImpotOrdinaire di = creeDI(tache, dcache, simul);
+		final DeclarationImpotOrdinaire di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
 			return false;
 		}
@@ -512,7 +492,7 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Crée une nouvelle déclaration d'impôt sur le tiers
 	 */
-	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	protected DeclarationImpotOrdinaire creeDI(TacheEnvoiDeclarationImpot tache, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
 		final Contribuable contribuable = tache.getContribuable();
 		final ForGestion forGestion = tiersService.getForGestionActif(contribuable, tache.getDateFin());
@@ -590,30 +570,29 @@ public class EnvoiDIsEnMasseProcessor {
 	/**
 	 * Crée une déclaration d'impôt ordinaire et envoie la à éditique pour impression, selon la tâche en instance spécifiée.
 	 *
-	 * @param tache
-	 *            la tâche à traiter
-	 * @param dateTraitement
- *            la date de traitement officielle de ce job
-	 * @param dcache le cache des déclarations
-	 * @param simul
-	 *            true si le batch est appelé en mode simulation ( {@link ch.vd.uniregctb.declaration.ordinaire.ProduireListeDIsNonEmisesProcessor} ). Dans ce cas on imprime pas
+	 * @param tache          la tâche à traiter
+	 * @param dateTraitement la date de traitement officielle de ce job
+	 * @param rapport        le rapport en cours de construction
+	 * @param cache          le cache local des données de type structurel (cedi, aci,...)
+	 * @param dcache         le cache des déclarations
+	 * @param simul          true si le batch est appelé en mode simulation ( {@link ch.vd.uniregctb.declaration.ordinaire.ProduireListeDIsNonEmisesProcessor} ). Dans ce cas on imprime pas
 	 *
 	 */
-	private boolean envoyerDINormal(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, DeclarationsCache dcache, boolean simul) throws DeclarationException {
+	private boolean envoyerDINormal(TacheEnvoiDeclarationImpot tache, RegDate dateTraitement, EnvoiDIsResults rapport, Cache cache, DeclarationsCache dcache, boolean simul) throws DeclarationException {
 
-		Contribuable ctb = tache.getContribuable();
+		final Contribuable ctb = tache.getContribuable();
 		if (!simul && ctb.getOfficeImpotId() == null) {
 			rapport.addErrorForGestionNul(ctb, null, null, "L'office d'impôt du contribuable n'est pas renseigné");
 			return false;
 		}
 		// Création de la déclaration d'impôt, du délai de retour et de son état
-		DeclarationImpotOrdinaire di = creeDI(tache, dcache, simul);
+		final DeclarationImpotOrdinaire di = creeDI(tache, rapport, cache, dcache, simul);
 		if (di == null) {
 			return false;
 		}
 		final RegDate dateExpedition = ajouterEtatInitial(di, dateTraitement, true);
 		ajouterDelaisDeRetourInitial(di, dateTraitement, dateExpedition);
-		ajouterAdresseRetour(di, tache);
+		ajouterAdresseRetour(di, tache, cache);
 
 		// Impression de la déclaration proprement dites
 		if (!simul) {
@@ -700,8 +679,9 @@ public class EnvoiDIsEnMasseProcessor {
 	 *
 	 * @param di    une déclaration
 	 * @param tache la tâche à l'origine de la création de la déclaration
+	 * @param cache le cache local des données de type structurel (cedi, aci,...)
 	 */
-	private void ajouterAdresseRetour(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpot tache) {
+	private void ajouterAdresseRetour(DeclarationImpotOrdinaire di, TacheEnvoiDeclarationImpot tache, Cache cache) {
 
 		final TypeAdresseRetour adresseRetour = tache.getAdresseRetour();
 		if (adresseRetour == null || adresseRetour == TypeAdresseRetour.CEDI) {

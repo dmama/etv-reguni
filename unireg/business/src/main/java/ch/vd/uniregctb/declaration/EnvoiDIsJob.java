@@ -35,6 +35,7 @@ public class EnvoiDIsJob extends JobDefinition {
 	public static final String EXCLURE_DCD = "EXCLURE_DCD";
 	public static final String CTB_NO_MIN = "CTB_NO_MIN";
 	public static final String CTB_NO_MAX = "CTB_NO_MAX";
+	public static final String NB_THREADS = "NB_THREADS";
 
 	public EnvoiDIsJob(int sortOrder, String description) {
 		super(NAME, CATEGORIE, sortOrder, description);
@@ -88,6 +89,14 @@ public class EnvoiDIsJob extends JobDefinition {
 			param.setType(new JobParamBoolean());
 			addParameterDefinition(param, Boolean.FALSE);
 		}
+		{
+			final JobParam param = new JobParam();
+			param.setDescription("Nombre de threads");
+			param.setName(NB_THREADS);
+			param.setMandatory(true);
+			param.setType(new JobParamInteger());
+			addParameterDefinition(param, 4);
+		}
 	}
 
 	public void setService(DeclarationImpotService service) {
@@ -122,9 +131,10 @@ public class EnvoiDIsJob extends JobDefinition {
 		final int nbMax = getIntegerValue(params, NB_MAX);
 		final RegDate dateTraitement = RegDate.get(); // = aujourd'hui
 		final boolean exclureDecedes = getBooleanValue(params, EXCLURE_DCD);
+		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 
 		final StatusManager status = getStatusManager();
-		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
+		final EnvoiDIsResults results = service.envoyerDIsEnMasse(annee, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 		final EnvoiDIsRapport rapport = rapportService.generateRapport(results, status);
 
 		setLastRunReport(rapport);

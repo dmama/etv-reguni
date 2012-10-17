@@ -89,9 +89,9 @@ public class ProduireListeDIsNonEmisesProcessor {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		this.envoiDIsEnMasseProcessor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDocumentDAO, periodeDAO, delaisService, diService, 1, transactionManager, parametres,
-				serviceCivilCacheWarmer, adresseService);
-		this.determinationDIsAEmettreProcessor =new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
-				periodeImpositionService, adresseService);
+		                                                             serviceCivilCacheWarmer, adresseService);
+		this.determinationDIsAEmettreProcessor = new DeterminationDIsAEmettreProcessor(hibernateTemplate, periodeDAO, tacheDAO, parametres, tiersService, transactionManager, validationService,
+		                                                                               periodeImpositionService, adresseService);
 
 		final ListeDIsNonEmises rapportFinal = new ListeDIsNonEmises(anneePeriode, dateTraitement, tiersService, adresseService);
 
@@ -132,7 +132,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 	protected void traiterBatch(List<Long> batch, int anneePeriode, RegDate dateTraitement) throws DeclarationException, AssujettissementException {
 
-		this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
+		final EnvoiDIsEnMasseProcessor.Cache cache = this.envoiDIsEnMasseProcessor.initCache(anneePeriode, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 
 		// Récupère la période fiscale
 		final PeriodeFiscale periode = periodeDAO.getPeriodeFiscaleByYear(anneePeriode);
@@ -142,12 +142,12 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		// Traite tous les contribuables
 		for (Long id : batch) {
-			traiterContribuable(id, periode, dateTraitement);
+			traiterContribuable(id, periode, dateTraitement, cache);
 		}
 
 	}
 
-	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement) throws DeclarationException, AssujettissementException {
+	private void traiterContribuable(Long id, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache) throws DeclarationException, AssujettissementException {
 
 		rapport.nbCtbsTotal++;
 
@@ -163,11 +163,11 @@ public class ProduireListeDIsNonEmisesProcessor {
 		}
 
 		for (PeriodeImposition d : details) {
-			traiterDetails(d, contribuable, periode, dateTraitement);
+			traiterDetails(d, contribuable, periode, dateTraitement, cache);
 		}
 	}
 
-	private void traiterDetails(PeriodeImposition details, Contribuable contribuable, PeriodeFiscale periode, RegDate dateTraitement) throws DeclarationException {
+	private void traiterDetails(PeriodeImposition details, Contribuable contribuable, PeriodeFiscale periode, RegDate dateTraitement, EnvoiDIsEnMasseProcessor.Cache cache) throws DeclarationException {
 		
 		final RegDate datePeriode = RegDate.get(periode.getAnnee());
 
@@ -180,7 +180,7 @@ public class ProduireListeDIsNonEmisesProcessor {
 
 		TacheEnvoiDeclarationImpot tache = determinationDIsAEmettreProcessor.traiterPeriodeImposition(contribuable, periode, details);
 		if (tache == null) {
-			ExistenceResults<TacheEnvoiDeclarationImpot> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
+			final ExistenceResults<TacheEnvoiDeclarationImpot> res = determinationDIsAEmettreProcessor.checkExistenceTache(contribuable, details);
 			if (res == null) {
 				rapport.addNonEmisePourRaisonInconnue(contribuable.getId(), null, null);
 				return;
@@ -202,12 +202,11 @@ public class ProduireListeDIsNonEmisesProcessor {
 			}
 		}
 
-		List<Long> ids = new ArrayList<Long>();
+		final List<Long> ids = new ArrayList<Long>();
 		ids.add(contribuable.getId());
-		final DeclarationsCache cache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
+		final DeclarationsCache dcache = envoiDIsEnMasseProcessor.new DeclarationsCache(periode.getAnnee(), ids);
 
-		envoiDIsEnMasseProcessor.setRapport(rapport);
-		boolean tacheTraitee = envoiDIsEnMasseProcessor.traiterTache(tache, dateTraitement, cache, true);
+		final boolean tacheTraitee = envoiDIsEnMasseProcessor.traiterTache(tache, dateTraitement, rapport, cache, dcache, true);
 		if (tacheTraitee) {
 			// Incoherence !
 			LOGGER.info("Impossible de determiner pourquoi la DI n'est pas émise pour " + contribuable.toString());

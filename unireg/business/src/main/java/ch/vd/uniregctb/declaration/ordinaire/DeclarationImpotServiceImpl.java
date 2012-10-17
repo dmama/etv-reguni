@@ -223,12 +223,11 @@ public class DeclarationImpotServiceImpl implements DeclarationImpotService {
 	 */
 	@Override
 	public EnvoiDIsResults envoyerDIsEnMasse(int anneePeriode, CategorieEnvoiDI categorie, @Nullable Long noCtbMin, @Nullable Long noCtbMax, int nbMax, RegDate dateTraitement, boolean exclureDecedes,
-	                                         @Nullable StatusManager status)
-			throws DeclarationException {
+	                                         int nbThreads, @Nullable StatusManager status) throws DeclarationException {
 
 		final EnvoiDIsEnMasseProcessor processor = new EnvoiDIsEnMasseProcessor(tiersService, hibernateTemplate, modeleDAO, periodeDAO,
 				delaisService, this, tailleLot, transactionManager, parametres, serviceCivilCacheWarmer, adresseService);
-		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, status);
+		return processor.run(anneePeriode, categorie, noCtbMin, noCtbMax, nbMax, dateTraitement, exclureDecedes, nbThreads, status);
 	}
 
 	@Override

@@ -44,6 +44,7 @@ public class EnvoiDIsJobTest extends JobTest {
 		params.put(EnvoiDIsJob.PERIODE_FISCALE, RegDate.get().year() -1);
 		params.put(EnvoiDIsJob.CATEGORIE_CTB, CategorieEnvoiDI.VAUDOIS_COMPLETE);
 		params.put(EnvoiDIsJob.EXCLURE_DCD, Boolean.FALSE);
+		params.put(EnvoiDIsJob.NB_THREADS, 4);
 		final JobDefinition job = batchScheduler.startJob(EnvoiDIsJob.NAME, params);
 
 		int count = 0;
