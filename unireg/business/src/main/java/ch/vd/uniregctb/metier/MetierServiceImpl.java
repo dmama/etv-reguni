@@ -2672,7 +2672,7 @@ public class MetierServiceImpl implements MetierService {
 
 	@Override
 	public ComparerForFiscalEtCommuneResults comparerForFiscalEtCommune(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(tiersDAO, transactionManager, adresseService, tiersService, serviceInfra);
+		final ComparerForFiscalEtCommuneProcessor processor = new ComparerForFiscalEtCommuneProcessor(hibernateTemplate, transactionManager, adresseService, tiersService, serviceInfra);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
 

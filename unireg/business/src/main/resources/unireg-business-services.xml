@@ -164,6 +164,7 @@
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="identificationContribuableHelper" ref="identificationContribuableHelper" />
 		<property name="batchScheduler" ref="batchScheduler"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<!-- Helpers de toutes sortes et de tous lieux (Dieu y retrouvera les siens) -->
@@ -253,7 +254,7 @@
 	</bean>
 
 	<bean id="evenementExterneProcessor" class="ch.vd.uniregctb.evenement.externe.EvenementExterneProcessorImpl">
-		<property name="evenementExterneDAO" ref="evenementExterneDAO"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 		<property name="evenementExterneService" ref="evenementExterneService"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="tiersService" ref="tiersService"/>

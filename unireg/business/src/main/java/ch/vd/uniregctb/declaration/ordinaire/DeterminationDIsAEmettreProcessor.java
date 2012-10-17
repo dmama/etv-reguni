@@ -104,7 +104,7 @@ public class DeterminationDIsAEmettreProcessor {
 
 		// Traite les contribuables par lots
 		final ParallelBatchTransactionTemplate<Long, DeterminationDIsResults> template = new ParallelBatchTransactionTemplate<Long, DeterminationDIsResults>(ids, batchSize, nbThreads, Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, hibernateTemplate);
+																																							 transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchCallback<Long, DeterminationDIsResults>() {
 
 			@Override

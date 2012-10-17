@@ -11,6 +11,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -22,7 +23,6 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -32,19 +32,18 @@ public class IdentifierContribuableProcessor {
 
 	final Logger LOGGER = Logger.getLogger(IdentifierContribuableProcessor.class);
 	private final IdentificationContribuableService identService;
-	private final IdentCtbDAO identCtbDAO;
+	private final HibernateTemplate hibernateTemplate;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<IdentifierContribuableResults> rapport = new ThreadLocal<IdentifierContribuableResults>();
 
-	public IdentifierContribuableProcessor(IdentificationContribuableService identService, IdentCtbDAO identCtbDAO, PlatformTransactionManager transactionManager, TiersService tiersService,
+	public IdentifierContribuableProcessor(IdentificationContribuableService identService, HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, TiersService tiersService,
 	                                       AdresseService adresseService) {
-
-		this.identCtbDAO = identCtbDAO;
-		this.transactionManager = transactionManager;
 		this.identService = identService;
+		this.hibernateTemplate = hibernateTemplate;
+		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 	}
@@ -61,7 +60,7 @@ public class IdentifierContribuableProcessor {
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>
 				template = new ParallelBatchTransactionTemplate<Long, IdentifierContribuableResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, identCtbDAO.getHibernateTemplate());
+																									 transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, IdentifierContribuableResults>() {
 
 			@Override
@@ -108,14 +107,14 @@ public class IdentifierContribuableProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<IdentificationContribuable> list = identCtbDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
-            @Override
-            public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException {
-                Criteria crit = session.createCriteria(IdentificationContribuable.class);
-                crit.add(Restrictions.in("id", batch));
-                crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-                return crit.list();
-            }
+        final List<IdentificationContribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
+	        @Override
+	        public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException {
+		        Criteria crit = session.createCriteria(IdentificationContribuable.class);
+		        crit.add(Restrictions.in("id", batch));
+		        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		        return crit.list();
+	        }
         });
 		for (IdentificationContribuable identificationContribuable : list) {
 			rapport.get().nbMessagesTotal++;
@@ -149,7 +148,7 @@ public class IdentifierContribuableProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = identCtbDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);

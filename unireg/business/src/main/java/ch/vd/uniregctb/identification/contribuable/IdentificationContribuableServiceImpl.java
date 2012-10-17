@@ -16,6 +16,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +89,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private IdentificationContribuableHelper identificationContribuableHelper;
 	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
 	private BatchScheduler batchScheduler;
+	private HibernateTemplate hibernateTemplate;
 
 	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
 		this.identificationContribuableHelper = identificationContribuableHelper;
@@ -131,6 +133,10 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 	public void setBatchScheduler(BatchScheduler batchScheduler) {
 		this.batchScheduler = batchScheduler;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
@@ -1398,13 +1404,11 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 			return false;
 		}
-
-
 	}
 
 	@Override
 	public IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage) {
-		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, identCtbDAO, transactionManager, tiersService, adresseService);
+		IdentifierContribuableProcessor processor = new IdentifierContribuableProcessor(this, hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, nbThreads, status, idMessage);
 	}
 

@@ -72,7 +72,8 @@ public class CorrectionFlagHabitantProcessor {
 			statusManager.setMessage(messageStatus, 0);
 
 			final ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurPersonnesPhysiquesResults> template
-					= new ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurPersonnesPhysiquesResults>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
+					= new ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurPersonnesPhysiquesResults>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+					                                                                                                 transactionManager, statusManager, hibernateTemplate);
 			template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CorrectionFlagHabitantSurPersonnesPhysiquesResults>() {
 
 				@Override
@@ -167,7 +168,8 @@ public class CorrectionFlagHabitantProcessor {
 				statusManager.setMessage(messageStatus, 0);
 
 				final ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurMenagesResults> template
-						= new ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurMenagesResults>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE, transactionManager, statusManager, hibernateTemplate);
+						= new ParallelBatchTransactionTemplate<Long, CorrectionFlagHabitantSurMenagesResults>(ids, TAILLE_LOT, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+						                                                                                      transactionManager, statusManager, hibernateTemplate);
 				template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, CorrectionFlagHabitantSurMenagesResults>() {
 
 					@Override

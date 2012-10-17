@@ -557,14 +557,13 @@ public class SituationFamilleServiceImpl implements SituationFamilleService {
 	 */
 	@Override
 	public ReinitialiserBaremeDoubleGainResults reinitialiserBaremeDoubleGain(RegDate dateTraitement, StatusManager statusManager) {
-		ReinitialiserBaremeDoubleGainProcessor processor = new ReinitialiserBaremeDoubleGainProcessor(this, hibernateTemplate,
-				transactionManager, tiersService, adresseService);
+		final ReinitialiserBaremeDoubleGainProcessor processor = new ReinitialiserBaremeDoubleGainProcessor(this, hibernateTemplate, transactionManager, tiersService, adresseService);
 		return processor.run(dateTraitement, statusManager);
 	}
 
 	@Override
 	public ComparerSituationFamilleResults comparerSituationFamille(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil,situationFamilleDAO,tiersService,transactionManager, adresseService);
+		final ComparerSituationFamilleProcessor processor = new ComparerSituationFamilleProcessor(serviceCivil, hibernateTemplate, tiersService, transactionManager, adresseService);
 		return processor.run(dateTraitement,nbThreads,status);
 	}
 }

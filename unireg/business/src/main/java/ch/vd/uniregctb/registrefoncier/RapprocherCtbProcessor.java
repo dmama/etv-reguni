@@ -69,8 +69,8 @@ public class RapprocherCtbProcessor {
 		final RapprocherCtbResults rapportFinal = new RapprocherCtbResults(dateTraitement, tiersService, adresseService);
 		final ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults> template =
 				new ParallelBatchTransactionTemplate<ProprietaireFoncier, RapprocherCtbResults>(listeProprietairesFonciers, BATCH_SIZE,
-						nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager,
-						status, hibernateTemplate);
+																								nbThreads, Behavior.REPRISE_AUTOMATIQUE, transactionManager, status,
+																								hibernateTemplate);
 		template.setReadonly(true);
 		template.execute(rapportFinal, new BatchCallback<ProprietaireFoncier, RapprocherCtbResults>() {
 

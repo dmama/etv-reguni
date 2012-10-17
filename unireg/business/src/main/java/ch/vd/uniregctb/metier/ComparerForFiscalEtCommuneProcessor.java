@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -27,7 +28,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class ComparerForFiscalEtCommuneProcessor {
@@ -37,24 +37,21 @@ public class ComparerForFiscalEtCommuneProcessor {
 	final Logger LOGGER = Logger.getLogger(ComparerForFiscalEtCommuneProcessor.class);
 
 	private final PlatformTransactionManager transactionManager;
-	private final TiersDAO tiersDAO;
+	private final HibernateTemplate hibernateTemplate;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private static final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerForFiscalEtCommuneResults> rapport = new ThreadLocal<ComparerForFiscalEtCommuneResults>();
 
-	public ComparerForFiscalEtCommuneProcessor(TiersDAO tiersDAO, PlatformTransactionManager transactionManager, AdresseService aService,
+	public ComparerForFiscalEtCommuneProcessor(HibernateTemplate hibernateTemplate, PlatformTransactionManager transactionManager, AdresseService aService,
 	                                           TiersService tiersService, ServiceInfrastructureService serviceInfra) {
-
+		this.hibernateTemplate = hibernateTemplate;
 		this.transactionManager = transactionManager;
-		this.tiersDAO = tiersDAO;
 		this.adresseService = aService;
 		this.tiersService = tiersService;
 		this.serviceInfra = serviceInfra;
-
 	}
-
 
 	public ComparerForFiscalEtCommuneResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
 
@@ -66,7 +63,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ComparerForFiscalEtCommuneResults>
 				template = new ParallelBatchTransactionTemplate<Long, ComparerForFiscalEtCommuneResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, tiersDAO.getHibernateTemplate());
+																										 transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerForFiscalEtCommuneResults>() {
 
 			@Override
@@ -106,7 +103,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-		final List<Contribuable> list = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
+		final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
 			@Override
 			public List<Contribuable> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(Contribuable.class);
@@ -159,7 +156,7 @@ public class ComparerForFiscalEtCommuneProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = tiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);

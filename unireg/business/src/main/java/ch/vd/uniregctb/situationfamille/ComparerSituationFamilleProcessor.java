@@ -10,6 +10,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -25,7 +26,6 @@ import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.SituationFamilleDAO;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -36,20 +36,19 @@ public class ComparerSituationFamilleProcessor {
 	final Logger LOGGER = Logger.getLogger(ComparerSituationFamilleProcessor.class);
 	private final ServiceCivilService serviceCivil;
 	private final PlatformTransactionManager transactionManager;
-	private final SituationFamilleDAO situationFamilleDAO;
+	private final HibernateTemplate hibernateTemplate;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
 	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<ComparerSituationFamilleResults>();
 
-	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, SituationFamilleDAO situationFamilleDAO, TiersService tiersService, PlatformTransactionManager transactionManager,
+	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager,
 	                                         AdresseService adresseService) {
 
 		this.serviceCivil = serviceCivil;
-		this.transactionManager = transactionManager;
-		this.situationFamilleDAO = situationFamilleDAO;
+		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
-
+		this.transactionManager = transactionManager;
 		this.adresseService = adresseService;
 	}
 
@@ -64,7 +63,7 @@ public class ComparerSituationFamilleProcessor {
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>
 				template = new ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, situationFamilleDAO.getHibernateTemplate());
+																									   transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerSituationFamilleResults>() {
 
 			@Override
@@ -104,15 +103,15 @@ public class ComparerSituationFamilleProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-        final List<SituationFamilleMenageCommun> list = situationFamilleDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
-            @Override
-            public List<SituationFamilleMenageCommun> doInHibernate(Session session) throws HibernateException {
-                final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
-                crit.add(Restrictions.in("id", batch));
-                crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-	            //noinspection unchecked
-	            return crit.list();
-            }
+        final List<SituationFamilleMenageCommun> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
+	        @Override
+	        public List<SituationFamilleMenageCommun> doInHibernate(Session session) throws HibernateException {
+		        final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);
+		        crit.add(Restrictions.in("id", batch));
+		        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		        //noinspection unchecked
+		        return crit.list();
+	        }
         });
 
 		for (SituationFamilleMenageCommun situation : list) {
@@ -147,7 +146,7 @@ public class ComparerSituationFamilleProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsMessage = situationFamilleDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+				final List<Long> idsMessage = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);

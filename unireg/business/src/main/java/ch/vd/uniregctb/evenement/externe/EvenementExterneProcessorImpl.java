@@ -11,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -29,7 +30,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 	final Logger LOGGER = Logger.getLogger(EvenementExterneProcessorImpl.class);
 	private final int batchSize = BATCH_SIZE;
-	private EvenementExterneDAO evenementExterneDAO;
+	private HibernateTemplate hibernateTemplate;
 	private EvenementExterneService evenementExterneService;
 	private PlatformTransactionManager transactionManager;
 	private final ThreadLocal<TraiterEvenementExterneResult> rapport = new ThreadLocal<TraiterEvenementExterneResult>();
@@ -40,13 +41,13 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	public TraiterEvenementExterneResult traiteEvenementsExternes(final RegDate dateTraitement, int nbThreads, @Nullable StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 		final TraiterEvenementExterneResult rapportFinal = new TraiterEvenementExterneResult(dateTraitement, tiersService, adresseService);
-		status.setMessage("Récupération des evenements externes à traiter...");
+		status.setMessage("Récupération des événements externes à traiter...");
 		final List<Long> ids = recupererEvenementATraiter();
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>
 				template = new ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				                                                                                     transactionManager, status, evenementExterneDAO.getHibernateTemplate());
+				                                                                                     transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, TraiterEvenementExterneResult>() {
 
 			@Override
@@ -87,7 +88,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
 
 		//Chargement des evenement externes
-		final List<EvenementExterne> list = evenementExterneDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
+		final List<EvenementExterne> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
 			@Override
 			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(EvenementExterne.class);
@@ -121,7 +122,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 
-				final List<Long> idsEvenement = evenementExterneDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+				final List<Long> idsEvenement = hibernateTemplate.executeWithNewSession(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						Query queryObject = session.createQuery(queryMessage);
@@ -142,8 +143,8 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setEvenementExterneDAO(EvenementExterneDAO evenementExterneDAO) {
-		this.evenementExterneDAO = evenementExterneDAO;
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
