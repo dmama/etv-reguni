@@ -1,8 +1,11 @@
 package ch.vd.uniregctb.validation.tiers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.validation.ValidationResults;
@@ -78,11 +81,12 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 		final List<Declaration> lesLRs = dpi.getDeclarationsSorted();
 		if (lesLRs != null && !lesLRs.isEmpty()) {
 			final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
-
-			for (Declaration lr : lesLRs) {
-				if (!lr.isAnnule() && !DateRangeHelper.intersect(lr, fors)) {
-					vr.addError(String.format("La LR qui commence le (%s) et se termine le (%s) n'est couverte par aucun for valide",
-							RegDateHelper.dateToDisplayString(lr.getDateDebut()), RegDateHelper.dateToDisplayString(lr.getDateFin())));
+			final List<DateRange> lrs = new ArrayList<DateRange>(lesLRs);
+			final List<DateRange> periodeNonCouverte = DateRangeHelper.subtract(lrs ,fors, new DateRangeAdapterCallback());
+			if(!periodeNonCouverte.isEmpty()){
+				for (DateRange dateRange : periodeNonCouverte) {
+					vr.addError(String.format("La période qui débute le (%s) et se termine le (%s) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+							RegDateHelper.dateToDisplayString(dateRange.getDateDebut()), RegDateHelper.dateToDisplayString(dateRange.getDateFin())));
 				}
 			}
 		}

@@ -117,7 +117,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testValidationLRCouvertesParFor() {
+	public void testValidationLRNonCouvertesParFor() {
 
 
 		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
@@ -202,8 +202,47 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			debiteur.addDeclaration(lr);
 		}
 
-
-		assertValidation(Arrays.asList("La LR qui commence le (01.08.2008) et se termine le (31.12.2008) n'est couverte par aucun for valide"),
+		assertValidation(Arrays.asList("La période qui débute le (13.02.2008) et se termine le (30.06.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+				"La période qui débute le (01.08.2008) et se termine le (31.12.2008) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+				"La période qui débute le (01.01.2011) et se termine le (23.06.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide",
+				"La période qui débute le (21.09.2011) et se termine le (30.11.2011) contient des LRs alors qu'elle n'est couverte par aucun for valide"),
 				null, validate(debiteur));
 	}
+
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testValidationLRCouvertesParFor() {
+
+
+		final DebiteurPrestationImposable debiteur = new DebiteurPrestationImposable();
+
+		debiteur.addPeriodicite(new Periodicite(PeriodiciteDecompte.SEMESTRIEL, null, date(2006, 10, 2), null));
+
+
+		{
+			final ForDebiteurPrestationImposable forFiscal = new ForDebiteurPrestationImposable();
+			forFiscal.setDateDebut(date(2006, 10, 2));
+			forFiscal.setDateFin(null);
+			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
+			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			debiteur.addForFiscal(forFiscal);
+		}
+
+
+
+		{
+			final DeclarationImpotSource lr = new DeclarationImpotSource();
+			lr.setModeCommunication(ModeCommunication.SITE_WEB);
+			lr.setPeriodicite(PeriodiciteDecompte.SEMESTRIEL);
+			lr.setDateDebut(date(2006, 10, 2));
+			lr.setDateFin(date(2008, 6, 30));
+			debiteur.addDeclaration(lr);
+		}
+
+		assertValidation(null,null, validate(debiteur));
+	}
+
+
 }
