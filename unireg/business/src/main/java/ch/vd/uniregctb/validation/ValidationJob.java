@@ -220,9 +220,15 @@ public class ValidationJob extends JobDefinition {
 			}
 		}
 
-		// Arrêt des threads
+		// Signale aux threads de validation que tous les ids sont postés dans la queue
+		// et qu'ils peuvent s'arrêter lorsque celle-ci est vide
 		for (ValidationJobThread thread : threads) {
-			thread.interrupt();
+			thread.stopIfInputQueueEmpty();
+		}
+
+		// On attend que les threads de validation se terminent d'eux-mêmes
+		for (ValidationJobThread thread : threads) {
+			thread.join();
 		}
 	}
 

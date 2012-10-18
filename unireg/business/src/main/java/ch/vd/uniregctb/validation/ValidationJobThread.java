@@ -45,6 +45,7 @@ public class ValidationJobThread extends Thread {
 
 	private final BlockingQueue<Long> queue;
 	private final ValidationJobResults results; // accès concurrents sur cette variable !
+	private boolean noMoreInput;
 
 	public ValidationJobThread(BlockingQueue<Long> queue, ValidationJobResults results, TiersDAO tiersDAO,
 	                           PlatformTransactionManager transactionManager, AdresseService adresseService,
@@ -77,7 +78,7 @@ public class ValidationJobThread extends Thread {
 					catch (InterruptedException e) {
 						return Boolean.FALSE;
 					}
-					return Boolean.TRUE;
+					return !(queue.isEmpty() && noMoreInput);
 				}
 			});
 		} while (continueProcessing);
@@ -85,7 +86,8 @@ public class ValidationJobThread extends Thread {
 
 	private void processBatch() throws InterruptedException {
 
-		for (int i = 0; i < BATCH_SIZE; ++i) {
+		for (int i = 0; i < BATCH_SIZE && !(queue.isEmpty() && noMoreInput); ++i) {
+
 
 			final Long id = queue.take();
 			Assert.notNull(id);
@@ -311,5 +313,13 @@ public class ValidationJobThread extends Thread {
 			}
 			results.addErrorAdresses(contribuable, e);
 		}
+	}
+
+	/**
+	 * Signale au thread qu'il n'y a plus de donnée en entrée et qu'il peut se terminer
+	 * lorsque la queue est vide
+	 */
+	public void stopIfInputQueueEmpty() {
+		this.noMoreInput = true;
 	}
 }
