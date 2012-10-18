@@ -163,7 +163,6 @@
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="identificationContribuableHelper" ref="identificationContribuableHelper" />
-		<property name="batchScheduler" ref="batchScheduler"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 

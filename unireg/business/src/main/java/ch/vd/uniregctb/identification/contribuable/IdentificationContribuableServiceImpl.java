@@ -61,7 +61,6 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
-import ch.vd.uniregctb.scheduler.BatchScheduler;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -88,7 +87,6 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private ServiceSecuriteService serviceSecuriteService;
 	private IdentificationContribuableHelper identificationContribuableHelper;
 	private IdentificationContribuableCache identificationContribuableCache = new IdentificationContribuableCache();        // cache vide à l'initialisation
-	private BatchScheduler batchScheduler;
 	private HibernateTemplate hibernateTemplate;
 
 	public void setIdentificationContribuableHelper(IdentificationContribuableHelper identificationContribuableHelper) {
@@ -131,22 +129,26 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		this.serviceSecuriteService = serviceSecuriteService;
 	}
 
-	public void setBatchScheduler(BatchScheduler batchScheduler) {
-		this.batchScheduler = batchScheduler;
-	}
-
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		if (batchScheduler.getJob(UpdateCriteresIdentificationJob.NAME) != null) { // le job n'existe pas forcément dans les contextes de test
-			LOGGER.info("Démarrage du job de préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
-			batchScheduler.startJob(UpdateCriteresIdentificationJob.NAME, null);
-		}
+		// en fonction du nombre de demandes d'identification en base, le chargement des valeurs possibles des critères de
+		// recherche peut prendre quelques secondes (minutes ?), donc on met ça dans un thread séparés afin de ne pas
+		// poser de problème de lenteur exagérée au démarrage de l'application (surtout pour l'équipe de développement
+		// qui peut avoir à démarrer l'application souvent...)
+		final Thread thread = new Thread() {
+			@Override
+			public void run() {
+				LOGGER.info("Préchargement des valeurs pour les critères de recherche pour l'identification des contribuables");
+				updateCriteres();
+				LOGGER.info("Préchargement terminé.");
+			}
+		};
+		thread.start();
 	}
-
 
 	@SuppressWarnings({
 			"UnusedDeclaration"
