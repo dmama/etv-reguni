@@ -1361,7 +1361,7 @@ public class TestData {
 
 		ForDebiteurPrestationImposable fdpi0 = new ForDebiteurPrestationImposable();
 		fdpi0.setId(11L);
-		fdpi0.setDateFin(RegDate.get(2007, 12, 31));
+		fdpi0.setDateFin(RegDate.get(2008,3,22));
 		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
 		fdpi0.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi0.setLogModifDate(new Timestamp(1199142000000L));
