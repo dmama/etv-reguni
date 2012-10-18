@@ -2,7 +2,7 @@
 
 TMP_FILE=$(mktemp)
 
-grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed -e '1~2 N;s/\n/ /' | sed -e 's/^.*\b\([0-9]\+\). du contribuable \([0-9./]\+\) au \([0-9.]\+\) .* \([A-Z_]\+\)$/\3\;\2\;\4;\1/' -e 's/\//;/' -e 's/^\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\)/\3\2\1/' -e 's/\.//g' | sort -n > "$TMP_FILE"
+grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed -e '1~2 N;s/\n/ /' | sed -e 's/^.*\b\([0-9]\+\). du contribuable \([0-9./]\+\) au \([0-9.]\+\) .* \([A-Z_]\+\)$/\3\;\2\;\4;\1/' -e 's/\//;/' -e 's/^\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\)/\3\2\1/' -e 's/\.//g' > "$TMP_FILE"
 
 function body() {
 	echo "Nouvelles inscriptions e-Facture : $(cat "$TMP_FILE" | wc -l)."
