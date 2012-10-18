@@ -9,6 +9,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 
 /**
@@ -17,7 +18,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 public class ValidationJobResults extends JobResults<Long, ValidationJobResults> {
 
 	public enum ErreurType {
-		INVALIDE("le contribuable ne valide pas."),
+		INVALIDE("le tiers ne valide pas."),
 		PERIODES_IMPOSITION("les périodes d'imposition ne peuvent pas être calculées"),
 		ADRESSES("les adresses n'ont pas pu être calculées"),
 		DI("Incohérence dans les dates de DI");
@@ -37,18 +38,18 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 
 		public final ErreurType raison;
 
-		public Erreur(long noCtb, Integer officeImpotID, ValidationResults erreur, String nomCtb) {
-			super(noCtb, officeImpotID, buildDetails(erreur), nomCtb);
+		public Erreur(long noTiers, Integer officeImpotID, ValidationResults erreur, String nomTiers) {
+			super(noTiers, officeImpotID, buildDetails(erreur), nomTiers);
 			this.raison = ErreurType.INVALIDE;
 		}
 
-		public Erreur(long numero, Integer oid, String message, ErreurType raison, String nomCtb) {
-			super(numero, oid, message, nomCtb);
+		public Erreur(long numero, Integer oid, String message, ErreurType raison, String nomTiers) {
+			super(numero, oid, message, nomTiers);
 			this.raison = raison;
 		}
 
-		public Erreur(long numero, Integer oid, Exception exception, ErreurType raison, String nomCtb) {
-			super(numero, oid, exception.getMessage(), nomCtb);
+		public Erreur(long numero, Integer oid, Exception exception, ErreurType raison, String nomTiers) {
+			super(numero, oid, exception.getMessage(), nomTiers);
 			this.raison = raison;
 		}
 
@@ -83,7 +84,7 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 	public final boolean calculateAdresses;
 	public final boolean modeStrict;
 
-	public int nbCtbsTotal;
+	public int nbTiersTotal;
 	public final List<Erreur> erreursValidation = new ArrayList<Erreur>();
 	public final List<Erreur> erreursPeriodesImposition = new ArrayList<Erreur>();
 	public final List<Erreur> erreursCoherenceDI = new ArrayList<Erreur>();
@@ -100,9 +101,9 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		this.modeStrict = modeStrict;
 	}
 
-	public int getNbCtbsTotal() {
+	public int getNbTiersTotal() {
 		synchronized (this) {
-			return nbCtbsTotal;
+			return nbTiersTotal;
 		}
 	}
 
@@ -130,14 +131,14 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		}
 	}
 
-	public void incCtbsTotal() {
+	public void incTiersTotal() {
 		synchronized (this) {
-			nbCtbsTotal++;
+			nbTiersTotal++;
 		}
 	}
 
-	public void addErrorCtbInvalide(Contribuable ctb, ValidationResults erreur) {
-		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), erreur, getNom(ctb.getNumero()));
+	public void addErrorTiersInvalide(Tiers tiers, ValidationResults erreur) {
+		final Erreur e = new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), erreur, getNom(tiers.getNumero()));
 		synchronized (this) {
 			erreursValidation.add(e);
 		}
@@ -158,8 +159,8 @@ public class ValidationJobResults extends JobResults<Long, ValidationJobResults>
 		}
 	}
 
-	public void addErrorAdresses(Contribuable ctb, Exception exception) {
-		final Erreur e = new Erreur(ctb.getNumero(), ctb.getOfficeImpotId(), exception, ErreurType.ADRESSES, getNom(ctb.getNumero()));
+	public void addErrorAdresses(Tiers tiers, Exception exception) {
+		final Erreur e = new Erreur(tiers.getNumero(), tiers.getOfficeImpotId(), exception, ErreurType.ADRESSES, getNom(tiers.getNumero()));
 		synchronized (this) {
 			erreursAdresses.add(e);
 		}

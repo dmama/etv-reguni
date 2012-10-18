@@ -138,11 +138,11 @@ public class ValidationJob extends JobDefinition {
 		final int nbThreads = getStrictlyPositiveIntegerValue(params, NB_THREADS);
 		final boolean modeStrict = getBooleanValue(params, MODE_STRICT);
 
-		// Chargement des ids des contribuables à processer
-		statusManager.setMessage("Chargement des ids de tous les contribuables...");
-		final List<Long> ids = getCtbIds(statusManager);
+		// Chargement des ids des tiers à processer
+		statusManager.setMessage("Chargement des ids de tous les tiers...");
+		final List<Long> ids = getTiersIds(statusManager);
 
-		// Processing des contribuables
+		// Processing des tiers
 		final ValidationJobResults results = new ValidationJobResults(RegDate.get(), calculatePeriodesImposition, coherencePeriodesImpositionWrtDIs, calculateAdresses, modeStrict, tiersService,
 				adresseService);
 		processAll(ids, results, nbThreads, statusManager);
@@ -155,7 +155,7 @@ public class ValidationJob extends JobDefinition {
 		Audit.success("Le batch de validation des tiers est terminé", rapport);
 	}
 
-	private List<Long> getCtbIds(final StatusManager statusManager) {
+	private List<Long> getTiersIds(final StatusManager statusManager) {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
@@ -164,11 +164,11 @@ public class ValidationJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return tiersDAO.getHibernateTemplate().find("select cont.numero from Contribuable as cont order by cont.numero asc");
+				return tiersDAO.getHibernateTemplate().find("select t.numero from Tiers t order by t.numero asc");
 			}
 		});
 
-		statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
+		statusManager.setMessage(String.format("%d tiers trouvés", ids.size()));
 		return ids;
 	}
 
@@ -189,7 +189,7 @@ public class ValidationJob extends JobDefinition {
 		// variables pour le log
 		int i = 0;
 
-		// Dispatching des contribuables à processer
+		// Dispatching des tiers à processer
 		for (Long id : ids) {
 			if (statusManager.interrupted()) {
 				results.interrompu = true;
@@ -200,9 +200,9 @@ public class ValidationJob extends JobDefinition {
 			if (++i % 100 == 0) {
 				int percent = (i * 100) / ids.size();
 				String message = String.format(
-						"Processing du contribuable %d => invalides(%d) / p.imposition(%d) / coherence(%d) / adresses(%d) / total(%d)", id,
+						"Processing du tiers %d => invalides(%d) / p.imposition(%d) / coherence(%d) / adresses(%d) / total(%d)", id,
 						results.getNbErreursValidation(), results.getNbErreursPeriodesImposition(), results.getNbErreursCoherenceDI(),
-						results.getNbErreursAdresses(), results.getNbCtbsTotal());
+						results.getNbErreursAdresses(), results.getNbTiersTotal());
 				statusManager.setMessage(message, percent);
 				if (LOGGER.isDebugEnabled()) {
 					LOGGER.debug(message);

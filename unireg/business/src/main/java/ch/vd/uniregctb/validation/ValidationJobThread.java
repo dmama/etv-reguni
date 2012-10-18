@@ -23,6 +23,7 @@ import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
 /**
@@ -92,32 +93,32 @@ public class ValidationJobThread extends Thread {
 			final Long id = queue.take();
 			Assert.notNull(id);
 
-			results.incCtbsTotal();
+			results.incTiersTotal();
 
-			final Contribuable contribuable = (Contribuable) tiersDAO.get(id);
-			if (contribuable == null || contribuable.isAnnule()) {
+			final Tiers tiers = tiersDAO.get(id);
+			if (tiers == null || tiers.isAnnule() ) {
 				continue;
 			}
 
-			checkValidation(contribuable, results);
+			checkValidation(tiers, results);
 
-			if (results.calculatePeriodesImposition) {
-				checkPeriodesImposition(contribuable, results);
+			if (results.calculatePeriodesImposition && tiers instanceof Contribuable) {
+				checkPeriodesImposition((Contribuable) tiers, results);
 			}
 
 			if (results.calculateAdresses) {
-				checkAdresses(contribuable, results);
+				checkAdresses(tiers, results);
 			}
 		}
 	}
 
-	private void checkValidation(final Contribuable contribuable, ValidationJobResults results) {
-		final ValidationResults r = validationService.validate(contribuable);
+	private void checkValidation(final Tiers tiers, ValidationJobResults results) {
+		final ValidationResults r = validationService.validate(tiers);
 		if (r.hasErrors()) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Le contribuable n°" + contribuable.getNumero() + " est invalide");
+				LOGGER.debug("Le tiers n°" + tiers.getNumero() + " est invalide");
 			}
-			results.addErrorCtbInvalide(contribuable, r);
+			results.addErrorTiersInvalide(tiers, r);
 		}
 	}
 
@@ -303,15 +304,15 @@ public class ValidationJobThread extends Thread {
 		results.addErrorCoherenceDi(contribuable, message);
 	}
 
-	private void checkAdresses(final Contribuable contribuable, ValidationJobResults results) {
+	private void checkAdresses(final Tiers tiers, ValidationJobResults results) {
 		try {
-			adresseService.getAdressesFiscalHisto(contribuable, results.modeStrict);
+			adresseService.getAdressesFiscalHisto(tiers, results.modeStrict);
 		}
 		catch (Exception e) {
 			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Calcul impossible des adresses historiques du contribuable n°" + contribuable.getNumero());
+				LOGGER.debug("Calcul impossible des adresses historiques du tiers n°" + tiers.getNumero());
 			}
-			results.addErrorAdresses(contribuable, e);
+			results.addErrorAdresses(tiers, e);
 		}
 	}
 

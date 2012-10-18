@@ -28,7 +28,7 @@ public class PdfValidationRapport extends PdfRapport {
 		addEnteteUnireg();
 
 		// Titre
-		addTitrePrincipal("Rapport de la validation de tous les contribuables");
+		addTitrePrincipal("Rapport de la validation de tous les tiers");
 
 		// Paramètres
 		addEntete1("Paramètres");
@@ -55,13 +55,13 @@ public class PdfValidationRapport extends PdfRapport {
 			addTableSimple(2, new PdfRapport.TableSimpleCallback() {
 				@Override
 				public void fillTable(PdfTableSimple table) throws DocumentException {
-					table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
-					table.addLigne("Nombre de contribuables ne validant pas:", String.valueOf(results.erreursValidation.size()));
+					table.addLigne("Nombre total de tiers:", String.valueOf(results.nbTiersTotal));
+					table.addLigne("Nombre de tiers ne validant pas:", String.valueOf(results.erreursValidation.size()));
 					table.addLigne("Nombre de périodes d'imposition qui ne sont pas calculables:", String
 							.valueOf(results.erreursPeriodesImposition.size()));
 					table.addLigne("Nombre de DIs émises dont les dates ne correspondent pas aux dates d'assujettissement:", String
 							.valueOf(results.erreursCoherenceDI.size()));
-					table.addLigne("Nombre de contribuables dont les adresses ne sont pas calculables:", String
+					table.addLigne("Nombre de tiers dont les adresses ne sont pas calculables:", String
 							.valueOf(results.erreursAdresses.size()));
 					table.addLigne("Durée d'exécution du job:", formatDureeExecution(results));
 					table.addLigne("Date de génération du rapport:", formatTimestamp(dateGeneration));
@@ -71,10 +71,10 @@ public class PdfValidationRapport extends PdfRapport {
 
 		// CTBs en erreurs
 		{
-			String filename = "contribuables_invalides.csv";
+			String filename = "tiers_invalides.csv";
 			String contenu = asCsvFile(results.erreursValidation, filename, statusManager);
-			String titre = "Liste des contribuables invalides";
-			String listVide = "(aucun contribuable invalide)";
+			String titre = "Liste des tiers invalides";
+			String listVide = "(aucun tiers invalide)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 
@@ -98,10 +98,10 @@ public class PdfValidationRapport extends PdfRapport {
 
 		// Adresses
 		if (results.calculateAdresses) {
-			String filename = "contribuables_adresses_incalculables.csv";
+			String filename = "tiers_adresses_incalculables.csv";
 			String contenu = asCsvFile(results.erreursAdresses, filename, statusManager);
-			String titre = "Liste des contribuables dont les adresses ne sont pas calculables";
-			String listVide = "(aucun contribuable dont les adresses ne sont pas calculables)";
+			String titre = "Liste des tiers dont les adresses ne sont pas calculables";
+			String listVide = "(aucun tiers dont les adresses ne sont pas calculables)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
 

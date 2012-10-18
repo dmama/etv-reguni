@@ -17,7 +17,7 @@ import ch.vd.uniregctb.tiers.TiersService;
  */
 public abstract class JobResults<E, R extends JobResults> implements BatchResults<E, R> {
 
-	public static final String EXCEPTION_DESCRIPTION = "Une exception est apparue pendant le traitement du contribuable, veuillez en informer le chef de projet Unireg";
+	public static final String EXCEPTION_DESCRIPTION = "Une exception est apparue pendant le traitement du tiers, veuillez en informer le chef de projet Unireg";
 
 	/**
 	 * Classe de base des informations dumpées dans les rapports d'exécution
@@ -53,16 +53,17 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	private TiersService tiersService;
 
 	/**
-	 * Retourne le nom et le prénom du contribuable spécifié. S'il s'agit d'un contribuable ménage commun et que les deux parties sont connues, la liste retournée contient les deux noms des parties.
+	 * Retourne le nom et le prénom ou la désignation du tiers spécifié.
+	 * S'il s'agit d'un contribuable ménage commun et que les deux parties sont connues, la liste retournée contient les deux noms des parties.
 	 *
-	 * @param noCtb le numéro de contribuable
-	 * @return une liste avec 1 nom (majorité des cas) ou 2 noms (contribuables ménage commun)
+	 * @param noTiers le numéro du tiers
+	 * @return une liste avec 1 nom (majorité des cas) ou 2 noms (contribuables ménage commun); ou plus pour les tiers débiteur
 	 */
-	private List<String> getNoms(long noCtb) {
+	private List<String> getNoms(long noTiers) {
 
 		List<String> noms;
 
-		final Tiers tiers = tiersService.getTiers(noCtb);
+		final Tiers tiers = tiersService.getTiers(noTiers);
 		if (tiers == null) {
 			noms = Collections.emptyList();
 		}
@@ -80,20 +81,20 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 	}
 
 	/**
-	 * Retourne le nom et prénom du contribuable (ou des deux parties dans le cas d'un ménage commun)
+	 * Retourne le nom et prénom ou la désignation du tiers (ou des deux parties dans le cas d'un ménage commun)
 	 *
-	 * @param noCtb le numéro de contribuable
-	 * @return le nom et le prénom du contribuable.
+	 * @param noTiers le numéro du tiers
+	 * @return le nom et le prénom, ou la désignation du tiers.
 	 */
-	protected String getNom(@Nullable Long noCtb) {
+	protected String getNom(@Nullable Long noTiers) {
 
-		if (noCtb == null) {
+		if (noTiers == null) {
 			return StringUtils.EMPTY;
 		}
 
 		final String nom;
 
-		final List<String> noms = getNoms(noCtb);
+		final List<String> noms = getNoms(noTiers);
 		if (noms.size() == 1) { // 90% des cas
 			nom = noms.get(0);
 		}
@@ -112,7 +113,6 @@ public abstract class JobResults<E, R extends JobResults> implements BatchResult
 		else {
 			nom = null;
 		}
-
 		return StringUtils.trimToEmpty(nom);
 	}
 
