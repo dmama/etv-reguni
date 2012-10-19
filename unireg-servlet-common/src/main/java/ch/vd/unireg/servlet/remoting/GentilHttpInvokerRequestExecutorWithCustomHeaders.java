@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.springframework.remoting.httpinvoker.CommonsHttpInvokerRequestExecutor;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
 
 /**
@@ -13,7 +12,7 @@ import org.springframework.remoting.httpinvoker.HttpInvokerClientConfiguration;
  *
  * @see {@link HttpInvokerServiceExporterWithCustomHeaders}
  */
-public class CommonsHttpInvokerRequestExecutorWithCustomHeaders extends CommonsHttpInvokerRequestExecutor {
+public class GentilHttpInvokerRequestExecutorWithCustomHeaders extends GentilHttpInvokerRequestExecutor {
 
 	private String prefix = "unireg-";
 
@@ -23,6 +22,10 @@ public class CommonsHttpInvokerRequestExecutorWithCustomHeaders extends CommonsH
 			return new HashMap<String, String>();
 		}
 	};
+
+	public GentilHttpInvokerRequestExecutorWithCustomHeaders(String serviceName) {
+		super(serviceName);
+	}
 
 	@Override
 	protected PostMethod createPostMethod(HttpInvokerClientConfiguration config) throws IOException {

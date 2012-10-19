@@ -22,7 +22,6 @@ public class BasicAuthHttpInvokerProxyFactoryBean extends HttpInvokerProxyFactor
 
 	@Override
 	public void afterPropertiesSet() {
-		executor = new GentilHttpInvokerRequestExecutor(getServiceInterface().getSimpleName());
 		initExecutor(executor, readTimeout, username, password, maxConnectionsPerHost, getBeanClassLoader());
 		setHttpInvokerRequestExecutor(executor);
 		super.afterPropertiesSet();

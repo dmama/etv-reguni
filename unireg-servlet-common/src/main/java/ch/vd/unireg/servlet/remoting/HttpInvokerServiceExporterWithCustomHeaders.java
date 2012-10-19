@@ -15,7 +15,7 @@ import org.springframework.remoting.support.RemoteInvocationResult;
 /**
  * Ce service exporter décode d'éventuels headers personnalisés transmis avec la requête http, et les transmettre à un callback avant et après l'invocation de la méthode du service.
  *
- * @see {@link CommonsHttpInvokerRequestExecutorWithCustomHeaders}
+ * @see {@link GentilHttpInvokerRequestExecutorWithCustomHeaders}
  */
 public class HttpInvokerServiceExporterWithCustomHeaders extends HttpInvokerServiceExporter {
 
