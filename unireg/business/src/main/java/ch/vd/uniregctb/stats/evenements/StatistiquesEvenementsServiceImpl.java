@@ -230,7 +230,7 @@ public class StatistiquesEvenementsServiceImpl implements StatistiquesEvenements
 				final String visaOperateur = (String) row[3];
 				final RegDate dateEvenement = RegDate.fromIndex(((Number) row[4]).intValue(), false);
 				final EtatEvenementCivil etat = EtatEvenementCivil.valueOf((String) row[5]);
-				final Long individu = ((Number) row[6]).longValue();
+				final Long individu = row[6] != null ? ((Number) row[6]).longValue() : null;
 				final TypeEvenementCivilEch type = TypeEvenementCivilEch.valueOf((String) row[7]);
 				final ActionEvenementCivilEch action = ActionEvenementCivilEch.valueOf((String) row[8]);
 				final String commentaireTraitement = (String) row[9];
