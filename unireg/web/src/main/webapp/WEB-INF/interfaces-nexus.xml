@@ -4,7 +4,9 @@
 
 	<!-- Service civil -->
 
-	<bean id="serviceCivilHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.CommonsHttpInvokerRequestExecutorWithCustomHeaders"/>
+	<bean id="serviceCivilHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutorWithCustomHeaders">
+		<constructor-arg value="ServiceCivil"/>
+	</bean>
 
 	<bean id="serviceCivilLogger" class="ch.vd.uniregctb.interfaces.civil.ServiceCivilRemoteLogger">
 		<property name="executor" ref="serviceCivilHttpRequestExecutor"/>
@@ -26,11 +28,16 @@
 
 	<!-- Service infra -->
 
+	<bean id="serviceInfraHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutor">
+		<constructor-arg value="ServiceInfrastructure"/>
+	</bean>
+
 	<bean id="serviceInfraRemote" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/serviceInfra.remoting" />
 		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="executor" ref="serviceInfraHttpRequestExecutor" />
 		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
@@ -41,12 +48,17 @@
 
 	<!-- Gestion de la cohérence des données du cache centralisé -->
 
+	<bean id="dataEventServiceHttpRequestExecutor" class="ch.vd.unireg.servlet.remoting.GentilHttpInvokerRequestExecutor">
+		<constructor-arg value="DataEvent"/>
+	</bean>
+
 	<!-- Data Event Service du cache centralisé Nexus -->
 	<bean id="nexusDataEventService" class="ch.vd.unireg.servlet.remoting.BasicAuthHttpInvokerProxyFactoryBean">
 		<property name="serviceUrl" value="${extprop.remoting.unireg.nexus.url}/dataEventService.remoting" />
 		<property name="serviceInterface" value="ch.vd.uniregctb.data.DataEventService" />
 		<property name="username" value="${extprop.remoting.unireg.username}" />
 		<property name="password" value="${extprop.remoting.unireg.password}" />
+		<property name="executor" ref="dataEventServiceHttpRequestExecutor" />
 		<property name="maxConnectionsPerHost" value="${extprop.remoting.maxConnectionsPerHost}" />
 	</bean>
 
