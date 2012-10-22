@@ -701,6 +701,24 @@ public class ArriveePrincipale extends Arrivee {
 	}
 
 	@Override
+	protected boolean isConjointMarieSeul() {
+		boolean isConjointMarieSeul = false;
+		final RegDate dateArrivee = getDateArriveeEffective(getDate());
+		final Individu individuConjoint = context.getServiceCivil().getConjoint(getNoIndividu(), dateArrivee);
+		if (individuConjoint != null) {
+			final PersonnePhysique conjoint = context.getTiersDAO().getPPByNumeroIndividu(individuConjoint.getNoTechnique(), true);
+			if (conjoint == null) {
+				isConjointMarieSeul = false;
+			}
+			else {
+				final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(conjoint, dateArrivee);
+				isConjointMarieSeul = coupleExistant != null && (coupleExistant.getConjoint()==null || coupleExistant.getPrincipal()==null);
+			}
+		}
+		return isConjointMarieSeul;
+	}
+
+	@Override
 	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
 		boolean isPosterieur = getPrincipalPP() != null;
 		if (isPosterieur) {

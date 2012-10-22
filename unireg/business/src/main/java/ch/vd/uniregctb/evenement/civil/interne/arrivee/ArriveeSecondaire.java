@@ -116,6 +116,12 @@ public class ArriveeSecondaire extends Arrivee {
 	}
 
 	@Override
+	protected boolean isConjointMarieSeul() {
+		// comme on ne fait rien, il est impossible de dire si l'événement est antérieur
+		return false;
+	}
+
+	@Override
 	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
 		// comme on ne fait rien, il est impossible de dire si l'événement est postérieur
 		return false;

@@ -1100,4 +1100,138 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			globalTiersIndexer.overwriteIndex();
 		}
 	}
+
+	//@Test(timeout = 10000L)
+	@Test
+	public void testArriveesAnterieurCoupleAMettreEnErreur() throws Exception {
+
+		final long noLui = 246L;
+		final long noElle = 3342L;
+		final RegDate dateArriveeLui = date(2012, 3, 12);
+		final RegDate dateArriveeElle = date(2012,6,15);        // arrivée décalée, avant le premier (si c'était après, ce serait traité)
+		final RegDate dateMariage = date(2005, 8, 2);
+
+
+		// mise en place civile Madame
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate naissanceElle = date(1971, 6, 21);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+				marieIndividu(elle, dateMariage);
+
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+		globalTiersIndexer.sync();
+		// création de l'événement civil pour l'arrivée de Madame
+		final long evtElle = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArriveeElle);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noElle);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée de madame
+		traiterEvenements(noElle);
+
+		// vérification de l'état de traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
+				assertNotNull(pp);
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+				assertNotNull(couple.getMenage());
+				assertNull(couple.getConjoint());
+				assertEquals(pp.getId(), couple.getPrincipal().getNumero());
+
+				final MenageCommun mc = couple.getMenage();
+				final ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateArriveeElle, ffp.getDateDebut());
+				assertEquals(MotifFor.ARRIVEE_HS, ffp.getMotifOuverture());
+
+				return null;
+			}
+		});
+
+
+
+		// mise en place civile Monsieur
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+
+				final RegDate naissanceElle = date(1971, 6, 21);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeElle, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+
+				final RegDate naissanceLui = date(1970, 3, 12);
+				final MockIndividu lui = addIndividu(noLui, naissanceLui, "Tartempion", "François", true);
+				addNationalite(lui, MockPays.France, naissanceLui, null);
+
+				marieIndividus(lui,elle, dateMariage);
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArriveeLui, null);
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+
+		globalTiersIndexer.sync();
+		// événement civil de l'arrivée de monsieur
+
+		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(321674L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArriveeLui);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée de monsieur
+		traiterEvenements(noLui);
+
+		// vérification de l'état de traitement de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",noLui);
+				assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
 }

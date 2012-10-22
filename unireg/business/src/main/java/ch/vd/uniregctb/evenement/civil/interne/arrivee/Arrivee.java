@@ -193,6 +193,13 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	protected abstract boolean isArriveeRedondanteAnterieurPourIndividuEnMenage();
 
+
+	/**
+	 *
+	 * @return<code>true</code> si le conjoint de l'individu qui arrive correspond à un contribuable Marié seul dans unireg
+	 */
+	protected abstract boolean isConjointMarieSeul();
+
 	/**
 	 * @return <code>true</code> si l'arrivée de cet individu en ménage est posterieur à une arrivée déjà traitée pour l'autre conjoint
 	 */
@@ -443,6 +450,12 @@ public abstract class Arrivee extends Mouvement {
 	 */
 	@NotNull
 	protected final HandleStatus handleIndividuEnMenage(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+
+		if (isConjointMarieSeul()) {
+			long numeroIndividu = getNoIndividu();
+			String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",numeroIndividu);
+			throw new EvenementCivilException(message);
+		}
 
 		if(isArriveeRedondanteAnterieurPourIndividuEnMenage()){
 			String stringDateArrivee = RegDateHelper.dateToDashString(getDate());
