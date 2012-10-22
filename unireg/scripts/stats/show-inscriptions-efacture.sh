@@ -1,11 +1,30 @@
 #! /bin/bash -
 
-TMP_FILE=$(mktemp)
+TMP_DIR=$(mktemp -d)
+TMP_FILE="$TMP_DIR/file"
+TMP_DEMANDES="$TMP_DIR/demandes"
+touch "$TMP_DEMANDES"
 
-grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed -e '1~2 N;s/\n/ /' | sed -e 's/^.*\b\([0-9]\+\). du contribuable \([0-9./]\+\) au \([0-9.]\+\) .* \([A-Z_]\+\)$/\3\;\2\;\4;\1/' -e 's/\//;/' -e 's/^\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\)/\3\2\1/' -e 's/\.//g' > "$TMP_FILE"
+grep "EFactureEventHandlerImpl" "$@" | grep "\binscription e-Facture" -A 1 | sed -e '/Reçu/ N;s/\n/ /' | grep -v "^--" | while read LINE; do
+
+	if [[ "$LINE" =~ ch\.vd\. ]]; then
+		# Exception....
+		echo "$LINE" | sed -e 's/^.*\b\([0-9]\+\). du contribuable \([0-9./]\+\) au \([0-9.]\+\) .*$/\3;\2;EXCEPTION;\1/' 
+	else
+		echo "$LINE" | sed -e 's/^.*\b\([0-9]\+\). du contribuable \([0-9./]\+\) au \([0-9.]\+\) .* \([A-Z_]\+\)$/\3;\2;\4;\1/' 
+	fi | while IFS=";" read DATE CTB_AVS TRAITEMENT NO_DEMANDE; do
+		grep -x "$NO_DEMANDE" "$TMP_DEMANDES" 2>/dev/null 1>&2
+		if [ $? == 0 ]; then
+			TRAITEMENT="$TRAITEMENT (RELANCE)"
+		fi
+		echo "$NO_DEMANDE" >> "$TMP_DEMANDES"
+		echo "$DATE;$CTB_AVS;$TRAITEMENT;$NO_DEMANDE"
+		
+	done | sed -e 's/\//;/' -e 's/^\([0-9]\{2\}\)\.\([0-9]\{2\}\)\.\([0-9]\{4\}\)/\3\2\1/' -e 's/\.//g'
+done > "$TMP_FILE"
 
 function body() {
-	echo "Nouvelles inscriptions e-Facture : $(cat "$TMP_FILE" | wc -l)."
+	echo "Nouvelles inscriptions e-Facture : $(grep -v "RELANCE" "$TMP_FILE" -c)."
 	echo
 	echo "DATE;NO_CTB;NO_AVS;TRAITEMENT;NO_DEMANDE"
 	cat "$TMP_FILE"
@@ -27,4 +46,4 @@ if [ -s "$TMP_FILE" ]; then
 	body | encode 
 fi
 
-rm -f "$TMP_FILE"
+rm -rf "$TMP_DIR"
