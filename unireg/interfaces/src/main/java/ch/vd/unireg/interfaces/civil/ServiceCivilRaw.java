@@ -28,10 +28,11 @@ public interface ServiceCivilRaw {
 	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
 	 *
 	 * @param noIndividu le numéro technique de l'individu.
-	 * @param parties      les parties optionnelles devant être renseignées
-	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
+	 * @param parties    les parties optionnelles devant être renseignées
+	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
+	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividu(long noIndividu, AttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
 	 * Retourne un lot d'individu avec les parties spécifiées.
@@ -41,8 +42,9 @@ public interface ServiceCivilRaw {
 	 * @param nosIndividus les numéros d'individus demandés
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
+	 * @throws ServiceCivilException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
 	 * Renvoie un individu correspondant à l'événement donné

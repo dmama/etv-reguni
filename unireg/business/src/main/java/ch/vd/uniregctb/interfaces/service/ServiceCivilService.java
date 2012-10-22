@@ -7,6 +7,7 @@ import java.util.Set;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -82,9 +83,10 @@ public interface ServiceCivilService {
 	 * @param noIndividu le numéro technique de l'individu.
 	 * @param date       la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
-	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée.
+	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
+	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
 	 */
-	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties);
+	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
@@ -140,8 +142,9 @@ public interface ServiceCivilService {
 	 * @param date         la date de validité des individus
 	 * @param parties      les parties optionnelles devant être renseignées
 	 * @return la liste des individus trouvés, ou <b>null</b> si le service n'est pas capable de charger les individus par lots.
+	 * @throws ServiceCivilException en cas d'erreur lors de la récupération d'un ou plusieurs individus.
 	 */
-	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties);
+	List<Individu> getIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
 	 * Retourne la nationalité d'un individu à une date donnée.

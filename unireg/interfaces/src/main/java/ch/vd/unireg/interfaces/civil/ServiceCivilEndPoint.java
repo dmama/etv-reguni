@@ -30,7 +30,7 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 	}
 
 	@Override
-	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) {
+	public Individu getIndividu(long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
 		try {
 			return target.getIndividu(noIndividu, parties);
 		}
@@ -42,7 +42,7 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 	}
 
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
 		try {
 			return target.getIndividus(nosIndividus, parties);
 		}

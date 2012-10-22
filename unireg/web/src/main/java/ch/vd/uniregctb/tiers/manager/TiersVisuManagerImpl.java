@@ -17,6 +17,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
@@ -204,9 +205,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	/**
 	 * Mise à jour de la vue MouvementDetailView
-	 *
-	 * @param contribuable
-	 * @return
 	 */
 	private List<MouvementDetailView> getMouvements(Contribuable contribuable) throws ServiceInfrastructureException {
 
@@ -360,13 +358,42 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 		final StandardBatchIterator<Long> iterator = new StandardBatchIterator<Long>(numerosIndividus, 500);
 		while (iterator.hasNext()) {
 			final List<Long> batch = iterator.next();
-			final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
-			for (Individu ind : individus) {
-				final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
-				Assert.notNull(rl);
-				for (RapportsPrestationView.Rapport rapport : rl) {
-					rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
-					rapport.noAVS = getNumeroAvs(ind);
+			try {
+				final List<Individu> individus = serviceCivilService.getIndividus(batch, null);
+				for (Individu ind : individus) {
+					final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
+					Assert.notNull(rl);
+					for (RapportsPrestationView.Rapport rapport : rl) {
+						rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
+						rapport.noAVS = getNumeroAvs(ind);
+					}
+				}
+			}
+			catch (ServiceCivilException e) {
+				LOGGER.debug("Impossible de charger le lot d'individus [" + batch + "], on continue un-par-un. L'erreur est : " + e.getMessage());
+				// on recommence, un-par-un
+				for (Long numero : batch) {
+					try {
+						Individu ind = serviceCivilService.getIndividu(numero, null);
+						if (ind != null) {
+							final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(ind.getNoTechnique());
+							Assert.notNull(rl);
+							for (RapportsPrestationView.Rapport rapport : rl) {
+								rapport.nomCourrier1 = serviceCivilService.getNomPrenom(ind);
+								rapport.noAVS = getNumeroAvs(ind);
+							}
+						}
+					}
+					catch (ServiceCivilException ex) {
+						LOGGER.warn("Impossible de charger l'individu [" + numero + "]. L'erreur est : " + ex.getMessage(), ex);
+						// on affiche le message d'erreur directement dans la page, pour éviter qu'il soit perdu
+						final List<RapportsPrestationView.Rapport> rl = rapportsByNumeroIndividu.get(numero);
+						Assert.notNull(rl);
+						for (RapportsPrestationView.Rapport rapport : rl) {
+							rapport.nomCourrier1 = "##erreur## : " + ex.getMessage();
+							rapport.noAVS = "##erreur##";
+						}
+					}
 				}
 			}
 		}

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
@@ -194,7 +195,14 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				if (idxMin < idxMax) {
 					final Set<Long> lotTiersIds = new HashSet<Long>(listeIdsTiers.subList(idxMin, idxMax));
 					final Set<Long> noIndividus = tiersDAO.getNumerosIndividu(lotTiersIds, true);
-					tiersService.getServiceCivilService().getIndividus(noIndividus, null, AttributeIndividu.ADRESSES);
+
+					// TODO (msi) centraliser ce try-catch dans le serviceCivilCacheWarmer
+					try {
+						tiersService.getServiceCivilService().getIndividus(noIndividus, null, AttributeIndividu.ADRESSES);
+					}
+					catch (ServiceCivilException e) {
+						LOGGER.error("Impossible de précharger le lot d'individus [" + noIndividus + "]. L'erreur est : " + e.getMessage());
+					}
 				}
 			}
 

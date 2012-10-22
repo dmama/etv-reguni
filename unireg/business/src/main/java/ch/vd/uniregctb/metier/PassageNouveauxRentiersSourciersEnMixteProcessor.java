@@ -138,7 +138,13 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		if (serviceCivil.isWarmable() && batch.size() > 1) {
 			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
 			if (!numeroIndividus.isEmpty()) {
-				serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.ADRESSES);
+				// TODO (msi) utiliser le serviceCivilCacheWarmer
+				try {
+					serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.ADRESSES);
+				}
+				catch (ServiceCivilException e) {
+					LOGGER.error("Impossible de précharger le lot d'individus [" + numeroIndividus + "]. L'erreur est : " + e.getMessage());
+				}
 			}
 		}
 		for (Long id : batch) {

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -55,11 +56,15 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 			if (!idsTiers.isEmpty()) {
 				final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(idsTiers, true);
 				if (nosIndividus != null && nosIndividus.size() > 1) { // il est inutile de préchauffer un seul individu à la fois
-					serviceCivilService.getIndividus(nosIndividus, date, parties);
-
-					final long end = System.nanoTime();
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
+					try {
+						serviceCivilService.getIndividus(nosIndividus, date, parties);
+						final long end = System.nanoTime();
+						if (LOGGER.isDebugEnabled()) {
+							LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
+						}
+					}
+					catch (ServiceCivilException e) {
+						LOGGER.error("Impossible de précharger le lot d'individus [" + nosIndividus + "]. L'erreur est : " + e.getMessage());
 					}
 				}
 			}

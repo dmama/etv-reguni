@@ -143,7 +143,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, AttributeIndividu... parties) throws ServiceCivilException {
 
 		final Individu individu;
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
@@ -186,7 +186,7 @@ public class ServiceCivilPersistentCache implements ServiceCivilRaw, UniregCache
 	 * {@inheritDoc}
 	 */
 	@Override
-	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) {
+	public List<Individu> getIndividus(Collection<Long> nosIndividus, AttributeIndividu... parties) throws ServiceCivilException {
 
 		final Set<AttributeIndividu> partiesSet = arrayToSet(parties);
 

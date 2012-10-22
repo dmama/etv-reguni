@@ -28,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -279,12 +280,17 @@ public class ProduireRolesProcessor {
 
 		if (!ppByNoIndividu.isEmpty()) {
 			// remplit le cache des individus...
-			final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), null, AttributeIndividu.ADRESSES);
+			try {
+				final List<Individu> individus = serviceCivilService.getIndividus(ppByNoIndividu.keySet(), null, AttributeIndividu.ADRESSES);
 
-			// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
-			for (Individu individu : individus) {
-				final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
-				pp.setIndividuCache(individu);
+				// et on remplit aussi le cache individu sur les personnes physiques... (utilisé pour l'accès à la date de décès et au sexe)
+				for (Individu individu : individus) {
+					final PersonnePhysique pp = ppByNoIndividu.get(individu.getNoTechnique());
+					pp.setIndividuCache(individu);
+				}
+			}
+			catch (ServiceCivilException e) {
+				LOGGER.error("Impossible de précharger le lot d'individus [" + ppByNoIndividu.keySet() + "]. L'erreur est : " + e.getMessage());
 			}
 		}
 	}

@@ -141,8 +141,14 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		if (serviceCivil.isWarmable()) {
 			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
 			if (!numeroIndividus.isEmpty()) {
-				serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
-				serviceCivil.getIndividus(numeroIndividus, null, AttributeIndividu.ADRESSES);
+				// TODO (msi) centraliser ce try-catch dans le serviceCivilCacheWarmer
+				try {
+					serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
+					serviceCivil.getIndividus(numeroIndividus, null, AttributeIndividu.ADRESSES);
+				}
+				catch (ServiceCivilException e) {
+					LOGGER.error("Impossible de précharger le lot d'individus [" + numeroIndividus + "]. L'erreur est : " + e.getMessage());
+				}
 			}
 		}
 

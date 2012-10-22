@@ -38,7 +38,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) {
+	public Individu getIndividu(final long noIndividu, final AttributeIndividu... parties) throws ServiceCivilException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
@@ -64,7 +64,7 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final AttributeIndividu... parties) {
+	public List<Individu> getIndividus(final Collection<Long> nosIndividus, final AttributeIndividu... parties) throws ServiceCivilException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
