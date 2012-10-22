@@ -36,11 +36,9 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 	}
 
 	@Override
-	public void warmIndividusPourTiers(Collection<Long> noTiers, @Nullable RegDate date, AttributeIndividu... parties) {
+	public void warmIndividusPourTiers(Collection<Long> noTiers, @Nullable RegDate date, boolean includesComposantsMenage, AttributeIndividu... parties) {
 
 		if (serviceCivilService.isWarmable()) {
-
-			final long start = System.nanoTime();
 
 			final Set<Long> idsTiers;
 			if (noTiers instanceof Set) {
@@ -54,20 +52,30 @@ public class ServiceCivilCacheWarmerImpl implements ServiceCivilCacheWarmer {
 			}
 
 			if (!idsTiers.isEmpty()) {
-				final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(idsTiers, true);
-				if (nosIndividus != null && nosIndividus.size() > 1) { // il est inutile de préchauffer un seul individu à la fois
-					try {
-						serviceCivilService.getIndividus(nosIndividus, date, parties);
-						final long end = System.nanoTime();
-						if (LOGGER.isDebugEnabled()) {
-							LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
-						}
-					}
-					catch (ServiceCivilException e) {
-						LOGGER.error("Impossible de précharger le lot d'individus [" + nosIndividus + "]. L'erreur est : " + e.getMessage());
-					}
-				}
+				final Set<Long> nosIndividus = tiersDAO.getNumerosIndividu(idsTiers, includesComposantsMenage);
+				warmIndividus(nosIndividus, date, parties);
 			}
 		}
+	}
+
+	public void warmIndividus(Collection<Long> nosIndividus, @Nullable RegDate date, AttributeIndividu... parties) {
+		if (serviceCivilService.isWarmable() && nosIndividus != null && nosIndividus.size() > 1) { // il est inutile de préchauffer un seul individu à la fois
+			final long start = System.nanoTime();
+			try {
+				serviceCivilService.getIndividus(nosIndividus, date, parties);
+				final long end = System.nanoTime();
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(String.format("Récupéré %d individu(s) en %d ms", nosIndividus.size(), (end - start) / 1000000L));
+				}
+			}
+			catch (ServiceCivilException e) {
+				LOGGER.error("Impossible de précharger le lot d'individus [" + nosIndividus + "]. L'erreur est : " + e.getMessage());
+			}
+		}
+	}
+
+	@Override
+	public boolean isServiceWarmable() {
+		return serviceCivilService.isWarmable();
 	}
 }

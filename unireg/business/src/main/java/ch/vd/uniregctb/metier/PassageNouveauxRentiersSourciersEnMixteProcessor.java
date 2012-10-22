@@ -24,10 +24,10 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -54,7 +54,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
-	private final ServiceCivilService serviceCivil;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ValidationService validationService;
 	private final int ageRentierHomme;
 	private final int ageRentierFemme;
@@ -64,7 +64,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private Set<Long> conjointAIgnorerGlobal = new HashSet<Long>();
 
 	public PassageNouveauxRentiersSourciersEnMixteProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, TiersDAO tiersDAO,
-	                                                        AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilService serviceCivil,
+	                                                        AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
 	                                                        ValidationService validationService, ParametreAppService parametreAppService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
@@ -72,11 +72,10 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
-		this.serviceCivil = serviceCivil;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
 		this.ageRentierFemme = parametreAppService.getAgeRentierFemme();
 		this.ageRentierHomme = parametreAppService.getAgeRentierHomme();
-
 	}
 
 	public PassageNouveauxRentiersSourciersEnMixteResults run(final RegDate dateTraitement, StatusManager statusManager) {
@@ -135,18 +134,8 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status, Set<Long> conjointAIgnorer) {
 		// On préchauffe le cache des individus, si possible
 		// On évite de le faire pour les batchs de taille 1 (reprise sur batch avec une erreur),ça ne sert à rien.
-		if (serviceCivil.isWarmable() && batch.size() > 1) {
-			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
-			if (!numeroIndividus.isEmpty()) {
-				// TODO (msi) utiliser le serviceCivilCacheWarmer
-				try {
-					serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.ADRESSES);
-				}
-				catch (ServiceCivilException e) {
-					LOGGER.error("Impossible de précharger le lot d'individus [" + numeroIndividus + "]. L'erreur est : " + e.getMessage());
-				}
-			}
-		}
+		serviceCivilCacheWarmer.warmIndividusPourTiers(batch, dateReference, false, AttributeIndividu.ADRESSES);
+
 		for (Long id : batch) {
 			if (status.interrupted()) {
 				break;

@@ -1712,7 +1712,7 @@ public class TiersServiceImpl implements TiersService {
             for (PersonnePhysique enfant : listeRecherche) {
                 noTiersEnfants.add(enfant.getNumero());
             }
-            serviceCivilCacheWarmer.warmIndividusPourTiers(noTiersEnfants, finPeriodeImposition, AttributeIndividu.ADRESSES);
+            serviceCivilCacheWarmer.warmIndividusPourTiers(noTiersEnfants, finPeriodeImposition, true, AttributeIndividu.ADRESSES);
 
             for (PersonnePhysique enfant : listeRecherche) {
                 final RegDate dateDeces = getDateDeces(enfant);

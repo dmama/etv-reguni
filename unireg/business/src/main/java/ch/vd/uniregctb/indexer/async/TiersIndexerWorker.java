@@ -24,12 +24,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
 import ch.vd.uniregctb.interfaces.model.PartPM;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -50,7 +50,7 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 	private final GlobalTiersIndexer.Mode mode;
 
-	private ServiceCivilService serviceCivilService;
+	@Nullable private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	private boolean prefetchPMs;
 	private TiersDAO tiersDAO;
@@ -67,21 +67,21 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	 * @param transactionManager        le transaction manager
 	 * @param dialect                   le dialect hibernate utilisé
 	 * @param name                      le nom du thread
-	 * @param serviceCivilService       le service civil qui permet de préchauffer le cache des individus
+	 * @param serviceCivilCacheWarmer   le warmer du cache du service civil
+	 * @param servicePM                 le service des personnes morales
 	 * @param prefetchPMs               <b>vrai</b> si le cache des PMs doit être préchauffé par lot; <b>faux</b> autrement.
 	 * @param tiersDAO                  le tiers DAO
-	 * @param servicePM                 le service des personnes morales
 	 */
 	public TiersIndexerWorker(GlobalTiersIndexer.Mode mode, GlobalTiersIndexerImpl globalTiersIndexer, SessionFactory sessionFactory, PlatformTransactionManager transactionManager, Dialect dialect,
-	                          String name, @Nullable ServiceCivilService serviceCivilService, boolean prefetchPMs, TiersDAO tiersDAO,
-	                          ServicePersonneMoraleService servicePM) {
+	                          String name, @Nullable ServiceCivilCacheWarmer serviceCivilCacheWarmer, ServicePersonneMoraleService servicePM,
+	                          boolean prefetchPMs, TiersDAO tiersDAO) {
 		this.indexer = globalTiersIndexer;
 		this.transactionManager = transactionManager;
 		this.sessionFactory = sessionFactory;
 		this.mode = mode;
 		this.dialect = dialect;
 		this.name = name;
-		this.serviceCivilService = serviceCivilService;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.prefetchPMs = prefetchPMs;
 		this.tiersDAO = tiersDAO;
 		this.servicePM = servicePM;
@@ -132,10 +132,9 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 						}
 					}
 					else {
-						if (serviceCivilService != null && serviceCivilService.isWarmable()) {
-							// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
-							warmIndividuCache(session, batch);
-						}
+						// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
+						warmIndividuCache(session, batch);
+
 						if (prefetchPMs) {
 							warmPMCache(batch);
 						}
@@ -181,22 +180,13 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 	private void warmIndividuCache(Session session, List<Long> batch) {
 
-		long start = System.nanoTime();
+		if (serviceCivilCacheWarmer != null && serviceCivilCacheWarmer.isServiceWarmable()) {
 
-		final TiersDAOImpl.GetNumerosIndividusCallback callback = new TiersDAOImpl.GetNumerosIndividusCallback(batch, true);
-		final Set<Long> numerosIndividus = callback.doInHibernate(session);
+			final TiersDAOImpl.GetNumerosIndividusCallback callback = new TiersDAOImpl.GetNumerosIndividusCallback(batch, true);
+			final Set<Long> numerosIndividus = callback.doInHibernate(session);
 
-		if (numerosIndividus.size() > 1) { // on peut tomber sur une plage de tiers ne contenant pas d'habitant (et inutile de préchauffer un seul individu)
-			try {
-				final AttributeIndividu parties[] = AttributeIndividu.values(); // toutes les parties (pour charger le cache persistent)
-				serviceCivilService.getIndividus(numerosIndividus, null, parties); // chauffe le cache
-
-				long nanosecondes = System.nanoTime() - start;
-				LOGGER.info("=> Récupéré " + numerosIndividus.size() + " individus en " + (nanosecondes / 1000000L) + "ms.");
-			}
-			catch (Exception e) {
-				LOGGER.error("Impossible de précharger le lot d'individus [" + numerosIndividus + "]. On continue un par un pour ce lot. L'erreur est : " + e.getMessage());
-			}
+			final AttributeIndividu parties[] = AttributeIndividu.values(); // toutes les parties (pour charger le cache persistent)
+			serviceCivilCacheWarmer.warmIndividus(numerosIndividus, null, parties);
 		}
 	}
 

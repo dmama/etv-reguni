@@ -28,13 +28,13 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.BatchCallback;
 import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.OuvertureForsResults.ErreurType;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -63,20 +63,21 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private final TiersDAO tiersDAO;
 	private final AdresseService adresseService;
 	private final ServiceInfrastructureService serviceInfra;
-	private final ServiceCivilService serviceCivil;
+	private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private final ValidationService validationService;
 
 	protected OuvertureForsResults rapport;
 
 	public OuvertureForsContribuablesMajeursProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersDAO tiersDAO, TiersService tiersService,
-	                                                  AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilService serviceCivil, ValidationService validationService) {
+	                                                  AdresseService adresseService, ServiceInfrastructureService serviceInfra, ServiceCivilCacheWarmer serviceCivilCacheWarmer,
+	                                                  ValidationService validationService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersDAO = tiersDAO;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 		this.serviceInfra = serviceInfra;
-		this.serviceCivil = serviceCivil;
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 		this.validationService = validationService;
 	}
 
@@ -138,17 +139,11 @@ public class OuvertureForsContribuablesMajeursProcessor {
 	private void traiteBatch(List<Long> batch, RegDate dateReference, StatusManager status) {
 
 		// On préchauffe le cache des individus, si possible
-		if (serviceCivil.isWarmable()) {
+		if (serviceCivilCacheWarmer.isServiceWarmable()) {
 			final Set<Long> numeroIndividus = tiersDAO.getNumerosIndividu(batch, false);
 			if (!numeroIndividus.isEmpty()) {
-				// TODO (msi) centraliser ce try-catch dans le serviceCivilCacheWarmer
-				try {
-					serviceCivil.getIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
-					serviceCivil.getIndividus(numeroIndividus, null, AttributeIndividu.ADRESSES);
-				}
-				catch (ServiceCivilException e) {
-					LOGGER.error("Impossible de précharger le lot d'individus [" + numeroIndividus + "]. L'erreur est : " + e.getMessage());
-				}
+				serviceCivilCacheWarmer.warmIndividus(numeroIndividus, dateReference, AttributeIndividu.PERMIS, AttributeIndividu.NATIONALITE, AttributeIndividu.PARENTS);
+				serviceCivilCacheWarmer.warmIndividus(numeroIndividus, null, AttributeIndividu.ADRESSES);
 			}
 		}
 

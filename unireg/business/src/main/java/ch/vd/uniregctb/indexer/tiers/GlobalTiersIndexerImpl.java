@@ -25,6 +25,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ProgrammingException;
@@ -71,6 +72,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
     private SessionFactory sessionFactory;
     private ServiceInfrastructureService serviceInfra;
     private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private ServicePersonneMoraleService servicePM;
 	private Dialect dialect;
 	private StatsService statsService;
@@ -386,7 +388,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	 * @return l'indexer de la classe {@link MassTiersIndexer}
 	 */
 	protected MassTiersIndexer createMassTiersIndexer(int nbThreads, Mode mode, int queueSizeByThread, boolean prefetchPMs) {
-		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilService, prefetchPMs, tiersDAO, servicePM);
+		return new MassTiersIndexer(this, transactionManager, sessionFactory, nbThreads, queueSizeByThread, mode, dialect, serviceCivilCacheWarmer, prefetchPMs, tiersDAO, servicePM);
 	}
 
 	/**
@@ -688,7 +690,11 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
         this.serviceCivilService = serviceCivilService;
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
     public void setServiceInfra(ServiceInfrastructureService serviceInfra) {
         this.serviceInfra = serviceInfra;
     }

@@ -50,7 +50,6 @@
 		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
-		<property name="serviceCivil" ref="serviceCivilService" />
 		<property name="cacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="messageSource" ref="messageSource" />

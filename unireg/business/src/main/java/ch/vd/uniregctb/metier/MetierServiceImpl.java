@@ -32,6 +32,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdressesCivilesHisto;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FiscalDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
@@ -39,7 +40,6 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.efacture.EFactureService;
 import ch.vd.uniregctb.efacture.EvenementEfactureException;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.modeimposition.DecesModeImpositionResolver;
@@ -87,11 +87,11 @@ public class MetierServiceImpl implements MetierService {
 	private HibernateTemplate hibernateTemplate;
 	private ServiceInfrastructureService serviceInfra;
 	private ServiceCivilService serviceCivilService;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
 	private AdresseService adresseService;
 	private SituationFamilleService situationFamilleService;
-	private GlobalTiersSearcher tiersSearcher;
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
 	private EFactureService eFactureService;
@@ -105,20 +105,16 @@ public class MetierServiceImpl implements MetierService {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	public ServiceInfrastructureService getInfrastructureService() {
-		return serviceInfra;
-	}
-
 	public void setInfrastructureService(ServiceInfrastructureService serviceInfra) {
 		this.serviceInfra = serviceInfra;
 	}
 
-	public ServiceCivilService getServiceCivilService() {
-		return serviceCivilService;
-	}
-
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
 		this.serviceCivilService = serviceCivilService;
+	}
+
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	public void setParametreAppService(ParametreAppService parametreAppService) {
@@ -152,16 +148,8 @@ public class MetierServiceImpl implements MetierService {
 		this.tiersService = tiersService;
 	}
 
-	public SituationFamilleService getSituationFamilleService() {
-		return situationFamilleService;
-	}
-
 	public void setSituationFamilleService(SituationFamilleService situationFamilleService) {
 		this.situationFamilleService = situationFamilleService;
-	}
-
-	public void setTiersSearcher(GlobalTiersSearcher globalTiersSearcher) {
-		this.tiersSearcher = globalTiersSearcher;
 	}
 
 	public void setValidationService(ValidationService validationService) {
@@ -1467,7 +1455,7 @@ public class MetierServiceImpl implements MetierService {
 	@Override
 	public OuvertureForsResults ouvertureForsContribuablesMajeurs(RegDate dateReference, StatusManager status) {
 		final OuvertureForsContribuablesMajeursProcessor processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager,
-				hibernateTemplate, tiersDAO, tiersService, adresseService, serviceInfra, serviceCivilService, validationService);
+				hibernateTemplate, tiersDAO, tiersService, adresseService, serviceInfra, serviceCivilCacheWarmer, validationService);
 		return processor.run(dateReference, status);
 	}
 
@@ -2682,7 +2670,7 @@ public class MetierServiceImpl implements MetierService {
 	@Override
 	public PassageNouveauxRentiersSourciersEnMixteResults passageSourcierEnMixteNouveauxRentiers(RegDate dateTraitement, StatusManager statusManager) {
 		final PassageNouveauxRentiersSourciersEnMixteProcessor processor = new PassageNouveauxRentiersSourciersEnMixteProcessor(transactionManager,
-				hibernateTemplate, tiersService, tiersDAO, adresseService, serviceInfra, serviceCivilService, validationService, parametreAppService);
+				hibernateTemplate, tiersService, tiersDAO, adresseService, serviceInfra, serviceCivilCacheWarmer, validationService, parametreAppService);
 		return processor.run(dateTraitement, statusManager);
 	}
 

@@ -17,8 +17,8 @@ import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.tiers.GlobalTiersSearcher;
 import ch.vd.uniregctb.metier.OuvertureForsResults.Erreur;
 import ch.vd.uniregctb.metier.OuvertureForsResults.Traite;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -49,15 +49,16 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
 		adresseService = getBean(AdresseService.class, "adresseService");
-		final GlobalTiersSearcher searcher = getBean(GlobalTiersSearcher.class, "globalTiersSearcher");
 		final ValidationService validationService = getBean(ValidationService.class, "validationService");
+		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
+
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
 		processor = new OuvertureForsContribuablesMajeursProcessor(transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService,
-				serviceInfra, serviceCivil, validationService);
+				serviceInfra, serviceCivilCacheWarmer, validationService);
 
 		mockProcessor = new MockOuvertureForsContribuablesMajeursProcessor(transactionManager, hibernateTemplate, tiersDAO, tiersService, adresseService,
-				serviceInfra, serviceCivil, validationService);
+				serviceInfra, serviceCivilCacheWarmer, validationService);
 	}
 
 	/**

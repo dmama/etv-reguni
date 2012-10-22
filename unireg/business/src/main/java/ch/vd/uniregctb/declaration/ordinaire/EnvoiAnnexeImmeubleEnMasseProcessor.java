@@ -174,7 +174,7 @@ public class EnvoiAnnexeImmeubleEnMasseProcessor {
 		// pré-chauffage du cache des individus du civil
 		final List<Long> idsCtb = getIdCtb(listCtbImmeuble);
 		if (serviceCivilCacheWarmer != null) {
-			serviceCivilCacheWarmer.warmIndividusPourTiers(idsCtb, null, AttributeIndividu.ADRESSES);
+			serviceCivilCacheWarmer.warmIndividusPourTiers(idsCtb, null, true, AttributeIndividu.ADRESSES);
 		}
 		rapport.nbCtbsTotal += listCtbImmeuble.size();
 

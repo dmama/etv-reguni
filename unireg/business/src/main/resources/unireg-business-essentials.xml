@@ -68,13 +68,13 @@
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="infrastructureService" ref="serviceInfrastructureService" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="situationFamilleService" ref="situationFamilleService" />
-		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="validationService" ref="validationService" />
 		<property name="eFactureService" ref="efactureService" />

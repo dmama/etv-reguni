@@ -51,7 +51,8 @@ public class OnTheFlyTiersIndexer {
 		this.dialect = dialect;
 
 		// Un queue bloquante de longueur illimitée
-		this.queue = new WorkingQueue<Long>(MIN_THREADS, new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null, false, null, null));
+		this.queue = new WorkingQueue<Long>(MIN_THREADS, new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null, null,
+		                                                                        false, null));
 		this.queue.start();
 
 		// Démarre le monitoring de la queue
@@ -161,7 +162,7 @@ public class OnTheFlyTiersIndexer {
 				if (LOGGER.isTraceEnabled()) {
 					LOGGER.trace("Demande d'ajout d'un nouveau thread d'indexation...");
 				}
-				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null, false, null, null));
+				final String name = queue.addNewWorker(new TiersIndexerWorker(null, indexer, sessionFactory, transactionManager, dialect, "OnTheFly", null, null, false, null));
 				LOGGER.info("Ajouté un thread d'indexation " + name + " (threadSize=" + (threadSize + 1) + ", queueSize=" + queueSize + ')');
 			}
 		}

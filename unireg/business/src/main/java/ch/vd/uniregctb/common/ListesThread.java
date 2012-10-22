@@ -172,7 +172,7 @@ public abstract class ListesThread<T extends ListesResults<T>> extends Thread {
 		else {
 			attributesArray = null;
 		}
-		serviceCivilCacheWarmer.warmIndividusPourTiers(idsTiers, date, attributesArray);
+		serviceCivilCacheWarmer.warmIndividusPourTiers(idsTiers, date, true, attributesArray);
 	}
 
 	protected void fillAttributesIndividu(Set<AttributeIndividu> attributes) {

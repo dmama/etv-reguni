@@ -21,7 +21,6 @@ import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -50,7 +49,6 @@ public class RapportController {
 
 	private TiersService tiersService;
 	private AdresseService adresseService;
-	private ServiceCivilService serviceCivil;
 	private ServiceCivilCacheWarmer cacheWarmer;
 	private TiersMapHelper tiersMapHelper;
 	private MessageSource messageSource;
@@ -72,11 +70,6 @@ public class RapportController {
 
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setServiceCivil(ServiceCivilService serviceCivil) {
-		this.serviceCivil = serviceCivil;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -290,13 +283,13 @@ public class RapportController {
 	}
 
 	private void prechargeIndividus(List<RapportEntreTiers> rapports) {
-		if (serviceCivil.isWarmable()) {
+		if (cacheWarmer.isServiceWarmable()) {
 			final Set<Long> tiersIds = new HashSet<Long>();
 			for (RapportEntreTiers rapport : rapports) {
 				tiersIds.add(rapport.getSujetId());
 				tiersIds.add(rapport.getObjetId());
 			}
-			cacheWarmer.warmIndividusPourTiers(tiersIds, null, AttributeIndividu.ADRESSES);
+			cacheWarmer.warmIndividusPourTiers(tiersIds, null, true, AttributeIndividu.ADRESSES);
 		}
 	}
 }

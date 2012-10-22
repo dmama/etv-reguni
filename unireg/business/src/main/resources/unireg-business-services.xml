@@ -8,6 +8,7 @@
 		<property name="tiersSearcher" ref="globalTiersSearcher" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="serviceCivilService" ref="serviceCivilService" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="tiersService" ref="tiersService" />

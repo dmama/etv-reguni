@@ -162,11 +162,11 @@
 	<bean id="abstractMouvementManager" abstract="true" class="ch.vd.uniregctb.mouvement.manager.AbstractMouvementManagerImpl">
 		<property name="tiersGeneralManager" ref="tiersGeneralManager" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="serviceSecuriteService" ref="serviceSecuriteService" />
 		<property name="mouvementDossierDAO" ref="mouvementDossierDAO" />
+		<property name="serviceCivilCacheWarmer" ref="serviceCivilCacheWarmer"/>
 	</bean>
 
 	<bean id="mouvementVisuManager" class="ch.vd.uniregctb.tiers.manager.MouvementVisuManagerImpl" parent="abstractMouvementManager"/>

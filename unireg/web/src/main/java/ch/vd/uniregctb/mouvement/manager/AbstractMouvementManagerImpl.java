@@ -17,18 +17,17 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
-import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
-import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.mouvement.EnvoiDossier;
@@ -44,7 +43,6 @@ import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.security.IfoSecProfil;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeMouvement;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -54,20 +52,13 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 	public static final Logger LOGGER = Logger.getLogger(AbstractMouvementManagerImpl.class);
 
 	private TiersGeneralManager tiersGeneralManager;
-
 	private TiersService tiersService;
-
-	private TiersDAO tiersDAO;
-
 	private AdresseService adresseService;
-
 	private ServiceInfrastructureService serviceInfra;
-
 	private ServiceSecuriteService serviceSecuriteService;
-
 	private MessageSource messageSource;
-
 	private MouvementDossierDAO mouvementDossierDAO;
+	private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
 	public void setMouvementDossierDAO(MouvementDossierDAO mouvementDossierDAO) {
 		this.mouvementDossierDAO = mouvementDossierDAO;
@@ -98,10 +89,6 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		this.tiersService = tiersService;
 	}
 
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
-	}
-
 	public void setAdresseService(AdresseService adresseService) {
 		this.adresseService = adresseService;
 	}
@@ -124,6 +111,10 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	protected ServiceSecuriteService getServiceSecuriteService() {
 		return serviceSecuriteService;
+	}
+
+	public void setServiceCivilCacheWarmer(ServiceCivilCacheWarmer serviceCivilCacheWarmer) {
+		this.serviceCivilCacheWarmer = serviceCivilCacheWarmer;
 	}
 
 	/**
@@ -177,8 +168,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 		final long start = System.nanoTime();
 
-		final ServiceCivilService serviceCivil = tiersService.getServiceCivilService();
-		if (serviceCivil.isWarmable() && mvts != null && mvts.size() > 1) {
+		if (serviceCivilCacheWarmer.isServiceWarmable() && mvts != null && mvts.size() > 1) {
 
 			// d'abord on cherche tous les identifiants de tiers
 			final Set<Long> idsTiers = new HashSet<Long>(mvts.size());
@@ -194,15 +184,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 				final int idxMax = Math.min((i + 1) * TAILLE_LOT, listeIdsTiers.size());
 				if (idxMin < idxMax) {
 					final Set<Long> lotTiersIds = new HashSet<Long>(listeIdsTiers.subList(idxMin, idxMax));
-					final Set<Long> noIndividus = tiersDAO.getNumerosIndividu(lotTiersIds, true);
-
-					// TODO (msi) centraliser ce try-catch dans le serviceCivilCacheWarmer
-					try {
-						tiersService.getServiceCivilService().getIndividus(noIndividus, null, AttributeIndividu.ADRESSES);
-					}
-					catch (ServiceCivilException e) {
-						LOGGER.error("Impossible de précharger le lot d'individus [" + noIndividus + "]. L'erreur est : " + e.getMessage());
-					}
+					serviceCivilCacheWarmer.warmIndividusPourTiers(lotTiersIds, null, true, AttributeIndividu.ADRESSES);
 				}
 			}
 
@@ -228,9 +210,6 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 
 	/**
 	 * Alimente la vue contribuable pour le mouvement
-	 *
-	 * @param numero
-	 * @return
 	 */
 	protected ContribuableView creerCtbView(Long numero) {
 		final Tiers tiers = getTiersService().getTiers(numero);
