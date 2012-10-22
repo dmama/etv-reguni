@@ -453,30 +453,47 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 
 		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, TypeEtatCivil.SEPARE);
 		etatsCivilIndividu.add(etatCivilIndividu);
-
-		// JDE, 20.02.2012 : le pseudo état-civil "séparé" ne met pas fin aux relations civiles, puisque le couple est toujours marié civilement
-//		final List<RelationVersIndividu> conjoints = individu.getConjoints();
-//		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
-//		if (relation != null) {
-//			((RelationVersIndividuImpl)relation).setDateFin(dateSeparation);
-//		}
 	}
 
 	public static void divorceIndividus(MockIndividu individu, MockIndividu conjoint, RegDate dateDivorce) {
-		divorceIndividu(individu, dateDivorce);
-		divorceIndividu(conjoint, dateDivorce);
+		delieIndividu(individu, dateDivorce, individu.getSexe() == conjoint.getSexe() ? TypeEtatCivil.PACS_TERMINE : TypeEtatCivil.DIVORCE);
+		delieIndividu(conjoint, dateDivorce, individu.getSexe() == conjoint.getSexe() ? TypeEtatCivil.PACS_TERMINE : TypeEtatCivil.DIVORCE);
 	}
 
 	public static void divorceIndividu(MockIndividu individu, RegDate dateDivorce) {
+		TypeEtatCivil nouveau;
+		if (individu.getEtatCivil(dateDivorce).getTypeEtatCivil() == TypeEtatCivil.PACS) {
+			nouveau = TypeEtatCivil.PACS_TERMINE;
+		} else {
+			// Par défaut, s'il n'y a pas d'état civil courant ou tout autre état civil
+			// l'individu sera divorcé
+			nouveau = TypeEtatCivil.DIVORCE;
+		}
+		delieIndividu(individu, dateDivorce, nouveau);
+	}
+
+	public static void terminePacsIndividu(MockIndividu individu, RegDate dateDivorce) {
+		delieIndividu(individu, dateDivorce, TypeEtatCivil.PACS_TERMINE);
+	}
+
+	private static void delieIndividu(MockIndividu individu, RegDate dateSeparation, TypeEtatCivil etatCivilResultant) {
 		final List<EtatCivil> etatsCivilIndividu = individu.getEtatsCivils();
-		final EtatCivil etatCivilIndividu = creeEtatCivil(dateDivorce, TypeEtatCivil.DIVORCE);
+		final EtatCivil etatCivilIndividu = creeEtatCivil(dateSeparation, etatCivilResultant);
 		etatsCivilIndividu.add(etatCivilIndividu);
 
 		final List<RelationVersIndividu> conjoints = individu.getConjoints();
-		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateDivorce);
+		final RelationVersIndividu relation = DateRangeHelper.rangeAt(conjoints, dateSeparation);
 		if (relation != null) {
-			((RelationVersIndividuImpl)relation).setDateFin(dateDivorce);
+			((RelationVersIndividuImpl)relation).setDateFin(dateSeparation);
 		}
+	}
+
+	public static void  dissouePartenartiatParAnnulation (MockIndividu individu, MockIndividu conjoint, RegDate dateDissolution) {
+		if (individu.getSexe() != conjoint.getSexe()) {
+			throw new IllegalArgumentException("individu et conjoint doivent être du même sexe");
+		}
+		delieIndividu(individu, dateDissolution, TypeEtatCivil.NON_MARIE);
+		delieIndividu(conjoint, dateDissolution, TypeEtatCivil.NON_MARIE);
 	}
 
 	/**

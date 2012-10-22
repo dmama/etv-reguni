@@ -34,6 +34,7 @@ import ch.vd.uniregctb.evenement.civil.interne.correction.identification.Correct
 import ch.vd.uniregctb.evenement.civil.interne.deces.DecesTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.demenagement.DemenagementTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.depart.DepartEchTranslationStrategy;
+import ch.vd.uniregctb.evenement.civil.interne.divorce.DissolutionPartenariatTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.divorce.DivorceTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.mariage.MariageTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.naissance.NaissanceTranslationStrategy;
@@ -198,7 +199,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new MariageTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.ANNULATION), new AnnulationMariageTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DivorceTranslationStrategy());
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DissolutionPartenariatTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.ANNULATION), new AnnulationDivorceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAdresseTranslationStrategy());
