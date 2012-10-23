@@ -9,7 +9,7 @@
 		</tiles:put>
 	</c:if>
 	<tiles:put name="fichierAide">
-		<a href="#" onClick="javascript:ouvrirAide('<c:url value='/docs/maj-civil-complement.pdf'/>');" title="AccessKey: a" accesskey="e">Aide</a>
+		<a href="#" onClick="ouvrirAide('<c:url value="/docs/maj-civil-complement.pdf"/>');" title="AccessKey: a" accesskey="e">Aide</a>
 	</tiles:put>
 	<tiles:put name="body">
 		<form:form method="post" id="formEditTiers" name="theForm">
@@ -28,10 +28,8 @@
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 			
-				<div id="tabContent_civilTab" class="editTiers" >
-					<jsp:include page="civil.jsp" />
-				</div>
-				
+				<jsp:include page="civil.jsp" />
+
 				<!-- Debut Boutons -->
 				<c:choose>
 					<c:when test="${command.tiers.numero != null}">

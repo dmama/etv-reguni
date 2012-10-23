@@ -331,6 +331,10 @@ input.numero-complement-npa,input.canton {
 	color: red;
 }
 
+.warn {
+	color: orange;
+}
+
 .global-error {
 	color: red;
 	font-weight: bold;
@@ -413,7 +417,7 @@ INPUT.readonly {
 	margin-bottom: 2em;
 }
 
-.validation_error td.heading, .warnings td.heading {
+.validation_error td.heading, .warnings td.heading, .warning_icon {
 	background: url(warn.png) no-repeat;
 	padding-left: 20px;
 }
