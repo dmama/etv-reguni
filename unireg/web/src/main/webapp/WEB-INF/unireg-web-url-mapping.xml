@@ -189,7 +189,6 @@
 				<entry key="/identification/gestion-messages/listEnCours.do" value-ref="identificationMessagesListEnCoursController" />
 				<entry key="/identification/gestion-messages/list.do" value-ref="identificationMessagesListController" />
 				<entry key="/identification/gestion-messages/edit.do" value-ref="identificationMessagesEditController" />
-				<entry key="/identification/tableau-bord/stats.do" value-ref="identificationMessagesStatsController" />
 				<entry key="/identification/gestion-messages/listTraite.do" value-ref="identificationMessagesListTraiteController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
 

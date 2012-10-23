@@ -2,7 +2,7 @@ package ch.vd.uniregctb.identification.contribuable.view;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 
-public class IdentificationMessagesStatsView extends IdentificationContribuableCriteria{
+public class IdentificationMessagesStatsCriteriaView extends IdentificationContribuableCriteria{
 
 
 	private Long tabIdsMessages[];

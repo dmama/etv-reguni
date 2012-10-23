@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
 
 public interface IdentificationMessagesStatsManager {
 
@@ -17,7 +17,7 @@ public interface IdentificationMessagesStatsManager {
 	 *
 	 * @return
 	 */
-	public IdentificationMessagesStatsView getView() ;
+	public IdentificationMessagesStatsCriteriaView getView() ;
 
 
 	/**

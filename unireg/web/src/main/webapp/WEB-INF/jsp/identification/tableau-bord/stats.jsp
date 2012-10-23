@@ -4,11 +4,27 @@
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
 
   	<tiles:put name="title"><fmt:message key="title.tableaubord.messages" /></tiles:put>
+    <tiles:put name="head">
+        <script type="text/javascript">
+            $(document).ready(function () {
+
+                $('#calculer').click( function () {
+                    $('#formRechercheMessage').attr('action','stats.do');
+                })
+
+                $('#effacer').click( function () {
+                    window.location.href = 'effacer.do';
+                    return false;
+                })
+
+            });
+        </script>
+    </tiles:put>
   	<tiles:put name="fichierAide">
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheMessage" name="theForm" action="stats.do">
+	    <form:form method="get" id="formRechercheMessage" commandName="statsCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche.messages"/></span></legend>
 				<form:errors cssClass="error"/>

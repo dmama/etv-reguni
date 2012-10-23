@@ -16,8 +16,8 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
 
 
 public class IdentificationMessagesStatsManagerImpl implements IdentificationMessagesStatsManager, ApplicationContextAware {
@@ -51,11 +51,11 @@ public class IdentificationMessagesStatsManagerImpl implements IdentificationMes
 	 * @return
 	 */
 	@Override
-	public IdentificationMessagesStatsView getView() {
-		IdentificationMessagesStatsView identificationMessagesStatsView = new IdentificationMessagesStatsView();
-		identificationMessagesStatsView.setTypeMessage(TOUS);
-		identificationMessagesStatsView.setPeriodeFiscale(-1);
-		return identificationMessagesStatsView;
+	public IdentificationMessagesStatsCriteriaView getView() {
+		IdentificationMessagesStatsCriteriaView identificationMessagesStatsCriteriaView = new IdentificationMessagesStatsCriteriaView();
+		identificationMessagesStatsCriteriaView.setTypeMessage(TOUS);
+		identificationMessagesStatsCriteriaView.setPeriodeFiscale(-1);
+		return identificationMessagesStatsCriteriaView;
 	}
 
 	@Override

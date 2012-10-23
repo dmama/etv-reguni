@@ -13,8 +13,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManager;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
@@ -56,7 +56,7 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 		HttpSession session = request.getSession();
 		String buttonEffacer = request.getParameter(ACTION_PARAMETER_NAME);
 
-		IdentificationMessagesStatsView bean = (IdentificationMessagesStatsView) session.getAttribute(STATS_CRITERIA_NAME);
+		IdentificationMessagesStatsCriteriaView bean = (IdentificationMessagesStatsCriteriaView) session.getAttribute(STATS_CRITERIA_NAME);
 
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
 	 		bean = identificationMessagesStatsManager.getView();
@@ -78,7 +78,7 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 
 		HttpSession session = request.getSession();
 		ModelAndView mav = super.showForm(request, response, errors, model);
-		IdentificationMessagesStatsView bean = (IdentificationMessagesStatsView) session.getAttribute(STATS_CRITERIA_NAME);
+		IdentificationMessagesStatsCriteriaView bean = (IdentificationMessagesStatsCriteriaView) session.getAttribute(STATS_CRITERIA_NAME);
 		if (bean != null) {
 
 			List<IdentificationMessagesStatsResultView> listResultat = identificationMessagesStatsManager.calculerStats(bean);
@@ -109,7 +109,7 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		mav.setView(new RedirectView(getSuccessView()));
 
-		IdentificationMessagesStatsView bean = (IdentificationMessagesStatsView) command;
+		IdentificationMessagesStatsCriteriaView bean = (IdentificationMessagesStatsCriteriaView) command;
 		HttpSession session = request.getSession();
 
 

@@ -46,14 +46,11 @@
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
 	</bean>
-	<bean id="identificationMessagesStatsController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesStatsController" parent="abstractIdentificationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="/identification/tableau-bord/stats" />
-		<property name="successView" value="stats.do" />
-		<property name="validator" ref="identificationMessagesStatsValidator" />
+
+	<bean id="identificationController" class="ch.vd.uniregctb.identification.contribuable.IdentificationController">
 		<property name="identificationMessagesStatsManager" ref="identificationMessagesStatsManager" />
+		<property name="identificationMapHelper" ref="identificationMapHelper" />
+
 	</bean>
 	
 	<bean id="identificationMessagesStatsManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManagerImpl">
