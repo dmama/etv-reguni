@@ -1,9 +1,13 @@
 package ch.vd.uniregctb.interfaces.service.host;
 
+import java.io.Serializable;
+
 import ch.vd.securite.model.Procedure;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 
-public class IfoSecProcedureImpl implements IfoSecProcedure {
+public class IfoSecProcedureImpl implements IfoSecProcedure, Serializable {
+
+	private static final long serialVersionUID = -7517333928144158983L;
 
 	private String code;
 	private String codeActivite;

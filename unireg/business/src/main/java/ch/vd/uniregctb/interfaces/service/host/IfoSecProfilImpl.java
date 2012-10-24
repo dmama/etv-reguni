@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.interfaces.service.host;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,9 @@ import ch.vd.securite.model.ProfilOperateur;
 import ch.vd.uniregctb.security.IfoSecProcedure;
 import ch.vd.uniregctb.security.IfoSecProfil;
 
-public class IfoSecProfilImpl implements IfoSecProfil {
+public class IfoSecProfilImpl implements IfoSecProfil, Serializable {
+
+	private static final long serialVersionUID = -5988187763961971993L;
 
 	private String imprimante;
 	private String nom;
