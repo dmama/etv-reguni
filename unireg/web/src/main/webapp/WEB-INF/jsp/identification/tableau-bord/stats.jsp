@@ -6,17 +6,11 @@
   	<tiles:put name="title"><fmt:message key="title.tableaubord.messages" /></tiles:put>
     <tiles:put name="head">
         <script type="text/javascript">
-            $(document).ready(function () {
+            $(function () {
 
                 $('#calculer').click( function () {
                     $('#formRechercheMessage').attr('action','stats.do');
                 })
-
-                $('#effacer').click( function () {
-                    window.location.href = 'effacer.do';
-                    return false;
-                })
-
             });
         </script>
     </tiles:put>

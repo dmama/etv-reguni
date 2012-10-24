@@ -16,7 +16,7 @@ import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityCheck;
 
 @Controller
-@RequestMapping(value = "/identification/tableau-bord")
+@RequestMapping(value = "/identification")
 public class IdentificationController {
 
 	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements civils";
@@ -39,7 +39,7 @@ public class IdentificationController {
 		return model;
 	}
 
-	@RequestMapping(value = "/effacer.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/tableau-bord/effacer.do", method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String effacerFormulaireDeRecherche(ModelMap model) {
 		final IdentificationMessagesStatsCriteriaView statsCriteriaView = identificationMessagesStatsManager.getView();
@@ -50,7 +50,7 @@ public class IdentificationController {
 
 
 
-	@RequestMapping(value = {"/stats.do"}, method = RequestMethod.GET)
+	@RequestMapping(value = {"/tableau-bord/stats.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
 	protected String  getStats(HttpServletRequest request,
 	                                @ModelAttribute("statsCriteria")  IdentificationMessagesStatsCriteriaView criteriaInSession,

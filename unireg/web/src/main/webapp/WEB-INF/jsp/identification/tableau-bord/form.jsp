@@ -43,10 +43,11 @@
 		<td width="25%">&nbsp;</td>
 		<td width="25%">
 			<div class="navigation-action"><input type="submit" id="calculer" value="<fmt:message key="label.bouton.calculer"/>" name="calculer"/></div>
-			
-			
+
+
 		</td>
-		<td width="25%"><div class="navigation-action"><input type="submit" id="effacer" value="<fmt:message key="label.bouton.effacer"/>" name="effacer" /></div></td>
+		<td width="25%"><div class="navigation-action">
+            <unireg:buttonTo name="Effacer" action="/identification/tableau-bord/effacer.do" method="GET"/>
 		<td width="25%">&nbsp;</td>
 	</tr>
 </table>
