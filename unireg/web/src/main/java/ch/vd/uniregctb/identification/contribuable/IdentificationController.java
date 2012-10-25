@@ -19,7 +19,7 @@ import ch.vd.uniregctb.security.SecurityCheck;
 @RequestMapping(value = "/identification")
 public class IdentificationController {
 
-	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec de gestion des événements civils";
+	private static final String ACCESS_DENIED_MESSAGE = "Vous ne possédez aucun droit IfoSec pour la gestion de l'identification de contribuable";
 	private IdentificationMessagesStatsManager identificationMessagesStatsManager;
 	private IdentificationMapHelper identificationMapHelper;
 
