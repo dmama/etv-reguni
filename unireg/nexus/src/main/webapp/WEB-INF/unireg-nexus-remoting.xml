@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<!-- HandlerAdapter qui enregistre les beans qui implémentent l'interface HttpRequestHandler
+	(dont les beans de remoting ci-dessous) dans le DispatcherServlet -->
+   <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
+
+	<bean name="serviceCivilRawExporterCallback" class="ch.vd.unireg.interfaces.civil.ServiceCivilRawExporterCallback">
+		<property name="serviceCivilLogger" ref="serviceCivilLogger"/>
+	</bean>
+
+	<bean name="serviceCivilRawExporter" class="ch.vd.unireg.servlet.remoting.HttpInvokerServiceExporterWithCustomHeaders">
+		<property name="service" ref="serviceCivilRaw" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.civil.ServiceCivilRaw" />
+		<property name="callback" ref="serviceCivilRawExporterCallback" />
+ 	</bean>
+
+	<bean name="serviceInfraRawExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="serviceInfrastructureRaw" />
+		<property name="serviceInterface" value="ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw" />
+	</bean>
+
+	<bean name="dataEventServiceExporter" class="org.springframework.remoting.httpinvoker.HttpInvokerServiceExporter">
+		<property name="service" ref="dataEventService" />
+		<property name="serviceInterface" value="ch.vd.uniregctb.data.DataEventService" />
+	</bean>
+
+	<bean id="urlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="urlMap">
+			<map>
+				<!-- Mapping des beans de remoting -->
+				<entry key="/serviceCivil.remoting" value-ref="serviceCivilRawExporter" />
+				<entry key="/serviceInfra.remoting" value-ref="serviceInfraRawExporter" />
+				<entry key="/dataEventService.remoting" value-ref="dataEventServiceExporter" />
+			</map>
+		</property>
+	</bean>
+
+</beans>

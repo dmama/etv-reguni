@@ -1,0 +1,85 @@
+ /* Change text colour to black (useful for light text on a dark background) */
+* {
+	color: #000;
+	float: none !important;
+}
+
+/* Improve colour contrast of links */
+a:link, a:visited {
+	color: #781351
+}
+
+#sommaire,
+#footer,
+#canton,
+#departement,
+#tabnav,
+#header,
+#content .outils,
+div #tabs,
+form#command,
+table.display_table div,
+#timeline,
+fieldset.information table.display_table form input,
+a.modif,
+.ui-tabs-nav, .ui-tabs-hide,
+.staticTip {
+	display:none;
+}
+
+.noprint {
+	display:none;
+}
+
+legend {
+	background-color: #fc0;
+}
+
+.display table {
+	border: 1px solid #666;
+	width: 80%;
+	margin: 20px 0 20px 0;
+}
+
+.display th, .displayTable  td {
+	padding: 2px 4px 2px 4px !important;
+	text-align: left;
+	vertical-align: top;
+}
+
+thead tr {
+	border-bottom: 10px;
+}
+
+th {
+	background-color: #DDD;
+	border-bottom: 2px solid #CDCDCD;
+}
+
+
+.display td a, .display td a:visited, .display td a:link,
+.display th a, .displayTable th a:visited {
+	color: black;
+}
+
+.display th a:hover {
+	text-decoration: underline;
+	color: black;
+}
+
+.display th.sorted a,.displayTable  th.sortable a {
+	background-position: right;
+	display: block;
+	width: 100%;
+}
+
+
+
+.display tr.odd {
+	background-color: #fff
+}
+
+fieldset, fieldset.information {
+	padding: 0.5em;
+	page-break-inside: avoid;
+}

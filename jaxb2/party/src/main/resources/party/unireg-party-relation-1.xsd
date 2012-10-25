@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.2-SNAPSHOT - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
+<!-- v1.1-SNAPSHOT - 1 novembre 2011 - ajouté les types de rapports 'CHILD' et 'PARENT' (SIFISC-2588) -->
+<!-- v1.0beta0 - 29 juillet 2011 - hand-edited by Manuel Siggen -->
+<xs:schema targetNamespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" elementFormDefault="qualified"
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/1"
+		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+
+	<xs:complexType name="relationBetweenPartiesType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Permet de caractériser un rapport (par exemple: tutelle, appartenance ménage, ...) entre deux tiers.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="type" type="relation:relationBetweenPartiesTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le type de rapport entre tiers</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFrom" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité du rapport.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="dateTo" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité du rapport. Si le rapport est toujours actif, cette date n'est pas renseignée.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="cancellationDate" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Date à laquelle le rapport a été annulé, ou null s'il n'est pas annulé.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="activityType" type="relation:activityTypeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Type d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="activityRate" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Taux d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="endDateOfLastTaxableItem" type="common:dateType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Seulement valable pour le type = PRESTATION_IMPOSABLE.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="extensionToForcedExecution" type="xs:boolean">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Vrai si la représentation conventionnelle s'étend à l'exécution forcée; faux autrement. Seulement renseigné pour le type = REPRESENTATION.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="otherPartyNumber" type="common:partyNumberType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Numéro de tiers pointé par cette relation.
+								En fonction du type de rapport-entre-tiers, les tiers participants sont de types suivants:
+								- Tutelle : Personne physique -> Personne physique ou Collectivité administrative
+								- Curatelle : Personne physique -> Personne physique ou Collectivité administrative
+								- Conseil légal : Personne physique -> Personne physique ou Collectivité administrative
+								- Prestations imposables : Personne physique -> Débiteur prestation imposable
+								- Appartenance ménage : Personne physique -> Ménage
+								- Représentation : Personne physique -> Tiers
+								- Contact impôt source : Débiteur prestation imposable -> Contribuable
+								- Annule et remplace : Tiers -> Tiers
+								- Enfants : Personne physique -> Personne physique
+								- Parents : Personne physique -> Personne physique
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
+	</xs:complexType>
+	<xs:simpleType name="relationBetweenPartiesTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différents types de rapports-entre-tiers.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="GUARDIAN">
+				<xs:annotation>
+					<xs:documentation>Tutelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WELFARE_ADVOCATE">
+				<xs:annotation>
+					<xs:documentation>Curatelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="LEGAL_ADVISER">
+				<xs:annotation>
+					<xs:documentation>Conseil légal.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="TAXABLE_REVENUE">
+				<xs:annotation>
+					<xs:documentation>Prestation imposable.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="HOUSEHOLD_MEMBER">
+				<xs:annotation>
+					<xs:documentation>Appartenance ménage.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="REPRESENTATIVE">
+				<xs:annotation>
+					<xs:documentation>Représentation conventionnelle.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="WITHHOLDING_TAX_CONTACT">
+				<xs:annotation>
+					<xs:documentation>Rapport qui existe entre un débiteur et son contribuable lié.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CANCELS_AND_REPLACES">
+				<xs:annotation>
+					<xs:documentation>Rapport qui existe lorsqu'un tiers à été annulé et remplacé par un autre tiers (correction de doublons)</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="CHILD">
+				<xs:annotation>
+					<xs:documentation>Lien de filiation où l'autre tiers est l'enfant du tiers courant. Les rapports de ce type ne sont renseignés que si la part CHILDREN est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="PARENT">
+				<xs:annotation>
+					<xs:documentation>Lien de filiation où l'autre tiers est le parent du tiers courant. Les rapports de ce type ne sont renseignés que si la part PARENTS est demandée.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="activityTypeType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:typesafeEnumClass>
+					<jxb:javadoc>Les différentes catégories d'activité d'un sourcier.</jxb:javadoc>
+				</jxb:typesafeEnumClass>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="MAIN">
+				<xs:annotation>
+					<xs:documentation>Activité principale.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="ACCESSORY">
+				<xs:annotation>
+					<xs:documentation>Activité accessoire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+			<xs:enumeration value="COMPLEMENTARY">
+				<xs:annotation>
+					<xs:documentation>Activité complémentaire.</xs:documentation>
+				</xs:annotation>
+			</xs:enumeration>
+		</xs:restriction>
+	</xs:simpleType>
+</xs:schema>

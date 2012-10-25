@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="uniregExternalProperties" class="ch.vd.uniregctb.utils.MockUniregProperties"/>
+
+	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
+
+	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.MockEvenementCivilSender"/>
+
+	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
+
+	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>
+
+	<bean id="servletService" class="ch.vd.uniregctb.servlet.MockServletService"/>
+
+	<bean id="extractionService" class="ch.vd.uniregctb.extraction.MockExtractionService"/>
+
+	<bean id="inboxService" class="ch.vd.uniregctb.inbox.MockInboxService"/>
+
+	<bean id="editiqueDownloadService" class="ch.vd.uniregctb.common.MockEditiqueDownloadService"/>
+
+</beans>

@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+							http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="norentesFrameworkTestScenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.common.NorentesFrameworkTestScenario" />
+
+	<bean id="ec_0_01_Ech99Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.ignore.Ec_0_01_Ech99_Scenario">
+		<property name="evtCivilExterneDAO" ref="evenementCivilRegPPDAO" />
+	</bean>
+
+	<bean id="ec_1000_01_NaissanceScenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.naissance.Ec_1000_01_NaissanceScenario" />
+
+	<bean id="ec_1000_02_NaissanceScenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.naissance.Ec_1000_02_Naissance_IndividuNonExistantScenario" />
+
+	<bean id="ec_1000_03_NaissanceScenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.naissance.Ec_1000_03_Naissance_HabitantSansIndividuScenario" />
+	<bean id="ec_1000_04_NaissanceScenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.naissance.Ec_1000_04_NaissanceAndFiliationScenario" />
+		
+	<!-- Scénarios de décès -->
+	<bean id="ec_2000_01_Deces_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_01_Deces_Celibataire_Scenario"/>
+	<bean id="ec_2000_02_Deces_Membre_Marie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_02_Deces_Membre_Marie_Scenario"/>
+	<bean id="ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_03_Deces_Membre_Marie_Depense_Surv_Suisse_Scenario"/>
+	<bean id="ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario"/>
+	<bean id="ec_2000_05_Deces_ConjointsMemeJour_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_05_Deces_ConjointsMemeJour_Scenario"/>
+	<bean id="ec_2000_06_Deces_Membre_Pacse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_06_Deces_Membre_Pacse_Scenario"/>
+	<bean id="ec_2000_07_Deces_CivilApresFiscal_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_07_Deces_CivilApresFiscal_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_2000_09_Deces_CivilApresFiscal_Difference1Mois_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_09_Deces_CivilApresFiscal_Difference1Mois_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_2000_10_Deces_CelibataireTuteur_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.deces.Ec_2000_10_Deces_CelibataireTuteur_Scenario"/>
+		
+	<!-- Scénarios d'annulation de décès -->
+	<bean id="ec_2001_01_AnnulationDeces_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_01_AnnulationDeces_Celibataire_Scenario"/>
+	<bean id="ec_2001_02_AnnulationDeces_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_02_AnnulationDeces_MarieSeul_Scenario"/>
+	<bean id="ec_2001_03_AnnulationDeces_Marie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_03_AnnulationDeces_Marie_Scenario"/>
+	<bean id="ec_2001_04_AnnulationDeces_Pacse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_04_AnnulationDeces_Pacse_Scenario"/>
+	<bean id="ec_2001_05_AnnulationDeces_Separe_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.deces.Ec_2001_05_AnnulationDeces_Separe_Scenario"/>
+	
+	<!-- Scénarios de mariage -->
+	<bean id="ec_4000_01_Mariage_CoupleArriveHorsSuisse_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario" >
+		<property name="infraService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_4000_02_Mariage_CoupleArriveHorsSuisse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_02_Mariage_CoupleArriveHorsSuisse_Scenario" />
+	<bean id="ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_03_Mariage_MarieSeulArriveHorsSuisse_Scenario" />
+	<bean id="ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_04_Mariage_CoupleArriveHorsSuisseEnDeuxFois_Scenario" />
+	<bean id="ec_4000_05_Mariage_EvtCoupleMarie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_05_Mariage_EvtCoupleMarie_Scenario" />
+	<bean id="ec_4000_06_Mariage_FusionMenages_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_06_Mariage_FusionMenages_Scenario" >
+		<property name="metierService" ref="metierService" />	
+	</bean>	
+	<bean id="ec_4000_07_Mariage_HabitantAvecNonHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario" >
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_4000_08_Mariage_HabitantAvecNonHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario" >
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_4000_09_Mariage_JIRA1481_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_09_Mariage_JIRA1481_Scenario" />
+	<bean id="ec_4000_10_Mariage_SuisseAvecPermisB_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_10_Mariage_SuisseAvecPermisB_Scenario" />
+
+	<bean id="ec_4000_10_Mariage_JIRA2055_Test" parent="evenementCivilScenario"	
+	class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_10_Mariage_JIRA2055_Scenario" />
+
+	<bean id="ec_4000_11_Mariage_JIRA2771_Test" parent="evenementCivilScenario"
+	class="ch.vd.uniregctb.norentes.civil.mariage.Ec_4000_11_Mariage_JIRA2771_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+
+	<!-- Scénarios d'annulation de mariage -->
+	<bean id="ec_4001_01_AnnulationMariage_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_01_AnnulationMariage_Celibataire_Scenario" />
+	<bean id="ec_4001_02_AnnulationMariage_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_02_AnnulationMariage_MarieSeul_Scenario" />
+	<bean id="ec_4001_03_AnnulationMariage_Marie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_03_AnnulationMariage_Marie_Scenario" />
+	<bean id="ec_4001_04_AnnulationMariage_CoupleSepare_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_04_AnnulationMariage_CoupleSepare_Scenario" />
+	<bean id="ec_4001_05_AnnulationMariage_Couple_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_05_AnnulationMariage_Couple_Scenario" />
+	<bean id="ec_4001_06_AnnulationMariage_JIRA1157_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_06_AnnulationMariage_JIRA1157_Scenario" />
+	<bean id="ec_4001_07_AnnulationMariage_JIRA1086_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.annulation.mariage.Ec_4001_07_AnnulationMariage_JIRA1086_Scenario" >
+		<property name="metierService" ref="metierService" />
+		<property name="validationService" ref="validationService" />
+	</bean>
+		
+		
+	<!-- Scénarios de correction de conjoint -->
+	<bean id="ec_41040_01_CorrectionConjoint_MarieSeul_Test" parent="evenementCivilScenario" 
+		class="ch.vd.uniregctb.norentes.civil.correction.conjoint.Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario"/>
+	<bean id="ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Test" parent="evenementCivilScenario" 
+		class="ch.vd.uniregctb.norentes.civil.correction.conjoint.Ec_41040_02_CorrectionConjoint_Deux_MariesSeuls_Scenario"/>
+	
+	<!-- Scénarios de séparation -->
+	<bean id="ec_6000_01_Separation_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_01_Separation_MarieSeul_Scenario" />
+	<bean id="ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_02_Separation_MarieAvecSuisseOuPermisC_Scenario" />
+	<bean id="ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario" />
+	<bean id="ec_6000_04_Separation_SecondEvenementRecu_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_04_Separation_SecondEvenementRecu_Scenario" />
+	<bean id="ec_6000_05_Separation_SuisseAvecPermisB_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_05_Separation_SuisseAvecPermisB_Scenario" />
+	<bean id="ec_6000_06_Separation_CavecB_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_06_Separation_CavecB_Scenario" />
+	<bean id="ec_6000_07_Separation_JIRA1255_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_07_Separation_JIRA1255_Scenario" >
+		<property name="metierService" ref="metierService" />
+	</bean>
+	<bean id="ec_6000_08_Separation_JIRA1057_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.separation.Ec_6000_08_Separation_JIRA1057_Scenario" />
+		
+	<!-- Scénarios d'annulation de séparation -->
+	<bean id="ec_6001_01_AnnulationSeparation_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.separation.Ec_6001_01_AnnulationSeparation_MarieSeul_Scenario" />
+	<bean id="ec_6001_02_AnnulationSeparation_CoupleSepare_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.separation.Ec_6001_02_AnnulationSeparation_CoupleSepare_Scenario" />
+	<bean id="ec_6001_03_AnnulationSeparation_Fiscale_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.separation.Ec_6001_03_AnnulationSeparation_Fiscale_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+	
+	<!-- Scénarios de séparation/divorce -->
+	<bean id="ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.divorce.Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario" />
+	<bean id="ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.divorce.Ec_8000_02_Divorce_MarieAvecEtrangerSansPermisC_Scenario" />
+	<bean id="ec_8000_03_Divorce_CivilApresFiscal_Scenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.divorce.Ec_8000_03_Divorce_CivilApresFiscal_Scenario">
+		<property name="metierService" ref="metierService" />
+	</bean>
+	
+	<!-- Obtention de permis d'établissement -->
+	<bean id="ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.obtention.permis.Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario" />
+	<bean id="ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.obtention.permis.Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario" />
+	<bean id="ec_16000_03_ObtentionPermis_NonResident_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.obtention.permis.Ec_16000_03_ObtentionPermis_NonResident_Scenario" />
+
+	<!-- Obtention nationalité suisse -->
+	<bean id="ec_12000_01_NationaliteSuisse_AvecPermisC_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_01_NationaliteSuisse_AvecPermisC_Scenario"/>
+	<bean id="ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.obtention.nationalite.Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario">
+		<property name="evenementFiscalSender" ref="evenementFiscalSender"/>
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<!-- Arrivées -->
+	<bean id="ec_18000_01_Arrivee_1_2_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_01_Arrivee_1_2_1_Scenario">
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_02_Arrivee_HC_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_02_Arrivee_HC_1_Scenario" />
+	<bean id="ec_18000_03_arrivee_Immeuble_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_03_Arrivee_Immeuble_1_Scenario" />
+	<bean id="ec_18000_04_arrivee_ChgtNom_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_04_Arrivee_ChgtNom_1_Scenario" />
+	<bean id="ec_18000_05_arrivee_RollBack_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_05_Arrivee_RollBack_1_Scenario" />
+	<bean id="ec_18000_06_Arrivee_HC_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_06_Arrivee_HC_1_Scenario" />
+	<bean id="ec_18000_07_Arrivee_Commune_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_07_Arrivee_Commune_Scenario" />
+	<bean id="ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_08_Depart_HS_Arrivee_HC_Meme_Periode_Scenario" />
+	<bean id="ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_09_Arrivee_Mariee_Seule_Deja_Mariee_Scenario" />
+	<bean id="ec_18000_10_Arrivee_HC_PermisC_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_10_Arrivee_HC_PermisC_Scenario" />
+	<bean id="ec_18000_11_Arrivee_HS_Habitant_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_11_Arrivee_HS_Habitant_Scenario" />
+	<bean id="ec_18000_12_Arrivee_Couple_AdresseFiscale_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_12_Arrivee_Couple_AdresseFiscale_PP_Scenario">
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_13_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_13_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_14_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_14_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_15_Arrivee_JIRA1789_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_15_Arrivee_JIRA1789_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_17_Arrivee_JIRA1677_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_17_Arrivee_JIRA1677_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_18_Arrivee_JIRA1411_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_18_Arrivee_JIRA1411_Scenario">
+		<property name="adresseService" ref="adresseService" />
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_19_Arrivee_JIRA1677_DatesDifferentes_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+	<bean id="ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario" >
+		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
+	</bean>
+
+	<!-- Scénarios de départ -->
+	<bean id="ec_19000_01_Depart_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_01_Depart_1_Scenario" />
+	<bean id="ec_19000_02_Depart_1_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_02_Depart_1_Scenario" />
+	<bean id="ec_19000_03_Depart_HS_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_03_Depart_HS_Scenario" />
+	<bean id="ec_19000_04_Depart_JIRA1262_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_04_Depart_JIRA1262_Scenario" >
+		<property name="diDAO" ref="diDAO" />
+	</bean>
+	<bean id="ec_19000_05_Depart_JIRA1394_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_05_Depart_JIRA1394_Scenario"/>
+	<bean id="ec_19000_06_Depart_JIRA1286_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_06_Depart_JIRA1286_Scenario"/>
+	<bean id="ec_19000_07_Depart_JIRA1703_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_07_Depart_JIRA1703_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+	<bean id="ec_19000_08_Depart_JIRA1996_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_08_Depart_JIRA1996_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+	<bean id="ec_19000_09_Depart_DejaNonHabitant_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_09_Depart_DejaNonHabitant_Scenario"/>
+	<bean id="ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_10_Depart_DejaNonHabitantDejaForLoin_Scenario"/>
+	<bean id="ec_19000_11_Depart_JIRA771_Test" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.depart.Ec_19000_11_Depart_JIRA771_Scenario" >
+		<property name="adresseService" ref="adresseService" />
+	</bean>
+
+	<bean id="ec_20000_01_Demenagement_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.demenagement.Ec_20000_01_Demenagement_Celibataire_Scenario" />
+		
+	<!-- Scénarios de veuvage -->
+	<bean id="ec_10000_01_Veuvage_SuisseMarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_01_Veuvage_SuisseMarieSeul_Scenario" />
+	<bean id="ec_10000_02_Veuvage_NonSuisseMarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario" />
+	<bean id="ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario" />
+	<bean id="ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_04_Veuvage_DecesPuisVeuvageMemeJour_Scenario" />
+	<bean id="ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_05_Veuvage_VeuvageErreurPuisAnnulation_Scenario" />
+	<bean id="ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.veuvage.Ec_10000_06_Veuvage_VeuvageHabitantMarieAvecNonHabitant_Scenario" />
+
+	<!-- Scénarios d'annulation de veuvage -->
+	<bean id="ec_10001_01_AnnulationVeuvage_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.veuvage.Ec_10001_01_AnnulationVeuvage_MarieSeul_Scenario" />
+	<bean id="ec_10001_02_AnnulationVeuvage_NonMarie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.veuvage.Ec_10001_02_AnnulationVeuvage_NonMarie_Scenario" />
+	
+	<bean id="ec_7000_01_Reconciliation_MarieSeul_Scenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.reconciliation.Ec_7000_01_Reconciliation_MarieSeul_Scenario"/>
+	<bean id="ec_7000_02_Reconciliation_MarieADeux_Scenario" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.reconciliation.Ec_7000_02_Reconciliation_MarieADeux_Scenario"/>
+	<bean id="ec_7000_03_Reconciliation_Date_Future" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.reconciliation.Ec_7000_03_Reconciliation_Date_Future_Scenario"/>
+	<bean id="ec_7000_04_Reconciliation_Non_Separes" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.reconciliation.Ec_7000_04_Reconciliation_Non_Separes_Scenario"/>
+	<bean id="ec_7000_05_Reconciliation_Non_Assujettis" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.reconciliation.Ec_7000_05_Reconciliation_Non_Assujettis_Scenario"/>
+	
+	<!--  -->
+	<bean id="ec_7001_01_AnnulationReconciliation_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.reconciliation.Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario"/>
+	<bean id="ec_7001_02_AnnulationReconciliation_CoupleReconcilie_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.reconciliation.Ec_7001_02_AnnulationReconciliation_CoupleReconcilie_Scenario"/>
+	<bean id="ec_7001_03_AnnulationReconciliation_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulation.reconciliation.Ec_7001_03_AnnulationReconciliation_Celibataire_Scenario"/>
+	
+	<bean id="ec_16001_01_AnnulationPermis_Celibataire_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulationpermis.Ec_16001_01_AnnulationPermis_Celibataire_Scenario" />
+	<bean id="ec_16001_02_AnnulationPermis_MarieSeul_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulationpermis.Ec_16001_02_AnnulationPermis_MarieSeul_Scenario" />
+	<bean id="ec_16001_03_AnnulationPermis_MarieADeux_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulationpermis.Ec_16001_03_AnnulationPermis_MarieADeux_Scenario" />
+		
+	<bean id="ec_25000_01_Tutelle_AvecTuteur_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.tutelle.Ec_25000_01_Tutelle_AvecTuteur_Scenario" />
+	<bean id="ec_25001_01_AnnulationTutelle_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulationtutelle.Ec_25001_01_AnnulationTutelle_Scenario" />
+
+	<bean id="ec_26000_01_LeveeTutelle_AvecTuteur_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.tutelle.Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario" />
+	<bean id="ec_26001_01_AnnulationLeveeTutelle_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.annulationtutelle.Ec_26001_01_AnnulationLeveeTutelle_Scenario" />
+
+	<bean id="ec_41010_01_CorrectionDateNaissance_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.changement.dateNaissance.Ec_41010_01_CorrectionDateNaissance_Scenario"/>
+
+	<bean id="ec_43000_01_CorrectionAdresse_MemeCommune_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_01_CorrectionAdresse_MemeCommune_Scenario"/>
+	<bean id="ec_43000_02_CorrectionAdresse_CommuneDifferente_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario"/>
+	<bean id="ec_43000_03_CorrectionAdresse_IndividuMineur_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario"/>
+	<bean id="ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Test" parent="evenementCivilScenario"
+		  class="ch.vd.uniregctb.norentes.civil.correction.adresse.Ec_43000_04_CorrectionAdresse_IndividuMajeurSansFor_Scenario"/>
+
+	<bean id="ec_48000_01_CorrectionIdentificationHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.changement.identification.Ec_48000_01_CorrectionIdentificationHabitant_Scenario"/>
+	<bean id="ec_48000_02_CorrectionIdentificationNonHabitant_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.changement.identification.Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario"/>
+
+	<bean id="ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.fin.permis.Ec_16010_01_FinPermis_PermisCAvecNationaliteSuisse_Scenario" />
+	<bean id="ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Test" parent="evenementCivilScenario"
+		class="ch.vd.uniregctb.norentes.civil.fin.permis.Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario" />
+		
+</beans>

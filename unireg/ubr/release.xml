@@ -1,0 +1,38 @@
+<assembly>
+	<id>release</id>
+	<formats>
+		<format>zip</format>
+	</formats>
+	<includeBaseDirectory>false</includeBaseDirectory>
+	<dependencySets>
+		<dependencySet>
+			<outputDirectory>lib</outputDirectory>
+			<scope>runtime</scope>
+		</dependencySet>
+	</dependencySets>
+	<fileSets>
+                <!-- Documentation -->
+                <fileSet>
+                        <directory>../base/doc</directory>
+                        <outputDirectory>docs</outputDirectory>
+                        <useDefaultExcludes>true</useDefaultExcludes>
+                        <includes>
+                                <include>ubr.doc</include>
+                        </includes>
+                        <excludes>
+                                <exclude>~*.doc</exclude>
+                        </excludes>
+                </fileSet>
+	</fileSets>
+	<files>
+		<file>
+			<source>src/main/scripts/unireg_batch.sh</source>
+		</file>
+		<file>
+			<source>src/main/scripts/unireg_extract_roles.sh</source>
+		</file>
+		<file>
+			<source>src/main/scripts/unireg_rapport_csv.sh</source>
+		</file>
+	</files>
+</assembly>

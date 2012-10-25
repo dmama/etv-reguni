@@ -1,0 +1,123 @@
+a.filename {
+	display: inline;
+	float: left;
+}
+
+legend span {
+	display: inline;
+	float: left;
+}
+
+legend span.delete {
+	display: none;
+	color: #00FF00;
+}
+
+legend a.delete {
+	display: inline;
+	float: left;
+}
+
+.complements, .civil, .fiscal, .tiers, .menage, entreprises{
+	border: 1px solid #bcbcbc;
+	padding: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	margin-top: -11px;
+	margin-right: 0px;
+	margin-bottom: 10px;  
+	margin-left: 0px;
+	display: block;
+	float: left;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	width: 100%;
+}
+
+.adresse, .for_fiscal, .prestations_imposables, .autres_roles, .categorie, .situation_famille {
+	border: 1px solid #bcbcbc;
+	padding: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	margin-top: -11px;
+	margin-right: 0px;
+	margin-bottom: 10px;  
+	margin-left: 0px;
+	display: block;
+	float: left;
+	background-image: url(bgpannelouter.jpg);
+	background-repeat: repeat;
+	width: 100%;
+}
+
+.individu, .imposition, .entreprise
+	{
+	border: 1px solid #cdcdcd;
+	padding: 10px;
+	margin: 10px;
+	position: relative;
+	top: 10px;
+	z-index: 1;
+	display: inherit;
+	float: left;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+}
+
+.individu tr.even,.adresse tr.even,.information tr.even, .imposition tr.even, .prestations_imposables tr.even, .for_fiscal tr.even, .categorie tr.even, .situation_famille tr.even, .autres_roles tr.even, .entreprise tr.even {
+	background-color: #ddd;
+}
+
+.individu tr.odd,.adresse tr.odd,.information tr.odd, .imposition tr.odd, .prestations_imposables tr.odd, .for_fiscal tr.odd, .categorie tr.odd, .situation_famille tr.odd, .autres_roles tr.odd, .entreprise tr.odd {
+}
+
+.supprimer {
+	position: relative;
+	width: auto;
+	float: right;
+	bottom: 38px;
+	left: 11px;
+	background-color: #EFEFEF;
+	z-index: 2;
+	background-image: url(delete_on.gif);
+	background-repeat: no-repeat;
+	background-position: right center;
+	padding-top: 5px;
+	padding-right: 20px;
+	padding-bottom: 5px;
+	padding-left: 5px;
+	border-top-width: thin;
+	border-right-width: thin;
+	border-bottom-width: thin;
+	border-left-width: thin;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #000000;
+	border-right-color: #000000;
+	border-bottom-color: #EFEFEF;
+	border-left-color: #000000;
+}
+
+.groupes-evenement {
+	display: table;
+	clear: both;
+}
+
+.groupe-evenement {
+	border: 1px solid #cdcdcd;
+	padding: 10px;
+	margin: 10px;
+	position: relative;
+	z-index: 1;
+	display: inline;
+	float: left;
+	background-image: url(bgpannelinner.jpg);
+	background-repeat: repeat;
+	width: 21%;
+	position: relative;
+	height: 110px;
+}
