@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -104,7 +105,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals("1006", principale0.getNumeroPostal());
 		assertEquals("Lausanne", principale0.getLocalite());
 		if (principale0.getLocalisationPrecedente() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
-			assertLocalisation(LocalisationType.CANTON_VD, 5633, principale0.getLocalisationPrecedente());
+			assertLocalisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, principale0.getLocalisationPrecedente());
 		}
 		if (principale0.getLocalisationSuivante() != null) { // host-interfaces ne connaît pas cette info, on ne teste donc que si elle est renseignée (= RCPers)
 			assertLocalisation(LocalisationType.CANTON_VD, 5498, principale0.getLocalisationSuivante());
