@@ -219,14 +219,15 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
 		// [SIFISC-5847] Il ne faut pas tenir compte des espaces initiaux dans le tri et l'affichage des libellés
-		final Map<String, String> allEmetteurs = new TreeMap<String, String>(new StringComparator(false, false, false, null));
+		final StringComparator comparator = new StringComparator(false, false, false, null);
+		final Map<String, String> allEmetteurs = new TreeMap<String, String>(comparator);
 		final Collection<String> emetteurs = identCtbService.getEmetteursId(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 
 		for (String emetteur : emetteurs) {
 			final String libelle = StringUtils.trimToEmpty(emetteur);
 			allEmetteurs.put(emetteur, libelle);
 		}
-		return sortMapAccordingToValues(allEmetteurs);
+		return sortMapAccordingToValues(allEmetteurs, comparator);
 	}
 
 	public Map<ErreurMessage, String> initErreurMessage() {
@@ -304,15 +305,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * @return une nouvelle map triée
 	 */
 	private static <K, V extends Comparable<V>> Map<K, V> sortMapAccordingToValues(Map<K, V> source) {
-		if (source == null) {
-			return null;
-		}
-		final List<Map.Entry<K, V>> content = new ArrayList<Map.Entry<K, V>>(source.entrySet());
-		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
+		return sortMapAccordingToValues(source, new Comparator<V>() {
 			@Override
-			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				final V v1 = o1.getValue();
-				final V v2 = o2.getValue();
+			public int compare(V v1, V v2) {
 				if (v1 == v2) {
 					return 0;
 				}
@@ -325,6 +320,30 @@ public class IdentificationMapHelper extends CommonMapHelper {
 				else {
 					return v1.compareTo(v2);
 				}
+			}
+		});
+	}
+
+	/**
+	 * Tri les éléments dans une map (i.e. l'itérateur fournira les éléments dans cet ordre) par rapport au tri de la valeur imposé par le comparateur donné
+	 *
+	 * @param source map dont les éléments doivent être triés
+	 * @param comparator comparateur utilisé pour le tri
+	 * @param <K>    type des clés de la map
+	 * @param <V>    type des valeurs de la map
+	 * @return une nouvelle map triée
+	 */
+	private static <K, V> Map<K, V> sortMapAccordingToValues(Map<K, V> source, final Comparator<V> comparator) {
+		if (source == null) {
+			return null;
+		}
+		final List<Map.Entry<K, V>> content = new ArrayList<Map.Entry<K, V>>(source.entrySet());
+		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
+			@Override
+			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+				final V v1 = o1.getValue();
+				final V v2 = o2.getValue();
+				return comparator.compare(v1, v2);
 			}
 		});
 		final Map<K, V> sorted = new LinkedHashMap<K, V>(source.size());
