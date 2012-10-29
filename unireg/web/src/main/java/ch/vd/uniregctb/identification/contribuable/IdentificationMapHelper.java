@@ -328,12 +328,12 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * Tri les éléments dans une map (i.e. l'itérateur fournira les éléments dans cet ordre) par rapport au tri de la valeur imposé par le comparateur donné
 	 *
 	 * @param source map dont les éléments doivent être triés
-	 * @param comparator comparateur utilisé pour le tri
+	 * @param valueComparator comparateur utilisé pour le tri
 	 * @param <K>    type des clés de la map
 	 * @param <V>    type des valeurs de la map
 	 * @return une nouvelle map triée
 	 */
-	private static <K, V> Map<K, V> sortMapAccordingToValues(Map<K, V> source, final Comparator<V> comparator) {
+	private static <K, V> Map<K, V> sortMapAccordingToValues(Map<K, V> source, final Comparator<V> valueComparator) {
 		if (source == null) {
 			return null;
 		}
@@ -341,9 +341,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		Collections.sort(content, new Comparator<Map.Entry<K, V>>() {
 			@Override
 			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
-				final V v1 = o1.getValue();
-				final V v2 = o2.getValue();
-				return comparator.compare(v1, v2);
+				return valueComparator.compare(o1.getValue(), o2.getValue());
 			}
 		});
 		final Map<K, V> sorted = new LinkedHashMap<K, V>(source.size());
