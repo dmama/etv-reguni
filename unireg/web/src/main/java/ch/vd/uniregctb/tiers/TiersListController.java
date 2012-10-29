@@ -141,10 +141,6 @@ public class TiersListController extends AbstractTiersListController {
 		return mav;
 	}
 
-	public TiersListManager getTiersListManager() {
-		return tiersListManager;
-	}
-
 	public void setTiersListManager(TiersListManager tiersListManager) {
 		this.tiersListManager = tiersListManager;
 	}

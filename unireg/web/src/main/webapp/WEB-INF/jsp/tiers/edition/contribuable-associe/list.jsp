@@ -57,7 +57,7 @@
 			</display:column>
 			<display:column sortable ="true" titleKey="label.date.naissance" sortProperty="dateNaissance">
 				<c:if test="${tiers.annule}"><strike></c:if>
-					<unireg:date date="${tiers.dateNaissance}"></unireg:date>
+					<unireg:date date="${tiers.dateNaissance}"/>
 				<c:if test="${tiers.annule}"></strike></c:if>
 			</display:column>
 			<display:column sortable ="true" titleKey="label.localitePays" >

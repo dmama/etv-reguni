@@ -50,9 +50,15 @@
 					<display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
 						<unireg:date date="${tiers.dateNaissance}"/>
 					</display:column>
-					<display:column sortable="true" titleKey="label.npa" property="npa" escapeXml="true"/>
-					<display:column sortable="true" titleKey="label.localitePays" property="localiteOuPays" escapeXml="true"/>
-					<display:column sortable="true" titleKey="label.for.principal" property="forPrincipal" escapeXml="true"/>
+					<display:column sortable="true" titleKey="label.npa">
+						<c:out value="${tiers.npa}" />
+					</display:column>
+					<display:column sortable="true" titleKey="label.localitePays">
+						<c:out value="${tiers.localiteOuPays}" />
+					</display:column>
+					<display:column sortable="true" titleKey="label.for.principal">
+						<c:out value="${tiers.forPrincipal}" />
+					</display:column>
 					<display:column sortable="true" titleKey="label.date.ouverture.for" sortProperty="dateOuvertureFor">
 						<fmt:formatDate value="${tiers.dateOuvertureFor}" pattern="dd.MM.yyyy"/>
 					</display:column>
