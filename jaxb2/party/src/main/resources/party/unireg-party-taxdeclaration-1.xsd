@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.7 - 29 octobre 2012 - ajouté la source de quittancement sur les états des déclarations -->
 <!-- v1.5 - 18 septembre 2012 - ajouté les délais sur les déclarations -->
 <!-- v1.2 - 15 décembre 2011 - rendu la documentation compatible avec la javadoc -->
 <!-- v1.1 - 23 novembre 2011 - ajouté le code de segmentation sur les DIs -->
@@ -234,6 +235,24 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>L'état de la déclaration.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="source" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La source du quittancement (CEDI, ADDI, ...) si elle est connue. Uniquement renseigné pour les états de type RETURNED.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>

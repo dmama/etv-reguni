@@ -992,6 +992,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		hibernateTemplate.merge(declaration);
 	}
 
+	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
+		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
+		etat.setSource(source);
+		declaration.addEtat(etat);
+		hibernateTemplate.merge(declaration);
+	}
+
 	protected void addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
 		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
 		declaration.addEtat(etat);

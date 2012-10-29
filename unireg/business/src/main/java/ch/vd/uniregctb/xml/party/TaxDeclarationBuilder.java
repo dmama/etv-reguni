@@ -14,6 +14,7 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.WithholdingTaxDeclaration;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
@@ -66,13 +67,13 @@ public class TaxDeclarationBuilder {
 
 	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtats()) {
+			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsSorted()) {
 				d.getStatuses().add(newTaxDeclarationStatus(etat));
 			}
 		}
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
 			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
-			for (ch.vd.uniregctb.declaration.DelaiDeclaration delai : declaration.getDelais()) {
+			for (ch.vd.uniregctb.declaration.DelaiDeclaration delai : declaration.getDelaisSorted()) {
 				otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
 			}
 		}
@@ -93,6 +94,9 @@ public class TaxDeclarationBuilder {
 		e.setType(EnumHelper.coreToXML(etat.getEtat()));
 		e.setDateFrom(DataHelper.coreToXML(getAdjustedStatusDateFrom(etat)));
 		e.setCancellationDate(DataHelper.coreToXML(etat.getAnnulationDate()));
+		if (etat instanceof EtatDeclarationRetournee) {
+			e.setSource(((EtatDeclarationRetournee) etat).getSource());
+		}
 		return e;
 	}
 
@@ -150,6 +154,6 @@ public class TaxDeclarationBuilder {
 		if (etat == null) {
 			return null;
 		}
-		return new TaxDeclarationStatus(etat.getDateFrom(), etat.getCancellationDate(), etat.getType(), null);
+		return new TaxDeclarationStatus(etat.getDateFrom(), etat.getCancellationDate(), etat.getType(), etat.getSource(), 0, null);
 	}
 }

@@ -68,6 +68,8 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
@@ -1936,6 +1938,90 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(newDate(annee + 1, 1, 15), deadline0.getProcessingDate());
 			assertEquals(newDate(annee + 1, 6, 30), deadline0.getDeadline());
 			assertFalse(deadline0.isWrittenConfirmation());
+		}
+	}
+
+	/**
+	 * [SIFISC-6500] Vérifie que les états des déclarations sont bien retournés par le web-service.
+	 */
+	@Test
+	public void testGetPartyTaxDeclarationStatuses() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30));
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 15));
+				addEtatDeclarationRetournee(di, date(annee + 1, 4, 23), "TEST");
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// sans la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEmpty(d0.getStatuses());
+		}
+
+		// avec la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_STATUSES));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			final List<TaxDeclarationStatus> statuses = d0.getStatuses();
+			assertNotNull(statuses);
+			assertEquals(2, statuses.size());
+
+			final TaxDeclarationStatus status0 = statuses.get(0);
+			assertNotNull(status0);
+			assertEquals(newDate(annee + 1, 1, 15), status0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, status0.getType());
+			assertNull(status0.getSource());
+
+			final TaxDeclarationStatus status1 = statuses.get(1);
+			assertNotNull(status1);
+			assertEquals(newDate(annee + 1, 4, 23), status1.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.RETURNED, status1.getType());
+			assertEquals("TEST", status1.getSource());
 		}
 	}
 
