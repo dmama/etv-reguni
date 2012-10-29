@@ -12,10 +12,12 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Constants;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
+import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
 
 public class TiersIndexedData implements Serializable {
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3618708307365700475L;
 
 	//private static final Logger LOGGER = Logger.getLogger(TiersIndexableData.class);
 
@@ -36,7 +38,8 @@ public class TiersIndexedData implements Serializable {
 	private final String pays;
 	private final String localiteOuPays;
 	private final String forPrincipal;
-	private final String categorieImpotSource;
+	private final CategorieImpotSource categorieImpotSource;
+	private final ModeCommunication modeCommunication;
 	private final boolean annule;
 	private final boolean debiteurInactif;
 	private final Boolean dansLeCanton;
@@ -61,13 +64,12 @@ public class TiersIndexedData implements Serializable {
 		pays = getDocValue(TiersIndexableData.PAYS, doc);
 		localiteOuPays = getDocValue(TiersIndexableData.LOCALITE_PAYS, doc);
 		forPrincipal = getDocValue(TiersIndexableData.FOR_PRINCIPAL, doc);
-		categorieImpotSource = getDocValue(TiersIndexableData.CATEGORIE_DEBITEUR_IS, doc);
 		annule = Constants.OUI.equals(getDocValue(TiersIndexableData.ANNULE, doc));
 		debiteurInactif = Constants.OUI.equals(getDocValue(TiersIndexableData.DEBITEUR_INACTIF, doc));
 		ancienNumeroSourcier = getLongValue(TiersIndexableData.ANCIEN_NUMERO_SOURCIER, doc);
 
 		final String estDansLeCanton = getDocValue(TiersIndexableData.DOMICILE_VD, doc);
-		if (estDansLeCanton == null || "".equals(estDansLeCanton)) {
+		if (StringUtils.isBlank(estDansLeCanton)) {
 			dansLeCanton = null;
 		}
 		else {
@@ -75,11 +77,27 @@ public class TiersIndexedData implements Serializable {
 		}
 
 		final String noOfs = getDocValue(TiersIndexableData.NO_OFS_DOMICILE_VD, doc);
-		if (noOfs == null || "".equals(noOfs)) {
+		if (StringUtils.isBlank(noOfs)) {
 			noOfsCommuneDomicile = null;
 		}
 		else {
 			noOfsCommuneDomicile = Integer.valueOf(noOfs);
+		}
+
+		final String cat = doc.get(TiersIndexableData.CATEGORIE_DEBITEUR_IS);
+		if (StringUtils.isBlank(cat)) {
+			this.categorieImpotSource = null;
+		}
+		else {
+			this.categorieImpotSource = CategorieImpotSource.valueOf(cat);
+		}
+
+		final String mode = doc.get(TiersIndexableData.MODE_COMMUNICATION);
+		if (StringUtils.isBlank(mode)) {
+			this.modeCommunication = null;
+		}
+		else {
+			this.modeCommunication = ModeCommunication.valueOf(mode);
 		}
 	}
 
@@ -173,8 +191,15 @@ public class TiersIndexedData implements Serializable {
 		return forPrincipal;
 	}
 
-	public String getCategorieImpotSource() {
+	public CategorieImpotSource getCategorieImpotSource() {
 		return categorieImpotSource;
+	}
+
+	/**
+	 * @return le mode de communication du débiteur; <b>null</b> si le tiers n'est pas un débiteur.
+	 */
+	public ModeCommunication getModeCommunication() {
+		return modeCommunication;
 	}
 
 	public boolean isAnnule() {

@@ -17,6 +17,7 @@ import ch.vd.uniregctb.indexer.SearchCallback;
 import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.NatureJuridique;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -430,11 +431,33 @@ public class TiersIndexableDataTest extends WithoutSpringTest {
 
 		final TiersIndexedData indexed = resultats.get(0);
 		assertEquals((Long) ID, indexed.getNumero());
-		assertEquals(CategorieImpotSource.PRESTATIONS_PREVOYANCE.name(), indexed.getCategorieImpotSource());
+		assertEquals(CategorieImpotSource.PRESTATIONS_PREVOYANCE, indexed.getCategorieImpotSource());
 
 		// recherche des données (KO)
 		criteria.setCategorieDebiteurIs(CategorieImpotSource.ADMINISTRATEURS);
 		assertEmpty(globalTiersSearcher.search(criteria));
+	}
+
+	@Test
+	public void testIndexationModeCommunicationDebiteurIs() throws Exception {
+
+		// création et indexation des données
+		final TiersIndexableData data = newIndexableData();
+		data.setNumeros(String.valueOf(ID));
+		data.setModeCommunication(ModeCommunication.ELECTRONIQUE);
+		globalIndex.indexEntity(data);
+
+		// recherche des données (OK)
+		final TiersCriteria criteria = new TiersCriteria();
+		criteria.setNumero(ID);
+
+		final List<TiersIndexedData> resultats = globalTiersSearcher.search(criteria);
+		assertNotNull(resultats);
+		assertEquals(1, resultats.size());
+
+		final TiersIndexedData indexed = resultats.get(0);
+		assertEquals((Long) ID, indexed.getNumero());
+		assertEquals(ModeCommunication.ELECTRONIQUE, indexed.getModeCommunication());
 	}
 
 	@Test

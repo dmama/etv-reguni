@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- v1.7 - 29 octobre 2012 - ajouté les catégories de débiteur et le mode de communication sur les résultats de la recherche (SIFISC-6587) -->
 <!-- v1.6 - 27 septembre 2012 - ajouté les dates de début et de fin de validité sur les comptes bancaires [SIFISC-3373] -->
 <!-- v1.5 - 18 septembre 2012 - ajouté les délais sur les déclarations -->
 <!-- v1.4 - 25 juin 2012 - ajouté le type 'partyPartType' -->
@@ -9,13 +10,15 @@
 		   xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:party="http://www.vd.ch/fiscalite/unireg/party/party/1"
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/common/1" xmlns:address="http://www.vd.ch/fiscalite/unireg/party/address/1"
 		   xmlns:relation="http://www.vd.ch/fiscalite/unireg/party/relation/1" xmlns:taxdeclaration="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1"
-		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+		   xmlns:taxresidence="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" xmlns:debtor="http://www.vd.ch/fiscalite/unireg/party/debtor/1"
+		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="../unireg-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/address/1" schemaLocation="unireg-party-address-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/relation/1" schemaLocation="unireg-party-relation-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxdeclaration/1" schemaLocation="unireg-party-taxdeclaration-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/taxresidence/1" schemaLocation="unireg-party-taxresidence-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/debtor/1" schemaLocation="unireg-party-debtor-1.xsd" />
 
 	<xs:complexType abstract="true" name="partyType">
 		<xs:annotation>
@@ -506,6 +509,33 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>Le numéro de tiers.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="debtorCategory" type="debtor:debtorCategoryType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La catégorie actuelle du débiteur. Uniquement renseigné si le tiers retourné est un débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element minOccurs="0" name="debtorCommunicationMode" type="debtor:communicationModeType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Le mode de communication actuel du débiteur. Uniquement renseigné si le tiers retourné est un débiteur.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="padding" type="xs:int">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>

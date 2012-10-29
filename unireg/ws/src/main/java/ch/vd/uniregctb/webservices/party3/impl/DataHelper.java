@@ -196,6 +196,8 @@ public class DataHelper {
 		i.setCountry(value.getPays());
 		i.setDateOfBirth(DataHelper.coreToWeb(value.getRegDateNaissance()));
 		i.setType(DataHelper.getPartyType(value));
+		i.setDebtorCategory(ch.vd.uniregctb.xml.EnumHelper.coreToXML(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(ch.vd.uniregctb.xml.EnumHelper.coreToXML(value.getModeCommunication()));
 		return i;
 	}
 

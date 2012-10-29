@@ -12,6 +12,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
+import ch.vd.uniregctb.type.ModeCommunication;
 
 @SuppressWarnings({"UnusedDeclaration"})
 public class TiersIndexableData extends IndexableData {
@@ -52,6 +53,7 @@ public class TiersIndexableData extends IndexableData {
 	public static final String DOMICILE_VD = "D_DOMICILE_VD";
 	public static final String NO_OFS_DOMICILE_VD = "D_NO_OFS_DOMICILE_VD";
 	public static final String INDEXATION_DATE = "D_INDEXATION_DATE";
+	public static final String MODE_COMMUNICATION = "D_MODE_COMMUNICATION";
 
 	// champs de recherche
 	private String numeros;
@@ -88,6 +90,7 @@ public class TiersIndexableData extends IndexableData {
 	private String domicileVd;
 	private String noOfsDomicileVd;
 	private String indexationDate;
+	private String modeCommunication; // uniquement renseigné sur les débiteurs (SIFISC-6587)
 
 	public TiersIndexableData(Long id, String type, String subType) {
 		super(id, type, subType);
@@ -138,6 +141,7 @@ public class TiersIndexableData extends IndexableData {
 		addStoredValue(d, TiersIndexableData.DOMICILE_VD, domicileVd);
 		addStoredValue(d, TiersIndexableData.NO_OFS_DOMICILE_VD, noOfsDomicileVd);
 		addStoredValue(d, TiersIndexableData.INDEXATION_DATE, indexationDate);
+		addStoredValue(d, TiersIndexableData.MODE_COMMUNICATION, modeCommunication);
 
 		return d;
 	}
@@ -488,6 +492,10 @@ public class TiersIndexableData extends IndexableData {
 
 	public void setIndexationDate(String indexationDate) {
 		this.indexationDate = indexationDate;
+	}
+
+	public void setModeCommunication(ModeCommunication modeCommunication) {
+		this.modeCommunication = (modeCommunication == null ? StringUtils.EMPTY : modeCommunication.name());
 	}
 
 	private static String add(String left, String right) {

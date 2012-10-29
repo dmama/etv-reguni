@@ -60,6 +60,7 @@ import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.unireg.xml.party.adminauth.v1.AdministrativeAuthority;
 import ch.vd.unireg.xml.party.corporation.v1.Corporation;
+import ch.vd.unireg.xml.party.debtor.v1.CommunicationMode;
 import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
@@ -98,6 +99,7 @@ import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
+import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -1165,6 +1167,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 	/**
 	 * [SIFISC-3399] Vérifie que le critère 'debtorCategory' est bien géré.
+	 * [SIFISC-6587] Vérifie que la catégorie et le mode de communication sont bien retournés
 	 */
 	@Test
 	public void testSearchPartyByDebtorCategory() throws Exception {
@@ -1176,6 +1179,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 			public Long execute(TransactionStatus status) throws Exception {
 				addDebiteur(CategorieImpotSource.CONFERENCIERS_ARTISTES_SPORTIFS, PeriodiciteDecompte.UNIQUE, date(2000, 1, 1));
 				final DebiteurPrestationImposable debiteur = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2000, 1, 1));
+				debiteur.setModeCommunication(ModeCommunication.PAPIER);
 				return debiteur.getNumero();
 			}
 		});
@@ -1190,9 +1194,11 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(list);
 		assertEquals(1, list.getItems().size());
 
-		PartyInfo info = list.getItems().get(0);
+		final PartyInfo info = list.getItems().get(0);
 		assertEquals(id.intValue(), info.getNumber());
 		assertEquals(PartyType.DEBTOR, info.getType());
+		assertEquals(DebtorCategory.ADMINISTRATORS, info.getDebtorCategory());
+		assertEquals(CommunicationMode.PAPER, info.getDebtorCommunicationMode());
 	}
 
 	/**
