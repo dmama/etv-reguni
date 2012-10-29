@@ -1,33 +1,39 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<c:set var="showEditLink" value="${command.allowedOnglet.FISCAL && empty param['message'] && empty param['retour']}" />
+<c:set var="showTimelineLink" value="${false}" />
+<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux}" />
+</authz:authorize>
+
 <!-- Debut Fiscal -->
-<c:if test="${command.allowedOnglet.FISCAL}">
+<c:if test="${showEditLink || showTimelineLink}">
 	<table border="0">
 		<tr>
-			<td>
-				<c:if test="${empty param['message'] && empty param['retour']}">
+			<c:if test="${showEditLink}">
+				<td>
 					<c:choose>
 						<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
-							<unireg:raccourciModifier link="../debiteur/edit.do?id=${command.tiers.numero}" tooltip="Modifier les caractéristiques fiscales du débiteur" display="label.bouton.modifier"/>
+							<unireg:raccourciModifier link="../debiteur/edit.do?id=${command.tiers.numero}" tooltip="Modifier les caractéristiques fiscales du débiteur"
+							                          display="label.bouton.modifier"/>
 						</c:when>
 						<c:otherwise>
 							<unireg:raccourciModifier link="../fiscal/edit.do?id=${command.tiers.numero}" tooltip="Modifier la partie fiscale" display="label.bouton.modifier"/>
 						</c:otherwise>
 					</c:choose>
-				</c:if>
-			</td>
+				</td>
+			</c:if>
 
-			<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
+			<c:if test="${showTimelineLink}">
 				<td id="timeline" align="right">
 					<a href='<c:url value="/fors/timeline.do?id=" /><c:out value="${command.tiers.numero}" />'><fmt:message key="title.vue.chronologique"/></a>
 				</td>
-			</authz:authorize>
-
+			</c:if>
 		</tr>
 	</table>
-
 </c:if>
+
 <c:choose>
 	<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<jsp:include page="debiteur.jsp"/>

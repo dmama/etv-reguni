@@ -44,12 +44,9 @@
 				<h3><c:out value="${command.description}"/></h3>
 		</c:if>
 		<c:if test="${!command.forPrint}">
-			<p style="text-align: center; color:red;">Attention: cette page est une aide pour les développeurs de Unireg. Il ne s'agit en aucune manière d'une page officielle, et aucun support n'est prévu.</p>
-
 			<a href="<c:url value="/tiers/visu.do?id=" /><c:out value="${command.tiersId}" />" >&lt;&lt; Retour à la visualisation</a>
 
 			<unireg:bandeauTiers numero="${command.tiersId}" showValidation="false" showEvenementsCivils="false" showLinks="false"/>
-
 		</c:if>
 
 
