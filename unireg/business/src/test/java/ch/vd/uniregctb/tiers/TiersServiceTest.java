@@ -3150,7 +3150,6 @@ public class TiersServiceTest extends BusinessTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddForDebiteurPeriodePassee() throws Exception {
-		//Ajout d'une première periodicite'
 		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
@@ -3163,11 +3162,12 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
+		//Ajout d'un second for avant le dernier for ouvert
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				tiersService.addForDebiteur(dpi,date(2009,4,1),date(2009,6,21),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+				tiersService.addForDebiteur(dpi, date(2009, 4, 1), date(2009, 6, 21), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bex.getNoOFS());
 				return null;
 			}
 		});
@@ -3176,13 +3176,27 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertEquals(2,dpi.getForsFiscauxNonAnnules(true).size());
+
+
+				final List<ForFiscal> forsFiscauxNonAnnules = dpi.getForsFiscauxNonAnnules(true);
+				// on doit se retrouver avec 2 fors
+				assertEquals(2, forsFiscauxNonAnnules.size());
+
+
+				//le  fors  ajouté a été placé correctement avant le for existant
+				assertEquals(date(2009,4,1),forsFiscauxNonAnnules.get(0).getDateDebut());
+				assertEquals(date(2009,6,21),forsFiscauxNonAnnules.get(0).getDateFin());
+
+				assertEquals(date(2009, 6, 22), forsFiscauxNonAnnules.get(1).getDateDebut());
+				assertNull(forsFiscauxNonAnnules.get(1).getDateFin());
+
 				return null;
 			}
 		});
 
 
 
+		//Ajout d'un troisième for après le dernier for ouvert
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
@@ -3196,7 +3210,20 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
-				assertEquals(3,dpi.getForsFiscauxNonAnnules(true).size());
+
+				//on doit se retrouver avec 3 fors
+				final List<ForFiscal> forsFiscauxNonAnnules = dpi.getForsFiscauxNonAnnules(true);
+				assertEquals(3, forsFiscauxNonAnnules.size());
+
+				//Le dernier for ouvert se retrouve fermé à la veille de la date de début du nouveau for
+				assertEquals(date(2009, 6, 22), forsFiscauxNonAnnules.get(1).getDateDebut());
+				assertEquals(date(2010, 3, 31), forsFiscauxNonAnnules.get(1).getDateFin());
+
+				//le  nouveau for a été placé correctement après le dernier for ouvert (qui est maintenant fermé !)
+				assertEquals(date(2010, 4, 1), forsFiscauxNonAnnules.get(2).getDateDebut());
+
+				assertNull(forsFiscauxNonAnnules.get(2).getDateFin());
+
 				return null;
 			}
 		});
