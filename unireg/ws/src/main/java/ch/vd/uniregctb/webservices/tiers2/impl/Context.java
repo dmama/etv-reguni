@@ -4,7 +4,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.uniregctb.adresse.AdresseService;
-import ch.vd.uniregctb.dao.jdbc.JdbcTiersDao;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.iban.IbanValidator;
@@ -52,10 +51,6 @@ public class Context {
 	public DeclarationImpotService diService;
 
 	public BamMessageSender bamSender;
-
-	public JdbcTiersDao jdbcTiersDao;
-
-	public boolean useJdbc;
 
 	public ServicePersonneMoraleService servicePM;
 
