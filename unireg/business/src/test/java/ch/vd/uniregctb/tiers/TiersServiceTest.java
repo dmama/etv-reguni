@@ -3013,6 +3013,8 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(new Long(6789L), ctb.getNumero());
 	}
 
+
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAddPeriodiciteDebiteurPrestationImposable() throws Exception {
@@ -3141,6 +3143,64 @@ public class TiersServiceTest extends BusinessTest {
 				return null;
 			}
 		});
+	}
+
+
+	//test SIFISC-6845
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAddForDebiteurPeriodePassee() throws Exception {
+		//Ajout d'une première periodicite'
+		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = addDebiteur();
+				tiersService.addForDebiteur(dpi,date(2009,6,22),null,TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+
+
+
+				return dpi.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				tiersService.addForDebiteur(dpi,date(2009,4,1),date(2009,6,21),TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertEquals(2,dpi.getForsFiscauxNonAnnules(true).size());
+				return null;
+			}
+		});
+
+
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				tiersService.addForDebiteur(dpi,date(2010,4,1),null,TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,MockCommune.Bex.getNoOFS());
+				return null;
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertEquals(3,dpi.getForsFiscauxNonAnnules(true).size());
+				return null;
+			}
+		});
+
 	}
 
 	//test UNIREG-3041 AJout d'une nouvelle périodicité avec une périodicité existante l'année suivante et une

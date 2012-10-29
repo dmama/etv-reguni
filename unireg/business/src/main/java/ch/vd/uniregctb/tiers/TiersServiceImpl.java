@@ -2711,7 +2711,10 @@ public class TiersServiceImpl implements TiersService {
     public ForDebiteurPrestationImposable addForDebiteur(DebiteurPrestationImposable debiteur, RegDate dateDebut, RegDate dateFin, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
         final ForDebiteurPrestationImposable dernierForDebiteur = debiteur.getDernierForDebiteur();
         if (dernierForDebiteur != null && dernierForDebiteur.getDateFin() == null) {
-            closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), false);
+	        if (dateFin == null || dateFin.isAfter(dernierForDebiteur.getDateDebut())) {
+		        closeForDebiteurPrestationImposable(debiteur, dernierForDebiteur, dateDebut.getOneDayBefore(), false);
+	        }
+
         }
         if (dernierForDebiteur == null) {
             //[UNIREG-2885] dans le cas de la création d'un premier for, on doit adapter si besoin la première périodicité
