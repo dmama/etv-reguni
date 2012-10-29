@@ -252,7 +252,7 @@
 	                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
 	                                    </c:if>
 	                                    <br/>
-	                                    <c:if test="${a.class.name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a.class.name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
 	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
 	                                    </c:if>
 	                                </div>

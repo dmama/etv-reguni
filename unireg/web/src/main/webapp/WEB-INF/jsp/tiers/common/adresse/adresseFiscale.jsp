@@ -47,7 +47,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.source">
 			<fmt:message key="option.source.${adresse.source}" />
-			<c:if test="${adresse.default || adresse.source == 'CIVILE'}">(<fmt:message key="option.source.default.tag" />)</c:if>
+			<c:if test="${adresse['default'] || adresse.source == 'CIVILE'}">(<fmt:message key="option.source.default.tag" />)</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">
@@ -88,7 +88,7 @@
 		<display:column property="dateFin" sortable ="true" titleKey="label.date.fin"  format="{0,date,dd.MM.yyyy}" class="error" />
 		<display:column sortable ="true" titleKey="label.adresse.source" class="error">
 			<fmt:message key="option.source.${adresseEnErreur.source}" />
-			<c:if test="${adresseEnErreur.default}">(<fmt:message key="option.source.default.tag" />)</c:if>
+			<c:if test="${adresseEnErreur['default']}">(<fmt:message key="option.source.default.tag" />)</c:if>
 		</display:column>
 		<display:column style="action">
 			<c:if test="${page == 'visu' }">

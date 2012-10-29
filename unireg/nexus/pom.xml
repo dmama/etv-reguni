@@ -93,13 +93,13 @@
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-embedded-tomcat</artifactId>
-			<version>1.8</version>
+			<version>3.0.0</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>weblogic</groupId>
-			<artifactId>wlfullclient-jdk6</artifactId>
-			<version>10.3</version>
+			<artifactId>wlthint3client</artifactId>
+			<version>10.3.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
