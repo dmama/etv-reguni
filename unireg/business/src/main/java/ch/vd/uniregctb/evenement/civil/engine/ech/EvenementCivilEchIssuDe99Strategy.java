@@ -6,7 +6,9 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterne;
+import ch.vd.uniregctb.evenement.civil.interne.EvenementCivilInterneComposite;
 import ch.vd.uniregctb.evenement.civil.interne.changement.nom.ChangementNom;
+import ch.vd.uniregctb.evenement.civil.interne.changement.origine.CorrectionOrigine;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -26,15 +28,16 @@ public class EvenementCivilEchIssuDe99Strategy implements EvenementCivilEchTrans
 		// sur le principe, un eCH-99 ne devrait pas avoir d'impact fiscal -> une simple
 		// ré-indexation suffit... SAUF pour ce qui concerne les anciens habitants pour lesquels certaines
 		// données, modifiables par le eCH-99 (prénoms, origine) doivent être repris dans Unireg avant ré-indexation ;
-		// seuls les noms (et prénoms, donc) sont considérés ici car l'origine n'est de toute façon pas reprise
-		// lors du passage d'habitant à non-habitant mais à chaque demande d'affichage
+		// seuls les noms (et prénoms, donc)et  l'origine
 
 		event.setCommentaireTraitement("Evénement civil issu d'un eCH-0099 de commune.");
 
 		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(event.getNumeroIndividu());
 		if (pp != null && !pp.isHabitantVD()) {
 			Audit.info(event.getId(), "Evénement civil issu d'un eCH-0099 sur un ancien habitant");
-			return new ChangementNom(event, context, options);
+			return new EvenementCivilInterneComposite(event, context, options,
+					new ChangementNom(event, context, options),
+					new CorrectionOrigine(event, context, options));
 		}
 		else {
 			return INDEXATION_ONLY.create(event, context, options);

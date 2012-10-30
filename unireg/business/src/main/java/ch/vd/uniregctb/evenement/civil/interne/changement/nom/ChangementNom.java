@@ -20,8 +20,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 
 /**
  * Modélise un événement de changement de nom.
- *
- * @author <a href="mailto:abenaissi@cross-systems.com">Akram BEN AISSI </a>
  */
 public class ChangementNom extends ChangementBase {
 
