@@ -19,6 +19,7 @@ public abstract class LengthConstants {
 	public final static int TIERS_NUMAVS = 13;
 	public final static int TIERS_NUMTEL = 35;
 	public final static int TIERS_EMAIL = 255;
+	public static final int TIERS_LIB_ORIGINE = 250;
 
 	public final static int IDENTPERSONNE_IDENTIFIANT = 13;
 	public final static int IDENTPERSONNE_CATEGORIE = 10;

@@ -33,8 +33,6 @@ import ch.vd.uniregctb.type.Sexe;
 @DiscriminatorValue("PersonnePhysique")
 public class PersonnePhysique extends Contribuable {
 
-	private static final long serialVersionUID = 3641798749348427983L;
-
 	public PersonnePhysique(){
 		super();
 	}
@@ -83,6 +81,7 @@ public class PersonnePhysique extends Contribuable {
 	private String prenom;
 	private RegDate dateNaissance;
 	private Sexe sexe;
+	private String libelleCommuneOrigine;
 
 	/**
 	 * Code ISO-2 du pays selon la norme ISO-3166
@@ -198,8 +197,7 @@ public class PersonnePhysique extends Contribuable {
 		String s = "";
 
 		if (numeroIndividu != null) {
-			String sNumero = String.valueOf(numeroIndividu);
-			s = sNumero;
+			s = String.valueOf(numeroIndividu);
 		}
 
 		return s;
@@ -274,7 +272,6 @@ public class PersonnePhysique extends Contribuable {
 	 * </ul>
 	 *
 	 * @return la date de naissance de la personne physique, ou <b>null</b> si cette information n'est pas connue.
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8QFx9Edygsbnw9h5bVw?GETTER"
 	 */
 	@Column(name = "NH_DATE_NAISSANCE")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })
@@ -312,6 +309,15 @@ public class PersonnePhysique extends Contribuable {
 
 	public void setNumeroOfsCommuneOrigine(Integer numeroOfsCommuneOrigine) {
 		this.numeroOfsCommuneOrigine = numeroOfsCommuneOrigine;
+	}
+
+	@Column(name = "NH_LIBELLE_COMMUNE_ORIGINE", length = LengthConstants.TIERS_LIB_ORIGINE)
+	public String getLibelleCommuneOrigine() {
+		return libelleCommuneOrigine;
+	}
+
+	public void setLibelleCommuneOrigine(String libelleCommuneOrigine) {
+		this.libelleCommuneOrigine = libelleCommuneOrigine;
 	}
 
 	@Column(name = "NH_CAT_ETRANGER", length = LengthConstants.TIERS_CATETRANGER)
