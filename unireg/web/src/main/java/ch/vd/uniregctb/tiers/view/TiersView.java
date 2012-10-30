@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.uniregctb.di.view.DeclarationView;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -113,7 +115,7 @@ public class TiersView {
 	/**
 	 * @param tiers the tiers to set
 	 */
-	public void setTiers(Tiers tiers) {
+	public void setTiers(@Nullable Tiers tiers) {
 		this.tiers = tiers;
 	}
 
@@ -303,7 +305,7 @@ public class TiersView {
 		return adressesEnErreur;
 	}
 
-	public void setAdressesEnErreur(List<AdresseView> adressesEnErreur) {
+	public void setAdressesEnErreur(@Nullable List<AdresseView> adressesEnErreur) {
 		this.adressesEnErreur = adressesEnErreur;
 	}
 
@@ -311,7 +313,7 @@ public class TiersView {
 		return adressesEnErreurMessage;
 	}
 
-	public void setAdressesEnErreurMessage(String adressesEnErreurMessage) {
+	public void setAdressesEnErreurMessage(@Nullable String adressesEnErreurMessage) {
 		this.adressesEnErreurMessage = adressesEnErreurMessage;
 	}
 
@@ -336,7 +338,7 @@ public class TiersView {
 	}
 
 
-	public void setAllowedOnglet(Map<String, Boolean> allowedOnglet) {
+	public void setAllowedOnglet(@Nullable Map<String, Boolean> allowedOnglet) {
 		this.allowedOnglet = allowedOnglet;
 	}
 

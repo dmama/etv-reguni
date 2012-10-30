@@ -54,7 +54,7 @@
 		<td><fmt:message key="label.sexe" />&nbsp;:</td>
 		<td>
 			<form:select path="tiers.sexe" tabindex="5" >
-				<form:option value="" ></form:option>
+				<form:option value="" />
 				<form:options items="${sexes}" />
 			</form:select>
 		</td>
@@ -103,7 +103,7 @@
 		<td><fmt:message key="label.categorie.etranger" />&nbsp;:</td>
 		<td>
 			<form:select path="tiers.categorieEtranger" tabindex="8" >
-				<form:option value=""></form:option>
+				<form:option value=""/>
 				<form:options items="${categoriesEtrangers}" />
 			</form:select>
 		</td>
@@ -149,16 +149,14 @@
 		class="<unireg:nextRowClass/>">
 		<td><fmt:message key="label.commune.origine" />&nbsp;:</td>
 		<td>
-			<form:hidden path="tiers.numeroOfsCommuneOrigine" id="tiers_numeroOfsCommuneOrigine" />
-			<form:input path="libelleOfsCommuneOrigine" id="tiers_libelleOfsCommuneOrigine" cssErrorClass="input-with-errors" tabindex="11" size="20" />
+			<form:input path="tiers.libelleCommuneOrigine" id="tiers_libelleCommuneOrigine" tabindex="11"
+			            cssErrorClass="input-with-errors" size="30" maxlength="250" />
 			<script>
 				$(function() {
-					Autocomplete.infra('commune', '#tiers_libelleOfsCommuneOrigine', true, function(item) {
-						$('#tiers_numeroOfsCommuneOrigine').val(item ? item.id1 : null);
-					});
+					Autocomplete.infra('commune', '#tiers_libelleCommuneOrigine', true);
 				});
 			</script>
-			<form:errors path="tiers.numeroOfsCommuneOrigine" cssClass="error" /></td>
+			<form:errors path="tiers.libelleCommuneOrigine" cssClass="error" />
 	</tr>
 	
 </table>

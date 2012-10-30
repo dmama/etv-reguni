@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.tiers.view;
 
-
-
-
 /**
  * Structure model pour l'ecran d'edition de IdentificationPersonne
  *
@@ -12,9 +9,7 @@ package ch.vd.uniregctb.tiers.view;
 public class IdentificationPersonneView {
 
 	private String ancienNumAVS;
-
 	private String numRegistreEtranger;
-
 
 	public String getNumRegistreEtranger() {
 		return numRegistreEtranger;
@@ -31,11 +26,4 @@ public class IdentificationPersonneView {
 	public void setNumRegistreEtranger(String numRegistreEtranger) {
 		this.numRegistreEtranger = numRegistreEtranger;
 	}
-
-
-
-
-
-
-
 }

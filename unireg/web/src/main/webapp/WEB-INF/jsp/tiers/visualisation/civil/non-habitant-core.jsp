@@ -7,7 +7,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroIndividuFormatte" scope="request"/>
 			<spring:bind path="${bind}" >
-				<c:out value="${status.value}"></c:out>
+				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
@@ -37,7 +37,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroAssureSocial" scope="request"/>
 			<spring:bind path="${bind}" >
-					<unireg:numAVS numeroAssureSocial="${status.value}"></unireg:numAVS>	
+					<unireg:numAVS numeroAssureSocial="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
@@ -50,7 +50,7 @@
 		<td>
 			<c:forEach var="identification" items="${identificationsPersonnes}">
 				<c:if test="${identification.categorieIdentifiant == 'CH_AHV_AVS'}">
-						<unireg:ancienNumeroAVS ancienNumeroAVS="${identification.identifiant}"></unireg:ancienNumeroAVS>
+						<unireg:ancienNumeroAVS ancienNumeroAVS="${identification.identifiant}"/>
 				</c:if>
 			</c:forEach>	
 		</td>
@@ -61,7 +61,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.dateNaissance" scope="request"/>
 			<spring:bind path="${bind}" >
-				<unireg:date date="${status.value}"></unireg:date>
+				<unireg:date date="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
@@ -84,7 +84,7 @@
 		<td>
 		<c:set var="bind" value="command.${param.path}.dateDeces" scope="request"/>
 		<spring:bind path="${bind}" >
-			<unireg:date date="${status.value}"></unireg:date>
+			<unireg:date date="${status.value}"/>
 		</spring:bind>                                       
 	</tr>
 
@@ -122,7 +122,7 @@
 		<td>
 		<c:set var="bind" value="command.${param.path}.dateDebutValiditeAutorisation" scope="request"/>
 		<spring:bind path="${bind}" >
-			<unireg:date date="${status.value}"></unireg:date>
+			<unireg:date date="${status.value}"/>
 		</spring:bind>                                       
 	</tr>
 
@@ -132,33 +132,25 @@
 			<!-- (msi/fde) on a pas trouvé mieux... -->
 			<c:choose>
 				<c:when test="${param.path == 'tiersPrincipal'}">
-					<unireg:infra entityId="${command.tiersPrincipal.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:infra entityId="${command.tiersPrincipal.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"/>
 				</c:when>
 				<c:when test="${param.path == 'tiersConjoint'}">
-					<unireg:infra entityId="${command.tiersConjoint.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:infra entityId="${command.tiersConjoint.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"/>
 				</c:when>
 				<c:when test="${param.path == 'tiers'}">
-					<unireg:infra entityId="${command.tiers.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:infra entityId="${command.tiers.numeroOfsNationalite}" entityType="pays" entityPropertyName="nomMinuscule"/>
 				</c:when>
 			</c:choose>
 		</td>
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-	<td width="50%"><fmt:message key="label.commune.origine"/>&nbsp;:</td>
+		<td width="50%"><fmt:message key="label.commune.origine"/>&nbsp;:</td>
 		<td>
-			<!-- (msi/fde) on a pas trouvé mieux... -->
-			<c:choose>
-				<c:when test="${param.path == 'tiersPrincipal'}">
-					<unireg:commune ofs="${command.tiersPrincipal.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
-				</c:when>
-				<c:when test="${param.path == 'tiersConjoint'}">
-					<unireg:commune ofs="${command.tiersConjoint.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
-				</c:when>
-				<c:when test="${param.path == 'tiers'}">
-					<unireg:commune ofs="${command.tiers.numeroOfsCommuneOrigine}" displayProperty="nomMinuscule"/>
-				</c:when>
-			</c:choose>
+			<c:set var="bind" value="command.${param.path}.libelleCommuneOrigine" scope="request"/>
+			<spring:bind path="${bind}" >
+					<c:out value="${status.value}"/>
+			</spring:bind>
 		</td>
 	</tr>
 

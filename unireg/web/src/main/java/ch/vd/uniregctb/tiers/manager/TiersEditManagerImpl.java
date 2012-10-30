@@ -51,10 +51,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	/**
 	 * Charge les informations dans TiersView
 	 *
-	 * @param numero
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -142,10 +138,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	/**
 	 * Charge les informations dans TiersView
 	 *
-	 * @param numero
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException{
@@ -158,10 +150,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	/**
 	 * Rafraichissement de la vue
 	 *
-	 * @param numero
-	 * @return
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	public TiersEditView refresh(TiersEditView tiersEditView, Long numero) throws AdresseException, ServiceInfrastructureException {
@@ -238,9 +226,8 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			setAdressesFiscalesModifiables(tiersEditView,tiers);
 
 			//gestion des droits d'édition
-			boolean allowed = false;
 			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			allowed = setDroitEdition(tiers, allowedOnglet);
+			boolean allowed = setDroitEdition(tiers, allowedOnglet);
 
 			tiersEditView.setAllowedOnglet(allowedOnglet);
 			tiersEditView.setAllowed(allowed);
@@ -259,8 +246,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	/**
 	 * Met a jour le non-habitant pour l'edition
 	 *
-	 * @param tiersEditView
-	 * @param nonHabitant
 	 * @throws ServiceInfrastructureException
 	 */
 	private void setNonHabitant(TiersEditView tiersEditView, PersonnePhysique nonHabitant) throws ServiceInfrastructureException {
@@ -284,10 +269,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		final Integer numeroOfsNationalite = nonHabitant.getNumeroOfsNationalite();
 		if (numeroOfsNationalite != null) {
 			tiersEditView.setLibelleOfsPaysOrigine(getServiceInfrastructureService().getPays(numeroOfsNationalite).getNomMinuscule());
-		}
-		final Integer numeroOfsCommuneOrigine = nonHabitant.getNumeroOfsCommuneOrigine();
-		if (numeroOfsCommuneOrigine != null) {
-			tiersEditView.setLibelleOfsCommuneOrigine(getServiceInfrastructureService().getCommuneByNumeroOfsEtendu(numeroOfsCommuneOrigine, null).getNomMinuscule());
 		}
 
 		tiersEditView.setIdentificationPersonne(idPersonneView);
@@ -473,9 +454,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				//ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ctbAss, dpi);
 				final RapportEntreTiers rapport = tiersService.addContactImpotSource(dpiFromView, ctbAss);
 
-				final DebiteurPrestationImposable dpiRtr = (DebiteurPrestationImposable) tiersDAO.get(rapport.getObjetId());
-
-				return dpiRtr;
+				return tiersDAO.get(rapport.getObjetId());
 			}
 			else {
 				return tiersDAO.save(dpiFromView);

@@ -31,8 +31,6 @@ public class TiersEditView extends TiersView {
 
 	private String libelleOfsPaysOrigine ;
 
-	private String libelleOfsCommuneOrigine ;
-
 	private String sdateNaissance;
 
 	private String sdateDeces;
@@ -52,7 +50,6 @@ public class TiersEditView extends TiersView {
 		setAdressesEnErreur(null);
 		setAdressesEnErreurMessage(null);
 		libelleOfsPaysOrigine = null;
-		libelleOfsCommuneOrigine = null;
 		sdateNaissance = null;
 		sdateDeces = null;
 		sdateDebutValiditeAutorisation = null;
@@ -119,14 +116,6 @@ public class TiersEditView extends TiersView {
 
 	public void setLibelleOfsPaysOrigine(String libelleOfsPaysOrigine) {
 		this.libelleOfsPaysOrigine = libelleOfsPaysOrigine;
-	}
-
-	public String getLibelleOfsCommuneOrigine() {
-		return libelleOfsCommuneOrigine;
-	}
-
-	public void setLibelleOfsCommuneOrigine(String libelleOfsCommuneOrigine) {
-		this.libelleOfsCommuneOrigine = libelleOfsCommuneOrigine;
 	}
 
 	public Long getNumeroCtbAssocie() {
