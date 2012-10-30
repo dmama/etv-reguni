@@ -525,9 +525,6 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             List<RapportEntreTiers> rapports = TiersHelper.getRapportSujetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
-	                if (r.isAnnule()) {
-		                continue;
-	                }
                     MenageCommun menage = (MenageCommun) tiersDAO.get(r.getObjetId());
                     list.add(menage);
                 }
@@ -539,10 +536,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
             List<RapportEntreTiers> rapports = TiersHelper.getRapportObjetHistoOfType(tiers, TypeRapportEntreTiers.APPARTENANCE_MENAGE);
             if (rapports != null && !rapports.isEmpty()) {
                 for (RapportEntreTiers r : rapports) {
-	                if (r.isAnnule()) {
-		                continue;
-	                }
-	                PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
+                    PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(r.getSujetId());
                     list.add(pp);
                 }
             }
