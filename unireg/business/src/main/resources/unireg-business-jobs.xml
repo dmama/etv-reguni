@@ -446,6 +446,14 @@
 		<property name="tiersDAO" ref="tiersDAO" />
 	</bean>
 
+	<bean id="migrationNoOfsVersLibelle" parent="schedulerJob" class="ch.vd.uniregctb.database.MigrationNoOfsVersLibelleJob">
+		<constructor-arg value="710" />
+		<constructor-arg value="Migration de la donnée représentant la commune d'origine (NH_NO_OFS_COMMUNE_ORIGINE -> NH_LIBELLE_COMMUNE_ORIGINE)"/>
+		<property name="serviceInfra" ref="serviceInfrastructureService" />
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="dialect" ref="hibernateDialect" />
+	</bean>
+
     <bean id="cacheResetJob" parent="schedulerJob" class="ch.vd.uniregctb.cache.CacheResetJob">
         <constructor-arg value="801"/>
         <constructor-arg value="Réinitialiser les différents caches d'Unireg"/>
