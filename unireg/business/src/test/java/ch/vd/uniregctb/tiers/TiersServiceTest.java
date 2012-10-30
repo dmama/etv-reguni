@@ -44,6 +44,7 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.evenement.EvenementFiscal;
@@ -6052,5 +6053,45 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(service.isDomicileDansLeCanton(brahim, date(1990, 1, 1)));
 		assertTrue(service.isDomicileDansLeCanton(brahim, date(2010, 3, 12)));
 		assertTrue(service.isDomicileDansLeCanton(brahim, null));
+	}
+
+	@Test
+	public void testChangeHabitantEnNHAvecRepriseOrigine() throws Exception {
+
+		final long noIndividu = 3467843L;
+		final long noIndividu2 = 3467844L;
+		final RegDate dateNaissance = date(1989, 10, 3);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Bouliokova", "Tatiana", Sexe.FEMININ);
+				addOrigine(ind, MockCommune.Orbe);
+				final MockIndividu ind2 = addIndividu(noIndividu2, dateNaissance, "Gerard", "Mansudoux-Geveney", Sexe.MASCULIN);
+				MockCommune [] communes = new MockCommune[] {
+						MockCommune.Orbe, MockCommune.Lausanne, MockCommune.GrangesMarnand,	MockCommune.CheseauxSurLausanne, MockCommune.VufflensLaVille,
+						MockCommune.YverdonLesBains, MockCommune.RomanelSurLausanne, MockCommune.Malapalud,	MockCommune.RomainmotierEnvy, MockCommune.ChateauDoex,
+						MockCommune.BourgEnLavaux, MockCommune.LeChenit, MockCommune.Zurich, MockCommune.LeLieu,MockCommune.LesClees, MockCommune.Aubonne,
+						MockCommune.Echallens, MockCommune.Mirage, MockCommune.Bale, MockCommune.Chamblon};
+				for (MockCommune commune : communes) {
+					addOrigine(ind2, commune);
+				}
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				final PersonnePhysique pp2 = addHabitant(noIndividu2);
+				tiersService.changeHabitantenNH(pp);
+				tiersService.changeHabitantenNH(pp2);
+				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe", "Orbe", pp.getLibelleCommuneOrigine());
+				final int maxSize = LengthConstants.TIERS_LIB_ORIGINE;
+				assertEquals("les origines trop longues devraient être abrégées à " + maxSize, maxSize, pp2.getLibelleCommuneOrigine().length());
+				return pp.getNumero();
+			}
+		});
 	}
 }

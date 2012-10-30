@@ -1246,5 +1246,16 @@ public interface TiersService {
      * @return les numéros de tiers des offices d'impôt de district et de région; ou <b>null</b> si la commune n'est pas vaudoise ou est inconnue.
      */
     NumerosOfficesImpot getOfficesImpot(int noOfs, @Nullable RegDate date);
+
+	/**
+	 * @param noIndividu l'individu dont on veut le libellé de ses communes d'origines
+	 *
+	 * @return Une chaîne de caratères avec toutes les communes origines de l'individu concaténées avec des ", ".
+	 *          Abrégé par "..." si c'est trop long (cf. {@link ch.vd.uniregctb.common.LengthConstants#TIERS_LIB_ORIGINE})
+	 *
+	 * @throws IndividuNotFoundException
+	 */
+	String buildLibelleOrigine(long noIndividu);
+
 }
 

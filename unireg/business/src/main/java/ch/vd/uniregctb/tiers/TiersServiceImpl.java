@@ -46,6 +46,7 @@ import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
@@ -66,6 +67,7 @@ import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -309,7 +311,7 @@ public class TiersServiceImpl implements TiersService {
         habitant.setDateDeces(ind.getDateDeces());
 	    habitant.setSexe(ind.getSexe());
 
-	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS);
+	    final Individu individu = serviceCivilService.getIndividu(habitant.getNumeroIndividu(), null, AttributeIndividu.NATIONALITE, AttributeIndividu.PERMIS, AttributeIndividu.ORIGINE);
 	    if (individu == null) {
 		    throw new IndividuNotFoundException(habitant.getNumeroIndividu());
 	    }
@@ -332,6 +334,11 @@ public class TiersServiceImpl implements TiersService {
             habitant.setCategorieEtranger(null);
             habitant.setDateDebutValiditeAutorisation(null);
         }
+
+	    // Commune d'origine
+	    if (individu.getOrigines() != null && !individu.getOrigines().isEmpty()) {
+		    habitant.setLibelleCommuneOrigine(buildLibelleOrigine(individu));
+	    }
 
         // indentification navs11 et numRCE
         setIdentifiantsPersonne(habitant, ind.getNoAVS11(), ind.getNumeroRCE());
@@ -4292,5 +4299,39 @@ public class TiersServiceImpl implements TiersService {
 
         return new NumerosOfficesImpot(oid == null ? 0 : oid.getNumero(), oir == null ? 0 : oir.getNumero());
     }
+
+	@Override
+	public String buildLibelleOrigine(long noIndividu) {
+		final Individu individu = serviceCivilService.getIndividu(noIndividu, null, AttributeIndividu.ORIGINE);
+		if (individu == null) {
+			throw new IndividuNotFoundException(noIndividu);
+		}
+		return buildLibelleOrigine(individu);
+	}
+
+	private String buildLibelleOrigine(final Individu individu) {
+		if (individu.getOrigines() == null) {
+			return "";
+		}
+		final StringBuilder sb = new StringBuilder(LengthConstants.TIERS_LIB_ORIGINE);
+		for ( Iterator<Origine> it = individu.getOrigines().iterator(); it.hasNext(); ) {
+			final Origine origine = it.next();
+			sb.append(origine.getNomLieu());
+			if (it.hasNext()) {
+				sb.append(", ");
+			}
+		}
+		if (sb.length() > LengthConstants.TIERS_LIB_ORIGINE) {
+			// Si la chaîne de caratère est trop longue (très peu probable), on la tronque.
+			// Pas génant car cette donnée est simplement là à titre d'information dans l'IHM.
+			// Aucune décision métier ne doit être prise dessus.
+			return sb.substring(0, LengthConstants.TIERS_LIB_ORIGINE - 3) + "...";
+		}
+		else {
+			return sb.toString();
+		}
+	}
+
+
 
 }
