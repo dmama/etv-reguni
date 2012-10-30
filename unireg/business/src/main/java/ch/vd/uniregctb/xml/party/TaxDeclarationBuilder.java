@@ -66,13 +66,13 @@ public class TaxDeclarationBuilder {
 
 	private static void fillTaxDeclarationParts(TaxDeclaration d, ch.vd.uniregctb.declaration.Declaration declaration, Set<PartyPart> parts) {
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_STATUSES)) {
-			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtats()) {
+			for (ch.vd.uniregctb.declaration.EtatDeclaration etat : declaration.getEtatsSorted()) {
 				d.getStatuses().add(newTaxDeclarationStatus(etat));
 			}
 		}
 		if (parts != null && parts.contains(PartyPart.TAX_DECLARATIONS_DEADLINES) && d instanceof OrdinaryTaxDeclaration) {
 			final OrdinaryTaxDeclaration otd = (OrdinaryTaxDeclaration) d;
-			for (ch.vd.uniregctb.declaration.DelaiDeclaration delai : declaration.getDelais()) {
+			for (ch.vd.uniregctb.declaration.DelaiDeclaration delai : declaration.getDelaisSorted()) {
 				otd.getDeadlines().add(newTaxDeclarationDeadline(delai));
 			}
 		}

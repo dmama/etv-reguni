@@ -68,6 +68,8 @@ import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationDeadline;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationKey;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatus;
+import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
 import ch.vd.unireg.xml.party.taxresidence.v1.LiabilityChangeReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxLiabilityReason;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
@@ -1936,6 +1938,261 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals(newDate(annee + 1, 1, 15), deadline0.getProcessingDate());
 			assertEquals(newDate(annee + 1, 6, 30), deadline0.getDeadline());
 			assertFalse(deadline0.isWrittenConfirmation());
+		}
+	}
+
+	/**
+	 * [SIFISC-6500] Vérifie que les états des déclarations sont bien retournés par le web-service.
+	 */
+	@Test
+	public void testGetPartyTaxDeclarationStatuses() throws Exception {
+
+		final class Ids {
+			long diId;
+			long ppId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30));
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 15));
+				addEtatDeclarationRetournee(di, date(annee + 1, 4, 23));
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// sans la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEmpty(d0.getStatuses());
+		}
+
+		// avec la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_STATUSES));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			final List<TaxDeclarationStatus> statuses = d0.getStatuses();
+			assertNotNull(statuses);
+			assertEquals(2, statuses.size());
+
+			final TaxDeclarationStatus status0 = statuses.get(0);
+			assertNotNull(status0);
+			assertEquals(newDate(annee + 1, 1, 15), status0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, status0.getType());
+
+			final TaxDeclarationStatus status1 = statuses.get(1);
+			assertNotNull(status1);
+			assertEquals(newDate(annee + 1, 4, 23), status1.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.RETURNED, status1.getType());
+		}
+	}
+
+	/**
+	 * [SIFISC-6864] Vérifie que les délais des déclarations sont bien retournés par le web-service dans l'ordre chronologique.
+	 */
+	@Test
+	public void testGetPartyTaxDeclarationDeadlinesSortingOrder() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30));
+				addDelaiDeclaration(di, date(annee + 1, 1, 15), date(annee + 1, 6, 30));
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// sans la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEmpty(d0.getDeadlines());
+		}
+
+		// avec la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_DEADLINES));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			final List<TaxDeclarationDeadline> deadlines = d0.getDeadlines();
+			assertNotNull(deadlines);
+			assertEquals(2, deadlines.size());
+
+			final TaxDeclarationDeadline deadline0 = deadlines.get(0);
+			assertNotNull(deadline0);
+			assertEquals(newDate(annee + 1, 1, 15), deadline0.getApplicationDate());
+			assertEquals(newDate(annee + 1, 1, 15), deadline0.getProcessingDate());
+			assertEquals(newDate(annee + 1, 6, 30), deadline0.getDeadline());
+			assertFalse(deadline0.isWrittenConfirmation());
+
+			final TaxDeclarationDeadline deadline1 = deadlines.get(1);
+			assertNotNull(deadline1);
+			assertEquals(newDate(annee + 1, 3, 15), deadline1.getApplicationDate());
+			assertEquals(newDate(annee + 1, 3, 15), deadline1.getProcessingDate());
+			assertEquals(newDate(annee + 1, 9, 30), deadline1.getDeadline());
+			assertFalse(deadline1.isWrittenConfirmation());
+		}
+	}
+
+	/**
+	 * [SIFISC-6864] Vérifie que les états des déclarations sont bien retournés par le web-service dans l'ordre nominal.
+	 */
+	@Test
+	public void testGetPartyTaxDeclarationStatusesSortingOrder() throws Exception {
+
+		final class Ids {
+			long ppId;
+			long diId;
+		}
+
+		final int annee = 2009;
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(annee);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, md);
+				addDelaiDeclaration(di, date(annee + 1, 3, 15), date(annee + 1, 9, 30));
+				addEtatDeclarationEmise(di, date(annee + 1, 1, 7));
+				addEtatDeclarationRetournee(di, date(annee + 1, 7, 31));
+				addEtatDeclarationSommee(di, date(annee + 1, 7, 20), date(annee + 1, 7, 18));
+
+				final Ids ids = new Ids();
+				ids.ppId = pp.getNumero();
+				ids.diId = di.getId();
+				return ids;
+			}
+		});
+
+		// sans la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			assertEmpty(d0.getDeadlines());
+		}
+
+		// avec la part qui va bien
+		{
+			final GetPartyRequest params = new GetPartyRequest();
+			params.setLogin(login);
+			params.setPartyNumber((int) ids.ppId);
+			params.getParts().addAll(Arrays.asList(PartyPart.TAX_DECLARATIONS_STATUSES));
+
+			final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+			assertNotNull(pp);
+			final List<TaxDeclaration> declarations = pp.getTaxDeclarations();
+			assertNotNull(declarations);
+			assertEquals(1, declarations.size());
+
+			final OrdinaryTaxDeclaration d0 = (OrdinaryTaxDeclaration) declarations.get(0);
+			final List<TaxDeclarationStatus> statuses = d0.getStatuses();
+			assertNotNull(statuses);
+			assertEquals(3, statuses.size());
+
+			final TaxDeclarationStatus status0 = statuses.get(0);
+			assertNotNull(status0);
+			assertEquals(newDate(annee + 1, 1, 7), status0.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SENT, status0.getType());
+
+			final TaxDeclarationStatus status1 = statuses.get(1);
+			assertNotNull(status1);
+			assertEquals(newDate(annee + 1, 7, 18), status1.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.SUMMONS_SENT, status1.getType());
+
+			final TaxDeclarationStatus status2 = statuses.get(2);
+			assertNotNull(status2);
+			assertEquals(newDate(annee + 1, 7, 31), status2.getDateFrom());
+			assertEquals(TaxDeclarationStatusType.RETURNED, status2.getType());
 		}
 	}
 

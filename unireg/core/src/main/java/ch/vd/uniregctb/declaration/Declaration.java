@@ -466,6 +466,23 @@ public abstract class Declaration extends HibernateEntity implements DateRange, 
 		return list;
 	}
 
+	/**
+	 * @return la liste des délaos triés par ordre croissant (du plus ancien ou plus récent).
+	 * @see EtatDeclaration.Comparator
+	 */
+	@Transient
+	public List<DelaiDeclaration> getDelaisSorted() {
+		if (delais == null) {
+			return null;
+		}
+
+		// tri par ordre croissant
+		final List<DelaiDeclaration> list = new ArrayList<DelaiDeclaration>(delais);
+		Collections.sort(list, new DelaiDeclaration.Comparator());
+
+		return list;
+	}
+
 	@Transient
 	public RegDate getDelaiAccordeAu() {
 		RegDate dateMax = null;
