@@ -34,11 +34,6 @@ import ch.vd.uniregctb.tiers.LinkedEntity;
 public class DelaiDeclaration extends HibernateEntity implements Comparable<DelaiDeclaration>, LinkedEntity {
 
 	/**
-	 *
-	 */
-	private static final long serialVersionUID = -955921153312461733L;
-
-	/**
 	 * The ID
 	 */
 	private Long id;

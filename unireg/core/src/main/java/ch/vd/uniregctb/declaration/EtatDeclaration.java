@@ -84,11 +84,6 @@ public abstract class EtatDeclaration extends HibernateEntity implements DateRan
 	}
 
 	/**
-	 *
-	 */
-	private static final long serialVersionUID = -7856018681261138158L;
-
-	/**
 	 * The ID
 	 */
 	private Long id;
