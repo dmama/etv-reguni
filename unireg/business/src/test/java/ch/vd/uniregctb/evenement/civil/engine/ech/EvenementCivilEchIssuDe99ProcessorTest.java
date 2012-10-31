@@ -266,8 +266,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				Assert.assertEquals("l'origine du non-habitant devrait être Orbe", "Orbe", pp.getLibelleCommuneOrigine());
 				return pp.getNumero();
 			}

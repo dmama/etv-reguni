@@ -6052,13 +6052,11 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				final PersonnePhysique pp2 = addHabitant(noIndividu2);
-				tiersService.changeHabitantenNH(pp);
-				tiersService.changeHabitantenNH(pp2);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				final PersonnePhysique pp2 = tiersService.createNonHabitantFromIndividu(noIndividu2);
 				assertEquals("le libellé de la commune d'origine du non-habitant devrait être Orbe", "Orbe", pp.getLibelleCommuneOrigine());
 				final int maxSize = LengthConstants.TIERS_LIB_ORIGINE;
 				assertEquals("les origines trop longues devraient être abrégées à " + maxSize, maxSize, pp2.getLibelleCommuneOrigine().length());
