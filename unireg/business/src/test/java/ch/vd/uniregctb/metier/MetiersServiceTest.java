@@ -729,8 +729,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -749,7 +749,7 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Geneve.getNoOFS(), null));
 
 						// on ne connait que l'adresse courrier sur Genève (= prise par défaut pour l'adresse de domicile)
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateSeparation, null));
 					}
 				});
 
@@ -879,8 +879,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -896,7 +896,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
 						individu.getAdresses()
-								.add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
+								.add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateDepart.addDays(1), null));
 					}
 				});
 
@@ -994,8 +994,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -1008,8 +1008,9 @@ public class MetiersServiceTest extends BusinessTest {
 						assertEquals(0, individu.getAdresses().size());
 
 						// on ne connait que l'adresse courrier à Paris (= prise par défaut pour l'adresse de domicile)
+						RegDate debutValidite = dateSeparation.addYears(-1);
 						individu.getAdresses()
-								.add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, dateSeparation.addYears(-1), null));
+								.add(new MockAdresse(TypeAdresseCivil.COURRIER, "5 Avenue des Champs-Elysées", null, "75017 Paris", MockPays.France, debutValidite, null));
 					}
 				});
 
@@ -1141,8 +1142,8 @@ public class MetiersServiceTest extends BusinessTest {
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
-						individu.getAdresses().add(MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
+						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Bussigny.RueDeLIndustrie, null, dateSeparation, null));
 					}
 				});
 
@@ -1981,6 +1982,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 	/**
 	 * Cas UNIREG-2653 le décès fiscal d'un habitant également décédé au civil doit faire passer la personne physique en non-habitant
+	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	public void testDecesFiscalHabitantDecedeDansLeCivil() throws Exception {
@@ -2014,6 +2016,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.isHabitantVD());
 				metierService.deces(pp, dateDeces, "Décédé", null);
+				tiersService.updateHabitantFlag(pp, noInd, null, null);
 				return null;
 			}
 		});
@@ -2031,6 +2034,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 	/**
 	 * UNIREG-2653 une annulation de décès dans le civil doit repasser la personne physique en habitant
+	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2073,6 +2077,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.isHabitantVD());
 
 				metierService.deces(pp, dateDeces, "Décédé", 1L);
+				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
 				return null;
 			}
 		});
@@ -2102,6 +2107,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				metierService.annuleDeces(pp, dateDeces);
+				tiersService.updateHabitantFlag(pp, noIndDecede, null, null); // [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux
 				return null;
 			}
 		});
@@ -2209,6 +2215,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 	/**
 	 * UNIREG-2653 une annulation de décès seulement fiscale ne doit pas repasser la personne physique en habitant
+	 * [SIFISC-6841] la gestion du flag habitant est désormais séparée de la gestion des fors fiscaux, le test a été mis-à-jour pour appeler tiersService.updateHabitantFlag() lorsque c'est nécessaire.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2251,6 +2258,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.isHabitantVD());
 
 				metierService.deces(pp, dateDeces, "Décédé", 1L);
+				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
 				return null;
 			}
 		});
@@ -2264,6 +2272,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertEquals(dateDeces, tiersService.getDateDeces(pp));
 
 				metierService.annuleDeces(pp, dateDeces);
+				tiersService.updateHabitantFlag(pp, noIndDecede, null, null);
 				return null;
 			}
 		});

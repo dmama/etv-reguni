@@ -652,8 +652,8 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok: arrivée en adresse secondaire
 		 */
-		final Adresse ancienne = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut, veille);
-		final Adresse nouvelle = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
+		final Adresse ancienne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut, veille);
+		final Adresse nouvelle = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
 		final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
 		final MessageCollector collector = buildMessageCollector();
@@ -672,7 +672,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: arrivée en adresse secondaire hors canton
 		 */
-		final Adresse nouvelleHorsCanton = MockServiceCivil.newAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
+		final Adresse nouvelleHorsCanton = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
 		final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
 		arriveeHorsCanton.validateArriveeAdresseSecondaire(collector);
 		assertFalse(collector.getErreurs().isEmpty());
@@ -2357,6 +2357,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 	public void testModeImpositionArriveeHCEtrangerNonEtabliAvecImmeuble() throws Exception {
 
 		final long noInd = 123456;
+		final RegDate dateArrivee = date(2009, 12, 1);
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -2364,6 +2365,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				MockIndividu ind = addIndividu(noInd, date(1950, 1, 1), "Pouly", "Mohamed", true);
 				addNationalite(ind, MockPays.Colombie, date(1950, 1, 1), null);
 				addPermis(ind, TypePermis.SEJOUR, date(1980, 1, 1), null, false);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 			}
 		});
 
@@ -2385,7 +2387,6 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		globalTiersIndexer.sync();
 
-		final RegDate dateArrivee = date(2009, 12, 1);
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 		final Individu individu = serviceCivil.getIndividu(noInd, null);

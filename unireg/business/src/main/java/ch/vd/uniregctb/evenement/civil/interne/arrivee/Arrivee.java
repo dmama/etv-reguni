@@ -145,7 +145,10 @@ public abstract class Arrivee extends Mouvement {
 			 * Création à la demande de l'habitant
 			 */
 			// [UNIREG-770] rechercher si un Non-Habitant assujetti existe (avec Nom - Prénom)
-			final PersonnePhysique habitant = getOrCreateHabitant(individu, dateArrivee, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL).personnePhysique;
+			final PersonnePhysique habitant = getOrCreateHabitant(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
+
+			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+			context.getTiersService().updateHabitantFlag(habitant, getNoIndividu(), dateArrivee, getNumeroEvenement());
 
 			/*
 			 * Mise-à-jour des adresses
@@ -195,8 +198,7 @@ public abstract class Arrivee extends Mouvement {
 
 
 	/**
-	 *
-	 * @return<code>true</code> si le conjoint de l'individu qui arrive correspond à un contribuable Marié seul dans unireg
+	 * @return <code>true</code> si le conjoint de l'individu qui arrive correspond à un contribuable Marié seul dans unireg
 	 */
 	protected abstract boolean isConjointMarieSeul();
 
@@ -310,46 +312,23 @@ public abstract class Arrivee extends Mouvement {
 		}
 	}
 
-	/**
-	 * Type de retour pour la methode getOrCreateXXXX
-	 */
-	private static class GetOrCreateReturnType {
-
-		private final PersonnePhysique personnePhysique;
-		private final boolean wasNonHabitant;
-
-		private GetOrCreateReturnType(PersonnePhysique personnePhysique, boolean wasNonHabitant) {
-			this.personnePhysique = personnePhysique;
-			this.wasNonHabitant = wasNonHabitant;
-		}
+	@NotNull
+	private PersonnePhysique getOrCreateHabitant(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
+		  return getOrCreatePersonnePhysique(individu, evenementId, behavior);
 	}
 
-	private GetOrCreateReturnType getOrCreateHabitant(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior) throws EvenementCivilException {
-		  return getOrCreatePersonnePhysique(individu, dateEvenement, evenementId, behavior, false);
+	@NotNull
+	private PersonnePhysique getOrCreateConjoint(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
+		return getOrCreatePersonnePhysique(individu, evenementId, behavior);
 	}
 
-	private GetOrCreateReturnType getOrCreateConjoint(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior) throws EvenementCivilException {
-		return getOrCreatePersonnePhysique(individu, dateEvenement, evenementId, behavior, true);
-	}
-
-	private GetOrCreateReturnType getOrCreatePersonnePhysique(Individu individu, RegDate dateEvenement, long evenementId, FindBehavior behavior, boolean traitementConjoint) throws EvenementCivilException {
+	@NotNull
+	private PersonnePhysique getOrCreatePersonnePhysique(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
 		final PersonnePhysique personnePhysiqueResultante;
-		boolean wasNonHabitant = false;
 		if (pp != null) {
-			if (pp.isHabitantVD()) {
-				personnePhysiqueResultante = pp;
-			}
-			else {
-				wasNonHabitant = true;
-				if (!traitementConjoint) {
-					personnePhysiqueResultante = getService().changeNHenHabitant(pp, pp.getNumeroIndividu(), dateEvenement);
-					Audit.info(evenementId, "Le non habitant " + personnePhysiqueResultante.getNumero() + " devient habitant");
-				} else {
-					personnePhysiqueResultante = pp;
-				}
-			}
+			personnePhysiqueResultante = pp;
 		}
 		else {
 			final List<PersonnePhysique> nonHabitants = findNonHabitants(individu, behavior.isAssujettissementObligatoire());
@@ -373,30 +352,20 @@ public abstract class Arrivee extends Mouvement {
 				}
 				else {
 					// [UNIREG-1603] le candidat correspond parfaitement aux critères
-					wasNonHabitant = true;
-					if (traitementConjoint) {
-						personnePhysiqueResultante = candidat;
-						// Meme si on ne passe pas en Habitant le conjoint, on fait le lien avec le civil (Decision prise suite au traitement de SIFISC-6109)
-						personnePhysiqueResultante.setNumeroIndividu(individu.getNoTechnique());
-					} else {
-						personnePhysiqueResultante = getService().changeNHenHabitant(candidat, individu.getNoTechnique(), dateEvenement);
-						Audit.info(evenementId, "Le non habitant " + personnePhysiqueResultante.getNumero() + " devient habitant");
-					}
+					personnePhysiqueResultante = candidat;
+					// Meme si on ne passe pas en Habitant le conjoint, on fait le lien avec le civil (Decision prise suite au traitement de SIFISC-6109)
+					personnePhysiqueResultante.setNumeroIndividu(individu.getNoTechnique());
 				}
 			}
 			else if (nonHabitants.isEmpty() || !behavior.isErrorOnMultiples()) {
-				PersonnePhysique nouvellePersonnePhysique = new PersonnePhysique(true);
-				nouvellePersonnePhysique.setNumeroIndividu(individu.getNoTechnique());
-				nouvellePersonnePhysique = (PersonnePhysique) context.getTiersDAO().save(nouvellePersonnePhysique);
-				if (traitementConjoint) {
-					// s'il s'agit du conjoint on le passe en non-habitant car il n'est pas encore arrivé (on ne l'a pas trouvé dans les tiers)
-					// Il sera passé en habitant lorsque son evenenement d'arrivée sera traité
-					nouvellePersonnePhysique = context.getTiersService().changeHabitantenNH(nouvellePersonnePhysique);
-					Audit.info(evenementId, "Un tiers non-habitant a été créé pour le conjoint du nouvel arrivant");
-				} else {
-					Audit.info(evenementId, "Un tiers a été créé pour le nouvel arrivant");
-				}
-				personnePhysiqueResultante = nouvellePersonnePhysique;
+				// Ici on créé un non-habitant et on l'initialise avec les données connues de son individu. C'est un peu spécial mais le problème c'est qu'on
+				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créé le
+				// conjoint non-habitant.
+				PersonnePhysique conjoint = new PersonnePhysique(individu.getNoTechnique());
+				conjoint = (PersonnePhysique) context.getTiersDAO().save(conjoint);
+				conjoint = context.getTiersService().changeHabitantenNH(conjoint);
+				Audit.info(evenementId, "Un tiers non-habitant a été créé pour le conjoint du nouvel arrivant");
+				personnePhysiqueResultante = conjoint;
 			}
 			else {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...
@@ -415,7 +384,7 @@ public abstract class Arrivee extends Mouvement {
 			}
 		}
 
-		return new GetOrCreateReturnType(personnePhysiqueResultante,wasNonHabitant);
+		return personnePhysiqueResultante;
 	}
 
 	private static RegDate findDateDebutMenageAvant(Individu individu, RegDate limiteSuperieureEtDefaut) {
@@ -457,7 +426,7 @@ public abstract class Arrivee extends Mouvement {
 			throw new EvenementCivilException(message);
 		}
 
-		if(isArriveeRedondanteAnterieurPourIndividuEnMenage()){
+		if (isArriveeRedondanteAnterieurPourIndividuEnMenage()) {
 			String stringDateArrivee = RegDateHelper.dateToDashString(getDate());
 			long numeroIndividu = getNoIndividu();
 			String message = String.format("la date d'arrivée (%s) de l'individu (n° %s) est antérieure à l'arrivée de son menage commun",stringDateArrivee,numeroIndividu);
@@ -475,16 +444,11 @@ public abstract class Arrivee extends Mouvement {
 		final Individu conjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 
 		if (isArriveeRedondantePosterieurPourIndividuEnMenage()) {
-			if (!getPrincipalPP().isHabitantVD()) {
-				//noinspection ConstantConditions
-				context.getTiersService().changeNHenHabitant(getPrincipalPP(), individu.getNoTechnique(), dateEvenement);
-			}
+			context.getTiersService().updateHabitantFlag(getPrincipalPP(), getNoIndividu(), dateEvenement, getNumeroEvenement());
 			return HandleStatus.TRAITE;
 		}
 		if (isArriveeRedondantePourIndividuEnMenage()) {
-			if (!getPrincipalPP().isHabitantVD()) {
-				//noinspection ConstantConditions
-				context.getTiersService().changeNHenHabitant(getPrincipalPP(), individu.getNoTechnique(), dateEvenement);
+			if (context.getTiersService().updateHabitantFlag(getPrincipalPP(), getNoIndividu(), dateEvenement, getNumeroEvenement()) != TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT) {
 				return HandleStatus.TRAITE;
 			}
 			return HandleStatus.REDONDANT;
@@ -493,14 +457,15 @@ public abstract class Arrivee extends Mouvement {
 		/*
 		 * Récupération/création des habitants
 		 */
-		final GetOrCreateReturnType res = getOrCreateHabitant(individu, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
-		final PersonnePhysique arrivant = res.personnePhysique;
-		final boolean arrivantWasNonHabitant = res.wasNonHabitant;
+		final PersonnePhysique arrivant = getOrCreateHabitant(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+		final boolean arrivantWasNonHabitant = !arrivant.isHabitantVD();
+
+		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+		context.getTiersService().updateHabitantFlag(arrivant, getNoIndividu(), dateEvenement, getNumeroEvenement());
 
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {
-			final GetOrCreateReturnType res2 = getOrCreateConjoint(conjoint, dateEvenement, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
-			conjointDeLArrivant = res2.personnePhysique;
+			conjointDeLArrivant = getOrCreateConjoint(conjoint, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		}
 		else {
 			conjointDeLArrivant = null;
@@ -514,7 +479,7 @@ public abstract class Arrivee extends Mouvement {
 		final RegDate dateDebutMenage = findDateDebutMenageAvant(individu, getDate());
 
 		 // [SIFISC-6032] Fermeture d'eventuel for personnel ouvert pour des anciens non-habitants  avant de créer le ménage.
-		if (arrivant != null && arrivantWasNonHabitant) {
+		if (arrivantWasNonHabitant) {
 			context.getTiersService().closeForFiscalPrincipal(arrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 

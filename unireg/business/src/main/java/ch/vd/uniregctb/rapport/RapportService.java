@@ -83,8 +83,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
+import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -315,7 +314,7 @@ public interface RapportService {
 	 *
 	 * @return le rapport
 	 */
-	CorrectionFlagHabitantRapport generateRapport(CorrectionFlagHabitantSurPersonnesPhysiquesResults resultsPP, CorrectionFlagHabitantSurMenagesResults resultsMC, StatusManager status);
+	CorrectionFlagHabitantRapport generateRapport(CorrectionFlagHabitantResults results, StatusManager status);
 
 	/**
 	 * Génère le rapport des statistiques sur les événements unireg

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -38,6 +39,47 @@ public class MockAdresse implements Adresse, MockCloneable {
 
 	public MockAdresse() {
 
+	}
+
+	public MockAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
+		this(type, casePostale, rue.getLocalite(), debutValidite, finValidite);
+		this.rue = rue.getDesignationCourrier();
+		this.numeroRue = rue.getNoRue();
+	}
+
+	public MockAdresse(TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
+		this(type, batiment.getRue(), casePostale, debutValidite, finValidite);
+		this.egid = batiment.getEgid();
+	}
+
+	public MockAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
+		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
+		this.typeAdresse = type;
+		this.casePostale = casePostale;
+		this.noOfsPays = pays.getNoOFS();
+		this.rue = rue;
+		this.lieu = npaLocalite;
+		this.dateDebutValidite = debutValidite;
+		this.dateFinValidite = finValidite;
+	}
+
+	public MockAdresse(TypeAdresseCivil type, CasePostale casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+		this.typeAdresse = type;
+
+		// localité
+		this.casePostale = casePostale;
+		this.localite = localite.getNomAbregeMinuscule();
+		this.numeroPostal = localite.getNPA().toString();
+		final Commune c = localite.getCommuneLocalite();
+		this.noOfsCommuneAdresse = (c == null ? null : c.getNoOFSEtendu());
+		this.noOfsPays = MockPays.Suisse.getNoOFS();
+		final Integer complementNPA = localite.getComplementNPA();
+		this.numeroPostalComplementaire = (complementNPA == null ? null : complementNPA.toString());
+		this.numeroOrdrePostal = localite.getNoOrdre();
+
+		// validité
+		this.dateDebutValidite = debutValidite;
+		this.dateFinValidite = finValidite;
 	}
 
 	public MockAdresse(String rue, String numero, String numeroPostal, String localite) {

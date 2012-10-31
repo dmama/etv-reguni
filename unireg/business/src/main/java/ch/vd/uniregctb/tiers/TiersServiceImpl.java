@@ -44,6 +44,7 @@ import ch.vd.unireg.interfaces.civil.data.AdoptionReconnaissance;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
@@ -61,6 +62,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.EntityKey;
@@ -93,8 +95,7 @@ import ch.vd.uniregctb.tache.TacheService;
 import ch.vd.uniregctb.tiers.Contribuable.FirstForsList;
 import ch.vd.uniregctb.tiers.dao.RemarqueDAO;
 import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantProcessor;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
+import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
@@ -256,39 +257,42 @@ public class TiersServiceImpl implements TiersService {
         nonHabitant.setDateDebutValiditeAutorisation(null);
         nonHabitant.setIdentificationsPersonnes(null);
 
-        if (date != null) {
-            //fermeture de la situation de famille si nbEnfant = 0 ou etatCivil != du civil
-            final SituationFamille sitFam = nonHabitant.getSituationFamilleActive();
-            if (sitFam != null) {
-                Individu ind = getIndividu(nonHabitant);
-                if (ind != null) {
-                    ch.vd.unireg.interfaces.civil.data.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
-                    TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
-	                if (etatCivilDuCivil != null && (
-                            sitFam.getEtatCivil() != EtatCivilHelper.civil2core(etatCivilDuCivil) ||
-                                    sitFam.getNombreEnfants() == 0)) {
-                        situationFamilleService.closeSituationFamille(nonHabitant, date);
-                    }
-                }
-            }
-            //fermeture des adresses fiscales temporaires
-            if (nonHabitant.getAdressesTiers() != null) {
-                for (AdresseTiers adr : nonHabitant.getAdressesTiers()) {
-                    boolean permanente = false;
-                    if (adr instanceof AdresseSupplementaire) {
-                        final AdresseSupplementaire adrSup = (AdresseSupplementaire) adr;
-                        if (adrSup.isPermanente()) {
-                            permanente = true;
-                        }
-                    }
-                    if (!adr.isAnnule() && adr.getDateDebut().isAfterOrEqual(date) && !permanente) {
-                        adr.setAnnule(true);
-                    } else if (!adr.isAnnule() && adr.getDateFin() == null && !permanente) {
-                        adr.setDateFin(date);
-                    }
+	    if (date == null) {
+		    date = RegDate.get();
+	    }
+
+        //fermeture de la situation de famille si nbEnfant = 0 ou etatCivil != du civil
+        final SituationFamille sitFam = nonHabitant.getSituationFamilleActive();
+        if (sitFam != null) {
+            Individu ind = getIndividu(nonHabitant);
+            if (ind != null) {
+                ch.vd.unireg.interfaces.civil.data.EtatCivil dernierEtatCivil = ind.getEtatCivilCourant();
+                TypeEtatCivil etatCivilDuCivil = dernierEtatCivil == null ? null : dernierEtatCivil.getTypeEtatCivil();
+                if (etatCivilDuCivil != null && (
+                        sitFam.getEtatCivil() != EtatCivilHelper.civil2core(etatCivilDuCivil) ||
+                                sitFam.getNombreEnfants() == 0)) {
+                    situationFamilleService.closeSituationFamille(nonHabitant, date);
                 }
             }
         }
+        //fermeture des adresses fiscales temporaires
+        if (nonHabitant.getAdressesTiers() != null) {
+            for (AdresseTiers adr : nonHabitant.getAdressesTiers()) {
+                boolean permanente = false;
+                if (adr instanceof AdresseSupplementaire) {
+                    final AdresseSupplementaire adrSup = (AdresseSupplementaire) adr;
+                    if (adrSup.isPermanente()) {
+                        permanente = true;
+                    }
+                }
+                if (!adr.isAnnule() && adr.getDateDebut().isAfterOrEqual(date) && !permanente) {
+                    adr.setAnnule(true);
+                } else if (!adr.isAnnule() && adr.getDateFin() == null && !permanente) {
+                    adr.setDateFin(date);
+                }
+            }
+        }
+
         nonHabitant.setHabitant(true);
         return nonHabitant;
     }
@@ -347,7 +351,36 @@ public class TiersServiceImpl implements TiersService {
         return habitant;
     }
 
-    @Override
+	@Override
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) {
+
+		final Individu individu = serviceCivilService.getIndividu(noInd, date, AttributeIndividu.ADRESSES);
+		if (individu == null) {
+			throw new IndividuNotFoundException(noInd);
+		}
+
+		// on détermine si la personne physique devrait être habitante ou non
+		final boolean dansLeCanton = (individu.getDateDeces() == null && isDomicileVaudois(pp, date));
+
+		// on met-à-jour le flag si nécessaire
+		if (dansLeCanton && pp.isHabitantVD() || (!dansLeCanton && !pp.isHabitantVD())) {
+			// rien à faire
+			return UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT;
+		}
+
+		if (dansLeCanton) {
+			changeNHenHabitant(pp, noInd, date);
+			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée habitante.");
+			return UpdateHabitantFlagResultat.CHANGE_EN_HABITANT;
+		}
+		else {
+			changeHabitantenNH(pp);
+			Audit.info(numeroEvenement, "La personne physique n°" + pp.getNumero() + " a été passée non-habitante.");
+			return UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT;
+		}
+	}
+
+	@Override
     public void setIdentifiantsPersonne(PersonnePhysique nonHabitant, String navs11, String numRce) {
         final Set<IdentificationPersonne> set = new HashSet<IdentificationPersonne>(2);
 
@@ -1297,8 +1330,8 @@ public class TiersServiceImpl implements TiersService {
 	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
         forFiscalPrincipal.setDateFin(null);
         forFiscalPrincipal.setMotifFermeture(null);
-        return openOrReopenForFiscalPrincipal(forFiscalPrincipal, changeHabitantFlag);
-    }
+		return forFiscalPrincipal;
+	}
 
     private ForDebiteurPrestationImposable reopenForDebiteur(ForDebiteurPrestationImposable forDebiteur) {
         forDebiteur.setDateFin(null);
@@ -1342,7 +1375,7 @@ public class TiersServiceImpl implements TiersService {
 
         Assert.notNull(nouveauForFiscal);
 
-        return openOrReopenForFiscalPrincipal(nouveauForFiscal, changeHabitantFlag);
+	    return nouveauForFiscal;
 
     }
 
@@ -1387,7 +1420,6 @@ public class TiersServiceImpl implements TiersService {
         }
 
         Assert.notNull(nouveauForFiscal);
-        nouveauForFiscal = openOrReopenForFiscalPrincipal(nouveauForFiscal, changeHabitantFlag);
         nouveauForFiscal = closeForFiscalPrincipal(contribuable, nouveauForFiscal, dateFermeture, motifFermeture);
 
 
@@ -1413,69 +1445,6 @@ public class TiersServiceImpl implements TiersService {
         Assert.notNull(nouveauForFiscal);
         nouveauForFiscal = closeForDebiteurPrestationImposable(debiteur, nouveauForFiscal, dateFermeture, true);
         return nouveauForFiscal;
-
-    }
-
-
-    private ForFiscalPrincipal openOrReopenForFiscalPrincipal(ForFiscalPrincipal forFP, boolean changeHabitantFlag) {
-
-        if (!changeHabitantFlag) {
-            return forFP;
-        }
-
-        //si (re)ouverture d'un for non vaudois et PP.isHabitantVD faire devenir la PP non habitant
-        if (forFP.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-            if (forFP.getTiers() instanceof PersonnePhysique) {
-                PersonnePhysique pp = (PersonnePhysique) forFP.getTiers();
-                if (pp.isHabitantVD()) {
-                    changeHabitantenNH(pp);
-                }
-            } else if (forFP.getTiers() instanceof MenageCommun) {
-                MenageCommun menage = (MenageCommun) forFP.getTiers();
-                EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menage, null);
-                PersonnePhysique principal = (ensemble == null) ? null : ensemble.getPrincipal();
-                if (principal != null && principal.isHabitantVD()) {
-                    changeHabitantEnNHSiDomicilieHorsDuCanton(principal);
-                }
-                PersonnePhysique second = (ensemble == null) ? null : ensemble.getConjoint();
-                if (second != null && second.isHabitantVD()) {
-                    changeHabitantEnNHSiDomicilieHorsDuCanton(second);
-                }
-            }
-        }
-        //Si (re)ouverture d'un for vaudois et !PP.isHabitantVD et PP.numInd not null refaire devenir la PP habitante
-        if (forFP.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-            if (forFP.getTiers() instanceof PersonnePhysique) {
-                final PersonnePhysique pp = (PersonnePhysique) forFP.getTiers();
-                if (!pp.isHabitantVD() && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
-                    changeNHenHabitant(pp, pp.getNumeroIndividu(), forFP.getDateDebut());
-                }
-            } else if (forFP.getTiers() instanceof MenageCommun) {
-                final MenageCommun menage = (MenageCommun) forFP.getTiers();
-                final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menage, null);
-                final PersonnePhysique principal = (ensemble == null) ? null : ensemble.getPrincipal();
-                changeNHEnHabitantSiDomicilieDansLeCanton(principal, forFP.getDateDebut());
-                final PersonnePhysique conjoint = (ensemble == null) ? null : ensemble.getConjoint();
-                changeNHEnHabitantSiDomicilieDansLeCanton(conjoint, forFP.getDateDebut());
-            }
-        }
-
-        return forFP;
-    }
-
-    @Override
-    public boolean changeHabitantEnNHSiDomicilieHorsDuCanton(PersonnePhysique pp) {
-        boolean change = false;
-        if (pp != null && pp.isHabitantVD() && !isDecede(pp)) {
-            // on doit vérifier l'adresse de domicile du contribuable,
-            // et ne le passer en non-habitant que si cette adresse n'est pas vaudoise...
-            final Boolean isDomicileVaudois = isDomicileDansLeCanton(pp, null);
-            if (isDomicileVaudois != null && !isDomicileVaudois) {
-                changeHabitantenNH(pp);
-                change = true;
-            }
-        }
-        return change;
     }
 
     @Override
@@ -1485,7 +1454,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	/**
-	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970).
+	 * Détermine si une personne physique est domiciliée dans le canton de vaud, ou non (SIFISC-5970) (SIFISC-6841).
 	 *
 	 * @param pp   une personne physique
 	 * @param date une date de réféence
@@ -1494,56 +1463,20 @@ public class TiersServiceImpl implements TiersService {
 	 */
 	protected Boolean isDomicileDansLeCanton(PersonnePhysique pp, @Nullable RegDate date) {
 
+		final Long numeroIndividu = pp.getNumeroIndividu();
+		if (numeroIndividu == null) {
+			// non-habitant => pas de domicile dans le canton par définition
+			return false;
+		}
+
 		try {
-			final Long numeroIndividu = pp.getNumeroIndividu();
-			if (numeroIndividu == null) {
-				// non-habitant => pas de domicile dans le canton par définition
-				return false;
+			final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
+			if (adresses == null) {
+				// individu inconnu ?
+				return null;
 			}
-			else {
-				final AdressesCivilesHistoriques adresses = serviceCivilService.getAdressesHisto(numeroIndividu, false);
-				if (adresses == null) {
-					// individu non trouvé ?
-					return null;
-				}
 
-				if (adresses.principales.isEmpty()) {
-					// pas d'adresses principales => pas de domicile dans le canton
-					return false;
-				}
-
-				final Adresse adresse = DateRangeHelper.rangeAt(adresses.principales, date);
-				if (adresse == null) {
-					// l'adresse courante est nulle. Deux possibilités :
-					//  - soit la personne est partie HC/HS,
-					//  - soit la personne a annoncé son départ pour une commune vaudoise et ne s'est pas encore annoncée dans le nouvelle commune.
-
-					Adresse precedente = null;
-					for (Adresse a : adresses.principales) {
-						if (RegDateHelper.isBefore(a.getDateFin(), date, NullDateBehavior.LATEST)) {
-							precedente = a;
-						}
-					}
-
-					if (precedente == null) {
-						// la personne ne possède pas d'adresse dans le canton avant la date demandée
-						return false;
-					}
-					else if (precedente.getLocalisationSuivante() == null) {
-						// l'adresse précédente ne possède pas d'information sur la destination de la personne, on considère qu'elle est partie hors-Suisse (voir SIFISC-5970)
-						return false;
-					}
-					else {
-						// cas simple
-						return precedente.getLocalisationSuivante().getType() == LocalisationType.CANTON_VD;
-					}
-				}
-				else {
-					// la personne possède une adresse de domicile à la date demandée.
-					final Commune commune = serviceInfra.getCommuneByAdresse(adresse, date);
-					return commune != null && commune.isVaudoise();
-				}
-			}
+			return isResidentVaudois(adresses.principales, date) || isResidentVaudois(adresses.secondaires, date); // [SIFISC-6841] On tient aussi compte des résidences secondaires
 		}
 		catch (ServiceInfrastructureException e) {
 			// rien à faire...
@@ -1555,6 +1488,41 @@ public class TiersServiceImpl implements TiersService {
 		}
 
 		return null;
+	}
+
+	private boolean isResidentVaudois(List<Adresse> adresses, RegDate date) {
+		if (adresses.isEmpty()) {
+			// pas d'adresses de résidence => pas de domicile dans le canton
+			return false;
+		}
+
+		final Adresse adresse = DateRangeHelper.rangeAt(adresses, date);
+		if (adresse == null) {
+			// l'adresse courante est nulle. Deux possibilités :
+			//  - soit la personne est partie HC/HS,
+			//  - soit la personne a annoncé son départ pour une commune vaudoise et ne s'est pas encore annoncée dans le nouvelle commune.
+
+			Adresse precedente = null;
+			for (Adresse a : adresses) {
+				if (RegDateHelper.isBefore(a.getDateFin(), date, NullDateBehavior.LATEST)) {
+					precedente = a;
+				}
+			}
+
+			if (precedente == null) {
+				// la personne ne possède pas d'adresse dans le canton avant la date demandée
+				return false;
+			}
+
+			final Localisation localisationSuivante = precedente.getLocalisationSuivante();
+			// si l'adresse précédente ne possède pas d'information sur la destination de la personne, on considère qu'elle est partie hors-Suisse (voir SIFISC-5970)
+			return localisationSuivante != null && localisationSuivante.getType() == LocalisationType.CANTON_VD;
+		}
+		else {
+			// la personne possède une adresse de domicile à la date demandée.
+			final Commune commune = serviceInfra.getCommuneByAdresse(adresse, date);
+			return commune != null && commune.isVaudoise();
+		}
 	}
 
 	@Override
@@ -1965,20 +1933,6 @@ public class TiersServiceImpl implements TiersService {
             }
         }
         return a;
-    }
-
-    @Override
-    public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee) {
-        boolean change = false;
-        if (pp != null && !pp.isHabitantVD() && !isDecede(pp) && pp.getNumeroIndividu() != null && pp.getNumeroIndividu() != 0) {
-            // on doit vérifier l'adresse de domicile du contribuable,
-            // et ne le passer en habitant que si cette adresse est vaudoise...
-            if (isDomicileVaudois(pp, null)) {
-                changeNHenHabitant(pp, pp.getNumeroIndividu(), dateArrivee);
-                change = true;
-            }
-        }
-        return change;
     }
 
     private void afterForFiscalPrincipalAdded(Contribuable contribuable, ForFiscalPrincipal forFiscalPrincipal) {
@@ -3271,7 +3225,8 @@ public class TiersServiceImpl implements TiersService {
             if (forPrecedent != null) {
                 reopenForFiscalPrincipal(forPrecedent, changeHabitantFlag);
             }
-        } else if (forFiscal instanceof ForDebiteurPrestationImposable) {
+        }
+        else if (forFiscal instanceof ForDebiteurPrestationImposable) {
             final ForDebiteurPrestationImposable forDPI = (ForDebiteurPrestationImposable) forFiscal;
             final ForsParType fors = tiers.getForsParType(true);
             if (fors.dpis.isEmpty()) {
@@ -3679,18 +3634,9 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager) {
+    public CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager) {
         final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);
         return processor.corrigeFlagSurPersonnesPhysiques(nbThreads);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public CorrectionFlagHabitantSurMenagesResults corrigeFlagHabitantSurMenagesCommuns(int nbThreads, StatusManager statusManager) {
-        final CorrectionFlagHabitantProcessor processor = new CorrectionFlagHabitantProcessor(hibernateTemplate, this, transactionManager, statusManager, adresseService);
-        return processor.corrigeFlagSurMenages(nbThreads);
     }
 
     @Override

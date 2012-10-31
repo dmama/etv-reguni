@@ -149,24 +149,9 @@ public class DepartPrincipal extends Depart {
 			}
 		}
 
-		//[UNIREG-1996] on traite les deux habitants ensemble conformement à l'ancien fonctionement
-		if (isAncienTypeDepart()) {
-			traiteHabitantOfAncienDepart(pp);
-		}
-		else {
-
-			// [UNIREG-1691] si la personne physique était déjà notée non-habitante, on ne fait que régulariser une situation bancale
-			if (pp.isHabitantVD()) {
-				context.getTiersService().changeHabitantenNH(pp);
-			}
-
-			/*
-			 * [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre
-			 * (notamment au niveau des fors fiscaux)
-			 */
-			if (!isDepartComplet()) {
-				return;
-			}
+		// [UNIREG-771] : L'événement de départ du premier doit passer l'individu de habitant à non habitant et ne rien faire d'autre (notamment au niveau des fors fiscaux)
+		if (!isAncienTypeDepart() && !isDepartComplet()) {
+			return;
 		}
 
 		Audit.info(getNumeroEvenement(), "Traitement du départ principal");
@@ -200,22 +185,6 @@ public class DepartPrincipal extends Depart {
 		}
 
 		handleDepartResidencePrincipale(this, ctb, dateFermeture, motifFermeture, numeroOfsAutoriteFiscale);
-	}
-
-	/**
-	 * Permet de transformer un habitant et son conjoint en non habitant dans le cas d'un ancien Type de départ
-	 * @param pp     une personne physique
-	 */
-	private void traiteHabitantOfAncienDepart(PersonnePhysique pp) {
-		final EnsembleTiersCouple couple = getService().getEnsembleTiersCouple(pp, getDate());
-		final PersonnePhysique conjoint;
-		if (couple != null) {
-			conjoint = couple.getConjoint(pp);
-			if (conjoint != null) {
-				getService().changeHabitantenNH(conjoint);
-			}
-		}
-		getService().changeHabitantenNH(pp);
 	}
 
 	/**

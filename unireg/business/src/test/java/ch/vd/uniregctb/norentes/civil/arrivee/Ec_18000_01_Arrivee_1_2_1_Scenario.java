@@ -196,7 +196,7 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArriveeOrbe, null);
+		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Orbe.RueDavall, null, dateArriveeOrbe, null);
 		adrs.add(aa);
 	}
 

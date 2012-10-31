@@ -179,7 +179,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 			last = (MockAdresse)a;
 		}
 		last.setDateFinValidite(dateDepartBex);
-		Adresse aa = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, null);
+		Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateArriveeZurich, null);
 		adrs.add(aa);
 	}
 

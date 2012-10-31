@@ -4,7 +4,6 @@ import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
@@ -30,8 +29,7 @@ public class AdresseCivileAdapterTest {
 		 * Adresse sur Suisse
 		 */
 
-		Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+		Adresse lausanne = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 		{
 			final AdresseCivileAdapter adapter = new AdresseCivileAdapter(lausanne, (Tiers)null, false, serviceInfra);
 			assertEquals("Lausanne", adapter.getLocalite());
@@ -70,8 +68,7 @@ public class AdresseCivileAdapterTest {
 	@Test
 	public void testConstructors() throws Exception {
 
-		final Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+		final Adresse lausanne = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Constructor n°1
 		{
@@ -110,8 +107,7 @@ public class AdresseCivileAdapterTest {
 	@Test
 	public void testEquals() throws Exception {
 
-		final Adresse lausanne = MockServiceCivil.newAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
+		final Adresse lausanne = new MockAdresse(TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate.get(1980, 1, 1), RegDate.get(1987, 12, 11));
 
 		// Cas standards
 		final AdresseCivileAdapter adapter1 = new AdresseCivileAdapter(lausanne, (Tiers)null, false,serviceInfra);

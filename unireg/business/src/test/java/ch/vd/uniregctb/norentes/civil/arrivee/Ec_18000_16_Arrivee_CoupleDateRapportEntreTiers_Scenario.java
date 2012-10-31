@@ -6,7 +6,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -20,8 +19,6 @@ import ch.vd.uniregctb.type.TypePermis;
 public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends EvenementCivilScenario {
 
 	public static final String NAME = "Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers";
-
-	private ServiceInfrastructureService serviceInfrastructureService;
 
 	@Override
 	public TypeEvenementCivil geTypeEvenementCivil() {
@@ -46,10 +43,6 @@ public class Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario extends Ev
 
 	private final RegDate dateMariage = date(1995, 1, 6);
 	private final RegDate dateArriveeLausanne = date(2009, 6, 1);
-
-	public void setServiceInfrastructureService(ServiceInfrastructureService serviceInfrastructureService) {
-		this.serviceInfrastructureService = serviceInfrastructureService;
-	}
 
 	@Override
 	protected void initServiceCivil() {

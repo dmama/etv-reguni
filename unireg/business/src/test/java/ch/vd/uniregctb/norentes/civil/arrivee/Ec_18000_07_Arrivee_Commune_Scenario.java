@@ -97,8 +97,7 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		}
 		lastAdr.setDateFinValidite(dateDemenagement);
 
-		Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null,
-				dateArriveeLausanne, null);
+		Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

@@ -122,18 +122,27 @@ public abstract class Depart extends Mouvement {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
-		if (!isDepartVaudois()) {
-			final PersonnePhysique pp = getPrincipalPP();
-			if (pp == null) {
-				// si on ne connaissait pas le gaillard, c'est un problème
-				throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
-			}
+		if (isDepartVaudois()) { // on ignore les départs vaudois car dans ce cas c'est l'arrivée qui fait foi
+			return HandleStatus.TRAITE;
+		}
 
-			final MotifFor motifFermeture = findMotifFermetureFor();
-			final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
-			final Contribuable contribuable = findContribuable(dateFermeture, pp);
+		final PersonnePhysique pp = getPrincipalPP();
+		if (pp == null) {
+			// si on ne connaissait pas le gaillard, c'est un problème
+			throw new EvenementCivilException("Aucun habitant (ou ancien habitant) trouvé avec numéro d'individu " + getNoIndividu());
+		}
 
-			doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
+		final MotifFor motifFermeture = findMotifFermetureFor();
+		final RegDate dateFermeture = findDateFermeture(this, motifFermeture == MotifFor.DEMENAGEMENT_VD);
+		final Contribuable contribuable = findContribuable(dateFermeture, pp);
+
+		doHandleFermetureFors(pp, contribuable, dateFermeture, motifFermeture);
+
+		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+		context.getTiersService().updateHabitantFlag(pp, getNoIndividu(), dateFermeture.getOneDayAfter(), getNumeroEvenement());
+
+		if (isAncienTypeDepart) {
+			context.getTiersService().updateHabitantFlag(getConjointPP(), getNoIndividuConjoint(), dateFermeture.getOneDayAfter(), getNumeroEvenement());
 		}
 
 		return HandleStatus.TRAITE;

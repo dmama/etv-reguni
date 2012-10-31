@@ -9,6 +9,7 @@ import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.evenement.civil.interne.AbstractEvenementCivilInterneTest;
 import ch.vd.uniregctb.evenement.civil.interne.MessageCollector;
@@ -19,6 +20,7 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 import static junit.framework.Assert.assertEquals;
@@ -60,6 +62,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 				final RegDate dateNaissance = date(1956, 2, 25);
 				final MockIndividu andre = addIndividu(NO_INDIVIDU_CELIBATAIRE, dateNaissance, "Girard", "André", true);
 				addNationalite(andre, MockPays.Suisse, dateNaissance, null);
+				addAdresse(andre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.LeLieu, date(1995, 4, 19), null);
 			}
 		});
 
@@ -125,6 +128,7 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				final MockIndividu andre = addIndividu(NO_INDIVIDU_MARIE_SEUL, date(1956, 2, 25), "Girard", "André", true);
+				addAdresse(andre, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Lausanne, date(1980, 3, 1), null);
 				marieIndividu(andre, DATE_MARIAGE);
 			}
 		});
@@ -223,7 +227,9 @@ public class AnnulationDecesTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			protected void init() {
 				final MockIndividu ppal = addIndividu(NO_INDIVIDU_MARIE, date(1950, 3, 12), "Tartempion", "Momo", true);
+				addAdresse(ppal, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Lausanne, date(1980, 3, 1), null);
 				final MockIndividu conjoint = addIndividu(NO_INDIVIDU_MARIE_CONJOINT, date(1952, 7, 14), "Tartempion", "Béa", false);
+				addAdresse(conjoint, TypeAdresseCivil.PRINCIPALE, null, MockLocalite.Lausanne, date(1984, 1, 1), null);
 				marieIndividus(ppal, conjoint, DATE_MARIAGE);
 			}
 		});

@@ -165,6 +165,17 @@ public class Deces extends EvenementCivilInterne {
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
+		try {
+			return handleDeces();
+		}
+		finally {
+			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+			context.getTiersService().updateHabitantFlag(getPrincipalPP(), getNoIndividu(), getDate(), getNumeroEvenement());
+		}
+	}
+
+	private HandleStatus handleDeces() throws EvenementCivilException {
+
 		if (isRedondant) {
 			return HandleStatus.REDONDANT;
 		}
@@ -180,11 +191,6 @@ public class Deces extends EvenementCivilInterne {
 
 			if (dateDecesUnireg.equals(getDate())) {
 				// si l'evt civil de Décès est identique à la date de décès dans UNIREG : OK (evt traité sans modif dans UNIREG)
-
-				// [UNIREG-2653] Mais il faut tout de même passer l'individu en "non-habitant"
-				if (defunt.isHabitantVD()) {
-					context.getTiersService().changeHabitantenNH(defunt);
-				}
 				return HandleStatus.TRAITE;
 			}
 			else {
@@ -192,11 +198,6 @@ public class Deces extends EvenementCivilInterne {
 				final boolean unJourDifference = RegDateHelper.isBetween(getDate(), dateDecesUnireg.getOneDayBefore(), dateDecesUnireg.getOneDayAfter(), NullDateBehavior.EARLIEST);
 				if (unJourDifference && dateDecesUnireg.year() == getDate().year()) {
 					// si 1 jour de différence dans la même Période Fiscale (même année) : OK (evt traité sans modif dans UNIREG)
-
-					// [UNIREG-2653] Mais il faut tout de même passer l'individu en "non-habitant"
-					if (defunt.isHabitantVD()) {
-						context.getTiersService().changeHabitantenNH(defunt);
-					}
 					return HandleStatus.TRAITE;
 				}
 				else if (!unJourDifference || dateDecesUnireg.year() != getDate().year()) {

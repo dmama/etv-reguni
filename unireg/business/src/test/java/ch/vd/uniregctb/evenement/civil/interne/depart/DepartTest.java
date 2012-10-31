@@ -15,9 +15,12 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Localisation;
+import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
@@ -339,7 +342,6 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 
 	/**
 	 * Permet de tester le JIRA 1996
-	 *
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -708,7 +710,8 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		handleDepart(depart, collector, collector);
 
 		final PersonnePhysique tiers = tiersDAO.getPPByNumeroIndividu(depart.getNoIndividu());
-		String message = String.format("A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)",
+		String message = String.format(
+				"A la date de l'événement, la personne physique (ctb: %s) associée à l'individu possède un for principal vaudois sur sa résidence secondaire (arrangement fiscal ?)",
 				tiers.getNumero());
 		assertTrue("L'évènement devrait partir en erreur car c'est un départ vaudois sur une résidence secondaire", collector.hasErreurs());
 		assertEquals(message, collector.getErreurs().get(0).getMessage());
@@ -879,6 +882,50 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertEquals(dateDepart, ffp.getDateDebut());
+	}
+
+	/**
+	 * [SIFISC-6841] Vérifie que le départ d'une résidence secondaire pour une destination inconnue transforme bien la personne physique en non-habitante.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDepartSecondaireDeCommuneDestinationInconnuePersonnePhysiqueSansFor() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), dateDepart);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Neuchatel.getNoOFS(), null));
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, ServiceInfrastructureRaw.noPaysInconnu, null));
+			}
+		});
+
+		// mise en place de la personne physique
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				return null;
+			}
+		});
+
+		// résumons-nous :
+		// 1. la personne physique est habitante à Echallens en résidence secondaire
+		// 2. nous allons maintenant recevoir un événement de départ secondaire depuis Echallens pour une destination inconnue
+		// 3. on devrait avoir la fermeture du for fiscal et le passage en non-habitante de la personne physique
+		final Depart depart = createValidDepart(noIndividu, dateDepart, false, null, false);
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
+		assertEmpty(collector.getErreurs());
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+		assertFalse(pp.isHabitantVD());
+		assertEmpty(pp.getForsFiscauxSorted());
 	}
 
 	/**

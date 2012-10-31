@@ -159,7 +159,7 @@ public class Ec_18000_14_Arrivee_JIRA1789_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArrivee.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
+		final Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, nouvelleRue, null, dateArrivee, null);
 		adrs.add(adresse);
 	}
 

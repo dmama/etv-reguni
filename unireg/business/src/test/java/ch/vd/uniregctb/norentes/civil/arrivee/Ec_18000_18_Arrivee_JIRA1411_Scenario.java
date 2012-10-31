@@ -131,7 +131,7 @@ public class Ec_18000_18_Arrivee_JIRA1411_Scenario extends EvenementCivilScenari
 		assertNotNull(lastAdr, "Aucune adresse connue!");
 		lastAdr.setDateFinValidite(dateArriveeLausanne.getOneDayBefore());
 
-		final Adresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
+		final Adresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArriveeLausanne, null);
 		adrs.add(adresse);
 	}
 

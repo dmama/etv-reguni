@@ -4241,7 +4241,6 @@ public class TacheServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
-				assertFalse(pp.isHabitantVD());
 
 				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 				assertNotNull(fors);
@@ -4391,7 +4390,6 @@ public class TacheServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
 				assertNotNull(pp);
-				assertFalse(pp.isHabitantVD());
 
 				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
 				assertNotNull(fors);

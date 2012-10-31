@@ -138,7 +138,6 @@ public class DepartSecondaire extends Depart {
 					else {
 						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
 						openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
-						context.getTiersService().changeHabitantenNH(pp);
 					}
 				}
 				else if (ffp != null) {
@@ -146,7 +145,6 @@ public class DepartSecondaire extends Depart {
 					final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
 					final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);
-					context.getTiersService().changeHabitantenNH(pp);
 				}
 			}
 		}

@@ -742,13 +742,11 @@ public class ArriveePrincipale extends Arrivee {
 				if (dateArrivee.isBefore(forFiscalPrincipal.getDateDebut())) {
 					return true;
 				}
-
-
 			}
-
 		}
 		return false;
 	}
+
 	@Override
 	protected boolean isArriveeRedondantePourIndividuEnMenage() {
 		// l'événement sera considéré comme redondant si

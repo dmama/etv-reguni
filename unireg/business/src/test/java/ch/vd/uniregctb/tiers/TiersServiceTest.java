@@ -25,8 +25,6 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
-import ch.vd.unireg.interfaces.civil.data.Localisation;
-import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
@@ -622,31 +620,6 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(MotifRattachement.DOMICILE, ff.getMotifRattachement());
 		assertEquals(dateOuverture, ff.getDateDebut());
 		assertEquals(ModeImposition.ORDINAIRE, ff.getModeImposition());
-	}
-
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testAnnuleForFiscalPrincipalUNIREG1370() throws Exception {
-		final RegDate dateOuverture = RegDate.get(1990, 7, 1);
-
-		serviceCivil.setUp(new DefaultMockServiceCivil());
-
-		final Set<ForFiscal> forsFiscaux = new HashSet<ForFiscal>();
-		PersonnePhysique pp = new PersonnePhysique(true);
-		pp.setNumeroIndividu(54321L);
-		pp.setForsFiscaux(forsFiscaux);
-		pp.setHabitant(false);
-		pp.setNom("Bolomey");
-		pp = (PersonnePhysique) tiersDAO.save(pp);
-		ForFiscalPrincipal forVD = tiersService.openForFiscalPrincipal(pp, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFSEtendu(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC, true);
-		assertTrue(pp.isHabitantVD());
-		tiersService.closeForFiscalPrincipal(forVD, date(2007, 12, 31), MotifFor.DEPART_HS);
-		ForFiscalPrincipal forHS = tiersService.openForFiscalPrincipal(pp, date(2008, 1, 1), MotifRattachement.DOMICILE, MockPays.France.getNoOFS(),
-				TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);
-		assertTrue(!pp.isHabitantVD());
-		tiersService.annuleForFiscal(forHS, true);
-		assertTrue(pp.isHabitantVD());
 	}
 
 	private AppartenanceMenage buildAppartenanceMenage(MenageCommun mc, PersonnePhysique pp, RegDate dateDebut, @Nullable RegDate dateFin, boolean isAnnule) {
@@ -5663,10 +5636,8 @@ public class TiersServiceTest extends BusinessTest {
 				final RegDate dateNaissance = date(1980, 8, 12);
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance, "Tartempion", "Ernestine", false);
 				addNationalite(individu, MockPays.France, dateNaissance, null);
-
-				final MockAdresse adresseVD = addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDebutForMixteVaudois, dateFinResidenceVD);
-				adresseVD.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
-				addAdresse(individu, TypeAdresseCivil.COURRIER, "Rue des champs", "42", 74000, null, "Annecy", MockPays.France, dateDebutResidenceHS, null);
+				// msi 30.10.2012, dans le cas JIRA l'individu quitte la Suisse et possède une nouvelle adresse en France. Mais suite au découplage
+				addAdresse(individu, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateDebutForMixteVaudois, null);
 			}
 		});
 
@@ -5704,6 +5675,8 @@ public class TiersServiceTest extends BusinessTest {
 				assertFalse(adresse.isAnnule());
 
 				tiersService.annuleForFiscal(ffp, true);
+				// l'update du flag habitant est maintenant découplée des fors fiscaux -> ajouté l'appel explicitement dans le test
+				tiersService.updateHabitantFlag(pp, pp.getNumeroIndividu(), dateFinResidenceVD, null);
 				return null;
 			}
 		});

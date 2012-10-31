@@ -208,9 +208,7 @@
 		<property name="adresseService" ref="adresseService" />
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 	</bean>
-	<bean id="ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" >
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
-	</bean>
+	<bean id="ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_16_Arrivee_CoupleDateRapportEntreTiers_Scenario"/>
 	<bean id="ec_18000_17_Arrivee_JIRA1677_Scenario" parent="evenementCivilScenario" class="ch.vd.uniregctb.norentes.civil.arrivee.Ec_18000_17_Arrivee_JIRA1677_Scenario" >
 		<property name="serviceInfrastructureService" ref="serviceInfrastructureService"/>
 	</bean>

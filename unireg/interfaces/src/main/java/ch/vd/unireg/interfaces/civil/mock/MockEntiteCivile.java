@@ -33,6 +33,10 @@ public abstract class MockEntiteCivile implements EntiteCivile {
 		this.adresses = adresses;
 	}
 
+	public void addAdresse(Adresse adresse) {
+		this.adresses.add(adresse);
+	}
+
 	public void copyPartsFrom(Individu individu, Set<AttributeIndividu> parts) {
 		if (parts != null && parts.contains(AttributeIndividu.ADRESSES)) {
 			adresses = deepCopy(individu.getAdresses());

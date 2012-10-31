@@ -19,8 +19,7 @@ import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
+import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -102,29 +101,28 @@ public interface TiersService {
      */
     public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant);
 
-    /**
+	enum UpdateHabitantFlagResultat {
+		PAS_DE_CHANGEMENT,
+		CHANGE_EN_HABITANT,
+		CHANGE_EN_NONHABITANT
+	}
+
+	/**
+	 * Mis-à-jour le flag habitant en fonction de l'état de l'individu dans le registre civil.
+	 *
+	 * @param pp              la personne physique à mettre-à-jour
+	 * @param noInd           le numéro d'individu correspondant
+	 * @param date            la date de valeur à utiliser
+	 * @param numeroEvenement le numéro de l'événement civil qui a provoqué ce changement
+	 */
+	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, @Nullable Long numeroEvenement);
+
+	/**
      * @param pp   personne physique dont on veut connaître la localisation du domicile
      * @param date date de référence pour le domicile du contribuable
      * @return <code>true</code> si l'adresse de domicile associée à la personne physique donnée est sur le canton de vaud, false sinon
      */
     public boolean isDomicileVaudois(PersonnePhysique pp, RegDate date);
-
-    /**
-     * Change un habitant en non-habitant s'il est actuellement domicilié hors du canton de Vaud
-     *
-     * @param pp la personne physique
-     * @return <code>true</code> si un changement de flag habitant a eu lieu
-     */
-    public boolean changeHabitantEnNHSiDomicilieHorsDuCanton(PersonnePhysique pp);
-
-    /**
-     * Change un non-habitant en habitant s'il est actuellement domicilié sur le canton de Vaud (et qu'il a déjà un numéro d'individu)
-     *
-     * @param pp          la personne physique
-     * @param dateArrivee
-     * @return <code>true</code> si un changement de flag habitant a eu lieu
-     */
-    public boolean changeNHEnHabitantSiDomicilieDansLeCanton(PersonnePhysique pp, RegDate dateArrivee);
 
     /**
      * Retourne le contribuable <i>père</i> (au sens civil du terme) du contribuable spécifié.
@@ -1050,15 +1048,7 @@ public interface TiersService {
      * @param nbThreads
      * @param statusManager
      */
-    public CorrectionFlagHabitantSurPersonnesPhysiquesResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager);
-
-    /**
-     * Lance la correction des flags "habitant" sur les personnes physiques en ménage commun en fonction du for fiscal principal actif du ménage
-     *
-     * @param nbThreads
-     * @param statusManager
-     */
-    public CorrectionFlagHabitantSurMenagesResults corrigeFlagHabitantSurMenagesCommuns(int nbThreads, StatusManager statusManager);
+    public CorrectionFlagHabitantResults corrigeFlagHabitantSurPersonnesPhysiques(int nbThreads, StatusManager statusManager);
 
     /**
      * Renvoie <code>true</code> si la personne physique est un sourcier gris à la date donnée

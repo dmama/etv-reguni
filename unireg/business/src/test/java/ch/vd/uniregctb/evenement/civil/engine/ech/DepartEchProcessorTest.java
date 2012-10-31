@@ -841,7 +841,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 					oldAddress.setDateFinValidite(dateDepart);
 					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFSEtendu(), null));
 
-					final MockAdresse newAddress = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
+					final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
 					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFSEtendu(), null));
 					individu.getAdresses().add(newAddress);
 				}

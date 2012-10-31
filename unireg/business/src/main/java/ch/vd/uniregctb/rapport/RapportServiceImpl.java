@@ -93,8 +93,7 @@ import ch.vd.uniregctb.stats.evenements.StatsEvenementsIdentificationContribuabl
 import ch.vd.uniregctb.tache.ListeTachesEnInstanceParOID;
 import ch.vd.uniregctb.tiers.ExclureContribuablesEnvoiResults;
 import ch.vd.uniregctb.tiers.rattrapage.etatdeclaration.CorrectionEtatDeclarationResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurMenagesResults;
-import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantSurPersonnesPhysiquesResults;
+import ch.vd.uniregctb.tiers.rattrapage.flaghabitant.CorrectionFlagHabitantResults;
 import ch.vd.uniregctb.tiers.rattrapage.pm.MigrationCoquillesPM;
 import ch.vd.uniregctb.validation.ValidationJobResults;
 
@@ -679,7 +678,7 @@ public class RapportServiceImpl implements RapportService {
 	}
 
 	@Override
-	public CorrectionFlagHabitantRapport generateRapport(final CorrectionFlagHabitantSurPersonnesPhysiquesResults resultsPP, final CorrectionFlagHabitantSurMenagesResults resultsMC, StatusManager s) {
+	public CorrectionFlagHabitantRapport generateRapport(final CorrectionFlagHabitantResults results, StatusManager s) {
 
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
@@ -693,7 +692,7 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(CorrectionFlagHabitantRapport doc, OutputStream os) throws Exception {
 					final PdfCorrectionFlagHabitantRapport document = new PdfCorrectionFlagHabitantRapport();
-					document.write(resultsPP, resultsMC, nom, description, dateGeneration, os, status);
+					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
 		}

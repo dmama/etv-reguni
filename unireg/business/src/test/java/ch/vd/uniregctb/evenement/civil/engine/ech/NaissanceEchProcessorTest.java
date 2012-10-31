@@ -14,7 +14,6 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
@@ -137,7 +136,7 @@ public class NaissanceEchProcessorTest extends AbstractEvenementCivilEchProcesso
 		doModificationIndividu(noIndividu, new IndividuModification() {
 			@Override
 			public void modifyIndividu(MockIndividu individu) {
-				final MockAdresse adresse = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
+				final MockAdresse adresse = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateNaissance, null);
 				adresse.setDateDebutValidite(dateNaissance);
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				individu.getAdresses().add(adresse);

@@ -128,6 +128,10 @@ public class AnnulationDeces extends EvenementCivilInterne {
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);
 		}
+		finally {
+			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+			context.getTiersService().updateHabitantFlag(defunt, getNoIndividu(), getDate(), getNumeroEvenement());
+		}
 		return HandleStatus.TRAITE;
 	}
 }

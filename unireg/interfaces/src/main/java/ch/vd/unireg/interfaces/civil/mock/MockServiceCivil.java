@@ -35,7 +35,6 @@ import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
@@ -280,7 +279,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une rue).
 	 */
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, @Nullable RegDate debutValidite, @Nullable RegDate finValidite) {
-		final MockAdresse adresse = newAdresse(type, rue, casePostale, debutValidite, finValidite);
+		final MockAdresse adresse = new MockAdresse(type, rue, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -291,7 +290,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, String rue, String npaLocalite, MockPays pays,
 	                                 @Nullable RegDate debutValidite,
 	                                 @Nullable RegDate finValidite) {
-		final MockAdresse adresse = newAdresse(type, rue, casePostale, npaLocalite, pays, debutValidite, finValidite);
+		final MockAdresse adresse = new MockAdresse(type, rue, casePostale, npaLocalite, pays, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -300,7 +299,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'un bâtiment).
 	 */
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, MockBatiment batiment, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
-		final MockAdresse adresse = newAdresse(type, batiment, casePostale, debutValidite, finValidite);
+		final MockAdresse adresse = new MockAdresse(type, batiment, casePostale, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}
@@ -309,81 +308,8 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
-		final MockAdresse adresse = newAdresse(type, casePostale, localite, debutValidite, finValidite);
+		final MockAdresse adresse = new MockAdresse(type, casePostale, localite, debutValidite, finValidite);
 		add(individu, adresse);
-		return adresse;
-	}
-
-	/**
-	 * Crée une nouvelle adresse à partie d'une rue.
-	 */
-	public static MockAdresse newAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
-		Assert.notNull(rue);
-
-		final MockLocalite localite = rue.getLocalite();
-		Assert.notNull(localite);
-
-		final MockAdresse adresse = (MockAdresse) newAdresse(type, casePostale, localite, debutValidite, finValidite);
-		adresse.setRue(rue.getDesignationCourrier());
-		adresse.setNumeroRue(rue.getNoRue());
-		return adresse;
-	}
-
-	/**
-	 * Crée une nouvelle adresse à partie d'un bâtiment.
-	 */
-	public static MockAdresse newAdresse(TypeAdresseCivil type, MockBatiment batiment, CasePostale casePostale, RegDate debutValidite, RegDate finValidite) {
-		Assert.notNull(batiment);
-
-		MockRue rue = batiment.getRue();
-
-		final MockAdresse adresse = (MockAdresse) newAdresse(type, rue, casePostale, debutValidite, finValidite);
-		adresse.setEgid(batiment.getEgid());
-		return adresse;
-	}
-
-	/**
-	 * Crée une nouvelle adresse à partie d'une localité.
-	 */
-	public static MockAdresse newAdresse(TypeAdresseCivil type, CasePostale casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
-		Assert.notNull(localite);
-
-		final MockAdresse adresse = new MockAdresse();
-		adresse.setTypeAdresse(type);
-
-		// localité
-		adresse.setCasePostale(casePostale);
-		adresse.setLocalite(localite.getNomAbregeMinuscule());
-		adresse.setNumeroPostal(localite.getNPA().toString());
-		adresse.setCommuneAdresse(localite.getCommuneLocalite());
-		adresse.setPays(MockPays.Suisse);
-		final Integer complementNPA = localite.getComplementNPA();
-		adresse.setNumeroPostalComplementaire(complementNPA == null ? null : complementNPA.toString());
-		adresse.setNumeroOrdrePostal(localite.getNoOrdre());
-
-		// validité
-		adresse.setDateDebutValidite(debutValidite);
-		adresse.setDateFinValidite(finValidite);
-		return adresse;
-	}
-
-	/**
-	 * Crée une nouvelle adresse à l'étranger
-	 */
-	public static MockAdresse newAdresse(TypeAdresseCivil type, String rue, @Nullable CasePostale casePostale, String npaLocalite, MockPays pays, RegDate debutValidite, @Nullable RegDate finValidite) {
-		Assert.notNull(pays);
-		Assert.isFalse(pays.getNoOFS() == ServiceInfrastructureRaw.noOfsSuisse, "Pour la Suisse, il faut utiliser une autre méthode newAdresse");
-
-		final MockAdresse adresse = new MockAdresse();
-		adresse.setTypeAdresse(type);
-
-		adresse.setCasePostale(casePostale);
-		adresse.setCommuneAdresse(null);
-		adresse.setPays(pays);
-		adresse.setRue(rue);
-		adresse.setLieu(npaLocalite);
-		adresse.setDateDebutValidite(debutValidite);
-		adresse.setDateFinValidite(finValidite);
 		return adresse;
 	}
 

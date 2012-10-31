@@ -21,7 +21,6 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
-import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -2178,16 +2177,6 @@ public class MetierServiceImpl implements MetierService {
 			}
 		}
 
-		// [UNIREG-2653] en cas d'annulation de décès, l'ancien décédé peut
-		// repasser habitant s'il n'est pas décédé dans le civil (et qu'il réside dans le canton, évidemment)
-		if (tiers.isConnuAuCivil() && !tiers.isHabitantVD()) {
-			final Individu individu = serviceCivilService.getIndividu(tiers.getNumeroIndividu(), date);
-			if (individu.getDateDeces() == null && tiersService.isDomicileVaudois(tiers, null)) {
-				// il n'est pas mort au civil et réside dans le canton -> retour à la case "habitant"
-				tiersService.changeNHenHabitant(tiers, individu.getNoTechnique(), date);
-			}
-		}
-
 		tiers.setDateDeces(null);
 
 		/*
@@ -2443,13 +2432,6 @@ public class MetierServiceImpl implements MetierService {
 
 		final boolean wasDefuntHabitant = defunt != null && defunt.isHabitantVD();
 
-		// [UNIREG-2653] un habitant décédé doit passer non-habitant (seulement s'il est effectivement décédé au civil)
-		if (wasDefuntHabitant) {
-			final Individu individu = tiersService.getIndividu(defunt);
-			if (individu.getDateDeces() != null) {
-				tiersService.changeHabitantenNH(defunt);
-			}
-		}
 		if (defunt != null && (!wasDefuntHabitant || numeroEvenement == null)) {
 			// si décès via IHM on surcharge la date de décès du civil
 			defunt.setDateDeces(date);

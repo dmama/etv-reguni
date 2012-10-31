@@ -55,17 +55,13 @@ public class CorrectionFlagHabitantJob extends JobDefinition {
 		final StatusManager statusManager = getStatusManager();
 
 		// correction des personnes physiques touchées
-		final CorrectionFlagHabitantSurPersonnesPhysiquesResults pp = tiersService.corrigeFlagHabitantSurPersonnesPhysiques(nbThreads, statusManager);
-
-		// correction des ménages communs concernés
-		final CorrectionFlagHabitantSurMenagesResults mc = tiersService.corrigeFlagHabitantSurMenagesCommuns(nbThreads, statusManager);
+		final CorrectionFlagHabitantResults res = tiersService.corrigeFlagHabitantSurPersonnesPhysiques(nbThreads, statusManager);
 
 		// tri des données collectées
-		pp.sort();
-		mc.sort();
+		res.sort();
 
 		// génération du rapport
-		final CorrectionFlagHabitantRapport rapport = rapportService.generateRapport(pp, mc, statusManager);
+		final CorrectionFlagHabitantRapport rapport = rapportService.generateRapport(res, statusManager);
 		setLastRunReport(rapport);
 		Audit.success("La correction des flags 'habitant' est terminée.", rapport);
 	}

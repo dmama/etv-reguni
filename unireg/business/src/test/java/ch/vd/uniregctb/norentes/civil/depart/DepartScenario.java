@@ -6,7 +6,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
-import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -39,7 +38,7 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 
 	protected void ouvrirAdresseZurich(MockIndividu individu, RegDate dateOuverture) {
 		final Collection<Adresse> adrs = individu.getAdresses();
-		final Adresse aa = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateOuverture, null);
+		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateOuverture, null);
 		adrs.add(aa);
 	}
 
@@ -47,7 +46,7 @@ public abstract class DepartScenario extends EvenementCivilScenario {
 
 	protected void ouvrirAdresseEnney(MockIndividu individu, RegDate dateOuverture) {
 		final Collection<Adresse> adrs = individu.getAdresses();
-		final Adresse aa = MockServiceCivil.newAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateOuverture, null);
+		final Adresse aa = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Enney.chemin, null, dateOuverture, null);
 		adrs.add(aa);
 	}
 
