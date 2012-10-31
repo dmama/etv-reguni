@@ -845,8 +845,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 		final long pp = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				return pp.getNumero();
 			}
 		});

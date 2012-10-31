@@ -2147,8 +2147,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndDecede);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndDecede);
 				return pp.getNumero();
 			}
 		});
@@ -3133,8 +3132,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				tiersService.changeHabitantenNH(elle);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
@@ -3231,8 +3229,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				tiersService.changeHabitantenNH(elle);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
@@ -3329,8 +3326,7 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				tiersService.changeHabitantenNH(elle);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
@@ -3501,10 +3497,8 @@ public class MetiersServiceTest extends BusinessTest {
 		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
-				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				tiersService.changeHabitantenNH(lui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				tiersService.changeHabitantenNH(elle);
+				final PersonnePhysique lui = tiersService.createNonHabitantFromIndividu(noIndividuLui);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 				addForPrincipal(lui, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Cossonay);
 				addForPrincipal(lui, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Allemagne);
 				addForPrincipal(elle, date(2000, 1, 1), MotifFor.INDETERMINE, dateDepart, MotifFor.DEPART_HS, MockCommune.Echallens);

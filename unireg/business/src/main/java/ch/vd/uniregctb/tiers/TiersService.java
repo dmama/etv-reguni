@@ -83,23 +83,15 @@ public interface TiersService {
      */
     public void changeNHenMenage(long numeroTiers);
 
-    /**
-     * change un non habitant en habitant (en cas d'arrivée HC ou HS)
-     *
-     * @param nonHabitant la PP de type nonHabitant
-     * @param numInd      le numéro d'individu de l'habitant
-     * @param date        la dte du changement (si aucune date donnée, ni les situations de famille ni les adresses ne seront modifiées = rattrapage!)
-     * @return la même PP de type habitant maintenant
-     */
-    public PersonnePhysique changeNHenHabitant(PersonnePhysique nonHabitant, Long numInd, RegDate date);
-
-    /**
-     * change un habitant en non habitant (en cas de départ HC ou HS)
-     *
-     * @param habitant un habitant
-     * @return l'habitant transformé en non-habitant
-     */
-    public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant);
+	/**
+	 * Crée un non-habitant lié vers un individu. Cette méthode est utile dans le cas très rare où l'on apprend l'existence d'un habitant avant d'avoir traité son événement d'arrivée et que l'on a
+	 * besoin immédiatement de la personne physique correspondante.
+	 *
+	 * @param numeroIndividu un numéro d'individu
+	 * @return un nouveau non-habitant lié à un individu
+	 */
+	@NotNull
+	public PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu);
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

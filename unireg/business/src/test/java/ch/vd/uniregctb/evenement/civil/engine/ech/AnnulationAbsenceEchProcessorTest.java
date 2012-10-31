@@ -40,8 +40,7 @@ public class AnnulationAbsenceEchProcessorTest extends AbstractEvenementCivilEch
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				pp.setDateDeces(dateAbsence);
 				addForPrincipal(pp, date(2000, 1, 1), MotifFor.INDETERMINE, dateAbsence, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				return pp.getNumero();

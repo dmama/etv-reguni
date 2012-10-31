@@ -85,8 +85,7 @@ public class CoupleValidatorTest extends WebTest {
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
 				return pp.getNumero();
 			}
@@ -128,8 +127,7 @@ public class CoupleValidatorTest extends WebTest {
 		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				addForPrincipal(pp, date(2001, 5, 1), MotifFor.DEPART_HS, MockPays.Allemagne);
 
 				final SituationFamille situationFamille = addSituation(pp, date(2001, 5, 1), null, 0);

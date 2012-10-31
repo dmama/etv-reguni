@@ -243,8 +243,15 @@ public class TiersServiceImpl implements TiersService {
         return tiersDAO.get(numeroTiers);
     }
 
-    @Override
-    public PersonnePhysique changeNHenHabitant(PersonnePhysique nonHabitant, Long numInd, RegDate date) {
+	/**
+	 * change un non habitant en habitant (en cas d'arrivée HC ou HS)
+	 *
+	 * @param nonHabitant la PP de type nonHabitant
+	 * @param numInd      le numéro d'individu de l'habitant
+	 * @param date        la dte du changement (si aucune date donnée, ni les situations de famille ni les adresses ne seront modifiées = rattrapage!)
+	 * @return la même PP de type habitant maintenant
+	 */
+	private PersonnePhysique changeNHenHabitant(PersonnePhysique nonHabitant, Long numInd, RegDate date) {
         Assert.isFalse(nonHabitant.isHabitantVD(), "changeNHenHabitant : la PP fourni est habitant");
         nonHabitant.setNumeroIndividu(numInd);
         nonHabitant.setNumeroAssureSocial(null);
@@ -297,14 +304,13 @@ public class TiersServiceImpl implements TiersService {
         return nonHabitant;
     }
 
-    /**
-     * change un habitant en non habitant (en cas de départ HC ou HS)
-     *
-     * @param habitant la PP de type Habitant
-     * @return la même PP de type nonHabitant maintenant
-     */
-    @Override
-    public PersonnePhysique changeHabitantenNH(PersonnePhysique habitant) {
+	/**
+	 * change un habitant en non habitant (en cas de départ HC ou HS)
+	 *
+	 * @param habitant un habitant
+	 * @return l'habitant transformé en non-habitant
+	 */
+    private PersonnePhysique changeHabitantenNH(PersonnePhysique habitant) {
 
         Assert.isTrue(habitant.isHabitantVD(), "changeHabitantenNH : la PP fourni n'est pas habitant");
         final Individu ind = getIndividu(habitant);
@@ -350,6 +356,20 @@ public class TiersServiceImpl implements TiersService {
         habitant.setHabitant(false);
         return habitant;
     }
+
+	@Override
+	@NotNull
+	public PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu) {
+
+		if (tiersDAO.getPPByNumeroIndividu(numeroIndividu) != null) {
+			throw new IllegalArgumentException("Il existe déjà une personne physique avec le numéro d'individu = " + numeroIndividu);
+		}
+
+		final PersonnePhysique pp = (PersonnePhysique) tiersDAO.save(new PersonnePhysique(numeroIndividu));
+		changeHabitantenNH(pp);
+
+		return pp;
+	}
 
 	@Override
 	public UpdateHabitantFlagResultat updateHabitantFlag(@NotNull PersonnePhysique pp, long noInd, @Nullable RegDate date, Long numeroEvenement) {

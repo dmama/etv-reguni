@@ -91,8 +91,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 
 	@Etape(id=1, descr="Chargement du non-habitant connu au civil")
 	public void etape1() {
-		final PersonnePhysique julie = addHabitant(noIndJulie);
-		tiersService.changeHabitantenNH(julie);
+		final PersonnePhysique julie = tiersService.createNonHabitantFromIndividu(noIndJulie);
 		noHabJulie = julie.getNumero();
 	}
 

@@ -159,8 +159,7 @@ public class EvenementCivilEchIssuDe99ProcessorTest extends AbstractEvenementCiv
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
-				tiersService.changeHabitantenNH(pp);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				addForPrincipal(pp, date(2000, 11, 1), MotifFor.ARRIVEE_HS, date(2011, 12, 31), MotifFor.DEPART_HS, MockCommune.Aigle);
 				addForPrincipal(pp, date(2012, 1, 1), MotifFor.DEPART_HS, MockPays.Russie);
 				return pp.getNumero();

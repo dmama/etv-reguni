@@ -5645,11 +5645,10 @@ public class TiersServiceTest extends BusinessTest {
 		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
 				addForPrincipal(pp, dateDebutForMixteVaudois, MotifFor.ARRIVEE_HS, dateFinResidenceVD, MotifFor.DEPART_HS, MockCommune.Echallens, ModeImposition.MIXTE_137_2);
 				addForPrincipal(pp, dateDebutResidenceHS, MotifFor.DEPART_HS, null, null, MockPays.France, ModeImposition.SOURCE);
 				addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, dateDebutSurchargeCourrier, null, MockRue.Neuchatel.RueDesBeauxArts);
-				tiersService.changeHabitantenNH(pp);
 				return pp.getNumero();
 			}
 		});

@@ -1382,8 +1382,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
-				tiersService.changeHabitantenNH(elle);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
 				final MenageCommun mc = couple.getMenage();

@@ -359,13 +359,10 @@ public abstract class Arrivee extends Mouvement {
 			}
 			else if (nonHabitants.isEmpty() || !behavior.isErrorOnMultiples()) {
 				// Ici on créé un non-habitant et on l'initialise avec les données connues de son individu. C'est un peu spécial mais le problème c'est qu'on
-				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créé le
+				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créer le
 				// conjoint non-habitant.
-				PersonnePhysique conjoint = new PersonnePhysique(individu.getNoTechnique());
-				conjoint = (PersonnePhysique) context.getTiersDAO().save(conjoint);
-				conjoint = context.getTiersService().changeHabitantenNH(conjoint);
+				personnePhysiqueResultante = context.getTiersService().createNonHabitantFromIndividu(individu.getNoTechnique());
 				Audit.info(evenementId, "Un tiers non-habitant a été créé pour le conjoint du nouvel arrivant");
-				personnePhysiqueResultante = conjoint;
 			}
 			else {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...

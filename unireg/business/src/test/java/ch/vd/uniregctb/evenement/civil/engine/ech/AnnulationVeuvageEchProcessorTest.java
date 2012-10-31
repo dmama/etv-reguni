@@ -48,12 +48,11 @@ public class AnnulationVeuvageEchProcessorTest extends AbstractEvenementCivilEch
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique lui = addHabitant(noIndividuLui);
-				final PersonnePhysique elle = addHabitant(noIndividuElle);
+				final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
 				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateDeces);
 				final MenageCommun mc = couple.getMenage();
 				addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
 				addForPrincipal(lui, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-				tiersService.changeHabitantenNH(elle);
 				elle.setDateDeces(dateDeces);
 				return mc.getNumero();
 			}
@@ -124,12 +123,11 @@ public class AnnulationVeuvageEchProcessorTest extends AbstractEvenementCivilEch
             @Override
             public Long doInTransaction(TransactionStatus status) {
                 final PersonnePhysique lui = addHabitant(noIndividuLui);
-                final PersonnePhysique elle = addHabitant(noIndividuElle);
+                final PersonnePhysique elle = tiersService.createNonHabitantFromIndividu(noIndividuElle);
                 final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, dateDeces);
                 final MenageCommun mc = couple.getMenage();
                 addForPrincipal(mc, dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
                 addForPrincipal(lui, dateDeces.getOneDayAfter(), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
-                tiersService.changeHabitantenNH(elle);
                 elle.setDateDeces(dateDeces);
                 return mc.getNumero();
             }

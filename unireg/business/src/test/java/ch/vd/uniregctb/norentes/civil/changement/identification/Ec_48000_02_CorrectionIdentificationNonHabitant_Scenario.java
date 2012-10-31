@@ -75,7 +75,7 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 	@Etape(id=1, descr="Chargement du non-habitant avec ses fors principaux")
 	public void step1() {
 		// momo
-		final PersonnePhysique momo = addHabitant(noIndMomo);
+		final PersonnePhysique momo = tiersService.createNonHabitantFromIndividu(noIndMomo);
 		noHabMomo = momo.getNumero();
 
 		final ForFiscalPrincipal f = addForFiscalPrincipal(momo, MockCommune.VillarsSousYens, dateNaissance.addYears(18), dateNaissance.addYears(22), MotifFor.MAJORITE, MotifFor.DEPART_HC);
@@ -83,8 +83,6 @@ public class Ec_48000_02_CorrectionIdentificationNonHabitant_Scenario extends Ev
 
 		final ForFiscalPrincipal fhc = addForFiscalPrincipal(momo, MockCommune.Neuchatel, dateNaissance.addYears(22).getOneDayAfter(), null, MotifFor.DEPART_HC, null);
 		fhc.setModeImposition(ModeImposition.ORDINAIRE);
-
-		tiersService.changeHabitantenNH(momo);
 	}
 
 	@Check(id=1, descr="Vérifie que l'habitant Maurice a bien été indexé")

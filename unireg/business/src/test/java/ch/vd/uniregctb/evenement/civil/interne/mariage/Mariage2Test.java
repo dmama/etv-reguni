@@ -99,8 +99,7 @@ public class Mariage2Test extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique monsieur = addHabitant(noIndMonsieur);
-				tiersService.changeHabitantenNH(monsieur);
+				final PersonnePhysique monsieur = tiersService.createNonHabitantFromIndividu(noIndMonsieur);
 				addForPrincipal(monsieur, date(2008, 1, 1), MotifFor.DEPART_HS, MockPays.France);
 
 				ids.idMonsieur = monsieur.getNumero();
