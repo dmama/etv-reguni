@@ -50,7 +50,7 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
 		// [UNIREG-3017] si le CTB PP est mineur (ou le couple à la date de l'événement CTB MC a deux individus mineurs) et n'a aucun for (du tout) ou que tous sont annulés -> Traiter l'événement tout droit
-		final Individu individu = getIndividu();
+		final Individu individu = getIndividuOrThrowException();
 		final PersonnePhysique pp = getPrincipalPP();
 		final EnsembleTiersCouple couple = context.getTiersService().getEnsembleTiersCouple(pp, getDate());
 		final boolean mineur;
@@ -79,6 +79,10 @@ public class AnnulationArrivee extends EvenementCivilInterne {
 		if (erreur) {
 			throw new EvenementCivilException("Veuillez effectuer cette opération manuellement");
 		}
+
+		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
+		context.getTiersService().updateHabitantFlag(pp, getNoIndividu(), getDate(), getNumeroEvenement());
+
 		return HandleStatus.TRAITE;
 	}
 }
