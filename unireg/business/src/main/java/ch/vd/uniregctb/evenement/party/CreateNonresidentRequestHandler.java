@@ -38,7 +38,7 @@ public class CreateNonresidentRequestHandler implements RequestHandler<CreateNon
 		final UserLogin login = request.getLogin();
 		if (!securityProvider.isGranted(Role.CREATE_NONHAB, login.getUserId(), login.getOid())) {
 			throw new ServiceException(
-					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas les droits d'accès en lecture complète sur l'application.", null));
+					new AccessDeniedExceptionInfo("L'utilisateur spécifié (" + login.getUserId() + '/' + login.getOid() + ") n'a pas le droit de création de non-habitant sur l'application.", null));
 		}
 		PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNom(request.getLastName());
