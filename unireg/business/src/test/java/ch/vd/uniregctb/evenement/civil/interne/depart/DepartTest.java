@@ -908,7 +908,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final PersonnePhysique pp = addHabitant(noIndividu);
+				addHabitant(noIndividu);
 				return null;
 			}
 		});
@@ -926,6 +926,58 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(pp);
 		assertFalse(pp.isHabitantVD());
 		assertEmpty(pp.getForsFiscauxSorted());
+	}
+
+	/**
+	 * [SIFISC-6842] Vérifie que le départ d'une résidence principale alors qu'il y a encore une résidence secondaire dans le canton laisse bien le flag 'habitant' actif.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDepartPrincipalAlorsQueEncoreEnResidenceSecondaire() throws Exception {
+
+		final long noIndividu = 123456L;
+		final RegDate dateDepart = date(2008, 12, 4);
+
+		serviceCivil.setUp(new DefaultMockServiceCivil(false) {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1956, 4, 30), "Talon", "Achille", true);
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, date(2000, 1, 1), dateDepart);
+				adresse.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE, MockRue.Echallens.GrandRue, null, date(2000, 1, 1), null);
+			}
+		});
+
+		// mise en place de la personne physique
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus transactionStatus) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, date(2000,1,1), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				return null;
+			}
+		});
+
+		// résumons-nous :
+		// 1. la personne physique est habitante à Lausanne en résidence principal et à Echallens en résidence secondaire
+		// 2. nous allons maintenant recevoir un événement de départ secondaire depuis Lausanne
+		// 3. on devrait avoir la fermeture du for fiscal de Lausanne mais la personne physique devrait rester habitante
+		final Depart depart = createValidDepart(noIndividu, dateDepart, true, null, false);
+		final MessageCollector collector = buildMessageCollector();
+		handleDepart(depart, collector, collector);
+		assertEmpty(collector.getErreurs());
+
+		final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+		assertNotNull(pp);
+		assertTrue(pp.isHabitantVD());
+
+		final List<ForFiscal> fors = pp.getForsFiscauxSorted();
+		assertNotNull(fors);
+		assertEquals(2, fors.size());
+		assertForPrincipal(date(2000, 1, 1), MotifFor.ARRIVEE_HC, dateDepart, MotifFor.DEPART_HS, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
+		                   (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, TypeAutoriteFiscale.PAYS_HS, MockPays.France.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
+		                   (ForFiscalPrincipal) fors.get(1));
 	}
 
 	/**

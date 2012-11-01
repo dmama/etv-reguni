@@ -47,16 +47,16 @@ public class DepartSecondaire extends Depart {
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
 		final Adresse nouvelleAdresseSecondaire = nouvellesAdresses.secondaire;
 		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdresseSecondaire, lendemainDepart);
-		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdresseSecondaire);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, nouvelleAdresseSecondaire, nouvelleCommune);
 	}
 
 	protected DepartSecondaire(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse adresseSecondaire, Commune communePrincipale,
 	                           Adresse ancienneAdresseSecondaire, Commune ancienneCommuneSecondaire, EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, adresseSecondaire, communePrincipale, context, isRegPP);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, ancienneAdresseSecondaire, adresseSecondaire, communePrincipale, context, isRegPP);
 		this.ancienneAdresse = ancienneAdresseSecondaire;
 		this.ancienneCommune = ancienneCommuneSecondaire;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
-		this.nouvelleLocalisation = computeNouvelleLocalisation(adresseSecondaire);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, adresseSecondaire, nouvelleCommune);
 	}
 
 	public DepartSecondaire(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options, Adresse ancienneAdresse) throws EvenementCivilException {

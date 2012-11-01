@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -82,12 +83,12 @@ public abstract class Depart extends Mouvement {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected Depart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse nouvelleAdresse, Commune nouvelleCommune,
+	protected Depart(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse ancienneAdresse, Adresse nouvelleAdresse, Commune nouvelleCommune,
 	                 EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
 		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdresse, null, null, context);
 		this.paysInconnu = context.getServiceInfra().getPaysInconnu();
 		this.nouvelleCommune = nouvelleCommune;
-		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdresse);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, nouvelleAdresse, nouvelleCommune);
 
 		//SIFISC-4230 Pour les evenements regPP, les départs vaudois doivent partir en erreur
 		if (isDepartVaudois() && isRegPP) {
@@ -425,28 +426,39 @@ public abstract class Depart extends Mouvement {
 		return isAncienTypeDepart;
 	}
 
+	protected Localisation computeNouvelleLocalisation(@Nullable Adresse ancienneAdresse, @Nullable Adresse nouvelleAdresse, @Nullable Commune nouvelleCommune) throws EvenementCivilException {
 
-	protected Localisation computeNouvelleLocalisation(Adresse nouvelleAdresse) {
 		final Localisation nextLocalisation;
-		if (getNouvelleCommune() == null) {
-			if (nouvelleAdresse != null && nouvelleAdresse.getNoOfsPays() != null && nouvelleAdresse.getNoOfsPays() != ServiceInfrastructureService.noOfsSuisse) {
-				nextLocalisation = new Localisation(LocalisationType.HORS_SUISSE, nouvelleAdresse.getNoOfsPays(), null);
+
+		if (nouvelleAdresse != null) {
+			final Integer noOfsPays = nouvelleAdresse.getNoOfsPays();
+			if (noOfsPays != null && !noOfsPays.equals(ServiceInfrastructureService.noOfsSuisse)) {
+				// adresse hors-suisse
+				nextLocalisation = new Localisation(LocalisationType.HORS_SUISSE, noOfsPays, null);
 			}
 			else {
-				nextLocalisation = null;
+				// adresse suisse
+				if (nouvelleCommune == null) {
+					nouvelleCommune = context.getServiceInfra().getCommuneByAdresse(nouvelleAdresse, nouvelleAdresse.getDateDebut());
+					if (nouvelleCommune == null) {
+						throw new EvenementCivilException("Impossible de déterminer la commune de la nouvelle adresse");
+					}
+				}
+				if (nouvelleCommune.isVaudoise()) {
+					nextLocalisation = new Localisation(LocalisationType.CANTON_VD, nouvelleCommune.getNoOFS(), null);
+				}
+				else {
+					nextLocalisation = new Localisation(LocalisationType.HORS_CANTON, nouvelleCommune.getNoOFS(), null);
+				}
 			}
+		}
+		else if (ancienneAdresse != null) {
+			nextLocalisation = ancienneAdresse.getLocalisationSuivante();
 		}
 		else {
-			Localisation localisationSuisse = new Localisation();
-			localisationSuisse.setNoOfs(getNouvelleCommune().getNoOFS());
-			if (getNouvelleCommune().isVaudoise()) {
-				localisationSuisse.setType(LocalisationType.CANTON_VD);
-			}
-			else {
-				localisationSuisse.setType(LocalisationType.HORS_CANTON);
-			}
-			nextLocalisation = localisationSuisse;
+			nextLocalisation = null;
 		}
+
 		return nextLocalisation;
 	}
 

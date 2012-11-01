@@ -50,7 +50,7 @@ public class DepartPrincipal extends Depart {
 		final AdressesCiviles nouvellesAdresses = getAdresses(context, lendemainDepart);
 		final Adresse nouvelleAdressePrincipale = nouvellesAdresses.principale;
 		this.nouvelleCommune = getCommuneByAdresse(context, nouvelleAdressePrincipale, lendemainDepart);
-		this.nouvelleLocalisation = computeNouvelleLocalisation(nouvelleAdressePrincipale);
+		this.nouvelleLocalisation = computeNouvelleLocalisation(ancienneAdresse, nouvelleAdressePrincipale, nouvelleCommune);
 
 		// SIFISC-4230 Pour les événements regPP, les départs vaudois doivent partir en erreur
 		if (isDepartVaudois()) {
@@ -64,7 +64,7 @@ public class DepartPrincipal extends Depart {
 	@SuppressWarnings({"JavaDoc"})
 	protected DepartPrincipal(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Adresse ancienneAdressePrincipale, Commune ancienneCommunePrincipale,
 	                          Adresse nouvelleAdressePrincipale, Commune nouvelleCommunePrincipale, EvenementCivilContext context, boolean isRegPP) throws EvenementCivilException {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, nouvelleAdressePrincipale, nouvelleCommunePrincipale, context, isRegPP);
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, ancienneAdressePrincipale, nouvelleAdressePrincipale, nouvelleCommunePrincipale, context, isRegPP);
 		this.ancienneAdresse = ancienneAdressePrincipale;
 		this.ancienneCommune = ancienneCommunePrincipale;
 		this.numeroOfsEntiteForAnnonce = numeroOfsCommuneAnnonce;
