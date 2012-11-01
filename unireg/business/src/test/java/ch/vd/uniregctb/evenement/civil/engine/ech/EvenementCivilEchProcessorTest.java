@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Set;
 
+import junit.framework.Assert;
 import org.apache.commons.lang.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -591,5 +592,77 @@ public class EvenementCivilEchProcessorTest extends AbstractEvenementCivilEchPro
 		assertFalse(recu.booleanValue());
 		traiterEvenements(noIndividu);
 		assertFalse(recu.booleanValue());
+	}
+
+	/**
+	 * [SIFISC-6908] lors d'un forçage d'événement civil, le flag 'habitant' doit être mis-à-jour
+	 */
+	@Test
+	public void testUpdateFlagHabitantSurForcage() throws Exception {
+
+		final long noIndividu = 14563435356783512L;
+		final long evtId = 12456234125L;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+				addIndividu(noIndividu, date(1940, 10, 31), "Hitchcock", "Alfred", true);
+			}
+		});
+
+		// mise en place fiscale, remplissage du cache du service civil sur l'individu
+		final long ppid = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				Assert.assertEquals("Alfred Hitchcock", tiersService.getNomPrenom(pp));
+				return pp.getNumero();
+			}
+		});
+
+		// création d'un événement en erreur
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(evtId);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setType(TypeEvenementCivilEch.CHGT_NOM);
+				evt.setDateEvenement(date(2009, 1, 1));
+				evt.setEtat(EtatEvenementCivil.EN_ERREUR);
+				evt.setNumeroIndividu(noIndividu);
+				evtCivilDAO.save(evt);
+				return null;
+			}
+		});
+
+		// vérification que le flag habitant est toujours setté
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				Assert.assertTrue(pp.isHabitantVD());
+				return null;
+			}
+		});
+
+		// forçage de l'événement en erreur
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				evtCivilService.forceEvenement(evtId);
+				return null;
+			}
+		});
+
+		// vérification que le flag habitant a bien été resetté
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
+				Assert.assertFalse(pp.isHabitantVD()); // [SIFISC-6908] le forçage de l'événement doit recalculer le flag 'habitant'
+				return null;
+			}
+		});
 	}
 }

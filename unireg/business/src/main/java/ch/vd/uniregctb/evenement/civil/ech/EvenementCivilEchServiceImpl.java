@@ -26,6 +26,9 @@ import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
@@ -50,6 +53,8 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
     private EvenementCivilEchDAO evenementCivilEchDAO;
 	private PlatformTransactionManager transactionManager;
 	private HibernateTemplate hibernateTemplate;
+	private TiersDAO tiersDAO;
+	private TiersService tiersService;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
@@ -83,24 +88,28 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
 		}
 	}
 
-
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementCivilEchDAO(EvenementCivilEchDAO evenementCivilEchDAO) {
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
 	public void setServiceCivil(ServiceCivilService serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	@Override
@@ -204,5 +213,17 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             throw new IllegalArgumentException("l'état de l'événement " + id + " ne lui permet pas d'être forcé");
         }
         evt.setEtat(EtatEvenementCivil.FORCE);
+
+	    // [SIFISC-6908] En cas de forçage de l'événement, on essaie au moins de mettre-à-jour le flag habitant, pour que les droits d'édition corrects s'appliquent sur la personne physiques.
+	    final Long numeroIndividu = evt.getNumeroIndividu();
+	    try {
+		    final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
+		    if (pp != null) {
+			    tiersService.updateHabitantFlag(pp, numeroIndividu, evt.getDateEvenement(), id);
+		    }
+	    }
+	    catch (RuntimeException e) {
+		    LOGGER.error("Impossible de recalculer le flag 'habitant' sur l'individu n°" + numeroIndividu, e);
+	    }
     }
 }

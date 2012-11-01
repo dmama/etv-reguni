@@ -35,6 +35,9 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -55,6 +58,8 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private EvenementCivilRegPPDAO evenementCivilRegPPDAO;
 	private EvenementCivilTranslator evenementCivilTranslator;
 	private ServiceCivilService serviceCivil;
+	private TiersDAO tiersDAO;
+	private TiersService tiersService;
 
 	/**
 	 * {@inheritDoc}
@@ -99,6 +104,18 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		catch (EvenementCivilException e) {
 			// tant pis, on aura au moins essayé...
 			LOGGER.warn(String.format("Impossible de rafraîchir le cache civil relatif à l'événement civil %d", evenementCivilExterne.getId()), e);
+		}
+
+		// [SIFISC-6908] En cas de forçage de l'événement, on essaie au moins de mettre-à-jour le flag habitant, pour que les droits d'édition corrects s'appliquent sur la personne physiques.
+		final Long numeroIndividu = evenementCivilExterne.getNumeroIndividuPrincipal();
+		try {
+			final PersonnePhysique pp = tiersDAO.getPPByNumeroIndividu(numeroIndividu);
+			if (pp != null) {
+				tiersService.updateHabitantFlag(pp, numeroIndividu, evenementCivilExterne.getDateEvenement(), evenementCivilExterne.getId());
+			}
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Impossible de recalculer le flag 'habitant' sur l'individu n°" + numeroIndividu, e);
 		}
 	}
 
@@ -381,5 +398,13 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	public void setServiceCivil(ServiceCivilService serviceCivil) {
 		this.serviceCivil = serviceCivil;
+	}
+
+	public void setTiersDAO(TiersDAO tiersDAO) {
+		this.tiersDAO = tiersDAO;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 }

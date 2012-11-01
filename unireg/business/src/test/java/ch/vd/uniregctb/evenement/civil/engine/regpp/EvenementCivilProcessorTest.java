@@ -52,6 +52,7 @@ import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
@@ -1073,6 +1074,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 					final String prenomNom = tiersService.getNomPrenom(pp);
 					assertEquals("Alfredo Hitchcock", prenomNom);
+					assertTrue(pp.isHabitantVD());
 					return null;
 				}
 			});
@@ -1094,6 +1096,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppid);
 					final String prenomNom = tiersService.getNomPrenom(pp);
 					assertEquals("Alfred Hitchcock", prenomNom);
+					assertFalse(pp.isHabitantVD()); // [SIFISC-6908] le forçage de l'événement doit recalculer le flag 'habitant'
 
 					final EvenementCivilRegPP evt = evenementCivilRegPPDAO.get(evtId);
 					assertNotNull(evt);
