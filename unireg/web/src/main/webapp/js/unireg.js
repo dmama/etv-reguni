@@ -1643,11 +1643,7 @@ var RegDate = {
 		if (!regdate) {
 			return null;
 		}
-		d = new Date();
-		d.setDate(regdate.day); // 1..31
-		d.setMonth(regdate.month - 1); // 0..11
-		d.setFullYear(regdate.year); // 4 digits
-		return d;
+		return new Date(regdate.year, regdate.month - 1, regdate.day);  // months are 0-based
 	},
 
 	format: function(regdate, format) {
