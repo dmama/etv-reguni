@@ -104,7 +104,8 @@ public class EfactureManagerImpl implements EfactureManager {
 		if (resultatQuittancement.isOk()) {
 			if (resultatQuittancement.equals(ResultatQuittancement.dejaInscrit())) {
 				return ResultatQuittancement.dejaInscrit().getDescription(noCtb);
-			} else if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
+			}
+			else if (eFactureResponseService.waitForResponse(resultatQuittancement.getBusinessId(), timeOutForReponse)) {
 				return ResultatQuittancement.ok(resultatQuittancement).getDescription(noCtb);
 			}
 		}
@@ -125,11 +126,11 @@ public class EfactureManagerImpl implements EfactureManager {
 			final DemandeAvecHisto demande = it.previous();
 			final int sizeEtatDemandes = demande.getHistoriqueEtats().size();
 			final List<EtatDemandeView> etatsDemande = new ArrayList<EtatDemandeView>(sizeEtatDemandes);
-			for (ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ){
+			for (ListIterator<EtatDemande> jt = demande.getHistoriqueEtats().listIterator(sizeEtatDemandes); jt.hasPrevious(); ) {
 				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
 			}
-			final DemandeAvecHistoView view  = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), etatsDemande);
+			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getTypeDemande(), etatsDemande);
 			demandes.add(view);
 		}
 		res.setDemandes(demandes);
@@ -150,17 +151,16 @@ public class EfactureManagerImpl implements EfactureManager {
 				etat.getDateObtention(),
 				etat.getDescriptionRaison(),
 				null, // pas de document relatif au destinataire, prévu dans un futur proche
-				messageSource.getMessage("label.efacture.etat.destinataire."+ etat.getType(), null, WebContextUtils.getDefaultLocale()));
+				messageSource.getMessage("label.efacture.etat.destinataire." + etat.getType(), null, WebContextUtils.getDefaultLocale()));
 	}
 
 	private EtatDemandeView getEtatDemande(EtatDemande etat) {
 		final TypeDocumentEditique typeDocumentEditique = determineTypeDocumentEditique(etat.getType());
-		final String descriptionEtat = messageSource.getMessage("label.efacture.etat.demande."+ etat.getType(), null, WebContextUtils.getDefaultLocale());
+		final String descriptionEtat = messageSource.getMessage("label.efacture.etat.demande." + etat.getType(), null, WebContextUtils.getDefaultLocale());
 		final String key = etat.getChampLibre();
 		final ArchiveKey archiveKey = (key == null || typeDocumentEditique == null) ? null : new ArchiveKey(typeDocumentEditique, key);
 		return new EtatDemandeView(etat.getDate(), etat.getDescriptionRaison(), archiveKey, descriptionEtat, etat.getType());
 	}
-
 
 	private static TypeDocumentEditique determineTypeDocumentEditique(TypeEtatDemande typeEtat) {
 		if (typeEtat.getTypeAttente() == TypeAttenteDemande.EN_ATTENTE_CONTACT) {

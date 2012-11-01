@@ -5,16 +5,22 @@ import java.util.List;
 
 import ch.vd.evd0025.v1.RegistrationRequestHistoryEntry;
 import ch.vd.evd0025.v1.RegistrationRequestWithHistory;
+import ch.vd.unireg.interfaces.EvdHelper;
 
 /**
  * Representation Interne UNIREG de la classe {@link RegistrationRequestWithHistory} de l' eVD-25
  */
 public class DemandeAvecHisto extends Demande {
 
-	private List<EtatDemande> historiqueEtats;
+	private final List<EtatDemande> historiqueEtats;
+	private final TypeDemande typeDemande;
 
 	public List<EtatDemande> getHistoriqueEtats() {
 		return historiqueEtats;
+	}
+
+	public TypeDemande getTypeDemande() {
+		return typeDemande;
 	}
 
 	public DemandeAvecHisto(RegistrationRequestWithHistory request) {
@@ -27,11 +33,13 @@ public class DemandeAvecHisto extends Demande {
 			} else {
 				historiqueEtats.add(EtatDemande.newEtatDemandeFactice(TypeEtatDemande.valueOf(request.getRegistrationStatus(), null)));
 			}
-		} else {
+		}
+		else {
 			for (RegistrationRequestHistoryEntry entry : request.getRegistrationRequestHistoryEntry()) {
 				historiqueEtats.add(new EtatDemande(entry));
 			}
 		}
+		this.typeDemande = EvdHelper.getTypeDemandeFromEvd25(request.getRegistrationMode());
 	}
 
 	public EtatDemande getDernierEtat() {
