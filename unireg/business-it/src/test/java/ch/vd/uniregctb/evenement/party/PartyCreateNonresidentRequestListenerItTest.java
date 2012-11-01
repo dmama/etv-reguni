@@ -57,7 +57,7 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 		}
 		catch (ServiceException e) {
 			assertInstanceOf(AccessDeniedExceptionInfo.class, e.getInfo());
-			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas les droits d'accès en lecture complète sur l'application.", e.getMessage());
+			assertEquals("L'utilisateur spécifié (xxxxx/22) n'a pas le droit de création de non-habitant sur l'application.", e.getMessage());
 		}
 
 	}
@@ -127,7 +127,4 @@ public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestLis
 		request.setSocialNumber(7561212121212L);
 		return request;
 	}
-
-
-
 }
