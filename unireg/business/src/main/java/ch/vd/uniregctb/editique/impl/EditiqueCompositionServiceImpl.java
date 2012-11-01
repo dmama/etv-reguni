@@ -27,7 +27,6 @@ import ch.vd.uniregctb.declaration.ordinaire.ImpressionConfirmationDelaiHelperPa
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelper;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelper;
 import ch.vd.uniregctb.declaration.ordinaire.ImpressionSommationDIHelperParams;
-import ch.vd.uniregctb.declaration.ordinaire.ImpressionTaxationOfficeHelper;
 import ch.vd.uniregctb.declaration.ordinaire.ModeleFeuilleDocumentEditique;
 import ch.vd.uniregctb.declaration.source.ImpressionListeRecapHelper;
 import ch.vd.uniregctb.declaration.source.ImpressionSommationLRHelper;
@@ -62,7 +61,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	private ImpressionNouveauxDossiersHelper impressionNouveauxDossiersHelper;
 	private ImpressionConfirmationDelaiHelper impressionConfirmationDelaiHelper;
 	private ServiceSecuriteService serviceSecurite;
-	private ImpressionTaxationOfficeHelper impressionTaxationOfficeHelper;
 	private ImpressionBordereauMouvementDossierHelper impressionBordereauMouvementDossierHelper;
 	private ImpressionDocumentEfactureHelperImpl impressionEfactureHelper;
 
@@ -102,11 +100,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setServiceSecurite(ServiceSecuriteService serviceSecurite) {
 		this.serviceSecurite = serviceSecurite;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setImpressionTaxationOfficeHelper(ImpressionTaxationOfficeHelper impressionTaxationOfficeHelper) {
-		this.impressionTaxationOfficeHelper = impressionTaxationOfficeHelper;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -348,17 +341,6 @@ public class EditiqueCompositionServiceImpl implements EditiqueCompositionServic
 		final TypeDocumentEditique typeDocumentMessage = impressionLRHelper.getTypeDocumentEditique();
 		final String nomDocument = impressionLRHelper.construitIdDocument(lr);
 		return editiqueService.creerDocumentImmediatementSynchroneOuRien(nomDocument, typeDocumentMessage, TypeFormat.PCL, document, false);
-	}
-
-	@Override
-	public EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException {
-		final TypeDocumentEditique prefixe = impressionTaxationOfficeHelper.getTypeDocumentEditique();
-		final FichierImpressionDocument document = impressionTaxationOfficeHelper.remplitTaxationOffice(declaration);
-		final String nomDocument = impressionTaxationOfficeHelper.construitIdDocument(declaration);
-
-		final String description =
-				String.format("TO de la déclaration d'impôt %d du contribuable %s", declaration.getPeriode().getAnnee(), FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
-		return editiqueService.creerDocumentImmediatementSynchroneOuInbox(nomDocument, prefixe, TypeFormat.PCL, document, false, description);
 	}
 
 	@Override

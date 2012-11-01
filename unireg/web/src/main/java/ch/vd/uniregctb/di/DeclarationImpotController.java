@@ -654,45 +654,6 @@ public class DeclarationImpotController {
 	}
 
 	/**
-	 * Imprimer la chemise de taxation d'office pour la déclaration spécifiée.
-	 */
-	@RequestMapping(value = "/di/imprimerTO.do", method = RequestMethod.POST)
-	public String imprimerTO(@RequestParam("id") final long id, HttpServletResponse response) throws Exception {
-
-		if (!SecurityHelper.isGranted(securityProvider, Role.DI_SOM_PP)) {
-			throw new AccessDeniedException("vous ne possédez pas le droit IfoSec de sommation des déclarations d'impôt sur les personnes physiques.");
-		}
-
-		// Vérifie les paramètres
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		template.execute(new TxCallback<Object>() {
-			@Override
-			public Object execute(TransactionStatus status) throws Exception {
-				final DeclarationImpotOrdinaire di = diDAO.get(id);
-				if (di == null) {
-					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
-				}
-
-				if (EditerDeclarationImpotView.getDernierEtat(di) != TypeEtatDeclaration.ECHUE) {
-					throw new IllegalArgumentException("La déclaration n°" + id + " n'est pas échue.");
-				}
-
-				final Contribuable ctb = (Contribuable) di.getTiers();
-				controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
-				return null;
-			}
-		});
-
-		// On imprime la chemise de taxation d'office
-
-		final EditiqueResultat resultat = manager.envoieImpressionLocalTaxationOffice(id);
-
-		final RedirectEditDI inbox = new RedirectEditDI(id);
-		final RedirectEditDIApresErreur erreur = new RedirectEditDIApresErreur(id, messageSource);
-		return retourEditiqueControllerHelper.traiteRetourEditique(resultat, response, "to", inbox, erreur, erreur);
-	}
-
-	/**
 	 * Affiche un écran qui permet de choisir les paramètres pour l'impression d'un duplicata de DI
 	 */
 	@Transactional(rollbackFor = Throwable.class, readOnly = true)

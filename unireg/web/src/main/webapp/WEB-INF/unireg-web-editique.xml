@@ -42,7 +42,6 @@
 		<property name="impressionSommationLRHelper" ref="impressionSommationLRHelper" />
 		<property name="impressionNouveauxDossiersHelper" ref="impressionNouveauxDossiersHelper" />
 		<property name="impressionConfirmationDelaiHelper" ref="impressionConfirmationDelaiHelper" />
-		<property name="impressionTaxationOfficeHelper" ref="impressionTaxationOfficeHelper" />
 		<property name="impressionBordereauMouvementDossierHelper" ref="impressionBordereauMouvementDossierHelper" />
 		<property name="serviceSecurite" ref="serviceSecuriteService" />
 		<property name="impressionEfactureHelper" ref="impressionEfactureHelper" />

@@ -81,14 +81,6 @@ public interface DeclarationImpotEditManager {
 	@Transactional(rollbackFor = Throwable.class)
 	public EditiqueResultat envoieImpressionLocalConfirmationDelai(Long idDI, Long idDelai) throws EditiqueException;
 
-	/**
-	 * Imprimer la chemise de taxation d'office
-	 *
-	 * @param id l'id de la déclaration d'impôt échue dont on veut imprimer la chemise de taxation d'office.
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	EditiqueResultat envoieImpressionLocalTaxationOffice(Long id) throws EditiqueException;
-
 	@Transactional(rollbackFor = Throwable.class)
 	EditiqueResultat envoieImpressionLocalDuplicataDI(Long id, TypeDocument typeDocument, List<ModeleFeuilleDocumentEditique> annexes) throws DeclarationException;
 

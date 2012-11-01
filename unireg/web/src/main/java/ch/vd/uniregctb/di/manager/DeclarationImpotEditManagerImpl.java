@@ -645,19 +645,4 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 	public void setPeriodeImpositionService(PeriodeImpositionService periodeImpositionService) {
 		this.periodeImpositionService = periodeImpositionService;
 	}
-
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public EditiqueResultat envoieImpressionLocalTaxationOffice(Long id) throws EditiqueException {
-		final DeclarationImpotOrdinaire di = diDAO.get(id);
-		di.setDateImpressionChemiseTaxationOffice(DateHelper.getCurrentDate());
-
-		try {
-			return editiqueCompositionService.imprimeTaxationOfficeOnline(di);
-		}
-		catch (JMSException e) {
-			throw new EditiqueException(e);
-		}
-	}
-
 }

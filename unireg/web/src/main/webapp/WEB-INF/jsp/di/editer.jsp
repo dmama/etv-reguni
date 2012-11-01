@@ -92,10 +92,6 @@
 					</script>
 
 				</c:if>
-				<!-- Impression de chemise de taxation d'office -->
-				<c:if test="${command.allowedSommation && command.dernierEtat == 'ECHUE'}">
-					<input type="button" name="imprimerTO" value="<fmt:message key="label.bouton.imprimer.to" />" onclick="return Page_ImprimerTO(this);" />
-				</c:if>
 			</c:if>
 
 			<c:if test="${command.depuisTache}">
@@ -123,14 +119,6 @@
 					Form.dynamicSubmit('post', App.curl('/di/sommer.do'), {id:${command.id}});
 					button.disabled = true;
 					return true;
-			    }
-
-			    function Page_ImprimerTO(button) {
-					if(!confirm('Voulez-vous vraiment imprimer cette taxation d\'office ?'))
-						return false;
-				    Form.dynamicSubmit('post', App.curl('/di/imprimerTO.do'), {id:${command.id}});
-				    button.disabled = true;
-				    return true;
 			    }
 		</script>
 	</tiles:put>

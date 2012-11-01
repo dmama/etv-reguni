@@ -184,11 +184,6 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 	</bean>
 
-	<bean id="impressionTaxationOfficeHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionTaxationOfficeHelperImpl">
-		<property name="serviceInfrastructureService" ref="serviceInfrastructureService" />
-		<property name="situationFamilleService" ref="situationFamilleService" />
-	</bean>
-
 	<bean id="impressionDIHelper" parent="editiqueAbstractHelper" class="ch.vd.uniregctb.declaration.ordinaire.ImpressionDeclarationImpotOrdinaireHelperImpl">
 		<property name="infraService" ref="serviceInfrastructureService" />
 		<property name="situationFamilleService" ref="situationFamilleService" />

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
 import ch.vd.uniregctb.declaration.DelaiDeclaration;
@@ -140,16 +139,6 @@ public interface EditiqueCompositionService {
 	 * @throws EditiqueException
 	 */
 	EditiqueResultat imprimeLROnline(DeclarationImpotSource lr, RegDate dateEvenement, TypeDocument typeDocument) throws EditiqueException, JMSException;
-
-	/**
-	 * Imprime une chemise de taxation d'office on-line
-	 *
-	 * @param declaration
-	 * @return
-	 * @throws EditiqueException
-	 * @throws ServiceInfrastructureException
-	 */
-	EditiqueResultat imprimeTaxationOfficeOnline(DeclarationImpotOrdinaire declaration) throws EditiqueException, JMSException;
 
 	/**
 	 * Envoie à l'éditique le bordereau de mouvements de dossiers correspondant aux mouvement donnés
