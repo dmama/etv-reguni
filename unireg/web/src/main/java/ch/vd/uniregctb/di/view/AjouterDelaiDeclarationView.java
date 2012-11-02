@@ -53,6 +53,10 @@ public class AjouterDelaiDeclarationView {
 		return ancienDelaiAccorde;
 	}
 
+	public void setAncienDelaiAccorde(RegDate ancienDelaiAccorde) {
+		this.ancienDelaiAccorde = ancienDelaiAccorde;
+	}
+
 	public RegDate getDateExpedition() {
 		return dateExpedition;
 	}

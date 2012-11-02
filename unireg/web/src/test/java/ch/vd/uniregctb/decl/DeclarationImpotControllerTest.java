@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.decl;
 
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.servlet.ModelAndView;
 
 import ch.vd.registre.base.date.RegDate;
@@ -18,10 +20,10 @@ import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
 import ch.vd.uniregctb.di.view.ImprimerNouvelleDeclarationImpotView;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.supergra.FlashMessage;
-import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -137,7 +139,6 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		});
 	}
 
-
 	/**
 	 * Teste l'impossibilité d'imprimer des duplicatas en cas de problème de période d'imposition
 	 */
@@ -147,17 +148,17 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
-				CollectiviteAdministrative cedi = addCollAdm(ServiceInfrastructureService.noCEDI);
+				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp,null,date(2008,6,12),date(2010,7,13));
+				final EnsembleTiersCouple ensembleTiersCouple = addEnsembleTiersCouple(pp, null, date(2008, 6, 12), date(2010, 7, 13));
 
 				final MenageCommun menage = ensembleTiersCouple.getMenage();
-				addForPrincipal(menage, date(2008,6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION
-						, date(2010,7, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Vaulion);
+				addForPrincipal(menage, date(2008, 6, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, date(2010, 7, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+				                MockCommune.Vaulion);
 
 				final PeriodeFiscale p2010 = addPeriodeFiscale(2010);
 				final ModeleDocument modeleDocument2010 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, p2010);
-				Declaration declaration = addDeclarationImpot(menage,p2010,date(2010,1,1),date(2010,12,31), TypeContribuable.VAUDOIS_ORDINAIRE,modeleDocument2010);
+				Declaration declaration = addDeclarationImpot(menage, p2010, date(2010, 1, 1), date(2010, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument2010);
 				return declaration.getId();
 			}
 		});
@@ -169,14 +170,61 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		// exécution de la requête
 		final ModelAndView results = handle(request, response);
+		assertNotNull(results);
+
 		// on test la présence du message flash
 		HttpSession session = request.getSession();
-		final FlashMessage flash =(FlashMessage) session.getAttribute("flash");
+		final FlashMessage flash = (FlashMessage) session.getAttribute("flash");
 		assertNotNull(flash);
 		final String messageAttendue = "L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable";
-		assertEquals(messageAttendue,flash.getMessage());
-
+		assertEquals(messageAttendue, flash.getMessage());
 	}
 
+	/**
+	 * [SIFISC-6918] Ce test s'assure qu'il n'est pas possible d'ajouter un délai plus court que le délai accordé actuel.
+	 */
+	@Test
+	public void testAjouterDelaiDIPlusCourtQueDejaAccorde() throws Exception {
 
+		final int anneeCourante = RegDate.get().year();
+
+		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				addCollAdm(ServiceInfrastructureService.noCEDI);
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneeCourante, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
+
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
+				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				addDelaiDeclaration(declaration, RegDate.get(), RegDate.get().addMonths(3));
+				return declaration.getId();
+			}
+		});
+
+		request.setMethod("POST");
+		request.addParameter("idDeclaration", diId.toString());
+		request.addParameter("dateDemande", RegDateHelper.dateToDisplayString(RegDate.get()));
+		request.addParameter("delaiAccordeAu", RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)));
+		request.setRequestURI("/di/delai/ajouter.do");
+
+		// exécution de la requête
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que l'erreur sur le délai accordé trop court a été bien renseignée
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEquals(1, result.getErrorCount());
+
+		final List<?> errors = result.getAllErrors();
+		final FieldError error = (FieldError) errors.get(0);
+		assertNotNull(error);
+		assertEquals("delaiAccordeAu", error.getField());
+		assertEquals("error.delai.accorde.invalide", error.getCode());
+
+		final AjouterDelaiDeclarationView ajouterView = (AjouterDelaiDeclarationView) mav.getModel().get("command");
+		assertNotNull(ajouterView);
+	}
 }
