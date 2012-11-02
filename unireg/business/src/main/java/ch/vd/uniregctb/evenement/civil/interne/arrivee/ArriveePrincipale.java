@@ -683,21 +683,19 @@ public class ArriveePrincipale extends Arrivee {
 	}
 	@Override
 	protected boolean isArriveeRedondanteAnterieurPourIndividuEnMenage(){
-		boolean isAnterieur = getPrincipalPP() != null;
-		if (isAnterieur) {
+		boolean isRedondant = getPrincipalPP() != null;
+		if (isRedondant) {
 			final RegDate dateArrivee = getDateArriveeEffective(getDate());
 			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
 			if (coupleExistant != null) {
-				final ForFiscalPrincipal ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
 				final List<ForFiscalPrincipal> listFfp = coupleExistant.getMenage().getForsFiscauxPrincipauxOuvertsApres(dateArrivee);
-				isAnterieur = existForArriveeOuvertApres(listFfp, dateArrivee);
+				isRedondant = existForArriveeOuvertApres(listFfp, dateArrivee);
 			}
 			else {
-				isAnterieur = false;
+				isRedondant = false;
 			}
-
 		}
-		return isAnterieur;
+		return isRedondant;
 	}
 
 	@Override
@@ -712,7 +710,7 @@ public class ArriveePrincipale extends Arrivee {
 			}
 			else {
 				final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(conjoint, dateArrivee);
-				isConjointMarieSeul = coupleExistant != null && (coupleExistant.getConjoint()==null || coupleExistant.getPrincipal()==null);
+				isConjointMarieSeul = coupleExistant != null && (coupleExistant.getConjoint() == null || coupleExistant.getPrincipal() == null);
 			}
 		}
 		return isConjointMarieSeul;
@@ -720,25 +718,28 @@ public class ArriveePrincipale extends Arrivee {
 
 	@Override
 	protected boolean isArriveeRedondantePosterieurPourIndividuEnMenage() {
-		boolean isPosterieur = getPrincipalPP() != null;
-		if (isPosterieur) {
+		boolean isRedondant = getPrincipalPP() != null;
+		if (isRedondant) {
 			final MotifFor motifOuverture = getMotifOuvertureFor();
 			final RegDate dateArrivee = getDateArriveeEffective(getDate());
 			final EnsembleTiersCouple coupleExistant = context.getTiersService().getEnsembleTiersCouple(getPrincipalPP(), dateArrivee);
 			if (coupleExistant != null) {
 				final ForFiscalPrincipal ffp = coupleExistant.getMenage().getForFiscalPrincipalAt(dateArrivee);
-				isPosterieur = ffp != null && dateArrivee.isAfter(ffp.getDateDebut()) &&
-						(MotifFor.ARRIVEE_HC== ffp.getMotifOuverture()|| MotifFor.ARRIVEE_HS == ffp.getMotifOuverture()) &&
-						(MotifFor.ARRIVEE_HC== motifOuverture|| MotifFor.ARRIVEE_HS == motifOuverture);
+				isRedondant = ffp != null && dateArrivee.isAfter(ffp.getDateDebut()) &&
+						(MotifFor.ARRIVEE_HC == ffp.getMotifOuverture() || MotifFor.ARRIVEE_HS == ffp.getMotifOuverture()) &&
+						(MotifFor.ARRIVEE_HC == motifOuverture || MotifFor.ARRIVEE_HS == motifOuverture);
+			}
+			else {
+				// SIFISC-6926 : si on n'a pas de couple, on n'a pas le droit de dire que c'est redondant !!!
+				isRedondant = false;
 			}
 		}
-		return isPosterieur;
+		return isRedondant;
 	}
 
-
-	private boolean existForArriveeOuvertApres(List<ForFiscalPrincipal> listeFor,RegDate dateArrivee){
+	private static boolean existForArriveeOuvertApres(List<ForFiscalPrincipal> listeFor, RegDate dateArrivee) {
 		for (ForFiscalPrincipal forFiscalPrincipal : listeFor) {
-			if(MotifFor.ARRIVEE_HC == forFiscalPrincipal.getMotifOuverture() || MotifFor.ARRIVEE_HS == forFiscalPrincipal.getMotifOuverture()){
+			if (MotifFor.ARRIVEE_HC == forFiscalPrincipal.getMotifOuverture() || MotifFor.ARRIVEE_HS == forFiscalPrincipal.getMotifOuverture()) {
 				if (dateArrivee.isBefore(forFiscalPrincipal.getDateDebut())) {
 					return true;
 				}
