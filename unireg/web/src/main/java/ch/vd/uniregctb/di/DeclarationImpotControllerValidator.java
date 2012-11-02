@@ -189,12 +189,18 @@ public class DeclarationImpotControllerValidator implements Validator {
 			return;
 		}
 
+		final DeclarationImpotOrdinaire di = diDAO.get(view.getIdDeclaration());
+		if (di == null) {
+			errors.reject("error.di.inexistante");
+			return;
+		}
+
 		if (view.getDelaiAccordeAu() == null) {
 			ValidationUtils.rejectIfEmpty(errors, "delaiAccordeAu", "error.delai.accorde.vide");
 		}
-		else if (view.getDelaiAccordeAu().isBefore(RegDate.get()) ||
-				(view.getAncienDelaiAccorde() != null && view.getDelaiAccordeAu().isBeforeOrEqual(view.getAncienDelaiAccorde()))) {
-			if (!ValidatorUtils.alreadyHasErrorOnField(errors, "delaiAccordeAu")) {
+		else {
+			final RegDate ancienDelaiAccorde = di.getDelaiAccordeAu();
+			if (view.getDelaiAccordeAu().isBefore(RegDate.get()) || (ancienDelaiAccorde != null && view.getDelaiAccordeAu().isBeforeOrEqual(ancienDelaiAccorde))) {
 				errors.rejectValue("delaiAccordeAu", "error.delai.accorde.invalide");
 			}
 		}

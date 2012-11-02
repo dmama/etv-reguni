@@ -16,7 +16,9 @@
 
 			<form:errors cssClass="error"/>
 
-			<form:hidden path="idDeclaration" value="${command.idDeclaration}"/>
+			<form:hidden path="idDeclaration"/>
+			<form:hidden path="ancienDelaiAccorde"/>
+
 			<fieldset>
 				<legend><span><fmt:message key="label.etats"/></span></legend>
 				<table border="0">
