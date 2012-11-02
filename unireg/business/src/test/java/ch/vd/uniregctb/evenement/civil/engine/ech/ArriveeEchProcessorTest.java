@@ -33,6 +33,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
 
@@ -410,7 +411,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			public Object doInTransaction(TransactionStatus status) {
 				final EvenementCivilEch evt = evtCivilDAO.get(evtElle);
 				assertNotNull(evt);
-				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
 				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noElle);
 				assertNotNull(pp);
@@ -1087,7 +1088,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				public Object doInTransaction(TransactionStatus status) {
 					final EvenementCivilEch evt = evtCivilDAO.get(evt2Id);
 					assertNotNull(evt);
-					assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+					assertEquals(EtatEvenementCivil.REDONDANT, evt.getEtat());
 
 					final PersonnePhysique madame = (PersonnePhysique) tiersService.getTiers(idMadame);
 					assertNotNull(madame);
@@ -1230,6 +1231,94 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
 				String message = String.format("Le conjoint de l'individu (n° %s) correspond à un(e) marié(e) seul",noLui);
 				assertEquals(message, erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-6926
+	 */
+	@Test
+	public void testArriveePersonneMarieConnueHorsSuisseCelibataire() throws Exception {
+
+		final long noIndividu = 32673256L;
+		final RegDate debutHS = date(2009, 9, 1);
+		final RegDate dateMariage = date(2011, 6, 6);
+		final RegDate dateArrivee = date(2012, 5, 5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1980, 10, 25);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Tine", "Albert", Sexe.MASCULIN);
+				marieIndividu(ind, dateMariage);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Rue de la tour Eiffel", "23", 75007, null, "Paris", MockPays.France, debutHS, dateArrivee.getOneDayBefore());
+				final MockAdresse adresseVD = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+				adresseVD.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				tiersService.changeHabitantenNH(pp);
+				addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée
+		traiterEvenements(noIndividu);
+
+		// vérification de l'état de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNull(evt.getCommentaireTraitement());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffpPP);
+				assertEquals(debutHS, ffpPP.getDateDebut());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
+				assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+				assertNull(couple.getConjoint());
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateArrivee, ffpMc.getDateDebut());
+				assertNull(ffpMc.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFSEtendu(), ffpMc.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

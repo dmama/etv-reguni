@@ -474,19 +474,12 @@ public abstract class Arrivee extends Mouvement {
 
 		final Individu conjoint = context.getServiceCivil().getConjoint(getNoIndividu(), getDate());
 
-		if (isArriveeRedondantePosterieurPourIndividuEnMenage()) {
+		if (isArriveeRedondantePosterieurPourIndividuEnMenage() || isArriveeRedondantePourIndividuEnMenage()) {
 			if (!getPrincipalPP().isHabitantVD()) {
 				//noinspection ConstantConditions
 				context.getTiersService().changeNHenHabitant(getPrincipalPP(), individu.getNoTechnique(), dateEvenement);
 			}
-			return HandleStatus.TRAITE;
-		}
-		if (isArriveeRedondantePourIndividuEnMenage()) {
-			if (!getPrincipalPP().isHabitantVD()) {
-				//noinspection ConstantConditions
-				context.getTiersService().changeNHenHabitant(getPrincipalPP(), individu.getNoTechnique(), dateEvenement);
-				return HandleStatus.TRAITE;
-			}
+			Audit.info(getNumeroEvenement(), "Arrivée considérée comme redondante fiscalement, ré-évaluation du flag habitant");
 			return HandleStatus.REDONDANT;
 		}
 
