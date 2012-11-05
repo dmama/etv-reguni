@@ -145,7 +145,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin(),
 					"Le for principal du ménage commun possède une date de fin fausse");
 			assertEquals(lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + lausanne.getNomMajuscule());
+					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + lausanne.getNomMinuscule());
 		}
 	}
 

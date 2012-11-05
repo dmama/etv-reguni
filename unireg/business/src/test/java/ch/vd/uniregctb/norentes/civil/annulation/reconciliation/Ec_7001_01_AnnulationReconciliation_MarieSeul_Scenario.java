@@ -77,7 +77,7 @@ public class Ec_7001_01_AnnulationReconciliation_MarieSeul_Scenario extends Abst
 			assertEquals(dateSeparation, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertEquals(dateReconciliation.getOneDayBefore(), ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.SOURCE, ffp.getModeImposition(), "Le mode d'imposition n'est pas SOURCE");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMajuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 		{
 			MenageCommun mc = (MenageCommun) tiersDAO.get(noMenage);

@@ -124,7 +124,7 @@ public class Ec_7000_04_Reconciliation_Non_Separes_Scenario extends EvenementCiv
 					"Le for fiscal principal du ménage commun possède une date de début qui est fausse");
 			assertNull(ffp.getDateFin(), "Le for fiscal principal du ménage commun est fermé");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + commune.getNomMajuscule());
+					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + commune.getNomMinuscule());
 		}
 	}
 

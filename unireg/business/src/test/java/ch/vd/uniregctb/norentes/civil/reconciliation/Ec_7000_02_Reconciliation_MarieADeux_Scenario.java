@@ -127,7 +127,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + commune.getNomMajuscule());
+					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
 		}
 	}
 

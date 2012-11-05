@@ -130,7 +130,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 					"Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + communeMariage.getNomMajuscule());
+					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
 		}
 	}
 
