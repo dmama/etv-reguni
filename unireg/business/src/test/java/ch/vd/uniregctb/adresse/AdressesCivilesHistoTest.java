@@ -116,6 +116,7 @@ public class AdressesCivilesHistoTest {
 		assertEquals(RegDate.get(2008, 1, 1), adresses.getVeryLastDate());
 	}
 
+	@Test
 	public void testGetVeryLastDatePlusieursAdresses() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
@@ -126,6 +127,7 @@ public class AdressesCivilesHistoTest {
 		assertEquals(RegDate.get(2008, 1, 1), adresses.getVeryLastDate());
 	}
 
+	@Test
 	public void testGetVeryLastDateQuatreAdresses() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
@@ -137,6 +139,7 @@ public class AdressesCivilesHistoTest {
 		assertEquals(RegDate.get(2010, 3, 2), adresses.getVeryLastDate());
 	}
 
+	@Test
 	public void testGetVeryLastDateAdressesSecondairesIgnorees() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
@@ -152,6 +155,7 @@ public class AdressesCivilesHistoTest {
 
 	}
 
+	@Test
 	public void testGetVeryLastDateAdresseDateFinNulle() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
