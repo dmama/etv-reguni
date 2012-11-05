@@ -93,7 +93,7 @@
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-embedded-tomcat</artifactId>
-			<version>3.0.0</version>
+			<version>${embedded-tomcat.version}</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -194,7 +194,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.0.2</version>
+				<version>2.3</version>
 				<configuration>
 					<archive>
 						<manifest>
@@ -205,7 +205,14 @@
 							<Application-Version>${pom.version}</Application-Version>
 						</manifestEntries>
 					</archive>
-					<dependentWarExcludes>**/hibernate.cfg.xml,**/web.xml</dependentWarExcludes>
+					<overlays>
+						<overlay>
+							<excludes>
+								<exclude>**/hibernate.cfg.xml</exclude>
+								<exclude>**/web.xml</exclude>
+							</excludes>
+						</overlay>
+					</overlays>
 					<webResources>
 						<resource>
 							<filtering>true</filtering>

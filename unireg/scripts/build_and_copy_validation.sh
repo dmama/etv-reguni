@@ -34,7 +34,7 @@ nexusFileOrig=unireg-nexus-release.zip
 nexusFileDest=unireg-nexus-release-${env}-${version}-${DATE}.zip
 ubrFileOrig=ubr-release.zip
 ubrFileDest=ubr-release-${env}-${version}-${DATE}.zip
-MVN_OPTS="-Pnot,build.source,oracle,all"
+MVN_OPTS="-Pnot,build.source,oracle,all,jspc"
 
 # on vérifie que l'on ne dépend pas de librairies SNAPSHOT
 IGNORE_SNAPSHOT="org.apache.activemq.protobuf:activemq-protobuf:jar:1.0-SNAPSHOT"

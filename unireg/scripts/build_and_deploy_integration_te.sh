@@ -47,7 +47,7 @@ nexusAppDir=$tomcatDir/appDir/unireg-nexus
 
 # Compilation
 if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/base && mvn -Pnot,oracle,ext clean install)
+	(cd unireg/base && mvn -Pnot,oracle,ext,jspc clean install)
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors du build" >&2
