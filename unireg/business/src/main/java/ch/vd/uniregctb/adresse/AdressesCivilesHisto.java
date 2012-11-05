@@ -126,13 +126,14 @@ public class AdressesCivilesHisto {
 	 * @throws DonneesCivilesException en cas d'incohérence des données
 	 */
 	private void validate(boolean strict) throws DonneesCivilesException {
-		validateList(principales, "principale", strict);
-		validateList(courriers, "courrier", strict);
-		validateList(secondaires, "secondaire", strict);
-		validateList(tutelles, "tutelle", strict);
+		validateNonChevauchement(principales, "principale", strict);
+		validateNonChevauchement(courriers, "courrier", strict);
+		// [SIFISC-6942] les adresses secondaires *peuvent* se chevaucher
+		// validateNonChevauchement(secondaires, "secondaire", strict);
+		validateNonChevauchement(tutelles, "tutelle", strict);
 	}
 
-	private static void validateList(List<Adresse> adresses, String typeAdresse, boolean strict) throws DonneesCivilesException {
+	private static void validateNonChevauchement(List<Adresse> adresses, String typeAdresse, boolean strict) throws DonneesCivilesException {
 		if (adresses == null) {
 			return;
 		}
@@ -143,8 +144,8 @@ public class AdressesCivilesHisto {
 			final Adresse current = adresses.get(i);
 			if (DateRangeHelper.intersect(previous, current)) {
 				if (strict) {
-					throw new DonneesCivilesException("L'adresse civile " + typeAdresse + " qui commence le " + current.getDateDebut() + " et finit le " + current.getDateFin()
-							+ " chevauche l'adresse précédente qui commence le " + previous.getDateDebut() + " et finit le " + previous.getDateFin());
+					final String message = buildMessageErreurChevauchement(typeAdresse, previous, current);
+					throw new DonneesCivilesException(message);
 				}
 				else {
 					// on essaie de corriger les données à la volée
@@ -171,6 +172,45 @@ public class AdressesCivilesHisto {
 				}
 			}
 		}
+	}
+
+	private static String buildMessageErreurChevauchement(String typeAdresse, Adresse previous, Adresse current) {
+
+		final StringBuilder s = new StringBuilder();
+
+		s.append("L'adresse civile ").append(typeAdresse);
+
+		if (current.getDateDebut() == null) {
+			s.append(" dont la date de début est inconnue");
+		}
+		else {
+			s.append(" qui commence le ").append(RegDateHelper.dateToDisplayString(current.getDateDebut()));
+		}
+
+		if (current.getDateFin() == null) {
+			s.append(" (et qui est toujours active)");
+		}
+		else {
+			s.append(" et finit le ").append(RegDateHelper.dateToDisplayString(current.getDateFin()));
+		}
+
+		s.append(" chevauche l'adresse précédente ");
+
+		if (previous.getDateDebut() == null) {
+			s.append(" dont la date de début est inconnue");
+		}
+		else {
+			s.append("qui commence le ").append(RegDateHelper.dateToDisplayString(previous.getDateDebut()));
+		}
+
+		if (previous.getDateFin() == null) {
+			s.append(" (et qui est toujours active)");
+		}
+		else {
+			s.append(" et finit le ").append(RegDateHelper.dateToDisplayString(previous.getDateFin()));
+		}
+
+		return s.toString();
 	}
 
 	/**

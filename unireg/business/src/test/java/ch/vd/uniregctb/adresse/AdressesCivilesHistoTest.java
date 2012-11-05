@@ -2,6 +2,7 @@ package ch.vd.uniregctb.adresse;
 
 import java.util.List;
 
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
@@ -167,7 +168,19 @@ public class AdressesCivilesHistoTest {
 		assertNull(null, adresses.getVeryLastDate());
 	}
 
-	private void add(List<Adresse> adresses, RegDate dateDebut, RegDate dateFin) {
+
+	/**
+	 * [SIFISC-6942] Vérifie que les adresses secondaires peuvent se chevaucher sans problème de validation.
+	 */
+	@Test
+	public void testChevauchementAdressesSecondaires() throws Exception {
+		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
+		add(adresses.secondaires, RegDate.get(1985, 1, 1), null);
+		add(adresses.secondaires, RegDate.get(2000, 1, 1), RegDate.get(2008, 1, 1));
+		adresses.finish(true);
+	}
+
+	private void add(List<Adresse> adresses, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		MockAdresse a = new MockAdresse();
 		a.setDateDebutValidite(dateDebut);
 		a.setDateFinValidite(dateFin);
