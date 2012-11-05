@@ -1417,12 +1417,21 @@ var Histo = {
 	 * Affiche ou filtre les données historiques d'une table
 	 */
 	refreshHistoTable: function(showHisto, table, dateFinIndex) {
-		var rows = $(table).get(0).rows;
+
+		if ($(table).length == 0) {
+			return;
+		}
+
+		var rows = $(table).prop('rows');
 		var foundSomething = false; // vrai si une ligne au moins est affichée
 		var visibleCount = 0;
 
 		for (i = 1; i < rows.length; i++) { // on ignore l'entête
 			var line = rows[i];
+			if (line.className == 'empty') {
+				// la table est vide, inutile d'aller plus loin
+				return;
+			}
 			var dateFin = line.cells[dateFinIndex].innerHTML;
 			var isHisto = (dateFin != null && StringUtils.isNotBlank(dateFin)); // date fin != null -> valeur historique
 

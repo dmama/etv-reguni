@@ -64,7 +64,7 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshRegimesVDTable(checkbox) {
-		var showHisto = $(checkbox).get(0).checked;
+		var showHisto = $(checkbox).attr('checked');
 		var table = $('#regimesVD');
 		Histo.refreshHistoTable(showHisto, table, 1);
 	}
@@ -73,7 +73,7 @@
 	 * Affiche ou filtre les données historiques de la table des sièges
 	 */
 	function refreshRegimesCHTable(checkbox) {
-		var showHisto = $(checkbox).get(0).checked;
+		var showHisto = $(checkbox).attr('checked');
 		var table = $('#regimesCH');
 		Histo.refreshHistoTable(showHisto, table, 1);
 	}
