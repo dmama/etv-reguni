@@ -907,9 +907,6 @@ var Tiers = {
 		var titre = options.titre || 'Caractéristiques du tiers';
 		var showAvatar = options.showAvatar;
 		var showLinks = options.showLinks;
-		var showValidation = options.showValidation;
-		var showEvenementsCivils = options.showEvenementsCivils;
-		var showComplements = options.showComplements;
 
 		var url = App.curl('tiers/vignette-info.do?numero=') + numero +
 			'&fillActions=' + (showLinks ? 'true' : 'false') +
@@ -943,7 +940,7 @@ var Tiers = {
 				html += '<input name="debugTypeForPrincipalActif" type="hidden" value="' + tiers.typeAutoriteFiscaleForPrincipal + '"/>';
 				if (showAvatar || showLinks) {
 					html += '<table cellspacing="0" cellpadding="0" border="0"><tr><td>\n';
-					html += Tiers._buildDescriptifTiers(tiers, showLinks, showEvenementsCivils, showValidation, showComplements);
+					html += Tiers._buildDescriptifTiers(tiers, showLinks);
 					html += '</td><td width="130 px">\n';
 					html += Tiers._buildImageTiers(tiers);
 					html += '</td></tr></table>';
@@ -961,12 +958,9 @@ var Tiers = {
 		.error(Ajax.popupErrorHandler);
 	},
 
-	_buildDescriptifTiers : function(tiers, showLinks, showEvenementsCivils, showValidation, showComplements) {
+	_buildDescriptifTiers : function(tiers, showLinks) {
 		var html = '';
 
-		if (showValidation) {
-			// TODO (msi)
-		}
 		html += '<table cellspacing="0" cellpadding="5" border="0" class="display_table">';
 		if (tiers.dateAnnulation) {
 			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS ANNULE</center></td></tr>\n';
@@ -975,10 +969,6 @@ var Tiers = {
 			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS DESACTIVE AU ' + RegDate.format(tiers.dateDesactivation) + '</center></td></tr>\n';
 		}
 		else {
-			if (showEvenementsCivils) {
-				// TODO (msi)
-			}
-
 			// Numéro de contribuable
 			html += '<tr class="odd">';
 			html += '<td width="25%" nowrap>N° de tiers&nbsp;:&nbsp;</td>';
@@ -1053,9 +1043,6 @@ var Tiers = {
 				html += '<tr class="odd"><td width="25%">Adresse&nbsp;:</td>';
 				html +=
 					'<td  width="75%"  colspan="2" class="error">Si ce problème persiste, veuillez s\'il-vous-plaît contacter l\'administrateur pour lui communiquer le message ci-dessus. Merci.</td></tr>';
-			}
-			if (showComplements) {
-				// TODO (msi)
 			}
 		}
 		html += '</table>';
