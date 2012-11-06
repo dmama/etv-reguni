@@ -33,8 +33,6 @@ import ch.vd.uniregctb.type.Sexe;
 @DiscriminatorValue("PersonnePhysique")
 public class PersonnePhysique extends Contribuable {
 
-	private static final long serialVersionUID = 3641798749348427983L;
-
 	public PersonnePhysique(){
 		super();
 	}
@@ -274,7 +272,6 @@ public class PersonnePhysique extends Contribuable {
 	 * </ul>
 	 *
 	 * @return la date de naissance de la personne physique, ou <b>null</b> si cette information n'est pas connue.
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_nLi8QFx9Edygsbnw9h5bVw?GETTER"
 	 */
 	@Column(name = "NH_DATE_NAISSANCE")
 	@Type(type = "ch.vd.uniregctb.hibernate.RegDateUserType", parameters = { @Parameter(name = "allowPartial", value = "true") })

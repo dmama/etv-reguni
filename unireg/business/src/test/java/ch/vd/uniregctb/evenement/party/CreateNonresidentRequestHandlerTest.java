@@ -38,14 +38,14 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 		super.onSetUp();
 
 		handler = new CreateNonresidentRequestHandler();
-		handler.setTiersDAO(tiersDAO);
+		handler.setHibernateTemplate(hibernateTemplate);
 	}
 
 	@Test
 	public void testSansDroit() throws Exception {
 		handler.setSecurityProvider(new MockSecurityProvider());
 		final CreateNonresidentRequest request = new CreateNonresidentRequest(
-				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, NaturalPersonCategory.SWISS, 7561111111111L
+				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, NaturalPersonCategory.SWISS, 7561111111111L, null
 		);
 		try {
 			handler.handle(request).getResponse();
@@ -69,7 +69,7 @@ public class CreateNonresidentRequestHandlerTest extends BusinessTest {
 	private void testCasNormal(final NaturalPersonCategory category) throws Exception {
 
 		final CreateNonresidentRequest request = new CreateNonresidentRequest(
-				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, category, 7561111111111L
+				USER_LOGIN, "Nabit", "Pala", new Date(1980, 1, 2), Sex.MALE, category, 7561111111111L, null
 		);
 		final CreateNonresidentResponse res= doInNewTransaction(new TransactionCallback<CreateNonresidentResponse>() {
 			@Override

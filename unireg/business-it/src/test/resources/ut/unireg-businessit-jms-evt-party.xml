@@ -61,7 +61,7 @@
 	</bean>
 
 	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandler">
-		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 
