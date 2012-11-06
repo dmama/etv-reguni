@@ -37,7 +37,7 @@
 	 */
 	generic: function(url, input, validateSelection, on_change) {
 
-		var input = $(input);
+		input = $(input);
 
 		// [SIFISC-832] on évite de passer par des variables locales parce qu'on cas de réinstanciation de l'autocompletion sur un champ,
 		// cela crée plusieurs closures avec chacunes leurs variables locales. Et après, il y a plusieurs versions de l'event handler sur 'focusout'
@@ -47,7 +47,7 @@
 
 		input.autocomplete({
 			source: App.curl(url),
-			open: function(event, ui) {
+			open: function() {
 				if (validateSelection) {
 					input.removeClass('error');
 				}
@@ -64,7 +64,7 @@
 				input.data('selected', ui.item);
 				return false;
 			},
-			close: function(event, ui) {
+			close: function() {
 				input.data('is_open', false);
 				if (validateSelection && input.data('selected') == null) {
 					input.addClass('error');
@@ -77,13 +77,14 @@
 			minLength: 2
 		})
 		.data( "autocomplete" )._renderItem = function( ul, item ) {
+			/** @namespace item.desc */
 			return $( "<li></li>" )
 				.data( "item.autocomplete", item )
 				.append( "<a>" + item.desc + "</a>" )
 				.appendTo( ul );
 		};
 
-		input.focusout(function(event) {
+		input.focusout(function() {
 			if (input.data('is_open')) {
 				// on ignore l'événement si le dialog d'autocompletion est ouverte, parce que cela veut dire que l'utilisateur a cliqué avec la souris sur un élément du menu
 				return;
@@ -98,7 +99,7 @@
 		});
 
 		var previous = null;
-		input.keyup(function(event) {
+		input.keyup(function() {
 			var current = input.val();
 			if (current != previous) {
 				previous = current;
@@ -107,10 +108,11 @@
 			}
 		});
 	}
-}
+};
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var Dialog = {
 
 	/**
@@ -183,6 +185,7 @@ var Dialog = {
 
 						// on effectue la recherche par ajax
 						$.get(App.curl(queryString), function(results) {
+							/** @namespace results.filterDescription */
 							$('#tiers-picker-filter-description').text(results.filterDescription);
 							$('#tiers-picker-results').html(Dialog.__buildHtmlTiersPickerResults(results, buttonId));
 						}, 'json')
@@ -209,7 +212,7 @@ var Dialog = {
 					queryString += '&filterBean=' + encodeURIComponent(filter_bean);
 					queryString += '&filterParams=' + encodeURIComponent(filter_params);
 				}
- 				queryString += '&' + new Date().getTime()
+ 				queryString += '&' + new Date().getTime();
 
 				// on effectue la recherche par ajax
 				$.get(App.curl(queryString), function(results) {
@@ -264,6 +267,7 @@ var Dialog = {
 	__buildHtmlTiersPickerResults: function(results, buttonId) {
 		var table = results.summary;
 
+		/** @namespace results.entries */
 		if (results.entries.length > 0) {
 			table += '<table border="0" cellspacing="0">';
 			table += '<thead><tr class="header">';
@@ -272,8 +276,16 @@ var Dialog = {
 			table += '<tbody>';
 			for(var i = 0; i < results.entries.length; ++i) {
 				var e = results.entries[i];
+				/** @namespace e.numero */
+				/** @namespace e.nom1 */
+				/** @namespace e.nom2 */
+				/** @namespace e.dateNaissance */
+				/** @namespace e.npa */
+				/** @namespace e.localitePays */
+				/** @namespace e.forPrincipal */
 				table += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd')  + '">';
-				table += '<td><a onclick="document.getElementById(\'' + buttonId + '\').select_tiers_id(this); return false;" href="#">' + Tiers.formatNumero(e.numero) + '</a></td>';
+				var onclick = "document.getElementById('" + buttonId + "').select_tiers_id(this); return false;";
+				table += '<td><a onclick="' + onclick + '" href="#">' + Tiers.formatNumero(e.numero) + '</a></td>';
 				table += '<td>' + StringUtils.escapeHTML(e.nom1) + (e.nom2 ? ' ' + StringUtils.escapeHTML(e.nom2) : '' ) + '</td>';
 				table += '<td>' + StringUtils.escapeHTML(e.dateNaissance) + '</td>';
 				table += '<td>' + (e.npa ? StringUtils.escapeHTML(e.npa) : '') + (e.localitePays ? ' ' + StringUtils.escapeHTML(e.localitePays) : '') + '</td>';
@@ -295,6 +307,13 @@ var Dialog = {
 
 		// charge le contenu de la boîte de dialogue
 		$.getJSON(App.curl('/common/consult-log.do?nature=') + nature + '&id=' + id + '&' + new Date().getTime(), function(view) {
+
+			/** @namespace view.utilisateurCreation */
+			/** @namespace view.utilisateurDerniereModif */
+			/** @namespace view.utilisateurAnnulation */
+			/** @namespace view.dateHeureCreation */
+			/** @namespace view.dateHeureDerniereModif */
+			/** @namespace view.dateHeureAnnulation */
 
 			var dialog = Dialog.create_dialog_div('consulter-log-dialog');
 
@@ -391,6 +410,13 @@ var Dialog = {
 
 		$.getJSON(App.curl("/tiers/mouvement.do?idMvt=") + id + "&" + new Date().getTime(), function(mvt) {
 			if (mvt) {
+				/** @namespace mvt.dateExecution */
+				/** @namespace mvt.executant */
+				/** @namespace mvt.dateMouvement */
+				/** @namespace mvt.collectiviteAdministrative */
+				/** @namespace mvt.nomPrenomUtilisateur */
+				/** @namespace mvt.typeMouvement */
+				/** @namespace mvt.numeroTelephoneUtilisateur */
 
 				var html =
 				'<fieldset class="information">' +
@@ -466,7 +492,7 @@ var Dialog = {
 		}
 		return dialog;
 	}
-}
+};
 
 //===================================================
 
@@ -760,21 +786,25 @@ var Fors = {
 	 */
 	buildActionTableHtml: function(results) {
 
+		/** @namespace results.exception */
+		/** @namespace results.errors */
+		/** @namespace results.actions */
+
 		var table = '<table class="sync_actions" border="0" cellspacing="0"><tbody>';
 
 		// header
 		if (results.exception) {
-			table += '<tr class="header"><td colspan="2">'
+			table += '<tr class="header"><td colspan="2">';
 			table += 'Les erreurs de validation suivantes seront levées si vous confirmez les changements';
-			table += '</tr>'
-			table += '<tr class="exception" colspan="2">';
+			table += '</tr>';
+			table += '<tr class="exception">';
 			table += '<td>' + StringUtils.escapeHTML(results.exception) + '</td>';
 			table += '</tr>'
 		}
 		else if (results.errors && results.errors.length > 0) {
-			table += '<tr class="header"><td colspan="2">'
+			table += '<tr class="header"><td colspan="2">';
 			table += 'Les erreurs de validation suivantes seront levées si vous confirmez les changements';
-			table += '</tr>'
+			table += '</tr>';
 			for (var i = 0; i < results.errors.length; ++i) {
 				table += '<tr class="action">';
 				table += '<td class="rowheader">»</td>';
@@ -783,10 +813,10 @@ var Fors = {
 			}
 		}
 		else {
-			table += '<tr class="header"><td colspan="2">'
-			table += 'Les actions suivantes seront exécutées si vous confirmez les changements'
-			table += '</tr>'
-			for (var i = 0; i < results.actions.length; ++i) {
+			table += '<tr class="header"><td colspan="2">';
+			table += 'Les actions suivantes seront exécutées si vous confirmez les changements';
+			table += '</tr>';
+			for (i = 0; i < results.actions.length; ++i) {
 				table += '<tr class="action">';
 				table += '<td class="rowheader">»</td>';
 				table += '<td class="action">' + StringUtils.escapeHTML(results.actions[i]) + '</td>';
@@ -799,7 +829,7 @@ var Fors = {
 		return table;
 	}
 
-}
+};
 
 //===================================================
 
@@ -816,7 +846,6 @@ var Quicksearch = {
 		var characterCode;
 
 		if (e && e.which) {
-			e = e;
 			characterCode = e.which;
 		} else {
 			e = event;
@@ -857,7 +886,7 @@ var Quicksearch = {
 		}
 	}
 
-}
+};
 
 //===================================================
 
@@ -870,6 +899,7 @@ var Rapport = {
 		var divTauxActiviteLabel 	= document.getElementById('tauxActiviteLabel');
 		var divTauxActiviteInput 	= document.getElementById('tauxActiviteInput');
 		var form = document.getElementById('formModifRapport');
+		/** @namespace form.tauxActivite */
 		if (type == 'PRINCIPALE') {
 			divTauxActiviteLabel.style.display = '';
 			divTauxActiviteInput.style.display = '';
@@ -892,6 +922,7 @@ var Rapport = {
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 /**
  * Classe utilitaire pour la manipulation de données en relation avec les tiers
  */
@@ -903,6 +934,11 @@ var Tiers = {
 	 * @param options une liste d'options pour l'affichage d'informations supplémentaires.
 	 */
 	loadVignette:function (div, numero, options) {
+
+		/** @namespace options.titre */
+		/** @namespace options.showAvatar */
+		/** @namespace options.showLinks */
+
 		options = options || {};
 		var titre = options.titre || 'Caractéristiques du tiers';
 		var showAvatar = options.showAvatar;
@@ -923,6 +959,10 @@ var Tiers = {
 
 		// récupère les informations du tiers
 		$.getJSON(url, function(tiers) {
+
+			/** @namespace tiers.accessDenied */
+			/** @namespace tiers.nature */
+			/** @namespace tiers.typeAutoriteFiscaleForPrincipal */
 
 			var html = '';
 			if (tiers && tiers.accessDenied) {
@@ -959,14 +999,23 @@ var Tiers = {
 	},
 
 	_buildDescriptifTiers : function(tiers, showLinks) {
+
+		/** @namespace tiers.dateAnnulation */
+		/** @namespace tiers.dateDesactivation */
+		/** @namespace tiers.roleLigne1 */
+		/** @namespace tiers.roleLigne2 */
+		/** @namespace tiers.adresseEnvoiException */
+		/** @namespace tiers.adresseEnvoi */
+		/** @namespace tiers.adresseEnvoi.ligne1 */
+
 		var html = '';
 
 		html += '<table cellspacing="0" cellpadding="5" border="0" class="display_table">';
 		if (tiers.dateAnnulation) {
-			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS ANNULE</center></td></tr>\n';
+			html += '<tr class="inactif"><td colspan="3" width="100%" style="text-align: center;">TIERS ANNULE</td></tr>\n';
 		}
 		else if (tiers.dateDesactivation) {
-			html += '<tr class="inactif"><td colspan="3" width="100%"><center>TIERS DESACTIVE AU ' + RegDate.format(tiers.dateDesactivation) + '</center></td></tr>\n';
+			html += '<tr class="inactif"><td colspan="3" width="100%" style="text-align: center;">TIERS DESACTIVE AU ' + RegDate.format(tiers.dateDesactivation) + '</center></td></tr>\n';
 		}
 		else {
 			// Numéro de contribuable
@@ -1007,6 +1056,7 @@ var Tiers = {
 					html += '<span>Actions : </span><select onchange="return App.executeAction($(this).val());">';
 					html += '<option>---</option>';
 					for(var i in tiers.actions) {
+						//noinspection JSUnfilteredForInLoop
 						var action = tiers.actions[i];
 						html += '<option value="' + action.url + '">' + StringUtils.escapeHTML(action.label) + '</option>';
 					}
@@ -1025,7 +1075,7 @@ var Tiers = {
 				html += '<td width="25%">Adresse&nbsp;:</td>';
 				html += '<td width="75%" colspan="2">' + StringUtils.escapeHTML(tiers.adresseEnvoi.ligne1) + '</td>';
 				// lignes 2 à 6
-				for (var i = 2; i <= 6; ++i) {
+				for (i = 2; i <= 6; ++i) {
 					var line = tiers.adresseEnvoi['ligne' + i];
 					if (StringUtils.isNotBlank(line)) {
 						html += '<tr class="odd">';
@@ -1050,12 +1100,16 @@ var Tiers = {
 	},
 
 	_buildVers : function(tiers) {
+
+		/** @namespace tiers.urlsVers */
+
 		var html = '<div style="float: right;margin-right: 10px">';
 		html += '<span>Vers : </span>';
 
 		html += '<select name="AppSelect" onchange="App.gotoExternalApp(this);">';
 		html += '<option value="">---</option>';
 		for (var i in tiers.urlsVers) {
+			//noinspection JSUnfilteredForInLoop
 			var uv = tiers.urlsVers[i];
 			var url = App.curl('/redirect/') + uv.appName + '.do?id=' + tiers.numero;
 			html += '<option value="' + url + '">' + StringUtils.escapeHTML(uv.label) + '</option>';
@@ -1065,6 +1119,7 @@ var Tiers = {
 	},
 
 	_buildImageTiers : function(tiers) {
+		/** @namespace tiers.typeAvatar */
 		var image = this._getImageUrl(tiers.typeAvatar, false);
 		return '<img class="iepngfix" src="' + App.curl(image) + '">';
 	},
@@ -1164,6 +1219,7 @@ var Tiers = {
 	loadValidationMessages: function(numero, div) {
 		this.validate(numero, function(results) {
 			var html = '';
+			/** @namespace results.warnings */
 			if (results.errors || results.warnings) {
 				html += '<table class="validation_error" cellspacing="0" cellpadding="0" border="0">';
 				html += '<tr><td class="heading">Un ou plusieurs problèmes ont été détectés sur ce contribuable ';
@@ -1172,11 +1228,13 @@ var Tiers = {
 
 				if (results.errors) {
 					for (var i in results.errors) {
+						//noinspection JSUnfilteredForInLoop
 						html += '<li class="err">Erreur: ' + StringUtils.escapeHTML(results.errors[i]) +'</li>'
 					}
 				}
 				if (results.warnings) {
-					for (var i in results.warnings) {
+					for (i in results.warnings) {
+						//noinspection JSUnfilteredForInLoop
 						html += '<li class="warn">Avertissement: ' + StringUtils.escapeHTML(results.warnings[i]) +'</li>'
 					}
 				}
@@ -1185,7 +1243,7 @@ var Tiers = {
 			$(div).html(html);
 		});
 	}
-}
+};
 
 //===================================================
 
@@ -1198,7 +1256,8 @@ var Link = {
 	 * @return {String} le code html qui va bien.
 	 */
 	consulterLog:function (nature, id) {
-		return '<a href="#" class="consult" title="Consultation des logs" onclick="return Dialog.open_consulter_log(\'' + nature + '\', ' + id + ');">&nbsp;</a>';
+		var onclick = "return Dialog.open_consulter_log('" + nature + "', " + id + ");";
+		return '<a href="#" class="consult" title="Consultation des logs" onclick="' + onclick + '">&nbsp;</a>';
 	},
 
 	/**
@@ -1235,7 +1294,7 @@ var Histo = {
 			var len = tbl.rows.length;
 			var showHisto = $('#' + elementId).attr('checked');
 
-			for (i = 1 ; i < len; i++) {
+			for (var i = 1 ; i < len; i++) {
 
 				var visible;
 				if (!showHisto) {
@@ -1245,11 +1304,8 @@ var Histo = {
 						// cette ligne est masquée par défaut, on ne fait donc rien
 						continue;
 					}
-					else if (StringUtils.trim(x[numCol].innerHTML) == '' && x[numCol].innerHTML.indexOf('strike')== -1 && !this.hasClassName(tbl.rows[i], 'strike')) {
-						visible = true;
-					}
 					else {
-						visible = false;
+						visible = StringUtils.isBlank(x[numCol].innerHTML) && x[numCol].innerHTML.indexOf('strike') == -1 && !this.hasClassName(tbl.rows[i], 'strike');
 					}
 				}
 				else {
@@ -1274,7 +1330,7 @@ var Histo = {
 		var tbl = $('#' + tableId).get(0);
 		if (tbl != null) {
 			var len = tbl.rows.length;
-			for (i=1 ; i< len; i++) {
+			for (var i=1 ; i< len; i++) {
 				if (!isAll) {
 					var x = tbl.rows[i].cells;
 					if (numCol >= x.length) {
@@ -1319,10 +1375,10 @@ var Histo = {
 			var len = tbl.rows.length;
 			var showHisto = $('#' + elementId).attr('checked');
 
-			for (i=1 ; i< len; i++){
+			for (var i=1 ; i< len; i++){
 				if (!showHisto) {
 					var x = tbl.rows[i].cells;
-					if ((StringUtils.trim(x[numCol].innerHTML) == '') && (!this.hasClassName(tbl.rows[i], 'strike'))||(x[numColActive].innerHTML.match('Active'))){
+					if ((StringUtils.trim(x[numCol].innerHTML) == '') && (!this.hasClassName(tbl.rows[i], 'strike'))||(x[numColActive].innerHTML.match(/Active/))){
 						tbl.rows[i].style.display = '';
 					}
 					else {
@@ -1347,7 +1403,7 @@ var Histo = {
 			var len = tbl.rows.length;
 			var showHisto = $('#' + elementId).attr('checked');
 
-			for (i=1 ; i< len; i++){
+			for (var i=1 ; i< len; i++){
 				if (!showHisto) {
 					var x = tbl.rows[i].cells;
 					if ((x[numCol].innerHTML.indexOf('strike')== -1) && (!this.hasClassName(tbl.rows[i], 'strike'))){
@@ -1413,7 +1469,7 @@ var Histo = {
 		var foundSomething = false; // vrai si une ligne au moins est affichée
 		var visibleCount = 0;
 
-		for (i = 1; i < rows.length; i++) { // on ignore l'entête
+		for (var i = 1; i < rows.length; i++) { // on ignore l'entête
 			var line = rows[i];
 			if (line.className == 'empty') {
 				// la table est vide, inutile d'aller plus loin
@@ -1444,10 +1500,11 @@ var Histo = {
 			rows[1].style.display = ''
 		}
 	}
-}
+};
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var StringUtils = {
 
 	trim: function(string) {
@@ -1489,10 +1546,11 @@ var StringUtils = {
 		while (val.length < len) val = car + val;
 		return val;
 	}
-}
+};
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var DateUtils = {
 
 	/*
@@ -1502,20 +1560,23 @@ var DateUtils = {
 		if (!strDate) {
 			return null;
 		}
+		var day;
+		var month;
+		var year;
 		if (format == 'dd.MM.yyyy') {
-			day = parseInt(strDate.substring(0,2));
-			month = parseInt(strDate.substring(3,5));
-			year = parseInt(strDate.substring(6,10));
+			day = parseInt(strDate.substring(0, 2));
+			month = parseInt(strDate.substring(3, 5));
+			year = parseInt(strDate.substring(6, 10));
 		}
 		else if (format == 'yyyy.MM.dd') {
-			year = parseInt(strDate.substring(0,4));
-			month = parseInt(strDate.substring(5,7));
-			day = parseInt(strDate.substring(8,10));
+			year = parseInt(strDate.substring(0, 4));
+			month = parseInt(strDate.substring(5, 7));
+			day = parseInt(strDate.substring(8, 10));
 		}
 		else {
 			alert("Type de format inconnu !");
 		}
-		d = new Date();
+		var d = new Date();
 		d.setDate(day); // 1..31
 		d.setMonth(month - 1); // 0..11
 		d.setFullYear(year); // 4 digits
@@ -1533,17 +1594,20 @@ var DateUtils = {
 	* Ajoute nombreAnnees années à la date
 	*/
 	addYear: function(strDate, nombreAnnees, format){
+		var day;
+		var month;
+		var year;
 		if (format == 'dd.MM.yyyy') {
-			day = strDate.substring(0,2);
-			month = strDate.substring(3,5);
-			year = parseInt(strDate.substring(6,10)) + nombreAnnees;
+			day = strDate.substring(0, 2);
+			month = strDate.substring(3, 5);
+			year = parseInt(strDate.substring(6, 10)) + nombreAnnees;
 		}
 		if (format == 'yyyy.MM.dd') {
 			year = parseInt(strDate.substring(0,4)) + nombreAnnees;
 			month = strDate.substring(5,7);
 			day = strDate.substring(8,10);
 		}
-		d = new Date();
+		var d = new Date();
 		d.setDate(day);
 		d.setMonth(month);
 		d.setFullYear(year);
@@ -1551,14 +1615,14 @@ var DateUtils = {
 	},
 
 	/*
-	* Retourne:
-	*   0 si date_1=date_2
-	  *   1 si date_1>date_2
-	*  -1 si date_1<date_2
-	*/
-	compare: function(date_1, date_2){
-	  diff = date_1.getTime()-date_2.getTime();
-	  return (diff==0?diff:diff/Math.abs(diff));
+	 * Retourne:
+	 *   0 si date_1=date_2
+	 *   1 si date_1>date_2
+	 *  -1 si date_1<date_2
+	 */
+	compare:function (date_1, date_2) {
+		var diff = date_1.getTime() - date_2.getTime();
+		return (diff == 0 ? diff : diff / Math.abs(diff));
 	},
 
 	toCompactString: function(date) {
@@ -1627,7 +1691,7 @@ var DateUtils = {
 
 		return duration;
 	}
-}
+};
 
 var RegDate = {
 
@@ -1639,6 +1703,9 @@ var RegDate = {
 		if (!regdate) {
 			return null;
 		}
+		/** @namespace regdate.year */
+		/** @namespace regdate.month */
+		/** @namespace regdate.day */
 		return new Date(regdate.year, regdate.month - 1, regdate.day);  // months are 0-based
 	},
 
@@ -1650,7 +1717,8 @@ var RegDate = {
 		format = format || 'shortDate';
 		return date.format(format);
 	}
-}
+};
+
 //===================================================
 
 /*
@@ -1680,6 +1748,7 @@ var dateFormat = function () {
 
 	// Regexes and supporting functions are cached through closure
 	return function (date, mask, utc) {
+		//noinspection UnnecessaryLocalVariableJS
 		var dF = dateFormat;
 
 		// You can't provide utc if you skip other args (use the "UTC:" mask prefix)
@@ -1690,7 +1759,7 @@ var dateFormat = function () {
 
 		// Passing date through Date applies Date.parse, if necessary
 		date = date ? new Date(date) : new Date;
-		if (isNaN(date)) throw SyntaxError("invalid date");
+		if (isNaN(Number(date))) throw new SyntaxError("invalid date");
 
 		mask = String(dF.masks[mask] || mask || dF.masks["default"]);
 
@@ -1869,7 +1938,7 @@ var App = {
 			form.submit();
 		}
 		else if (/^goto:/.test(url)) { // requête de type GOTO
-			var u = url.replace(/^goto:/, '');
+			u = url.replace(/^goto:/, '');
 			window.location.href = App.curl(u);
 		}
 	},
@@ -1883,7 +1952,7 @@ var App = {
     		window.location.href = value;
     	}
     }
-}
+};
 
 //===================================================
 
@@ -1915,15 +1984,15 @@ var Ajax = {
      */
     notifyErrorHandler: function(action) {
     	return function(xhr, ajaxOptions, thrownError) {
-			$.jGrowl("Désolé ! Une erreur est survenue et l'action <i>" + action + "</i> n'a pas pu être effectuée.<br/><br/>" +
+			$.jGrowl("Désolé ! Une erreur est survenue et l'action <span style=\"font-style: italic;\">" + action + "</span> n'a pas pu être effectuée.<br/><br/>" +
 				"Veuillez réessayer plus tard, s'il-vous-plaît.<br/><br/>" +
 				"Si le problème persiste, merci de communiquer à votre administrateur le message suivant :<br/><br/>" +
-				"&nbsp;&nbsp;&nbsp;&nbsp;<i>" + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) +') : '+
-				StringUtils.escapeHTML(xhr.responseText) + '</i>',
+				"&nbsp;&nbsp;&nbsp;&nbsp;<span style=\"font-style: italic;\">" + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) +') : '+
+				StringUtils.escapeHTML(xhr.responseText) + '</span>',
 				{life:10000});
 		}
     }
-}
+};
 
 
 //===================================================
@@ -2000,7 +2069,7 @@ var Tooltips = {
 	activate_static_tooltips: function(obj) {
 		$(".staticTip", obj).tooltip({
 			items: "[id]",
-			content: function(response) {
+			content: function() {
 				// on détermine l'id de la div qui contient le tooltip à afficher
 				var id = $(this).attr("id") + "-tooltip";
 				id = id.replace(/\./g, '\\.'); // on escape les points
@@ -2011,12 +2080,13 @@ var Tooltips = {
 			}
 		});
 	}
-}
+};
 
 //===================================================
 
 Object.extend = function(destination, source) {
 	for (var property in source) {
+		//noinspection JSUnfilteredForInLoop
 		destination[property] = source[property];
 	}
 	return destination;
@@ -2070,6 +2140,7 @@ var Modifier = {
 	isElementOver : function(element) {
 		if ( element && element.tagName !== "A")
 			return false;
+		//noinspection UnnecessaryLocalVariableJS
 		var link = element;
 	    var href = link.href;
 		return ( href != null && href !== "" && href.indexOf("#") <0  &&
@@ -2098,12 +2169,11 @@ var Modifier = {
 	 	this.isModifiedSending = modified;
 	 	this.formName = theForm.name;
 	 	var count = theForm.elements.length;
-	    var element;
 	    var self = this;
 
 	    $(theForm).submit(function(ev) {
 			ev = ev || window.event;
-			if (!self.submitSaveConfirmation(this)) {
+			if (!self.submitSaveConfirmation()) {
 				return Event.stop(ev);
 			}
 	    });
@@ -2136,20 +2206,20 @@ var Modifier = {
 	            }
 	            else if (type == "reset") {
 					$(element).click(function(ev) {
-						ev = ev || window.event
-						if (!self.submitResetConfirmation(this)) {
+						ev = ev || window.event;
+						if (!self.submitResetConfirmation()) {
 							return Event.stop(ev);
 						}
 					});
 	            }
 	        }
 	        else if (tagName == "select") {
-				$(element).change(function(ev) {
+				$(element).change(function() {
 					self.setIsModified( true);
 				});
 	        }
 	        else if (tagName == "textarea") {
-	            $(element).change(function(ev) {
+	            $(element).change(function() {
 	             	self.setIsModified( true);
 				});
 	            $(element).keyup(function(event) {
@@ -2160,19 +2230,22 @@ var Modifier = {
 	    }
 
 	    var links = document.getElementsByTagName("A");
-	    var count = links.length;
-	    for (var i = 0; i < count; i++) {
+	    count = links.length;
+	    for (i = 0; i < count; i++) {
 	    	var link = links[i];
-	    	 var href = link.href;
 	    	if ( Modifier.isElementOver(link)) {
-	    		var func =link.onclick;
-	    		link.onclick =  function(ev) {
-	             		ev = ev || window.event;
-		            	if (!self.overConfirmation(this))
-		            		return Event.stop(ev);
-		            	if ( func) func();
-	                }
-	    	}
+	    		var func = link.onclick;
+			    link.onclick = function (ev) {
+				    ev = ev || window.event;
+				    if (!self.overConfirmation())
+					    return Event.stop(ev);
+				    //noinspection JSReferencingMutableVariableFromClosure
+				    if (func) {
+					    //noinspection JSReferencingMutableVariableFromClosure
+					    func();
+				    }
+			    }
+		    }
 	    }
 
 	    this.inputTarget = document.createElement("INPUT");
@@ -2183,7 +2256,7 @@ var Modifier = {
 	},
 
 
-	submitSaveConfirmation : function(submit) {
+	submitSaveConfirmation : function() {
 	  	if (!this.isModified || confirm(this.messageSaveSubmitConfirmation)) {
 			var form = document.forms[this.formName];
 			var saveSubmit = form.elements[this.submitSaveName];
@@ -2208,13 +2281,13 @@ var Modifier = {
 	  	}
 	},
 
-	overConfirmation : function(link) {
+	overConfirmation : function() {
 	  	if ( this.isModified)
 	  		return confirm(this.messageOverConfirmation);
 	  	return true;
 	},
 
-	submitResetConfirmation : function(reset) {
+	submitResetConfirmation : function() {
 	  	if ( this.isModified) {
 	  		if ( confirm(this.messageResetSubmitConfirmation)) {
 	  			this.setIsModified( this.isModifiedSending);
@@ -2244,19 +2317,22 @@ var Modifier = {
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var Postit = {
 	refresh : function() {
 		$.get(App.curl('/postit/todo.do?') + new Date().getTime(), function(todo) {
+			/** @namespace todo.taches */
+			/** @namespace todo.dossiers */
 			if (todo.taches > 0 || todo.dossiers > 0) {
 				var text = 'Bonjour !<br>Il y a ';
 				if (todo.taches > 0) {
-					text += '<a href="../tache/list.do">' + todo.taches + ' tâche(s)</a>';
+					text += '<a href="' + App.curl('/tache/list.do')+ '">' + todo.taches + ' tâche(s)</a>';
 				}
 				if (todo.taches > 0 && todo.dossiers > 0) {
 					text += ' et ';
 				}
 				if (todo.dossiers > 0) {
-					text += '<a href="../tache/list-nouveau-dossier.do">' + todo.dossiers + ' dossier(s)</a>';
+					text += '<a href="' + App.curl('/tache/list-nouveau-dossier.do')+ '">' + todo.dossiers + ' dossier(s)</a>';
 				}
 				text += ' en instance.';
 				$('#postitText').html(text);
@@ -2267,7 +2343,7 @@ var Postit = {
 			}
 		}, 'json');
 	}
-}
+};
 
 //===================================================
 
@@ -2287,7 +2363,8 @@ var Batch = {
 			}, 'json')
 			.error(function(xhr, ajaxOptions, thrownError) {
 				var message = '<span class="error">Oups ! Le chargement de la liste des batches en cours a provoqué l\'erreur suivante :' +
-					'&nbsp;<i>' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) + ') : ' + StringUtils.escapeHTML(xhr.responseText) + '</i></span>';
+					'&nbsp;<span style="font-style: italic;">' + StringUtils.escapeHTML(thrownError) + ' (' +  StringUtils.escapeHTML(xhr.status) + ') : ' + StringUtils.escapeHTML(xhr.responseText) +
+					'</span></span>';
 				$("#jobsActif").html(message);
 				requestDone = true;
 			});
@@ -2309,7 +2386,7 @@ var Batch = {
 		form.attr('action', App.curl('/admin/batch/start.do?name=') + encodeURIComponent(name));
 		// cet appel nécessite la plugin jquery.form.js pour gérer l'upload ajax de fichiers dans les formulaires (voir http://malsup.com/jquery/form/)
 		form.ajaxSubmit({
-			success: function(responseText, statusText) {
+			success: function(responseText) {
 				if (responseText) {
 					responseText = responseText.replace(/(<pre>|<\/pre>)/ig, ''); // enlève les éventuelles balises <pre> qui apparaissent des fois avec Firefox et IE
 				}
@@ -2333,6 +2410,14 @@ var Batch = {
 	},
 
 	__buildHtmlTableRunningBatches: function(jobs, readonly) {
+
+		/** @namespace job.runningParams */
+		/** @namespace job.lastEnd */
+		/** @namespace job.lastStart */
+		/** @namespace job.percentProgression */
+		/** @namespace job.runningMessage */
+		/** @namespace job.description */
+
 		var table = '<table>';
 		table += '<thead><tr><th>Action</th><th>Nom</th><th>Progression</th><th>Statut</th><th>Début</th><th>Durée</th></tr></thead>';
 		table += '<tbody>';
@@ -2350,7 +2435,8 @@ var Batch = {
 				table += '<td></td>';
 			}
 			else {
-				table += '<td><a class="stop iepngfix" href="#" onclick="return Batch.stop(\'' + job.name + '\');"></a></td>';
+				var onclick = "return Batch.stop('" + job.name + "');";
+				table += '<td><a class="stop iepngfix" href="#" onclick="' + onclick + '"></a></td>';
 			}
 
 			table += '<td>' + StringUtils.escapeHTML(job.description) + '</td>';
@@ -2382,8 +2468,10 @@ var Batch = {
 				params += '<table class="jobparams"><tbody>';
 
 				var hasParam = false;
-				for(key in job.runningParams) {
+				for(var key in job.runningParams) {
+					//noinspection JSUnfilteredForInLoop
 					var value = job.runningParams[key];
+					//noinspection JSUnfilteredForInLoop
 					params += '<tr><td>' + StringUtils.escapeHTML(key) + '</td><td>➭ ' + StringUtils.escapeHTML(value) + '</td></tr>';
 					hasParam = true;
 				}
@@ -2434,10 +2522,11 @@ var Batch = {
 			return '';
 		}
 	}
-}
+};
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var DisplayTable = {
 
 	buildPagination:function (page, pageSize, totalCount, buildGotoPageStatement) {
@@ -2445,7 +2534,7 @@ var DisplayTable = {
 		var html = '';
 
 		if (totalCount > pageSize) {
-			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<table class="pageheader" style="margin-top: 0;"><tr>\n';
 			html += '<td class="pagebanner">Trouvé ' + totalCount + ' éléments. Affichage de ' + ((page - 1) * pageSize + 1) + ' à ' + (page * pageSize) + '.</td>';
 			html += '<td class="pagelinks">&nbsp;\n';
 
@@ -2462,7 +2551,7 @@ var DisplayTable = {
 			// direct page links
 			for (var i = firstShownPage; i <= lastShownPage; ++i) {
 				if (i == page) {
-					html += '<font size="+1"><strong>' + i + '</strong></font>&nbsp;\n';
+					html += '<span style="font-size: larger; "><strong>' + i + '</strong></font>&nbsp;\n';
 				}
 				else {
 					html += '<a href="#" onclick="' + buildGotoPageStatement(i) + '; return false;">' + i + '</a>&nbsp;\n';
@@ -2478,7 +2567,7 @@ var DisplayTable = {
 			html += '</td></tr></table>';
 		}
 		else if (totalCount == 0) {
-			html += '<table class="pageheader" style="margin-top: 0px;"><tr>\n';
+			html += '<table class="pageheader" style="margin-top: 0;"><tr>\n';
 			html += '<td class="pagebanner">Aucun élément trouvé.</td>';
 			html += '</td></tr></table>';
 		}
@@ -2489,6 +2578,7 @@ var DisplayTable = {
 
 //===================================================
 
+//noinspection JSUnusedGlobalSymbols
 var Inbox = {
 
 	requestInboxSizeDone: true,
@@ -2515,7 +2605,7 @@ var Inbox = {
 				$(span).text(text);
 				$(span).attr('style', '');
 			}
-			this.requestInboxSizeDone = true;
+			Inbox.requestInboxSizeDone = true;
 		}, 'json');
 	}
 };
@@ -2530,6 +2620,13 @@ var Decl = {
 	open_details_di: function(diId) {
 
 		$.getJSON(App.curl("/di/details.do?id=") + diId + "&" + new Date().getTime(), function(di) {
+			/** @namespace di.delais */
+			/** @namespace di.etats */
+			/** @namespace di.periodeFiscale */
+			/** @namespace di.codeControle */
+			/** @namespace di.dateDebut */
+			/** @namespace di.dateFin */
+			/** @namespace di.typeDocumentMessage */
 			if (di) {
 				var info = '<fieldset class="information"><legend><span>Caractéristiques de la déclaration d\'impôt</span></legend>';
 				info += '<table><tr class="odd"><td width="25%">Période fiscale&nbsp;:</td><td width="25%">' + di.periodeFiscale + '</td>';
@@ -2606,7 +2703,11 @@ var Decl = {
 			html +=
 				'<table id="delai" class="display"><thead><tr><th>Date demande</th><th>Délai accordé</th><th>Confirmation écrite</th><th>Date traitement</th><th></th></tr></thead><tbody>';
 			for (var i in delais) {
+				//noinspection JSUnfilteredForInLoop
 				var d = delais[i];
+				/** @namespace d.delaiAccordeAu */
+				/** @namespace d.dateDemande */
+				/** @namespace d.confirmationEcrite */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (d.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(d.dateDemande) + '</td><td>' + RegDate.format(d.delaiAccordeAu) + '</td>';
 				html += '<td>';
@@ -2636,7 +2737,14 @@ var Decl = {
 			}
 			html += '<th></th></tr></thead><tbody>';
 			for (var i in etats) {
+				//noinspection JSUnfilteredForInLoop
 				var e = etats[i];
+				/** @namespace e.annule */
+				/** @namespace e.dateObtention */
+				/** @namespace e.dateEnvoiCourrierMessage */
+				/** @namespace e.etatMessage */
+				/** @namespace e.sourceMessage */
+				/** @namespace e.etat */
 				html += '<tr class="' + (i % 2 == 0 ? 'even' : 'odd') + (e.annule ? ' strike' : '') + '">';
 				html += '<td>' + RegDate.format(e.dateObtention);
 				if (!e.annule && e.etat == 'SOMMEE') {
