@@ -14,7 +14,7 @@
 			<form:input path="tiers.prenom" tabindex="1" id="tiers_prenom" cssErrorClass="input-with-errors"
 			            size="20" maxlength="${lengthnom}" />
 			<span class="jTip formInfo" title="<c:url value="/htm/prenom.htm?width=375"/>" id="prenom">?</span>
-			<div id="empty_tiers_prenom_warning" style="display:inline;" class="warn warning_icon"><fmt:message key="warning.prenom.vide"/></div>
+			<div id="empty_tiers_prenom_warning" style="display:none;" class="warn warning_icon"><fmt:message key="warning.prenom.vide"/></div>
 			<form:errors path="tiers.prenom" cssClass="error" />
 		</td>
 	</tr>
@@ -167,14 +167,12 @@
 	$(function() {
 		Tooltips.activate_ajax_tooltips();
 
-		$('#empty_tiers_prenom_warning').hide();
-
 		var refresh_prenom_warning = function() {
 			var prenom = $('#tiers_prenom').val();
 			var nom = $('#tiers_nom').val();
 			if (StringUtils.isBlank(prenom) && /\s*\S+\s+\S+\s*/.test(nom)) {
 				// on affiche le warning si le prénom est vide que le nom contient deux mots distincts
-				$('#empty_tiers_prenom_warning').show();
+				$('#empty_tiers_prenom_warning').css('display', 'inline'); // on n'utilise pas show() parce que le display devient 'block' et on veut 'inline'
 			}
 			else {
 				$('#empty_tiers_prenom_warning').hide();
@@ -182,7 +180,9 @@
 		};
 
 		$('#tiers_nom').change(refresh_prenom_warning);
+		$('#tiers_nom').keyup(refresh_prenom_warning);
 		$('#tiers_prenom').change(refresh_prenom_warning);
+		$('#tiers_prenom').keyup(refresh_prenom_warning);
 
 		refresh_prenom_warning();
 	});
