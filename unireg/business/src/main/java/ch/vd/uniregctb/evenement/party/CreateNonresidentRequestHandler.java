@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
@@ -13,19 +14,21 @@ import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
 public class CreateNonresidentRequestHandler implements RequestHandler<CreateNonresidentRequest> {
 
-	private TiersDAO tiersDAO;
+	private HibernateTemplate hibernateTemplate;
+
 	private SecurityProviderInterface securityProvider;
 
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
@@ -48,9 +51,21 @@ public class CreateNonresidentRequestHandler implements RequestHandler<CreateNon
 		if (request.getSocialNumber() != null) {
 			nh.setNumeroAssureSocial(request.getSocialNumber().toString());
 		}
+		else if (request.getOldSocialNumber() != null) {
+			IdentificationPersonne ip = new IdentificationPersonne();
+			ip.setCategorieIdentifiant(CategorieIdentifiant.CH_AHV_AVS);
+			ip.setIdentifiant(request.getOldSocialNumber().toString());
+			ip.setPersonnePhysique(nh);
+			nh.addIdentificationPersonne(ip);
+		}
 		nh.setCategorieEtranger(EnumHelper.xmlToCore(request.getCategory()));
-		nh = (PersonnePhysique) tiersDAO.save(nh);
-		return new RequestHandlerResult(new CreateNonresidentResponse(XmlUtils.date2xmlcal(new Date()), nh.getNumero().intValue()));
+		final int idNouveauNonHabitant = ((Long) hibernateTemplate.save(nh)).intValue();
+
+		// On force le flush la session car sinon problème:
+		// l'authentification n'est plus valide au moment ou hibernate veut sauver l'eventuelle IdentificationPersonne
+		hibernateTemplate.flush();
+
+		return new RequestHandlerResult(new CreateNonresidentResponse(XmlUtils.date2xmlcal(new Date()), idNouveauNonHabitant));
 	}
 
 	@Override
