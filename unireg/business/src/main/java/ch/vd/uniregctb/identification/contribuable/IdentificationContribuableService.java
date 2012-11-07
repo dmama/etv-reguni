@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -46,7 +44,7 @@ public interface IdentificationContribuableService {
 	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiterAndSuspendu, @Nullable TypeDemande typeDemande);
+	                                             boolean nonTraiterAndSuspendu, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -58,7 +56,7 @@ public interface IdentificationContribuableService {
 	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu,
-	                 @Nullable TypeDemande typeDemande);
+	                 TypeDemande... typeDemande);
 
 	/**
 	 * Force l'identification du contribuable
@@ -153,11 +151,11 @@ public interface IdentificationContribuableService {
 
 	/**
 	 * Récupère les valeurs des types de messages en fonction des types de demande
-	 * @param typeDemande MELDEWESEN, NCS, IMPOT_SOURCE
 	 * @param filter filtre qui permet de ne renvoyer que les valeurs référencées par des demandes dans certains états seulement
+	 * @param typesDemande MELDEWESEN, NCS, IMPOT_SOURCE
 	 * @return emetteurs ids
 	 */
-	public Collection<String> getTypeMessages(TypeDemande typeDemande, IdentificationContribuableEtatFilter filter);
+	public Collection<String> getTypeMessages(IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande);
 
 	/**
 	 * Récupère les valeurs des Périodes fiscales

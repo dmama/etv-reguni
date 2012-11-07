@@ -120,7 +120,6 @@ public class IdentificationMessagesListController extends AbstractIdentification
 		return mav;
 	}
 
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
 	 *      javax.servlet.http.HttpServletResponse, java.lang.Object,
@@ -156,16 +155,13 @@ public class IdentificationMessagesListController extends AbstractIdentification
 		return mav;
 	}
 
-
 	/**
 	 * Initialise la map des états du message en fonction du type de controleur
 	 * @return une map
 	 */
 	@Override
 	protected Map<Etat, String> initMapEtatMessage() {
-
 		return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
-
 	}
 
 	/**
@@ -178,16 +174,13 @@ public class IdentificationMessagesListController extends AbstractIdentification
 		session.removeAttribute(module);
 	}
 
-
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
 		return identificationMapHelper.initMapTypeMessage(false, TypeDemande.MELDEWESEN);
-
 	}
 
 	@Override
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
 	}
-
 }

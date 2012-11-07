@@ -39,5 +39,45 @@
       <value>19730711</value>
 	  <value>MELDEWESEN</value>	
     </row>
+    <row>
+      <value>2</value>
+      <value>2</value>
+      <value>CS_EMPLOYEUR</value>
+      <value>0</value>
+      <value>123456</value>
+      <value>Test</value>
+      <value>Test</value>
+      <value>2008</value>
+	  <value>MANUEL_SANS_ACK</value>
+      <value>Test</value>
+      <value>NON_PRIORITAIRE</value>
+      <value>2008-01-01</value>
+      <value>EXCEPTION</value>
+      <value>Larousse</value>
+      <value>Lora</value>
+      <value>1234567890123</value>
+      <value>19730711</value>
+	  <value>NCS</value>
+    </row>
+    <row>
+      <value>3</value>
+      <value>3</value>
+      <value>LISTE_IS</value>
+      <value>0</value>
+      <value>123456</value>
+      <value>Test</value>
+      <value>Test</value>
+      <value>2008</value>
+	  <value>MANUEL_SANS_ACK</value>
+      <value>Test</value>
+      <value>NON_PRIORITAIRE</value>
+      <value>2008-01-01</value>
+      <value>EXCEPTION</value>
+      <value>Larousse</value>
+      <value>Lora</value>
+      <value>1234567890123</value>
+      <value>19730711</value>
+	  <value>IMPOT_SOURCE</value>
+    </row>
   </table>
 </dataset>
