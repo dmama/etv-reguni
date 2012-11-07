@@ -76,16 +76,27 @@ public class IdentificationContribuableCache {
 	}
 
 	public Collection<String> getTypesMessages(IdentificationContribuableEtatFilter filter) {
-		final List<String> accumulator = new LinkedList<String>();
-		for (TypeDemande typeDemande : TypeDemande.values()) {
-			accumulator.addAll(getTypesMessagesParTypeDemande(typeDemande, filter));
-		}
-		return new HashSet<String>(accumulator);
+		return getTypesMessagesParTypeDemande(filter, TypeDemande.values());
 	}
 
-	public Collection<String> getTypesMessagesParTypeDemande(TypeDemande typeDemande, IdentificationContribuableEtatFilter filter) {
-		final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(typeDemande);
-		return typesMessages != null ? findValues(typesMessages, filter) : Collections.<String>emptyList();
+	public Collection<String> getTypesMessagesParTypeDemande(IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande) {
+		final Collection<String> res;
+		if (typesDemande == null || typesDemande.length == 0) {
+			res = Collections.emptyList();
+		}
+		else if (typesDemande.length == 1) {
+			final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(typesDemande[0]);
+			res = findValues(typesMessages, filter);
+		}
+		else {
+			final List<String> accumulator = new LinkedList<String>();
+			for (TypeDemande type : typesDemande) {
+				final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(type);
+				accumulator.addAll(findValues(typesMessages, filter));
+			}
+			res = new HashSet<String>(accumulator);
+		}
+		return res;
 	}
 
 	public List<String> getListTraitementUsers() {

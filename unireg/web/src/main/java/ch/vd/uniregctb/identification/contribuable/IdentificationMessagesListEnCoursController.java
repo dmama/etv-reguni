@@ -121,41 +121,30 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	@Override
 	protected ModelAndView showForm(HttpServletRequest request, HttpServletResponse response, BindException errors, Map model) throws Exception {
 
-		HttpSession session = request.getSession();
-		ModelAndView mav = super.showForm(request, response, errors, model);
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
+		final HttpSession session = request.getSession();
+		final ModelAndView mav = super.showForm(request, response, errors, model);
+		final IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 		if (bean != null) {
 			// Récupération de la pagination
-			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
-			List<IdentificationMessagesResultView> listIdentifications = null;
-			Integer nombreElements = 0;
-
+			final WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
+			final List<IdentificationMessagesResultView> listIdentifications;
+			final int nombreElements;
 
 			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
-
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true);
 				nombreElements = identificationMessagesListManager.count(bean, false, false, true);
-
 			}
 			else if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
 				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false);
 				nombreElements = identificationMessagesListManager.count(bean, true, false, false);
 			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO)) {
-				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination);
-				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, null);
-			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
-				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.NCS);
-				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.NCS);
-			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
-				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, TypeDemande.IMPOT_SOURCE);
-				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, TypeDemande.IMPOT_SOURCE);
+			else {
+				final TypeDemande types[] = getAllowedTypes();
+				listIdentifications = identificationMessagesListManager.findEncoursSeul(bean, pagination, types);
+				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, types);
 			}
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, nombreElements);
 		}
 		else {
@@ -164,11 +153,9 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		}
 
 		mav.addObject(IDENTIFICATION_EN_COURS_MESSAGE, true);
-
 		mav.addObject(IDENTIFICATION_TRAITE_MESSAGE, false);
 
 		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE, Boolean.TRUE);
-
 		session.setAttribute(IDENTIFICATION_TRAITE_MESSAGE, Boolean.FALSE);
 
 		return mav;
@@ -237,59 +224,34 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
-		{
-			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
+			return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
+		}
 
-				return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
-
-			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
-				return identificationMapHelper.initMapEtatEnCoursMessage();
-			}
+		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
+			return identificationMapHelper.initMapEtatEnCoursMessage();
 		}
 		return null;
 	}
 
-
 	@Override
 	protected Map<String, String> initMapEmetteurId() {
 		return identificationMapHelper.initMapEmetteurId(false);
-
 	}
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
-			//Les autres rôles ont le droit de voir tout les types de message
-			return identificationMapHelper.initMapTypeMessage(false);
-		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
-
-			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
-			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.NCS);
-
-		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
-
-			//la cellule IS ne voie que les messages de type IMPOT SOURCE dont les Liste is
-			return identificationMapHelper.initMapTypeMessage(false, TypeDemande.IMPOT_SOURCE);
-
-		}
-		else {
-			return null;
-		}
+		final TypeDemande[] types = getAllowedTypes();
+		return identificationMapHelper.initMapTypeMessage(false, types);
 	}
 
 	@Override
 	protected Map<Integer, String> initMapPeriodeFiscale() {
 		return identificationMapHelper.initMapPeriodeFiscale(false);
-
 	}
 
 	@Override
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 		return identificationMapHelper.initMapPrioriteEmetteur(false);
 	}
-
-	
 }

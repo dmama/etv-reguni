@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.ui.Model;
 
 import ch.vd.uniregctb.common.ApplicationConfig;
@@ -159,30 +158,16 @@ public class IdentificationMapHelper extends CommonMapHelper {
 
 
 	/**
-	 * Initialise la map des types du message
-	 *
-	 * @return une map
+	 * Initialise la map des types de message
 	 */
-
-	public Map<String, String> initMapTypeMessage(final boolean isTraite, @Nullable final TypeDemande typeDemande) {
+	public Map<String, String> initMapTypeMessage(final boolean isTraite, TypeDemande... typesDemande) {
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final Collection<String> typesMessage = identCtbService.getTypeMessages(typeDemande, isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+		final Collection<String> typesMessage = identCtbService.getTypeMessages(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, typesDemande);
 		for (String typeMessage : typesMessage) {
 			final String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
 		}
 		return sortMapAccordingToValues(mapMessage);
-	}
-
-
-	/**
-	 * Initialise la map des types du message
-	 *
-	 * @return une map
-	 */
-
-	public Map<String, String> initMapTypeMessage(final boolean isTraite) {
-		return initMapTypeMessage(isTraite, null);
 	}
 
 	/**

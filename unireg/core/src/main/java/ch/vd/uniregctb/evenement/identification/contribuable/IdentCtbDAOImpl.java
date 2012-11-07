@@ -15,7 +15,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
@@ -36,28 +35,43 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		super(IdentificationContribuable.class);
 	}
 
-
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, @Nullable TypeDemande typeDemande) {
+	                                             boolean nonTraiteAndSuspendu, TypeDemande... typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
 		final List<Object> criteria = new ArrayList<Object>();
-		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
-
-		String queryOrder = "";
+		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
+	}
 
+	private static String buildWhereAvecTypeDemande(String tableName, TypeDemande... typeDemande) {
+		if (typeDemande == null || typeDemande.length < 1) {
+			return " 1=1 ";
+		}
+		else if (typeDemande.length == 1) {
+			return String.format(" %s.demande.typeDemande = '%s' ", tableName, typeDemande[0]);
+		}
+		else {
+			final StringBuilder b = new StringBuilder();
+			for (int i = 0 ; i < typeDemande.length ; ++i) {
+				if (i > 0) {
+					b.append(",");
+				}
+				b.append("'").append(typeDemande[i]).append("'");
+			}
+			return String.format(" %s.demande.typeDemande in (%s) ", tableName, b.toString());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande typeDemande) {
-		String queryOrder = buildOrderClause(paramPagination);
-		final String avecTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
-		final String sansTypeDemande = " select identificationContribuable from IdentificationContribuable identificationContribuable where 1=1 ";
-		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere + queryOrder : sansTypeDemande + queryWhere + queryOrder;
+	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande... typeDemande) {
+		final String selectBase = "select identificationContribuable from IdentificationContribuable identificationContribuable where";
+		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
+		final String queryOrder = buildOrderClause(paramPagination);
+		final String query = selectBase + whereTypeDemande + queryWhere + queryOrder;
 
 		final int firstResult = paramPagination.getSqlFirstResult();
 		final int maxResult = paramPagination.getSqlMaxResults();
@@ -65,9 +79,8 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
 			@Override
 			public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException, SQLException {
-
-				Query queryObject = session.createQuery(query);
-				Object[] values = criteria.toArray();
+				final Query queryObject = session.createQuery(query);
+				final Object[] values = criteria.toArray();
 				if (values != null) {
 					for (int i = 0; i < values.length; i++) {
 						if (values[i] instanceof Date) {
@@ -76,12 +89,10 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 						else {
 							queryObject.setParameter(i, values[i]);
 						}
-
 					}
 				}
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
-
 				return queryObject.list();
 			}
 		});
@@ -107,30 +118,25 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return queryOrder;
 	}
 
-
-
 	/**
 	 * @param nonTraiteOnly
 	 * @param nonTraiteAndSuspendu
 	 * @param typeDemande
-	 * @see ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO#count(ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria, boolean, boolean)
 	 */
-
 	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
-	                 @Nullable TypeDemande typeDemande) {
+	                 TypeDemande... typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
-		List<Object> criteria = new ArrayList<Object>();
+		final List<Object> criteria = new ArrayList<Object>();
 		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
 
-		final String avecTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where identificationContribuable.demande.typeDemande ='";
-		final String sansTypeDemande = " select count(*) from IdentificationContribuable identificationContribuable where 1=1 ";
-		final String query = typeDemande != null ? avecTypeDemande + typeDemande.name() + '\'' + queryWhere : sansTypeDemande + queryWhere;
-		int count = DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
-		return count;
+		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
+		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
+		final String query = selectBase + whereTypeDemande + queryWhere;
+		return DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
 	}
 
 	public Map<TypeDemande, Map<Etat, List<String>>> getTypesMessages() {

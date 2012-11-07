@@ -6,6 +6,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -23,6 +24,9 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.security.Role;
+import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tache.TacheMapHelper;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -225,4 +229,23 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 
 	public static final String PERIODE_PARAMETER_NAME = "periode";
 
+	/**
+	 * Retourne les types de demandes autorisés par rapports aux droits du principal courant
+	 * @return un tableau (potentiellement vide...) des types autorisés
+	 */
+	protected TypeDemande[] getAllowedTypes() {
+		final Set<TypeDemande> types = new HashSet<TypeDemande>();
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
+			types.add(TypeDemande.MELDEWESEN);
+			types.add(TypeDemande.NCS);
+			types.add(TypeDemande.IMPOT_SOURCE);
+		}
+		if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
+			types.add(TypeDemande.NCS);
+		}
+		if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+			types.add(TypeDemande.IMPOT_SOURCE);
+		}
+		return types.toArray(new TypeDemande[types.size()]);
+	}
 }

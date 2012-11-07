@@ -4,7 +4,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -112,33 +111,16 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 		if (bean != null) {
 			// Récupération de la pagination
-			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
-
-			List<IdentificationMessagesResultView> listIdentifications = null;
-			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false));
-			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.NCS);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.NCS));
-			}
-			else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, true, false, TypeDemande.IMPOT_SOURCE);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-				mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, TypeDemande.IMPOT_SOURCE));
-			}
-
-
+			final WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
+			final TypeDemande[] types = getAllowedTypes();
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, identificationMessagesListManager.find(bean, pagination, false, true, false, types));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, types));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, 0);
 		}
 		mav.addObject(IDENTIFICATION_EN_COURS_MESSAGE, false);
-
 		mav.addObject(IDENTIFICATION_TRAITE_MESSAGE, true);
 
 		session.setAttribute(IDENTIFICATION_EN_COURS_MESSAGE, Boolean.FALSE);
@@ -191,30 +173,12 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 	@Override
 	protected Map<String, String> initMapEmetteurId() {
 		return identificationMapHelper.initMapEmetteurId(true);
-
 	}
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_GEST_BO)) {
-			//Les autres rôles ont le droit de voir tout les types de message
-			return identificationMapHelper.initMapTypeMessage(true);
-		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.NCS_IDENT_CTB_CELLULE_BO)) {
-
-			//la cellule NCS ne voie que les messages de type NCS dont les certificats de salaire employeur
-			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.NCS);
-
-		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
-
-			//la cellule IS ne voie que les messages de type IMPOT SOURCE dont les Liste is
-			return identificationMapHelper.initMapTypeMessage(true, TypeDemande.IMPOT_SOURCE);
-
-		}
-		else {
-			return null;
-		}
+		final TypeDemande[] types = getAllowedTypes();
+		return identificationMapHelper.initMapTypeMessage(true, types);
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import java.util.List;
 import java.util.Map;
 
-import org.jetbrains.annotations.Nullable;
-
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.common.ParamPagination;
 
@@ -27,7 +25,7 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, @Nullable TypeDemande typeDemande);
+	                                             boolean nonTraiteAndSuspendu, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
@@ -40,7 +38,7 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
-	                 @Nullable TypeDemande typeDemande);
+	                 TypeDemande... typeDemande);
 
 
 	/**
