@@ -10,7 +10,7 @@
 		</td>
 		<c:if test="${typeRecherche == 'principale' }">
 			<td width="12px"></td>
-			<td style="vertical-align:middle; text-align:right;" width="2%"><a href="#" onclick="return toogle_search();" style="font-size:11px">recherche simple</a></td>
+			<td style="vertical-align:middle; text-align:right;" width="2%"><a href="#" onclick="return Search.toogleMode();" style="font-size:11px">recherche simple</a></td>
 		</c:if>
 		<c:if test="${typeRecherche != 'principale' }">
 			<td colspan="2">&nbsp;</td>

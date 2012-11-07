@@ -91,36 +91,16 @@
 			</form:form>
 		</div>
 
-		<script>
+		<script type="text/javascript">
 			$(function() {
-				// sélection du mode de recherche
-				if ($.cookie("search-mode") == 'simple') {
-					$('#simple-search').show();
-					$('#advanced-search').hide();
+				<%--@elvariable id="urlRetour" type="java.lang.String"--%>
+				<%--@elvariable id="simpleSearchQuery" type="java.lang.String"--%>
+				var urlRetour<c:if test="${urlRetour != null}"> = '${urlRetour}'</c:if>;
+				var savedSimpleQuery<c:if test="${simpleSearchQuery != null}"> = '${simpleSearchQuery}'</c:if>;
 
-					// fallback autofocus pour les browsers qui ne le supportent pas
-					if (!("autofocus" in document.createElement("input"))) {
-						$('#simple-search-input').focus();
-					}
-					refreshSimpleSearch();
-				}
+				// on initialise la recherche
+				Search.init(urlRetour, savedSimpleQuery);
 			});
-
-			function toogle_search() {
-				$('#simple-search').toggle();
-				$('#advanced-search').toggle();
-				$('#simple-search-results').html('');
-
-				if ($('#simple-search').is(':visible')) {
-					$.cookie("search-mode", "simple", { expires: 31 });
-					$('#simple-search-input').focus();
-					refreshSimpleSearch();
-				}
-				else {
-					$.cookie("search-mode", "advanced", { expires: 31 });
-				}
-				return false;
-			}
 		</script>
 
 	</tiles:put>
