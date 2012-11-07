@@ -33,7 +33,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:choice>
-				<xs:element name="datePriseEnCompte" type="unireg:dateType" minOccurs="1">
+				<xs:element name="datePriseEnCompte" type="unireg:dateType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
@@ -42,7 +42,7 @@
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="CodeErreur" type="xs:string" minOccurs="0">
+				<xs:element name="codeErreur" type="xs:string">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>

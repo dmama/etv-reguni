@@ -51,7 +51,7 @@
 				</xs:annotation>
 			</xs:element>
 			<xs:choice>
-				<xs:element name="finRapportTravail" type="FinRapportTravailType">
+				<xs:element name="finRapportTravail" type="finRapportTravailType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
@@ -60,7 +60,7 @@
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="fermetureRapportTravail" type="FermetureRapportTravailType">
+				<xs:element name="fermetureRapportTravail" type="fermetureRapportTravailType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
@@ -69,7 +69,7 @@
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="creationProlongationRapportTravail">
+				<xs:element name="creationProlongationRapportTravail" type="creationProlongationRapportTravailType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
@@ -82,7 +82,7 @@
 		</xs:sequence>
 	</xs:complexType>
 
-	<xs:complexType name ="FinRapportTravailType">
+	<xs:complexType name ="finRapportTravailType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
@@ -91,7 +91,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="code" type="FinRapportTravailTypeType" minOccurs="1">
+			<xs:element name="code" type="finRapportTravailTypeType" minOccurs="1">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -111,7 +111,7 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-	<xs:simpleType name="FinRapportTravailTypeType">
+	<xs:simpleType name="finRapportTravailTypeType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:typesafeEnumClass>
@@ -133,7 +133,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="FermetureRapportTravailType">
+	<xs:simpleType name="fermetureRapportTravailType">
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:typesafeEnumClass>
@@ -149,4 +149,12 @@
 			</xs:enumeration>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:complexType name="creationProlongationRapportTravailType">
+		<xs:appinfo>
+			<jxb:typesafeEnumClass>
+				<jxb:javadoc>Evenement de création ou de prolongation de rapport de travail </jxb:javadoc>
+			</jxb:typesafeEnumClass>
+		</xs:appinfo>
+	</xs:complexType>
 </xs:schema>
