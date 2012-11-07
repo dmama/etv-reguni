@@ -23,6 +23,7 @@ import ch.vd.uniregctb.evenement.regpp.view.EvenementCivilRegPPElementListeView;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.IndividuNotFoundException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -131,8 +132,9 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 
 	private EvenementCivilRegPPElementListeView buildView(EvenementCivilRegPP evt) throws AdresseException {
 		final EvenementCivilRegPPElementListeView evtRegPPElementListeView = new EvenementCivilRegPPElementListeView(evt);
-		final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(evt.getNumeroIndividuPrincipal());
+
 		try {
+			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(evt.getNumeroIndividuPrincipal());
 			if (habitantPrincipal != null) {
 				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
 				if (couple != null && couple.getMenage() != null) {
@@ -142,6 +144,13 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 					evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
 				}
 			}
+		}
+		catch (PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException e) {
+			LOGGER.warn(String.format("Détermination impossible des tiers associés à l'événement civil %d : %s", evt.getId(), e.getMessage()), e);
+		}
+
+		try {
+
 			if (evt.getNumeroIndividuPrincipal() != null) {
 				String nom1 = adresseService.getNomCourrier(evt.getNumeroIndividuPrincipal());
 				evtRegPPElementListeView.setNom1(nom1);
@@ -156,6 +165,7 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
 			evtRegPPElementListeView.setNom1("<erreur: individu introuvable>");
 		}
+
 		return evtRegPPElementListeView;
 	}
 
