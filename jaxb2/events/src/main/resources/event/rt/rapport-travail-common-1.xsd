@@ -10,7 +10,9 @@
 		<xs:annotation>
 			<xs:appinfo>
 				<jxb:class>
-					<jxb:javadoc>Données de base d'un rapport de travai</jxb:javadoc>
+					<jxb:javadoc>Données d'identification d'un rapport de travail, toute autre information inconnue d'UNIREG doit être stockée dans le header du message.
+					(numéro de séquence liste, type de liste LR ou LC )
+					</jxb:javadoc>
 				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
@@ -29,24 +31,6 @@
 					<xs:appinfo>
 						<jxb:property>
 							<jxb:javadoc>Numéro du contribuable</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="numeroSequenceListe" type="xs:string" minOccurs="1">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>numéro de séquence</jxb:javadoc>
-						</jxb:property>
-					</xs:appinfo>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="typeListe" type="typeListeType" minOccurs="1">
-				<xs:annotation>
-					<xs:appinfo>
-						<jxb:property>
-							<jxb:javadoc>type de liste</jxb:javadoc>
 						</jxb:property>
 					</xs:appinfo>
 				</xs:annotation>
@@ -71,26 +55,4 @@
 			</xs:element>
 		</xs:sequence>
 	</xs:complexType>
-
-	<xs:simpleType name="typeListeType">
-		<xs:annotation>
-			<xs:appinfo>
-				<jxb:typesafeEnumClass>
-					<jxb:javadoc>Type de la liste traitée: Liste Récapitulative ou Liste Corrective.</jxb:javadoc>
-				</jxb:typesafeEnumClass>
-			</xs:appinfo>
-		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="LR">
-				<xs:annotation>
-					<xs:documentation>Liste récapitulative.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-			<xs:enumeration value="LC">
-				<xs:annotation>
-					<xs:documentation>Liste corrective.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
 </xs:schema>
