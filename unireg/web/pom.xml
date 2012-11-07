@@ -241,10 +241,19 @@
 		</dependency>
 	</dependencies>
 
+	<properties>
+		<!-- A priori, on met tous le répertoire webapp dans le WAR -->
+		<excluded-from-war/>
+	</properties>
+
 	<profiles>
 		<profile>
 			<!-- Profile qui force la pré-compilation des JSP de l'application web -->
 			<id>jspc</id>
+			<properties>
+				<!-- Pas la peine de mettre les JSP dans le WAR si elles sont précompilées -->
+				<excluded-from-war>**/*.jsp</excluded-from-war>
+			</properties>
 			<build>
 				<plugins>
 					<!-- Plugin de compilation des JSP -->
@@ -393,6 +402,7 @@
 							</includes>
 						</resource>
 					</webResources>
+					<warSourceExcludes>${excluded-from-war}</warSourceExcludes>
 				</configuration>
 			</plugin>
 
