@@ -151,10 +151,13 @@
 	</xs:simpleType>
 
 	<xs:complexType name="creationProlongationRapportTravailType">
-		<xs:appinfo>
-			<jxb:typesafeEnumClass>
-				<jxb:javadoc>Evenement de création ou de prolongation de rapport de travail </jxb:javadoc>
-			</jxb:typesafeEnumClass>
-		</xs:appinfo>
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Evenement de création ou de prolongation de rapport de travail</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
 	</xs:complexType>
+
 </xs:schema>
