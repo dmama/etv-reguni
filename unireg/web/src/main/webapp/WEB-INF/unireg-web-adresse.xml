@@ -32,6 +32,7 @@
 
 	<bean id="closeAdresseValidator" class="ch.vd.uniregctb.tiers.validator.CloseAdresseValidator" >
 		<property name="tiersService" ref="tiersService" />
+		<property name="securityProvider" ref="securityProviderInterface" />
 	</bean>
 	
 	<bean id="tiersAdresseController" class="ch.vd.uniregctb.tiers.TiersAdresseController" parent="abstractTiersController">
