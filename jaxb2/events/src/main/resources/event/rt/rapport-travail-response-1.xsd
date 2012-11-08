@@ -5,10 +5,12 @@
 		   xmlns:common="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
 		   xmlns:unireg="http://www.vd.ch/fiscalite/unireg/common/1"
 		   xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0"
-		   xmlns:xs="http://www.w3.org/2001/XMLSchema">
+		   xmlns:xs="http://www.w3.org/2001/XMLSchema"
+		   xmlns:exception="http://www.vd.ch/fiscalite/unireg/exception/1">
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/common/1"
 			   schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-common-1.xsd" />
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-common-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/exception/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/unireg-exception-1.xsd" />
 
 	<xs:element name="miseAJourRapportTravailResponse" type="miseAJourRapportTravailResponseType" />
 
@@ -23,7 +25,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="identifiantRapportTravail" type="common:identifiantRapportTravailType">
+			<xs:element name="identifiantRapportTravail" type="common:identifiantRapportTravailType" minOccurs="0">
 				<xs:annotation>
 					<xs:appinfo>
 						<jxb:property>
@@ -42,11 +44,11 @@
 						</xs:appinfo>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="codeErreur" type="xs:string">
+				<xs:element name="exceptionInfo" type="exception:serviceExceptionInfoType">
 					<xs:annotation>
 						<xs:appinfo>
 							<jxb:property>
-								<jxb:javadoc>Libellé ou code d'erreur</jxb:javadoc>
+								<jxb:javadoc>Exception contenant la cause de l'erreur aussi précise que possible</jxb:javadoc>
 							</jxb:property>
 						</xs:appinfo>
 					</xs:annotation>
