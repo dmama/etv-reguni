@@ -15,8 +15,6 @@ import java.util.Map;
 import java.util.Set;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.declaration.ModeleDocument;
-import ch.vd.uniregctb.declaration.PeriodeFiscale;
 
 public abstract class HibernateEntityUtils {
 
@@ -101,16 +99,6 @@ public abstract class HibernateEntityUtils {
 		for (PropertyDescriptor desc : descriptors) {
 
 			if (desc.getName().equals("class")) {
-				continue;
-			}
-
-			if (desc.getName().equals("periodeFiscale") && clazz.equals(ModeleDocument.class)) {
-				// FIXME (msi) [hack] le lien modeleDocument -> période fiscale n'est pas encore implémenté dans le dao Jdbc
-				continue;
-			}
-
-			if (desc.getName().equals("modelesDocument") && clazz.equals(PeriodeFiscale.class)) {
-				// FIXME (msi) [hack] le lien période fiscale -> modèles de documents n'est pas encore implémenté dans le dao Jdbc
 				continue;
 			}
 
