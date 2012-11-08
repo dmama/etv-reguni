@@ -246,6 +246,13 @@ public class AbstractIdentificationController extends AbstractSimpleFormControll
 		if (SecurityHelper.isGranted(securityProvider, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
 			types.add(TypeDemande.IMPOT_SOURCE);
 		}
-		return types.toArray(new TypeDemande[types.size()]);
+
+		if (types.size() == 0) {
+			// aucun droit... plutôt que tous
+			return new TypeDemande[] { null };
+		}
+		else {
+			return types.toArray(new TypeDemande[types.size()]);
+		}
 	}
 }
