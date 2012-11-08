@@ -11,8 +11,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -802,6 +804,7 @@ public class DeclarationImpotController {
 		final Long id = view.getIdDeclaration();
 
 		if (result.hasErrors()) {
+			fixModel(id, view);
 			return "di/delai/ajouter";
 		}
 
@@ -838,6 +841,22 @@ public class DeclarationImpotController {
 			// Pas de duplicata -> on retourne à l'édition de la DI
 			return "redirect:/di/editer.do?id=" + id;
 		}
+	}
+
+	private void fixModel(final long id, final AjouterDelaiDeclarationView view) {
+		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+		template.setReadOnly(true);
+		template.execute(new TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(TransactionStatus status) {
+				final DeclarationImpotOrdinaire di = diDAO.get(id);
+				if (di == null) {
+					throw new ObjectNotFoundException(messageSource.getMessage("error.di.inexistante", null, WebContextUtils.getDefaultLocale()));
+				}
+				view.setDiInfo(di);
+			}
+		});
 	}
 
 	private static class RedirectEditDI implements RetourEditiqueControllerHelper.TraitementRetourEditique {
