@@ -25,16 +25,19 @@ public class AjouterDelaiDeclarationView {
 	}
 
 	public AjouterDelaiDeclarationView(DeclarationImpotOrdinaire di, RegDate delaiAccordeAu) {
+		setDiInfo(di);
+		this.delaiAccordeAu = delaiAccordeAu;
+		this.dateDemande = RegDate.get();
+		this.confirmationEcrite = false;
+	}
+
+	public void setDiInfo (DeclarationImpotOrdinaire di) {
 		this.tiersId = di.getTiers().getId();
 		this.declarationPeriode = di.getDateDebut().year();
 		this.declarationRange = new DateRangeHelper.Range(di);
-		this.delaiAccordeAu = delaiAccordeAu;
 		this.dateExpedition = di.getDateExpedition();
-
 		this.idDeclaration = di.getId();
-		this.dateDemande = RegDate.get();
 		this.ancienDelaiAccorde = di.getDelaiAccordeAu();
-		this.confirmationEcrite = false;
 	}
 
 	public Long getTiersId() {
