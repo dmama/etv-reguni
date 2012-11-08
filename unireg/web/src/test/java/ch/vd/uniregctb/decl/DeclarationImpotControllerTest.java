@@ -176,7 +176,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 		HttpSession session = request.getSession();
 		final FlashMessage flash = (FlashMessage) session.getAttribute("flash");
 		assertNotNull(flash);
-		final String messageAttendue = "L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable";
+		final String messageAttendue = "Echec de l'impression du duplicata, le contribuable n'a pas de données valides à la fin de la période de la déclaration d'impôt.";
 		assertEquals(messageAttendue, flash.getMessage());
 	}
 

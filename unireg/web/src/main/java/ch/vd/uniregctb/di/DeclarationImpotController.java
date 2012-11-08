@@ -750,7 +750,7 @@ public class DeclarationImpotController {
 
 				// Vérification de la période d'imposition du contribuable
 				if (periodeImpositionService.determine(ctb, di) == null) {
-					Flash.error("L'impression d'un duplicata n'est pas autorisée car la période de la déclaration ne correspond à aucune période d'imposition du contribuable");
+					Flash.error("Echec de l'impression du duplicata, le contribuable n'a pas de données valides à la fin de la période de la déclaration d'impôt.");
 					return "redirect:/di/editer.do?id=" + di.getId();
 				}
 
