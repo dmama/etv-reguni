@@ -17,30 +17,24 @@ import ch.vd.uniregctb.tiers.DroitAcces;
 public interface DroitAccesDAO extends GenericDAO<DroitAcces, Long> {
 
 	/**
-	 * @param date TODO
 	 * @return le droit d'accès courant entre l'opérateur et le tiers spécifié; ou <b>null</b> si aucun n'accès n'est défini.
 	 */
 	DroitAcces getDroitAcces(long operateurId, long tiersId, RegDate date);
 
 	/**
 	 * Renvoie la liste des droits d'acces d'un utilisateur
-	 * @param noIndividuOperateur
-	 * @return
 	 */
 	List<DroitAcces> getDroitsAcces(long noIndividuOperateur);
 
 	/**
 	 * Renvoie la liste des droits d'acces d'un utilisateur paginée
-	 *
-	 * @param noIndividuOperateur
-	 * @return
 	 */
 	List<DroitAcces> getDroitsAcces(long noIndividuOperateur, ParamPagination paramPagination);
 
-		/**
+	/**
 	 * Renvoie la liste des ids des  droits d'acces d'un utilisateur
-	 * @param noIndividuOperateur
-	 * @return  la liste des ids des droits d'accès
+	 *
+	 * @return la liste des ids des droits d'accès
 	 */
 	List<Long> getIdsDroitsAcces(long noIndividuOperateur);
 

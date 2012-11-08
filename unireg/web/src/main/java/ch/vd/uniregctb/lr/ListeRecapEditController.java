@@ -160,7 +160,6 @@ public class ListeRecapEditController extends AbstractListeRecapController {
 				lrEditManager.annulerLR(bean);
 				return new ModelAndView("redirect:edit-debiteur.do?numero=" + bean.getDpi().getNumero().toString());
 			}
-			//TODO [FDE] A supprimer - Mis ici pour tester les Sommations LR
 			else if (request.getParameter(BUTTON_SOMMER_LR) != null) {
 				final EditiqueResultat resultat = lrEditManager.envoieImpressionLocalSommationLR(bean);
 				traiteRetourEditique(resultat, response, "sommationLr", null, erreur, erreur);

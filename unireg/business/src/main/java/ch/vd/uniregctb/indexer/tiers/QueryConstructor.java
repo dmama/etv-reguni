@@ -75,7 +75,7 @@ public class QueryConstructor {
 				case AUTRE_COMMUNAUTE:
 					break;
 				case ETABLISSEMENT:
-					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
+					// TODO Indexer pour etablissement et collectiviteadministrative
 					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					break;
 				case COLLECTIVITE_ADMINISTRATIVE:
@@ -87,7 +87,7 @@ public class QueryConstructor {
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EntrepriseIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, MenageCommunIndexable.SUB_TYPE)), should);
 					query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, AutreCommunauteIndexable.SUB_TYPE)), should);
-					// TODO(JEC) Indexer pour etablissement et collectiviteadministrative
+					// TODO Indexer pour etablissement et collectiviteadministrative
 					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, EtablissementIndexable.SUB_TYPE)), should);
 					// query.add(new TermQuery(new Term(LuceneHelper.F_DOCSUBTYPE, CollectiviteAdministrative.SUB_TYPE)), should);
 					break;

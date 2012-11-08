@@ -570,9 +570,7 @@ public class TacheServiceImpl implements TacheService {
 	}
 
 	private void executeActions(Long ctbId, List<SynchronizeAction> actions) {
-		//TODO(XSIBNM)
-		// Appeler la méthode getCollectiviteAdministrative et asserter que la collectivité existe.
-		// Corriger les tests qui ne passent plus
+		//TODO (BNM) Appeler la méthode getCollectiviteAdministrative et asserter que la collectivité existe + corriger les tests qui ne passent plus
 		final CollectiviteAdministrative officeSuccessions = tiersService.getOrCreateCollectiviteAdministrative(ServiceInfrastructureService.noACISuccessions, true);
 		if (officeSuccessions == null) {
 			throw new IllegalArgumentException("Impossible de trouver l'office des successions !");

@@ -19,13 +19,11 @@ public class CorrectionDateEtatCivil extends EvenementCivilInterne {
 
 	@Override
 	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		// TODO (PBO) CorrectionDateEtatCivilTranslationStrategy.validateSpecific
 	}
 
 	@NotNull
 	@Override
 	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
-		// TODO (PBO) CorrectionDateEtatCivilTranslationStrategy.handle
 		throw new EvenementCivilException("Veuillez effectuer cette opération manuellement");
 	}
 }

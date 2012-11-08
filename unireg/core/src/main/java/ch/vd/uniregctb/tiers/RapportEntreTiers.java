@@ -128,7 +128,6 @@ public abstract class RapportEntreTiers extends HibernateEntity implements DateR
 	 * <!-- begin-user-doc --> <!-- end-user-doc -->
 	 * @return the dateDebut
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_uEJMMJNYEdygKK6Oe0tVlw?GETTER"
-	 * TODO (GDY) ajouter nullable = false
 	 */
 	@Override
 	@Column(name = "DATE_DEBUT")

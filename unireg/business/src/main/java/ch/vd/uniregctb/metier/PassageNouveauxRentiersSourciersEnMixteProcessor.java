@@ -195,7 +195,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 
 		// On cache la date de naissance, et le sexe dans le fiscal de manière à restreindre le nombre d'habitants traités la
 		// prochaine fois que le batch est lancé.
-		// TODO FRED probleme si la donnée est corrigée dans le civil, cette donnée devient obsolète et n'est pas remise à zéro ou remise à jour...  meme cas de figure pour le batch de majoration
+		// TODO (FNR) probleme si la donnée est corrigée dans le civil, cette donnée devient obsolète et n'est pas remise à zéro ou remise à jour...  meme cas de figure pour le batch de majoration
 		if (sourcier.getDateNaissance() == null) {
 			sourcier.setDateNaissance(data.getDateNaissance());
 		}

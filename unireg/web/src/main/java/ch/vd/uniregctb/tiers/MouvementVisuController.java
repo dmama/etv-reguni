@@ -27,7 +27,7 @@ public class MouvementVisuController implements MessageSourceAware {
 		this.mouvementVisuManager = mouvementVisuManager;
 	}
 
-	//TODO Un check sur la securité peut-être ?
+	//TODO (FNR) Un check sur la securité peut-être ?
 	@RequestMapping("/tiers/mouvement.do")
 	@ResponseBody
 	public MouvementForJSON mouvement(@RequestParam("idMvt") Long idMvt) {

@@ -70,10 +70,6 @@ public class TiersSituationFamilleControllerTest extends WebTest {
 		ModelAndView mav = controller.handleRequest(request, response);
 		Map<?, ?> model = mav.getModel();
 		Assert.assertTrue(model != null);
-
-		/*
-		 * TODO (FDE) enrichir test ?
-		 */
 	}
 
 	public SituationFamilleManager getSituationFamilleManager() {

@@ -1232,7 +1232,6 @@ public class TiersServiceImpl implements TiersService {
      * @param tauxActivite le taux d'activite
      * @return le rapport-prestation-imposable avec les références mises-à-jour des objets sauvés
      */
-    // TODO(FDE) : ajouter un test dans TiersServiceTest
     @Override
     public RapportPrestationImposable addRapportPrestationImposable(PersonnePhysique sourcier, DebiteurPrestationImposable debiteur,
                                                                     RegDate dateDebut, RegDate dateFin, TypeActivite typeActivite, Integer tauxActivite) {
@@ -2050,7 +2049,6 @@ public class TiersServiceImpl implements TiersService {
     }
 
     private void afterForFiscalSecondaireAdded(Contribuable contribuable, ForFiscalSecondaire forFiscalSecondaire) {
-        // TODO (PBO) à déplacer dans EvenementFiscalService
         if (contribuable.getForFiscalPrincipalAt(forFiscalSecondaire.getDateDebut()).getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
             boolean isFirst = true;
             List<ForFiscal> fors = contribuable.getForsFiscauxValidAt(forFiscalSecondaire.getDateDebut());

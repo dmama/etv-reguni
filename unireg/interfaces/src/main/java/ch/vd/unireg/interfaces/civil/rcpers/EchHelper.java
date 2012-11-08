@@ -7,6 +7,7 @@ import ch.ech.ech0044.v2.DatePartiallyKnown;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
@@ -146,8 +147,8 @@ public abstract class EchHelper {
 			return TypeEtatCivil.PACS;
 		}
 		else if ("7".equals(maritalStatus)) { // Partenariat dissous...
-			if (cancelationReason == null) { // FIXME (rcpers) la valeur devrait toujours être renseignée, supprimer ce check lorsque SIREF-1834 sera résolu
-				return TypeEtatCivil.PACS_TERMINE;
+			if (cancelationReason == null) {
+				throw new ServiceCivilException("Dans la cas d'une dissolution de partenariat, la raison précise doit être renseignée."); // SIREF-1834
 			}
 			if ("1".equals(cancelationReason)) {
 				// Partenariat dissous judiciairement

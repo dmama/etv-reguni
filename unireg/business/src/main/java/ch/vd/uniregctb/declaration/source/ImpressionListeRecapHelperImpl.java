@@ -320,7 +320,6 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + ' ' + lr.getPeriode().getAnnee().toString());
-		//TODO (FDE) Se renseigner sur le numéro de collectivité concerné
 		bvrstd.setVersPourLigne1("Département des finances");
 		bvrstd.setVersPourLigne2("Administration des impôts");
 		bvrstd.setVersPourLigne3("");

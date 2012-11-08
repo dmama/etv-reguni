@@ -35,103 +35,64 @@ public interface IdentificationContribuableService {
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
-	 * @param identificationContribuableCriteria
-	 * @param paramPagination
-	 * @param nonTraiteOnly TODO
-	 * @param archiveOnly TODO
-	 * @param nonTraiterAndSuspendu TODO
-	 * @param typeDemande
-	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                             boolean nonTraiterAndSuspendu, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
-	 * @param identificationContribuableCriteria
-	 * @param nonTraiteOnly TODO
-	 * @param archiveOnly TODO
-	 * @param nonTraiterAndSuspendu TODO
-	 * @param typeDemande
-	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu,
 	                 TypeDemande... typeDemande);
 
 	/**
 	 * Force l'identification du contribuable
-	 * @param identificationContribuable
-	 * @param personne
-	 * @param etat TODO
-	 * @throws Exception
 	 */
 	public void forceIdentification(IdentificationContribuable identificationContribuable, PersonnePhysique personne, Etat etat) throws Exception;
 
 	/**
 	 * Impossible à identifier
-	 * @param identificationContribuable
-	 * @param erreur TODO
-	 * @throws Exception
 	 */
 	public void impossibleAIdentifier(IdentificationContribuable identificationContribuable, Erreur erreur) throws Exception;
 
 	/**
 	 * Soumet le message à l'identification
-	 *
-	 * @param message
 	 */
 	public void soumettre(IdentificationContribuable message);
 
-
 	/**
-	 *
 	 * Calcule et retourne les statistiques  par type de message par période et pour chaque état possible
-	 * @param identificationContribuableCriteria
-	 *
 	 */
 	public Map<IdentificationContribuable.Etat, Integer> calculerStats(IdentificationContribuableCriteria identificationContribuableCriteria);
 
-	/**Retourn le nom complet du canton emetteur du message
-	 * @param emetteurId TODO
-	 *
-	 * @return
-	 * @throws ServiceInfrastructureException
+	/**
+	 * Retourn le nom complet du canton emetteur du message
 	 */
 	public String getNomCantonFromEmetteurId(String emetteurId) throws ServiceInfrastructureException;
 
-
-	/**Retourne le nom d'un utilisateur traitant en fonction de sa nature
+	/**
+	 * Retourne le nom d'un utilisateur traitant en fonction de sa nature
 	 *
-	 *
-	 *
-	 * @param visaUser
 	 * @return le nom et le visa utilisateur modifié si besoin
 	 */
 	public IdentifiantUtilisateur getNomUtilisateurFromVisaUser(String visaUser);
 
-	/**Retente une identification automatique sur les messages present en base
+	/**
+	 * Retente une identification automatique sur les messages present en base
 	 *
-	 * @param message
 	 * @return 1 si l 'identification a réussi, 0 Sinon
-	 * @throws Exception
 	 */
 
 	public boolean tenterIdentificationAutomatiqueContribuable(IdentificationContribuable message) throws Exception;
 
 	/**
 	 * Relance l'identification automatique sur les messages en etat intermediaire: A TRAITER, A EXPERTISER, SUSPENDU
-	 *
-	 * @param dateTraitement
-	 * @param nbThreads
-	 * @param status
-	 * @param idMessage
-	 * @return
 	 */
 
 	IdentifierContribuableResults relancerIdentificationAutomatique(RegDate dateTraitement, int nbThreads, StatusManager status, Long idMessage);
 
-	/**Permet de mettre à jour les caches des critères de recherche
-	 *
+	/**
+	 * Permet de mettre à jour les caches des critères de recherche
 	 */
 	public void updateCriteres();
 

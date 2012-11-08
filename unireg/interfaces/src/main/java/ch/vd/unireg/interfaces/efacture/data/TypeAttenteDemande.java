@@ -33,7 +33,7 @@ public enum TypeAttenteDemande {
 				return t;
 			}
 		}
-		//TODO afin d'éviter que ca plante, on reçoit des nombres aléatoires de la efacture ; devrait être inutile après la mise en integration
+		// TODO (JDE) afin d'éviter que ca plante, on reçoit des nombres aléatoires de la efacture ; devrait être inutile après la mise en integration
 		if (code > 2) {
 			return null;
 		}

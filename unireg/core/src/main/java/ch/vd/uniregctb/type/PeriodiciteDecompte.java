@@ -127,7 +127,6 @@ public enum PeriodiciteDecompte {
 	UNIQUE() {
 		@Override
 		public RegDate getDebutPeriode(RegDate reference) {
-			//TODO (FDE a implementer)
 			throw new NotImplementedException();
 		}
 

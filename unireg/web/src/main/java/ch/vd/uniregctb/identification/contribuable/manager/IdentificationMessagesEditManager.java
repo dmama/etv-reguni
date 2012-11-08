@@ -26,10 +26,6 @@ public interface IdentificationMessagesEditManager {
 
 	/**
 	 * Force l'identification du contribuable
-	 * @param idIdentification
-	 * @param idPersonne
-	 * @param etat TODO
-	 * @throws Exception
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void forceIdentification(Long idIdentification, Long idPersonne, Etat etat) throws Exception ;
@@ -43,7 +39,6 @@ public interface IdentificationMessagesEditManager {
 
 	/**
 	 * Impossible à identifier
-	 * @param bean TODO
 	 */
 	@Transactional(rollbackFor = Throwable.class)
 	public void impossibleAIdentifier(IdentificationMessagesEditView bean) throws Exception ;

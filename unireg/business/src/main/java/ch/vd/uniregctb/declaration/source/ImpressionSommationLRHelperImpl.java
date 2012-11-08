@@ -317,7 +317,6 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		slrlc.setTel(dpi.getNumeroTelephoneProfessionnel());
 		slrlc.setPeriodeDu(String.valueOf(lr.getDateDebut().index()));
 		slrlc.setPeriodeAu(String.valueOf(lr.getDateFin().index()));
-		//TODO (FDE) Le renseigner dès que possible
 		final String codeBar = calculCodeBarre(lr);
 		slrlc.setCodeBar(codeBar);
 
@@ -345,7 +344,6 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 		final String prefixeBVRST = buildPrefixeBvrStandard(typeDocumentEditique);
 		bvrstd.setPrefixe(prefixeBVRST);
 		bvrstd.setLibImp(IMPOT_A_LA_SOURCE_MIN + ' ' + lr.getPeriode().getAnnee().toString());
-		//TODO (FDE) Se renseigner sur le numéro de collectivité concerné
 		bvrstd.setVersPourLigne1("Département des finances");
 		bvrstd.setVersPourLigne2("Administration des impôts");
 		bvrstd.setVersPourLigne3("");

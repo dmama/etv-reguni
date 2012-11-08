@@ -15,27 +15,12 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
-	 *
-	 * @param identificationContribuableCriteria
-	 *
-	 * @param paramPagination
-	 * @param nonTraiteOnly   TODO
-	 * @param archiveOnly     TODO
-	 * @param typeDemande
-	 * @return
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
 	                                             boolean nonTraiteAndSuspendu, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
-	 *
-	 * @param identificationContribuableCriteria
-	 *
-	 * @param nonTraiteOnly TODO
-	 * @param archiveOnly   TODO
-	 * @param typeDemande
-	 * @return
 	 */
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
 	                 TypeDemande... typeDemande);

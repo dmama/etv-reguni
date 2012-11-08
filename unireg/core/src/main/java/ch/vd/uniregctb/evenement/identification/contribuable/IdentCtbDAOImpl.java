@@ -271,14 +271,6 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	/**
 	 * Construit la clause Where
-	 *
-	 * @param criteria
-	 * @param identificationContribuableCriteria
-	 *
-	 * @param nonTraiteOnly       TODO
-	 * @param archiveOnly         TODO
-	 * @param nonTraiteOrSuspendu TODO
-	 * @return
 	 */
 	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
 	                              boolean nonTraiteOrSuspendu) {

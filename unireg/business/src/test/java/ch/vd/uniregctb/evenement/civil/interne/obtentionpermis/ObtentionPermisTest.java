@@ -708,7 +708,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 	 * SIFISC-4535 : cas d'un sourcier en secondaire avec un for principal vaudois (= cas bizarre) qui reçoit le permis C
 	 * --> aujourd'hui, unireg passer le sourcier à l'ordinaire (rattachement domicile), ce qui est faux puisque le contribuable
 	 * n'est présent qu'en secondaire
-	 * TODO ce test tient compte du comportement actuel, il faudra le modifier dès qu'une décision aura été prise pour SIFISC-4535
+	 * TODO (JDE) ce test tient compte du comportement actuel, il faudra le modifier dès qu'une décision aura été prise pour SIFISC-4535
 	 */
 	@Test
 	public void testResidentSecondaireSourcierForVaudoisObtientPermisC() throws Exception {
