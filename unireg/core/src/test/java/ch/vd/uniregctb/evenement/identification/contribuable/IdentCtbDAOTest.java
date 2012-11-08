@@ -110,6 +110,12 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 			assertNotNull(list);
 			assertEquals(3, list.size());
 		}
+		// aucun type
+		{
+			final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false, new TypeDemande[] { null });
+			assertNotNull(list);
+			assertEquals(0, list.size());
+		}
 		// seulement un à chaque fois
 		{
 			for (TypeDemande type : EnumSet.of(TypeDemande.IMPOT_SOURCE, TypeDemande.MELDEWESEN, TypeDemande.NCS)) {

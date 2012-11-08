@@ -52,7 +52,12 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 			return " 1=1 ";
 		}
 		else if (typeDemande.length == 1) {
-			return String.format(" %s.demande.typeDemande = '%s' ", tableName, typeDemande[0]);
+			if (typeDemande[0] == null) {
+				return String.format(" %s.demande.typeDemande is null ", tableName);
+			}
+			else {
+				return String.format(" %s.demande.typeDemande = '%s' ", tableName, typeDemande[0]);
+			}
 		}
 		else {
 			final StringBuilder b = new StringBuilder();
