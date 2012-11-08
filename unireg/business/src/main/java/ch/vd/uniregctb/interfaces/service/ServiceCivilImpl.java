@@ -24,7 +24,6 @@ import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.data.Tutelle;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
@@ -138,17 +137,6 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 		}
 
 		return individu.getPermis();
-	}
-
-	@Override
-	public final Tutelle getTutelle(long noIndividu, RegDate date) {
-
-		final Individu individu = getIndividu(noIndividu, date, AttributeIndividu.TUTELLE);
-		if (individu == null) {
-			return null;
-		}
-
-		return individu.getTutelle();
 	}
 
 	@Override

@@ -18,7 +18,6 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.civil.data.Tutelle;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -122,12 +121,6 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	public Collection<Permis> getPermis(long noIndividu, @Nullable RegDate date) {
 		assertTargetNotNull();
 		return service.getPermis(noIndividu, date);
-	}
-
-	@Override
-	public Tutelle getTutelle(long noTechniqueIndividu, RegDate date) {
-		assertTargetNotNull();
-		return service.getTutelle(noTechniqueIndividu, date);
 	}
 
 	@Override

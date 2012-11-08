@@ -44,7 +44,7 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class IndividuRCPers implements Individu, Serializable {
 
-	private static final long serialVersionUID = -7813406058433917119L;
+	private static final long serialVersionUID = -5634728139412585597L;
 
 	private long noTechnique;
 	private String prenom;
@@ -59,7 +59,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	private RegDate naissance;
 	private RegDate dateArriveeVD;
 	private Collection<Origine> origines;
-	private Tutelle tutelle;
 	private Collection<AdoptionReconnaissance> adoptions;
 	private Collection<Adresse> adresses;
 	private Collection<RelationVersIndividu> enfants;
@@ -99,7 +98,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.naissance = EchHelper.partialDateFromEch44(identification.getDateOfBirth());
 		this.dateArriveeVD = initDateArriveeVD(person.getResidenceHistory());
 		this.origines = initOrigins(person);
-		this.tutelle = null;
 		this.adoptions = null; // RCPers ne distingue pas les adoptions des filiations
 
 		if (history) {
@@ -182,9 +180,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = right.permis;
 		}
-		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
-			tutelle = right.tutelle;
-		}
 
 		if (parts != null) {
 			this.availableParts.addAll(parts);
@@ -206,7 +201,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		this.dateArriveeVD = right.dateArriveeVD;
 		this.origines = right.origines;
 		this.derniereNationalite = right.derniereNationalite;
-		this.tutelle = right.tutelle;
 
 		this.adresses = right.adresses;
 		this.adoptions = right.adoptions;
@@ -666,11 +660,6 @@ public class IndividuRCPers implements Individu, Serializable {
 	}
 
 	@Override
-	public Tutelle getTutelle() {
-		return tutelle;
-	}
-
-	@Override
 	public Sexe getSexe() {
 		return sexe;
 	}
@@ -697,9 +686,6 @@ public class IndividuRCPers implements Individu, Serializable {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
-			tutelle = individu.getTutelle();
 		}
 
 		if (parts != null) {

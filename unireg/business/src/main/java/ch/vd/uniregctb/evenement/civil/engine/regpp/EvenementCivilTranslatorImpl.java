@@ -22,8 +22,6 @@ import ch.vd.uniregctb.evenement.civil.interne.annulation.separation.AnnulationS
 import ch.vd.uniregctb.evenement.civil.interne.annulation.veuvage.AnnulationVeuvageTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulationpermis.AnnulationPermisTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.annulationpermis.SuppressionNationaliteTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.annulationtutelle.AnnulationLeveeTutelleTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.annulationtutelle.AnnulationTutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.arrivee.ArriveeTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.CorrectionAdresseTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.changement.adresseNotification.ModificationAdresseNotificationTranslationStrategy;
@@ -57,7 +55,6 @@ import ch.vd.uniregctb.evenement.civil.interne.obtentionpermis.ObtentionPermisTr
 import ch.vd.uniregctb.evenement.civil.interne.reconciliation.ReconciliationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.separation.SeparationTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.testing.TestingTranslationStrategy;
-import ch.vd.uniregctb.evenement.civil.interne.tutelle.LeveeTutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.tutelle.TutelleTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.interne.veuvage.VeuvageTranslationStrategy;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
@@ -81,9 +78,9 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		strategies.put(TypeEvenementCivil.ANNUL_DATE_FIN_NATIONALITE_SUISSE, new RemiseBlancDateFinNationaliteTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_DECES, new AnnulationDecesTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_DIVORCE, new AnnulationDivorceTranslationStrategy());
-		strategies.put(TypeEvenementCivil.ANNUL_LEVEE_TUTELLE, new AnnulationLeveeTutelleTranslationStrategy());
+		strategies.put(TypeEvenementCivil.ANNUL_LEVEE_TUTELLE, new TutelleTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_MARIAGE, new AnnulationMariageTranslationStrategy());
-		strategies.put(TypeEvenementCivil.ANNUL_MESURE_TUTELLE, new AnnulationTutelleTranslationStrategy());
+		strategies.put(TypeEvenementCivil.ANNUL_MESURE_TUTELLE, new TutelleTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_RECONCILIATION, new AnnulationReconciliationTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_SEPARATION, new AnnulationSeparationTranslationStrategy());
 		strategies.put(TypeEvenementCivil.ANNUL_VEUVAGE, new AnnulationVeuvageTranslationStrategy());
@@ -121,7 +118,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 		strategies.put(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, new FinPermisTranslationStrategy());
 		strategies.put(TypeEvenementCivil.FIN_NATIONALITE_NON_SUISSE, new FinNationaliteTranslationStrategy());
 		strategies.put(TypeEvenementCivil.FIN_NATIONALITE_SUISSE, new FinNationaliteTranslationStrategy());
-		strategies.put(TypeEvenementCivil.LEVEE_TUTELLE, new LeveeTutelleTranslationStrategy());
+		strategies.put(TypeEvenementCivil.LEVEE_TUTELLE, new TutelleTranslationStrategy());
 		strategies.put(TypeEvenementCivil.MARIAGE, new MariageTranslationStrategy());
 		strategies.put(TypeEvenementCivil.MESURE_TUTELLE, new TutelleTranslationStrategy());
 		strategies.put(TypeEvenementCivil.MODIF_ADRESSE_NOTIFICATION, new ModificationAdresseNotificationTranslationStrategy());

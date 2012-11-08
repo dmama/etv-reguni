@@ -39,7 +39,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
-import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
@@ -49,7 +48,6 @@ import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypePermis;
-import ch.vd.uniregctb.type.TypeTutelle;
 
 /**
  * Mock du Service Civil.
@@ -537,48 +535,6 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 			}
 		}
 		return b.toString();
-	}
-
-	protected void setTutelle(MockIndividu pupille, MockIndividu tuteur, MockCollectiviteAdministrative autoriteTutelaire, TypeTutelle type) {
-		final MockTutelle tutelle = new MockTutelle();
-		tutelle.setLibelleMotif("BlaBla");
-		tutelle.setTuteur(tuteur);
-		if (autoriteTutelaire != null) {
-			tutelle.setNomAutoriteTutelaire(merge(autoriteTutelaire.getNomComplet1(), autoriteTutelaire.getNomComplet2(), autoriteTutelaire.getNomComplet3()));
-			tutelle.setNumeroCollectiviteAutoriteTutelaire((long) autoriteTutelaire.getNoColAdm());
-		}
-		else {
-			tutelle.setNomAutoriteTutelaire(null);
-			tutelle.setNumeroCollectiviteAutoriteTutelaire(null);
-		}
-		tutelle.setTuteurGeneral(null);
-		tutelle.setTypeTutelle(type);
-
-		pupille.setTutelle(tutelle);
-	}
-
-	protected void setTutelle(MockIndividu pupille, MockCollectiviteAdministrative autoriteTutelaire, TypeTutelle type) {
-		final MockTuteurGeneral tuteurGeneral = new MockTuteurGeneral();
-		tuteurGeneral.setNomContact("Ouilles");
-		tuteurGeneral.setNomOffice("Office du Tuteur General de Vaud");
-		tuteurGeneral.setNoTelephoneContact("+41123224568");
-		tuteurGeneral.setPrenomContact("Jacques");
-
-		final MockTutelle tutelle = new MockTutelle();
-		tutelle.setLibelleMotif("BlaBla");
-		tutelle.setTuteur(null);
-		if (autoriteTutelaire != null) {
-			tutelle.setNomAutoriteTutelaire(merge(autoriteTutelaire.getNomComplet1(), autoriteTutelaire.getNomComplet2(), autoriteTutelaire.getNomComplet3()));
-			tutelle.setNumeroCollectiviteAutoriteTutelaire((long) autoriteTutelaire.getNoColAdm());
-		}
-		else {
-			tutelle.setNomAutoriteTutelaire(null);
-			tutelle.setNumeroCollectiviteAutoriteTutelaire(null);
-		}
-		tutelle.setTuteurGeneral(tuteurGeneral);
-		tutelle.setTypeTutelle(type);
-
-		pupille.setTutelle(tutelle);
 	}
 
 	/**

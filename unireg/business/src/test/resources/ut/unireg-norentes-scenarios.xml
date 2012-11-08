@@ -296,16 +296,6 @@
 	<bean id="ec_16001_03_AnnulationPermis_MarieADeux_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.annulationpermis.Ec_16001_03_AnnulationPermis_MarieADeux_Scenario" />
 		
-	<bean id="ec_25000_01_Tutelle_AvecTuteur_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.tutelle.Ec_25000_01_Tutelle_AvecTuteur_Scenario" />
-	<bean id="ec_25001_01_AnnulationTutelle_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.annulationtutelle.Ec_25001_01_AnnulationTutelle_Scenario" />
-
-	<bean id="ec_26000_01_LeveeTutelle_AvecTuteur_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.tutelle.Ec_26000_01_LeveeTutelle_AvecTuteur_Scenario" />
-	<bean id="ec_26001_01_AnnulationLeveeTutelle_Test" parent="evenementCivilScenario"
-		class="ch.vd.uniregctb.norentes.civil.annulationtutelle.Ec_26001_01_AnnulationLeveeTutelle_Scenario" />
-
 	<bean id="ec_41010_01_CorrectionDateNaissance_Test" parent="evenementCivilScenario"
 		class="ch.vd.uniregctb.norentes.civil.changement.dateNaissance.Ec_41010_01_CorrectionDateNaissance_Scenario"/>
 

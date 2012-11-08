@@ -24,7 +24,6 @@ import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividuImpl;
-import ch.vd.unireg.interfaces.civil.data.Tutelle;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -48,7 +47,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	private String numeroRCE;
 	private Collection<Origine> origines;
 	private PermisList permis;
-	private Tutelle tutelle;
 	private Sexe sexe;
 	private RegDate dateArriveeVD;
 	private final Set<AttributeIndividu> availableParts = new HashSet<AttributeIndividu>();
@@ -77,7 +75,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		this.origines = right.origines;
 		this.sexe = right.sexe;
 		this.nationalites = right.nationalites;
-		this.tutelle = right.tutelle;
 
 		this.adoptionsReconnaissances = right.adoptionsReconnaissances;
 		this.parents = right.parents;
@@ -380,15 +377,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 	}
 
 	@Override
-	public Tutelle getTutelle() {
-		return tutelle;
-	}
-
-	public void setTutelle(Tutelle tutelle) {
-		this.tutelle = tutelle;
-	}
-
-	@Override
 	public Sexe getSexe() {
 		return sexe;
 	}
@@ -426,9 +414,6 @@ public class MockIndividu extends MockEntiteCivile implements Individu {
 		}
 		if (parts != null && parts.contains(AttributeIndividu.PERMIS)) {
 			permis = individu.getPermis();
-		}
-		if (parts != null && parts.contains(AttributeIndividu.TUTELLE)) {
-			tutelle = individu.getTutelle();
 		}
 	}
 

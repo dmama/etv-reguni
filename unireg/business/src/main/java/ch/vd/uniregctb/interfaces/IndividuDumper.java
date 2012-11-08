@@ -22,8 +22,6 @@ import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.unireg.interfaces.civil.data.Tutelle;
-import ch.vd.unireg.interfaces.civil.data.TuteurGeneral;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Rue;
@@ -110,46 +108,6 @@ public abstract class IndividuDumper {
 		s.append(tab(depth + 1)).append("permis=").append(dumpPermis(individu.getPermis(), ignoreSpecific, depth + 1)).append(", \n");
 		s.append(tab(depth + 1)).append("prenom=").append(dumpString(individu.getPrenom())).append(", \n");
 		s.append(tab(depth + 1)).append("sexe=").append(dumpSexe(individu.getSexe())).append(", \n");
-		if (!ignoreSpecific) {
-			s.append(tab(depth + 1)).append("tutelle=").append(dumpTutelle(individu.getTutelle(), depth + 1, ignoreSpecific, ignoreBugs, validateAVS)).append(", \n");
-		}
-		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpTutelle(Tutelle tutelle, int depth, boolean ignoreSpecific, boolean ignoreBugs, boolean validateAVS) {
-		if (tutelle == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("Tutelle{\n");
-		s.append(tab(depth + 1)).append("dateDebut=").append(tutelle.getDateDebut()).append(", \n");
-		s.append(tab(depth + 1)).append("dateFin=").append(tutelle.getDateFin()).append(", \n");
-		s.append(tab(depth + 1)).append("libelleMotif=").append(dumpString(tutelle.getLibelleMotif())).append(", \n");
-		s.append(tab(depth + 1)).append("noSequence=").append(tutelle.getNoSequence()).append(", \n");
-		s.append(tab(depth + 1)).append("nomAutoriteTutelaire=").append(dumpString(tutelle.getNomAutoriteTutelaire())).append(", \n");
-		s.append(tab(depth + 1)).append("numeroCollectiviteAutoriteTutelaire=").append(tutelle.getNumeroCollectiviteAutoriteTutelaire()).append(", \n");
-		s.append(tab(depth + 1)).append("tuteur=").append(dump(tutelle.getTuteur(), ignoreSpecific, ignoreBugs, validateAVS, depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("tuteurGeneral=").append(dumpTuteurGeneral(tutelle.getTuteurGeneral(), depth + 1)).append(", \n");
-		s.append(tab(depth + 1)).append("type=").append(tutelle.getTypeTutelle()).append(", \n");
-		s.append(tab(depth)).append("}");
-
-		return s.toString();
-	}
-
-	private static String dumpTuteurGeneral(TuteurGeneral tuteurGeneral, int depth) {
-		if (tuteurGeneral == null) {
-			return "null";
-		}
-
-		StringBuilder s = new StringBuilder();
-		s.append("TuteurGeneral{\n");
-		s.append(tab(depth + 1)).append("noTelephoneContact=").append(tuteurGeneral.getNoTelephoneContact()).append(", \n");
-		s.append(tab(depth + 1)).append("nomContact=").append(tuteurGeneral.getNomContact()).append(", \n");
-		s.append(tab(depth + 1)).append("nomOffice=").append(tuteurGeneral.getNomOffice()).append(", \n");
-		s.append(tab(depth + 1)).append("prenomContact=").append(tuteurGeneral.getPrenomContact()).append(", \n");
 		s.append(tab(depth)).append("}");
 
 		return s.toString();

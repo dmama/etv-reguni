@@ -52,7 +52,7 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 
 		final Individu individu =
 				service.getIndividu(692185, null, AttributeIndividu.ADRESSES, AttributeIndividu.ORIGINE, AttributeIndividu.NATIONALITE, AttributeIndividu.ADOPTIONS, AttributeIndividu.ENFANTS,
-						AttributeIndividu.PARENTS, AttributeIndividu.PERMIS, AttributeIndividu.TUTELLE);
+						AttributeIndividu.PARENTS, AttributeIndividu.PERMIS);
 		assertNotNull(individu);
 		assertEquals("Jean-Marc", individu.getPrenom());
 		assertEquals("Delacrétaz", individu.getNom());
@@ -64,7 +64,6 @@ public abstract class AbstractServiceCivilTest extends BusinessItTest {
 		assertEquals(692185, individu.getNoTechnique());
 		assertNull(individu.getNumeroRCE());
 		assertEmpty(individu.getPermis());
-		assertNull(individu.getTutelle());
 
 		// On vérifie les états-civils
 		final EtatCivilList etatsCivils = individu.getEtatsCivils();

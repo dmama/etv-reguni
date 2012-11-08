@@ -135,11 +135,6 @@ public interface Individu extends EntiteCivile {
 	List<RelationVersIndividu> getConjoints();
 
 	/**
-	 * @return la tutelle à laquelle l'individu étendu est soumis.
-	 */
-	Tutelle getTutelle();
-
-	/**
 	 * Copie les parties spécifiées à partir de l'individu spécifié.
 	 *
 	 * @param individu l'individu sur lequel il faut copier les parties.

@@ -15,7 +15,6 @@ import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
 import ch.vd.unireg.interfaces.civil.data.Origine;
 import ch.vd.unireg.interfaces.civil.data.Permis;
-import ch.vd.unireg.interfaces.civil.data.Tutelle;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.HistoriqueCommune;
 import ch.vd.uniregctb.common.DonneesCivilesException;
@@ -182,19 +181,6 @@ public interface ServiceCivilService {
 	 * @return la liste des permis de l'individu, valides jusqu'à la date spécifiée.
 	 */
 	Collection<Permis> getPermis(long noIndividu, @Nullable RegDate date);
-
-	/**
-	 * Retourne la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis, l'individu attendu étant identifié par le numéro en paramètre.
-	 * <p/>
-	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués.
-	 * <p/>
-	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramètres donnés.
-	 *
-	 * @param noIndividu le numéro technique de l'individu.
-	 * @param date       la date de validité de la tutelle.
-	 * @return la tutelle, valide durant l'année en paramètre, à laquelle l'individu attendu est soumis.
-	 */
-	Tutelle getTutelle(long noIndividu, RegDate date);
 
 	/**
 	 * @param noIndividu le numéro technique de l'individu.
