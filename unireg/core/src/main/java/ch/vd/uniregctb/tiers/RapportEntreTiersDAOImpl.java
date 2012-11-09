@@ -77,6 +77,28 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		});
 	}
 
+	@Override
+	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, final Long numeroSourcier, boolean activesOnly) {
+		final StringBuilder b = new StringBuilder();
+		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur and rapport.sujetId = :sourcier");
+		if (activesOnly) {
+			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");
+		}
+		final String query = b.toString();
+
+		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<RapportPrestationImposable>>() {
+			@Override
+			public List<RapportPrestationImposable> doInHibernate(Session session) throws HibernateException, SQLException {
+
+				final Query queryObject = session.createQuery(query);
+				queryObject.setParameter("debiteur", numeroDebiteur);
+				queryObject.setParameter("sourcier", numeroSourcier);
+
+				return queryObject.list();
+			}
+		});
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

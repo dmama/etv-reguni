@@ -63,6 +63,8 @@
 		<property name="validationService" ref="validationService" />
 		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="assujettissementService" ref="assujettissementService" />
+		<property name="rapportEntreTiersDAO" ref="rapportEntreTiersDAO" />
+
 	</bean>
 
 	<bean id="metierService" class="ch.vd.uniregctb.metier.MetierServiceImpl">

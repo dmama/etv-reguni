@@ -139,6 +139,7 @@ public class TiersServiceImpl implements TiersService {
 	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 	private AssujettissementService assujettissementService;
+	private RapportEntreTiersDAO rapportEntreTiersDAO;
 
     /**
      * Recherche les Tiers correspondants aux critères dans le data model de Unireg
@@ -227,7 +228,11 @@ public class TiersServiceImpl implements TiersService {
         this.validationInterceptor = validationInterceptor;
     }
 
-    /**
+	public void setRapportEntreTiersDAO(RapportEntreTiersDAO rapportEntreTiersDAO) {
+		this.rapportEntreTiersDAO = rapportEntreTiersDAO;
+	}
+
+	/**
      * Renvoie la personne physique correspondant au numéro d'individu passé en paramètre.
      *
      * @param numeroIndividu le numéro de l'individu.
@@ -4263,6 +4268,21 @@ public class TiersServiceImpl implements TiersService {
 
         return new NumerosOfficesImpot(oid == null ? 0 : oid.getNumero(), oir == null ? 0 : oir.getNumero());
     }
+
+	@Override
+	public List<RapportPrestationImposable> getRapportPrestationImposableForPeriode(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, DateRange periodeDeclaration) {
+
+		final List<RapportPrestationImposable> rapportsValides = new ArrayList<RapportPrestationImposable>();
+
+
+		final List<RapportPrestationImposable> allRapports  = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(),sourcier.getNumero(),false);
+		for (RapportPrestationImposable rapport : allRapports) {
+			if(DateRangeHelper.intersect(periodeDeclaration,rapport)){
+				rapportsValides.add(rapport);
+			}
+		}
+		return rapportsValides;
+	}
 
 	@Override
 	public String buildLibelleOrigine(long noIndividu) {
