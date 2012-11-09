@@ -36,6 +36,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.common.BusinessComparable;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -701,14 +702,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public List<ForFiscal> getForsFiscauxNonAnnules(boolean sort) {
-		List<ForFiscal> fors = new ArrayList<ForFiscal>();
-		if (forsFiscaux != null) {
-			for (ForFiscal f : forsFiscaux) {
-				if (!f.isAnnule()) {
-					fors.add(f);
-				}
-			}
-		}
+		final List<ForFiscal> fors = AnnulableHelper.sansElementsAnnules(forsFiscaux);
 		if (sort) {
 			Collections.sort(fors, new DateRangeComparator<ForFiscal>());
 		}

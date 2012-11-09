@@ -12,6 +12,7 @@ import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseCivile;
 import ch.vd.uniregctb.adresse.AdressePM;
 import ch.vd.uniregctb.adresse.AdresseTiers;
+import ch.vd.uniregctb.common.AnnulableHelper;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -75,15 +76,14 @@ public class DebiteurPrestationImposableValidator extends TiersValidator<Debiteu
 		return results;
 	}
 
-
 	private ValidationResults validateLRCouverteParFor(DebiteurPrestationImposable dpi) {
-		ValidationResults vr = new ValidationResults();
-		final List<Declaration> lesLRs = dpi.getDeclarationsSorted();
-		if (lesLRs != null && !lesLRs.isEmpty()) {
+		final ValidationResults vr = new ValidationResults();
+		final List<Declaration> lesLRs = AnnulableHelper.sansElementsAnnules(dpi.getDeclarationsSorted());
+		if (!lesLRs.isEmpty()) {
 			final List<ForFiscal> fors = dpi.getForsFiscauxNonAnnules(true);
 			final List<DateRange> lrs = new ArrayList<DateRange>(lesLRs);
-			final List<DateRange> periodeNonCouverte = DateRangeHelper.subtract(lrs ,fors, new DateRangeAdapterCallback());
-			if(!periodeNonCouverte.isEmpty()){
+			final List<DateRange> periodeNonCouverte = DateRangeHelper.subtract(lrs, fors, new DateRangeAdapterCallback());
+			if (!periodeNonCouverte.isEmpty()) {
 				for (DateRange dateRange : periodeNonCouverte) {
 					vr.addError(String.format("La période qui débute le (%s) et se termine le (%s) contient des LRs alors qu'elle n'est couverte par aucun for valide",
 							RegDateHelper.dateToDisplayString(dateRange.getDateDebut()), RegDateHelper.dateToDisplayString(dateRange.getDateFin())));
