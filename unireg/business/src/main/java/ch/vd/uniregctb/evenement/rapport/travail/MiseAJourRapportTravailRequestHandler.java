@@ -94,14 +94,39 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			final RegDate dateDebutPeriodeDeclaration = request.getDateDebutPeriodeDeclaration();
 
 			if(dateDebutRapportTravail.isAfterOrEqual(dateDebutPeriodeDeclaration)){
+				//CAS 18
 				annulerRapportTravail(rapportAModifier);
-			}
-
-			if (dateDebutRapportTravail.isBefore(dateDebutPeriodeDeclaration)) {
-			//TO BE CONTINUED
+			}else if (dateDebutRapportTravail.isBefore(dateDebutPeriodeDeclaration)) {
+				//Traitement de la date de fin du rappport
+				traiterFermetureRapportTravail(rapportAModifier,request);
 			}
 
 		}
+	}
+
+	private void traiterFermetureRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+
+		final RegDate dateFermeture = request.getDateDebutPeriodeDeclaration().getOneDayBefore();
+		final RegDate dateFinDeclaration = request.getDateFinPeriodeDeclaration();
+
+		//cas 16 et cas 15
+		final RegDate dateFinRapport = rapportAModifier.getDateFin();
+		if (dateFinRapport == null || dateFinRapport.isBeforeOrEqual(dateFinDeclaration)) {
+			rapportAModifier.setDateFin(dateFermeture);
+			String message = String.format("Fermeture du rapport de travail commencant" +
+					" le %s pour le debiteur %s et le sourcier %s. La date de fermeture a été determinée au %s",
+					RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
+					FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
+					FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()),
+					RegDateHelper.dateToDisplayString(dateFermeture));
+			LOGGER.info(message);
+		}
+		//cas 17
+		if(dateFinRapport!=null && dateFinRapport.isBefore(request.getDateDebutPeriodeDeclaration())){
+			final String cause = "Date de fin du rapport avant la date de début de la période";
+			aucunTraitement(cause,request.getBusinessId());
+		}
+
 	}
 
 	private void annulerRapportTravail(RapportPrestationImposable rapportAModifier) {
@@ -233,7 +258,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		LOGGER.info(message);
 	}
 
-	private void aucunTraitement(String businessId) {
-		LOGGER.info("aucun traitement necessaire pour le message " + businessId);
+	private void aucunTraitement(String cause,String businessId) {
+		LOGGER.info(cause+": aucun traitement necessaire pour le message " + businessId);
 	}
 }
