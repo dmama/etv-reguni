@@ -60,11 +60,10 @@ public class DataHelper {
 			Calendar cal = GregorianCalendar.getInstance();
 			cal.setTime(date);
 
-			final Date d = new Date();
-			d.setYear(cal.get(Calendar.YEAR));
-			d.setMonth(cal.get(Calendar.MONTH) + 1);
-			d.setDay(cal.get(Calendar.DAY_OF_MONTH));
-			return d;
+			final int year = cal.get(Calendar.YEAR);
+			final int month = cal.get(Calendar.MONTH) + 1;
+			final int day = cal.get(Calendar.DAY_OF_MONTH);
+			return new Date(year, month, day);
 		}
 	}
 
@@ -73,11 +72,7 @@ public class DataHelper {
 			return null;
 		}
 		else {
-			final Date d = new Date();
-			d.setYear(date.year());
-			d.setMonth(date.month());
-			d.setDay(date.day());
-			return d;
+			return new Date(date.year(), date.month(), date.day());
 		}
 	}
 

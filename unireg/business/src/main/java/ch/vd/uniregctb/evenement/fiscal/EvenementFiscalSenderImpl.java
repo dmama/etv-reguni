@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.evenement.fiscal;
 
-import java.util.Date;
-
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlObject;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,6 +24,7 @@ import ch.vd.fiscalite.registre.evenementFiscalV1.EvenementFiscalSituationFamill
 import ch.vd.fiscalite.registre.evenementFiscalV1.ModeImpositionEnumType;
 import ch.vd.fiscalite.registre.evenementFiscalV1.MotifForEnumType;
 import ch.vd.infrastructure.model.impl.DateUtils;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -215,7 +214,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		final EvenementFiscalFinAutoriteParentaleDocument document = EvenementFiscalFinAutoriteParentaleDocument.Factory.newInstance();
 		final EvenementFiscalFinAutoriteParentaleType evt = document.addNewEvenementFiscalFinAutoriteParentale();
 		evt.setDateEvenement(DateUtils.calendar(evenement.getDateEvenement().asJavaDate()));
-		evt.setDateTraitement(DateUtils.calendar(new Date()));
+		evt.setDateTraitement(DateUtils.calendar(DateHelper.getCurrentDate()));
 		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
 		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
 		evt.setNumeroTechnique(evenement.getId());
@@ -226,7 +225,7 @@ public final class EvenementFiscalSenderImpl implements EvenementFiscalSender {
 		final EvenementFiscalNaissanceDocument document = EvenementFiscalNaissanceDocument.Factory.newInstance();
 		final EvenementFiscalNaissanceType evt = document.addNewEvenementFiscalNaissance();
 		evt.setDateEvenement(DateUtils.calendar(evenement.getDateEvenement().asJavaDate()));
-		evt.setDateTraitement(DateUtils.calendar(new Date()));
+		evt.setDateTraitement(DateUtils.calendar(DateHelper.getCurrentDate()));
 		evt.setNumeroTiers(String.valueOf(evenement.getTiers().getNumero()));
 		evt.setNumeroTiersEnfant(String.valueOf(evenement.getEnfant().getNumero()));
 		evt.setNumeroTechnique(evenement.getId());

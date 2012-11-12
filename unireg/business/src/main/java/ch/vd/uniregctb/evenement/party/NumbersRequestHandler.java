@@ -9,6 +9,7 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.core.io.ClassPathResource;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest;
 import ch.vd.unireg.xml.event.party.numbers.v1.NumbersResponse;
@@ -47,7 +48,7 @@ public class NumbersRequestHandler implements RequestHandler<NumbersRequest> {
 		// on récupère les ids demandés
 		final List<PartyType> types = request.getTypes();
 		final TypeTiers[] tiersTypes = party2tiers(types);
-		final Date time = new Date();
+		final Date time = DateHelper.getCurrentDate();
 		final List<Long> ids = tiersDAO.getAllIdsFor(request.isIncludeCancelled(), tiersTypes);
 
 		// construction de la réponse

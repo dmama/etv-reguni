@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.evenement.party;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.common.v1.UserLogin;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
@@ -65,7 +65,7 @@ public class CreateNonresidentRequestHandler implements RequestHandler<CreateNon
 		// l'authentification n'est plus valide au moment ou hibernate veut sauver l'eventuelle IdentificationPersonne
 		hibernateTemplate.flush();
 
-		return new RequestHandlerResult(new CreateNonresidentResponse(XmlUtils.date2xmlcal(new Date()), idNouveauNonHabitant));
+		return new RequestHandlerResult(new CreateNonresidentResponse(XmlUtils.date2xmlcal(DateHelper.getCurrentDate()), idNouveauNonHabitant));
 	}
 
 	@Override

@@ -3,7 +3,6 @@ package ch.vd.uniregctb.database;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -141,7 +141,7 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 				if (max1000ids.size() == 1000 || i == contribuables.length - 1) {
 					sqlQuery.setParameter("libelle", value.libelleCommune);
 					sqlQuery.setParameterList("ids", max1000ids);
-					sqlQuery.setParameter("ts", new Date());
+					sqlQuery.setParameter("ts", DateHelper.getCurrentDate());
 					sqlQuery.executeUpdate();
 					max1000ids.clear();
 					if (getStatusManager().interrupted()) {

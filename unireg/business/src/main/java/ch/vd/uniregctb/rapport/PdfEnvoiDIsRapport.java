@@ -112,11 +112,6 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
             addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 
-        // HeaderFooter header = new HeaderFooter(new Phrase("This is a header."), false);
-        // setHeader(header);
-        // setFooter(new HeaderFooter(new Phrase("Rapport du job de détermination des DIs à émettre - Page"), new Phrase(
-        // " - généré le " + new SimpleDateFormat("dd.MM.yyy k:m:s").format(new Date()))));
-
         close();
 
         status.setMessage("Génération du rapport terminée.");
