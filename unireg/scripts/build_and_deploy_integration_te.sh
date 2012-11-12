@@ -63,7 +63,7 @@ if [ $? != 0 ]; then
 fi
 
 if [ $DEPLOY_ONLY == 0 ]; then
-	(cd unireg/web && mvn -Pnot,oracle assembly:assembly)
+	(cd unireg/web && mvn -Pnot,oracle,jspc assembly:assembly)
 fi
 if [ $? != 0 ]; then
 	echo "!!! Erreur lors de l'assembly de web" >&2

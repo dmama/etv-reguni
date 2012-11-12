@@ -76,7 +76,7 @@ function assemble_app() {
   local appName=$1
 
   if [ $DEPLOY_ONLY == 0 ]; then
-	  (cd unireg/$appName && mvn -Pnot,oracle assembly:assembly)
+	  (cd unireg/$appName && mvn -Pnot,oracle,jspc assembly:assembly)
   fi
   if [ $? != 0 ]; then
 	  echo "!!! Erreur lors de l'assembly de $appName" >&2
