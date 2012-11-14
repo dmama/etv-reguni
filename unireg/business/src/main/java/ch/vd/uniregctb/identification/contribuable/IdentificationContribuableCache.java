@@ -92,7 +92,10 @@ public class IdentificationContribuableCache {
 			final List<String> accumulator = new LinkedList<String>();
 			for (TypeDemande type : typesDemande) {
 				final Map<IdentificationContribuableEtatFilter, Collection<String>> typesMessages = typesMessagesParTypeDemande.get(type);
-				accumulator.addAll(findValues(typesMessages, filter));
+				if(typesMessages !=null){
+					accumulator.addAll(findValues(typesMessages, filter));
+				}
+
 			}
 			res = new HashSet<String>(accumulator);
 		}
