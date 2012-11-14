@@ -293,7 +293,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 * @return le premier rapport de travail qui est concerne par la période de déclaration
 	 */
 	private List<RapportPrestationImposable> findRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
-		List<RapportPrestationImposable> listeRapport = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier);
+		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
 		return listeRapport;
 	}
 

@@ -4270,7 +4270,7 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public List<RapportPrestationImposable> getRapportPrestationImposableForPeriode(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
 
 		final List<RapportPrestationImposable> allRapports  = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(),sourcier.getNumero(),false);
 		return allRapports;

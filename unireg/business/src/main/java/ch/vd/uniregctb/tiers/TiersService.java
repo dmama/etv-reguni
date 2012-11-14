@@ -1244,10 +1244,11 @@ public interface TiersService {
 			*
 			*
 	 *
+	 *
 	 * @param dpi un débiteur
 * @param sourcier un sourcier
 * @return la listes des rapports de prestations
 	*/
-	public List<RapportPrestationImposable> getRapportPrestationImposableForPeriode(DebiteurPrestationImposable dpi, PersonnePhysique sourcier);
+	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier);
 }
 

@@ -153,7 +153,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
 		assertEquals(1,rapports.size());
 		RapportPrestationImposable rapport = rapports.get(0);
 		assertEquals(dateDebutVersementSalaire,rapport.getDateDebut());
@@ -202,7 +202,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
 		assertEquals(0,rapports.size());
 
 	}
