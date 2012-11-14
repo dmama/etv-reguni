@@ -243,121 +243,43 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertTextMessage(OUTPUT_QUEUE, texte);
 	}
 
+	private static final String EXPECTED_XML_TEMPLATE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>%s</iden:type><iden:code>%s</iden:code><iden:message>%s</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
+
 	@Test
 	public void testSendReponseErreurTechnique() throws Exception {
-
-		// Création du message
-		final IdentificationContribuable message = new IdentificationContribuable();
-		final EsbHeader header = new EsbHeader();
-		header.setBusinessUser("IdentificationContribuableTest");
-		header.setBusinessId(String.valueOf(message.hashCode()));
-		header.setReplyTo("ReplyToTest");
-		message.setHeader(header);
-		final Reponse reponse = new Reponse();
-		reponse.setDate(newUtilDate(2008, 3, 23));
-		final Erreur erreur = new Erreur();
-		erreur.setType(TypeErreur.TECHNIQUE);
-		erreur.setCode("TestErreurTechnique");
-		erreur.setMessage("Erreur technique de test");
-		reponse.setErreur(erreur);
-		message.setReponse(reponse);
-
-		// Envoi du message
-		handler.sendReponse(message);
-
-		// On vérifie que l'on a bien envoyé le message
-		final String texte =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>T</iden:type><iden:code>TestErreurTechnique</iden:code><iden:message>Erreur technique de test</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
-		assertTextMessage(OUTPUT_QUEUE, texte);
+		testSendReponseErreur(TypeErreur.TECHNIQUE,	"TestErreurTechnique",	"Erreur technique de test");
 	}
 
 	@Test
 	public void testSendReponseErreurContribuableInconnu() throws Exception {
-
-		// Création du message
-		final IdentificationContribuable message = new IdentificationContribuable();
-		final EsbHeader header = new EsbHeader();
-		header.setBusinessUser("IdentificationContribuableTest");
-		header.setBusinessId(String.valueOf(message.hashCode()));
-		header.setReplyTo("ReplyToTest");
-		message.setHeader(header);
-		final Reponse reponse = new Reponse();
-		reponse.setDate(newUtilDate(2008, 3, 23));
-		final Erreur erreur = new Erreur();
-		erreur.setType(TypeErreur.METIER);
-		erreur.setCode(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESSPONDANCE.getCode());
-		erreur.setMessage(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESSPONDANCE.getLibelle());
-		reponse.setErreur(erreur);
-		message.setReponse(reponse);
-
-		// Envoi du message
-		handler.sendReponse(message);
-
-		// On vérifie que l'on a bien envoyé le message
-		final String texte =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>01</iden:code><iden:message>Aucun contribuable ne correspond au message</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
-		assertTextMessage(OUTPUT_QUEUE, texte);
+		testSendReponseErreur(IdentificationContribuable.ErreurMessage.AUCUNE_CORRESPONDANCE);
 	}
 
 	@Test
 	public void testSendReponseErreurVersACI() throws Exception {
-
-		// Création du message
-		final IdentificationContribuable message = new IdentificationContribuable();
-		final EsbHeader header = new EsbHeader();
-		header.setBusinessUser("IdentificationContribuableTest");
-		header.setBusinessId(String.valueOf(message.hashCode()));
-		header.setReplyTo("ReplyToTest");
-		message.setHeader(header);
-		final Reponse reponse = new Reponse();
-		reponse.setDate(newUtilDate(2008, 3, 23));
-		final Erreur erreur = new Erreur();
-		erreur.setType(TypeErreur.METIER);
-		erreur.setCode(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON.getCode());
-		erreur.setMessage(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON.getLibelle());
-		reponse.setErreur(erreur);
-		message.setReponse(reponse);
-
-		// Envoi du message
-		handler.sendReponse(message);
-
-		// On vérifie que l'on a bien envoyé le message
-		final String texte =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>02</iden:code><iden:message>Envoi manuel à ACI autre canton</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
-		assertTextMessage(OUTPUT_QUEUE, texte);
+		testSendReponseErreur(IdentificationContribuable.ErreurMessage.ACI_AUTRE_CANTON);
 	}
 
 	@Test
 	public void testSendReponseErreurVersIs() throws Exception {
-
-		// Création du message
-		final IdentificationContribuable message = new IdentificationContribuable();
-		final EsbHeader header = new EsbHeader();
-		header.setBusinessUser("IdentificationContribuableTest");
-		header.setBusinessId(String.valueOf(message.hashCode()));
-		header.setReplyTo("ReplyToTest");
-		message.setHeader(header);
-		final Reponse reponse = new Reponse();
-		reponse.setDate(newUtilDate(2008, 3, 23));
-		final Erreur erreur = new Erreur();
-		erreur.setType(TypeErreur.METIER);
-		erreur.setCode(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE.getCode());
-		erreur.setMessage(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE.getLibelle());
-		reponse.setErreur(erreur);
-		message.setReponse(reponse);
-
-		// Envoi du message
-		handler.sendReponse(message);
-
-		// On vérifie que l'on a bien envoyé le message
-		final String texte =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>03</iden:code><iden:message>Envoi manuel à IS</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
-		assertTextMessage(OUTPUT_QUEUE, texte);
+		testSendReponseErreur(IdentificationContribuable.ErreurMessage.SECTION_IMPOT_SOURCE);
 	}
 
 	@Test
 	public void testSendReponseErreurVersOMPI() throws Exception {
+		testSendReponseErreur(IdentificationContribuable.ErreurMessage.OIPM);
+	}
 
+	@Test
+	public void testSendReponseErreurFrontalier() throws Exception {
+		testSendReponseErreur(IdentificationContribuable.ErreurMessage.FRONTALIER);
+	}
+
+	private void testSendReponseErreur (IdentificationContribuable.ErreurMessage erreurMessage) throws Exception {
+		testSendReponseErreur(TypeErreur.METIER, erreurMessage.getCode(), erreurMessage.getLibelle());
+	}
+
+	private void testSendReponseErreur (TypeErreur type, String code, String msgErreur) throws Exception {
 		// Création du message
 		final IdentificationContribuable message = new IdentificationContribuable();
 		final EsbHeader header = new EsbHeader();
@@ -368,9 +290,9 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final Reponse reponse = new Reponse();
 		reponse.setDate(newUtilDate(2008, 3, 23));
 		final Erreur erreur = new Erreur();
-		erreur.setType(TypeErreur.METIER);
-		erreur.setCode(IdentificationContribuable.ErreurMessage.OIPM.getCode());
-		erreur.setMessage(IdentificationContribuable.ErreurMessage.OIPM.getLibelle());
+		erreur.setType(type);
+		erreur.setCode(code);
+		erreur.setMessage(msgErreur);
 		reponse.setErreur(erreur);
 		message.setReponse(reponse);
 
@@ -378,11 +300,8 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		handler.sendReponse(message);
 
 		// On vérifie que l'on a bien envoyé le message
-		final String texte =
-				"<?xml version=\"1.0\" encoding=\"UTF-8\"?><iden:identificationCTB xmlns:iden=\"http://www.vd.ch/fiscalite/registre/identificationContribuable-v1.7\"><iden:reponse><iden:date>2008-03-23T00:00:00.000+01:00</iden:date><iden:erreur><iden:type>M</iden:type><iden:code>04</iden:code><iden:message>Envoi manuel à OIPM</iden:message></iden:erreur></iden:reponse></iden:identificationCTB>";
-		assertTextMessage(OUTPUT_QUEUE, texte);
+		assertTextMessage(OUTPUT_QUEUE, String.format(EXPECTED_XML_TEMPLATE, type.name().substring(0,1), code, msgErreur));
 	}
-
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testReceiveDemandeIdentificationCtb() throws Exception {

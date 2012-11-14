@@ -89,10 +89,11 @@ public class IdentificationContribuable extends HibernateEntity {
 
 	public enum	ErreurMessage {
 
-		AUCUNE_CORRESSPONDANCE("Aucun contribuable ne correspond au message", "01"),
+		AUCUNE_CORRESPONDANCE("Aucun contribuable ne correspond au message", "01"),
         ACI_AUTRE_CANTON("Envoi manuel à ACI autre canton", "02"),
 		SECTION_IMPOT_SOURCE("Envoi manuel à IS", "03"),
-		OIPM("Envoi manuel à OIPM", "04");
+		OIPM("Envoi manuel à OIPM", "04"),
+		FRONTALIER("Frontalier", "05");
 
 		private final String libelle;
 		private final String code;
