@@ -7,7 +7,6 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -1244,11 +1243,11 @@ public interface TiersService {
 	/**Permet de récuperer toutes les rapports de préstation imposable couvrant une période donnée.
 			*
 			*
+	 *
 	 * @param dpi un débiteur
 * @param sourcier un sourcier
-* @param periodeDeclaration
-	 * @return la listes des rapports de prestations qui couvre la période donnée
+* @return la listes des rapports de prestations
 	*/
-	public List<RapportPrestationImposable> getRapportPrestationImposableForPeriode(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, DateRange periodeDeclaration);
+	public List<RapportPrestationImposable> getRapportPrestationImposableForPeriode(DebiteurPrestationImposable dpi, PersonnePhysique sourcier);
 }
 

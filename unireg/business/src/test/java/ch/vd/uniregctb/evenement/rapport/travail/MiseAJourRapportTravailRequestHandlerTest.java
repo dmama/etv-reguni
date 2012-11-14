@@ -12,8 +12,11 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.rt.common.v1.IdentifiantRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravailType;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
@@ -150,7 +153,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier,periodeDeclaration);
+		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier);
 		assertEquals(1,rapports.size());
 		RapportPrestationImposable rapport = rapports.get(0);
 		assertEquals(dateDebutVersementSalaire,rapport.getDateDebut());
@@ -199,7 +202,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier,periodeDeclaration);
+		List<RapportPrestationImposable> rapports = tiersService.getRapportPrestationImposableForPeriode(dpi, sourcier);
 		assertEquals(0,rapports.size());
 
 	}
@@ -297,7 +300,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
-		assertEquals(dateFinRapportAttendu,rapportPrestationImposable.getDateFin());
+		assertEquals(dateFinRapportAttendu, rapportPrestationImposable.getDateFin());
 
 	}
 
@@ -350,6 +353,161 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 	}
 
+
+	//CODE FIN DE RAPPORT SORTIE OU DECES
+	//Dans le cas ou une date de fin de rapport de travail est inexistante et que l'on reçoit une demande de fin de rapport
+	//le rapport de travail recoit comme date de fin la date de l'évenement ou la date de fin de versement de salaire.
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRapportTravailExistantAvecEvenementFinRapport() throws Exception {
+
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2011,1,1),null,false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2012, 1, 1);
+		final RegDate dateFinPeriode = date(2012, 12, 31);
+		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
+		final RegDate dateFinCore = date(2012, 6, 30);
+		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
+		final Date dateEvenement = DataHelper.coreToXML(dateFinCore);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+		FinRapportTravail finRapportTravail = new FinRapportTravail();
+		finRapportTravail.setCode(FinRapportTravailType.SORTIE);
+		finRapportTravail.setDateEvenement(dateEvenement);
+		request.setFinRapportTravail(finRapportTravail);
+		request.setDateFinVersementSalaire(dateFinVersementSalaire);
+
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		rapportPrestations.addAll(dpi.getRapportsObjet());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		assertEquals(dateFinCore,rapportPrestationImposable.getDateFin());
+
+	}
+
+
+	//le rapport de travail existant à une date de fin dans la période de déclaration.
+	//En cas d'absence d'evenement de fin ou de fermeture, on réouvre le rapport de travail
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRapportTravailExistantFermeDansPeriodeDeclaration() throws Exception {
+
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2011,1,1),date(2012,8,1),false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2012, 1, 1);
+		final RegDate dateFinPeriode = date(2012, 12, 31);
+		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
+		final RegDate dateFinCore = date(2012, 6, 30);
+		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
+		final Date dateEvenement = DataHelper.coreToXML(dateFinCore);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+		request.setDateFinVersementSalaire(dateFinVersementSalaire);
+
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		rapportPrestations.addAll(dpi.getRapportsObjet());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		assertEquals(null,rapportPrestationImposable.getDateFin());
+
+	}
+
+	//le rapport de travail existant à une date de début postérieur à la date de début de la période de déclaration.
+	//la date de debut du rapport reçoit la date d edébut de versement de salaire
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRapportTravailExistantOuvertApresPeriodeDeclaration() throws Exception {
+
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2012,1,1),null,false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2011, 1, 1);
+		final RegDate dateFinPeriode = date(2011, 12, 31);
+		final RegDate dateDebutVersementSalaire = date(2011, 1, 1);
+		final RegDate dateFinCore = date(2012, 6, 30);
+		final Date dateFinVersementSalaire = DataHelper.coreToXML(dateFinCore);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+		request.setDateFinVersementSalaire(dateFinVersementSalaire);
+
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		rapportPrestations.addAll(dpi.getRapportsObjet());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
+
+	}
 
 	private MiseAJourRapportTravailRequest createMiseAJourRapportTravailRequest(Long idDebiteur, Long idSourcier, DateRange periodeDeclaration,
 	                                                                            RegDate dateDebutVersementSalaire, RegDate dateFinVersementSalaire) {
