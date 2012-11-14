@@ -1102,8 +1102,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		}
 	}
 
-	//@Test(timeout = 10000L)
-	@Test
+	@Test(timeout = 10000L)
 	public void testArriveesAnterieurCoupleAMettreEnErreur() throws Exception {
 
 		final long noLui = 246L;
@@ -1239,7 +1238,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	/**
 	 * SIFISC-6926
 	 */
-	@Test
+	@Test(timeout = 10000L)
 	public void testArriveePersonneMarieConnueHorsSuisseCelibataire() throws Exception {
 
 		final long noIndividu = 32673256L;

@@ -145,7 +145,7 @@ public abstract class Arrivee extends Mouvement {
 			 * Création à la demande de l'habitant
 			 */
 			// [UNIREG-770] rechercher si un Non-Habitant assujetti existe (avec Nom - Prénom)
-			final PersonnePhysique habitant = getOrCreateHabitant(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
+			final PersonnePhysique habitant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_OBLIGATOIRE_ERROR_IF_SEVERAL);
 
 			// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 			context.getTiersService().updateHabitantFlag(habitant, getNoIndividu(), dateArrivee, getNumeroEvenement());
@@ -313,16 +313,6 @@ public abstract class Arrivee extends Mouvement {
 	}
 
 	@NotNull
-	private PersonnePhysique getOrCreateHabitant(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
-		  return getOrCreatePersonnePhysique(individu, evenementId, behavior);
-	}
-
-	@NotNull
-	private PersonnePhysique getOrCreateConjoint(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
-		return getOrCreatePersonnePhysique(individu, evenementId, behavior);
-	}
-
-	@NotNull
 	private PersonnePhysique getOrCreatePersonnePhysique(Individu individu, long evenementId, FindBehavior behavior) throws EvenementCivilException {
 
 		final PersonnePhysique pp = context.getTiersDAO().getPPByNumeroIndividu(individu.getNoTechnique());
@@ -449,7 +439,7 @@ public abstract class Arrivee extends Mouvement {
 		/*
 		 * Récupération/création des habitants
 		 */
-		final PersonnePhysique arrivant = getOrCreateHabitant(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		final boolean arrivantWasNonHabitant = !arrivant.isHabitantVD();
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
@@ -457,11 +447,12 @@ public abstract class Arrivee extends Mouvement {
 
 		final PersonnePhysique conjointDeLArrivant;
 		if (conjoint != null) {
-			conjointDeLArrivant = getOrCreateConjoint(conjoint, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
+			conjointDeLArrivant = getOrCreatePersonnePhysique(conjoint, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
 		}
 		else {
 			conjointDeLArrivant = null;
 		}
+		final boolean conjointDeLArrivantWasNonHabitant = conjointDeLArrivant != null && !conjointDeLArrivant.isHabitantVD();
 
 		/*
 		 * Récupération/création du ménage commun et du rapports entre tiers
@@ -473,6 +464,9 @@ public abstract class Arrivee extends Mouvement {
 		 // [SIFISC-6032] Fermeture d'eventuel for personnel ouvert pour des anciens non-habitants  avant de créer le ménage.
 		if (arrivantWasNonHabitant) {
 			context.getTiersService().closeForFiscalPrincipal(arrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
+		}
+		if (conjointDeLArrivant != null && conjointDeLArrivantWasNonHabitant ) {
+			context.getTiersService().closeForFiscalPrincipal(conjointDeLArrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
 		final MenageCommun menageCommun = getOrCreateMenageCommun(arrivant, conjointDeLArrivant, dateEvenement, dateDebutMenage, numeroEvenement);
