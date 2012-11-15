@@ -15,6 +15,7 @@ import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tache.manager.TacheListManager;
+import ch.vd.uniregctb.tiers.manager.TiersEditManager;
 import ch.vd.uniregctb.tiers.manager.TiersVisuManager;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -38,7 +39,8 @@ public class TiersVisuController extends AbstractTiersController {
 	private final static String TACHE_ID_TRAITE_PARAM = "idTacheTraite";
 	private final static String RAPPORTS_PREST_HISTO_PARAM = "rapportsPrestationHisto";
 
-	private TiersVisuManager tiersVisuManager ;
+	private TiersEditManager tiersEditManager;
+	private TiersVisuManager tiersVisuManager;
 	private TacheListManager tacheListManager;
 
 	public static final String PAGE_SIZE_NAME = "pageSize";
@@ -142,10 +144,14 @@ public class TiersVisuController extends AbstractTiersController {
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
 		if (request.getParameter(BUTTON_ANNULER_TIERS) != null) {
-			tiersVisuManager.annulerTiers(bean.getTiers().getNumero());
+			tiersEditManager.annulerTiers(bean.getTiers().getNumero());
 			return new ModelAndView("redirect:visu.do?id=" + bean.getTiers().getNumero());
 		}
 		return showForm(request, response, errors);
+	}
+
+	public void setTiersEditManager(TiersEditManager tiersEditManager) {
+		this.tiersEditManager = tiersEditManager;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

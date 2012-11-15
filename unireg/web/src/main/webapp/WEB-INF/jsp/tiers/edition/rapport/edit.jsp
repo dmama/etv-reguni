@@ -29,12 +29,12 @@
 					</jsp:include>
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
-			<c:if test="${command.allowedOnglet.DOS}">
+			<c:if test="${command.autorisations.rapports}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="dossiers-apparentes.jsp" />
 				</div>
 			</c:if>
-			<c:if test="${command.allowedOnglet.DBT}">
+			<c:if test="${command.autorisations.debiteurs}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="../debiteur/debiteur.jsp" />
 				</div>

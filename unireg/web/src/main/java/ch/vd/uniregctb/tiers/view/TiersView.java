@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.tiers.view;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.di.view.DeclarationView;
@@ -18,6 +18,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -95,7 +96,7 @@ public class TiersView {
 
 	private LogicielView logiciel;
 
-	private Map<String, Boolean> allowedOnglet;
+	private Autorisations autorisations;
 
 	public ComplementView getComplement() {
 		return complement;
@@ -333,15 +334,14 @@ public class TiersView {
 		this.mouvements = mouvements;
 	}
 
-	public Map<String, Boolean> getAllowedOnglet() {
-		return allowedOnglet;
+	public Autorisations getAutorisations() {
+		return autorisations;
 	}
 
-
-	public void setAllowedOnglet(@Nullable Map<String, Boolean> allowedOnglet) {
-		this.allowedOnglet = allowedOnglet;
+	public void setAutorisations(@NotNull Autorisations autorisations) {
+		this.autorisations = autorisations;
+		this.isAllowed = autorisations.isEditable();
 	}
-
 
 	public boolean isAllowed() {
 		return isAllowed;

@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Complements -->
-<c:if test="${command.allowedOnglet.CPLT}">
+<c:if test="${command.autorisations.complements}">
 	<table border="0">
 		<tr>
 			<td>

@@ -176,31 +176,11 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 				}
 			}
 
-			final Map<String, Boolean> allowedOnglet = initAllowedModif();
-			setDroitEdition(tiers, allowedOnglet);
-			tiersVisuView.setAllowedOnglet(allowedOnglet);
+			final Autorisations autorisations = getAutorisations(tiers);
+			tiersVisuView.setAutorisations(autorisations);
 		}
 
 		return tiersVisuView;
-	}
-
-	/**
-	 * initialise les droits d'édition des onglets du tiers
-	 *
-	 * @return la map de droit d'édition des onglets
-	 */
-	private Map<String, Boolean> initAllowedModif() {
-		Map<String, Boolean> allowedModif = new HashMap<String, Boolean>();
-		allowedModif.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_DEBITEUR, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_RAPPORT, Boolean.FALSE);
-		allowedModif.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
-
-		return allowedModif;
 	}
 
 	/**
@@ -433,5 +413,13 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			nomPrenom = "";
 		}
 		return nomPrenom;
+	}
+
+	/**
+	 * Compte le nombre de rapports prestation imposable pour un débiteur
+	 */
+	@Transactional(readOnly = true)
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto) {
+		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur, !rapportsPrestationHisto);
 	}
 }

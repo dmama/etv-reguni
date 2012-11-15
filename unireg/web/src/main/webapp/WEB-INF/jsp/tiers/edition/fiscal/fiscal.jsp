@@ -9,10 +9,13 @@
 			</c:if>
 		</c:when>
 		<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-			<c:if test="${command.allowedOnglet.FOR_PRINC || command.allowedOnglet.FOR_SEC || command.allowedOnglet.FOR_AUTRE}">
+			<c:if test="${command.autorisations.forsPrincipaux ||
+						  command.autorisations.forsSecondaires ||
+						  command.autorisations.forsAutresImpots ||
+						  command.autorisations.forsAutresElementsImposables}">
 				<jsp:include page="for.jsp"/>
 			</c:if>
-			<c:if test="${command.allowedOnglet.SIT_FAM}">
+			<c:if test="${command.autorisations.situationsFamille}">
 				<jsp:include page="situation-famille.jsp"/>
 			</c:if>
 		</c:when>

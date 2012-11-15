@@ -57,10 +57,10 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!adresse.annule && adresse.source !='CIVILE' && adresse.id!= null && adresse.id!='' }">
-					<c:if test="${((adresse.usage == 'COURRIER') && (command.allowedOnglet.ADR_C)) ||
-					((adresse.usage == 'POURSUITE') && (command.allowedOnglet.ADR_P)) ||
-					((adresse.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
-					((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
+					<c:if test="${((adresse.usage == 'COURRIER') && (command.autorisations.adressesCourrier)) ||
+					((adresse.usage == 'POURSUITE') && (command.autorisations.adressesPoursuite)) ||
+					((adresse.usage == 'REPRESENTATION') && (command.autorisations.adressesRepresentation)) ||
+					((adresse.usage == 'DOMICILE') && (command.autorisations.adressesDomicile))}">
 						<c:if test="${adresse.dateFin == null}">
 							<unireg:raccourciModifier link="adresse-close.do?idAdresse=${adresse.id}" tooltip="Fermeture de l'adresse"/>
 						</c:if>
@@ -98,10 +98,10 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!adresseEnErreur.annule && adresseEnErreur.source !='CIVILE' && adresseEnErreur.id!= null && adresseEnErreur.id!='' }">
-					<c:if test="${((adresseEnErreur.usage == 'COURRIER') && (command.allowedOnglet.ADR_C)) ||
-						((adresseEnErreur.usage == 'POURSUITE') && (command.allowedOnglet.ADR_P)) ||
-						((adresseEnErreur.usage == 'REPRESENTATION') && (command.allowedOnglet.ADR_B)) ||
-						((adresse.usage == 'DOMICILE') && (command.allowedOnglet.ADR_D))}">
+					<c:if test="${((adresseEnErreur.usage == 'COURRIER') && (command.autorisations.adressesCourrier)) ||
+						((adresseEnErreur.usage == 'POURSUITE') && (command.autorisations.adressesPoursuite)) ||
+						((adresseEnErreur.usage == 'REPRESENTATION') && (command.autorisations.adressesRepresentation)) ||
+						((adresse.usage == 'DOMICILE') && (command.autorisations.adressesDomicile))}">
 						<unireg:raccourciModifier link="../adresses/adresse-close.do?idAdresse=${adresseEnErreur.id}" tooltip="Fermeture de l'adresse"/>
 						<unireg:raccourciAnnuler onClick="annulerAdresse(${adresseEnErreur.id});" tooltip="Annulation de l'adresse"/>
 					</c:if>

@@ -4,7 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.dossiers.apparentes" /></span></legend>
 	
-	<c:if test="${command.allowedOnglet.DOS_NO_TRA}">
+	<c:if test="${command.autorisations.autresRapports}">
 	<table border="0">
 		<tr>
 			<td>

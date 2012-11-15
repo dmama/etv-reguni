@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -32,10 +32,11 @@ public interface AutorisationManager {
 	boolean isEditAllowedCA(CollectiviteAdministrative tiers);
 
 	/**
-	 * Détermine et retourne la carte détaillées des autorisations pour un tiers.
+	 * Détermine et retourne les autorisations de l'utilisateur courant sur le tiers spécifié.
 	 *
 	 * @param tiers un tiers
-	 * @return la map des autorisations détaillées.
+	 * @return les autorisations détaillées.
 	 */
-	Map<String, Boolean> getAutorisations(Tiers tiers);
+	@NotNull
+	Autorisations getAutorisations(Tiers tiers);
 }

@@ -2,9 +2,7 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -25,7 +23,6 @@ import ch.vd.uniregctb.adresse.AdresseSuisse;
 import ch.vd.uniregctb.adresse.AdresseSupplementaire;
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.adresse.AdressesCiviles;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseRepresentant;
 import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -42,7 +39,6 @@ import ch.vd.uniregctb.tiers.view.AdresseDisponibleView;
 import ch.vd.uniregctb.tiers.view.AdresseView;
 import ch.vd.uniregctb.tiers.view.EtatSuccessoralView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -436,9 +432,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Annule une adresse
-	 *
-	 * @param idAdresse
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -459,9 +452,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Recupere la Localite
-	 *
-	 * @param adresse
-	 * @return
 	 */
 	private Localite getLocalite(AdresseSuisse adresse) {
 		final Integer noLocalite = getNumeroOrdreLocalite(adresse);
@@ -472,9 +462,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Recupere le numéro ordre poste
-	 *
-	 * @param adresse
-	 * @return
 	 */
 	private Integer getNumeroOrdreLocalite(AdresseSuisse adresse) {
 		final Integer noLocalite;
@@ -493,9 +480,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Recupere le pays
-	 *
-	 * @param adresseEtrangere
-	 * @return
 	 */
 	public Pays getPays(AdresseEtrangere adresseEtrangere) {
 
@@ -506,9 +490,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Recupere la liste des adresses disponibles
-	 *
-	 * @param tiers
-	 * @return
 	 */
 	private List<AdresseDisponibleView> getAdressesDisponible(Tiers tiers) {
 
@@ -553,9 +534,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Remplit la collection des adressesView avec l'adresse fiscale du type spécifié.
-	 *
-	 * @param adressesDisponibleView
-	 * @param adressesIndividu
 	 */
 	private void fillAdressesDisponibleViewFromAddIndividu(List<AdresseDisponibleView> adressesDisponibleView,
 			final AdressesCiviles adressesIndividu) {
@@ -579,9 +557,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Remplit AdresseDisponibleView en fonction de Adresse
-	 *
-	 * @param addIndividu
-	 * @return
 	 */
 	private AdresseDisponibleView createAdresseDisponibleViewFromAdresseCivil(Adresse addIndividu) {
 		AdresseDisponibleView addDispoView = new AdresseDisponibleView();
@@ -638,9 +613,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Recupere le nom courrier
-	 *
-	 * @param tiers
-	 * @return
 	 */
 	private String getNomCourrier(Tiers tiers) {
 
@@ -664,11 +636,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 	/**
 	 * Charge les informations dans TiersView
-	 *
-	 * @param numero
-	 * @return un objet TiersView
-	 * @throws AdresseException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -688,29 +655,9 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		setAdressesFiscalesModifiables(tiersEditView, tiers);		
 
 		//gestion des droits d'édition
-		boolean allowed = false;
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowed = setDroitEdition(tiers, allowedOnglet);
+		final Autorisations autorisations = getAutorisations(tiers);
+		tiersEditView.setAutorisations(autorisations);
 
-		tiersEditView.setAllowedOnglet(allowedOnglet);
-		tiersEditView.setAllowed(allowed);
-
-		if(!allowed){
-			tiersEditView.setTiers(null);
-		}
 		return tiersEditView;
-	}
-
-	/**
-	 * initialise les droits d'édition des onglets du tiers
-	 * @return la map de droit d'édition des onglets
-	 */
-	private Map<String, Boolean> initAllowedOnglet(){
-		Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
-		allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_B, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_C, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_P, Boolean.FALSE);
-		return allowedOnglet;
 	}
 }

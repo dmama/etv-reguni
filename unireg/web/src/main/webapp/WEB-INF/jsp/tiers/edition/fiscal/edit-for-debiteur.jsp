@@ -27,7 +27,7 @@
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 
-			<c:if test="${command.allowedOnglet.FISCAL}">
+			<c:if test="${command.autorisations.donneesFiscales}">
 				<div id="tabContent_fiscalTab" class="situation_fiscale">
 					<jsp:include page="for-debiteur.jsp"/> 
 				</div>

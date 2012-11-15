@@ -60,6 +60,7 @@
 	<bean id="tiersVisuController" class="ch.vd.uniregctb.tiers.TiersVisuController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersVisuView" />
+		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="tiersVisuManager" ref="tiersVisuManager" />
 		<property name="tacheListManager" ref="tacheListManager" />
 		<property name="formView" value="tiers/visualisation/visu" />

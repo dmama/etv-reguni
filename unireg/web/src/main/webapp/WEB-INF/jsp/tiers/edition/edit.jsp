@@ -57,20 +57,20 @@
 			<!--onglets-->
 			<div id="tiersCreationTabs">
 				<ul>
-					<c:if test="${command.allowedOnglet.FISCAL}">
+					<c:if test="${command.autorisations.donneesFiscales}">
 						<li id="fiscalTab"><a href="#tabContent_fiscalTab"><fmt:message key="label.fiscal" /></a></li>
 					</c:if>
 					<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 						<li id="civilTab"><a href="#tabContent_civilTab"><fmt:message key="label.civil" /></a></li>
 					</c:if>
-					<c:if test="${command.allowedOnglet.CPLT}">
+					<c:if test="${command.autorisations.complements}">
 						<li id="complementsTab">
 							<a href="#tabContent_complementsTab"><fmt:message key="label.complements" /></a>
 						</li>
 					</c:if>
 				</ul>
 
-				<c:if test="${command.allowedOnglet.FISCAL}">
+				<c:if test="${command.autorisations.donneesFiscales}">
 					<div id="tabContent_fiscalTab" class="situation_fiscale">
 						<jsp:include page="fiscal/fiscal.jsp" />
 					</div>
@@ -78,7 +78,7 @@
 				<c:if test="${command.natureTiers != 'DebiteurPrestationImposable'}">
 					<div id="tabContent_civilTab" class="visuTiers">
 					<c:choose>
-						<c:when test="${!(command.allowedOnglet.CIVIL)}">
+						<c:when test="${!(command.autorisations.donneesCiviles)}">
 							<jsp:include page="../visualisation/civil/civil.jsp" />
 						</c:when>
 						<c:otherwise>
@@ -87,7 +87,7 @@
 					</c:choose>
 					</div>
 				</c:if>
-				<c:if test="${command.allowedOnglet.CPLT}">
+				<c:if test="${command.autorisations.complements}">
 					<div id="tabContent_complementsTab" class="editTiers">
 						<jsp:include page="complement/complement.jsp" />
 					</div>

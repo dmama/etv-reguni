@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Mouvement dossier -->
 <c:if test="${!command.tiers.annule}">
-	<c:if test="${command.allowedOnglet.MVT}">
+	<c:if test="${command.autorisations.mouvements}">
 		<table border="0">
 			<tr>
 				<td>

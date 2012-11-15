@@ -2,7 +2,7 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp"%>
 
 <!-- Debut Dossiers Apparentes -->
-<c:if test="${command.allowedOnglet.DOS || command.allowedOnglet.DBT}">
+<c:if test="${command.autorisations.rapports || command.autorisations.debiteurs}">
 	<table border="0">
 		<tr><td>
 			<c:if test="${empty param['message'] && empty param['retour']}">

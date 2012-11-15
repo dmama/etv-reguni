@@ -29,7 +29,7 @@
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
 
-			<c:if test="${command.allowedOnglet.FISCAL}">
+			<c:if test="${command.autorisations.donneesFiscales}">
 				<div id="tabContent_fiscalTab" class="situation_fiscale">
 				<c:choose>
 					<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">

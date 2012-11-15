@@ -73,10 +73,10 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (command.allowedOnglet.FOR_PRINC)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (command.allowedOnglet.FOR_SEC)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (command.allowedOnglet.FOR_AUTRE)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (command.allowedOnglet.FOR_AUTRE))}">
+				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (command.autorisations.forsPrincipaux)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (command.autorisations.forsSecondaires)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (command.autorisations.forsAutresImpots)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (command.autorisations.forsAutresElementsImposables))}">
 					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
 						<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
 					</c:if>

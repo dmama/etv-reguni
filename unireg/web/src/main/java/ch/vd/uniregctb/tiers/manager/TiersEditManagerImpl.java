@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -17,8 +15,6 @@ import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.entreprise.EntrepriseView;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
-import ch.vd.uniregctb.security.Role;
-import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.tiers.AutreCommunaute;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -35,7 +31,6 @@ import ch.vd.uniregctb.tiers.view.DebiteurEditView;
 import ch.vd.uniregctb.tiers.view.IdentificationPersonneView;
 import ch.vd.uniregctb.tiers.view.PeriodiciteView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodeDecompte;
@@ -94,16 +89,10 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 				tiersEditView.setAddContactISAllowed(false);
 			}
 		}
+
 		//gestion des droits d'édition
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		boolean allowed = setDroitEdition(tiers, allowedOnglet);
-
-		tiersEditView.setAllowedOnglet(allowedOnglet);
-		tiersEditView.setAllowed(allowed);
-
-		if(!allowed){
-			tiersEditView.setTiers(null);
-		}
+		final Autorisations autorisations = getAutorisations(tiers);
+		tiersEditView.setAutorisations(autorisations);
 
 		return tiersEditView;
 	}
@@ -226,18 +215,11 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			setAdressesFiscalesModifiables(tiersEditView,tiers);
 
 			//gestion des droits d'édition
-			Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-			boolean allowed = setDroitEdition(tiers, allowedOnglet);
-
-			tiersEditView.setAllowedOnglet(allowedOnglet);
-			tiersEditView.setAllowed(allowed);
-
-			if(!allowed){
-				tiersEditView.setTiers(null);
-			}
+			final Autorisations autorisations = getAutorisations(tiers);
+			tiersEditView.setAutorisations(autorisations);
 		}
 		else {
-			tiersEditView.setAllowed(true);
+			tiersEditView.setAutorisations(new Autorisations());
 		}
 
 		return tiersEditView;
@@ -287,14 +269,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		tiersView.setIdentificationPersonne(idpersonneView);
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		tiersView.setTiers(nonHab);
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
-		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
-		}
-		tiersView.setAllowedOnglet(allowedOnglet);
+		tiersView.setAutorisations(getAutorisations(nonHab));
 		return tiersView;
 	}
 
@@ -308,14 +283,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		TiersEditView tiersView = new TiersEditView();
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
 		tiersView.setTiers(autreCommunaute);
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
-		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
-		}
-		tiersView.setAllowedOnglet(allowedOnglet);
+		tiersView.setAutorisations(getAutorisations(autreCommunaute));
 		return tiersView;
 	}
 
@@ -367,42 +335,8 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		setPeriodiciteCourante(tiersView, debiteur);
 		tiersView.setTiers(debiteur);
 		tiersView.setNumeroCtbAssocie(numeroCtbAssocie);
-		final Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
-			allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
-		}
-		allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
-		tiersView.setAllowedOnglet(allowedOnglet);
+		tiersView.setAutorisations(getAutorisations(debiteur));
 		return tiersView;
-	}
-
-	/**
-	 * initialise les droits d'édition des onglets du tiers
-	 * @return la map de droit d'édition des onglets
-	 */
-	private Map<String, Boolean> initAllowedOnglet(){
-		Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
-		allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_B, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_C, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.ADR_P, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_DEBITEUR, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.DOSSIER_NO_TRAVAIL, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_RAPPORT, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.FALSE);
-
-		return allowedOnglet;
 	}
 
 	/**
@@ -513,5 +447,25 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		final PeriodeDecompte periodeDecompte = (nouvellePeriodicite == PeriodiciteDecompte.UNIQUE ? nouvellePeriode : null);
 		final RegDate debutValidite = tiersService.getDateDebutNouvellePeriodicite(dpi);
 		return tiersService.addPeriodicite(dpi, nouvellePeriodicite, periodeDecompte, debutValidite, null);
+	}
+
+	/**
+	 * Compte le nombre de rapports prestation imposable pour un débiteur
+	 */
+	@Transactional(readOnly = true)
+	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto) {
+		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur, !rapportsPrestationHisto);
+	}
+
+	/**
+	 * Annule un tiers
+	 */
+	@Transactional(rollbackFor = Throwable.class)
+	public void annulerTiers(Long numero) {
+		final Tiers tiers = tiersService.getTiers(numero);
+		if (tiers == null) {
+			throw new TiersNotFoundException(numero);
+		}
+		tiersService.annuleTiers(tiers);
 	}
 }

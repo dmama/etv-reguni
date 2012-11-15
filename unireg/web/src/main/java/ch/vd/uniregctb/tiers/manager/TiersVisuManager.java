@@ -38,14 +38,6 @@ public interface TiersVisuManager {
 	) throws AdresseException, ServiceInfrastructureException, DonneesCivilesException;
 
 	/**
-	 * Annule un tiers
-	 *
-	 * @param numero un numéro de tiers à annuler
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerTiers(Long numero) ;
-
-	/**
 	 * Compte le nombre de rapports prestation imposable pour un débiteur
 	 *
 	 * @param numeroDebiteur          un numéro de débiteur

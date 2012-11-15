@@ -29,7 +29,7 @@
 				<!-- Fin Caracteristiques generales -->
 
 			<div>
-			<c:if test="${command.allowedOnglet.RPT}">
+			<c:if test="${command.autorisations.rapportsDePrestations}">
 				<div id="tabContent_rapportsPrestationTab" class="visuTiers">
 					<jsp:include page="contribuable-associe.jsp" />
 					<jsp:include page="rapports-prestation.jsp" />

@@ -1,8 +1,5 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -11,7 +8,6 @@ import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
@@ -30,7 +26,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -57,10 +52,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	/**
 	 * Charge les informations dans TiersView
-	 * @param numero
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -95,36 +86,16 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 				setPeriodiciteCourante(tiersEditView, dpi);
 			}
 		}
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		boolean allowed = setDroitEdition(tiers, allowedOnglet);
 
-		tiersEditView.setAllowedOnglet(allowedOnglet);
-		tiersEditView.setAllowed(allowed);
-		if (!allowed) {
-			tiersEditView.setTiers(null);
-		}
+		final Autorisations autorisations = getAutorisations(tiers);
+		tiersEditView.setAutorisations(autorisations);
+
 		return tiersEditView;
-	}
-
-	/**
-	 * initialise les droits d'édition des onglets du tiers
-	 * @return la map de droit d'édition des onglets
-	 */
-	private Map<String, Boolean> initAllowedOnglet() {
-		final Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
-		allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.FISCAL_FOR_AUTRE, Boolean.FALSE);
-
-		return allowedOnglet;
 	}
 
 
 	/**
 	 * Recupere la vue ForFiscalView
-	 * @param id
-	 * @return
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -188,8 +159,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	/**
 	 * Cree une nouvelle vue ForFiscalView
-	 * @param id
-	 * @return
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -445,7 +414,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	/**
 	 * Annulation du for
-	 * @param idFor
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)

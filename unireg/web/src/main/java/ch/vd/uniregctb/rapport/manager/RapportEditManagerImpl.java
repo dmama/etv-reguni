@@ -1,8 +1,6 @@
 package ch.vd.uniregctb.rapport.manager;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +26,9 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
@@ -45,11 +43,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	/**
 	 * Alimente la vue RapportView
-	 *
-	 * @param numeroTiers
-	 * @param numeroTiersLie
-	 * @return une RapportView
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -117,7 +110,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		final Tiers tiersLie = tiersService.getTiers(numeroTiersLie); // l'autre tiers du rapport (pas celui par lequel on est arrivé sur le rapport)
 		Assert.notNull(tiersLie);
 
-		final List<String> nomTiersCourant = adresseService.getNomCourrier(tiersCourant, null, false);
 		final List<String> nomTiersLie = adresseService.getNomCourrier(tiersLie, null, false);
 		final String toolTipMessage = getRapportEntreTiersTooltips(rapportEntreTiers);
 
@@ -160,7 +152,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	/**
 	 * Persiste le rapport entre tiers
-	 * @param rapportView
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -243,8 +234,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	/**
 	 * Annule le rapport de prestation
-	 *
-	 * @param idRapport
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -256,11 +245,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 
 	/**
 	 * Charge les informations dans TiersView
-	 *
-	 * @param numero
-	 * @return un objet TiersView
-	 * @throws AdressesResolutionException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -287,16 +271,8 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 		}
 
 		//gestion des droits d'édition
-		boolean allowed = false;
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowed = setDroitEdition(tiers, allowedOnglet);
-
-		tiersEditView.setAllowedOnglet(allowedOnglet);
-		tiersEditView.setAllowed(allowed);
-
-		if(!allowed){
-			tiersEditView.setTiers(null);
-		}
+		final Autorisations autorisations = getAutorisations(tiers);
+		tiersEditView.setAutorisations(autorisations);
 
 		return tiersEditView;
 	}
@@ -331,33 +307,11 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				tiersEditView.setAddContactISAllowed(false);
 			}
 		}
+
 		//gestion des droits d'édition
-		boolean allowed = false;
-		Map<String, Boolean> allowedOnglet = initAllowedOnglet();
-		allowed = setDroitEdition(tiers, allowedOnglet);
-
-		tiersEditView.setAllowedOnglet(allowedOnglet);
-		tiersEditView.setAllowed(allowed);
-
-		if(!allowed){
-			tiersEditView.setTiers(null);
-		}
+		final Autorisations autorisations = getAutorisations(tiers);
+		tiersEditView.setAutorisations(autorisations);
 
 		return tiersEditView;
-	}
-
-
-	/**
-	 * initialise les droits d'édition des onglets du tiers
-	 * @return la map de droit d'édition des onglets
-	 */
-	private Map<String, Boolean> initAllowedOnglet(){
-		Map<String, Boolean> allowedOnglet = new HashMap<String, Boolean>();
-		allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.DOSSIER_NO_TRAVAIL, Boolean.FALSE);
-		allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.FALSE);
-		allowedOnglet.put(TiersVisuView.MODIF_RAPPORT, Boolean.FALSE);
-
-		return allowedOnglet;
 	}
 }

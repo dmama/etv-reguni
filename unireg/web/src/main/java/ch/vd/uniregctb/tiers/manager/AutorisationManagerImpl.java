@@ -20,6 +20,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -63,7 +64,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (tiers instanceof PersonnePhysique || tiers instanceof MenageCommun) {
 			return isEditAllowedPP(tiers);
 		}
-		else if (tiers instanceof CollectiviteAdministrative) {
+		else //noinspection SimplifiableIfStatement
+			if (tiers instanceof CollectiviteAdministrative) {
 			return isEditAllowedCA((CollectiviteAdministrative) tiers);
 		}
 		else {
@@ -173,8 +175,8 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return SecurityHelper.isAnyGranted(securityProvider, Role.CREATE_CA, Role.MODIF_CA);
 	}
 
-	@Override
-	public Map<String, Boolean> getAutorisations(Tiers tiers) {
+	@NotNull
+	private Map<String, Boolean> getAutorisationsMap(Tiers tiers) {
 
 		final Map<String, Boolean> map = new HashMap<String, Boolean>();
 
@@ -352,6 +354,19 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		return map;
 	}
 
+	@NotNull
+	@Override
+	public Autorisations getAutorisations(Tiers tiers) {
+
+		if (tiers instanceof Etablissement) { // les établissements ne sont pas éditables pour l'instant
+			return new Autorisations();
+		}
+		else {
+			final Map<String, Boolean> map = getAutorisationsMap(tiers);
+			return new Autorisations(map);
+		}
+	}
+
 	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille
 	 *
@@ -380,9 +395,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
 	 */
 	private boolean setDroitHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 
@@ -424,9 +436,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
 	 */
 	private boolean setDroitNonHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 
@@ -507,10 +516,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 * @return
 	 */
 	private boolean codeFactorise1(Tiers tiers, Map<String, Boolean> allowedOnglet) {
 		boolean isEditable = false;
@@ -544,9 +549,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param allowedOnglet
-	 * @return
 	 */
 	private void codeFactorise2(Map<String, Boolean> allowedOnglet) {
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
@@ -569,11 +571,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 * @param isEditable
-	 * @return
 	 */
 	private boolean codeFactorise3(Tiers tiers, Map<String, Boolean> allowedOnglet,
 	                               boolean isEditable) {
@@ -628,9 +625,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 	/**
 	 * Le type d'autorité fiscale est null en cas d'absence de for fiscal principal actif
-	 *
-	 * @param tiers
-	 * @return
 	 */
 	private static Pair<TypeImposition, TypeAutoriteFiscale> calculeTypeImpositionEtAutoriteFiscale(Tiers tiers) {
 		final TypeImposition typeImposition = calculeTypeImposition(tiers);

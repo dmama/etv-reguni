@@ -3,7 +3,7 @@
 <%@page import="ch.vd.uniregctb.common.LengthConstants"%>
 <!-- Debut Complements -->
 <c:set var="lengthpersonne" value="<%=LengthConstants.TIERS_PERSONNE%>" scope="request" />
-<c:if test="${command.allowedOnglet.CPLT_COM}">
+<c:if test="${command.autorisations.complementsCommunications}">
 <fieldset>
 	<legend><span><fmt:message key="label.complement.pointCommunication" /></span></legend>
 	<unireg:nextRowClass reset="1"/>
@@ -86,7 +86,7 @@
 	</table>
 </fieldset>
 </c:if>
-<c:if test="${command.allowedOnglet.CPLT_COOR_FIN}">
+<c:if test="${command.autorisations.complementsCoordonneesFinancieres}">
 <fieldset>
 	<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 	<unireg:nextRowClass reset="1"/>

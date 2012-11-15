@@ -2,6 +2,10 @@ package ch.vd.uniregctb.tiers.view;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
+import ch.vd.uniregctb.tiers.manager.Autorisations;
+
 /**
  * Structure model pour l'ecran d'edition des Tiers
  *
@@ -56,7 +60,7 @@ public class TiersEditView extends TiersView {
 		separed = false;
 		numeroCtbAssocie = null;
 		situationFamilleActive = false;
-		setAllowedOnglet(null);
+		setAutorisations(new Autorisations());
 		setAllowed(false);
 	}
 
@@ -140,5 +144,13 @@ public class TiersEditView extends TiersView {
 
 	public void setAdressesFiscalesModifiables(List<AdresseView> adressesFiscalesModifiables) {
 		this.adressesFiscalesModifiables = adressesFiscalesModifiables;
+	}
+
+	@Override
+	public void setAutorisations(@NotNull Autorisations autorisations) {
+		super.setAutorisations(autorisations);    //To change body of overridden methods use File | Settings | File Templates.
+		if (!autorisations.isEditable()) {
+			setTiers(null);
+		}
 	}
 }

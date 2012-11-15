@@ -7,13 +7,11 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
-import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -35,7 +33,6 @@ import ch.vd.uniregctb.common.DonneesCivilesException;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
-import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -74,7 +71,6 @@ import ch.vd.uniregctb.tiers.Curatelle;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
-import ch.vd.uniregctb.tiers.Etablissement;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
@@ -156,8 +152,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Recupere l'individu correspondant au tiers
-	 *
-	 * @return
 	 */
 	protected IndividuView getIndividuView(PersonnePhysique habitant) {
 
@@ -175,8 +169,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Recupere l'entreprise correspondant au tiers
-	 *
-	 * @return
 	 */
 	protected EntrepriseView getEntrepriseView(Entreprise entreprise) {
 
@@ -190,10 +182,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente Set<DebiteurView>
-	 *
-	 * @param contribuable
-	 * @return
-	 * @throws AdresseException
 	 */
 	protected Set<DebiteurView> getDebiteurs(Contribuable contribuable) throws AdresseException {
 
@@ -224,10 +212,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente List<RapportView>
-	 *
-	 * @param tiers
-	 * @return
-	 * @throws AdresseException
 	 */
 	protected List<RapportView> getRapports(Tiers tiers) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<RapportView>();
@@ -335,9 +319,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente List<RapportView>
-	 *
-	 * @return
-	 * @throws AdresseException
 	 */
 	protected void setContribuablesAssocies(TiersView tiersView, DebiteurPrestationImposable debiteur) throws AdresseException {
 		final List<RapportView> rapportsView = new ArrayList<RapportView>();
@@ -452,11 +433,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente List<RapportPrestationView>
-	 *
-	 * @param dpi
-	 * @param rapportsPrestationHisto
-	 * @return
-	 * @throws AdresseException
 	 */
 	protected List<RapportPrestationView> getRapportsPrestation(DebiteurPrestationImposable dpi, WebParamPagination pagination, boolean rapportsPrestationHisto) throws AdresseException {
 
@@ -494,8 +470,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente Set<ListeRecapitulativeView>
-	 *
-	 * @return
 	 */
 	private List<ListeRecapDetailView> getListesRecapitulatives(DebiteurPrestationImposable dpi) {
 
@@ -514,7 +488,7 @@ public class TiersManager implements MessageSourceAware {
 				lrView.setAnnule(lr.isAnnule());
 				Set<DelaiDeclaration> echeances = lr.getDelais();
 				Iterator<DelaiDeclaration> itEcheance = echeances.iterator();
-				RegDate delai = null;
+				RegDate delai;
 				RegDate delaiMax = null;
 				while (itEcheance.hasNext()) {
 					DelaiDeclaration echeance = itEcheance.next();
@@ -536,9 +510,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour la vue en fonction de l'habitant
-	 *
-	 * @param habitant
-	 * @param tiersView
 	 */
 	protected void setHabitant(TiersView tiersView, PersonnePhysique habitant) {
 		IndividuView individu = getIndividuView(habitant);
@@ -550,8 +521,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour la vue en fonction du menage commun
-	 *
-	 * @param tiersView
 	 */
 	protected void setMenageCommun(TiersView tiersView, MenageCommun menageCommun) {
 		tiersView.setTiers(menageCommun);
@@ -585,9 +554,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour la vue en fonction de l'entreprise
-	 *
-	 * @param entreprise
-	 * @param tiersView
 	 */
 	protected void setEntreprise(TiersView tiersView, Entreprise entreprise) {
 		tiersView.setTiers(entreprise);
@@ -597,10 +563,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour la vue en fonction du debiteur prestation imposable
-	 *
-	 * @param tiersView
-	 * @param rapportsPrestationHisto
-	 * @throws AdresseException
 	 */
 	protected void setDebiteurPrestationImposable(TiersView tiersView, DebiteurPrestationImposable dpi, boolean rapportsPrestationHisto, WebParamPagination webParamPagination) throws
 			AdresseException {
@@ -617,9 +579,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour les fors fiscaux
-	 *
-	 * @param tiersView
-	 * @param contribuable
 	 */
 	protected void setForsFiscaux(TiersView tiersView, Contribuable contribuable) {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(contribuable, null);
@@ -651,9 +610,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met a jour les fors fiscaux pour le dpi
-	 *
-	 * @param tiersView
-	 * @param dpi
 	 */
 	protected void setForsFiscauxDebiteur(TiersView tiersView, DebiteurPrestationImposable dpi) {
 		final List<ForFiscalView> forsFiscauxView = new ArrayList<ForFiscalView>();
@@ -736,9 +692,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Indique si l'on a le droit ou non de saisir une nouvelle situation de famille
-	 *
-	 * @param contribuable
-	 * @return
 	 */
 	protected boolean isSituationFamilleActive(Contribuable contribuable) {
 		Set<ForFiscal> forsFiscaux = contribuable.getForsFiscaux();
@@ -762,10 +715,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Met à jour TiersView en fonction de Contribuable
-	 *
-	 * @param tiersView
-	 * @param contribuable
-	 * @throws AdresseException
 	 */
 	protected void setSituationsFamille(TiersView tiersView, Contribuable contribuable) throws AdresseException {
 
@@ -808,28 +757,8 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setSituationsFamille(situationsFamilleView);
 	}
 
-	/**
-	 * gestion des droits d'èdition d'un tiers
-	 *
-	 * @param tiers
-	 * @param allowedOnglet
-	 * @return true si l'utilisateur a le droit d'éditer le tiers
-	 */
-	protected boolean setDroitEdition(Tiers tiers, Map<String, Boolean> allowedOnglet) {
-
-		final Map<String, Boolean> autorisations = autorisationManager.getAutorisations(tiers);
-		allowedOnglet.putAll(autorisations);
-
-		boolean isEditable = false;
-		if (!(tiers instanceof Etablissement)) { // les établissements ne sont pas éditables pour l'instant
-			for (Boolean b : autorisations.values()) {
-				if (b!= null&& b) {
-					isEditable = true;
-					break;
-				}
-			}
-		}
-		return isEditable;
+	protected Autorisations getAutorisations(Tiers tiers) {
+		return autorisationManager.getAutorisations(tiers);
 	}
 
 	protected ComplementView buildComplement(Tiers tiers) {
@@ -869,7 +798,6 @@ public class TiersManager implements MessageSourceAware {
 	}
 
 	/**
-	 * @param tiers
 	 * @return true sur l'utilisateur connecté à les droits Ifosec et sécurité dossiers de modif le tiers retourne tjs false si le tiers n'est pas une PP ou un ménage
 	 */
 	protected boolean checkDroitEdit(Tiers tiers) {
@@ -878,9 +806,6 @@ public class TiersManager implements MessageSourceAware {
 
 	/**
 	 * Alimente la vue TiersGeneralView
-	 *
-	 * @param tiersView
-	 * @throws AdresseException
 	 */
 	protected void setTiersGeneralView(TiersView tiersView, Tiers tiers) throws AdresseException {
 		TiersGeneralView tiersGeneralView = tiersGeneralManager.getTiers(tiers, true);
@@ -1161,18 +1086,6 @@ public class TiersManager implements MessageSourceAware {
 		return resultat;  //To change body of created methods use File | Settings | File Templates.
 	}
 
-	/**
-	 * Compte le nombre de rapports prestation imposable pour un débiteur
-	 *
-	 * @param numeroDebiteur
-	 * @param rapportsPrestationHisto
-	 * @return
-	 */
-	@Transactional(readOnly = true)
-	public int countRapportsPrestationImposable(Long numeroDebiteur, boolean rapportsPrestationHisto) {
-		return rapportEntreTiersDAO.countRapportsPrestationImposable(numeroDebiteur, !rapportsPrestationHisto);
-	}
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setWebCivilService(WebCivilService webCivilService) {
 		this.webCivilService = webCivilService;
@@ -1273,19 +1186,5 @@ public class TiersManager implements MessageSourceAware {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
-	}
-
-	/**
-	 * Annule un tiers
-	 *
-	 * @param numero
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerTiers(Long numero) {
-		final Tiers tiers = tiersService.getTiers(numero);
-		if (tiers == null) {
-			throw new TiersNotFoundException(numero);
-		}
-		tiersService.annuleTiers(tiers);
 	}
 }
