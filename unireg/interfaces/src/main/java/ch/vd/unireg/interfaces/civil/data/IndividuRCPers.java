@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,10 @@ import ch.vd.evd0001.v3.Relationship;
 import ch.vd.evd0001.v3.Residence;
 import ch.vd.evd0001.v3.ResidencePermit;
 import ch.vd.evd0001.v3.UpiPerson;
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeAdapterCallback;
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -37,7 +41,9 @@ import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.mock.CollectionLimitator;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
+import ch.vd.unireg.interfaces.infra.data.AdresseCourrierMinimale;
 import ch.vd.unireg.interfaces.infra.data.AdresseRCPers;
+import ch.vd.unireg.interfaces.infra.data.RangeChangingAdresseWrapper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
@@ -350,7 +356,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		return new EtatCivilListRCPers(list);
 	}
 
-	protected static Collection<Adresse> initAdresses(@Nullable MailAddress currentContact, @Nullable List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
+	protected static List<Adresse> initAdresses(@Nullable MailAddress currentContact, @Nullable List<HistoryContact> contact, List<Residence> residence, ServiceInfrastructureRaw infraService) {
 
 		final List<Adresse> adresses = new ArrayList<Adresse>();
 
@@ -406,8 +412,98 @@ public class IndividuRCPers implements Individu, Serializable {
 			}
 		}
 
+		// [SIFISC-6604] si l'historique est renseigné, on essaie de remplir les trous d'adresse avec le goesTo de l'adresse de résidence précédente...
+		if (contact != null) {
+			fillHoles(adresses);
+		}
+
 		Collections.sort(adresses, new DateRangeComparator<Adresse>());
 		return adresses;
+	}
+
+	private static void fillHoles(List<Adresse> adresses) {
+		// y a-t-il seulement des trous ?
+		if (adresses.size() == 0) {
+			return;
+		}
+
+		// je garde les adresses de résidence sur le côté, j'en aurai besoin plus tard
+		final List<Adresse> residences = new ArrayList<Adresse>(adresses.size());
+
+		// d'abord, on cherche la date de début la plus ancienne
+		RegDate bigBang = RegDate.getLateDate();
+		for (Adresse adr : adresses) {
+			if (RegDateHelper.isBefore(adr.getDateDebut(), bigBang, NullDateBehavior.EARLIEST)) {
+				bigBang = adr.getDateDebut();
+			}
+
+			// collecte des adresses de résidence (principales seulement -> l'AdresseService ne tient pas compte des adresses secondaires pour les défauts de courrier)
+			if (adr.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
+				residences.add(adr);
+			}
+		}
+
+		// voici la période pendant laquelle on doit connaître les adresses : depuis le big bang
+		final DateRange life = new DateRangeHelper.Range(bigBang, null);
+		final DateRangeAdapterCallback callback = new DateRangeAdapterCallback();
+		final Set<TypeAdresseCivil> typesPrisEnCompte = EnumSet.of(TypeAdresseCivil.COURRIER, TypeAdresseCivil.PRINCIPALE);
+		List<DateRange> holes = Arrays.asList(life);
+		for (Adresse adr : adresses) {
+			if (typesPrisEnCompte.contains(adr.getTypeAdresse())) {
+				holes = DateRangeHelper.subtract(holes, Arrays.asList(adr), callback);
+			}
+		}
+
+		// alors, reste-t-il des trous ?
+		if (holes.size() > 0) {
+			// essayons de les remplir...
+
+			// procédure de remplissage... enclanchée
+			for (final DateRange hole : holes) {
+				Localisation goesTo = null;
+
+				// si trou sans adresse précédente possible, tant pis, on n'a pas d'adresse connue
+				if (hole.getDateDebut() != null) {
+
+					// à la veille du début d'un trou, il doit y avoir une adresse qui se termine
+					// cette adresse peut être une adresse de courrier, donc on va chercher la dernière adresse de résidence
+					// qui s'est fermée avant cette date, et on utilise, s'il est présent, la champ "goesTo"
+					RegDate dateFinTrouvee = null;
+					for (Adresse adr : residences) {
+						if (RegDateHelper.isBefore(adr.getDateFin(), hole.getDateDebut(), NullDateBehavior.LATEST)) {
+							if (dateFinTrouvee == null || RegDateHelper.isAfter(adr.getDateFin(), dateFinTrouvee, NullDateBehavior.LATEST)) {
+								dateFinTrouvee = adr.getDateFin();
+								goesTo = adr.getLocalisationSuivante();
+							}
+						}
+					}
+				}
+
+				// remplissage
+				final Adresse fillingAddress;
+				if (goesTo != null) {
+					// on a trouvé quelque chose, au final... faisons-en une adresse courrier avec les bonnes dates
+					final Adresse adresseCourrier = goesTo.getAdresseCourrier();
+					if (adresseCourrier != null) {
+						fillingAddress = new RangeChangingAdresseWrapper(adresseCourrier, hole.getDateDebut(), hole.getDateFin());
+					}
+					else if (goesTo.getType() == LocalisationType.CANTON_VD || goesTo.getType() == LocalisationType.HORS_CANTON) {
+						// adresse en Suisse, dont on ne connait que la commune
+						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), goesTo.getNoOfs(), ServiceInfrastructureRaw.noOfsSuisse);
+					}
+					else {
+						// adresse étrangère, dont on ne connait finalement que le pays (si une ville est donnée, alors une adresse courrier
+						// a déjà été créée dans le goesTo (voir AdresseRCPers))
+						final Integer noOfs = goesTo.getNoOfs();
+						fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, noOfs != null ? noOfs : ServiceInfrastructureRaw.noPaysInconnu);
+					}
+				}
+				else {
+					fillingAddress = new AdresseCourrierMinimale(hole.getDateDebut(), hole.getDateFin(), null, ServiceInfrastructureRaw.noPaysInconnu);
+				}
+				adresses.add(fillingAddress);
+			}
+		}
 	}
 
 	private static Map<Integer, List<Residence>> splitParCommune(List<Residence> residence) {

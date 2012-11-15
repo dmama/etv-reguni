@@ -13,6 +13,7 @@ import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import ch.ech.ech0011.v5.Destination;
 import ch.ech.ech0044.v2.NamedPersonId;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
@@ -31,6 +32,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
+import ch.vd.unireg.interfaces.infra.mock.MockLocalite;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -273,10 +275,11 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Collection<Adresse> adresses =
 				IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), Arrays.asList(r1, r2, r3, r4), infraService);
 		assertNotNull(adresses);
-		assertEquals(4, adresses.size());
+		assertEquals(5, adresses.size());       // 4 principales + une courrier créée depuis le 4.7.2012...
 
 		final List<Adresse> principales = new ArrayList<Adresse>();
 		final List<Adresse> secondaires = new ArrayList<Adresse>();
+		final List<Adresse> contacts = new ArrayList<Adresse>();
 		for (Adresse a : adresses) {
 			if (a.getTypeAdresse() == TypeAdresseCivil.PRINCIPALE) {
 				principales.add(a);
@@ -284,11 +287,17 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 			else if (a.getTypeAdresse() == TypeAdresseCivil.SECONDAIRE) {
 				secondaires.add(a);
 			}
+			else if (a.getTypeAdresse() == TypeAdresseCivil.COURRIER) {
+				contacts.add(a);
+			}
 			else {
 				fail();
 			}
 		}
 		assertEmpty(secondaires);
+
+		assertEquals(1, contacts.size());
+		assertAdresse(date(2012, 7, 4), null, null, null, null, null, contacts.get(0));
 
 		// les localisations des adresses principales doivent être nulles lors des déménagements
 		assertEquals(4, principales.size());
@@ -694,5 +703,483 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Collection<Adresse> adresses = IndividuRCPers.initAdresses(null, null, residences, infraService);
 		assertNotNull(adresses);
 		assertEquals(2, adresses.size());
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactNiGoesTo() throws Exception {
+
+		// cas sans aucune indication de destination
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+			assertNull(adr.getLocalisationSuivante());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactGoesToInconnu() throws Exception {
+
+		// cas avec indication de destination inconnue
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		res.setGoesTo(new Destination(StringUtils.EMPTY, null, null, null));    // <-- unknown
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+
+			final Localisation goesTo = adr.getLocalisationSuivante();
+			assertNotNull(goesTo);
+			assertEquals(LocalisationType.HORS_SUISSE, goesTo.getType());
+			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, goesTo.getNoOfs());
+			assertNull(goesTo.getAdresseCourrier());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactGoesToEtrangerAvecVille() throws Exception {
+
+		// cas avec indication de destination à l'étranger avec une ville donnée
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final MockPays pays = MockPays.Espagne;
+		final String ville = "Madrid";
+		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), null));
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+
+			final Localisation goesTo = adr.getLocalisationSuivante();
+			assertNotNull(goesTo);
+			assertEquals(LocalisationType.HORS_SUISSE, goesTo.getType());
+			assertEquals((Integer) pays.getNoOFS(), goesTo.getNoOfs());
+
+			final Adresse courrier = goesTo.getAdresseCourrier();
+			assertNotNull(courrier);
+			assertEquals(TypeAdresseCivil.COURRIER, courrier.getTypeAdresse());
+			assertNull(courrier.getDateDebut());
+			assertNull(courrier.getDateFin());
+			assertEquals(ville, courrier.getLocalite());
+			assertEquals((Integer) pays.getNoOFS(), courrier.getNoOfsPays());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(ville, adr.getLocalite());
+			assertEquals((Integer) pays.getNoOFS(), adr.getNoOfsPays());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactGoesToEtrangerAvecVilleEtDetail() throws Exception {
+
+		// cas avec indication de destination à l'étranger avec une ville donnée et un détail
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final MockPays pays = MockPays.Espagne;
+		final String ville = "Madrid";
+		res.setGoesTo(new Destination(null, null, new Destination.ForeignCountry(newCountry(pays), ville), newAddressInformation(MockRue.Echallens.GrandRue)));
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+
+			final Localisation goesTo = adr.getLocalisationSuivante();
+			assertNotNull(goesTo);
+			assertEquals(LocalisationType.HORS_SUISSE, goesTo.getType());
+			assertEquals((Integer) pays.getNoOFS(), goesTo.getNoOfs());
+
+			final Adresse courrier = goesTo.getAdresseCourrier();
+			assertNotNull(courrier);
+			assertEquals(TypeAdresseCivil.COURRIER, courrier.getTypeAdresse());
+			assertNull(courrier.getDateDebut());
+			assertNull(courrier.getDateFin());
+			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), courrier.getLocalite());
+			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), courrier.getRue());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactGoesToSuisse() throws Exception {
+
+		// cas avec indication de destination en Suisse sans détail
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final MockCommune commune = MockCommune.Aigle;
+		res.setGoesTo(newDestination(commune));
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+
+			final Localisation goesTo = adr.getLocalisationSuivante();
+			assertNotNull(goesTo);
+			assertEquals(LocalisationType.CANTON_VD, goesTo.getType());
+			assertEquals((Integer) commune.getNoOFS(), goesTo.getNoOfs());
+
+			final Adresse courrier = goesTo.getAdresseCourrier();
+			assertNull(courrier);
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals((Integer) ServiceInfrastructureRaw.noOfsSuisse, adr.getNoOfsPays());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAdresseSansContactGoesToSuisseAvecDetail() throws Exception {
+
+		// cas avec indication de destination en Suisse avec détail
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final MockCommune commune = MockCommune.Aubonne;
+		final Destination destination = newDestination(commune);
+		destination.setMailAddress(newAddressInformation(MockRue.Aubonne.RueTrevelin));
+		res.setGoesTo(destination);
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+
+			final Localisation goesTo = adr.getLocalisationSuivante();
+			assertNotNull(goesTo);
+			assertEquals(LocalisationType.CANTON_VD, goesTo.getType());
+			assertEquals((Integer) commune.getNoOFS(), goesTo.getNoOfs());
+
+			final Adresse courrier = goesTo.getAdresseCourrier();
+			assertNotNull(courrier);
+			assertEquals(TypeAdresseCivil.COURRIER, courrier.getTypeAdresse());
+			assertNull(courrier.getDateDebut());
+			assertNull(courrier.getDateFin());
+			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), courrier.getLocalite());
+			assertEquals(MockRue.Aubonne.RueTrevelin.getDesignationCourrier(), courrier.getRue());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Aubonne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Aubonne.RueTrevelin.getDesignationCourrier(), adr.getRue());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouSansRemplissagePourCauseAdresseCourrierExistante() throws Exception {
+
+		// cas avec indication de destination en Suisse avec détail
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final Residence res = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final HistoryContact ctct = newHistoryContact(depart.getOneDayAfter(), null, MockRue.Bussigny.RueDeLIndustrie);
+
+		final List<Residence> residences = Arrays.asList(res);
+		final List<HistoryContact> contacts = Arrays.asList(ctct);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(2, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
+		}
+
+		// adresse courrier explicitement donnée
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Bussigny.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Bussigny.RueDeLIndustrie.getDesignationCourrier(), adr.getRue());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAvecDateFin() throws Exception {
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final RegDate nouvelleArrivee = depart.addYears(2);
+		final Residence res1 = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final Residence res2 = newResidencePrincipale(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
+
+		final List<Residence> residences = Arrays.asList(res1, res2);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(3, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertEquals(nouvelleArrivee.getOneDayBefore(), adr.getDateFin());
+			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+		}
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(2);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(nouvelleArrivee, adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAvecAdresseSecondaire() throws Exception {
+
+		// les adresses secondaires doivent être ignorées -> un trou reste à combler...
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final RegDate nouvelleArrivee = depart.addYears(2);
+		final Residence res1 = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final Residence res2 = newResidenceSecondaire(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
+
+		final List<Residence> residences = Arrays.asList(res1, res2);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, Collections.<HistoryContact>emptyList(), residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(3, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis le départ
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.getOneDayAfter(), adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals((Integer) ServiceInfrastructureRaw.noPaysInconnu, adr.getNoOfsPays());
+		}
+
+		// adresse secondaire explicitement donnée
+		{
+			final Adresse adr = adresses.get(2);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.SECONDAIRE, adr.getTypeAdresse());
+			assertEquals(nouvelleArrivee, adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
+		}
+	}
+
+	@Test
+	public void testRemplissageTrouAvecDecalageDateDebut() throws Exception {
+
+		// ici, on a une adresse courrier qui revouvre une partie du trou des adresses de résidence
+		// on vérifie que l'adresse qui comble le trou restant :
+		// 1. a bien les bonnes dates (i.e. commence après l'adresse courrier existante)
+		// 2. a bien les bonnes information (récupérées sur la dernière adresse de résidence connue avant le trou)
+
+		final RegDate arrivee = date(2001, 1, 1);
+		final RegDate depart = date(2008, 12, 3);
+		final RegDate nouvelleArrivee = depart.addYears(2);
+		final Residence res1 = newResidencePrincipale(arrivee, null, depart, MockRue.Lausanne.AvenueDeBeaulieu);
+		final Destination destination = newDestination(MockPays.France);
+		destination.getForeignCountry().setTown("Paris");
+		res1.setGoesTo(destination);
+		final Residence res2 = newResidencePrincipale(nouvelleArrivee, null, null, MockRue.Echallens.GrandRue);
+		final HistoryContact ctct = newHistoryContact(depart.addMonths(-1), depart.addMonths(1), MockRue.Bussigny.RueDeLIndustrie);
+
+		final List<Residence> residences = Arrays.asList(res1, res2);
+		final List<HistoryContact> contacts = Arrays.asList(ctct);
+		final List<Adresse> adresses = IndividuRCPers.initAdresses(null, contacts, residences, infraService);
+		assertNotNull(adresses);
+		assertEquals(4, adresses.size());
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(0);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(arrivee, adr.getDateDebut());
+			assertEquals(depart, adr.getDateFin());
+			assertEquals(MockLocalite.Lausanne.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Lausanne.AvenueDeBeaulieu.getDesignationCourrier(), adr.getRue());
+		}
+
+		// adresse courrier existante
+		{
+			final Adresse adr = adresses.get(1);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.addMonths(-1), adr.getDateDebut());
+			assertEquals(depart.addMonths(1), adr.getDateFin());
+			assertEquals(MockLocalite.Bussigny.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Bussigny.RueDeLIndustrie.getDesignationCourrier(), adr.getRue());
+		}
+
+		// adresse courrier ajoutée pour combler le trou depuis la fin de l'adresse courrier existante
+		{
+			final Adresse adr = adresses.get(2);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.COURRIER, adr.getTypeAdresse());
+			assertEquals(depart.addMonths(1).getOneDayAfter(), adr.getDateDebut());
+			assertEquals(nouvelleArrivee.getOneDayBefore(), adr.getDateFin());
+			assertEquals((Integer) MockPays.France.getNoOFS(), adr.getNoOfsPays());
+			assertEquals("Paris", adr.getLocalite());
+		}
+
+		// adresse principale explicitement donnée
+		{
+			final Adresse adr = adresses.get(3);
+			assertNotNull(adr);
+			assertEquals(TypeAdresseCivil.PRINCIPALE, adr.getTypeAdresse());
+			assertEquals(nouvelleArrivee, adr.getDateDebut());
+			assertNull(adr.getDateFin());
+			assertEquals(MockLocalite.Echallens.getNomCompletMinuscule(), adr.getLocalite());
+			assertEquals(MockRue.Echallens.GrandRue.getDesignationCourrier(), adr.getRue());
+		}
 	}
 }
