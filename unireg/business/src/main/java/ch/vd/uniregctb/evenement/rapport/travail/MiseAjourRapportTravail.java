@@ -45,6 +45,7 @@ public class MiseAjourRapportTravail {
 
 		FinRapportTravail finRapport = request.getFinRapportTravail();
 		if (finRapport!=null) {
+			miseAjourRapportTravail.setDateEvenement(DataHelper.xmlToCore(finRapport.getDateEvenement()));
 
 			if(FinRapportTravailType.SORTIE.equals(finRapport.getCode())){
 				miseAjourRapportTravail.setSortie(true);

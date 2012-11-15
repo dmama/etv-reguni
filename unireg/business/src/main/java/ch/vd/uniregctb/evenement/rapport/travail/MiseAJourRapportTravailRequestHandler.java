@@ -96,11 +96,11 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			handleEvenementFermetureRapportTravailExistant(rapportAModifier, request);
 
 		} else{
-			handleModificationRapportTravailExistant(rapportAModifier, request);
+			handleModificationRapportTravailExistant(dpi, sourcier, rapportAModifier, request);
 		}
 	}
 
-	private void handleModificationRapportTravailExistant(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void handleModificationRapportTravailExistant(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
 
 		if(isRapportSurPeriode(rapportAModifier, request)){
 			handleRapportSurPeriode(rapportAModifier, request);
@@ -108,7 +108,36 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		else if(isRapportOuvertApresPeriode(rapportAModifier, request)){
 			handleRapportOuvertApresPeriode(rapportAModifier, request);
 		}
+		else if(isRapportFermeAvantPeriodeDeclaration(rapportAModifier,request)){
+			handleRapportFermeAvantPeriodeDeclaration(dpi, sourcier, rapportAModifier,request);
+		}
 
+	}
+
+	private void handleRapportFermeAvantPeriodeDeclaration(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+		final RegDate dateFin = rapportAModifier.getDateFin();
+		final RegDate dateDebutPeriode = request.getDateDebutPeriodeDeclaration();
+		if(isEcartInferieurEgalAUnJour(dateDebutPeriode, dateFin)){
+
+			reouvrirRapportTravail(rapportAModifier,request);
+			final RegDate nouvelleDateFin = calculerDateFinRapportTravail(request);
+			if(nouvelleDateFin!=null){
+				fermerRapportTravail(rapportAModifier,nouvelleDateFin);
+			}
+		}
+		else{
+			creerRapportTravail(dpi,sourcier,request);
+
+		}
+	}
+
+	private boolean isEcartInferieurEgalAUnJour(RegDate dateDebutPeriode, RegDate dateFin) {
+		final RegDate veille = dateDebutPeriode.getOneDayBefore();
+		final RegDate avantVeille = veille.getOneDayBefore();
+		if(dateFin.equals(veille) || dateFin.equals(avantVeille)){
+			return true;
+		}
+		return false;
 	}
 
 	private void handleRapportOuvertApresPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
