@@ -1,10 +1,12 @@
 package ch.vd.uniregctb.tiers.manager;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.io.Serializable;
+import java.util.List;
 
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Element;
+import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
@@ -13,14 +15,24 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.cache.CacheStats;
+import ch.vd.uniregctb.cache.EhCacheStats;
+import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.cache.UniregCacheManager;
 import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 
-public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean {
+public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface {
 
-	private static class AutorisationKey {
+	private static final Logger LOGGER = Logger.getLogger(AutorisationCacheImpl.class);
+
+	private static class AutorisationKey implements Serializable {
+
+		private static final long serialVersionUID = -199626698177798362L;
+
 		private final String visa;
 		private final int oid;
 		@Nullable
@@ -63,12 +75,17 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	private AutorisationManager autorisationManager;
 	private PlatformTransactionManager transactionManager;
 	private DataEventService dataEventService;
-
-	private final Map<AutorisationKey, Autorisations> cache = Collections.synchronizedMap(new HashMap<AutorisationKey, Autorisations>());
+	private Cache cache;
+	private String cacheName;
+	private CacheManager cacheManager;
+	private UniregCacheManager uniregCacheManager;
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		dataEventService.register(this);
+		uniregCacheManager.register(this);
+		cache = cacheManager.getCache(cacheName);
+		Assert.notNull(cache);
 	}
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
@@ -87,17 +104,33 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 		this.dataEventService = dataEventService;
 	}
 
+	public void setCacheName(String cacheName) {
+		this.cacheName = cacheName;
+	}
+
+	public void setCacheManager(CacheManager cacheManager) {
+		this.cacheManager = cacheManager;
+	}
+
+	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
+		this.uniregCacheManager = uniregCacheManager;
+	}
+
 	@Override
 	@NotNull
 	public Autorisations getAutorisations(Long tiersId, String visa, int oid) {
+		final Autorisations auth;
 
 		final AutorisationKey key = new AutorisationKey(tiersId, visa, oid);
-
-		Autorisations auth = cache.get(key);
-		if (auth == null) {
+		final Element element = cache.get(key);
+		if (element == null) {
 			auth = loadAutorisations(tiersId, visa, oid);
-			cache.put(key, auth);
+			cache.put(new Element(key, auth));
 		}
+		else {
+			auth = (Autorisations) element.getObjectValue();
+		}
+
 		return auth;
 	}
 
@@ -119,14 +152,18 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 	 * @param id l'id du tiers dont les données cachées doivent être supprimées.
 	 */
 	private void evictTiers(long id) {
-		synchronized (cache) {
-			Iterator<Map.Entry<AutorisationKey, Autorisations>> iter = cache.entrySet().iterator();
-			while (iter.hasNext()) {
-				final Map.Entry<AutorisationKey, Autorisations> entry = iter.next();
-				final Long tiersId = entry.getKey().getTiersId();
-				if (tiersId != null && tiersId.equals(id)) {
-					iter.remove();
-				}
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.debug("Eviction des autorisations cachées pour le tiers n° " + id);
+		}
+		final List<?> keys = cache.getKeys();
+		for (Object k : keys) {
+			boolean remove = false;
+			if (k instanceof AutorisationKey) {
+				final Long tiersId = ((AutorisationKey) k).getTiersId();
+				remove = (tiersId != null && tiersId.equals(id));
+			}
+			if (remove) {
+				cache.remove(k);
 			}
 		}
 	}
@@ -153,15 +190,31 @@ public class AutorisationCacheImpl implements AutorisationCache, DataEventListen
 
 	@Override
 	public void onTruncateDatabase() {
-		synchronized (cache) {
-			cache.clear();
-		}
+		reset();
 	}
 
 	@Override
 	public void onLoadDatabase() {
-		synchronized (cache) {
-			cache.clear();
-		}
+		reset();
+	}
+
+	@Override
+	public String getName() {
+		return "AUTH-WEB";
+	}
+
+	@Override
+	public String getDescription() {
+		return "Cache des autorisations d'édition des tiers";
+	}
+
+	@Override
+	public CacheStats buildStats() {
+		return new EhCacheStats(cache);
+	}
+
+	@Override
+	public void reset() {
+		cache.removeAll();
 	}
 }
