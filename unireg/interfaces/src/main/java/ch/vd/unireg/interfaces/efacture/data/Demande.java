@@ -4,8 +4,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -94,33 +92,12 @@ public class Demande {
 			if (!AvsHelper.isValidNouveauNumAVS(getNoAvs())) {
 				return TypeRefusDemande.NUMERO_AVS_INVALIDE;
 			}
-			//Check Adresse de courrier électronique
-			if (!EmailValidator.validate(getEmail())) {
-				return TypeRefusDemande.EMAIL_INVALIDE;
-			}
 			//Check Date et heure de la demande
 			if (getDateDemande() == null) {
 				return TypeRefusDemande.DATE_DEMANDE_ABSENTE;
 			}
 		}
 		return null;
-	}
-
-	private static class EmailValidator {
-
-		private static final String EMAIL_PATTERN =	"^[_A-Za-z0-9-]+([.+][_A-Za-z0-9-]+)*@[A-Za-z][A-Za-z0-9-]*(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-
-		private static Pattern pattern = Pattern.compile(EMAIL_PATTERN);
-
-		private EmailValidator() {}
-
-		public static boolean validate(final String email){
-			if (email == null) {
-				return false;
-			}
-			final Matcher matcher = pattern.matcher(email);
-			return matcher.matches();
-		}
 	}
 
 	public String getIdDemande() {

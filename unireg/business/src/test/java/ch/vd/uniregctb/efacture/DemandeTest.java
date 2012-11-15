@@ -55,24 +55,25 @@ public class DemandeTest extends WithoutSpringTest {
 		demande = nouvelleDemande().setNoAvs("7565817249034").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
+		// [SIFISC-7123] la validité de l'adresse email n'est plus verifiée par unireg
 		//noinspection NullableProblems
 		demande = nouvelleDemande().setEmail(null).build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 
 		demande = nouvelleDemande().setEmail("").build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 
 		demande = nouvelleDemande().setEmail("toto").build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 
 		demande = nouvelleDemande().setEmail("toto@").build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 
 		demande = nouvelleDemande().setEmail("toto@tutu").build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 
 		demande = nouvelleDemande().setEmail("toto@@gmail.com").build();
-		assertPerformBasicValidationFailWith(EMAIL_INVALIDE);
+		assertPerformBasicValidationOK();
 	}
 
 	private DemandeBuilderForUnitTests nouvelleDemande() {

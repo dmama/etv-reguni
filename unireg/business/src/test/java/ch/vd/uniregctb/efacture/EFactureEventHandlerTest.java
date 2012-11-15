@@ -82,11 +82,6 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 	}
 
 	@Test
-	public void testDemandeInscription_EmailInvalide() throws Exception {
-		testDemandeInscription_EchecValidationBasique(TypeRefusDemande.EMAIL_INVALIDE);
-	}
-
-	@Test
 	public void testDemandeInscription_NoAvsInvalide() throws Exception {
 		testDemandeInscription_EchecValidationBasique(TypeRefusDemande.NUMERO_AVS_INVALIDE);
 	}
