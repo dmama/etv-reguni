@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut DI -->
-<c:if test="${!command.tiers.annule && command.autorisations.declarationImpots}">
+<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+<c:if test="${!command.tiers.annule && autorisations.declarationImpots}">
 	<table border="0">
 		<tr><td>
 			<c:if test="${empty param['message'] && empty param['retour']}">

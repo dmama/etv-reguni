@@ -57,6 +57,27 @@ public class SecurityHelper {
 	}
 
 	/**
+	 * Vérifie si l'opérateur spécifié possède au moins un des rôles spécifiés.
+	 * <p/>
+	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link
+	 * #getDroitAcces(SecurityProviderInterface, ch.vd.uniregctb.tiers.Tiers)}.
+	 *
+	 * @param provider le security provider courant
+	 * @param visa     le visa de l'opérateur
+	 * @param code     le code de la collectivité de l'opérateur
+	 * @param roles    les rôles dont on veut vérifier l'allocation.
+	 * @return <b>vrai</b> si l'opérateur courant possède au moins un des rôles spécifiés; <b>faux</b> autrement.
+	 */
+	public static boolean isAnyGranted(SecurityProviderInterface provider, String visa, int code, Role... roles) {
+		for (Role role : roles) {
+			if (provider.isGranted(role, visa, code)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Vérifie que l'opérateur spécifié possède le rôle spécifié.
 	 * <p/>
 	 * <b>Attention !</b> Cette vérification ne tient pas compte d'une éventuelle restriction d'accès pour un dossier particulier. Pour cela, il faut utiliser la méthode {@link

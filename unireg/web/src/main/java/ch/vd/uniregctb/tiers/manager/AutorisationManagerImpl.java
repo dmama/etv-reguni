@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
@@ -176,11 +177,35 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	}
 
 	@NotNull
-	private Map<String, Boolean> getAutorisationsMap(Tiers tiers) {
+	@Override
+	public Autorisations getAutorisations(@Nullable Tiers tiers, String visa, int oid) {
+		if (tiers instanceof Etablissement) { // les établissements ne sont pas éditables pour l'instant
+			return new Autorisations();
+		}
+		else {
+			final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
+			return new Autorisations(map);
+		}
+	}
+
+	@NotNull
+	private Map<String, Boolean> getAutorisationsMap(@Nullable Tiers tiers, String visa, int oid) {
 
 		final Map<String, Boolean> map = new HashMap<String, Boolean>();
 
-		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, tiers);
+		if (tiers == null) {
+			// cas spécial du tiers nul : le tiers est entrain d'être crée. Les droits ci-dessous sont appliqués dans ce cas-là.
+			map.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
+			map.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
+			map.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
+			if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN, visa, oid)) {
+				map.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
+			}
+			map.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE); // pour la création de débiteur
+			return map;
+		}
+
+		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, visa, tiers.getNumero());
 		if (acces == null || acces == Niveau.LECTURE) {
 			map.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 			map.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
@@ -206,36 +231,36 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			return map;
 		}
 
-		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.COOR_FIN, visa, oid)) {
 			map.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 			map.put(TiersEditView.COMPLEMENT_COOR_FIN, Boolean.TRUE);
 		}
 
-		if (SecurityHelper.isGranted(securityProvider, Role.SUIVI_DOSS)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.SUIVI_DOSS, visa, oid)) {
 			map.put(TiersVisuView.MODIF_MOUVEMENT, Boolean.TRUE);
 		}
 
 		if (tiers.isDesactive(null)) {
 			// droits pour un contribuable annulé
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
 				map.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 				map.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				map.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
 				map.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 				map.put(TiersVisuView.MODIF_DI, Boolean.FALSE);
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_D, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_B, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_C, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_P, Boolean.TRUE);
 				}
@@ -244,11 +269,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		if (tiers instanceof Contribuable) {
-			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
 				map.put(TiersVisuView.MODIF_DEBITEUR, Boolean.TRUE);
 			}
 			if ((tiers instanceof PersonnePhysique || tiers instanceof MenageCommun)) {
-				if (SecurityHelper.isGranted(securityProvider, Role.SIT_FAM)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.SIT_FAM, visa, oid)) {
 					Contribuable contribuable = (Contribuable) tiers;
 					boolean isSitFamActive = isSituationFamilleActive(contribuable);
 					boolean civilOK = true;
@@ -268,7 +293,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 						map.put(TiersEditView.FISCAL_SIT_FAMILLLE, Boolean.TRUE);
 					}
 				}
-				if (SecurityHelper.isAnyGranted(securityProvider, Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
+				if (SecurityHelper.isAnyGranted(securityProvider, visa, oid,  Role.DI_EMIS_PP, Role.DI_DELAI_PM, Role.DI_DUPLIC_PP, Role.DI_QUIT_PP, Role.DI_SOM_PP)) {
 					map.put(TiersVisuView.MODIF_DI, Boolean.TRUE);
 				}
 			}
@@ -277,10 +302,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		if (tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (pp.isHabitantVD()) {
-				setDroitHabitant(tiers, map);
+				setDroitHabitant(tiers, visa, oid, map);
 			}
 			else {
-				setDroitNonHabitant(tiers, map);
+				setDroitNonHabitant(tiers, visa, oid, map);
 			}
 		}
 		else if (tiers instanceof MenageCommun) {
@@ -294,31 +319,31 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				}
 			}
 			if (isHabitant) {
-				setDroitHabitant(tiers, map);
+				setDroitHabitant(tiers, visa, oid, map);
 			}
 			else {
-				setDroitNonHabitant(tiers, map);
+				setDroitNonHabitant(tiers, visa, oid, map);
 			}
 		}
 		else if (tiers instanceof AutreCommunaute) {
 			//les autres communautés n'ont jamais les onglets fiscal, rapport prestation et dossier apparenté
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_AC)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_AC, visa, oid)) {
 				map.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
 				map.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 				map.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_D, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_D, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_B, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_B, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PM_C, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_C, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
 					map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					map.put(TiersEditView.ADR_P, Boolean.TRUE);
 				}
@@ -326,7 +351,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 		else if (tiers instanceof DebiteurPrestationImposable) {
 			//les DPI n'ont jamais les onglets civil, dossier apparenté et débiteur IS
-			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI, visa, oid)) {
 				map.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 				map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 				map.put(TiersEditView.ADR_B, Boolean.TRUE);
@@ -335,10 +360,10 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				map.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 				map.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 			}
-			if (SecurityHelper.isGranted(securityProvider, Role.RT)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 				map.put(TiersVisuView.MODIF_RAPPORT, Boolean.TRUE);
 			}
-			if (SecurityHelper.isGranted(securityProvider, Role.ADR_P)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
 				map.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 				map.put(TiersEditView.ADR_P, Boolean.TRUE);
 			}
@@ -352,19 +377,6 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 		
 		return map;
-	}
-
-	@NotNull
-	@Override
-	public Autorisations getAutorisations(Tiers tiers) {
-
-		if (tiers instanceof Etablissement) { // les établissements ne sont pas éditables pour l'instant
-			return new Autorisations();
-		}
-		else {
-			final Map<String, Boolean> map = getAutorisationsMap(tiers);
-			return new Autorisations(map);
-		}
 	}
 
 	/**
@@ -396,17 +408,17 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un habitant ou un ménage commun considéré habitant
 	 */
-	private boolean setDroitHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
+	private boolean setDroitHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
 		Assert.isTrue(tiers instanceof PersonnePhysique || tiers instanceof MenageCommun, "Le tiers " + tiers.getNumero() + " n'est ni une personne physique ni un ménage commun");
 
 		//les habitants n'ont jamais les onglets civil et rapport prestation
-		boolean isEditable = codeFactorise1(tiers, allowedOnglet);
+		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (isEditAllowedPP(tiers)) {
-			codeFactorise2(allowedOnglet);
+			codeFactorise2(visa, oid, allowedOnglet);
 			isEditable = true;
 		}
-		isEditable = codeFactorise3(tiers, allowedOnglet, isEditable);
+		isEditable = codeFactorise3(tiers, visa, oid, allowedOnglet, isEditable);
 
 		final boolean isPersonnePhysique = tiers instanceof PersonnePhysique;
 		TypeImposition typeImposition = calculeTypeImposition(tiers);
@@ -420,13 +432,13 @@ public class AutorisationManagerImpl implements AutorisationManager {
 			}
 		}
 
-		if ((typeImposition.isOrdinaireDepenseOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB)) ||
-				(typeImposition.isSourcierOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB))) {
+		if ((typeImposition.isOrdinaireDepenseOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
+				(typeImposition.isSourcierOuNonActif() && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.TRUE);
 			isEditable = true;
 		}
-		if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT)) {
+		if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.TRUE);
 			isEditable = true;
@@ -437,7 +449,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * enrichi la map de droit d'édition des onglets pour un non habitant ou un ménage commun considéré non habitant
 	 */
-	private boolean setDroitNonHabitant(Tiers tiers, Map<String, Boolean> allowedOnglet) {
+	private boolean setDroitNonHabitant(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 
 		//les non habitants n'ont jamais l'onglet rapport prestation
 		//les ménage commun n'ont jamais les onglets civil et rapport prestation
@@ -446,9 +458,9 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 		final boolean isPersonnePhysique = tiers instanceof PersonnePhysique;
 
-		boolean isEditable = codeFactorise1(tiers, allowedOnglet);
+		boolean isEditable = codeFactorise1(tiers, visa, oid, allowedOnglet);
 		if (tiers.isDebiteurInactif()) {//I107
-			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF)) {
+			if (SecurityHelper.isGranted(securityProvider, Role.MODIF_NONHAB_INACTIF, visa, oid)) {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
 				}
@@ -456,15 +468,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 				allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.FALSE);
 				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
 					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B, visa, oid)) {
 					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
 				}
-				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C)) {
+				if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C, visa, oid)) {
 					allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 					allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 				}
@@ -476,11 +488,11 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				if (isPersonnePhysique) {
 					allowedOnglet.put(TiersVisuView.MODIF_CIVIL, Boolean.TRUE);
 				}
-				codeFactorise2(allowedOnglet);
+				codeFactorise2(visa, oid, allowedOnglet);
 				isEditable = true;
 			}
 
-			isEditable = codeFactorise3(tiers, allowedOnglet, isEditable);
+			isEditable = codeFactorise3(tiers, visa, oid, allowedOnglet, isEditable);
 
 			Pair<TypeImposition, TypeAutoriteFiscale> types = calculeTypeImpositionEtAutoriteFiscale(tiers);
 			if (types.getFirst() == TypeImposition.AUCUN_FOR_ACTIF && isPersonnePhysique) {
@@ -495,17 +507,17 @@ public class AutorisationManagerImpl implements AutorisationManager {
 
 			final TypeImposition typeImposition = types.getFirst();
 			final TypeAutoriteFiscale typeAutoriteFiscale = types.getSecond();
-			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT)) {
+			if (isPersonnePhysique && typeImposition == TypeImposition.SOURCIER && SecurityHelper.isGranted(securityProvider, Role.RT, visa, oid)) {
 				allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.DOSSIER_TRAVAIL, Boolean.TRUE);
 				isEditable = true;
 			}
 			final boolean autoriteFiscaleVaudoiseOuIndeterminee = typeAutoriteFiscale == null || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 			final boolean autoriteFiscaleNonVaudoiseOuIndeterminee = typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
-			if ((typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS)) ||
-					(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS)) ||
-					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS))) {
+			if ((typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid)) ||
+					(typeImposition.isOrdinaireDepenseOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
+					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleNonVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
+					(typeImposition.isSourcierOuNonActif() && autoriteFiscaleVaudoiseOuIndeterminee && SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
 				allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 				allowedOnglet.put(TiersEditView.FISCAL_FOR_PRINC, Boolean.TRUE);
 				isEditable = true;
@@ -517,15 +529,15 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
-	private boolean codeFactorise1(Tiers tiers, Map<String, Boolean> allowedOnglet) {
+	private boolean codeFactorise1(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet) {
 		boolean isEditable = false;
-		if (SecurityHelper.isGranted(securityProvider, Role.ADR_P)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.ADR_P, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.ADR_P, Boolean.TRUE);
 			isEditable = true;
 		}
 
-		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD) && tiers instanceof PersonnePhysique) {
+		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD, visa, oid) && tiers instanceof PersonnePhysique) {
 			PersonnePhysique pp = (PersonnePhysique) tiers;
 			if (tiersService.isDecede(pp)) {
 				allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
@@ -533,7 +545,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 				isEditable = true;
 			}
 		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD) && tiers instanceof MenageCommun) {
+		else if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C_DCD, visa, oid) && tiers instanceof MenageCommun) {
 			MenageCommun mc = (MenageCommun) tiers;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(mc)) {
 				if (tiersService.isDecede(pp)) {
@@ -550,20 +562,20 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
-	private void codeFactorise2(Map<String, Boolean> allowedOnglet) {
+	private void codeFactorise2(String visa, int oid, Map<String, Boolean> allowedOnglet) {
 		allowedOnglet.put(TiersVisuView.MODIF_COMPLEMENT, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.COMPLEMENT_COMMUNICATION, Boolean.TRUE);
 		allowedOnglet.put(TiersVisuView.MODIF_DOSSIER, Boolean.TRUE);
 		allowedOnglet.put(TiersEditView.DOSSIER_NO_TRAVAIL, Boolean.TRUE);
-		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_D, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.ADR_D, Boolean.TRUE);
 		}
-		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_B, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.ADR_B, Boolean.TRUE);
 		}
-		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.ADR_PP_C, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_ADRESSE, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.ADR_C, Boolean.TRUE);
 		}
@@ -572,14 +584,14 @@ public class AutorisationManagerImpl implements AutorisationManager {
 	/**
 	 * Code commun pour les méthodes setDroitNonHabitant et setDroitHabitant
 	 */
-	private boolean codeFactorise3(Tiers tiers, Map<String, Boolean> allowedOnglet,
+	private boolean codeFactorise3(Tiers tiers, String visa, int oid, Map<String, Boolean> allowedOnglet,
 	                               boolean isEditable) {
-		if (!tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP)) {
+		if (!tiers.getForsFiscauxPrincipauxActifsSorted().isEmpty() && SecurityHelper.isGranted(securityProvider, Role.FOR_SECOND_PP, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.FISCAL_FOR_SEC, Boolean.TRUE);
 			isEditable = true;
 		}
-		if (SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE)) {
+		if (SecurityHelper.isGranted(securityProvider, Role.FOR_AUTRE, visa, oid)) {
 			allowedOnglet.put(TiersVisuView.MODIF_FISCAL, Boolean.TRUE);
 			allowedOnglet.put(TiersEditView.FISCAL_FOR_AUTRE, Boolean.TRUE);
 			isEditable = true;

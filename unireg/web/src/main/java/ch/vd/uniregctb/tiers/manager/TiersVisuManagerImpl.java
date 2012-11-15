@@ -175,9 +175,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 					}
 				}
 			}
-
-			final Autorisations autorisations = getAutorisations(tiers);
-			tiersVisuView.setAutorisations(autorisations);
 		}
 
 		return tiersVisuView;

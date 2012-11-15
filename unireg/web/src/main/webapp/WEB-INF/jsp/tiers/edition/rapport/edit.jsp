@@ -29,12 +29,13 @@
 					</jsp:include>
 				</c:if>
 				<!-- Fin Caracteristiques generales -->
-			<c:if test="${command.autorisations.rapports}">
+			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
+			<c:if test="${autorisations.rapports}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="dossiers-apparentes.jsp" />
 				</div>
 			</c:if>
-			<c:if test="${command.autorisations.debiteurs}">
+			<c:if test="${autorisations.debiteurs}">
 				<div id="tabContent_dossiersApparentesTab" class="visuTiers">
 					<jsp:include page="../debiteur/debiteur.jsp" />
 				</div>

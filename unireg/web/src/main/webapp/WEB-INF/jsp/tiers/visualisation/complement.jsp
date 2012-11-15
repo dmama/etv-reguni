@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Complements -->
-<c:if test="${command.autorisations.complements}">
+<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+<c:if test="${autorisations.complements}">
 	<table border="0">
 		<tr>
 			<td>

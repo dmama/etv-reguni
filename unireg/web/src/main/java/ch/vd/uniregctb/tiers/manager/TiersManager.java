@@ -757,10 +757,6 @@ public class TiersManager implements MessageSourceAware {
 		tiersView.setSituationsFamille(situationsFamilleView);
 	}
 
-	protected Autorisations getAutorisations(Tiers tiers) {
-		return autorisationManager.getAutorisations(tiers);
-	}
-
 	protected ComplementView buildComplement(Tiers tiers) {
 		return new ComplementView(tiers, servicePM, serviceInfrastructureService, ibanValidator);
 	}

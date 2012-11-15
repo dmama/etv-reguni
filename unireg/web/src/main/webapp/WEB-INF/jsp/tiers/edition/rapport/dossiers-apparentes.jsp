@@ -3,8 +3,9 @@
 <!-- Debut Dossiers Apparentes -->
 <fieldset>
 	<legend><span><fmt:message key="label.dossiers.apparentes" /></span></legend>
-	
-	<c:if test="${command.autorisations.autresRapports}">
+
+	<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+	<c:if test="${autorisations.autresRapports}">
 	<table border="0">
 		<tr>
 			<td>

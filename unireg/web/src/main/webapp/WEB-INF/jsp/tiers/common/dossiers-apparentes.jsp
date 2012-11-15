@@ -6,6 +6,7 @@
 </c:if>
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
+	<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
 </c:if>
 
 <c:if test="${not empty command.dossiersApparentes}">
@@ -79,9 +80,11 @@
 			</c:if>
 			<c:if test="${page == 'edit' }">
 				<c:if test="${!dossierApparente.annule}">
-				<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (command.autorisations.rapportsDeTravail)) ||
-					((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (command.autorisations.autresRapports))  && (dossierApparente.id != null)}">
-						<unireg:raccourciModifier link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}" tooltip="Edition de rapport"/>
+					<c:if test="${((dossierApparente.typeRapportEntreTiers == 'PRESTATION_IMPOSABLE') && (autorisations.rapportsDeTravail)) ||
+					((dossierApparente.typeRapportEntreTiers != 'APPARTENANCE_MENAGE') && (dossierApparente.typeRapportEntreTiers != 'PRESTATION_IMPOSABLE') && (autorisations.autresRapports))  && (dossierApparente.id != null)}">
+						<unireg:raccourciModifier
+								link="../tiers/rapport.do?idRapport=${dossierApparente.id}&sens=${dossierApparente.sensRapportEntreTiers}&viewRetour=%2Fdossiers-apparentes%2Fedit.do%3Fid%3D${tiersGeneral.numero}"
+								tooltip="Edition de rapport"/>
 						<unireg:raccourciAnnuler onClick="javascript:Rapport.annulerRapport(${dossierApparente.id});" tooltip="Annuler"/>
 					</c:if>
 				</c:if>

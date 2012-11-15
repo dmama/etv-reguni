@@ -654,10 +654,6 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		setTiersGeneralView(tiersEditView, tiers);
 		setAdressesFiscalesModifiables(tiersEditView, tiers);		
 
-		//gestion des droits d'édition
-		final Autorisations autorisations = getAutorisations(tiers);
-		tiersEditView.setAutorisations(autorisations);
-
 		return tiersEditView;
 	}
 }

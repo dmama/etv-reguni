@@ -14,43 +14,69 @@ public class Autorisations {
 	/**
 	 * Si <b>vrai</b>, l'édition des données fiscales est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des données fiscales est interdite.
 	 */
-	private boolean donneesFiscales;
-	private boolean forsPrincipaux;
-	private boolean forsSecondaires;
-	private boolean forsAutresElementsImposables;
-	private boolean forsAutresImpots;
-	private boolean declarationImpots;
+	private final boolean donneesFiscales;
+	private final boolean forsPrincipaux;
+	private final boolean forsSecondaires;
+	private final boolean forsAutresElementsImposables;
+	private final boolean forsAutresImpots;
+	private final boolean declarationImpots;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des adresses est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des adresses est interdite.
 	 */
-	private boolean adresses;
-	private boolean adressesDomicile;
-	private boolean adressesCourrier;
-	private boolean adressesRepresentation;
-	private boolean adressesPoursuite;
+	private final boolean adresses;
+	private final boolean adressesDomicile;
+	private final boolean adressesCourrier;
+	private final boolean adressesRepresentation;
+	private final boolean adressesPoursuite;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des compléments est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des complément est interdite.
 	 */
-	private boolean complements;
-	private boolean complementsCommunications;
-	private boolean complementsCoordonneesFinancieres;
+	private final boolean complements;
+	private final boolean complementsCommunications;
+	private final boolean complementsCoordonneesFinancieres;
 
 	/**
 	 * Si <b>vrai</b>, l'édition des rapports-entre-tiers est autorisée selon les détails des booléens qui suivent. Si <b>faux</b>, l'édition des rapports-entre-tiers est interdite.
 	 */
-	private boolean rapports;
-	private boolean rapportsDePrestations;
-	private boolean rapportsDeTravail;
-	private boolean autresRapports;
+	private final boolean rapports;
+	private final boolean rapportsDePrestations;
+	private final boolean rapportsDeTravail;
+	private final boolean autresRapports;
 
-	private boolean donneesCiviles;
-	private boolean debiteurs;
-	private boolean mouvements;
-	private boolean situationsFamille;
+	private final boolean donneesCiviles;
+	private final boolean debiteurs;
+	private final boolean mouvements;
+	private final boolean situationsFamille;
 
 	public Autorisations() {
+		this.donneesFiscales = false;
+		this.forsPrincipaux = false;
+		this.forsSecondaires = false;
+		this.forsAutresElementsImposables = false;
+		this.forsAutresImpots = false;
+		this.declarationImpots = false;
+
+		this.adresses = false;
+		this.adressesDomicile = false;
+		this.adressesCourrier = false;
+		this.adressesRepresentation = false;
+		this.adressesPoursuite = false;
+
+		this.complements = false;
+		this.complementsCommunications = false;
+		this.complementsCoordonneesFinancieres = false;
+
+		this.rapports = false;
+		this.rapportsDePrestations = false;
+		this.rapportsDeTravail = false;
+		this.autresRapports = false;
+
+		this.donneesCiviles = false;
+		this.debiteurs = false;
+		this.mouvements = false;
+		this.situationsFamille = false;
 	}
 
 	public Autorisations(Map<String, Boolean> map) {
@@ -92,183 +118,95 @@ public class Autorisations {
 	 */
 	public boolean isEditable() {
 		return donneesFiscales || forsPrincipaux || forsSecondaires || forsAutresElementsImposables || forsAutresImpots || declarationImpots || adresses || adressesDomicile || adressesCourrier ||
-				adressesRepresentation || adressesPoursuite || complements || complementsCommunications || complementsCoordonneesFinancieres || rapports || rapportsDePrestations || rapportsDeTravail ||
-				autresRapports || donneesCiviles || debiteurs || mouvements || situationsFamille;
+				adressesRepresentation || adressesPoursuite || complements || complementsCommunications || complementsCoordonneesFinancieres || rapports || rapportsDePrestations ||
+				rapportsDeTravail || autresRapports || donneesCiviles || debiteurs || mouvements || situationsFamille;
 	}
 
 	public boolean isDonneesFiscales() {
 		return donneesFiscales;
 	}
 
-	public void setDonneesFiscales(boolean donneesFiscales) {
-		this.donneesFiscales = donneesFiscales;
-	}
-
 	public boolean isForsPrincipaux() {
 		return forsPrincipaux;
-	}
-
-	public void setForsPrincipaux(boolean forsPrincipaux) {
-		this.forsPrincipaux = forsPrincipaux;
 	}
 
 	public boolean isForsSecondaires() {
 		return forsSecondaires;
 	}
 
-	public void setForsSecondaires(boolean forsSecondaires) {
-		this.forsSecondaires = forsSecondaires;
-	}
-
 	public boolean isForsAutresElementsImposables() {
 		return forsAutresElementsImposables;
-	}
-
-	public void setForsAutresElementsImposables(boolean forsAutresElementsImposables) {
-		this.forsAutresElementsImposables = forsAutresElementsImposables;
 	}
 
 	public boolean isForsAutresImpots() {
 		return forsAutresImpots;
 	}
 
-	public void setForsAutresImpots(boolean forsAutresImpots) {
-		this.forsAutresImpots = forsAutresImpots;
-	}
-
 	public boolean isDeclarationImpots() {
 		return declarationImpots;
-	}
-
-	public void setDeclarationImpots(boolean declarationImpots) {
-		this.declarationImpots = declarationImpots;
 	}
 
 	public boolean isAdresses() {
 		return adresses;
 	}
 
-	public void setAdresses(boolean adresses) {
-		this.adresses = adresses;
-	}
-
 	public boolean isAdressesDomicile() {
 		return adressesDomicile;
-	}
-
-	public void setAdressesDomicile(boolean adressesDomicile) {
-		this.adressesDomicile = adressesDomicile;
 	}
 
 	public boolean isAdressesCourrier() {
 		return adressesCourrier;
 	}
 
-	public void setAdressesCourrier(boolean adressesCourrier) {
-		this.adressesCourrier = adressesCourrier;
-	}
-
 	public boolean isAdressesRepresentation() {
 		return adressesRepresentation;
-	}
-
-	public void setAdressesRepresentation(boolean adressesRepresentation) {
-		this.adressesRepresentation = adressesRepresentation;
 	}
 
 	public boolean isAdressesPoursuite() {
 		return adressesPoursuite;
 	}
 
-	public void setAdressesPoursuite(boolean adressesPoursuite) {
-		this.adressesPoursuite = adressesPoursuite;
-	}
-
 	public boolean isComplements() {
 		return complements;
-	}
-
-	public void setComplements(boolean complements) {
-		this.complements = complements;
 	}
 
 	public boolean isComplementsCommunications() {
 		return complementsCommunications;
 	}
 
-	public void setComplementsCommunications(boolean complementsCommunications) {
-		this.complementsCommunications = complementsCommunications;
-	}
-
 	public boolean isComplementsCoordonneesFinancieres() {
 		return complementsCoordonneesFinancieres;
-	}
-
-	public void setComplementsCoordonneesFinancieres(boolean complementsCoordonneesFinancieres) {
-		this.complementsCoordonneesFinancieres = complementsCoordonneesFinancieres;
 	}
 
 	public boolean isRapports() {
 		return rapports;
 	}
 
-	public void setRapports(boolean rapports) {
-		this.rapports = rapports;
-	}
-
 	public boolean isRapportsDePrestations() {
 		return rapportsDePrestations;
-	}
-
-	public void setRapportsDePrestations(boolean rapportsDePrestations) {
-		this.rapportsDePrestations = rapportsDePrestations;
 	}
 
 	public boolean isRapportsDeTravail() {
 		return rapportsDeTravail;
 	}
 
-	public void setRapportsDeTravail(boolean rapportsDeTravail) {
-		this.rapportsDeTravail = rapportsDeTravail;
-	}
-
 	public boolean isAutresRapports() {
 		return autresRapports;
-	}
-
-	public void setAutresRapports(boolean autresRapports) {
-		this.autresRapports = autresRapports;
 	}
 
 	public boolean isDonneesCiviles() {
 		return donneesCiviles;
 	}
 
-	public void setDonneesCiviles(boolean donneesCiviles) {
-		this.donneesCiviles = donneesCiviles;
-	}
-
 	public boolean isDebiteurs() {
 		return debiteurs;
-	}
-
-	public void setDebiteurs(boolean debiteurs) {
-		this.debiteurs = debiteurs;
 	}
 
 	public boolean isMouvements() {
 		return mouvements;
 	}
 
-	public void setMouvements(boolean mouvements) {
-		this.mouvements = mouvements;
-	}
-
 	public boolean isSituationsFamille() {
 		return situationsFamille;
-	}
-
-	public void setSituationsFamille(boolean situationsFamille) {
-		this.situationsFamille = situationsFamille;
 	}
 }

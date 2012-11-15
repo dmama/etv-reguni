@@ -87,9 +87,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 			}
 		}
 
-		final Autorisations autorisations = getAutorisations(tiers);
-		tiersEditView.setAutorisations(autorisations);
-
 		return tiersEditView;
 	}
 

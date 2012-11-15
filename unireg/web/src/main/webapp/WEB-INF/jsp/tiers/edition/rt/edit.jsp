@@ -29,7 +29,8 @@
 				<!-- Fin Caracteristiques generales -->
 
 			<div>
-			<c:if test="${command.autorisations.rapportsDePrestations}">
+			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
+			<c:if test="${autorisations.rapportsDePrestations}">
 				<div id="tabContent_rapportsPrestationTab" class="visuTiers">
 					<jsp:include page="contribuable-associe.jsp" />
 					<jsp:include page="rapports-prestation.jsp" />

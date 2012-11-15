@@ -1183,4 +1183,29 @@
 		</attribute>
 	</tag>
 
+	<tag>
+		<name>setAuth</name>
+		<tag-class>ch.vd.uniregctb.taglibs.JspTagSetAutorisations</tag-class>
+		<body-content>JSP</body-content>
+		<description>Stocke les autorisations en écriture de l'utilisateur courant sur un tiers dans une variable JSTL.</description>
+		<attribute>
+			<description>Nom de la variable exportée dans le scope et qui contiendra les autorisations calculées.</description>
+			<name>var</name>
+			<required>true</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>tiersId</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Numéro du tiers dont on veut obtenir les autorisations.</description>
+		</attribute>
+		<attribute>
+			<description>Le scope de validité de la variable exportée. Par défaut scope = PAGE.</description>
+			<name>scope</name>
+			<required>false</required>
+			<rtexprvalue>false</rtexprvalue>
+		</attribute>
+	</tag>
+
 </taglib>

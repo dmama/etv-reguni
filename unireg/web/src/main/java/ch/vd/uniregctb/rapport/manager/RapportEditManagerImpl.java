@@ -26,7 +26,6 @@ import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.RepresentationConventionnelle;
 import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.manager.TiersManager;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -270,10 +269,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			tiersEditView.setDebiteurs(getDebiteurs(contribuable));
 		}
 
-		//gestion des droits d'édition
-		final Autorisations autorisations = getAutorisations(tiers);
-		tiersEditView.setAutorisations(autorisations);
-
 		return tiersEditView;
 	}
 
@@ -307,10 +302,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				tiersEditView.setAddContactISAllowed(false);
 			}
 		}
-
-		//gestion des droits d'édition
-		final Autorisations autorisations = getAutorisations(tiers);
-		tiersEditView.setAutorisations(autorisations);
 
 		return tiersEditView;
 	}

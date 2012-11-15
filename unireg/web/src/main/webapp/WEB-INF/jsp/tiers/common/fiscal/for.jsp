@@ -6,6 +6,7 @@
 </c:if>
 <c:if test="${page == 'edit' }">
 	<c:set var="url" value="edit.do" />
+	<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
 </c:if>
 <c:if test="${not empty command.forsFiscaux}">
 <display:table
@@ -73,10 +74,10 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (command.autorisations.forsPrincipaux)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (command.autorisations.forsSecondaires)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (command.autorisations.forsAutresImpots)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (command.autorisations.forsAutresElementsImposables))}">
+				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (autorisations.forsPrincipaux)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (autorisations.forsSecondaires)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (autorisations.forsAutresImpots)) ||
+					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (autorisations.forsAutresElementsImposables))}">
 					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
 						<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
 					</c:if>

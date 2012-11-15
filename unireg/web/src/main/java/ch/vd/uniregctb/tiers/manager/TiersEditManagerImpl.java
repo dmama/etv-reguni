@@ -90,10 +90,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			}
 		}
 
-		//gestion des droits d'édition
-		final Autorisations autorisations = getAutorisations(tiers);
-		tiersEditView.setAutorisations(autorisations);
-
 		return tiersEditView;
 	}
 
@@ -213,13 +209,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 			tiersEditView.setDossiersApparentes(getRapports(tiers));
 			setAdressesActives(tiersEditView, tiers);
 			setAdressesFiscalesModifiables(tiersEditView,tiers);
-
-			//gestion des droits d'édition
-			final Autorisations autorisations = getAutorisations(tiers);
-			tiersEditView.setAutorisations(autorisations);
-		}
-		else {
-			tiersEditView.setAutorisations(new Autorisations());
 		}
 
 		return tiersEditView;
@@ -269,7 +258,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		tiersView.setIdentificationPersonne(idpersonneView);
 		PersonnePhysique nonHab = new PersonnePhysique(false);
 		tiersView.setTiers(nonHab);
-		tiersView.setAutorisations(getAutorisations(nonHab));
 		return tiersView;
 	}
 
@@ -283,7 +271,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		TiersEditView tiersView = new TiersEditView();
 		AutreCommunaute autreCommunaute = new AutreCommunaute();
 		tiersView.setTiers(autreCommunaute);
-		tiersView.setAutorisations(getAutorisations(autreCommunaute));
 		return tiersView;
 	}
 
@@ -335,7 +322,6 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 		setPeriodiciteCourante(tiersView, debiteur);
 		tiersView.setTiers(debiteur);
 		tiersView.setNumeroCtbAssocie(numeroCtbAssocie);
-		tiersView.setAutorisations(getAutorisations(debiteur));
 		return tiersView;
 	}
 

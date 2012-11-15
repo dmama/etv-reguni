@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut CTB associé + Rapports prestation -->
-<c:if test="${command.autorisations.rapportsDePrestations}">
+<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+<c:if test="${autorisations.rapportsDePrestations}">
 	<table border="0">
 		<tr>
 			<td>

@@ -9,13 +9,14 @@
 			</c:if>
 		</c:when>
 		<c:when test="${command.natureTiers != 'DebiteurPrestationImposable'}">
-			<c:if test="${command.autorisations.forsPrincipaux ||
-						  command.autorisations.forsSecondaires ||
-						  command.autorisations.forsAutresImpots ||
-						  command.autorisations.forsAutresElementsImposables}">
+			<unireg:setAuth var="autorisations" tiersId="${command.tiersGeneral.numero}"/>
+			<c:if test="${autorisations.forsPrincipaux ||
+						  autorisations.forsSecondaires ||
+						  autorisations.forsAutresImpots ||
+						  autorisations.forsAutresElementsImposables}">
 				<jsp:include page="for.jsp"/>
 			</c:if>
-			<c:if test="${command.autorisations.situationsFamille}">
+			<c:if test="${autorisations.situationsFamille}">
 				<jsp:include page="situation-famille.jsp"/>
 			</c:if>
 		</c:when>

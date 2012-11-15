@@ -1,7 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<c:set var="showEditLink" value="${command.autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
+<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+<c:set var="showEditLink" value="${autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
 <c:set var="showTimelineLink" value="${false}" />
 <authz:authorize ifAnyGranted="ROLE_VISU_ALL">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux}" />
@@ -37,7 +38,7 @@
 <c:choose>
 	<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<jsp:include page="debiteur.jsp"/>
-		<c:if test="${command.autorisations.donneesFiscales}">
+		<c:if test="${autorisations.donneesFiscales}">
 			<table border="0">
 				<tr><td>
 					<unireg:raccourciModifier link="../fiscal/edit-for-debiteur.do?id=${command.tiers.numero}" tooltip="Modifier les fors du débiteur" display="label.bouton.modifier"/>

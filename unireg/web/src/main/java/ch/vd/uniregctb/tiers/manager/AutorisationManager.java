@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers.manager;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -32,11 +33,13 @@ public interface AutorisationManager {
 	boolean isEditAllowedCA(CollectiviteAdministrative tiers);
 
 	/**
-	 * Détermine et retourne les autorisations de l'utilisateur courant sur le tiers spécifié.
+	 * Détermine et retourne les autorisations d'un utilisateur sur le tiers spécifié.
 	 *
-	 * @param tiers un tiers
+	 * @param tiers un tiers; ou <b>null</b> si on s'intéresse aux autorisations pour créé un nouveau tiers
+	 * @param visa  le visa de l'utilisateur
+	 * @param oid   l'office d'impot de l'utilisateur
 	 * @return les autorisations détaillées.
 	 */
 	@NotNull
-	Autorisations getAutorisations(Tiers tiers);
+	Autorisations getAutorisations(@Nullable Tiers tiers, String visa, int oid);
 }

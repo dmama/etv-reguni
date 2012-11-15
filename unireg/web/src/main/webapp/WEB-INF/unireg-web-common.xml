@@ -138,6 +138,17 @@
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
+	<bean id="jspTagSetAutorisations" class="ch.vd.uniregctb.taglibs.JspTagSetAutorisations">
+		<property name="cache">
+			<bean class="ch.vd.uniregctb.tiers.manager.AutorisationCacheImpl">
+				<property name="tiersDAO" ref="tiersDAO" />
+				<property name="autorisationManager" ref="autorisationManager" />
+				<property name="transactionManager" ref="transactionManager" />
+				<property name="dataEventService" ref="dataEventService" />
+			</bean>
+		</property>
+	</bean>
+
 	<bean id="printPCLManager" class="ch.vd.uniregctb.print.PrintPCLManagerImpl">
 		<property name="localApp" value="${extprop.editique.localapp}" />
 	</bean>
