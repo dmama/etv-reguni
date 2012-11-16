@@ -37,7 +37,6 @@ public class MotifsForHelper {
 		}
 
 		// Motifs interdits depuis la GUI
-		// motifs.add(MotifFor.FUSION_COMMUNES);
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
 
 		// Motifs impossibles en ouverture
@@ -92,6 +91,9 @@ public class MotifsForHelper {
 			throw new IllegalArgumentException("Le motif de rattachement [" + type.rattachement + "] est inconnu");
 		}
 
+		// [SIFISC-5220] le motif fusion de communes est désormais autorisé pour permettre le rattrapage de données sans passer par SuperGra
+		motifs.add(MotifFor.FUSION_COMMUNES);
+
 		return motifs;
 	}
 
@@ -103,7 +105,6 @@ public class MotifsForHelper {
 		}
 
 		// Motifs interdits depuis la GUI
-		// motifs.add(MotifFor.FUSION_COMMUNES);
 		// motifs.add(MotifFor.CHGT_MODE_IMPOSITION);
 
 		// Motifs impossibles en fermeture
@@ -157,6 +158,9 @@ public class MotifsForHelper {
 		default:
 			throw new IllegalArgumentException("Le motif de rattachement [" + type.rattachement + "] est inconnu");
 		}
+
+		// [SIFISC-5220] le motif fusion de communes est désormais autorisé pour permettre le rattrapage de données sans passer par SuperGra
+		motifs.add(MotifFor.FUSION_COMMUNES);
 
 		return motifs;
 	}
