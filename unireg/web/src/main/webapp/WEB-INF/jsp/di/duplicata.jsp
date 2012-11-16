@@ -22,6 +22,8 @@
 						</td>
 					</tr>
 
+					<form:hidden path="modelesDocumentView[${statusModele.index}].typeDocument"/>
+
 					<c:forEach items="${modele.modelesFeuilles}" var="feuille" varStatus="statusFeuille">
 					<tr class="${rowClass}">
 						<td width="10%">&nbsp;</td>
@@ -29,6 +31,8 @@
 						<td width="45%" style="padding-bottom:4px">
 							<form:input path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].nbreIntituleFeuille"
 								cssClass="document-type-${modele.typeDocument}" size="2" maxlength="1"/>
+							<form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].intituleFeuille"/>
+							<form:hidden path="modelesDocumentView[${statusModele.index}].modelesFeuilles[${statusFeuille.index}].numeroFormulaire"/>
 						</td>
 					</tr>
 					</c:forEach>
