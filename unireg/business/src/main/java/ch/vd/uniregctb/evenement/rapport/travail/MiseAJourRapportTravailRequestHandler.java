@@ -2,12 +2,14 @@ package ch.vd.uniregctb.evenement.rapport.travail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -62,10 +64,51 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			}
 
 		}
+
+		traiterChevauchementRapport(dpi,sourcier, request);
+
 		return createResponse(request);
 	}
 
+	private void traiterChevauchementRapport(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, MiseAjourRapportTravail request) {
 
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(request.getDateDebutPeriodeDeclaration(),request.getDateFinPeriodeDeclaration());
+
+		final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true);
+		final List<RapportPrestationImposable> rapportsConcernes = new ArrayList<RapportPrestationImposable>();
+		for (RapportPrestationImposable rapport : rapports) {
+				if(DateRangeHelper.intersect(periodeDeclaration,rapport)){
+					rapportsConcernes.add(rapport);
+				}
+			}
+
+		if(rapportsConcernes.size()>1){
+			//on orddonnes les rapports;
+			Collections.sort(rapportsConcernes,new DateRangeComparator<RapportPrestationImposable>());
+
+			//On prépare la date de début et la date de fin du rapport
+			RegDate dateDebutNouveauRapport = rapportsConcernes.get(0).getDateDebut();
+			final int lastRapportPos = rapportsConcernes.size() - 1;
+			RegDate dateFinNouveauRapport = rapportsConcernes.get(lastRapportPos).getDateFin();
+
+			// on créer un nouveau rapport
+			RapportPrestationImposable nouveauRapport= tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebutNouveauRapport,dateFinNouveauRapport, TypeActivite.PRINCIPALE, 100);
+
+			//on annule touts les rapports précédents
+			for (RapportPrestationImposable rapportsConcerne : rapportsConcernes) {
+				rapportsConcerne.setAnnule(true);
+			}
+
+			String message = String.format("nouveau rapport de travail créé suite à la détection de cevauchement:" +
+					"Ce nouveau rapport commence le %s et se termine le %s.  Concerne le debiteur %s et le sourcier %s.",
+					RegDateHelper.dateToDisplayString(nouveauRapport.getDateDebut()),
+					RegDateHelper.dateToDisplayString(nouveauRapport.getDateDebut()),
+					FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
+					FormatNumeroHelper.numeroCTBToDisplay(sourcier.getNumero()));
+			LOGGER.info(message);
+
+		}
+	}
 
 
 	private PersonnePhysique getSourcier(MiseAjourRapportTravail request) throws ServiceException {
@@ -134,7 +177,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private boolean isEcartInferieurEgalAUnJour(RegDate dateDebutPeriode, RegDate dateFin) {
 		final RegDate veille = dateDebutPeriode.getOneDayBefore();
 		final RegDate avantVeille = veille.getOneDayBefore();
-		if(dateFin.equals(veille) || dateFin.equals(avantVeille)){
+		if(dateFin == veille || dateFin == avantVeille){
 			return true;
 		}
 		return false;
@@ -322,7 +365,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 * @return le premier rapport de travail qui est concerne par la période de déclaration
 	 */
 	private List<RapportPrestationImposable> findRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
-		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
+		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
 		return listeRapport;
 	}
 

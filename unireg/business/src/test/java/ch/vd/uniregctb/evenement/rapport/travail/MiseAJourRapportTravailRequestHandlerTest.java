@@ -153,7 +153,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
 		assertEquals(1,rapports.size());
 		RapportPrestationImposable rapport = rapports.get(0);
 		assertEquals(dateDebutVersementSalaire,rapport.getDateDebut());
@@ -202,7 +202,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
 		assertEquals(0,rapports.size());
 
 	}
@@ -713,6 +713,62 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(dateFinVersementSalaire,rapportPrestationImposable.getDateFin());
 
 	}
+
+	//Si deux rapports de travail existent et se chevauche  pour la période après application des règles de modification, il faut
+	//les fusionner
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testTraiterChevauchementRT() throws Exception {
+
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+		final RegDate dateDebutPremierRapport = date(2011, 1, 1);
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2012, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+
+				addRapportPrestationImposable(debiteur,sourcier, dateDebutPremierRapport,date(2012,5,24),false);
+				addRapportPrestationImposable(debiteur,sourcier,date(2012,8,1),null,false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2012, 1, 1);
+		final RegDate dateFinPeriode = date(2012, 6, 30);
+		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
+		final RegDate dateFinCore = date(2012, 6, 30);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
+
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
+		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true);
+
+		assertEquals(1,rapportPrestations.size());
+		RapportPrestationImposable rapportPrestationImposable = rapportPrestations.get(0);
+
+		assertEquals(dateDebutPremierRapport,rapportPrestationImposable.getDateDebut());
+		assertEquals(null,rapportPrestationImposable.getDateFin());
+
+	}
+
 	private MiseAJourRapportTravailRequest createMiseAJourRapportTravailRequest(Long idDebiteur, Long idSourcier, DateRange periodeDeclaration,
 	                                                                            RegDate dateDebutVersementSalaire, RegDate dateFinVersementSalaire) {
 		final MiseAJourRapportTravailRequest request = new MiseAJourRapportTravailRequest();

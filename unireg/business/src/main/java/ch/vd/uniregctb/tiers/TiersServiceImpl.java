@@ -4270,9 +4270,18 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, boolean nonAnnuleOnly) {
 
 		final List<RapportPrestationImposable> allRapports  = rapportEntreTiersDAO.getRapportsPrestationImposable(dpi.getNumero(),sourcier.getNumero(),false);
+		if (nonAnnuleOnly) {
+			List<RapportPrestationImposable> rapportsNonAnnule = new ArrayList<RapportPrestationImposable>();
+			for (RapportPrestationImposable rapport : allRapports) {
+				if (!rapport.isAnnule()) {
+					rapportsNonAnnule.add(rapport);
+				}
+			}
+			return rapportsNonAnnule;
+		}
 		return allRapports;
 	}
 
