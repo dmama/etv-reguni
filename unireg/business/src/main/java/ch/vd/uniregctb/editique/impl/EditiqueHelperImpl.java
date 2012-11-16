@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.editique.impl;
 
 import java.rmi.RemoteException;
+import java.util.List;
 
 import noNamespace.InfoArchivageDocument;
 import noNamespace.InfoArchivageDocument.InfoArchivage;
@@ -11,6 +12,8 @@ import noNamespace.TypAdresse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
@@ -198,19 +201,19 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	@Override
 	public String getCommune(Declaration di) throws EditiqueException {
-		ForGestion forGestion = tiersService.getForGestionActif(di.getTiers(), di.getDateDebut());
-		if (forGestion == null) {
-			forGestion = tiersService.getForGestionActif(di.getTiers(), di.getDateFin());
-			if (forGestion == null) {
-				String message = String.format(
-						"Le contribuable %s n'a pas de for gestion actif au %s ou au %s",
-						di.getTiers().getNumero(),
-						di.getDateDebut(),
-						di.getDateFin()
-				);
-				throw new EditiqueException(message);
-			}
+		final List<ForGestion> gestionHisto = tiersService.getForsGestionHisto(di.getTiers());
+		final List<DateRange> gestionSurPf = DateRangeHelper.intersections(di, gestionHisto);
+		if (gestionSurPf == null || gestionSurPf.size() == 0) {
+			String message = String.format(
+					"Le contribuable %s n'a pas de for gestion actif sur la période de la déclaration du %s au %s",
+					di.getTiers().getNumero(),
+					di.getDateDebut(),
+					di.getDateFin()
+			);
+			throw new EditiqueException(message);
 		}
+
+		final ForGestion forGestion = DateRangeHelper.rangeAt(gestionHisto, gestionSurPf.get(gestionSurPf.size() - 1).getDateFin());
 		Integer numeroOfsAutoriteFiscale = forGestion.getNoOfsCommune();
 		Commune commune;
 		try {

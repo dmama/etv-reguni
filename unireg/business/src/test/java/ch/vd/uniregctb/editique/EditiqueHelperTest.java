@@ -2,25 +2,36 @@ package ch.vd.uniregctb.editique;
 
 
 import noNamespace.InfoDocumentDocument1;
-import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockBatiment;
+import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.ModeleDocument;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class EditiqueHelperTest extends BusinessTest {
-	private static final Logger LOGGER = Logger.getLogger(EditiqueHelperTest.class);
 
 	private TiersService tiersService;
 	private EditiqueHelper editiqueHelper;
@@ -116,7 +127,57 @@ public class EditiqueHelperTest extends BusinessTest {
 				return null;
 			}
 		});
-
 	}
 
+	/**
+	 * SIFISC-6860
+	 */
+	@Test
+	public void testForGestionPourHorsCantonQuiAcheteEtVendSonImmeubleLaMemeAnnee() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final int pf = 2011;
+		final RegDate dateAchatImmeuble = date(pf, 1, 24);
+		final RegDate dateVenteImmeuble = date(pf, 10, 5);
+
+		// création fiscale d'un non-habitant HC propriétaire d'un immeuble acheté et revendu la même année
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Albertine", "Zweisteinen", date(1956, 3, 12), Sexe.FEMININ);
+				addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
+				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+
+				addCollAdm(MockCollectiviteAdministrative.CEDI);
+				final PeriodeFiscale periode = addPeriodeFiscale(pf);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
+				addDeclarationImpot(pp, periode, date(pf, 1, 1), date(pf, 12, 31), TypeContribuable.HORS_CANTON, md);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+
+				final Declaration di = pp.getDeclarationActive(dateVenteImmeuble);
+				assertNotNull(di);
+				try {
+					final String commune = editiqueHelper.getCommune(di);
+					assertEquals(MockCommune.Cossonay.getNomMinuscule(), commune);
+				}
+				catch (EditiqueException e) {
+					throw new RuntimeException(e);
+				}
+				return null;
+			}
+		});
+	}
 }
