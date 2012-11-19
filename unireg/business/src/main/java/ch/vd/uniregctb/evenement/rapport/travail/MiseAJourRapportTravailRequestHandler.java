@@ -61,13 +61,65 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		else {
 			for (RapportPrestationImposable rapportAModifier : rapportsAModifier) {
 				handleRapportPrestationExistant(dpi, sourcier, rapportAModifier, request);
+
 			}
 
 		}
 
+		traiterDateDeFinForDebiteur(dpi, request,rapportsAModifier);
+
 		traiterChevauchementRapport(dpi,sourcier, request);
 
 		return createResponse(request);
+	}
+
+	/**
+	 * Ferme les rapports de travail encore ouverts yi le dernier for du dpi est fermé à la date de fin de période
+	 * @param dpi le debiteur
+	 * @param request la demande
+	 * @param rapportsAModifier la liste des rapports à modifier
+	 */
+	private void traiterDateDeFinForDebiteur(DebiteurPrestationImposable dpi, MiseAjourRapportTravail request, List<RapportPrestationImposable> rapportAModifier) {
+			if(isDernierForFiscalFermeFinPeriode(dpi,request)){
+				//on ferme tous les rapports encore ouverts a cette date la
+				for (RapportPrestationImposable rapportPrestationImposable : rapportAModifier) {
+
+					if (rapportPrestationImposable.getDateFin() == null) {
+						//la date de fin du for est la même que la de fin de période
+						fermerRapportTravail(rapportPrestationImposable,request.getDateFinPeriodeDeclaration());
+					}
+				}
+
+
+			}
+
+	}
+
+	/**Determine si un debiteur a son dernier for fiscal ferme à la date de fin de la periode de déclaration
+	 *
+	 * @param dpi
+	 * @param request
+	 * @return<b>vrai</b> si le dernier for est fermé à la date de fin de la période, <b>faux</b> sinon
+	 */
+	private boolean isDernierForFiscalFermeFinPeriode(DebiteurPrestationImposable dpi, MiseAjourRapportTravail request){
+		final RegDate dateFinPeriodeDeclaration = request.getDateFinPeriodeDeclaration();
+		ForFiscal forFiscal = dpi.getForDebiteurPrestationImposableAt(dateFinPeriodeDeclaration);
+		if(forFiscal!=null){
+			final RegDate dateFinFor = forFiscal.getDateFin();
+			//Meme date de fin et aucun autre for ouvert après
+			if(dateFinFor== dateFinPeriodeDeclaration && dpi.getForDebiteurPrestationImposableAfter(dateFinFor) ==null){
+				return true;
+			}
+		}else{
+			//Pas de for Fiscal à cette période, c'est assez bizarre, à logger
+			String message = String.format("Pas de for fiscal trouvé pour la fin de la période de déclaration %s:" +
+					" concernant le débiteur %s. Il y a peut être une incohérence entre le contenu du message %s et les données du débiteur dans unireg",
+					RegDateHelper.dateToDisplayString(request.getDateFinPeriodeDeclaration()),
+					FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
+					request.getBusinessId());
+			LOGGER.info(message);
+		}
+		return false;
 	}
 
 	private void traiterChevauchementRapport(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, MiseAjourRapportTravail request) {
