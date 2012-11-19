@@ -133,22 +133,15 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="fermetureRapportTravailType">
+	<xs:complexType name="fermetureRapportTravailType">
 		<xs:annotation>
 			<xs:appinfo>
-				<jxb:typesafeEnumClass>
+				<jxb:class>
 					<jxb:javadoc>Evenement de fermeture de rapport de travail Z - Fermeture RT </jxb:javadoc>
-				</jxb:typesafeEnumClass>
+				</jxb:class>
 			</xs:appinfo>
 		</xs:annotation>
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="FERMETURE">
-				<xs:annotation>
-					<xs:documentation>Fermeture RT.</xs:documentation>
-				</xs:annotation>
-			</xs:enumeration>
-		</xs:restriction>
-	</xs:simpleType>
+	</xs:complexType>
 
 	<xs:complexType name="creationProlongationRapportTravailType">
 		<xs:annotation>
