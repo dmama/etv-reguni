@@ -197,7 +197,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		request.setFermetureRapportTravail(FermetureRapportTravail.FERMETURE);
+		request.setFermetureRapportTravail(new FermetureRapportTravail());
 		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
@@ -245,7 +245,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		request.setFermetureRapportTravail(FermetureRapportTravail.FERMETURE);
+		request.setFermetureRapportTravail(new FermetureRapportTravail());
 		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
@@ -293,7 +293,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		request.setFermetureRapportTravail(FermetureRapportTravail.FERMETURE);
+		request.setFermetureRapportTravail(new FermetureRapportTravail());
 		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
@@ -342,7 +342,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		request.setFermetureRapportTravail(FermetureRapportTravail.FERMETURE);
+		request.setFermetureRapportTravail(new FermetureRapportTravail());
 		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
