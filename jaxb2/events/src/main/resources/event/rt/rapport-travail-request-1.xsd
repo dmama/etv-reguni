@@ -142,7 +142,7 @@
 			</xs:appinfo>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="Z">
+			<xs:enumeration value="FERMETURE">
 				<xs:annotation>
 					<xs:documentation>Fermeture RT.</xs:documentation>
 				</xs:annotation>
