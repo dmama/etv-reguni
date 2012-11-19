@@ -7,7 +7,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.DelayQueue;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.log4j.Logger;
@@ -71,11 +70,9 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	private final BlockingQueue<DelayedIndividu> finalQueue = new ArrayBlockingQueue<DelayedIndividu>(20);
 	private final ReentrantLock batchLock = new ReentrantLock();
 	private final ReentrantLock manualLock = new ReentrantLock();
-	private final AtomicInteger totalCount = new AtomicInteger(0);
-	private final AtomicInteger totalInHatches = new AtomicInteger(0);
 
-	private final ServingHatch batchHatch = new ServingHatch("batchHatch", batchQueue, totalInHatches, finalQueue);
-	private final ServingHatch manualHatch = new ServingHatch("manualHatch", manualQueue, totalInHatches, finalQueue);
+	private final ServingHatch batchHatch = new ServingHatch("batchHatch", batchQueue, finalQueue);
+	private final ServingHatch manualHatch = new ServingHatch("manualHatch", manualQueue, finalQueue);
 
 	private EvenementCivilEchService evtCivilService;
 	private final long delayNs;
@@ -105,12 +102,8 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 	@Override
 	public void destroy() throws Exception {
-		if (manualHatch != null) {
-			manualHatch.stopServing();
-		}
-		if (batchHatch != null) {
-			batchHatch.stopServing();
-		}
+		manualHatch.stopServing();
+		batchHatch.stopServing();
 	}
 
 	private class DelayedIndividu implements Delayed {
@@ -217,16 +210,12 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 			// vu au travers de son web-service est bien à jour, voir SIREF-2016)
 			if (!queue.contains(elt) && !finalQueue.contains(elt)) {
 				queue.add(elt);
-				totalCount.incrementAndGet();
 			}
 		}
 		else {
-			boolean rem1 = queue.remove(elt);
-			boolean rem2 = finalQueue.remove(elt);
+			queue.remove(elt);
+			finalQueue.remove(elt);
 			queue.add(elt);
-			if (!rem1 && !rem2) {
-				totalCount.incrementAndGet();
-			}
 		}
 	}
 
@@ -236,7 +225,6 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 		if (elt != null) {
 			// 1. trouve tous les événements civils de cet individu qui sont dans un état A_TRAITER, EN_ATTENTE, EN_ERREUR
 			// 2. tri de ces événements par date, puis type d'événement
-			totalCount.decrementAndGet();
 			return new Batch(elt.noIndividu, buildLotsEvenementsCivils(elt.noIndividu));
 		}
 
@@ -251,7 +239,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 	@Override
 	public int getTotalCount() {
-		return totalCount.get();
+		return getInBatchQueueCount() + getInManualQueueCount() + getInFinalQueueCount() + getInHatchesCount();
 	}
 
 	@Override
@@ -271,7 +259,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 	@Override
 	public int getInHatchesCount() {
-		return totalInHatches.get();
+		return batchHatch.getNbHatchlings() + manualHatch.getNbHatchlings();
 	}
 
 	private static class ServingHatch extends Thread {
@@ -280,14 +268,12 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 
 		private final BlockingQueue<DelayedIndividu> queue;
 		private final BlockingQueue<DelayedIndividu> finalQueue;
-		private final AtomicInteger totalInHatches;
 		private volatile boolean stopped = false;
+		private volatile DelayedIndividu hatchling;
 
-
-		private ServingHatch(String threadName, BlockingQueue<DelayedIndividu> queue, AtomicInteger totalInHatches, BlockingQueue<DelayedIndividu> finalQueue) {
+		private ServingHatch(String threadName, BlockingQueue<DelayedIndividu> queue, BlockingQueue<DelayedIndividu> finalQueue) {
 			super(threadName);
 			this.queue = queue;
-			this.totalInHatches = totalInHatches;
 			this.finalQueue = finalQueue;
 		}
 
@@ -296,22 +282,16 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 			LOGGER.info("Démarrage du thread: " + getName());
 			try {
 				// On fait le passe-plat de la queue d'origine à la queue finale
-				DelayedIndividu individu = null;
 				while (!stopped) {
 					try {
-						final boolean evtWasNull = (individu == null);
-						if (individu == null) {
-							individu = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
-						}
-						if (individu != null && evtWasNull) {
-							totalInHatches.incrementAndGet();
-						}
-						if (individu != null) {
-							final boolean offerAccepted = finalQueue.offer(individu, HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
-							if (offerAccepted) {
-								individu = null;
-								totalInHatches.decrementAndGet();
+						hatchling = queue.poll(HATCH_TIMEOUT, TimeUnit.MILLISECONDS);
+						if (hatchling != null) {
+							while (!stopped) {
+								if (finalQueue.offer(hatchling, HATCH_TIMEOUT, TimeUnit.MILLISECONDS)) {
+									break;
+								}
 							}
+							hatchling = null;
 						}
 					}
 					catch (InterruptedException e) {
@@ -319,13 +299,17 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 						stopServing();
 					}
 					catch (RuntimeException e) {
-						LOGGER.error("Exception dans le thread " + getName() + " pour l'individu " + individu, e);
+						LOGGER.error("Exception dans le thread " + getName() + " pour l'individu " + hatchling, e);
 					}
 				}
 			}
 			finally {
 				LOGGER.info("Arrêt du thread: " + getName());
 			}
+		}
+
+		public int getNbHatchlings() {
+			return hatchling != null ? 1 : 0;
 		}
 
 		public void stopServing() {
