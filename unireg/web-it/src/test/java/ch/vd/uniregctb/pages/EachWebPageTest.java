@@ -3,6 +3,7 @@ package ch.vd.uniregctb.pages;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import junit.framework.Assert;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -96,12 +97,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un for
 	@Test
 	public void testTiersEditFor() throws Exception {
-		assertPage("/fiscal/for.do?idFor=7", "Edition d'un for fiscal du tiers 129.000.01");
+		assertPage("/fors/editPrincipal.do?forId=7", "Edition d'un for fiscal principal sur le contribuable n°129.000.01");
 	}
 
 	@Test
 	public void testTiersEditForInexistant() throws Exception {
-		assertPage("/fiscal/for.do?idFor=12345678", "Page d'erreur", "Le for fiscal spécifié n'existe pas");
+		assertPage("/for/editPrincipal.do?forId=12345678", "Page d'erreur", "Le for fiscal spécifié n'existe pas");
 	}
 
 	// Page de visualisation d'une adresse
@@ -572,7 +573,7 @@ public class EachWebPageTest extends WebitTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void assertPage(String url, String title, String contenu) throws Exception {
+	private void assertPage(String url, String title, @Nullable String contenu) throws Exception {
 
 		final HtmlPage page = getHtmlPage(url);
 
