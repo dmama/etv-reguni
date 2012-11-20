@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -32,6 +33,10 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
@@ -55,6 +60,7 @@ public class ForsController {
 	private Validator forsValidator;
 	private SecurityProviderInterface securityProvider;
 	private ParametreAppService paramService;
+	private HibernateTemplate hibernateTemplate;
 
 	private Map<MotifRattachement, String> motifsRattachementForPrincipal;
 	private Map<MotifRattachement, String> motifsRattachementForSecondaire;
@@ -91,6 +97,10 @@ public class ForsController {
 
 	public void setParamService(ParametreAppService paramService) {
 		this.paramService = paramService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -202,6 +212,51 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId;
 	}
 
+	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editPrincipal(@RequestParam(value = "forId", required = true) long forId, Model model) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
+		if (ffp == null) {
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(ffp.getTiers().getNumero());
+
+		model.addAttribute("command", new EditForPrincipalView(ffp));
+		return "fors/editPrincipal";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.POST)
+	public String editPrincipal(@Valid @ModelAttribute("command") final EditForPrincipalView view, BindingResult result, Model model) throws Exception {
+
+
+		// FIXME (msi) gérer la sécurité un peu plus sérieusement
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
+		if (ffp == null) {
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final long ctbId = ffp.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+		if (result.hasErrors()) {
+			return "fors/editPrincipal";
+		}
+
+		tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
+		return "redirect:/fiscal/edit.do?id=" + ctbId;
+	}
+
 	@RequestMapping(value = "/addSecondaire.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addSecondaire(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -244,6 +299,51 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId;
 	}
 
+	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editSecondaire(@RequestParam(value = "forId", required = true) long forId, Model model) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, forId);
+		if (ffs == null) {
+			throw new ObjectNotFoundException("Le for secondaire avec l'id = " + forId + " n'existe pas.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(ffs.getTiers().getNumero());
+
+		model.addAttribute("command", new EditForSecondaireView(ffs));
+		return "fors/editSecondaire";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.POST)
+	public String editSecondaire(@Valid @ModelAttribute("command") final EditForSecondaireView view, BindingResult result, Model model) throws Exception {
+
+		// FIXME (msi) gérer la sécurité un peu plus sérieusement
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, view.getId());
+		if (ffs == null) {
+			throw new ObjectNotFoundException("Le for secondaire avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final long ctbId = ffs.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+		if (result.hasErrors()) {
+			return "fors/editSecondaire";
+		}
+
+		tiersService.updateForSecondaire(ffs, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
+
+		return "redirect:/fiscal/edit.do?id=" + ctbId;
+	}
+
 	@RequestMapping(value = "/addAutreElementImposable.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreElementImposable(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -282,6 +382,51 @@ public class ForsController {
 
 		tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
 		                                         view.getNoAutoriteFiscale());
+
+		return "redirect:/fiscal/edit.do?id=" + ctbId;
+	}
+
+	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editAutreElementImposable(@RequestParam(value = "forId", required = true) long forId, Model model) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalAutreElementImposable ffaei = hibernateTemplate.get(ForFiscalAutreElementImposable.class, forId);
+		if (ffaei == null) {
+			throw new ObjectNotFoundException("Le for autre élément imposable avec l'id = " + forId + " n'existe pas.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(ffaei.getTiers().getNumero());
+
+		model.addAttribute("command", new EditForAutreElementImposableView(ffaei));
+		return "fors/editAutreElementImposable";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.POST)
+	public String editAutreElementImposable(@Valid @ModelAttribute("command") final EditForAutreElementImposableView view, BindingResult result, Model model) throws Exception {
+
+		// FIXME (msi) gérer la sécurité un peu plus sérieusement
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForFiscalAutreElementImposable ffaei = hibernateTemplate.get(ForFiscalAutreElementImposable.class, view.getId());
+		if (ffaei == null) {
+			throw new ObjectNotFoundException("Le for autre élément imposable avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final long ctbId = ffaei.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+		if (result.hasErrors()) {
+			return "fors/editAutreElementImposable";
+		}
+
+		tiersService.updateForAutreElementImposable(ffaei, ffaei.getDateFin(), ffaei.getMotifFermeture());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId;
 	}
@@ -368,6 +513,51 @@ public class ForsController {
 		tiersService.addForDebiteur(debiteur, view.getDateDebut(), view.getDateFin(), view.getTypeAutoriteFiscale(), view.getNoAutoriteFiscale());
 
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
+	}
+
+	@RequestMapping(value = "/editDebiteur.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editDebiteur(@RequestParam(value = "forId", required = true) long forId, Model model) {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
+		if (fdpi == null) {
+			throw new ObjectNotFoundException("Le for débiteur avec l'id = " + forId + " n'existe pas.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(fdpi.getTiers().getNumero());
+
+		model.addAttribute("command", new EditForDebiteurView(fdpi));
+		return "fors/editDebiteur";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/editDebiteur.do", method = RequestMethod.POST)
+	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
+
+		// FIXME (msi) gérer la sécurité un peu plus sérieusement
+		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		}
+
+		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, view.getId());
+		if (fdpi == null) {
+			throw new ObjectNotFoundException("Le for débiteur avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final long ctbId = fdpi.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+		if (result.hasErrors()) {
+			return "fors/editDebiteur";
+		}
+
+		tiersService.updateForDebiteur(fdpi, view.getDateFin());
+
+		return "redirect:/fiscal/edit-for-debiteur.do?id=" + ctbId;
 	}
 
 	private Map<GenreImpot, String> getGenresImpotPourForAutreImpot() {

@@ -1,11 +1,14 @@
 package ch.vd.uniregctb.fors;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
@@ -784,6 +787,139 @@ public class ForsControllerTest extends WebTestSpring3 {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				assertNotNull(dpi);
+
+				final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);
+				assertNotNull(ff);
+				assertFalse(ff.isAnnule());
+				assertEquals(dateDebut, ff.getDateDebut());
+				assertEquals(dateFermeture, ff.getDateFin());
+
+				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
+				assertNotNull(rapports);
+				assertEquals(1, rapports.size());
+
+				final RapportEntreTiers r = rapports.iterator().next();
+				assertNotNull(r);
+				assertInstanceOf(RapportPrestationImposable.class, r);
+				assertEquals(dateDebut, r.getDateDebut());
+				assertEquals(dateFermeture, r.getDateFin());
+				assertFalse(r.isAnnule());
+				return null;
+			}
+		});
+	}
+
+
+	/**
+	 * [UNIREG-3338] en cas de modification d'un for fiscal existant, le pays peut être invalide
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testFermetureForPrincipalSurPaysInvalide() throws Exception {
+
+		class Ids {
+			Long pp;
+			Long ffp;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1960, 1, 1), MotifFor.ARRIVEE_HS, MockPays.RDA);
+				ids.pp = pp.getId();
+				ids.ffp = ffp.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour des dates sur un for principal pré-existant avec un pays invalide
+		request.addParameter("id", ids.ffp.toString());
+		request.addParameter("tiersId", ids.pp.toString());
+		request.addParameter("genreImpot", GenreImpot.REVENU_FORTUNE.name());
+		request.addParameter("motifRattachement", MotifRattachement.DOMICILE.name());
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.PAYS_HS.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockPays.RDA.getNoOFS()));
+		request.addParameter("dateDebut", "01.01.1960");
+		request.addParameter("dateFin", "01.01.1970");
+		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
+		request.addParameter("motifDebut", MotifFor.DEPART_HS.name());
+		request.addParameter("motifFin", MotifFor.ARRIVEE_HS.name());
+		request.setRequestURI("/fors/editPrincipal.do");
+		request.setMethod("POST");
+
+		final ModelAndView mav = handle(request, response);
+		final Map<?, ?> model = mav.getModel();
+		assertNotNull(model);
+
+		// On vérifie qu'il n'y pas d'erreur
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEquals(0, result.getErrorCount());
+
+		// Vérifie que le for fiscal a bien été mis-à-jour
+		final Tiers tiers = tiersDAO.get(ids.pp);
+		assertNotNull(tiers);
+
+		final List<ForFiscal> forsFiscaux = new ArrayList<ForFiscal>(tiers.getForsFiscaux());
+		Assert.assertEquals(1, forsFiscaux.size());
+
+		final ForFiscalPrincipal for0 = (ForFiscalPrincipal) forsFiscaux.get(0);
+		Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, for0.getTypeAutoriteFiscale());
+		Assert.assertEquals(MockPays.RDA.getNoOFS(), for0.getNumeroOfsAutoriteFiscale().intValue());
+		Assert.assertEquals(date(1970, 1, 1), for0.getDateFin());
+	}
+
+	@Test
+	public void testFermetureForDebiteur() throws Exception {
+
+		final RegDate dateDebut = date(2009, 1, 1);
+		final RegDate dateFermeture = date(2010, 6, 30);
+
+		class Ids {
+			long debiteur;
+			long forDebiteur;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place fiscale
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, dateDebut);
+				final ForDebiteurPrestationImposable ff = addForDebiteur(dpi, dateDebut, null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				addRapportPrestationImposable(dpi, pp1, dateDebut, null, false);
+				ids.debiteur = dpi.getId();
+				ids.forDebiteur = ff.getId();
+			}
+		});
+
+		// Fermeture du for sur le débiteur
+		request.setMethod("POST");
+		request.addParameter("id", String.valueOf(ids.forDebiteur));
+		request.addParameter("dateFin", RegDateHelper.dateToDisplayString(dateFermeture));
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Bex.getNoOFS()));
+		request.setRequestURI("/fors/editDebiteur.do");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie qu'il n'y pas d'erreur
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEquals(0, result.getErrorCount());
+
+		// vérification que le for est bien fermé et que le rapport de travail aussi
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(ids.debiteur);
 				assertNotNull(dpi);
 
 				final ForDebiteurPrestationImposable ff = dpi.getForDebiteurPrestationImposableAt(dateFermeture);

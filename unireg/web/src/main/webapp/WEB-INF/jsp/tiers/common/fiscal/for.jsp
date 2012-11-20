@@ -88,16 +88,19 @@
 		</c:if>
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
-				<c:if test="${((forFiscal.natureForFiscal == 'ForFiscalPrincipal') && (autorisations.forsPrincipaux)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalSecondaire') && (autorisations.forsSecondaires)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreImpot') && (autorisations.forsAutresImpots)) ||
-					((forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable') && (autorisations.forsAutresElementsImposables))}">
-					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalAutreImpot'}">
-						<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
-					</c:if>
-					<c:if test="${forFiscal.natureForFiscal != 'ForFiscalPrincipal' || forFiscal.dernierForPrincipalOuDebiteur}">
-						<unireg:raccourciAnnuler onClick="javascript:Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
-					</c:if>
+				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal' && autorisations.forsPrincipaux}">
+					<unireg:linkTo name="" action="/fors/editPrincipal.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+				</c:if>
+				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire' && autorisations.forsSecondaires}">
+					<unireg:linkTo name="" action="/fors/editSecondaire.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
+				</c:if>
+				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable' && autorisations.forsAutresElementsImposables}">
+					<unireg:linkTo name="" action="/fors/editAutreElementImposable.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
+				</c:if>
+				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreImpot' && autorisations.forsAutresImpots}">
+					<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
 				</c:if>
 			</c:if>
 		</c:if>

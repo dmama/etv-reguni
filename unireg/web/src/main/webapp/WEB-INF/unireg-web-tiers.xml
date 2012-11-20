@@ -208,7 +208,6 @@
 		<property name="tiersService" ref="tiersService" />
 		<property name="tacheService" ref="tacheService" />
 		<property name="validationService" ref="validationService" />
-		<property name="forFiscalManager" ref="forFiscalManager" />
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
@@ -226,6 +225,7 @@
 		<property name="forsValidator" ref="forsValidator" />
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="paramService" ref="parametreAppService"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">

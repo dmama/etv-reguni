@@ -35,6 +35,10 @@ public class ForsValidator implements Validator, InitializingBean {
 		subValidators.put(AddForAutreElementImposableView.class, new AddForAutreElementImposableValidator(infraService));
 		subValidators.put(AddForAutreImpotView.class, new AddForAutreImpotValidator(infraService));
 		subValidators.put(AddForDebiteurView.class, new AddForDebiteurValidator(infraService, tiersDAO));
+		subValidators.put(EditForPrincipalView.class, new EditForPrincipalValidator());
+		subValidators.put(EditForSecondaireView.class, new EditForSecondaireValidator());
+		subValidators.put(EditForAutreElementImposableView.class, new EditForAutreElementImposableValidator());
+		subValidators.put(EditForDebiteurView.class, new EditForDebiteurValidator(tiersDAO));
 	}
 
 	@Override

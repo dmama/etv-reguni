@@ -43,7 +43,7 @@
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
 				<c:if test="${forFiscal.dateFermeture == null}">
-					<unireg:raccourciModifier link="for.do?idFor=${forFiscal.id}" tooltip="Edition de for"/>
+					<unireg:linkTo name="" action="/fors/editDebiteur.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 				</c:if>
 				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
 					<unireg:raccourciAnnuler onClick="javascript:Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>

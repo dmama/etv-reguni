@@ -2549,7 +2549,75 @@ public class TiersServiceImpl implements TiersService {
         return forRtr;
     }
 
-    /**
+	@Override
+	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
+
+		ForFiscalAutreElementImposable updated = null;
+
+		if (ffaei.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
+		}
+
+		return updated;
+	}
+
+	@Override
+	public ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+	                                               int noOfsAutoriteFiscale) {
+
+		ForFiscalSecondaire updated = null;
+
+		if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = closeForFiscalSecondaire((Contribuable) ffs.getTiers(), ffs, dateFermeture, motifFermeture);
+		}
+
+		if (dateOuverture != ffs.getDateDebut() || dateFermeture != ffs.getDateFin()) {
+			// les dates de début ou de fin ont été changées
+			updated = corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
+		}
+
+		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// l'autorité fiscale a été changée
+			updated = (ForFiscalSecondaire) corrigerAutoriteFiscale((updated == null ? ffs : updated), noOfsAutoriteFiscale);
+		}
+
+		return updated;
+	}
+
+	@Override
+	public ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+
+		ForFiscalPrincipal updated = null;
+
+		if (ffp.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+		}
+
+		if (ffp.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
+			// l'autorité fiscale a été changée
+			updated = (ForFiscalPrincipal) corrigerAutoriteFiscale(ffp, noOfsAutoriteFiscale);
+		}
+
+		return updated;
+	}
+
+	@Override
+	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
+
+		ForDebiteurPrestationImposable updated = null;
+
+		if (fdpi.getDateFin() == null && dateFermeture != null) {
+			// le for a été fermé
+			updated = closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture, true);
+		}
+
+		return updated;
+	}
+
+	/**
      * Annule tous les fors ouverts à la date spécifiée (et qui ne sont pas fermés) sur le contribuable donné et dont le motif d'ouverture correspond à ce qui est indiqué
      *
      * @param contribuable   contribuable visé

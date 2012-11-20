@@ -14,12 +14,9 @@ import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -28,7 +25,6 @@ import ch.vd.uniregctb.tiers.view.ForFiscalView;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.ModeImposition;
-import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -197,97 +193,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		}
 		forFiscalView.setDateOuverture(RegDate.get());
 		return forFiscalView;
-	}
-
-	@Override
-	public ForFiscal updateFor(ForFiscalView view) {
-
-		final ForFiscal forFiscal = forFiscalDAO.get(view.getId());
-		ForFiscal updated = null;
-
-		if (forFiscal instanceof ForFiscalPrincipal) {
-			updated = updateForPrincipal((ForFiscalPrincipal) forFiscal, view.getRegDateFermeture(), view.getMotifFermeture(), view.getNumeroAutoriteFiscale());
-		}
-		else if (forFiscal instanceof ForFiscalSecondaire) {
-			updated = updateForSecondaire((ForFiscalSecondaire) forFiscal, view.getRegDateOuverture(), view.getMotifOuverture(), view.getRegDateFermeture(), view.getMotifFermeture(),
-					view.getNumeroAutoriteFiscale());
-		}
-		else if (forFiscal instanceof ForFiscalAutreElementImposable) {
-			updated = updateForAutreElementImposable((ForFiscalAutreElementImposable) forFiscal, view.getRegDateFermeture(), view.getMotifFermeture());
-		}
-		else if (forFiscal instanceof ForDebiteurPrestationImposable) {
-			updated = updateForDebiteur((ForDebiteurPrestationImposable) forFiscal, view.getRegDateFermeture());
-		}
-		//else les fors autreimpot ne sont éditables
-
-		return updated;
-	}
-
-	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
-
-		ForDebiteurPrestationImposable updated = null;
-
-		if (fdpi.getDateFin() == null && dateFermeture != null) {
-			// le for a été fermé
-			updated = tiersService.closeForDebiteurPrestationImposable((DebiteurPrestationImposable) fdpi.getTiers(), fdpi, dateFermeture, true);
-		}
-
-		return updated;
-	}
-
-	@Override
-	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
-
-		ForFiscalAutreElementImposable updated = null;
-
-		if (ffaei.getDateFin() == null && dateFermeture != null) {
-			// le for a été fermé
-			updated = tiersService.closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
-		}
-
-		return updated;
-	}
-
-	@Override
-	public ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
-	                                               int noOfsAutoriteFiscale) {
-
-		ForFiscalSecondaire updated = null;
-
-		if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == null && dateFermeture != null) {
-			// le for a été fermé
-			updated = tiersService.closeForFiscalSecondaire((Contribuable) ffs.getTiers(), ffs, dateFermeture, motifFermeture);
-		}
-
-		if (dateOuverture != ffs.getDateDebut() || dateFermeture != ffs.getDateFin()) {
-			// les dates de début ou de fin ont été changées
-			updated = tiersService.corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
-		}
-
-		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
-			// l'autorité fiscale a été changée
-			updated = (ForFiscalSecondaire) tiersService.corrigerAutoriteFiscale((updated == null ? ffs : updated), noOfsAutoriteFiscale);
-		}
-
-		return updated;
-	}
-
-	@Override
-	public ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
-
-		ForFiscalPrincipal updated = null;
-
-		if (ffp.getDateFin() == null && dateFermeture != null) {
-			// le for a été fermé
-			updated = tiersService.closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
-		}
-
-		if (ffp.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
-			// l'autorité fiscale a été changée
-			updated = (ForFiscalPrincipal) tiersService.corrigerAutoriteFiscale(ffp, noOfsAutoriteFiscale);
-		}
-
-		return updated;
 	}
 
 	@Override

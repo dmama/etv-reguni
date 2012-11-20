@@ -29,7 +29,6 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.tiers.manager.ForFiscalManager;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.utils.RegDateEditor;
@@ -44,7 +43,6 @@ public class SimulationController {
 	private TiersService tiersService;
 	private TacheService tacheService;
 	private ValidationService validationService;
-	private ForFiscalManager forFiscalManager;
 	private PlatformTransactionManager transactionManager;
 
 	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
@@ -61,10 +59,6 @@ public class SimulationController {
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
-	}
-
-	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
-		this.forFiscalManager = forFiscalManager;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
@@ -157,13 +151,13 @@ public class SimulationController {
 				try {
 					// simule la mise-à-jour du for fiscal
 					if (ff instanceof ForFiscalPrincipal) {
-						forFiscalManager.updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+						tiersService.updateForPrincipal((ForFiscalPrincipal) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 					}
 					else if (ff instanceof ForFiscalSecondaire) {
-						forFiscalManager.updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
+						tiersService.updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 					}
 					else if (ff instanceof ForFiscalAutreElementImposable) {
-						forFiscalManager.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture);
+						tiersService.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture);
 					}
 					else {
 						// les autres types de fors ne sont pas pris en compte pour l'instant

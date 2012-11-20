@@ -6,15 +6,3 @@
 	<%-- Modification du mode d'imposition du for principal courant --%>
 	<jsp:include page="for-modif-mode-imposition.jsp"/>
 </c:if>
-
-<c:if test="${index != '' && index != 'modeimposition'}">
-	<%-- Modification d'un for fiscal existant --%>
-	<c:choose>
-		<c:when test="${command.natureForFiscal == 'ForDebiteurPrestationImposable'}">
-			<jsp:include page="for-modif-debiteur.jsp"/>
-		</c:when>
-		<c:when test="${command.natureForFiscal != 'ForDebiteurPrestationImposable'}">
-			<jsp:include page="for-modif.jsp"/>
-		</c:when>
-	</c:choose>
-</c:if>
