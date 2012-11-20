@@ -1,18 +1,29 @@
 package ch.vd.uniregctb.activation;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.declaration.Declaration;
-import ch.vd.uniregctb.tiers.*;
+import ch.vd.uniregctb.tiers.AnnuleEtRemplace;
+import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalRevenuFortune;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.ListIterator;
 
 public class ActivationServiceImpl implements ActivationService {
 
@@ -188,7 +199,8 @@ public class ActivationServiceImpl implements ActivationService {
 						if (forFiscal instanceof ForFiscalRevenuFortune && ((ForFiscalRevenuFortune) forFiscal).getMotifFermeture() == MotifFor.ANNULATION) {
 							if (forFiscal instanceof ForFiscalAutreElementImposable) {
 								final ForFiscalAutreElementImposable forFiscalAutreElementImposable = (ForFiscalAutreElementImposable) forFiscal;
-								tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(), dateReactivation, forFiscalAutreElementImposable.getMotifRattachement(), forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(), forFiscalAutreElementImposable.getTypeAutoriteFiscale(), MotifFor.REACTIVATION);
+								tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(), dateReactivation, forFiscalAutreElementImposable.getMotifRattachement(), forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
+								                                                MotifFor.REACTIVATION);
 							}
 							if (forFiscal instanceof ForFiscalPrincipal) {
 								final ForFiscalPrincipal forFiscalPrincipal = (ForFiscalPrincipal) forFiscal;
@@ -200,7 +212,7 @@ public class ActivationServiceImpl implements ActivationService {
 							}
 						}
 						else if (forFiscal instanceof ForFiscalAutreImpot) {
-							tiersService.openForFiscalAutreImpot(contribuable, forFiscal.getGenreImpot(), dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getTypeAutoriteFiscale());
+							tiersService.openForFiscalAutreImpot(contribuable, forFiscal.getGenreImpot(), dateReactivation, forFiscal.getNumeroOfsAutoriteFiscale());
 						}
 					}
 				}

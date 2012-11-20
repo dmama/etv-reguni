@@ -25,8 +25,6 @@ public class TiersForController extends AbstractTiersController {
 
 	private static final String ID_FOR_PARAMETER_NAME = "idFor";
 	private static final String NUMERO_CTB_PARAMETER_NAME = "numero";
-	private static final String NATURE_FOR_PARAMETER_NAME = "nature";
-	private static final String NATURE_DPI_PARAMETER_VALUE = "DPI";
 
 	private ForFiscalManager forFiscalManager;
 	private ParametreAppService paramService;
@@ -43,7 +41,6 @@ public class TiersForController extends AbstractTiersController {
 		ForFiscalView forFiscalView;
 		String idFor = request.getParameter(ID_FOR_PARAMETER_NAME);
 		Long numeroCtb = extractLongParam(request, NUMERO_CTB_PARAMETER_NAME);
-		String natureFor = request.getParameter(NATURE_FOR_PARAMETER_NAME);
 		checkAccesDossierEnLecture(numeroCtb);
 
 		//les droits sont vérifiés à la sauvegarde (ForFiscalValidator)
@@ -52,11 +49,7 @@ public class TiersForController extends AbstractTiersController {
 			forFiscalView = forFiscalManager.get(id);
 		}
 		else {
-			if (natureFor != null && NATURE_DPI_PARAMETER_VALUE.equals(natureFor.trim())) {
-				forFiscalView = forFiscalManager.create(numeroCtb, true);
-			} else {
-				forFiscalView = forFiscalManager.create(numeroCtb, false);
-			}
+			throw new IllegalArgumentException("On ne devrait plus passer par là pour créer un for sur un tiers !");
 		}
 
 		return forFiscalView;
@@ -69,10 +62,7 @@ public class TiersForController extends AbstractTiersController {
 		ForFiscalView forFiscalView = (ForFiscalView) command;
 		checkAccesDossierEnEcriture(forFiscalView.getNumeroCtb());
 
-		if (forFiscalView.getId() == null) {
-			forFiscalManager.addFor(forFiscalView);
-		}
-		else if (forFiscalView.isChangementModeImposition()) {
+		if (forFiscalView.isChangementModeImposition()) {
 			forFiscalManager.updateModeImposition(forFiscalView);
 		}
 		else {

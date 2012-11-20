@@ -522,13 +522,12 @@ public interface TiersService {
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-     * @param typeAutoriteFiscale      le type d'autorité fiscale
      * @param motifOuverture           le motif d'ouverture
      * @return le nouveau for fiscal autre élément imposable
      */
     ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, GenreImpot genreImpot,
                                                                       final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                                                      TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture);
+                                                                      MotifFor motifOuverture);
 
     /**
      * Ouvre un nouveau for fiscal autre impot sur un contribuable.
@@ -538,10 +537,9 @@ public interface TiersService {
      * @param genreImpot               le genre d'impot
      * @param dateImpot                la date à laquelle le nouveau for est valide
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-     * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @return le nouveau for autre impot
      */
-    ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, RegDate dateImpot, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale);
+    ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, RegDate dateImpot, int numeroOfsAutoriteFiscale);
 
     /**
      * Ouvre un nouveau for fiscal debiteur sur un contribuable.
@@ -740,11 +738,10 @@ public interface TiersService {
      * @param motifFermeture      le motif de fermeture du for à créer (peut être nul)
      * @param motifRattachement   le motif de rattachement du for à créer
      * @param autoriteFiscale     le numéro de l'autorité fiscale du for à créer
-     * @param typeAutoriteFiscale le type de l'autorité fiscale du for à créer
      * @return le nouveau for fiscal.
      */
     ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture,
-                                                               MotifRattachement motifRattachement, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale);
+                                                               MotifRattachement motifRattachement, int autoriteFiscale);
 
     /**
      * Ajoute un for fiscal débiteur sur un débiteur de prestation imposable.

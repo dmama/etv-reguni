@@ -146,7 +146,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 			sb.append("&nbsp;"); // compatibilité IE6
 		}
 		else {
-			sb.append(StringEscapeUtils.escapeJavaScript(name));
+			sb.append(HtmlUtils.htmlEscape(name));
 		}
 		sb.append("</a>");
 

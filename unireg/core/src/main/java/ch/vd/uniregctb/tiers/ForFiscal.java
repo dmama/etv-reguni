@@ -45,9 +45,9 @@ import ch.vd.uniregctb.type.TypeAutoriteFiscale;
  *  GenreImpot             | REVENU_FORTUNE     | REVENU_FORTUNE         | REVENU_FORTUNE                     | DEBITEUR_PRESTATION_IMPOSABLE | tous les autres        |
  * ------------------------+--------------------+------------------------+--------------------------------------------------------------------+------------------------|
  *  MotifRattachement      | DOMICILE           | ACTIVIE_INDEPENDANTE   | ACTIVITE_LUCRATIVE_CAS             | pas applicable                | pas applicable         |
- *                         | DIPLOMATE          | IMMEUBLE_PRIVE      	 | ADMINISTRATEUR                     |                               |                        |
- *                         |                    |                        | CREANCIER_HYPOTHECAIRE             |                               |                        |
- *                         |                    |                        | BENEFICIAIRE_PRESTATION_PREVOYANCE |                               |                        |
+ *                         | DIPLOMATE_SUISSE   | IMMEUBLE_PRIVE      	 | ADMINISTRATEUR                     |                               |                        |
+ *                         | DIPLOMATE_ETRANGER | SEJOUR_SAISONNIER      | CREANCIER_HYPOTHECAIRE             |                               |                        |
+ *                         |                    | DIRIGEANT_SOCIETE      | PRESTATION_PREVOYANCE              |                               |                        |
  *                         |                    |                        | LOI_TRAVAIL_AU_NOIR                |                               |                        |
  * ------------------------+--------------------+------------------------+--------------------------------------------------------------------+------------------------|
  *  TypeAutoriteFiscale    | toutes autorisées  | COMMUNE_OU_FRACTION_VD | COMMUNE_OU_FRACTION_VD             | COMMUNE_OU_FRACTION_VD        | COMMUNE_OU_FRACTION_VD |

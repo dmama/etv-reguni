@@ -70,7 +70,6 @@
 					</tr>
 
 					<jsp:include page="for-lieu.jsp">
-						<jsp:param name="limited" value="true" />
 						<jsp:param name="onChange" value="updateSyncActions" />
 					</jsp:include>
 

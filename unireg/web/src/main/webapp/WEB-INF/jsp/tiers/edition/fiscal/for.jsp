@@ -7,14 +7,12 @@
 	<table border="0">
 		<tr>
 			<td>
-				<a href="for.do?numero=<c:out value="${command.tiers.numero}"></c:out>&index=" class="add" title="Ajouter for"><fmt:message key="label.bouton.ajouter" /></a>
+				<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addPrincipal.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+				<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+				<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux}">
+					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fiscal/for.do" params="{idFor:${command.forsPrincipalActif.id},index:'modeimposition'}" link_class="add"/>
+				</c:if>
 			</td>
-			<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-			<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux}">
-				<td>
-					<a href="for.do?idFor=<c:out value="${command.forsPrincipalActif.id}"/>&index=modeimposition" class="add" title="Changer le mode d'imposition"><fmt:message key="label.changer.mode.imposition" /></a>
-				</td>
-			</c:if>
 		</tr>
 	</table>
 	

@@ -48,4 +48,30 @@ public class CommonMapHelper extends ApplicationObjectSupport {
 		return Collections.unmodifiableMap(map);
 	}
 
+	/**
+	 * Transforme une énumération en map indexée par enum et dont les valeurs sont les descriptions pour l'utilisateur
+	 *
+	 * @param keyPrefix le préfixe de la ressource utilisée pour récupérer les descriptions des enums
+	 * @param constants la liste des enums à inclure
+	 * @return une map
+	 */
+	protected <T extends Enum<T>> Map<T, String> initMapEnum(String keyPrefix, T... constants) {
+		final Map<String, T> mapTmp = new HashMap<String, T>();
+		final Map<T, String> map = new LinkedHashMap<T, String>();
+
+		for (T c : constants) {
+			final String nom = this.getMessageSourceAccessor().getMessage(keyPrefix + c);
+			mapTmp.put(nom, c);
+		}
+
+		final List<String> nomList = new ArrayList<String>(mapTmp.keySet());
+		Collections.sort(nomList);
+		for (String aNomList : nomList) {
+			final T c = mapTmp.get(aNomList);
+			map.put(c, aNomList);
+		}
+
+		return Collections.unmodifiableMap(map);
+	}
+
 }

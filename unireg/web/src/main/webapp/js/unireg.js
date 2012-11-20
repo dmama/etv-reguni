@@ -595,172 +595,31 @@ var Fors = {
 		.error(Ajax.popupErrorHandler);
 	},
 
-	/*
-	* Selection d'un type de for fiscal
-	*/
-	selectForFiscal: function(name) {
-		if( name == 'COMMUNE_OU_FRACTION_VD' ){
-			$('#for_fraction_commune_label').show();
-			$('#for_fraction_commune').show();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-			$('#for_pays_label').hide();
-			$('#for_pays').hide();
-		} else if( name == 'COMMUNE_HC' ){
-			$('#for_fraction_commune_label').hide();
-			$('#for_fraction_commune').hide();
-			$('#for_commune_label').show();
-			$('#for_commune').show();
-			$('#for_pays_label').hide();
-			$('#for_pays').hide();
-		} else if( name == 'PAYS_HS' ){
-			$('#for_fraction_commune_label').hide();
-			$('#for_fraction_commune').hide();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-			$('#for_pays_label').show();
-			$('#for_pays').show();
-		}
-	},
-
-	/*
-	* Selection d'un type de for fiscal pour les for DPI
-	*/
-	selectForFiscalDPI: function(name) {
-		if( name == 'COMMUNE_OU_FRACTION_VD' ){
-			$('#for_fraction_commune_label').show();
-			$('#for_fraction_commune').show();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-		} else if( name == 'COMMUNE_HC' ){
-			$('#for_fraction_commune_label').hide();
-			$('#for_fraction_commune').hide();
-			$('#for_commune_label').show();
-			$('#for_commune').show();
-		}
-	},
-
-	/*
-	* Selection du genre d'impot
-	*/
-	selectGenreImpot: function(name, callback) {
-		var divRattachement = $('#div_rattachement');
-		var divRattachementLabel = $('#div_rattachement_label');
-		var divDateForPeriodique = $('#date_for_periodique');
-		var divMotifForPeriodique = $('#motif_for_periodique');
-		var divForUnique = $('#for_unique');
-		var divSelectTypeFor = $('#select_type_for');
-		var optTypeFor = $('#optionTypeAutoriteFiscale');
-		var	divTypeForFraction = $('#type_for_fraction');
-		var divTypeForHS = $('#type_for_hs');
-		var rattachement = $('#rattachement');
-		var	divModeImposition = $('#mode_imposition');
-
-		if (name == 'REVENU_FORTUNE'){
-			// callback à cause d'un bug IE6 qui raffiche la combo même si elle est cachée
-			if (callback) {
-				callback($('#genre_impot').get(0));
+	autoCompleteCommunesVD: function(textInput, noOfsInput, onChangeCallback) {
+		Autocomplete.infra('communeVD', $(textInput), true, function(item) {
+			$(noOfsInput).val(item ? item.id1 : null);
+			if (onChangeCallback) {
+				onChangeCallback();
 			}
-			divRattachementLabel.show();
-			divRattachement.show();
-			divDateForPeriodique.show();
-			divMotifForPeriodique.show();
-			divForUnique.hide();
-			if (rattachement.val() == 'DOMICILE') {
-				divSelectTypeFor.show();
-				divTypeForFraction.hide();
-				divTypeForHS.hide();
-				divModeImposition.show();
-			} else if (rattachement.val() == 'DIPLOMATE_ETRANGER') {
-				//for hors suisse
-				divSelectTypeFor.hide();
-				optTypeFor.val('PAYS_HS');
-				divTypeForFraction.hide();
-				divTypeForHS.show();
-				$('#for_fraction_commune_label').hide();
-				$('#for_fraction_commune').hide();
-				$('#for_commune_label').hide();
-				$('#for_commune').hide();
-				$('#for_pays_label').show();
-				$('#for_pays').show();
-				divModeImposition.hide();
-			} else {
-				//for vaudois
-				divSelectTypeFor.hide();
-				optTypeFor.val('COMMUNE_OU_FRACTION_VD');
-				divTypeForFraction.show();
-				divTypeForHS.hide();
-				$('#for_fraction_commune_label').show();
-				$('#for_fraction_commune').show();
-				$('#for_commune_label').hide();
-				$('#for_commune').hide();
-				$('#for_pays_label').hide();
-				$('#for_pays').hide();
-				divModeImposition.hide();
-			}
-		} else {
-			//for vaudois
-			divRattachementLabel.hide();
-			divRattachement.hide();
-			divDateForPeriodique.hide();
-			divMotifForPeriodique.hide();
-			divForUnique.show();
-			divSelectTypeFor.hide();
-			optTypeFor.val('COMMUNE_OU_FRACTION_VD');
-			divTypeForFraction.show();
-			divTypeForHS.hide();
-			$('#for_fraction_commune_label').show();
-			$('#for_fraction_commune').show();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-			$('#for_pays_label').hide();
-			$('#for_pays').hide();
-			divModeImposition.hide();
-		}
+		});
 	},
 
-	/*
-	* Selection du rattachement
-	*/
-	selectRattachement: function(name) {
-		var divSelectTypeFor = $('#select_type_for');
-		var optTypeFor = $('#optionTypeAutoriteFiscale');
-		var	divTypeForFraction = $('#type_for_fraction');
-		var divTypeForHS = $('#type_for_hs');
-		var	divModeImposition = $('#mode_imposition');
+	autoCompleteCommunesHC: function(textInput, noOfsInput, onChangeCallback) {
+		Autocomplete.infra('communeHC', $(textInput), true, function(item) {
+			$(noOfsInput).val(item ? item.id1 : null);
+			if (onChangeCallback) {
+				onChangeCallback();
+			}
+		});
+	},
 
-		if (name == 'DOMICILE'){
-			divSelectTypeFor.show();
-			divTypeForFraction.hide();
-			divTypeForHS.hide();
-			divModeImposition.show();
-		} else if (name == 'DIPLOMATE_ETRANGER') {
-			//for hors suisse
-			divSelectTypeFor.hide();
-			optTypeFor.val('PAYS_HS');
-			divTypeForFraction.hide();
-			divTypeForHS.show();
-			$('#for_fraction_commune_label').hide();
-			$('#for_fraction_commune').hide();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-			$('#for_pays_label').show();
-			$('#for_pays').show();
-			divModeImposition.hide();
-		} else {
-			//for vaudois
-			divSelectTypeFor.hide();
-			optTypeFor.val('COMMUNE_OU_FRACTION_VD');
-			divTypeForFraction.show();
-			divTypeForHS.hide();
-			$('#for_fraction_commune_label').show();
-			$('#for_fraction_commune').show();
-			$('#for_commune_label').hide();
-			$('#for_commune').hide();
-			$('#for_pays_label').hide();
-			$('#for_pays').hide();
-			divModeImposition.hide();
-		}
+	autoCompletePaysHS: function(textInput, noOfsInput, onChangeCallback) {
+		Autocomplete.infra('etat', $(textInput), true, function(item) {
+			$(noOfsInput).val(item ? item.id1 : null);
+			if (onChangeCallback) {
+				onChangeCallback();
+			}
+		});
 	},
 
 	/*

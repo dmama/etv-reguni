@@ -52,6 +52,9 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 
 	/**
 	 * Charge les informations dans TiersView
+	 * @param numero un numéro de tiers
+	 * @return un objet TiersView
+	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -294,121 +297,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return tiersService.changeModeImposition(contribuable, forFiscalView.getRegDateChangement(), forFiscalView.getModeImposition(), forFiscalView.getMotifImposition());
 	}
 
-	@Override
-	public ForFiscal addFor(ForFiscalView forFiscalView) {
-		if (forFiscalView.getGenreImpot() == GenreImpot.REVENU_FORTUNE) {
-			if (forFiscalView.getMotifRattachement() == MotifRattachement.DOMICILE ||
-					forFiscalView.getMotifRattachement() == MotifRattachement.DIPLOMATE_SUISSE ||
-					forFiscalView.getMotifRattachement() == MotifRattachement.DIPLOMATE_ETRANGER) {
-				return addForPrincipal(forFiscalView);
-			}
-			else if (forFiscalView.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE ||
-					forFiscalView.getMotifRattachement() == MotifRattachement.IMMEUBLE_PRIVE ||
-					forFiscalView.getMotifRattachement() == MotifRattachement.SEJOUR_SAISONNIER ||
-					forFiscalView.getMotifRattachement() == MotifRattachement.DIRIGEANT_SOCIETE) {
-				return addForSecondaire(forFiscalView);
-			}
-			else {
-				return addForAutreElementImposable(forFiscalView);
-			}
-		}
-		else if (forFiscalView.getGenreImpot() == GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE) {
-			return addForDebiteur(forFiscalView);
-		}
-		else {
-			return addForAutreImpot(forFiscalView);
-		}
-	}
-
-	private ForFiscal addForAutreImpot(ForFiscalView forFiscalView) {
-
-		final Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
-		if (contribuable == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + forFiscalView.getNumeroCtb() + " n'existe pas.");
-		}
-
-		final GenreImpot genreImpot = forFiscalView.getGenreImpot();
-		final RegDate dateImpot = forFiscalView.getRegDateOuverture();
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
-
-		return tiersService.openForFiscalAutreImpot(contribuable, genreImpot, dateImpot, autoriteFiscale, typeAutoriteFiscale);
-	}
-
-	private ForFiscal addForDebiteur(ForFiscalView forFiscalView) {
-
-		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(forFiscalView.getNumeroCtb());
-		if (debiteur == null) {
-			throw new ObjectNotFoundException("Le débiteur avec l'id=" + forFiscalView.getNumeroCtb() + " n'existe pas.");
-		}
-
-		Assert.isEqual(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE, forFiscalView.getGenreImpot());
-		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
-		final RegDate dateFin = forFiscalView.getRegDateFermeture();
-		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-
-		return tiersService.addForDebiteur(debiteur, dateDebut, dateFin, typeAutoriteFiscale, autoriteFiscale);
-	}
-
-	private ForFiscal addForAutreElementImposable(ForFiscalView forFiscalView) {
-
-		final Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
-		if (contribuable == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + forFiscalView.getNumeroCtb() + " n'existe pas.");
-		}
-
-		Assert.isEqual(GenreImpot.REVENU_FORTUNE, forFiscalView.getGenreImpot());
-		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
-		final MotifFor motifOuverture = forFiscalView.getMotifOuverture();
-		final RegDate dateFin = forFiscalView.getRegDateFermeture();
-		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
-		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
-
-		return tiersService.addForAutreElementImposable(contribuable, dateDebut, motifOuverture, dateFin, motifFermeture, motifRattachement, typeAutoriteFiscale, autoriteFiscale);
-	}
-
-	private ForFiscal addForSecondaire(ForFiscalView forFiscalView) {
-
-		final Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
-		if (contribuable == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + forFiscalView.getNumeroCtb() + " n'existe pas.");
-		}
-
-		Assert.isEqual(GenreImpot.REVENU_FORTUNE, forFiscalView.getGenreImpot());
-		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
-		final MotifFor motifOuverture = forFiscalView.getMotifOuverture();
-		final RegDate dateFin = forFiscalView.getRegDateFermeture();
-		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
-		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
-
-		return tiersService.addForSecondaire(contribuable, dateDebut, dateFin, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture, motifFermeture);
-	}
-
-	private ForFiscal addForPrincipal(ForFiscalView forFiscalView) {
-
-		final Contribuable contribuable = (Contribuable) tiersDAO.get(forFiscalView.getNumeroCtb());
-		if (contribuable == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + forFiscalView.getNumeroCtb() + " n'existe pas.");
-		}
-
-		Assert.isEqual(GenreImpot.REVENU_FORTUNE, forFiscalView.getGenreImpot());
-		final RegDate dateDebut = forFiscalView.getRegDateOuverture();
-		final MotifFor motifOuverture = forFiscalView.getMotifOuverture();
-		final RegDate dateFin = forFiscalView.getRegDateFermeture();
-		final MotifFor motifFermeture = forFiscalView.getMotifFermeture();
-		final MotifRattachement motifRattachement = forFiscalView.getMotifRattachement();
-		final TypeAutoriteFiscale typeAutoriteFiscale = forFiscalView.getTypeAutoriteFiscale();
-		final int autoriteFiscale = forFiscalView.getNumeroAutoriteFiscale();
-		final ModeImposition modeImposition = forFiscalView.getModeImposition();
-
-		return tiersService.addForPrincipal(contribuable, dateDebut, motifOuverture, dateFin, motifFermeture, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition);
-	}
-
 	/**
 	 * Annulation du for
 	 */
@@ -431,5 +319,4 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		}
 		tiersService.traiterReOuvertureForDebiteur(forFiscal);
 	}
-
 }

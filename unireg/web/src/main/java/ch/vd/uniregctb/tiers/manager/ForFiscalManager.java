@@ -52,14 +52,6 @@ public interface ForFiscalManager {
 	public TiersEditView getView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
-	 * Ajoute un nouveau for fiscal.
-	 * @param forFiscalView le form-backing object de l'écran d'ajout de for fiscal
-	 * @return le for fiscal créé
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	ForFiscal addFor(ForFiscalView forFiscalView);
-
-	/**
 	 * Met-à-jour un for fiscal préexistant.
 	 * @param forFiscalView le form-backing object de l'écran de fermeture du for fiscal
 	 * @return le for fiscal mis-à-jour ou <b>null</b> si aucun changement n'était nécessaire

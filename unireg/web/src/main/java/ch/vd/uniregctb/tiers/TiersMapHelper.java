@@ -194,6 +194,10 @@ public class TiersMapHelper extends CommonMapHelper {
 		return mapRattachement;
 	}
 
+	public Map<MotifRattachement, String> getMapRattachement(MotifRattachement... motifs) {
+		return initMapEnum(ApplicationConfig.masterKeyRattachement, motifs);
+	}
+
 	/**
 	 * Initialise la map des genres d'impot
 	 *
@@ -204,6 +208,10 @@ public class TiersMapHelper extends CommonMapHelper {
 			mapGenreImpot = initMapEnum(ApplicationConfig.masterKeyGenreImpot, GenreImpot.class, GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		}
 		return mapGenreImpot;
+	}
+
+	public Map<GenreImpot, String> getMapGenreImpot(GenreImpot... genres) {
+		return initMapEnum(ApplicationConfig.masterKeyGenreImpot, genres);
 	}
 
 	/**

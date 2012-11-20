@@ -2019,7 +2019,7 @@ public class MetierServiceImpl implements MetierService {
 				final ForFiscalAutreElementImposable ffaei = tiersService.openForFiscalAutreElementImposable(contribuable, forFiscalAutreElementImposable.getGenreImpot(),
 						date, forFiscalAutreElementImposable.getMotifRattachement(),
 						forFiscalAutreElementImposable.getNumeroOfsAutoriteFiscale(),
-						forFiscalAutreElementImposable.getTypeAutoriteFiscale(), motifOuverture);
+						motifOuverture);
 				if (ffaei != null && dateFermeture != null && motifFermeture != null) {
 					tiersService.closeForFiscalAutreElementImposable(contribuable, ffaei, dateFermeture, motifFermeture);
 				}

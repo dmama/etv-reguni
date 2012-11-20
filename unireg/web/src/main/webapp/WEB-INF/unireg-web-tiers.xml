@@ -212,9 +212,20 @@
 		<property name="transactionManager" ref="transactionManager" />
 	</bean>
 
+	<bean id="forsValidator" class="ch.vd.uniregctb.fors.ForsValidator">
+		<property name="infraService" ref="serviceInfrastructureService"/>
+		<property name="tiersDAO" ref="tiersDAO"/>
+	</bean>
+
 	<bean id="forsController" class="ch.vd.uniregctb.fors.ForsController">
 		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="messageSource" ref="messageSource" />
+		<property name="forsValidator" ref="forsValidator" />
+		<property name="securityProvider" ref="securityProviderInterface" />
+		<property name="paramService" ref="parametreAppService"/>
 	</bean>
 
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">

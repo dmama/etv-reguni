@@ -271,8 +271,8 @@ public class FusionDeCommunesProcessor {
 			else {
 				final Contribuable contribuable = (Contribuable) autre.getTiers();
 				tiersService.closeForFiscalAutreElementImposable(contribuable, autre, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
-				tiersService.openForFiscalAutreElementImposable(contribuable, autre.getGenreImpot(), dateFusion, autre.getMotifRattachement(), nouveauNoOfs, autre.getTypeAutoriteFiscale(),
-						MotifFor.FUSION_COMMUNES);
+				tiersService.openForFiscalAutreElementImposable(contribuable, autre.getGenreImpot(), dateFusion, autre.getMotifRattachement(), nouveauNoOfs,
+				                                                MotifFor.FUSION_COMMUNES);
 			}
 		}
 	}

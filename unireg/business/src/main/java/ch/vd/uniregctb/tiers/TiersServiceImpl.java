@@ -2086,14 +2086,13 @@ public class TiersServiceImpl implements TiersService {
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
      * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-     * @param typeAutoriteFiscale      le type d'autorité fiscale
      * @param motifOuverture           le motif d'ouverture
      * @return le nouveau for fiscal autre élément imposable
      */
     @Override
     public ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, GenreImpot genreImpot,
                                                                              final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                                                             TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture) {
+                                                                             MotifFor motifOuverture) {
 
         // Ouvre un nouveau for à la date d'événement
         ForFiscalAutreElementImposable nouveauForFiscal = new ForFiscalAutreElementImposable();
@@ -2101,7 +2100,7 @@ public class TiersServiceImpl implements TiersService {
         nouveauForFiscal.setDateDebut(dateOuverture);
         nouveauForFiscal.setMotifRattachement(motifRattachement);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
-        nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+        nouveauForFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
         nouveauForFiscal.setMotifOuverture(motifOuverture);
         nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
@@ -2113,8 +2112,7 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateImpot, int numeroOfsAutoriteFiscale,
-                                                       TypeAutoriteFiscale typeAutoriteFiscale) {
+    public ForFiscalAutreImpot openForFiscalAutreImpot(Contribuable contribuable, GenreImpot genreImpot, final RegDate dateImpot, int numeroOfsAutoriteFiscale) {
 
         // Ouvre un nouveau for à la date d'événement
         ForFiscalAutreImpot nouveauForFiscal = new ForFiscalAutreImpot();
@@ -2122,7 +2120,7 @@ public class TiersServiceImpl implements TiersService {
         nouveauForFiscal.setDateDebut(dateImpot);
         nouveauForFiscal.setDateFin(dateImpot);
         nouveauForFiscal.setNumeroOfsAutoriteFiscale(numeroOfsAutoriteFiscale);
-        nouveauForFiscal.setTypeAutoriteFiscale(typeAutoriteFiscale);
+        nouveauForFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
         nouveauForFiscal = tiersDAO.addAndSave(contribuable, nouveauForFiscal);
 
         if (validationService.validate(contribuable).errorsCount() == 0) {
@@ -2679,9 +2677,9 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public ForFiscalAutreElementImposable addForAutreElementImposable(Contribuable contribuable, RegDate dateDebut, MotifFor motifOuverture, RegDate dateFin, MotifFor motifFermeture,
-                                                                      MotifRattachement motifRattachement, TypeAutoriteFiscale typeAutoriteFiscale, int autoriteFiscale) {
+                                                                      MotifRattachement motifRattachement, int autoriteFiscale) {
         final ForFiscalAutreElementImposable forRtr =
-                openForFiscalAutreElementImposable(contribuable, GenreImpot.REVENU_FORTUNE, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, motifOuverture);
+                openForFiscalAutreElementImposable(contribuable, GenreImpot.REVENU_FORTUNE, dateDebut, motifRattachement, autoriteFiscale, motifOuverture);
         if (dateFin != null) {
             closeForFiscalAutreElementImposable(contribuable, forRtr, dateFin, motifFermeture);
         }

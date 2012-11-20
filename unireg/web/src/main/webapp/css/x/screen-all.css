@@ -1922,6 +1922,43 @@ div.flash-error {
 	font-weight: normal;
 }
 
+
+/**
+ * Création de fors
+ */
+
+.createPrincipalLink {
+	margin-left: 10px;
+	padding-left: 20px;
+	height: 16px;
+	display: inline-block;
+	background: url(fors/principal_16.png) no-repeat;
+}
+
+.createSecondaireLink {
+	margin-left: 10px;
+	padding-left: 20px;
+	height: 16px;
+	display: inline-block;
+	background: url(fors/secondaire_16.png) no-repeat;
+}
+
+.createAutreElementLink {
+	margin-left: 10px;
+	padding-left: 20px;
+	height: 16px;
+	display: inline-block;
+	background: url(fors/autreelementimposable_16.png) no-repeat;
+}
+
+.createAutreLink {
+	margin-left: 10px;
+	padding-left: 20px;
+	height: 16px;
+	display: inline-block;
+	background: url(fors/autre_16.png) no-repeat;
+}
+
 /* ------ tooltip.css --------*/
 
 
