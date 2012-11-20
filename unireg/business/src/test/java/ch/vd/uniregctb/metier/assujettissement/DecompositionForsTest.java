@@ -9,12 +9,15 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 /**
@@ -112,5 +115,70 @@ public class DecompositionForsTest extends MetierTest {
 			assertEquals(1, decomp.secondairesApresLaPeriode.size());
 			assertSame(ffs, decomp.secondairesApresLaPeriode.get(0));
 		}
+	}
+
+	/**
+	 * [SIFISC-7191] Vérifie que l'algorithme de décomposition des fors ignore purement et simplement les fors fiscaux de type 'autre impôt'.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDecompositionForsAvecForAutreImpot() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor();
+		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2010, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Aigle);
+		addForAutreImpot(ctb, date(2011, 4, 1), date(2011, 4, 1), MockCommune.Aigle.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, GenreImpot.CHIENS);
+
+		// 2010
+		{
+			final DecompositionFors decomp = new DecompositionForsAnneeComplete(ctb, 2010);
+			assertEquals(date(2010, 1, 1), decomp.debut);
+			assertEquals(date(2010, 12, 31), decomp.fin);
+			assertFalse(decomp.isEmpty());
+			assertFalse(decomp.isFullyEmpty());
+
+			// Vérification des fors principaux
+
+			assertNull(decomp.principalAvantLaPeriode);
+			assertSame(ffp, decomp.principal);
+			assertSame(ffp, decomp.principalApresLaPeriode);
+
+			assertNotNull(decomp.principauxDansLaPeriode);
+			assertEquals(1, decomp.principauxDansLaPeriode.size());
+			assertSame(ffp, decomp.principauxDansLaPeriode.get(0));
+
+			// Vérification des fors secondaires
+
+			assertEmpty(decomp.secondaires);
+			assertEmpty(decomp.secondairesAvantLaPeriode);
+			assertEmpty(decomp.secondairesDansLaPeriode);
+			assertEmpty(decomp.secondairesApresLaPeriode);
+		}
+
+		// 2011
+		{
+			final DecompositionFors decomp = new DecompositionForsAnneeComplete(ctb, 2011);
+			assertEquals(date(2011, 1, 1), decomp.debut);
+			assertEquals(date(2011, 12, 31), decomp.fin);
+			assertFalse(decomp.isEmpty());
+			assertFalse(decomp.isFullyEmpty());
+
+			// Vérification des fors principaux
+
+			assertSame(ffp, decomp.principalAvantLaPeriode);
+			assertSame(ffp, decomp.principal);
+			assertSame(ffp, decomp.principalApresLaPeriode);
+
+			assertNotNull(decomp.principauxDansLaPeriode);
+			assertEquals(1, decomp.principauxDansLaPeriode.size());
+			assertSame(ffp, decomp.principauxDansLaPeriode.get(0));
+
+			// Vérification des fors secondaires
+
+			assertEmpty(decomp.secondaires);
+			assertEmpty(decomp.secondairesAvantLaPeriode);
+			assertEmpty(decomp.secondairesDansLaPeriode);
+			assertEmpty(decomp.secondairesApresLaPeriode);
+		}
+
 	}
 }

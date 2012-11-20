@@ -26,28 +26,44 @@ public abstract class DecompositionFors implements DateRange {
 	public final RegDate debut;
 	public final RegDate fin;
 
-	/** For principal valide à la fin de la période considérée */
+	/**
+	 * For principal valide à la fin de la période considérée
+	 */
 	public final ForFiscalPrincipal principal;
 
-	/** Liste des fors principaux valides à la fin de la période considérée */
+	/**
+	 * Liste des fors principaux valides à la fin de la période considérée
+	 */
 	public final ForsList<ForFiscalSecondaire> secondaires = new ForsList<ForFiscalSecondaire>();
 
-	/** Liste des fors principaux existants tout au long de la période considérée */
+	/**
+	 * Liste des fors principaux existants tout au long de la période considérée
+	 */
 	public final ForsList<ForFiscalPrincipal> principauxDansLaPeriode = new ForsList<ForFiscalPrincipal>();
 
-	/** Liste des fors secondaires existants tout au long de la période considérée */
+	/**
+	 * Liste des fors secondaires existants tout au long de la période considérée
+	 */
 	public final ForsList<ForFiscalSecondaire> secondairesDansLaPeriode = new ForsList<ForFiscalSecondaire>();
 
-	/** For principal valide immédiatement avant la période considérée */
+	/**
+	 * For principal valide immédiatement avant la période considérée
+	 */
 	public final ForFiscalPrincipal principalAvantLaPeriode;
 
-	/** For principal valide immédiatement après la période considérée */
+	/**
+	 * For principal valide immédiatement après la période considérée
+	 */
 	public final ForFiscalPrincipal principalApresLaPeriode;
 
-	/** Liste des fors secondaires existants immédiatement avant la période considérée */
+	/**
+	 * Liste des fors secondaires existants immédiatement avant la période considérée
+	 */
 	public final ForsList<ForFiscalSecondaire> secondairesAvantLaPeriode = new ForsList<ForFiscalSecondaire>();
 
-	/** Liste des fors secondaires existants immédiatement après la période considérée */
+	/**
+	 * Liste des fors secondaires existants immédiatement après la période considérée
+	 */
 	public final ForsList<ForFiscalSecondaire> secondairesApresLaPeriode = new ForsList<ForFiscalSecondaire>();
 
 	public DecompositionFors(Contribuable contribuable, RegDate debut, RegDate fin) {
@@ -75,8 +91,7 @@ public abstract class DecompositionFors implements DateRange {
 					// Le for est valide à la fin de la période
 					if (f.isPrincipal()) {
 						if (forPrincipal != null) {
-							Assert.fail("Le contribuable n°" + contribuable.getNumero()
-									+ " possède plus d'un for principal valide à la date = " + fin);
+							Assert.fail("Le contribuable n°" + contribuable.getNumero() + " possède plus d'un for principal valide à la date = " + fin);
 						}
 						forPrincipal = (ForFiscalPrincipal) f;
 						this.principauxDansLaPeriode.add(forPrincipal);
@@ -91,7 +106,7 @@ public abstract class DecompositionFors implements DateRange {
 					if (f.isPrincipal()) {
 						this.principauxDansLaPeriode.add((ForFiscalPrincipal) f);
 					}
-					else {
+					else if (f instanceof ForFiscalSecondaire) {
 						this.secondairesDansLaPeriode.add((ForFiscalSecondaire) f);
 					}
 				}
