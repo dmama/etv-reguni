@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.fors;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
@@ -83,7 +85,7 @@ public class AddForPrincipalView implements AddForRevenuFortuneView {
 		return motifFin;
 	}
 
-	public void setMotifFin(MotifFor motifFin) {
+	public void setMotifFin(@Nullable MotifFor motifFin) {
 		this.motifFin = motifFin;
 	}
 

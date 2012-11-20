@@ -1,12 +1,15 @@
 package ch.vd.uniregctb.tiers.manager;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -26,12 +29,15 @@ import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
+import ch.vd.uniregctb.tiers.NatureTiers;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.tiers.TiersException;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 import ch.vd.uniregctb.tiers.view.TiersVisuView;
 import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Niveau;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
@@ -185,6 +191,111 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		else {
 			final Map<String, Boolean> map = getAutorisationsMap(tiers, visa, oid);
 			return new Autorisations(map);
+		}
+	}
+
+	@Override
+	public boolean isModeImpositionAllowed(@NotNull Tiers tiers, @NotNull ModeImposition modeImposition, @NotNull TypeAutoriteFiscale typeAutoriteFiscale, MotifRattachement motifRattachement,
+	                                       RegDate date, String visa, int oid) {
+
+		final NatureTiers natureTiers = getNatureTiersRestreinte(tiers);
+		final boolean isOrdinaire = modeImposition == ModeImposition.ORDINAIRE || modeImposition == ModeImposition.DEPENSE || modeImposition == ModeImposition.INDIGENT;
+
+		// Vérification des droits de l'utilisateur
+		if (natureTiers == NatureTiers.Habitant) {
+			if ((isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HAB, visa, oid)) ||
+					(!isOrdinaire && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HAB, visa, oid))) {
+				return false;
+			}
+		}
+		else if (natureTiers == NatureTiers.NonHabitant) {
+			boolean isGris = false;
+			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+				isGris = true;
+			}
+			if ((isOrdinaire && !isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_HCHS, visa, oid)) ||
+					(!isOrdinaire && !isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_HCHS, visa, oid)) ||
+					(isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_ORDDEP_GRIS, visa, oid)) ||
+					(!isOrdinaire && isGris && !SecurityHelper.isGranted(securityProvider, Role.FOR_PRINC_SOURC_GRIS, visa, oid))) {
+				return false;
+			}
+		}
+
+		// Vérification de la cohérence métier du mode d'imposition
+		if (tiers instanceof PersonnePhysique) {
+			if (MotifRattachement.DOMICILE == motifRattachement && TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == typeAutoriteFiscale) {
+
+				final PersonnePhysique pp = (PersonnePhysique) tiers;
+
+				// [UNIREG-1235]
+				// La règle est la suivante:
+				// - un contribuable de nationalité suisse ne peut être qu'à l'ordinaire ou indigent
+				// - un contribuable étranger avec un permis C peut être à l'ordinaire, indigent, ou à la dépense
+				// - pour tous les autres, tous les modes sont admis (donc y compris pour ceux dont on ne connait ni la nationalité ni le permis de séjour)
+				// - [SIFISC-4528] exception pour les non-habitants étrangers, on ne contrôle pas leur permis pour pouvoir eventuellement leur ajouter un for source
+				//   antérieur à leur obtention du permis C,
+				final Set<ModeImposition> autorises = new HashSet<ModeImposition>();
+
+				// nationalité suisse ou étrangère ?
+				Boolean isSuisse;
+				try {
+					isSuisse = tiersService.isSuisse(pp, date);
+				}
+				catch (TiersException e) {
+					// je ne sais pas s'il est suisse ou pas...
+					isSuisse = null;
+				}
+
+				// Suisse et habitant?
+				if (isSuisse != null && isSuisse && pp.isHabitantVD()) {
+					autorises.add(ModeImposition.INDIGENT);
+					autorises.add(ModeImposition.ORDINAIRE);
+				}
+				else {
+
+					// permis de séjour C ou autre ?
+					Boolean isSansPermisC;
+					try {
+						isSansPermisC = tiersService.isEtrangerSansPermisC(pp, date);
+					}
+					catch (TiersException e) {
+						// on ne sait pas...
+						isSansPermisC = null;
+					}
+
+					// permis C et habitant ?
+					if (isSansPermisC != null && !isSansPermisC && pp.isHabitantVD()) {
+						autorises.add(ModeImposition.INDIGENT);
+						autorises.add(ModeImposition.ORDINAIRE);
+						autorises.add(ModeImposition.DEPENSE);
+					}
+					else {
+						// tous sont autorisés
+						autorises.addAll(Arrays.asList(ModeImposition.values()));
+					}
+				}
+
+				if (!autorises.contains(modeImposition)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	private NatureTiers getNatureTiersRestreinte(Tiers tiers) {
+		if (tiers instanceof MenageCommun) {
+			final MenageCommun menageCommun = (MenageCommun) tiers;
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menageCommun)) {
+				if (pp.isHabitantVD()) {
+					return NatureTiers.Habitant;
+				}
+			}
+			return NatureTiers.NonHabitant;
+		}
+		else {
+			return tiers.getNatureTiers();
 		}
 	}
 

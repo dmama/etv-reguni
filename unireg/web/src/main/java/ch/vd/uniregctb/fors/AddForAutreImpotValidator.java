@@ -4,6 +4,7 @@ import org.springframework.validation.Errors;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public class AddForAutreImpotValidator extends AddForValidator {
 
@@ -21,6 +22,10 @@ public class AddForAutreImpotValidator extends AddForValidator {
 		super.validate(target, errors);
 
 		final AddForAutreImpotView view = (AddForAutreImpotView) target;
+
+		if (view.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
+		}
 
 		// validation de la date
 		final RegDate dateEvenement = view.getDateEvenement();

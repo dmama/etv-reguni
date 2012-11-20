@@ -539,7 +539,7 @@ public class ForsController {
 	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
 
 		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 

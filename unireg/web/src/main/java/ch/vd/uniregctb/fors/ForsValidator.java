@@ -4,41 +4,45 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
-import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 
-/**
- * FIXME (msi) reprendre les règles de validation du ForFiscalViewValidator
- */
 public class ForsValidator implements Validator, InitializingBean {
 
 	private ServiceInfrastructureService infraService;
-	private TiersDAO tiersDAO;
+	private AutorisationManager autorisationManager;
+	private HibernateTemplate hibernateTemplate;
+
 	private Map<Class<?>, Validator> subValidators = new HashMap<Class<?>, Validator>();
 
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
 	}
 
-	public void setTiersDAO(TiersDAO tiersDAO) {
-		this.tiersDAO = tiersDAO;
+	public void setAutorisationManager(AutorisationManager autorisationManager) {
+		this.autorisationManager = autorisationManager;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		subValidators.put(AddForPrincipalView.class, new AddForPrincipalValidator(infraService));
-		subValidators.put(AddForSecondaireView.class, new AddForSecondaireValidator(infraService));
-		subValidators.put(AddForAutreElementImposableView.class, new AddForAutreElementImposableValidator(infraService));
+		subValidators.put(AddForPrincipalView.class, new AddForPrincipalValidator(infraService, hibernateTemplate, autorisationManager));
+		subValidators.put(AddForSecondaireView.class, new AddForSecondaireValidator(infraService, hibernateTemplate));
+		subValidators.put(AddForAutreElementImposableView.class, new AddForAutreElementImposableValidator(infraService, hibernateTemplate));
 		subValidators.put(AddForAutreImpotView.class, new AddForAutreImpotValidator(infraService));
-		subValidators.put(AddForDebiteurView.class, new AddForDebiteurValidator(infraService, tiersDAO));
-		subValidators.put(EditForPrincipalView.class, new EditForPrincipalValidator());
-		subValidators.put(EditForSecondaireView.class, new EditForSecondaireValidator());
-		subValidators.put(EditForAutreElementImposableView.class, new EditForAutreElementImposableValidator());
-		subValidators.put(EditForDebiteurView.class, new EditForDebiteurValidator(tiersDAO));
+		subValidators.put(AddForDebiteurView.class, new AddForDebiteurValidator(infraService, hibernateTemplate));
+		subValidators.put(EditForPrincipalView.class, new EditForPrincipalValidator(hibernateTemplate));
+		subValidators.put(EditForSecondaireView.class, new EditForSecondaireValidator(hibernateTemplate));
+		subValidators.put(EditForAutreElementImposableView.class, new EditForAutreElementImposableValidator(hibernateTemplate));
+		subValidators.put(EditForDebiteurView.class, new EditForDebiteurValidator(hibernateTemplate));
 	}
 
 	@Override
