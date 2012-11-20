@@ -2,9 +2,6 @@ package ch.vd.uniregctb.tiers.manager;
 
 import java.util.Map;
 
-import ch.vd.uniregctb.tiers.view.TiersEditView;
-import ch.vd.uniregctb.tiers.view.TiersVisuView;
-
 /**
  * Les niveaux d'autorisation <b>en écriture</b> sur les diverses ressources gérées par Unireg pour un utilisateur et un contribuable donné.
  */
@@ -80,32 +77,32 @@ public class Autorisations {
 	}
 
 	public Autorisations(Map<String, Boolean> map) {
-		this.donneesFiscales = isAllowed(map, TiersVisuView.MODIF_FISCAL);
-		this.forsPrincipaux = isAllowed(map, TiersEditView.FISCAL_FOR_PRINC);
-		this.forsSecondaires = isAllowed(map, TiersEditView.FISCAL_FOR_SEC);
-		this.forsAutresElementsImposables = isAllowed(map, TiersEditView.FISCAL_FOR_AUTRE);
-		this.forsAutresImpots = isAllowed(map, TiersEditView.FISCAL_FOR_AUTRE);
-		this.declarationImpots = isAllowed(map, TiersVisuView.MODIF_DI);
+		this.donneesFiscales = isAllowed(map, AutorisationManagerImpl.MODIF_FISCAL);
+		this.forsPrincipaux = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_PRINC);
+		this.forsSecondaires = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_SEC);
+		this.forsAutresElementsImposables = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
+		this.forsAutresImpots = isAllowed(map, AutorisationManagerImpl.FISCAL_FOR_AUTRE);
+		this.declarationImpots = isAllowed(map, AutorisationManagerImpl.MODIF_DI);
 
-		this.adresses = isAllowed(map, TiersVisuView.MODIF_ADRESSE);
-		this.adressesDomicile = isAllowed(map, TiersEditView.ADR_D);
-		this.adressesCourrier = isAllowed(map, TiersEditView.ADR_C);
-		this.adressesRepresentation = isAllowed(map, TiersEditView.ADR_B);
-		this.adressesPoursuite = isAllowed(map, TiersEditView.ADR_P);
+		this.adresses = isAllowed(map, AutorisationManagerImpl.MODIF_ADRESSE);
+		this.adressesDomicile = isAllowed(map, AutorisationManagerImpl.ADR_D);
+		this.adressesCourrier = isAllowed(map, AutorisationManagerImpl.ADR_C);
+		this.adressesRepresentation = isAllowed(map, AutorisationManagerImpl.ADR_B);
+		this.adressesPoursuite = isAllowed(map, AutorisationManagerImpl.ADR_P);
 
-		this.complements = isAllowed(map, TiersVisuView.MODIF_COMPLEMENT);
-		this.complementsCommunications = isAllowed(map, TiersEditView.COMPLEMENT_COMMUNICATION);
-		this.complementsCoordonneesFinancieres = isAllowed(map, TiersEditView.COMPLEMENT_COOR_FIN);
+		this.complements = isAllowed(map, AutorisationManagerImpl.MODIF_COMPLEMENT);
+		this.complementsCommunications = isAllowed(map, AutorisationManagerImpl.COMPLEMENT_COMMUNICATION);
+		this.complementsCoordonneesFinancieres = isAllowed(map, AutorisationManagerImpl.COMPLEMENT_COOR_FIN);
 
-		this.rapports = isAllowed(map, TiersVisuView.MODIF_DOSSIER);
-		this.rapportsDePrestations = isAllowed(map, TiersVisuView.MODIF_RAPPORT);
-		this.rapportsDeTravail = isAllowed(map, TiersEditView.DOSSIER_TRAVAIL);
-		this.autresRapports = isAllowed(map, TiersEditView.DOSSIER_NO_TRAVAIL);
+		this.rapports = isAllowed(map, AutorisationManagerImpl.MODIF_DOSSIER);
+		this.rapportsDePrestations = isAllowed(map, AutorisationManagerImpl.MODIF_RAPPORT);
+		this.rapportsDeTravail = isAllowed(map, AutorisationManagerImpl.DOSSIER_TRAVAIL);
+		this.autresRapports = isAllowed(map, AutorisationManagerImpl.DOSSIER_NO_TRAVAIL);
 
-		this.donneesCiviles = isAllowed(map, TiersVisuView.MODIF_CIVIL);
-		this.debiteurs = isAllowed(map, TiersVisuView.MODIF_DEBITEUR);
-		this.mouvements = isAllowed(map, TiersVisuView.MODIF_MOUVEMENT);
-		this.situationsFamille = isAllowed(map, TiersEditView.FISCAL_SIT_FAMILLLE);
+		this.donneesCiviles = isAllowed(map, AutorisationManagerImpl.MODIF_CIVIL);
+		this.debiteurs = isAllowed(map, AutorisationManagerImpl.MODIF_DEBITEUR);
+		this.mouvements = isAllowed(map, AutorisationManagerImpl.MODIF_MOUVEMENT);
+		this.situationsFamille = isAllowed(map, AutorisationManagerImpl.FISCAL_SIT_FAMILLLE);
 	}
 
 	private static boolean isAllowed(Map<String, Boolean> map, String key) {

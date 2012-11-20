@@ -8,16 +8,6 @@ package ch.vd.uniregctb.tiers.view;
  */
 public class TiersVisuView extends TiersView {
 
-	public static final String MODIF_FISCAL = "FISCAL";
-	public static final String MODIF_CIVIL = "CIVIL";
-	public static final String MODIF_ADRESSE = "ADR";
-	public static final String MODIF_COMPLEMENT = "CPLT";
-	public static final String MODIF_RAPPORT = "RPT";
-	public static final String MODIF_DOSSIER = "DOS";
-	public static final String MODIF_DEBITEUR = "DBT";
-	public static final String MODIF_DI = "DI";
-	public static final String MODIF_MOUVEMENT = "MVT";
-
 	private boolean adressesHisto;
 
 	private boolean adressesHistoCiviles;

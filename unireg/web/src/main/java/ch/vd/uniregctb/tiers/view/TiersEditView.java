@@ -10,19 +10,6 @@ import java.util.List;
  */
 public class TiersEditView extends TiersView {
 
-	public static final String FISCAL_FOR_PRINC = "FOR_PRINC";
-	public static final String FISCAL_FOR_SEC = "FOR_SEC";
-	public static final String FISCAL_FOR_AUTRE = "FOR_AUTRE";
-	public static final String FISCAL_SIT_FAMILLLE = "SIT_FAM";
-	public static final String ADR_D = "ADR_D";
-	public static final String ADR_C = "ADR_C";
-	public static final String ADR_B = "ADR_B";
-	public static final String ADR_P = "ADR_P";
-	public static final String COMPLEMENT_COMMUNICATION = "CPLT_COM";
-	public static final String COMPLEMENT_COOR_FIN = "CPLT_COOR_FIN";
-	public static final String DOSSIER_TRAVAIL = "DOS_TRA";
-	public static final String DOSSIER_NO_TRAVAIL = "DOS_NO_TRA";
-
 	private IdentificationPersonneView identificationPersonne;
 
 	private List<AdresseView> adressesActives;
