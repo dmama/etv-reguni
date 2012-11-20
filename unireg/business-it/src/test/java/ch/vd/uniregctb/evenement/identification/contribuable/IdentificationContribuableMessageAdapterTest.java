@@ -28,6 +28,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
@@ -505,7 +506,6 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		assertEquals(TypeDemande.IMPOT_SOURCE, m.getDemande().getTypeDemande());
 	}
 
-
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationE_Facture() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
@@ -536,6 +536,74 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		final IdentificationContribuable m = messages.get(0);
 		assertNotNull(m);
 		assertEquals(TypeDemande.E_FACTURE, m.getDemande().getTypeDemande());
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationAvecMetaDataAdditionnels() throws Exception {
+
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+		final String url = "http://heaven.com/tables-of-the-law.pdf";
+
+		// Aller
+		{
+
+			handler.setDemandeHandler(new DemandeHandler() {
+				@Override
+				public void handleDemande(IdentificationContribuable message) {
+					messages.add(message);
+				}
+			});
+
+			// Lit le message sous format texte
+			final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_alfred_hitchcock.xml");
+			final String texte = FileUtils.readFileToString(file);
+
+			// Envoie le message
+			final Map<String, String> customAttributes = new HashMap<String, String>();
+			customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+			customAttributes.put("MySpecialKey", "MySpecialValue");
+			sendTextMessage(INPUT_QUEUE, texte, customAttributes);
+
+			// On attend le message
+			while (messages.isEmpty()) {
+				Thread.sleep(100);
+			}
+			assertEquals(1, messages.size());
+
+			final IdentificationContribuable m = messages.get(0);
+			assertNotNull(m);
+			assertNotNull(m.getHeader());
+
+			final Map<String, String> metadata = m.getHeader().getMetadata();
+			assertNotNull(metadata);
+			assertEquals(2, metadata.size());
+			assertEquals(url, metadata.get(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals("MySpecialValue", metadata.get("MySpecialKey"));
+		}
+
+		// Retour
+		{
+			final IdentificationContribuable m = messages.get(0);
+
+			m.getHeader().setReplyTo("ReplyToTest");
+
+			final Reponse reponse = new Reponse();
+			reponse.setErreur(new Erreur(TypeErreur.METIER, "01", "Aucun contribuable ne correspond au message"));
+			reponse.setDate(newUtilDate(2008, 3, 23));
+			reponse.setNoContribuable(null);
+			m.setReponse(reponse);
+
+			handler.sendReponse(m);
+
+			esbTemplate.setReceiveTimeout(3000);        // On attend le message jusqu'à 3 secondes
+			final EsbMessage msg = esbTemplate.receive(OUTPUT_QUEUE);
+			assertNotNull("L'événement n'a pas été reçu.", msg);
+
+			final Map<String, String> retourMetadata = EsbMessageHelper.extractCustomHeaders(msg);
+			assertNotNull(retourMetadata);
+			assertEquals(url, retourMetadata.get(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals("MySpecialValue", retourMetadata.get("MySpecialKey"));
+		}
 	}
 
 }

@@ -2,6 +2,7 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
@@ -19,6 +20,7 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
@@ -110,6 +112,7 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 				header.setBusinessId(msg.getBusinessId());
 				header.setReplyTo(msg.getServiceReplyTo());
 				header.setDocumentUrl(msg.getHeader(DOCUMENT_URL_ATTRIBUTE_NAME));
+				header.setMetadata(EsbMessageHelper.extractCustomHeaders(msg));
 				message.setHeader(header);
 
 				Assert.notNull(demandeHandler, "Le handler de demandes n'est pas défini");
@@ -156,6 +159,11 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 		m.setServiceDestination(replyTo);
 		m.setContext("identificationContribuable");
 		m.setBody(XmlUtils.xmlbeans2string(identificationCtb));
+
+		final Map<String,String> metadata = header.getMetadata();
+		if (metadata != null && metadata.size() > 0) {
+			EsbMessageHelper.setHeaders(m, metadata, false);
+		}
 
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only

@@ -13,6 +13,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.jms.EsbMessageEndpointManager;
+import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.utils.UniregProperties;
 
 import static org.junit.Assert.assertEquals;
@@ -76,9 +77,7 @@ public abstract class EvenementTest {
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
 		if (customAttributes != null) {
-			for (Map.Entry<String, String> attr : customAttributes.entrySet()) {
-				m.addHeader(attr.getKey(), attr.getValue());
-			}
+			EsbMessageHelper.setHeaders(m, customAttributes, true);
 		}
 		esbTemplate.send(m);
 	}

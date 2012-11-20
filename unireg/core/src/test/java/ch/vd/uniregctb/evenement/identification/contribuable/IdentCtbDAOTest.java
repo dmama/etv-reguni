@@ -3,18 +3,26 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import java.util.Calendar;
 import java.util.EnumSet;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.common.ParamPagination;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.assertTrue;
 
 public class IdentCtbDAOTest extends CoreDAOTest {
 
@@ -37,7 +45,6 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 		dao = getBean(IdentCtbDAO.class, DAO_NAME);
-		loadDatabase(DB_UNIT_DATA_FILE);
 	}
 
 	/**
@@ -46,6 +53,8 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFind() throws Exception {
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		IdentificationContribuableCriteria identificationContribuableCriteria = new IdentificationContribuableCriteria();
 		Calendar cal = new GregorianCalendar();
 		cal.set(2000, 0, 1);
@@ -74,6 +83,8 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testFindTypeDemande() throws Exception {
+		loadDatabase(DB_UNIT_DATA_FILE);
+
 		final IdentificationContribuableCriteria identificationContribuableCriteria = new IdentificationContribuableCriteria();
 		final Calendar cal = new GregorianCalendar();
 		cal.set(2000, Calendar.JANUARY, 1);
@@ -130,5 +141,144 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 			assertNotNull(list);
 			assertEquals(2, list.size());
 		}
+	}
+
+	private static IdentificationContribuable buildDummyIdentificationContribuable(@Nullable Map<String, String> metadata) {
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setNom("Talon");
+		personne.setPrenoms("Achile");
+		personne.setDateNaissance(date(1963, 2, 12));
+
+		final Demande demande = new Demande();
+		demande.setDate(DateHelper.getCurrentDate());
+		demande.setEmetteurId("EmettEUR");
+		demande.setMessageId("Mon message à moi");
+		demande.setModeIdentification(Demande.ModeIdentificationType.MANUEL_AVEC_ACK);
+		demande.setPeriodeFiscale(2012);
+		demande.setPersonne(personne);
+		demande.setPrioriteEmetteur(Demande.PrioriteEmetteur.NON_PRIORITAIRE);
+		demande.setPrioriteUtilisateur(0);
+		demande.setTransmetteur("TransMEtteUR");
+		demande.setTypeDemande(TypeDemande.NCS);
+		demande.setTypeMessage("CS_EMPLOYEUR");
+
+		final EsbHeader header = new EsbHeader();
+		header.setBusinessId("Mon businessId");
+		header.setBusinessUser("MOI");
+		header.setReplyTo("Par là-bas...");
+		header.setMetadata(metadata);
+
+		final IdentificationContribuable identification = new IdentificationContribuable();
+		identification.setEtat(IdentificationContribuable.Etat.A_EXPERTISER);
+		identification.setDemande(demande);
+		identification.setHeader(header);
+
+		return identification;
+	}
+
+	@Test
+	public void testMetaDataPersistenceNull() throws Exception {
+		final long id = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.merge(buildDummyIdentificationContribuable(null)).getId();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final IdentificationContribuable ident = dao.get(id);
+				assertNotNull(ident);
+				assertNull(ident.getHeader().getMetadata());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMetaDataPersistenceEmpty() throws Exception {
+		final long id = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				return hibernateTemplate.merge(buildDummyIdentificationContribuable(new HashMap<String, String>())).getId();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final IdentificationContribuable ident = dao.get(id);
+				assertNotNull(ident);
+				assertNotNull(ident.getHeader().getMetadata());
+				assertEquals(0, ident.getHeader().getMetadata().size());
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMetaDataPersistenceOneElement() throws Exception {
+		final long id = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final HashMap<String, String> metadata = new HashMap<String, String>();
+				metadata.put("MyKey", "MyValue");
+				return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final IdentificationContribuable ident = dao.get(id);
+				assertNotNull(ident);
+
+				final Map<String, String> metadata = ident.getHeader().getMetadata();
+				assertNotNull(metadata);
+				assertEquals(1, metadata.size());
+
+				final Map.Entry<String, String> entry = metadata.entrySet().iterator().next();
+				assertNotNull(entry);
+				assertEquals("MyKey", entry.getKey());
+				assertEquals("MyValue", entry.getValue());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testMetaDataPersistenceSeveralElements() throws Exception {
+		final long id = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final HashMap<String, String> metadata = new HashMap<String, String>();
+				metadata.put("MyKey", "{}#,,");
+				metadata.put("YourKey{,", "YourValue");
+				metadata.put("HerKey\"{,", "HerValue\"{{");
+				metadata.put("HisKey", null);
+				return hibernateTemplate.merge(buildDummyIdentificationContribuable(metadata)).getId();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final IdentificationContribuable ident = dao.get(id);
+				assertNotNull(ident);
+
+				final Map<String, String> metadata = ident.getHeader().getMetadata();
+				assertNotNull(metadata);
+				assertEquals(4, metadata.size());
+
+				assertEquals("{}#,,", metadata.get("MyKey"));
+				assertEquals("YourValue", metadata.get("YourKey{,"));
+				assertEquals("HerValue\"{{", metadata.get("HerKey\"{,"));
+				assertTrue(metadata.containsKey("HisKey"));
+				assertNull(metadata.get("HisKey"));
+				return null;
+			}
+		});
 	}
 }

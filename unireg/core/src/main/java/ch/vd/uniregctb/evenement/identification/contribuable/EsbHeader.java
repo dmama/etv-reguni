@@ -2,6 +2,9 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Map;
+
+import org.hibernate.annotations.Type;
 
 /**
  * Contient l'entête spécifique à l'ESB d'un message JMS.
@@ -28,6 +31,11 @@ public class EsbHeader {
 	 * URL d'accès au document, si fournie par le demandeur
 	 */
 	private String documentUrl;
+
+	/**
+	 * Le reste des métadonnées à retourner dans la réponse
+	 */
+	private Map<String, String> metadata;
 
 	@Column(name = "BUSINESS_USER", length = 255, nullable = false)
 	public String getBusinessUser() {
@@ -63,5 +71,15 @@ public class EsbHeader {
 
 	public void setDocumentUrl(String documentUrl) {
 		this.documentUrl = documentUrl;
+	}
+
+	@Column(name = "META_DATA", length = 1023)
+	@Type(type = "ch.vd.uniregctb.hibernate.JsonMapUserType")
+	public Map<String, String> getMetadata() {
+		return metadata;
+	}
+
+	public void setMetadata(Map<String, String> metadata) {
+		this.metadata = metadata;
 	}
 }
