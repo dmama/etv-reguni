@@ -380,8 +380,6 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 	private MiseAJourRapportTravailResponse createResponse(MiseAjourRapportTravail request) {
 		MiseAJourRapportTravailResponse response = new MiseAJourRapportTravailResponse();
-		//TODO (xsibnm) construire l'identifiant du rapport de travail
-		//	response.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
 		response.setDatePriseEnCompte(DataHelper.coreToXML(RegDate.get()));
 		return response;
 	}
