@@ -14,6 +14,20 @@
 		requestURI="${url}"
 		class="display" decorator="ch.vd.uniregctb.decorator.TableEntityDecorator">
 
+	<display:column style="width:16px;">
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
+			<div class="forPrincipalIconSmall" title="For fiscal principal"/>
+		</c:if>
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire'}">
+			<div class="forSecondaireIconSmall" title="For fiscal secondaire"/>
+		</c:if>
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable'}">
+			<div class="forAutreElementImposableIconSmall"  title="For fiscal autre élément imposable"/>
+		</c:if>
+		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreImpot'}">
+			<div class="forAutreImpotIconSmall"  title="For fiscal autre impot"/>
+		</c:if>
+	</display:column>
 	<display:column sortable ="true" titleKey="label.genre.impot">
 			<fmt:message key="option.genre.impot.${forFiscal.genreImpot}"  />
 	</display:column>

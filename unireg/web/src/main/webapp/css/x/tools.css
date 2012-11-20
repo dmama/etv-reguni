@@ -294,3 +294,27 @@ a.reOpenFor {
 a.reOpenFor:hover {
 	background-image: url(key_on.png);
 }
+
+.forPrincipalIconSmall {
+	background-image: url(fors/principal_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forSecondaireIconSmall {
+	background-image: url(fors/secondaire_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forAutreElementImposableIconSmall {
+	background-image: url(fors/autreelementimposable_16.png);
+	width: 16px;
+	height: 16px;
+}
+
+.forAutreImpotIconSmall {
+	background-image: url(fors/autre_16.png);
+	width: 16px;
+	height: 16px;
+}
