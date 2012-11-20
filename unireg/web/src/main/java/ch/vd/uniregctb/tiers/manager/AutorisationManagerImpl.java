@@ -317,7 +317,7 @@ public class AutorisationManagerImpl implements AutorisationManager {
 		}
 
 		final Niveau acces = SecurityHelper.getDroitAcces(securityProvider, visa, tiers.getNumero());
-		if (acces == null || acces == Niveau.LECTURE) {
+		if (acces == null || acces == Niveau.LECTURE || !SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
 			map.put(TiersVisuView.MODIF_FISCAL, Boolean.FALSE);
 			map.put(TiersVisuView.MODIF_CIVIL, Boolean.FALSE);
 			map.put(TiersVisuView.MODIF_ADRESSE, Boolean.FALSE);

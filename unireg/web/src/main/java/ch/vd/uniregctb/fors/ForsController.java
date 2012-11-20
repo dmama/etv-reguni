@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ApplicationConfig;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ControllerUtils;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
@@ -42,6 +43,8 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersMapHelper;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.manager.AutorisationManager;
+import ch.vd.uniregctb.tiers.manager.Autorisations;
 import ch.vd.uniregctb.tiers.validator.MotifsForHelper;
 import ch.vd.uniregctb.type.GenreImpot;
 import ch.vd.uniregctb.type.MotifFor;
@@ -61,11 +64,12 @@ public class ForsController {
 	private SecurityProviderInterface securityProvider;
 	private ParametreAppService paramService;
 	private HibernateTemplate hibernateTemplate;
+	private AutorisationManager autorisationManager;
 
 	private Map<MotifRattachement, String> motifsRattachementForPrincipal;
 	private Map<MotifRattachement, String> motifsRattachementForSecondaire;
 	private Map<MotifRattachement, String> motifsRattachementForAutreElementImposable;
-	private Map<GenreImpot,String> genresImpotsForAutreImpot;
+	private Map<GenreImpot, String> genresImpotsForAutreImpot;
 
 	public void setTiersDAO(TiersDAO tiersDAO) {
 		this.tiersDAO = tiersDAO;
@@ -101,6 +105,10 @@ public class ForsController {
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
 		this.hibernateTemplate = hibernateTemplate;
+	}
+
+	public void setAutorisationManager(AutorisationManager autorisationManager) {
+		this.autorisationManager = autorisationManager;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -166,13 +174,24 @@ public class ForsController {
 		return messageSource.getMessage(key);
 	}
 
+	private Autorisations getAutorisations(Contribuable ctb) {
+		return autorisationManager.getAutorisations(ctb, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+	}
+
 	@RequestMapping(value = "/addPrincipal.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addPrincipal(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(tiersId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + tiersId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors principaux.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("rattachements", getMotifsRattachementPourForPrincipal());
@@ -188,10 +207,16 @@ public class ForsController {
 
 		final long ctbId = view.getTiersId();
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors principaux.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
@@ -201,10 +226,6 @@ public class ForsController {
 			return "fors/addPrincipal";
 		}
 
-		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		if (ctb == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
-		}
 
 		tiersService.addForPrincipal(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
 		                             view.getTypeAutoriteFiscale(), view.getModeImposition());
@@ -216,13 +237,14 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editPrincipal(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
 		if (ffp == null) {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(ffp.getTiers().getNumero());
@@ -235,15 +257,14 @@ public class ForsController {
 	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.POST)
 	public String editPrincipal(@Valid @ModelAttribute("command") final EditForPrincipalView view, BindingResult result, Model model) throws Exception {
 
-
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
 		if (ffp == null) {
 			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
 		}
 
 		final long ctbId = ffp.getTiers().getNumero();
@@ -261,9 +282,16 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addSecondaire(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(tiersId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + tiersId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsSecondaires()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors secondaires.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
@@ -277,20 +305,21 @@ public class ForsController {
 
 		final long ctbId = view.getTiersId();
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsSecondaires()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors secondaires.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
 			return "fors/addSecondaire";
-		}
-
-		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		if (ctb == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
 
 		tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(),
@@ -303,13 +332,14 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editSecondaire(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, forId);
 		if (ffs == null) {
 			throw new ObjectNotFoundException("Le for secondaire avec l'id = " + forId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffs.getTiers());
+		if (!auth.isForsSecondaires()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors secondaires.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(ffs.getTiers().getNumero());
@@ -322,14 +352,14 @@ public class ForsController {
 	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.POST)
 	public String editSecondaire(@Valid @ModelAttribute("command") final EditForSecondaireView view, BindingResult result, Model model) throws Exception {
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, view.getId());
 		if (ffs == null) {
 			throw new ObjectNotFoundException("Le for secondaire avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffs.getTiers());
+		if (!auth.isForsSecondaires()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors secondaires.");
 		}
 
 		final long ctbId = ffs.getTiers().getNumero();
@@ -348,9 +378,16 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreElementImposable(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(tiersId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + tiersId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsAutresElementsImposables()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres éléments imposables.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("rattachements", getMotifsRattachementPourForAutreElementImposable());
@@ -364,20 +401,21 @@ public class ForsController {
 
 		final long ctbId = view.getTiersId();
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsAutresElementsImposables()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres éléments imposables.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMotifsRattachementPourForAutreElementImposable());
 			return "fors/addAutreElementImposable";
-		}
-
-		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		if (ctb == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
 
 		tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
@@ -390,13 +428,14 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editAutreElementImposable(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalAutreElementImposable ffaei = hibernateTemplate.get(ForFiscalAutreElementImposable.class, forId);
 		if (ffaei == null) {
 			throw new ObjectNotFoundException("Le for autre élément imposable avec l'id = " + forId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffaei.getTiers());
+		if (!auth.isForsAutresElementsImposables()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres éléments imposables.");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(ffaei.getTiers().getNumero());
@@ -409,14 +448,14 @@ public class ForsController {
 	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.POST)
 	public String editAutreElementImposable(@Valid @ModelAttribute("command") final EditForAutreElementImposableView view, BindingResult result, Model model) throws Exception {
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
-		}
-
 		final ForFiscalAutreElementImposable ffaei = hibernateTemplate.get(ForFiscalAutreElementImposable.class, view.getId());
 		if (ffaei == null) {
 			throw new ObjectNotFoundException("Le for autre élément imposable avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffaei.getTiers());
+		if (!auth.isForsAutresElementsImposables()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres éléments imposables.");
 		}
 
 		final long ctbId = ffaei.getTiers().getNumero();
@@ -435,9 +474,16 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreImpot(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(tiersId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + tiersId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsAutresImpots()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres impôts.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
 
 		model.addAttribute("genresImpot", getGenresImpotPourForAutreImpot());
@@ -451,20 +497,21 @@ public class ForsController {
 
 		final long ctbId = view.getTiersId();
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
+		if (ctb == null) {
+			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
+
+		final Autorisations auth = getAutorisations(ctb);
+		if (!auth.isForsAutresImpots()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec de création de fors autres impôts.");
+		}
+
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
 			model.addAttribute("genresImpot", getGenresImpotPourForAutreImpot());
 			return "fors/addAutreImpot";
-		}
-
-		final Contribuable ctb = (Contribuable) tiersDAO.get(ctbId);
-		if (ctb == null) {
-			throw new ObjectNotFoundException("Le contribuable avec l'id=" + ctbId + " n'existe pas.");
 		}
 
 		tiersService.openForFiscalAutreImpot(ctb, view.getGenreImpot(), view.getDateEvenement(), view.getNoAutoriteFiscale());
@@ -476,7 +523,7 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addDebiteur(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 		controllerUtils.checkAccesDossierEnEcriture(tiersId);
@@ -493,7 +540,6 @@ public class ForsController {
 
 		final long dpiId = view.getTiersId();
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
@@ -519,7 +565,7 @@ public class ForsController {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editDebiteur(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
-		if (!SecurityHelper.isGranted(securityProvider, Role.VISU_ALL)) {
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}
 
@@ -538,7 +584,6 @@ public class ForsController {
 	@RequestMapping(value = "/editDebiteur.do", method = RequestMethod.POST)
 	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
 
-		// FIXME (msi) gérer la sécurité un peu plus sérieusement
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
 			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
 		}

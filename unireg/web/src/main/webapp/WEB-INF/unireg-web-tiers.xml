@@ -227,6 +227,7 @@
 		<property name="securityProvider" ref="securityProviderInterface" />
 		<property name="paramService" ref="parametreAppService"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="autorisationManager" ref="autorisationManager"/>
 	</bean>
 
 	<bean id="searchTiersController" class="ch.vd.uniregctb.search.SearchTiersController">
