@@ -14,7 +14,7 @@
 			<authz:authorize ifAnyGranted="ROLE_DI_EMIS_PP">
 				<table border="0">
 					<tr><td>
-						<unireg:linkTo name="&nbsp;Ajouter" action="/di/choisir.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
+						<unireg:linkTo name="Ajouter" action="/di/choisir.do" method="get" params="{tiersId:${command.ctbId}}" title="Ajouter une déclaration" link_class="add noprint"/>
 					</td></tr>
 				</table>
 			</authz:authorize>

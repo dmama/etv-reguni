@@ -6,7 +6,7 @@
 	<table border="0">
 		<tr>
 			<td>
-				<a href="delai.do?idLR=${command.id}" class="add" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter"/></a>
+				<a href="delai.do?idLR=${command.id}" class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter"/></a>
 			</td>
 		</tr>
 	</table>

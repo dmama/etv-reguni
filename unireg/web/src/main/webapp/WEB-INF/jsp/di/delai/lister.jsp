@@ -8,7 +8,7 @@
 		<table border="0">
 			<tr>
 				<td>
-					<unireg:linkTo name="&nbsp;Ajouter" title="Ajouter" action="/di/delai/ajouter.do" params="{id:${command.id}}" link_class="add"/>
+					<unireg:linkTo name="Ajouter" title="Ajouter" action="/di/delai/ajouter.do" params="{id:${command.id}}" link_class="add"/>
 				</td>
 			</tr>
 		</table>

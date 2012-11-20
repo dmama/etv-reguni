@@ -10,7 +10,7 @@
 		<tr>
 			<td>
 				<a href="../rapport/search.do?action=effacer&numero=<c:out value="${command.tiers.numero}"></c:out>"
-				class="add" title="Ajouter rapport">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+				class="add" title="Ajouter rapport"><fmt:message key="label.bouton.ajouter" /></a>
 			</td>
 		</tr>
 		<authz:authorize ifAnyGranted="ROLE_RT">
@@ -18,7 +18,7 @@
 		<tr>
 			<td>
 				<a href="../rt/list-debiteur.do?numeroSrc=<c:out value="${command.tiers.numero}"></c:out>" 
-				class="add" title="Ajouter rapport de travail">&nbsp;<fmt:message key="label.bouton.ajouter.rt" /></a>
+				class="add" title="Ajouter rapport de travail"><fmt:message key="label.bouton.ajouter.rt" /></a>
 			</td>
 		</tr>
 		</c:if>

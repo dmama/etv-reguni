@@ -24,7 +24,7 @@
 			<tr>
 				<td>
 					<a href="list-pp-utilisateur.do?noIndividuOperateur=${command.utilisateur.numeroIndividu}" 
-					class="add" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter" /></a>
+					class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter" /></a>
 
 				<c:if test="${not empty command.restrictions}">
 					&nbsp;

@@ -128,7 +128,9 @@ a.calendar:hover {
 
 
 a.add {
-	background-image: url(add_button_off.gif);	
+	padding-left:20px;
+	padding-right:20px;
+	background-image: url(add_button_off.gif);
 }
 
 a.add:hover {

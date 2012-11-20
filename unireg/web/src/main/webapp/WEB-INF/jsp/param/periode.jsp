@@ -178,7 +178,7 @@
 			</div>
 
 		<div class="button-add">
-			<a href="modele-add.do?pf=${periodeSelectionnee.id}" class="add" title="${titleParametres}">&nbsp;<fmt:message key="label.param.add"/></a>
+			<a href="modele-add.do?pf=${periodeSelectionnee.id}" class="add" title="${titleParametres}"><fmt:message key="label.param.add"/></a>
 		</div>
 		<table>
 			<tr>
@@ -213,7 +213,7 @@
 								<fmt:param value="${periodeSelectionnee.annee}" />
 								<fmt:param value="${libTypeDocument}" />
 						</fmt:message>
-						<a href="feuille/add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}">&nbsp;<fmt:message key="label.param.add"/></a>
+						<a href="feuille/add.do?pf=${periodeSelectionnee.id}&md=${modeleSelectionne.id}" class="add" title="${periodeEtModele}"><fmt:message key="label.param.add"/></a>
 						</td>
 						<td width="25%">&nbsp;</td>
 						<td width="25%">&nbsp;</td>

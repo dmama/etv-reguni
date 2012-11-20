@@ -23,7 +23,7 @@
 			<table border="0">
 			<tr>
 				<td>
-					<a href="edit-acces-pp.do?numero=${command.dossier.numero}" class="add" title="Ajouter">&nbsp;<fmt:message key="label.bouton.ajouter"/></a>
+					<a href="edit-acces-pp.do?numero=${command.dossier.numero}" class="add" title="Ajouter"><fmt:message key="label.bouton.ajouter"/></a>
 				</td>
 			</tr>
 			</table>

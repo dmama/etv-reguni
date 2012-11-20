@@ -8,7 +8,7 @@
 		<table id="quittancerBouton" border="0">
 			<tr>
 				<td>
-					<unireg:linkTo name="&nbsp;Quittancer" title="Quittancer la déclaration" action="/di/etat/ajouter.do" params="{id:${command.id}}" link_class="add"/>
+					<unireg:linkTo name="Quittancer" title="Quittancer la déclaration" action="/di/etat/ajouter.do" params="{id:${command.id}}" link_class="add"/>
 				</td>
 			</tr>
 		</table>
