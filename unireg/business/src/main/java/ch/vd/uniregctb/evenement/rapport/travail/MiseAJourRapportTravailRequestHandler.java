@@ -49,6 +49,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		// Le débiteur doit être actif (For en vigueur) sur toute la période de déclaration
 		validateDebiteur(dpi, periodeDeclaration);
+
 		final PersonnePhysique sourcier = getSourcier(request);
 
 
@@ -443,7 +444,6 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.VALIDATION.name(), null));
 		}
 
-		//TODO(XSIBNM) rajouter la validation sur le for en fonction d ela date de dbut de versement de salaire
 	}
 
 

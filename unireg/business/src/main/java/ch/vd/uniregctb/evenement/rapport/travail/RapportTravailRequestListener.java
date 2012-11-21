@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -54,11 +55,16 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 	private EsbMessageFactory esbMessageFactory;
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
+	private HibernateTemplate hibernateTemplate;
 
 	private RapportTravailRequestHandler rapportTravailRequestHandler;
 
 	private Schema schemaCache;
 
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
 
 	public void setRapportTravailRequestHandler(RapportTravailRequestHandler rapportTravailRequestHandler) {
 		this.rapportTravailRequestHandler = rapportTravailRequestHandler;
@@ -95,12 +101,15 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request);
 			result = rapportTravailRequestHandler.handle(miseAjourRapportTravail);
 			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (ServiceException e) {
+			LOGGER.error(e.getMessage(), e);
 			result = new MiseAJourRapportTravailResponse();
 			final BusinessExceptionInfo exceptionInfo = new BusinessExceptionInfo();
 			exceptionInfo.setMessage(e.getMessage());
 			result.setExceptionInfo(exceptionInfo);
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (UnmarshalException e) {
 			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not valid", message.getBusinessId());
@@ -109,6 +118,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			final TechnicalExceptionInfo exceptionInfo = new TechnicalExceptionInfo();
 			exceptionInfo.setMessage(msg);
 			result.setExceptionInfo(exceptionInfo);
+			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 
 		// on répond
@@ -147,8 +157,9 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 
 	@Override
 	public int getNombreMessagesRecus() {
-		return 0;
+		return nbMessagesRecus.intValue();
 	}
+
 
 
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {

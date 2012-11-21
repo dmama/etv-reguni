@@ -7,9 +7,10 @@
 	</bean>
 
 
-	<bean id="rapportTravailRiquestListener" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestListener" parent="esbMessageListener">
+	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestListener" parent="esbMessageListener">
 
 		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
@@ -22,7 +23,7 @@
 				<property name="maxMessagesPerSessions" value="1"/>
 			</bean>
 		</property>
-		<property name="messageListener" ref="rapportTravailRiquestListener" />
+		<property name="messageListener" ref="rapportTravailRequestListener" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="autoStartup" value="${extprop.jms.queue.rapportTravail.service.enabled}" />
 	</bean>
