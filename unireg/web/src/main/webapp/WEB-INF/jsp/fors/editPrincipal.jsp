@@ -45,12 +45,17 @@
 							<td><unireg:regdate regdate="${command.dateDebut}"/></td>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>
-								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-									<jsp:param name="path" value="dateFin" />
-									<jsp:param name="id" value="dateFin" />
-									<jsp:param name="onChange" value="updateSyncActions" />
-									<jsp:param name="onkeyup" value="updateSyncActions" />
-								</jsp:include>
+								<c:if test="${command.dateFinEditable}">
+									<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+										<jsp:param name="path" value="dateFin"/>
+										<jsp:param name="id" value="dateFin"/>
+										<jsp:param name="onChange" value="updateSyncActions"/>
+										<jsp:param name="onkeyup" value="updateSyncActions"/>
+									</jsp:include>
+								</c:if>
+								<c:if test="${!command.dateFinEditable}">
+									<unireg:regdate regdate="${command.dateFin}"/>
+								</c:if>
 							</td>
 						</tr>
 						<tr class="<unireg:nextRowClass/>" >

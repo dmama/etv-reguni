@@ -15,6 +15,7 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 
 	private RegDate dateDebut;
 	private RegDate dateFin;
+	private boolean dateFinEditable;
 
 	private MotifFor motifDebut;
 	private MotifFor motifFin;
@@ -32,6 +33,7 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.tiersId = ffp.getTiers().getNumero();
 		this.dateDebut = ffp.getDateDebut();
 		this.dateFin = ffp.getDateFin();
+		this.dateFinEditable = ffp.getDateFin() == null || ffp.getDateFin().isAfter(RegDate.get());
 		this.motifDebut = ffp.getMotifOuverture();
 		this.motifFin = ffp.getMotifFermeture();
 		this.motifRattachement = ffp.getMotifRattachement();
@@ -44,6 +46,7 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.id = ffp.getId();
 		this.tiersId = ffp.getTiers().getNumero();
 		this.dateDebut = ffp.getDateDebut();
+		this.dateFinEditable = ffp.getDateFin() == null || ffp.getDateFin().isAfter(RegDate.get());
 		this.motifDebut = ffp.getMotifOuverture();
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
@@ -80,6 +83,10 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 
 	public void setDateFin(RegDate dateFin) {
 		this.dateFin = dateFin;
+	}
+
+	public boolean isDateFinEditable() {
+		return dateFinEditable;
 	}
 
 	@Override
