@@ -271,6 +271,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
+			view.initReadOnlyData(ffp);
 			return "fors/editPrincipal";
 		}
 
@@ -366,6 +367,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
+			view.initReadOnlyData(ffs);
 			return "fors/editSecondaire";
 		}
 
@@ -462,10 +464,11 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
+			view.initReadOnlyData(ffaei);
 			return "fors/editAutreElementImposable";
 		}
 
-		tiersService.updateForAutreElementImposable(ffaei, ffaei.getDateFin(), ffaei.getMotifFermeture());
+		tiersService.updateForAutreElementImposable(ffaei, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
 		return "redirect:/fiscal/edit.do?id=" + ctbId;
 	}
@@ -597,6 +600,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
+			view.initReadOnlyData(fdpi);
 			return "fors/editDebiteur";
 		}
 

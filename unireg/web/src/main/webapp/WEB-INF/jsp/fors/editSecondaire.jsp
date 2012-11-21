@@ -105,10 +105,10 @@
 		<script type="text/javascript">
 			function updateSyncActions() {
 
-				var motifsOuverture = $('#motifDebut').val();
-				var dateOuverture = $('#dateDebut').val();
-				var motifsFermeture = $('#motifFin').val();
-				var dateFermeture = $('#dateFin').val();
+				var motifsDebut = $('#motifDebut').val();
+				var dateDebut = $('#dateDebut').val();
+				var motifsFin = $('#motifFin').val();
+				var dateFin = $('#dateFin').val();
 
 				var noOfsAut = $('#noAutoriteFiscale').val();
 				noOfsAut = noOfsAut.replace(/[^\d]/g, "");
@@ -120,8 +120,8 @@
 				}
 
 				var idFor = ${command.id};
-				var queryString = 'idFor=' + idFor + '&startDate=' + dateOuverture + '&startReason=' + motifsOuverture +
-						'&endDate=' + dateFermeture + '&endReason=' + motifsFermeture + '&noOfs=' + noOfsAut + '&' + new Date().getTime();
+				var queryString = 'idFor=' + idFor + '&startDate=' + dateDebut + '&startReason=' + motifsDebut +
+						'&endDate=' + dateFin + '&endReason=' + motifsFin + '&noOfs=' + noOfsAut + '&' + new Date().getTime();
 
 				$.get('<c:url value="/simulate/forFiscalUpdate.do"/>?' + queryString, function(results) {
 					if (!results || results.empty) {

@@ -35,6 +35,14 @@ public class EditForAutreElementImposableView implements EditForRevenuFortuneVie
 		this.noAutoriteFiscale = ffaei.getNumeroOfsAutoriteFiscale();
 	}
 
+	public void initReadOnlyData(ForFiscalAutreElementImposable ffaei) {
+		this.id = ffaei.getId();
+		this.tiersId = ffaei.getTiers().getNumero();
+		this.dateDebut = ffaei.getDateDebut();
+		this.motifDebut = ffaei.getMotifOuverture();
+		this.motifRattachement = ffaei.getMotifRattachement();
+	}
+
 	@Override
 	public long getId() {
 		return id;

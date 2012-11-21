@@ -2489,21 +2489,21 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public ForFiscalSecondaire corrigerPeriodeValidite(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
-        Assert.notNull(ffs);
+    public ForFiscalRevenuFortune corrigerPeriodeValidite(ForFiscalRevenuFortune forFiscal, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+        Assert.notNull(forFiscal);
 
-        if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == dateFermeture
-                && ffs.getMotifOuverture() == motifOuverture && ffs.getMotifFermeture() == motifFermeture) {
+        if (forFiscal.getDateDebut() == dateOuverture && forFiscal.getDateFin() == dateFermeture
+                && forFiscal.getMotifOuverture() == motifOuverture && forFiscal.getMotifFermeture() == motifFermeture) {
             // rien à faire
             return null;
         }
 
-        final Tiers tiers = ffs.getTiers();
+        final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers);
 
         // [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-        ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) ffs.duplicate();
-        ffs.setAnnule(true);
+        ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) forFiscal.duplicate();
+        forFiscal.setAnnule(true);
         forCorrige.setDateDebut(dateOuverture);
         forCorrige.setMotifOuverture(motifOuverture);
         forCorrige.setDateFin(dateFermeture);
@@ -2511,7 +2511,7 @@ public class TiersServiceImpl implements TiersService {
         forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
         // notifie le reste du monde
-        evenementFiscalService.publierEvenementFiscalAnnulationFor(ffs, RegDate.get());
+        evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
         evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), null, forCorrige.getId());
         if (dateFermeture != null) {
             evenementFiscalService.publierEvenementFiscalFermetureFor(tiers, RegDate.get(), null, forCorrige.getId());
@@ -2550,13 +2550,23 @@ public class TiersServiceImpl implements TiersService {
     }
 
 	@Override
-	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture) {
+	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture, Integer noOfsAutoriteFiscale) {
 
 		ForFiscalAutreElementImposable updated = null;
 
 		if (ffaei.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
 			updated = closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
+		}
+
+		if (ffaei.getDateFin() != dateFermeture) {
+			// les dates de début ou de fin ont été changées
+			updated = (ForFiscalAutreElementImposable) corrigerPeriodeValidite(ffaei, ffaei.getDateDebut(), ffaei.getMotifOuverture(), dateFermeture, motifFermeture);
+		}
+
+		if (!ffaei.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// l'autorité fiscale a été changée
+			updated = (ForFiscalAutreElementImposable) corrigerAutoriteFiscale((updated == null ? ffaei : updated), noOfsAutoriteFiscale);
 		}
 
 		return updated;
@@ -2575,7 +2585,7 @@ public class TiersServiceImpl implements TiersService {
 
 		if (dateOuverture != ffs.getDateDebut() || dateFermeture != ffs.getDateFin()) {
 			// les dates de début ou de fin ont été changées
-			updated = corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
+			updated = (ForFiscalSecondaire) corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 		}
 
 		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {

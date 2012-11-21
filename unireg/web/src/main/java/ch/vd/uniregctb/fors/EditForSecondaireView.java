@@ -1,4 +1,3 @@
-
 package ch.vd.uniregctb.fors;
 
 import ch.vd.registre.base.date.RegDate;
@@ -34,6 +33,12 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 		this.motifFin = ffs.getMotifFermeture();
 		this.motifRattachement = ffs.getMotifRattachement();
 		this.noAutoriteFiscale = ffs.getNumeroOfsAutoriteFiscale();
+	}
+
+	public void initReadOnlyData(ForFiscalSecondaire ffs) {
+		this.id = ffs.getId();
+		this.tiersId = ffs.getTiers().getNumero();
+		this.motifRattachement = ffs.getMotifRattachement();
 	}
 
 	@Override

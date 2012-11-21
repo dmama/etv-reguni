@@ -109,20 +109,10 @@
 		<script type="text/javascript">
 			function updateSyncActions() {
 
-				var motifsOuverture = '${command.motifDebut}';
-				var dateOuverture = '<unireg:regdate regdate="${command.dateDebut}" />';
-
-				var motifsFermetureSelect = $('#motifFermeture');
-				var motifsFermeture;
-				if (motifsFermetureSelect.length) {
-					motifsFermeture = motifsFermetureSelect.val();
-				}
-
-				var dateFermetureInput = $('#dateFermeture');
-				var dateFermeture;
-				if (dateFermetureInput.length) {
-					dateFermeture = dateFermetureInput.val();
-				}
+				var motifsDebut = '${command.motifDebut}';
+				var dateDebut = '<unireg:regdate regdate="${command.dateDebut}" />';
+				var motifsFin = $('#motifFin').val();
+				var dateFin = $('#dateFin').val();
 
 				var noOfsAut = $('#noAutoriteFiscale').val();
 				noOfsAut = noOfsAut.replace(/[^\d]/g, "");
@@ -134,8 +124,8 @@
 				}
 
 				var idFor = ${command.id};
-				var queryString = 'idFor=' + idFor + '&startDate=' + dateOuverture + '&startReason=' + motifsOuverture +
-						'&endDate=' + dateFermeture + '&endReason=' + motifsFermeture + '&noOfs=' + noOfsAut + '&' + new Date().getTime();
+				var queryString = 'idFor=' + idFor + '&startDate=' + dateDebut + '&startReason=' + motifsDebut +
+						'&endDate=' + dateFin + '&endReason=' + motifsFin + '&noOfs=' + noOfsAut + '&' + new Date().getTime();
 
 				$.get('<c:url value="/simulate/forFiscalUpdate.do"/>?' + queryString, function(results) {
 					if (!results || results.empty) {

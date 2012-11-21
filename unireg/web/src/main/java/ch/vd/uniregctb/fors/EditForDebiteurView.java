@@ -4,6 +4,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
+@SuppressWarnings("UnusedDeclaration")
 public class EditForDebiteurView implements EditForView {
 
 	private long id;
@@ -11,6 +12,8 @@ public class EditForDebiteurView implements EditForView {
 
 	private RegDate dateDebut;
 	private RegDate dateFin;
+	private boolean dateDebutEditable;
+	private boolean dateFinEditable;
 
 	private TypeAutoriteFiscale typeAutoriteFiscale;
 	private Integer noAutoriteFiscale;
@@ -23,6 +26,17 @@ public class EditForDebiteurView implements EditForView {
 		this.tiersId = fdpi.getTiers().getId();
 		this.dateDebut = fdpi.getDateDebut();
 		this.dateFin = fdpi.getDateFin();
+		this.dateDebutEditable = fdpi.getDateDebut() == null;
+		this.dateFinEditable = fdpi.getDateFin() == null || fdpi.getDateFin().isAfter(RegDate.get());
+		this.typeAutoriteFiscale = fdpi.getTypeAutoriteFiscale();
+		this.noAutoriteFiscale = fdpi.getNumeroOfsAutoriteFiscale();
+	}
+
+	public void initReadOnlyData(ForDebiteurPrestationImposable fdpi) {
+		this.id = fdpi.getId();
+		this.tiersId = fdpi.getTiers().getId();
+		this.dateDebutEditable = fdpi.getDateDebut() == null;
+		this.dateFinEditable = fdpi.getDateFin() == null || fdpi.getDateFin().isAfter(RegDate.get());
 		this.typeAutoriteFiscale = fdpi.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = fdpi.getNumeroOfsAutoriteFiscale();
 	}
@@ -64,11 +78,11 @@ public class EditForDebiteurView implements EditForView {
 	}
 
 	public boolean isDateDebutEditable() {
-		return dateDebut == null;
+		return dateDebutEditable;
 	}
 
 	public boolean isDateFinEditable() {
-		return dateFin == null || dateFin.isAfter(RegDate.get());
+		return dateFinEditable;
 	}
 
 	@Override

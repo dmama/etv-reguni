@@ -660,20 +660,20 @@ public interface TiersService {
      */
     ForFiscal corrigerAutoriteFiscale(ForFiscal forFiscal, int noOfsAutoriteFiscale);
 
-    /**
-     * Corrige la période de validité (date de début et date de fin) d'un for fiscal secondaire. Le for fiscal est annulé et un nouveau for fiscal avec la période de validité corrigée est ajouté au tiers
-     * [UNIREG-2322].
-     *
-     * @param ffs            le for fiscal secondaire à corriger
-     * @param dateOuverture  la nouvelle date d'ouverture
-     * @param motifOuverture le nouveau motif d'ouverture
-     * @param dateFermeture  la nouvelle date de fermeture
-     * @param motifFermeture le nouveau motif de fermeture
-     * @return le nouveau for fiscal corrigé
-     */
-    ForFiscalSecondaire corrigerPeriodeValidite(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
+	/**
+	 * Corrige la période de validité (date de début et date de fin) d'un for fiscal secondaire. Le for fiscal est annulé et un nouveau for fiscal avec la période de validité corrigée est ajouté au
+	 * tiers [UNIREG-2322].
+	 *
+	 * @param forFiscal      le for fiscal à corriger
+	 * @param dateOuverture  la nouvelle date d'ouverture
+	 * @param motifOuverture le nouveau motif d'ouverture
+	 * @param dateFermeture  la nouvelle date de fermeture
+	 * @param motifFermeture le nouveau motif de fermeture
+	 * @return le nouveau for fiscal corrigé
+	 */
+	ForFiscalRevenuFortune corrigerPeriodeValidite(ForFiscalRevenuFortune forFiscal, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
 
-    /**
+	/**
      * Ajoute un for fiscal principal sur un contribuable. Le for fiscal principal courant est fermé si nécessaire.
      *
      * @param contribuable        un contribuable
@@ -695,7 +695,7 @@ public interface TiersService {
 
 	ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale);
 
-	ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture);
+	ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture, Integer noOfsAutoriteFiscale);
 
 	ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture);
 

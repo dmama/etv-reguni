@@ -157,7 +157,7 @@ public class SimulationController {
 						tiersService.updateForSecondaire((ForFiscalSecondaire) ff, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 					}
 					else if (ff instanceof ForFiscalAutreElementImposable) {
-						tiersService.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture);
+						tiersService.updateForAutreElementImposable((ForFiscalAutreElementImposable) ff, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 					}
 					else {
 						// les autres types de fors ne sont pas pris en compte pour l'instant

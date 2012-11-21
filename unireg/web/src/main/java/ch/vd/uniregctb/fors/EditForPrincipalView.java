@@ -40,6 +40,16 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.modeImposition = ffp.getModeImposition();
 	}
 
+	public void initReadOnlyData(ForFiscalPrincipal ffp) {
+		this.id = ffp.getId();
+		this.tiersId = ffp.getTiers().getNumero();
+		this.dateDebut = ffp.getDateDebut();
+		this.motifDebut = ffp.getMotifOuverture();
+		this.motifRattachement = ffp.getMotifRattachement();
+		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
+		this.modeImposition = ffp.getModeImposition();
+	}
+
 	@Override
 	public long getId() {
 		return id;
