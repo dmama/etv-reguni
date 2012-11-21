@@ -108,6 +108,14 @@ public class SecurityProviderImpl implements SecurityProviderInterface, Initiali
 	}
 
 	private boolean wantBypassUnitTest(String visa) {
-		return bypassUnitTest && visa.startsWith(PREFIX_TEST_UNITAIRE);
+		if (bypassUnitTest) {
+			if (visa.startsWith(PREFIX_TEST_UNITAIRE)) {
+				return true;
+			}
+			else {
+				LOGGER.warn("**** Attention ! Le bypass IfoSec est activé mais l'utilisateur [" + visa + "] ne commence pas par " + PREFIX_TEST_UNITAIRE + ": aucune procédure bypassée ****");
+			}
+		}
+		return false;
 	}
 }
