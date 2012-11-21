@@ -102,7 +102,7 @@ public class EachWebPageTest extends WebitTest {
 
 	@Test
 	public void testTiersEditForInexistant() throws Exception {
-		assertPage("/fors/editPrincipal.do?forId=12345678", "Page d'erreur", "Le for fiscal spécifié n'existe pas");
+		assertPage("/fors/editPrincipal.do?forId=12345678", "Page d'erreur", "Le for principal avec l'id = 12345678 n'existe pas");
 	}
 
 	// Page de visualisation d'une adresse
