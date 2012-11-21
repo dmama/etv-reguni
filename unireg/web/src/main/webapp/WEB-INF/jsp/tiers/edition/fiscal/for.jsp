@@ -7,8 +7,17 @@
 	<table border="0">
 		<tr>
 			<td>
-				<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addPrincipal.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
 				<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
+				<c:if test="${autorisations.forsPrincipaux}">
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addPrincipal.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+				</c:if>
+				<c:if test="${!autorisations.forsPrincipaux && autorisations.forsSecondaires}">
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addSecondaire.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+				</c:if>
+				<c:if test="${!autorisations.forsPrincipaux && !autorisations.forsSecondaires && autorisations.forsAutresElementsImposables}">
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addAutreElementImposable.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+				</c:if>
+
 				<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux}">
 					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fiscal/for.do" params="{idFor:${command.forsPrincipalActif.id},index:'modeimposition'}" link_class="add"/>
 				</c:if>
