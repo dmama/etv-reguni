@@ -90,6 +90,9 @@
 			<c:if test="${!forFiscal.annule}">
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal' && autorisations.forsPrincipaux}">
 					<unireg:linkTo name="" action="/fors/editPrincipal.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
+						<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
+					</c:if>
 				</c:if>
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire' && autorisations.forsSecondaires}">
 					<unireg:linkTo name="" action="/fors/editSecondaire.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
