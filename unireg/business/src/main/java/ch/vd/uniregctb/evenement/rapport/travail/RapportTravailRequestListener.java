@@ -98,7 +98,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 			// on traite la requête
-			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request);
+			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request, message.getBusinessId());
 			result = rapportTravailRequestHandler.handle(miseAjourRapportTravail);
 			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
@@ -106,9 +106,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		catch (ServiceException e) {
 			LOGGER.error(e.getMessage(), e);
 			result = new MiseAJourRapportTravailResponse();
-			final BusinessExceptionInfo exceptionInfo = new BusinessExceptionInfo();
-			exceptionInfo.setMessage(e.getMessage());
-			result.setExceptionInfo(exceptionInfo);
+			result.setExceptionInfo(e.getInfo());
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
 		catch (UnmarshalException e) {

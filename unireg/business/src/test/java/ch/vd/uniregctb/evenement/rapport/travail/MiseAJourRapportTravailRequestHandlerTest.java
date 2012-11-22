@@ -55,7 +55,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		identifiantRapportTravail.setNumeroDebiteur(12325478);
 		request.setIdentifiantRapportTravail(identifiantRapportTravail);
 		try {
-			handler.handle(MiseAjourRapportTravail.get(request));
+			handler.handle(MiseAjourRapportTravail.get(request, null));
 			fail();
 		}
 		catch (ServiceException e) {
@@ -103,7 +103,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		request.setIdentifiantRapportTravail(identifiantRapportTravail);
 
 		try {
-			handler.handle(MiseAjourRapportTravail.get(request));
+			handler.handle(MiseAjourRapportTravail.get(request, null));
 			fail();
 		}
 		catch (ServiceException e) {
@@ -149,7 +149,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
@@ -198,7 +198,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
@@ -246,7 +246,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -294,7 +294,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -343,7 +343,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -399,7 +399,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		request.setFinRapportTravail(finRapportTravail);
 		request.setDateFinVersementSalaire(dateFinVersementSalaire);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -449,7 +449,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -498,7 +498,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setDateFinVersementSalaire(dateFinVersementSalaire);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -544,7 +544,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -599,7 +599,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		finRapportTravail.setDateEvenement(dateEvenement);
 		request.setFinRapportTravail(finRapportTravail);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -645,7 +645,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -702,7 +702,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		finRapportTravail.setDateEvenement(DataHelper.coreToXML(dateFinVersementSalaire));
 		request.setFinRapportTravail(finRapportTravail);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -755,7 +755,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
@@ -813,7 +813,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request));
+		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();

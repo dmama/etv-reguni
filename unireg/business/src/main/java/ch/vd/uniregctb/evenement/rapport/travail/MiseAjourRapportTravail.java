@@ -22,8 +22,9 @@ public class MiseAjourRapportTravail {
 	private RegDate dateEvenement;
 
 
-	public static MiseAjourRapportTravail get(MiseAJourRapportTravailRequest request){
+	public static MiseAjourRapportTravail get(MiseAJourRapportTravailRequest request, String businessId){
 		final MiseAjourRapportTravail miseAjourRapportTravail = new MiseAjourRapportTravail();
+		miseAjourRapportTravail.setBusinessId(businessId);
 		miseAjourRapportTravail.setIdDebiteur(request.getIdentifiantRapportTravail().getNumeroDebiteur());
 		miseAjourRapportTravail.setIdSourcier(request.getIdentifiantRapportTravail().getNumeroContribuable());
 

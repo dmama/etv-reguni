@@ -21,6 +21,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
+import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -167,22 +168,39 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private PersonnePhysique getSourcier(MiseAjourRapportTravail request) throws ServiceException {
 		//Le sourcier doit exister
 		final long numeroSourcier = request.getIdSourcier();
-		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(numeroSourcier);
-		if (sourcier == null) {
+		final Tiers tiers = tiersService.getTiers(numeroSourcier);
+
+		if (tiers == null) {
 			final String msg = String.format("le sourcier %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
 		}
+
+		if (!(tiers instanceof PersonnePhysique)) {
+			final String msg = String.format("le sourcier %s ne correspond pas à une personne physique", FormatNumeroHelper.numeroCTBToDisplay(numeroSourcier));
+			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
+		}
+
+		final PersonnePhysique sourcier = (PersonnePhysique) tiers;
 		return sourcier;
 	}
 
 	private DebiteurPrestationImposable getDebiteur(MiseAjourRapportTravail request) throws ServiceException {
-		//le débiteur doit exister
+
 		final long numeroDpi = request.getIdDebiteur();
-		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(numeroDpi);
-		if (dpi == null) {
+		final Tiers tiers = tiersService.getTiers(numeroDpi);
+		//le débiteur doit exister
+		if (tiers == null) {
 			final String msg = String.format("le débiteur %s n'existe pas dans unireg", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
 			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.UNKNOWN_PARTY.name(), null));
 		}
+
+		//nature du tiers récupéré
+		if (!(tiers instanceof DebiteurPrestationImposable)) {
+			final String msg = String.format("le tiers %s ne correspond pas à un débiteur", FormatNumeroHelper.numeroCTBToDisplay(numeroDpi));
+			throw new ServiceException(new BusinessExceptionInfo(msg, BusinessExceptionCode.INVALID_PARTY_TYPE.name(), null));
+		}
+
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
 		return dpi;
 	}
 
@@ -495,7 +513,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 	private void aucunTraitement(String cause, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
 		String message = String.format("Aucun traitement necessaire pour le message %s concernant le rapport de travail commencant" +
-				" le %s, se terminant le %s pour le debiteur %s et le sourcier %s:",
+				" le %s, se terminant le %s pour le debiteur %s et le sourcier %s ",
 				request.getBusinessId(),
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
 				RegDateHelper.dateToDisplayString(rapportAModifier.getDateFin()),
