@@ -168,7 +168,7 @@ public class TiersManager implements MessageSourceAware {
 		}
 		if (habitant.getDateDeces() != null && individuView != null) {//habitant décédé fiscalement
 			individuView.setEtatCivil("DECEDE");
-			individuView.setDateDernierChgtEtatCivil(RegDate.asJavaDate(habitant.getDateDeces()));
+			individuView.setDateDernierChgtEtatCivil(habitant.getDateDeces());
 		}
 		return individuView;
 	}
