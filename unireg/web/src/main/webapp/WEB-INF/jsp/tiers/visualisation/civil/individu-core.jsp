@@ -7,7 +7,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroIndividuFormatte" scope="request"/>
 			<spring:bind path="${bind}" >
-				<c:out value="${status.value}"></c:out>
+				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
@@ -63,7 +63,7 @@
 		<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
 		<td>
 			<c:set var="bind" value="command.${param.path}.dateNaissance" scope="request"/>
-			<spring:bind path="${bind}" >		
+			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
@@ -94,7 +94,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.numeroAssureSocial" scope="request"/>
 			<spring:bind path="${bind}" >	
-				<unireg:numAVS numeroAssureSocial="${status.value}"></unireg:numAVS>	
+				<unireg:numAVS numeroAssureSocial="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
@@ -103,7 +103,7 @@
 		<td>
 			<c:set var="bind" value="command.${param.path}.ancienNumeroAVS" scope="request"/>
 			<spring:bind path="${bind}" >		
-					<unireg:ancienNumeroAVS ancienNumeroAVS="${status.value}"></unireg:ancienNumeroAVS>
+				<unireg:ancienNumeroAVS ancienNumeroAVS="${status.value}"/>
 			</spring:bind> 
 		</td>
 	</tr>

@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.individu;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -19,10 +19,10 @@ public class IndividuView implements Serializable {
 	private String nomNaissance;
 	private String prenom;
 	private String autresPrenoms;
-	private Date dateNaissance;
+	private RegDate dateNaissance;
 	private Sexe sexe;
 	private String etatCivil;
-	private Date dateDernierChgtEtatCivil;
+	private RegDate dateDernierChgtEtatCivil;
 	private String numeroAssureSocial;
 	private String ancienNumeroAVS;
 	private String numeroRCE;
@@ -75,11 +75,11 @@ public class IndividuView implements Serializable {
 		this.autresPrenoms = autresPrenoms;
 	}
 
-	public Date getDateNaissance() {
+	public RegDate getDateNaissance() {
 		return dateNaissance;
 	}
 
-	public void setDateNaissance(Date dateNaissance) {
+	public void setDateNaissance(RegDate dateNaissance) {
 		this.dateNaissance = dateNaissance;
 	}
 
@@ -101,11 +101,11 @@ public class IndividuView implements Serializable {
 	}
 
 	@SuppressWarnings("unused")
-	public Date getDateDernierChgtEtatCivil() {
+	public RegDate getDateDernierChgtEtatCivil() {
 		return dateDernierChgtEtatCivil;
 	}
 
-	public void setDateDernierChgtEtatCivil(Date dateDernierChgtEtatCivil) {
+	public void setDateDernierChgtEtatCivil(RegDate dateDernierChgtEtatCivil) {
 		this.dateDernierChgtEtatCivil = dateDernierChgtEtatCivil;
 	}
 

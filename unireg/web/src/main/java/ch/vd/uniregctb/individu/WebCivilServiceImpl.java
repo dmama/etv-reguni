@@ -8,7 +8,6 @@ import java.util.List;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
@@ -87,7 +86,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 		indCible.setPrenom(indSource.getPrenom());
 		indCible.setNomNaissance(indSource.getNomNaissance());
 		indCible.setAutresPrenoms(indSource.getAutresPrenoms());
-		indCible.setDateNaissance(RegDate.asJavaDate(indSource.getDateNaissance()));
+		indCible.setDateNaissance(indSource.getDateNaissance());
 		indCible.setAncienNumeroAVS(indSource.getNoAVS11());
 		indCible.setNumeroAssureSocial(indSource.getNouveauNoAVS());
 		indCible.setNumeroRCE( indSource.getNumeroRCE() );
@@ -142,13 +141,13 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			final EtatCivil etatCivil = indSource.getEtatCivilCourant();
 			if (etatCivil != null) {
 				indCible.setEtatCivil(EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil()).name());
-				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(etatCivil.getDateDebut()));
+				indCible.setDateDernierChgtEtatCivil(etatCivil.getDateDebut());
 			}
 
 			/* Cas particulier du décès qui ne correspond pas à un état civil dans le host */
 			if (indSource.getDateDeces() != null) {
 				indCible.setEtatCivil("DECEDE");
-				indCible.setDateDernierChgtEtatCivil(RegDate.asJavaDate(indSource.getDateDeces()));
+				indCible.setDateDernierChgtEtatCivil(indSource.getDateDeces());
 			}
 
 		}
