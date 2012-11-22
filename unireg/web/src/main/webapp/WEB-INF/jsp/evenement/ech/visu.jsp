@@ -122,7 +122,7 @@
 		        <td class="error"><c:out value="${command.individuError}"/></td>
 	        </c:if>
 	        <c:if test="${command.individu != null}">
-		        <td><fmt:formatDate value="${command.individu.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+		        <td><unireg:regdate regdate="${command.individu.dateNaissance}"/></td>
 	        </c:if>
         </tr>
     </table>

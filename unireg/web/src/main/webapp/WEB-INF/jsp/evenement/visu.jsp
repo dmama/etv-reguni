@@ -108,7 +108,7 @@
 				</c:if>
 				<tr class="<unireg:nextRowClass/>" >
 					<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
-					<td><fmt:formatDate value="${command.individuPrincipal.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+					<td><unireg:regdate regdate="${command.individuPrincipal.dateNaissance}"/></td>
 				</tr>
 			</table>
 		</fieldset>
@@ -165,7 +165,7 @@
 					</c:if>
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.date.naissance" />&nbsp;:</td>
-						<td><fmt:formatDate value="${command.individuConjoint.dateNaissance}" pattern="dd.MM.yyyy"/></td>
+						<td><unireg:regdate regdate="${command.individuConjoint.dateNaissance}"/></td>
 					</tr>
 				</table>
 			</fieldset>
