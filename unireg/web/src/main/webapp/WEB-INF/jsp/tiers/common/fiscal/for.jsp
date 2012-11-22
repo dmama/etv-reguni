@@ -103,6 +103,7 @@
 					<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
 				</c:if>
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreImpot' && autorisations.forsAutresImpots}">
+					<span class="button_placeholder">&nbsp;</span>
 					<unireg:raccourciAnnuler onClick="Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
 				</c:if>
 			</c:if>
