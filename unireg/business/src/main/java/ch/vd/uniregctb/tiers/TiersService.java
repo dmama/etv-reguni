@@ -529,7 +529,22 @@ public interface TiersService {
                                                                       final RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
                                                                       MotifFor motifOuverture);
 
-    /**
+	/**
+	 * Ouvre un nouveau for fiscal autre élément imposable sur un contribuable.
+	 *
+	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
+	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
+	 * @param motifOuverture           le motif d'ouverture
+	 * @param dateFermeture            la date à laquelle le nouveau for est fermé
+	 * @param motifFermeture           motif de fermeture
+	 * @param motifRattachement        le motif de rattachement du nouveau for
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
+	 * @return le nouveau for fiscal autre élément imposable
+	 */
+	ForFiscalAutreElementImposable openForFiscalAutreElementImposable(Contribuable contribuable, RegDate dateOuverture, MotifFor motifOuverture, @Nullable RegDate dateFermeture,
+	                                                                  @Nullable MotifFor motifFermeture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale);
+
+	/**
      * Ouvre un nouveau for fiscal autre impot sur un contribuable.
      * <b>Note:</b> un for autre impôt possède une validité de 1 jour, il n'y a donc pas de méthode pour créer un for fiscal autre impôt fermé.
      *
