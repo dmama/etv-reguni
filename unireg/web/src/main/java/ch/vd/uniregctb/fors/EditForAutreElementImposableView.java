@@ -57,10 +57,6 @@ public class EditForAutreElementImposableView implements EditForRevenuFortuneVie
 		return tiersId;
 	}
 
-	public void setTiersId(long tiersId) {
-		this.tiersId = tiersId;
-	}
-
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;

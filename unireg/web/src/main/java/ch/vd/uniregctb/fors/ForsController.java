@@ -271,7 +271,6 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyData(ffp);
 			return "fors/editPrincipal";
 		}
 
@@ -367,7 +366,6 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyData(ffs);
 			return "fors/editSecondaire";
 		}
 
@@ -464,7 +462,6 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyData(ffaei);
 			return "fors/editAutreElementImposable";
 		}
 
@@ -600,7 +597,6 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			view.initReadOnlyData(fdpi);
 			return "fors/editDebiteur";
 		}
 

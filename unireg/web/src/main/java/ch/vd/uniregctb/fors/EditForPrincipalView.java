@@ -47,6 +47,9 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 		this.tiersId = ffp.getTiers().getNumero();
 		this.dateDebut = ffp.getDateDebut();
 		this.dateFinEditable = ffp.getDateFin() == null || ffp.getDateFin().isAfter(RegDate.get());
+		if (!this.dateFinEditable) {
+			this.dateFin = ffp.getDateFin();
+		}
 		this.motifDebut = ffp.getMotifOuverture();
 		this.motifRattachement = ffp.getMotifRattachement();
 		this.typeAutoriteFiscale = ffp.getTypeAutoriteFiscale();
@@ -65,10 +68,6 @@ public class EditForPrincipalView implements EditForRevenuFortuneView {
 	@Override
 	public long getTiersId() {
 		return tiersId;
-	}
-
-	public void setTiersId(long tiersId) {
-		this.tiersId = tiersId;
 	}
 
 	@Override

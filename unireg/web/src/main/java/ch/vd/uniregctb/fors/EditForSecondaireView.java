@@ -55,10 +55,6 @@ public class EditForSecondaireView implements EditForRevenuFortuneView {
 		return tiersId;
 	}
 
-	public void setTiersId(long tiersId) {
-		this.tiersId = tiersId;
-	}
-
 	@Override
 	public RegDate getDateDebut() {
 		return dateDebut;

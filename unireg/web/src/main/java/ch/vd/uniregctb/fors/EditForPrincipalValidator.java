@@ -8,8 +8,9 @@ import org.springframework.validation.Errors;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 
 public class EditForPrincipalValidator extends EditForRevenuFortuneValidator {
 
@@ -27,23 +28,27 @@ public class EditForPrincipalValidator extends EditForRevenuFortuneValidator {
 
 	@Override
 	public void validate(Object target, Errors errors) {
-		super.validate(target, errors);    //To change body of overridden methods use File | Settings | File Templates.
 
+		// préparation de la vue
 		final EditForPrincipalView view = (EditForPrincipalView) target;
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
+		if (ffp == null) {
+			throw new ObjectNotFoundException("Impossible de trouver le for fiscal avec l'id=" + view.getId());
+		}
+		view.initReadOnlyData(ffp); // on ré-initialise les données en lecture-seule parce qu'elles ne font pas partie du formulaire (et ne doivent pas l'être pour des raisons de sécurité)
 
-		final Contribuable ctb = hibernateTemplate.get(Contribuable.class, view.getTiersId());
-		if (ctb != null) {
-			// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
-			final List<DateRange> fors = new ArrayList<DateRange>();
-			for (ForFiscal f : ctb.getForsFiscauxPrincipauxActifsSorted()) {
-				if (view.getId() != f.getId()) {
-					fors.add(new DateRangeHelper.Range(f));
-				}
+		super.validate(target, errors);
+
+		// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
+		final List<DateRange> fors = new ArrayList<DateRange>();
+		for (ForFiscal f : ffp.getTiers().getForsFiscauxPrincipauxActifsSorted()) {
+			if (view.getId() != f.getId()) {
+				fors.add(new DateRangeHelper.Range(f));
 			}
-			if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
-				errors.rejectValue("dateDebut", "error.date.chevauchement");
-				errors.rejectValue("dateFin", "error.date.chevauchement");
-			}
+		}
+		if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
+			errors.rejectValue("dateDebut", "error.date.chevauchement");
+			errors.rejectValue("dateFin", "error.date.chevauchement");
 		}
 	}
 }

@@ -29,7 +29,6 @@
 					<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 
 					<form:hidden path="id"/>
-					<form:hidden path="tiersId"/>
 
 					<!-- Debut For -->
 					<table border="0">

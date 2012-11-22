@@ -36,7 +36,13 @@ public class EditForDebiteurView implements EditForView {
 		this.id = fdpi.getId();
 		this.tiersId = fdpi.getTiers().getId();
 		this.dateDebutEditable = fdpi.getDateDebut() == null;
+		if (!this.dateDebutEditable) {
+			this.dateDebut = fdpi.getDateDebut();
+		}
 		this.dateFinEditable = fdpi.getDateFin() == null || fdpi.getDateFin().isAfter(RegDate.get());
+		if (!this.dateFinEditable) {
+			this.dateFin = fdpi.getDateFin();
+		}
 		this.typeAutoriteFiscale = fdpi.getTypeAutoriteFiscale();
 		this.noAutoriteFiscale = fdpi.getNumeroOfsAutoriteFiscale();
 	}
@@ -53,10 +59,6 @@ public class EditForDebiteurView implements EditForView {
 	@Override
 	public long getTiersId() {
 		return tiersId;
-	}
-
-	public void setTiersId(long tiersId) {
-		this.tiersId = tiersId;
 	}
 
 	@Override
@@ -90,16 +92,8 @@ public class EditForDebiteurView implements EditForView {
 		return typeAutoriteFiscale;
 	}
 
-	public void setTypeAutoriteFiscale(TypeAutoriteFiscale typeAutoriteFiscale) {
-		this.typeAutoriteFiscale = typeAutoriteFiscale;
-	}
-
 	@Override
 	public Integer getNoAutoriteFiscale() {
 		return noAutoriteFiscale;
-	}
-
-	public void setNoAutoriteFiscale(Integer noAutoriteFiscale) {
-		this.noAutoriteFiscale = noAutoriteFiscale;
 	}
 }

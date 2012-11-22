@@ -13,10 +13,6 @@
 		<form:form name="formFor" id="formFor">
 
 			<form:hidden path="id"/>
-			<form:hidden path="tiersId"/>
-			<form:hidden path="dateDebut"/>
-			<form:hidden path="typeAutoriteFiscale"/>
-			<form:hidden path="noAutoriteFiscale"/>
 
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal"/></span></legend>
@@ -33,7 +29,6 @@
 								</jsp:include>
 							</c:if>
 							<c:if test="${!command.dateDebutEditable}">
-								<form:hidden path="dateDebutEditable"/>
 								<unireg:regdate regdate="${command.dateDebut}"/>
 							</c:if>
 						</td>
@@ -46,7 +41,6 @@
 								</jsp:include>
 							</c:if>
 							<c:if test="${!command.dateFinEditable}">
-								<form:hidden path="dateFinEditable"/>
 								<unireg:regdate regdate="${command.dateFin}"/>
 							</c:if>
 						</td>
