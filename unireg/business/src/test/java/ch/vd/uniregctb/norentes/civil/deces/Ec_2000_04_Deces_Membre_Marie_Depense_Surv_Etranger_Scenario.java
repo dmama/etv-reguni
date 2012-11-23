@@ -79,7 +79,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 			@Override
 			protected void init() {
 				indHamlet = addIndividu(noIndHamlet, dateNaissanceHamlet, "du Danemark", "Hamlet", true);
-				addOrigine(indHamlet, MockPays.Danemark.getNomMinuscule());
+				addOrigine(indHamlet, MockPays.Danemark.getNomCourt());
 				addNationalite(indHamlet, MockPays.Danemark, dateNaissanceHamlet, null);
 				addAdresse(indHamlet, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateArriveeVD, null);
 
@@ -149,7 +149,7 @@ public class Ec_2000_04_Deces_Membre_Marie_Depense_Surv_Etranger_Scenario extend
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateArriveeVD, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Lausanne");
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Lausanne");
 			assertEquals(ModeImposition.DEPENSE, ffp.getModeImposition(), "Le mode d'imposition n'est pas la dépense");
 
 			// [UNIREG-823] situation de famille

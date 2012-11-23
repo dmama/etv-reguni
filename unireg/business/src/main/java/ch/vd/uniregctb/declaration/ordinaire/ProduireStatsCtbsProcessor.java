@@ -160,7 +160,7 @@ public class ProduireStatsCtbsProcessor {
 			return null;
 		}
 
-		int noOfsCommune = commune.getNoOFSEtendu();
+		int noOfsCommune = commune.getNoOFS();
 		OfficeImpot office = infraService.getOfficeImpotDeCommune(noOfsCommune);
 		if (office == null) {
 			return null;
@@ -178,7 +178,7 @@ public class ProduireStatsCtbsProcessor {
 		final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (forGestion != null) {
-			commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateFin());
+			commune = infraService.getCommuneByNumeroOfs(forGestion.getNoOfsCommune(), forGestion.getDateFin());
 		}
 		return commune;
 	}
@@ -187,7 +187,7 @@ public class ProduireStatsCtbsProcessor {
 		final ForFiscalPrincipal ffp = ctb.getDernierForFiscalPrincipalVaudoisAvant(RegDate.get(annee, 12, 31));
 		Commune commune = null;
 		if (ffp != null) {
-			commune = infraService.getCommuneByNumeroOfsEtendu(ffp.getNumeroOfsAutoriteFiscale(), ffp.getDateFin());
+			commune = infraService.getCommuneByNumeroOfs(ffp.getNumeroOfsAutoriteFiscale(), ffp.getDateFin());
 		}
 		return commune;
 	}

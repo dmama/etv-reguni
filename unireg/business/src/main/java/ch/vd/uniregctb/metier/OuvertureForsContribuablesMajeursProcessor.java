@@ -429,7 +429,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		data.setDomicilieDansLeCanton(estDomicilieDansLeCanton);
-		data.setNumeroOfsAutoriteFiscale(commune == null ? null : commune.getNoOFSEtendu());
+		data.setNumeroOfsAutoriteFiscale(commune == null ? null : commune.getNoOFS());
 	}
 
 	private void fillEtatCivilPermisEtNationalite(PersonnePhysique habitant, final HabitantData data, RegDate dateReference) throws OuvertureForsException {

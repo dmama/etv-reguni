@@ -198,7 +198,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.pays = pays;
 		this.typeAffranchissement = typeAffranchissement;
 		if (!pays.isSuisse()) {
-			addLine(pays.getNomMinuscule());
+			addLine(pays.getNomCourt());
 		}
 	}
 
@@ -206,7 +206,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		this.pays = pays;
 		this.typeAffranchissement = typeAffranchissement;
 		if (!pays.isSuisse()) {
-			addLine(pays.getNomMinuscule(), optionalite);
+			addLine(pays.getNomCourt(), optionalite);
 		}
 	}
 

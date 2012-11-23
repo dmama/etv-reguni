@@ -334,7 +334,7 @@ public class ProduireRolesProcessor {
 	 * @param anneePeriode
 	 *            l'année de la période fiscale considérée.
 	 * @param noOfsCommune
-	 *            le numéro Ofs étendu de la commune à traiter
+	 *            le numéro Ofs de la commune à traiter
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */
 	public ProduireRolesCommunesResults runPourUneCommune(final int anneePeriode, final int noOfsCommune, final int nbThreads, final StatusManager s) throws ServiceException {
@@ -427,7 +427,7 @@ public class ProduireRolesProcessor {
 		try {
 			final List<Commune> communes = infraService.getListeCommunesByOID(oid);
 			for (Commune c : communes) {
-				nosOfsCommunes.add(c.getNoOFSEtendu());
+				nosOfsCommunes.add(c.getNoOFS());
 			}
 		}
 		catch (ServiceInfrastructureException e) {
@@ -781,7 +781,7 @@ public class ProduireRolesProcessor {
 	 * @param rapport rapport à compléter
 	 * @param contribuable contribuable en cours de traitement
 	 * @param anneePeriode année de la période courante
-	 * @param ofsCommune numéro OFS étendu de la commune considérée
+	 * @param ofsCommune numéro OFS de la commune considérée
 	 * @param groupement
 	 * @param typeCtbAnneePrecedente type de contribuable sur la commune à l'époque de la période précédente
 	 * @param ff for fiscal sur la commune qui était ouvert dans la période précédente

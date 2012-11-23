@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service.mock;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -74,8 +75,8 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	}
 
 	@Override
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, RegDate date) throws ServiceInfrastructureException {
-		return target.getCommuneByNumeroOfsEtendu(noCommune, date);
+	public Commune getCommuneByNumeroOfs(int noCommune, RegDate date) throws ServiceInfrastructureException {
+		return target.getCommuneByNumeroOfs(noCommune, date);
 	}
 
 	@Override
@@ -272,6 +273,11 @@ public class ProxyServiceInfrastructureService implements ServiceInfrastructureS
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		return target.getCommuneByLocalite(localite);
+	}
+
+	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		return target.getNoOfs2NoTechniqueMappingForCommunes();
 	}
 
 	@Override

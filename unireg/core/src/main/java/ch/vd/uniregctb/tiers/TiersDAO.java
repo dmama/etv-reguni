@@ -21,7 +21,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param id
 	 *            l'id du tiers
 	 * @param doNotAutoFlush
-	 *            si <b>vrai</b> ne flush pas la session en recherchant le tiers; si <b>faux</b> comportement identique à {@link #get(Long)}
+	 *            si <b>vrai</b> ne flush pas la session en recherchant le tiers; si <b>faux</b> comportement identique à {@link #get(java.io.Serializable)}
 	 * @return le tiers avec l'id spécifié, ou <b>null</b> si le tiers n'existe pas.
 	 */
 	Tiers get(long id, boolean doNotAutoFlush);
@@ -153,7 +153,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * Renvoie le contribuable dont le numero est passe en parametre.
 	 *
-	 * @param numeroIndividu
+	 * @param numeroContribuable
 	 * @return le contribuable dont le numero est passe en parametre.
 	 */
 	Contribuable getContribuableByNumero(Long numeroContribuable);
@@ -200,12 +200,11 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	/**
 	 * Renvoie la collectivité administrative rattachée au numero de collectivité donné.
 	 *
-	 * @param noTechnique
+	 * @param numeroTechnique
 	 *            le numero de la collectivité
 	 * @return le tiers représentant la collectivité administrative correspondant
 	 */
 	CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique);
-
 
 	/**
 	 * Renvoie la collectivité administrative rattachée au numero de district donné.
@@ -213,7 +212,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param numeroDistrict le numéro du district
 	 * @return le tiers représentant la collectivité administrative correspondante
 	 */
-	CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict);
+	CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict);
 
 	/**
 	 * Renvoie la collectivité administrative rattachée au numero de région donné.
@@ -221,7 +220,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	 * @param numeroRegion le numéro du région
 	 * @return le tiers représentant la collectivité administrative correspondante
 	 */
-	CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion);
+	CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion);
 
 
 	CollectiviteAdministrative getCollectiviteAdministrativesByNumeroTechnique(int numeroTechnique, boolean doNotAutoFlush);

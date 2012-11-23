@@ -76,7 +76,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 				addPermis(indBea, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 
-				addOrigine(indMomo, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});
@@ -127,7 +127,7 @@ public class Ec_7000_02_Reconciliation_MarieADeux_Scenario extends EvenementCivi
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNotNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
+					"Le dernier for n'est pas sur " + commune.getNomOfficiel());
 		}
 	}
 

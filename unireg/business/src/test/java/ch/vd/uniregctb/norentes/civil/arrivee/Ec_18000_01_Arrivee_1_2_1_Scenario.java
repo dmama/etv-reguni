@@ -172,13 +172,13 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 		}
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateDepartBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndAlain, dateDepartBex, false).principale.getLocalite(),
 				"l'adresse principale n'est pas à Bex");
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndJanine, dateDepartBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndJanine, dateDepartBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndFanny, dateDepartBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndFanny, dateDepartBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndJulien, dateDepartBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndJulien, dateDepartBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
 	}
 
@@ -236,13 +236,13 @@ public class Ec_18000_01_Arrivee_1_2_1_Scenario extends EvenementCivilScenario {
 		}
 
 		// vérification que les adresses civiles sont a Orbe
-		assertEquals(MockCommune.Orbe.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeOrbe, false).principale.getLocalite(),
+		assertEquals(MockCommune.Orbe.getNomOfficiel(), serviceCivilService.getAdresses(noIndAlain, dateArriveeOrbe, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Orbe");
-		assertEquals(MockCommune.Orbe.getNomMinuscule(), serviceCivilService.getAdresses(noIndJanine, dateArriveeOrbe, false).principale.getLocalite(),
+		assertEquals(MockCommune.Orbe.getNomOfficiel(), serviceCivilService.getAdresses(noIndJanine, dateArriveeOrbe, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Orbe");
-		assertEquals(MockCommune.Orbe.getNomMinuscule(), serviceCivilService.getAdresses(noIndFanny, dateArriveeOrbe, false).principale.getLocalite(),
+		assertEquals(MockCommune.Orbe.getNomOfficiel(), serviceCivilService.getAdresses(noIndFanny, dateArriveeOrbe, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Orbe");
-		assertEquals(MockCommune.Orbe.getNomMinuscule(), serviceCivilService.getAdresses(noIndJulien, dateArriveeOrbe, false).principale.getLocalite(),
+		assertEquals(MockCommune.Orbe.getNomOfficiel(), serviceCivilService.getAdresses(noIndJulien, dateArriveeOrbe, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Orbe");
 	}
 

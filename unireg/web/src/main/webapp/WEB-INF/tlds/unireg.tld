@@ -178,7 +178,7 @@
 			<name>entityPropertyName</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>la propriété de l'entité à afficher (nomMinuscule/dateDebutValidite/...)</description>
+			<description>la propriété de l'entité à afficher (nomCourt/dateDebutValidite/...)</description>
 		</attribute>
 		<attribute>
 			<name>entityPropertyTitle</name>
@@ -197,7 +197,7 @@
 			<name>ofs</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<description>le numéro OFS (étendu) de la commune</description>
+			<description>le numéro OFS de la commune</description>
 		</attribute>
 		<attribute>
 			<name>date</name>

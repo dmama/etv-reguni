@@ -1,7 +1,9 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -12,10 +14,12 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -243,6 +247,29 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final Map<Integer, Integer> map = target.getNoOfs2NoTechniqueMappingForCommunes();
+			items = map == null ? 0 : map.size();
+			return map;
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getNoOfs2NoTechniqueMappingForCommunes", items, null);
+		}
+	}
+
+	@Override
 	public List<Commune> getListeCommunes(final Canton canton) throws ServiceInfrastructureException {
 		Throwable t = null;
 		int items = 0;
@@ -438,7 +465,7 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 	}
 
 	@Override
-	public Pays getPays(final String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull final String codePays) throws ServiceInfrastructureException {
 		Throwable t = null;
 		final long time = tracing.start();
 		try {
@@ -801,6 +828,56 @@ public class ServiceInfrastructureTracing implements ServiceInfrastructureRaw, I
 		}
 		finally {
 			tracing.end(time, t, "getTousLesLogiciels", items, null);
+		}
+	}
+
+	@Override
+	public District getDistrict(final int code) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getDistrict(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getDistrict", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d", code);
+				}
+			});
+		}
+	}
+
+	@Override
+	public Region getRegion(final int code) {
+		Throwable t = null;
+		final long time = tracing.start();
+		try {
+			return target.getRegion(code);
+		}
+		catch (ServiceInfrastructureException e) {
+			t = e;
+			throw e;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getRegion", new Object() {
+				@Override
+				public String toString() {
+					return String.format("id=%d", code);
+				}
+			});
 		}
 	}
 }

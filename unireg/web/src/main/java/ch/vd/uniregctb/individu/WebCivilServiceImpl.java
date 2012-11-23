@@ -176,7 +176,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 	private void traiteNationalite(Individu individu, IndividuView indCible) {
 		final Nationalite nationalite = individu.getDerniereNationalite();
 		if (nationalite != null) {
-			indCible.setNationalite(nationalite.getPays().getNomMinuscule());
+			indCible.setNationalite(nationalite.getPays().getNomCourt());
 		}
 	}
 

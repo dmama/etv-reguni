@@ -1,6 +1,9 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -9,10 +12,12 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -62,7 +67,7 @@ public interface ServiceInfrastructureRaw {
 	 * @return le pays avec le code pays spécifié; ou <b>null</b> si aucun pays ne corresponds.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Pays getPays(String codePays) throws ServiceInfrastructureException;
+	Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro technique de la collectivité
@@ -97,6 +102,12 @@ public interface ServiceInfrastructureRaw {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	List<Commune> getCommunes() throws ServiceInfrastructureException;
+
+	/**
+	 * @return le mapping entre le numéro OFS et l'ancien numéro technique du Host pour les communes suisses (uniquement pour les communes dont le numéro technique est différent du numéro OFS).
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException;
 
 	/**
 	 * @return toutes les localités de Suisse
@@ -135,7 +146,7 @@ public interface ServiceInfrastructureRaw {
 	Rue getRueByNumero(int numero) throws ServiceInfrastructureException;
 
 	/**
-	 * Retourne l'historique d'une commune à partir de son numéro OFS étendu donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.
+	 * Retourne l'historique d'une commune à partir de son numéro OFS donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.
 	 *
 	 * @param noOfsCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
 	 * @return une liste avec 0, 1 ou 2 (cas exceptionnel) communes.
@@ -246,7 +257,7 @@ public interface ServiceInfrastructureRaw {
 	 *
 	 * @param application l'application considérée
 	 * @param tiersId     le numéro de tiers
-	 * @param oid
+	 * @param oid         l'office d'impôt
 	 * @return une chaîne de caractère qui contient l'url demandée
 	 */
 	String getUrlVers(ApplicationFiscale application, Long tiersId, Integer oid);
@@ -265,4 +276,16 @@ public interface ServiceInfrastructureRaw {
 	 * @throws ServiceInfrastructureException en cas de problème
 	 */
 	List<Logiciel> getTousLesLogiciels();
+
+	/**
+	 * @param code un code de district
+	 * @return un district ou <b>null</b> si le code passé ne correspond à aucun district.
+	 */
+	District getDistrict(int code);
+
+	/**
+	 * @param code un code de région
+	 * @return une région ou <b>null</b> si le code passé ne correspond à aucune région.
+	 */
+	Region getRegion(int code);
 }

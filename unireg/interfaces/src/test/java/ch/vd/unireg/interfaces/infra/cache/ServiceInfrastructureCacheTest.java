@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import net.sf.ehcache.CacheManager;
 import org.apache.commons.lang.mutable.MutableInt;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.util.ResourceUtils;
@@ -27,6 +29,7 @@ import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -59,7 +62,7 @@ public class ServiceInfrastructureCacheTest {
 		final List<Commune> list = cache.getCommuneHistoByNumeroOfs(1);
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertEquals(1, list.get(0).getNoOFSEtendu());
+		assertEquals(1, list.get(0).getNoOFS());
 	}
 
 	private static final int ITERATIONS = 2; // à augmenter pour stresser plus le cache si nécessaire
@@ -156,7 +159,7 @@ public class ServiceInfrastructureCacheTest {
 		for (int k = 0; k < results1.size(); k++) {
 			final Commune commune1 = results1.get(k);
 			final Commune commune2 = results2.get(k);
-			assertEquals(commune1.getNoOFSEtendu(), commune2.getNoOFSEtendu());
+			assertEquals(commune1.getNoOFS(), commune2.getNoOFS());
 			assertEquals(commune1.hashCode(), commune2.hashCode());
 		}
 	}
@@ -185,7 +188,7 @@ public class ServiceInfrastructureCacheTest {
 				assertEquals(1, list.size());
 
 				final Commune commune = list.get(0);
-				assertEquals(noOfs.intValue(), commune.getNoOFSEtendu());
+				assertEquals(noOfs.intValue(), commune.getNoOFS());
 				results.add(commune);
 			}
 
@@ -210,7 +213,7 @@ public class ServiceInfrastructureCacheTest {
 				assertEquals(1, list.size());
 
 				final Commune commune = list.get(0);
-				assertEquals(noOfs.intValue(), commune.getNoOFSEtendu());
+				assertEquals(noOfs.intValue(), commune.getNoOFS());
 				results.add(commune);
 			}
 		}
@@ -239,7 +242,7 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public Pays getPays(String codePays) throws ServiceInfrastructureException {
+		public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
 
@@ -265,6 +268,11 @@ public class ServiceInfrastructureCacheTest {
 
 		@Override
 		public List<Commune> getCommunes() throws ServiceInfrastructureException {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
 			throw new NotImplementedException();
 		}
 
@@ -382,6 +390,15 @@ public class ServiceInfrastructureCacheTest {
 			throw new NotImplementedException();
 		}
 
+		@Override
+		public District getDistrict(int code) {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public Region getRegion(int code) {
+			throw new NotImplementedException();
+		}
 	}
 
 	private static class TestCommune implements Commune {
@@ -402,18 +419,8 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public int getNoOFSEtendu() {
-			return noOfsCommune;
-		}
-
-		@Override
-		public int getNumTechMere() {
+		public int getOfsCommuneMere() {
 			return 0;
-		}
-
-		@Override
-		public int getNumeroTechnique() {
-			return noOfsCommune;
 		}
 
 		@Override
@@ -437,17 +444,22 @@ public class ServiceInfrastructureCacheTest {
 		}
 
 		@Override
-		public District getDistrict() {
+		public Integer getCodeDistrict() {
 			throw new NotImplementedException();
 		}
 
 		@Override
-		public String getNomMajuscule() {
+		public Integer getCodeRegion() {
 			throw new NotImplementedException();
 		}
 
 		@Override
-		public String getNomMinuscule() {
+		public String getNomCourt() {
+			throw new NotImplementedException();
+		}
+
+		@Override
+		public String getNomOfficiel() {
 			throw new NotImplementedException();
 		}
 
@@ -465,7 +477,7 @@ public class ServiceInfrastructureCacheTest {
 	private static class TestCommuneComparator implements Comparator<Commune> {
 		@Override
 		public int compare(Commune o1, Commune o2) {
-			return o1.getNoOFSEtendu() - o2.getNoOFSEtendu();
+			return o1.getNoOFS() - o2.getNoOFS();
 		}
 	}
 }

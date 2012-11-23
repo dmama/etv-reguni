@@ -78,14 +78,14 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 				marieIndividus(indMomo, indBea, dateMariage);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RouteDeStPrex, null, dateArriveeVillars, avantDateMariage);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateMariage, dateDivorce.getOneDayBefore());
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Bussigny.RueDeLIndustrie, null, dateDivorce, null);
 
-				addOrigine(indBea, MockCommune.Lausanne.getNomMinuscule());
+				addOrigine(indBea, MockCommune.Lausanne.getNomOfficiel());
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indBea, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.CheminDeMornex, null, dateNaissanceBea, null);
 			}
@@ -150,7 +150,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
+			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur Villars-sous-Yens");
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -158,7 +158,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 
 	@Etape(id=2, descr="Envoi de l'événement de Divorce")
 	public void etape2() throws Exception {
-		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndBea, dateDivorce, communeDivorce.getNoOFSEtendu());
+		long id = addEvenementCivil(TypeEvenementCivil.DIVORCE, noIndBea, dateDivorce, communeDivorce.getNoOFS());
 		commitAndStartTransaction();
 
 		traiteEvenements(id);
@@ -174,7 +174,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertNotNull(ffp.getDateFin(), "Le for sur Lausanne est ouvert");
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture(),
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
@@ -187,7 +187,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(),
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
-			assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(MockCommune.Bussigny.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
@@ -200,7 +200,7 @@ public class Ec_8000_01_Divorce_MarieAvecSuisseOuEtrangerPermisC_Scenario extend
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(),
 					"Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 

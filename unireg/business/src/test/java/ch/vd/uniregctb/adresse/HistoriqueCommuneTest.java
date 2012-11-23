@@ -30,7 +30,7 @@ public class HistoriqueCommuneTest extends WithoutSpringTest {
 			final HistoriqueCommune collation = (HistoriqueCommune) avant.collate(apres);
 			Assert.assertEquals(avant.getDateDebut(), collation.getDateDebut());
 			Assert.assertNull(collation.getDateFin());
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), collation.getCommune().getNoOFSEtendu());
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), collation.getCommune().getNoOFS());
 		}
 
 		// communes nulles, dates matchent -> collatable

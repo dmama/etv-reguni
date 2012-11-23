@@ -33,7 +33,8 @@
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
-		<property name="fidorClient" ref="fidorClient" />
+		<property name="fidorClientv2" ref="fidorClientv2" />
+		<property name="fidorClientv5" ref="fidorClientv5" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 

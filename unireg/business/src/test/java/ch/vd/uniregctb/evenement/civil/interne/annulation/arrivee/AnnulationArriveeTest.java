@@ -28,7 +28,7 @@ import ch.vd.uniregctb.type.MotifFor;
 public class AnnulationArriveeTest extends AbstractEvenementCivilInterneTest {
 
 	private AnnulationArrivee createValideAnnulationArrivee(Individu individu) {
-		return new AnnulationArrivee(individu, null, RegDate.get(), MockCommune.Lausanne.getNoOFSEtendu(), context);
+		return new AnnulationArrivee(individu, null, RegDate.get(), MockCommune.Lausanne.getNoOFS(), context);
 	}
 
 	private static enum ErrorLocation {

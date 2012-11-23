@@ -75,7 +75,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour seul for HC -> ok
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFS());
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(0, errors.getFieldErrorCount());
@@ -84,7 +84,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour seul for VD -> nok
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(1, errors.getFieldErrorCount());
@@ -121,7 +121,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour for HC qui n'est pas le premier -> nok
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFS());
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(1, errors.getFieldErrorCount());
@@ -134,7 +134,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour for VD qui n'est pas le premier -> nok
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			final Errors errors = validate(view);
 			assertNotNull(errors);
 			assertEquals(1, errors.getFieldErrorCount());
@@ -159,7 +159,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour for HC qui est le premier -> ok (c'est ici la validation globale sur le tiers qui échouera si le cas se présente...)
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Bale.getNoOFS());
 			view.setDateDebut(date(1990, 1, 1));
 			view.setDateFin(date(1990, 12, 31));
 			view.setMotifFin(MotifFor.DEPART_HC);
@@ -171,7 +171,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		// motif d'ouverture absent pour for VD qui est le premier -> nok
 		{
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			view.setDateDebut(date(1990, 1, 1));
 			view.setDateFin(date(1990, 12, 31));
 			view.setMotifFin(MotifFor.DEPART_HC);
@@ -208,7 +208,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		{
 			view.setMotifFin(null);
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			view.setNoAutoriteFiscale(MockCommune.Aigle.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Aigle.getNoOFS());
 			final Errors validationManquee = validate(view);
 			Assert.assertNotNull(validationManquee);
 			Assert.assertEquals(1, validationManquee.getErrorCount());
@@ -227,7 +227,7 @@ public class AddForPrincipalValidatorTest extends WebTestSpring3 {
 		{
 			view.setMotifFin(null);
 			view.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-			view.setNoAutoriteFiscale(MockCommune.Bern.getNoOFSEtendu());
+			view.setNoAutoriteFiscale(MockCommune.Bern.getNoOFS());
 			final Errors validationManquee = validate(view);
 			Assert.assertNotNull(validationManquee);
 			Assert.assertEquals(1, validationManquee.getErrorCount());

@@ -359,7 +359,7 @@ public class ForFiscal implements Range {
 	public TypeAutoriteFiscale typeAutoriteFiscale;
 
 	/**
-	 * Numéro OFS étendu de la commune, du canton ou du pays de l'autorité fiscale du fors
+	 * Numéro OFS de la commune, du canton ou du pays de l'autorité fiscale du fors
 	 * <p/>
 	 * <b>Dans la version 3 du web-service :</b> <i>taxationAuthorityFSOId</i>
 	 */

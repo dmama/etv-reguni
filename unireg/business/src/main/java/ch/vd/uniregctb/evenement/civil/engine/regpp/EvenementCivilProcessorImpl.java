@@ -218,7 +218,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 		if (numeroOFS != 0) {
 			Commune c;
 			try {
-				c = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOFS, event.getDateEvenement());
+				c = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOFS, event.getDateEvenement());
 			}
 			catch (ServiceInfrastructureException e) {
 				LOGGER.error(e, e);

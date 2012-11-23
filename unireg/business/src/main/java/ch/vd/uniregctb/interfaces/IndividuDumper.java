@@ -231,8 +231,8 @@ public abstract class IndividuDumper {
 			s.append(tab(depth + 1)).append("codeIso3=").append(dumpString(pays.getCodeIso3())).append(", \n");
 		}
 		s.append(tab(depth + 1)).append("noOfs=").append(pays.getNoOFS()).append(", \n");
-		s.append(tab(depth + 1)).append("nomMajuscule=").append(dumpString(pays.getNomMajuscule())).append(", \n");
-		s.append(tab(depth + 1)).append("nomMinuscule=").append(dumpString(pays.getNomMinuscule())).append(", \n");
+		s.append(tab(depth + 1)).append("nomCourt=").append(dumpString(pays.getNomCourt())).append(", \n");
+		s.append(tab(depth + 1)).append("nomOfficiel=").append(dumpString(pays.getNomOfficiel())).append(", \n");
 		s.append(tab(depth + 1)).append("sigleOfs=").append(dumpString(pays.getSigleOFS())).append(", \n");
 		s.append(tab(depth)).append("}");
 
@@ -367,7 +367,7 @@ public abstract class IndividuDumper {
 			return true;
 		}
 		if (infraService != null) {
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(adresse.getNoOfsCommuneAdresse(), adresse.getDateDebut());
+			final Commune commune = infraService.getCommuneByNumeroOfs(adresse.getNoOfsCommuneAdresse(), adresse.getDateDebut());
 			if (commune != null && !"VD".equals(commune.getSigleCanton())) {
 				return true;
 			}

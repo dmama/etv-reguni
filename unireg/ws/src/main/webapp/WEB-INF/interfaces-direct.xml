@@ -43,8 +43,14 @@
 
 	<!-- Client fidor -->
 
-	<bean id="fidorClient" class="ch.vd.uniregctb.webservice.fidor.FidorClientImpl">
-		<property name="serviceUrl" value="${extprop.webservice.fidor.url}" />
+	<bean id="fidorClientv2" class="ch.vd.uniregctb.webservice.fidor.v2.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.v2.url}" />
+		<property name="username" value="${extprop.webservice.fidor.username}" />
+		<property name="password" value="${extprop.webservice.fidor.password}" />
+	</bean>
+
+	<bean id="fidorClientv5" class="ch.vd.uniregctb.webservice.fidor.v5.FidorClientImpl">
+		<property name="serviceUrl" value="${extprop.webservice.fidor.v5.url}" />
 		<property name="username" value="${extprop.webservice.fidor.username}" />
 		<property name="password" value="${extprop.webservice.fidor.password}" />
 	</bean>
@@ -57,7 +63,8 @@
 	</bean>
 
 	<bean id="serviceInfrastructureFidor" class="ch.vd.unireg.interfaces.infra.fidor.ServiceInfrastructureFidor">
-		<property name="fidorClient" ref="fidorClient" />
+		<property name="fidorClientv2" ref="fidorClientv2" />
+		<property name="fidorClientv5" ref="fidorClientv5" />
 		<property name="uniregCacheManager" ref="uniregCacheManager" />
 	</bean>
 

@@ -313,7 +313,7 @@ public abstract class Depart extends Mouvement {
 			// de départ
 			if (commune != null) {
 				if ((!commune.isFraction() && commune.getNoOFS() != getNumeroOfsEntiteForAnnonce()) ||
-						(commune.isFraction() && commune.getNumTechMere() != getNumeroOfsEntiteForAnnonce())) {
+						(commune.isFraction() && commune.getOfsCommuneMere() != getNumeroOfsEntiteForAnnonce())) {
 					erreurs.addErreur("La commune d'annonce est differente de la dernière commune de résidence");
 				}
 			}
@@ -400,7 +400,7 @@ public abstract class Depart extends Mouvement {
 
 		if (localisation != null && localisation.getType() != LocalisationType.HORS_SUISSE && localisation.getNoOfs() != null) {
 			try {
-				nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), lendemain);
+				nouvelleCommune = context.getServiceInfra().getCommuneByNumeroOfs(localisation.getNoOfs(), lendemain);
 			}
 			catch (ServiceInfrastructureException e) {
 				throw new EvenementCivilException(e);

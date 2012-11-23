@@ -2,11 +2,13 @@ package ch.vd.unireg.interfaces.infra.cache;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -20,10 +22,12 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -444,6 +448,12 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		return resultat;
 	}
 
+	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		// on ne cache pas cette information
+		return target.getNoOfs2NoTechniqueMappingForCommunes();
+	}
+
 	private static class KeyGetListeCommunes {
 		final int noOfsCanton;
 
@@ -766,9 +776,10 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 
 	private static class KeyGetPaysByCodeIso {
 
+		@NotNull
 		private final String codePays;
 
-		private KeyGetPaysByCodeIso(String codePays) {
+		private KeyGetPaysByCodeIso(@NotNull String codePays) {
 			this.codePays = codePays;
 		}
 
@@ -778,43 +789,24 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 			if (o == null || getClass() != o.getClass()) return false;
 
 			final KeyGetPaysByCodeIso that = (KeyGetPaysByCodeIso) o;
-
-			if (codePays != null ? !codePays.equals(that.codePays) : that.codePays != null) return false;
-
-			return true;
+			return codePays.equals(that.codePays);
 		}
 
 		@Override
 		public int hashCode() {
-			return codePays != null ? codePays.hashCode() : 0;
+			return codePays.hashCode();
 		}
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 		final Pays resultat;
 
 		final KeyGetPaysByCodeIso key = new KeyGetPaysByCodeIso(codePays);
 		final Element element = cache.get(key);
 		if (element == null) {
-			// (msi, 05.06.2012) optim : Fidor ne supporte pas de récupérer un pays par son code iso : la méthode ServiceInfrastructureFidor#getPays(String) va donc chercher tous les pays et
-			// retourne celui qui corresponds au code iso, ce qui est horriblement inefficace. Par mesure d'optimisation, on charge tous les pays ici-même et on les stocke tous explicitement
-			// dans le cache avant de retourner celui demandé. De cette manière, tous les appels subséquents tomberont dans le cache.
-			Pays res = null;
-			final List<Pays> pays = getPays();
-			if (pays != null) {
-				for (Pays p : pays) {
-					final String c = p.getCodeIso2();
-					if (res == null && codePays.equals(c)) {
-						res = p;
-					}
-					cache.put(new Element(new KeyGetPaysByCodeIso(c), p));
-				}
-			}
-			if (res == null) { // le pays n'est pas trouvé, on cache aussi cette information
-				cache.put(new Element(new KeyGetPaysByCodeIso(codePays), null));
-			}
-			resultat = res;
+			resultat = target.getPays(codePays);
+			cache.put(new Element(key, resultat));
 		}
 		else {
 			resultat = (Pays) element.getObjectValue();
@@ -1315,6 +1307,88 @@ public class ServiceInfrastructureCache implements ServiceInfrastructureRaw, Uni
 		}
 		else {
 			resultat = (List<Logiciel>) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetDistrict {
+
+		private final int code;
+
+		private KeyGetDistrict(int code) {
+			this.code = code;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetDistrict that = (KeyGetDistrict) o;
+			return code == that.code;
+
+		}
+
+		@Override
+		public int hashCode() {
+			return code;
+		}
+	}
+
+	@Override
+	public District getDistrict(int code) {
+		final District resultat;
+
+		final KeyGetDistrict key = new KeyGetDistrict(code);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getDistrict(code);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (District) element.getObjectValue();
+		}
+
+		return resultat;
+	}
+
+	private static class KeyGetRegion {
+
+		private final int code;
+
+		private KeyGetRegion(int code) {
+			this.code = code;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			final KeyGetRegion that = (KeyGetRegion) o;
+			return code == that.code;
+
+		}
+
+		@Override
+		public int hashCode() {
+			return code;
+		}
+	}
+
+	@Override
+	public Region getRegion(int code) {
+		final Region resultat;
+
+		final KeyGetRegion key = new KeyGetRegion(code);
+		final Element element = cache.get(key);
+		if (element == null) {
+			resultat = target.getRegion(code);
+			cache.put(new Element(key, resultat));
+		}
+		else {
+			resultat = (Region) element.getObjectValue();
 		}
 
 		return resultat;

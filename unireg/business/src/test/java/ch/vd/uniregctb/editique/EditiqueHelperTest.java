@@ -151,7 +151,7 @@ public class EditiqueHelperTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Albertine", "Zweisteinen", date(1956, 3, 12), Sexe.FEMININ);
 				addForPrincipal(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bale);
-				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateAchatImmeuble, MotifFor.ACHAT_IMMOBILIER, dateVenteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale periode = addPeriodeFiscale(pf);
@@ -171,7 +171,7 @@ public class EditiqueHelperTest extends BusinessTest {
 				assertNotNull(di);
 				try {
 					final String commune = editiqueHelper.getCommune(di);
-					assertEquals(MockCommune.Cossonay.getNomMinuscule(), commune);
+					assertEquals(MockCommune.Cossonay.getNomCourt(), commune);
 				}
 				catch (EditiqueException e) {
 					throw new RuntimeException(e);

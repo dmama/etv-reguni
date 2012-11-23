@@ -724,13 +724,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertFalse(forFerme.isAnnule());
 				assertEquals(dateDebut, forFerme.getDateDebut());
 				assertEquals(dateDepart, forFerme.getDateFin());
-				assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) forFerme.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Bex.getNoOFS(), (int) forFerme.getNumeroOfsAutoriteFiscale());
 
 				final ForDebiteurPrestationImposable forOuvert = dpi.getForDebiteurPrestationImposableAt(null);
 				assertNotNull(forOuvert);
 				assertFalse(forOuvert.isAnnule());
 				assertEquals(dateOuvertureNouveauFor, forOuvert.getDateDebut());
-				assertEquals(MockCommune.Vevey.getNoOFSEtendu(), (int) forOuvert.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Vevey.getNoOFS(), (int) forOuvert.getNumeroOfsAutoriteFiscale());
 
 				final Set<RapportEntreTiers> rapports = dpi.getRapportsObjet();
 				assertNotNull(rapports);

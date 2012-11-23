@@ -84,24 +84,24 @@ public class JspTagLocalisation extends BodyTagSupport {
 		switch (localisation.getType()) {
 		case CANTON_VD:
 			if (showVD) {
-				final Commune commune = service.getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), null);
+				final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), null);
 				if (commune == null) {
 					return "Commune vaudoise inconnue";
 				}
 				else {
-					return commune.getNomMinuscule();
+					return commune.getNomOfficiel();
 				}
 			}
 			else {
 				return "";
 			}
 		case HORS_CANTON: {
-			final Commune commune = service.getCommuneByNumeroOfsEtendu(localisation.getNoOfs(), null);
+			final Commune commune = service.getCommuneByNumeroOfs(localisation.getNoOfs(), null);
 			if (commune == null) {
 				return "Commune hors-canton inconnue";
 			}
 			else {
-				return commune.getNomMinuscule() + " (" + commune.getSigleCanton() + ")";
+				return commune.getNomOfficiel() + " (" + commune.getSigleCanton() + ")";
 			}
 		}
 		case HORS_SUISSE: {
@@ -118,7 +118,7 @@ public class JspTagLocalisation extends BodyTagSupport {
 			return "Pays inconnu";
 		}
 		else {
-			return pays.getNomMinuscule();
+			return pays.getNomCourt();
 		}
 	}
 

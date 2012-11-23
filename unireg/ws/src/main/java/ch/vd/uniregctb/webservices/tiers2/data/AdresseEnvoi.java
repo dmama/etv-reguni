@@ -213,7 +213,7 @@ public class AdresseEnvoi {
 		this.casePostale = adresse.getCasePostale() == null ? null : adresse.getCasePostale().toString();
 		this.npaLocalite = adresse.getNpaEtLocalite() == null ? null : adresse.getNpaEtLocalite().toString();
 		final Pays pays = adresse.getPays();
-		this.pays = (pays == null || pays.isSuisse() ? null : pays.getNomMinuscule());
+		this.pays = (pays == null || pays.isSuisse() ? null : pays.getNomCourt());
 		this.typeAffranchissement = EnumHelper.coreToWeb(adresse.getTypeAffranchissement());
 	}
 }

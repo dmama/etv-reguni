@@ -83,7 +83,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, null, noEvt2, new AddressBuilder() {
 			           @Override
@@ -103,7 +103,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			@Override
@@ -122,7 +122,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -148,8 +148,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2005, 1, 20), date(2011, 5, 4));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
-		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFSEtendu(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
+		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFS(), null);
 		final Localisation suivante2 = null;    // on ne quitte pas la commune ici
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
@@ -178,8 +178,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2005, 1, 20), date(2011, 5, 4));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
-		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFSEtendu(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
+		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.ChateauDoex.getNoOFS(), null);
 		final Localisation suivante2 = null;    // on ne quitte pas la commune ici
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
@@ -209,7 +209,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid2 = MockBatiment.Epesses.BatimentChDuMont.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -236,7 +236,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid2 = MockBatiment.Villette.BatimentCheminDesGranges.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -262,7 +262,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -288,7 +288,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -315,7 +315,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2000, 4, 12), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -342,7 +342,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 2, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -369,7 +369,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Albanie.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -396,7 +396,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -423,7 +423,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Echallens.getNoOFS(), null);
 		final Localisation precedente2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.CheseauxSurLausanne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -476,8 +476,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFSEtendu(), null);
-		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bale.getNoOFS(), null);
+		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -503,8 +503,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
-		final Localisation suivante2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Bex.getNoOFSEtendu(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
+		final Localisation suivante2 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Bex.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -530,8 +530,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente1 = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation precedente2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -557,8 +557,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
-		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
+		final Localisation suivante1 = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
+		final Localisation suivante2 = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -583,8 +583,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
-		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -609,8 +609,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
-		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -635,8 +635,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
-		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -661,8 +661,8 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final long noEvt2 = 43757536526L;
 		final int egid = MockBatiment.Villette.BatimentRouteDeLausanne.getEgid();
 		final DateRange range = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
-		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation precedente = new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override
@@ -688,7 +688,7 @@ public abstract class AbstractAdresseResidenceComparisonStrategyTest extends Abs
 		final DateRange range1 = new DateRangeHelper.Range(date(2000, 4, 1), date(2005, 1, 19));
 		final DateRange range2 = new DateRangeHelper.Range(date(2001, 4, 1), date(2006, 1, 19));
 		final Localisation precedente = new Localisation(LocalisationType.HORS_SUISSE, MockPays.Allemagne.getNoOFS(), null);
-		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null);
+		final Localisation suivante = new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null);
 
 		setupCivil(noIndividu, noEvt1, new AddressBuilder() {
 			           @Override

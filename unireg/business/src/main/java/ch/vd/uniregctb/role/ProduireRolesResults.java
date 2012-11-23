@@ -450,7 +450,7 @@ public abstract class ProduireRolesResults extends JobResults<Long, ProduireRole
 		 * @param dateFermeture date de fermeture du for déterminant (ne devrait pas être nulle)
 		 * @param motifFermeture motif de fermeture du for déterminant (ne devrait pas être nul)
 		 * @param ancienTypeCtb type du contribuable dans la période fiscale précédente (il est maintenant non-assujetti)
-		 * @param ofsCommune numéro OFS étendu de la commune du for (vaudois!)
+		 * @param ofsCommune numéro OFS de la commune du for (vaudois!)
 		 */
 		public InfoFor(RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture, TypeContribuable ancienTypeCtb, boolean forPrincipal,
 		               MotifRattachement motifRattachement, int ofsCommune) {

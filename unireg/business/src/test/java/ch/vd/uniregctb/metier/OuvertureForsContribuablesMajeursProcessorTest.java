@@ -158,7 +158,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertNull(fp.getDateFin());
 		assertEquals(ModeImposition.ORDINAIRE, fp.getModeImposition());
 		assertEquals(MotifRattachement.DOMICILE, fp.getMotifRattachement());
-		assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), fp.getNumeroOfsAutoriteFiscale().intValue());
+		assertEquals(MockCommune.Lausanne.getNoOFS(), fp.getNumeroOfsAutoriteFiscale().intValue());
 	}
 
 
@@ -269,7 +269,7 @@ public class OuvertureForsContribuablesMajeursProcessorTest extends BusinessTest
 		assertNull(fp.getDateFin());
 		assertEquals(MotifRattachement.DOMICILE, fp.getMotifRattachement());
 		assertEquals(ModeImposition.SOURCE, fp.getModeImposition());
-		assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), fp.getNumeroOfsAutoriteFiscale().intValue());
+		assertEquals(MockCommune.Lausanne.getNoOFS(), fp.getNumeroOfsAutoriteFiscale().intValue());
 	}
 
 	/**

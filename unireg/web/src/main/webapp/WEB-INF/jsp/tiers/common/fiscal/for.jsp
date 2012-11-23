@@ -44,14 +44,14 @@
 	<display:column sortable ="true" titleKey="label.for.abrege">
 			<c:choose>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">			
-					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'COMMUNE_HC' }">
-					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+					<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 					(<unireg:commune ofs="${forFiscal.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${forFiscal.regDateOuverture}"/>)
 				</c:when>
 				<c:when test="${forFiscal.typeAutoriteFiscale == 'PAYS_HS' }">
-					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule" entityPropertyTitle="noOFS"></unireg:infra>
+					<unireg:infra entityId="${forFiscal.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomCourt" entityPropertyTitle="noOFS"></unireg:infra>
 				</c:when>
 			</c:choose>
 	</display:column>

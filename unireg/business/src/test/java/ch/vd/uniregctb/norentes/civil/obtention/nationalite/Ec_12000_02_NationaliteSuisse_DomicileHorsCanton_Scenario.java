@@ -77,7 +77,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 				super.init();
 
 				indJulie = getIndividu(noIndJulie);
-				addOrigine(indJulie, MockPays.France.getNomMinuscule());
+				addOrigine(indJulie, MockPays.France.getNomCourt());
 				addNationalite(indJulie, MockPays.France, dateNaissance, null);
 				addNationalite(indJulie, MockPays.Suisse, dateObtentionNationalite, null);
 				addPermis(indJulie, TypePermis.SEJOUR, dateObtentionPermis, dateObtentionNationalite.getOneDayBefore(), false);
@@ -103,7 +103,7 @@ public class Ec_12000_02_NationaliteSuisse_DomicileHorsCanton_Scenario extends E
 		assertEquals(0, ff.size(), "Il ne devrait pas y avoir de for fiscal");
 
 		final AdresseGenerique adresseDomicile = adresseService.getAdresseFiscale(julie, TypeAdresseFiscale.DOMICILE, null, false);
-		assertEquals(MockCommune.Neuchatel.getNoOFSEtendu(), adresseDomicile.getNoOfsCommuneAdresse(), "L'adresse de domicile devrait être à Neuchâtel");
+		assertEquals(MockCommune.Neuchatel.getNoOFS(), adresseDomicile.getNoOfsCommuneAdresse(), "L'adresse de domicile devrait être à Neuchâtel");
 	}
 
 	@Etape(id=2, descr="Envoi de l'événement Obtention de Nationalité Suisse")

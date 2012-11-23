@@ -62,11 +62,11 @@
 		<display:column sortable="true" titleKey="label.commune.pays">
 			<c:choose>
 				<c:when test="${sieges.type == 'COMMUNE_CH' }">
-					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomMinuscule" date="${sieges.dateFin}"/>
+					<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="nomOfficiel" date="${sieges.dateFin}"/>
 					(<unireg:commune ofs="${sieges.noOfsSiege}" displayProperty="sigleCanton" date="${sieges.dateFin}"/>)
 				</c:when>
 				<c:when test="${sieges.type == 'PAYS_HS' }">
-					<unireg:infra entityId="${sieges.noOfsSiege}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+					<unireg:infra entityId="${sieges.noOfsSiege}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 				</c:when>
 			</c:choose>
 		</display:column>

@@ -138,7 +138,7 @@ public class ForFiscalViewValidatorTest extends WebTest {
 		view.setNumeroCtb(noCtb);
 		view.setNatureTiers(NatureTiers.Habitant);
 		view.setModeImposition(ModeImposition.ORDINAIRE);
-		view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu());
+		view.setTypeEtNumeroForFiscal(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS());
 		view.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		view.setMotifRattachement(MotifRattachement.DOMICILE);
 

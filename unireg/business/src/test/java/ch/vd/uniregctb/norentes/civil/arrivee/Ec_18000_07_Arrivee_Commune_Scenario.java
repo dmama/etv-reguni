@@ -83,10 +83,10 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		ForFiscalPrincipal ffp = adrienne.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'Habitant " + adrienne.getNumero() + " null");
 		assertNull(ffp.getDateFin(), "Date de fin du dernier for d'Adrienne fausse");
-		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for principal n'est pas sur " + communeDepart.getNomMinuscule());
+		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for principal n'est pas sur " + communeDepart.getNomOfficiel());
 		// vérification que les adresses civiles sont sur Orbe
-		assertEquals(communeDepart.getNomMinuscule(), serviceCivilService.getAdresses(noIndAdrienne, null, false).principale.getLocalite(),
-			"L'adresse principale n'est pas sur " + communeDepart.getNomMinuscule());
+		assertEquals(communeDepart.getNomOfficiel(), serviceCivilService.getAdresses(noIndAdrienne, null, false).principale.getLocalite(),
+			"L'adresse principale n'est pas sur " + communeDepart.getNomOfficiel());
 	}
 
 	private void addNouvelleAdresse(MockIndividu individu) {
@@ -112,9 +112,9 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 		ForFiscalPrincipal ffp = adrienne.getDernierForFiscalPrincipal();
 		assertNotNull(ffp, "For principal de l'Habitant " + adrienne.getNumero() + " null");
 		assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "le for principal n'est pas sur " + communeDepart.getNomMinuscule());
-		assertEquals(communeArrivee.getNomMinuscule(), serviceCivilService.getAdresses(noIndAdrienne, null, false).principale.getLocalite(),
-				"L'adresse principale n'est pas sur " + communeArrivee.getNomMinuscule());
+		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "le for principal n'est pas sur " + communeDepart.getNomOfficiel());
+		assertEquals(communeArrivee.getNomOfficiel(), serviceCivilService.getAdresses(noIndAdrienne, null, false).principale.getLocalite(),
+				"L'adresse principale n'est pas sur " + communeArrivee.getNomOfficiel());
 	}
 
 	@Etape(id=3, descr="Envoi de l'événement d'arrivée d'Adrienne")
@@ -135,12 +135,12 @@ public class Ec_18000_07_Arrivee_Commune_Scenario extends EvenementCivilScenario
 			// For fermé sur Orbe
 			ForFiscalPrincipal ffpFerme = habitant.getForFiscalPrincipalAt(dateDemenagement.getOneDayBefore());
 			assertEquals(dateDemenagement, ffpFerme.getDateFin(), "Le for sur Lausanne n'est pas fermé à la bonne date");
-			assertEquals(communeDepart.getNoOFS(), ffpFerme.getNumeroOfsAutoriteFiscale(), "le for précédent n'est pas sur " + communeDepart.getNomMinuscule());
+			assertEquals(communeDepart.getNoOFS(), ffpFerme.getNumeroOfsAutoriteFiscale(), "le for précédent n'est pas sur " + communeDepart.getNomOfficiel());
 
 			// For ouvert sur Lausanne
 			ForFiscalPrincipal ffpOuvert = habitant.getForFiscalPrincipalAt(dateArriveeLausanne);
-			assertEquals(dateDemenagement.addDays(1) , ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomMinuscule() + " n'est pas ouvert à la bonne date");
-			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomMinuscule());
+			assertEquals(dateDemenagement.addDays(1) , ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomOfficiel() + " n'est pas ouvert à la bonne date");
+			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomOfficiel());
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le MotifRattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffpOuvert.getGenreImpot(), "Le GenreImpot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le ModeImposition du for est faux");

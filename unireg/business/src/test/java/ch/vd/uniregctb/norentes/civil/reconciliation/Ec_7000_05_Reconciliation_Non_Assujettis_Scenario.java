@@ -69,7 +69,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 			protected void init() {
 
 				indMomo = addIndividu(noIndMomo, RegDate.get(1961, 3, 12), "Durant", "Maurice", true);
-				addOrigine(indMomo, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, RegDate
 						.get(1961, 3, 12), dateDepartHC.getOneDayBefore());
@@ -145,7 +145,7 @@ public class Ec_7000_05_Reconciliation_Non_Assujettis_Scenario extends Evenement
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin(),
 					"Le for principal du ménage commun possède une date de fin fausse");
 			assertEquals(lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + lausanne.getNomMinuscule());
+					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + lausanne.getNomOfficiel());
 		}
 	}
 

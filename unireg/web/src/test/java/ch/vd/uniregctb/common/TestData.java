@@ -980,7 +980,7 @@ public class TestData {
 		ForDebiteurPrestationImposable forDebiteur1 = new ForDebiteurPrestationImposable();
 		forDebiteur1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		forDebiteur1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		forDebiteur1.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+		forDebiteur1.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 		forDebiteur1.setDateDebut(RegDate.get(2008, 1, 1));
 		dpi1.addForFiscal(forDebiteur1);
 
@@ -1365,7 +1365,7 @@ public class TestData {
 		fdpi0.setDateDebut(RegDate.get(2007, 1, 1));
 		fdpi0.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi0.setLogModifDate(new Timestamp(1199142000000L));
-		fdpi0.setNumeroOfsAutoriteFiscale(MockCommune.Echallens.getNoOFSEtendu());
+		fdpi0.setNumeroOfsAutoriteFiscale(MockCommune.Echallens.getNoOFS());
 		fdpi0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		dpi0.addForFiscal(fdpi0);
 		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
@@ -1375,7 +1375,7 @@ public class TestData {
 		fdpi1.setDateDebut(RegDate.get(2008, 3, 23));
 		fdpi1.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 		fdpi1.setLogModifDate(new Timestamp(1199142000000L));
-		fdpi1.setNumeroOfsAutoriteFiscale(MockCommune.Leysin.getNoOFSEtendu());
+		fdpi1.setNumeroOfsAutoriteFiscale(MockCommune.Leysin.getNoOFS());
 		fdpi1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		dpi0.addForFiscal(fdpi1);
 		dpi0 = (DebiteurPrestationImposable) hibernateTemplate.merge(dpi0);
@@ -1693,7 +1693,7 @@ public class TestData {
 		ffp0.setModeImposition(ModeImposition.ORDINAIRE);
 		ffp0.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp0.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp0.setNumeroOfsAutoriteFiscale(MockCommune.Bale.getNoOFSEtendu());
+		ffp0.setNumeroOfsAutoriteFiscale(MockCommune.Bale.getNoOFS());
 		ffp0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp0);
 		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
@@ -1707,7 +1707,7 @@ public class TestData {
 		ffs0.setMotifFermeture(MotifFor.VENTE_IMMOBILIER);
 		ffs0.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 		ffs0.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-		ffs0.setNumeroOfsAutoriteFiscale(MockCommune.Renens.getNoOFSEtendu());
+		ffs0.setNumeroOfsAutoriteFiscale(MockCommune.Renens.getNoOFS());
 		ffs0.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp6.addForFiscal(ffs0);
 		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
@@ -1719,7 +1719,7 @@ public class TestData {
 		ffs1.setLogModifDate(new Timestamp(1199142000000L));
 		ffs1.setMotifOuverture(MotifFor.ACHAT_IMMOBILIER);
 		ffs1.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-		ffs1.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+		ffs1.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 		ffs1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp6.addForFiscal(ffs1);
 		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
@@ -1733,7 +1733,7 @@ public class TestData {
 		ffp1.setModeImposition(ModeImposition.SOURCE);
 		ffp1.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp1.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFSEtendu());
+		ffp1.setNumeroOfsAutoriteFiscale(MockCommune.Bern.getNoOFS());
 		ffp1.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp1);
 		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
@@ -1748,7 +1748,7 @@ public class TestData {
 		ffp2.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 		ffp2.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp2.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp2.setNumeroOfsAutoriteFiscale(MockCommune.Neuchatel.getNoOFSEtendu());
+		ffp2.setNumeroOfsAutoriteFiscale(MockCommune.Neuchatel.getNoOFS());
 		ffp2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
 		pp6.addForFiscal(ffp2);
 		pp6 = (PersonnePhysique) hibernateTemplate.merge(pp6);
@@ -1761,7 +1761,7 @@ public class TestData {
 		ffp3.setModeImposition(ModeImposition.SOURCE);
 		ffp3.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp3.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp3.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFSEtendu());
+		ffp3.setNumeroOfsAutoriteFiscale(MockCommune.Aigle.getNoOFS());
 		ffp3.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp2.addForFiscal(ffp3);
 		pp2 = (PersonnePhysique) hibernateTemplate.merge(pp2);
@@ -1776,7 +1776,7 @@ public class TestData {
 		ffp4.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp4.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp4.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp4.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFSEtendu());
+		ffp4.setNumeroOfsAutoriteFiscale(MockCommune.Bex.getNoOFS());
 		ffp4.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp9.addForFiscal(ffp4);
 		pp9 = (PersonnePhysique) hibernateTemplate.merge(pp9);
@@ -1791,7 +1791,7 @@ public class TestData {
 		ffp5.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp5.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp5.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp5.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
+		ffp5.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffp5.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp10.addForFiscal(ffp5);
 		pp10 = (PersonnePhysique) hibernateTemplate.merge(pp10);
@@ -1804,7 +1804,7 @@ public class TestData {
 		ffp6.setModeImposition(ModeImposition.ORDINAIRE);
 		ffp6.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp6.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp6.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
+		ffp6.setNumeroOfsAutoriteFiscale(MockCommune.CheseauxSurLausanne.getNoOFS());
 		ffp6.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		mc1.addForFiscal(ffp6);
 		mc1 = (MenageCommun) hibernateTemplate.merge(mc1);
@@ -1817,7 +1817,7 @@ public class TestData {
 		ffp7.setModeImposition(ModeImposition.ORDINAIRE);
 		ffp7.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp7.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp7.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
+		ffp7.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffp7.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp8.addForFiscal(ffp7);
 		pp8 = (PersonnePhysique) hibernateTemplate.merge(pp8);
@@ -1830,7 +1830,7 @@ public class TestData {
 		ffp8.setModeImposition(ModeImposition.SOURCE);
 		ffp8.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp8.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp8.setNumeroOfsAutoriteFiscale(MockCommune.Chamblon.getNoOFSEtendu());
+		ffp8.setNumeroOfsAutoriteFiscale(MockCommune.Chamblon.getNoOFS());
 		ffp8.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		mc0.addForFiscal(ffp8);
 		mc0 = (MenageCommun) hibernateTemplate.merge(mc0);
@@ -1843,7 +1843,7 @@ public class TestData {
 		ffp9.setModeImposition(ModeImposition.SOURCE);
 		ffp9.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 		ffp9.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp9.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFSEtendu());
+		ffp9.setNumeroOfsAutoriteFiscale(MockCommune.Croy.getNoOFS());
 		ffp9.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp13.addForFiscal(ffp9);
 		pp13 = (PersonnePhysique) hibernateTemplate.merge(pp13);
@@ -1869,7 +1869,7 @@ public class TestData {
 		ffs2.setLogModifDate(new Timestamp(1199142000000L));
 		ffs2.setMotifOuverture(MotifFor.MAJORITE);
 		ffs2.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
-		ffs2.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
+		ffs2.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 		ffs2.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp1.addForFiscal(ffs2);
 		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
@@ -1884,7 +1884,7 @@ public class TestData {
 		ffp11.setMotifFermeture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		ffp11.setMotifOuverture(MotifFor.MAJORITE);
 		ffp11.setMotifRattachement(MotifRattachement.DOMICILE);
-		ffp11.setNumeroOfsAutoriteFiscale(MockCommune.Lonay.getNoOFSEtendu());
+		ffp11.setNumeroOfsAutoriteFiscale(MockCommune.Lonay.getNoOFS());
 		ffp11.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 		pp0.addForFiscal(ffp11);
 		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);

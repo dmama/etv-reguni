@@ -77,7 +77,7 @@ public class DepartPrincipal extends Depart {
 		this.ancienneAdresse = ancienneAdresse;
 		this.ancienneCommune = getCommuneByAdresse(context, ancienneAdresse, dateDepart);
 		if (ancienneCommune.isFraction()) {
-			    numeroOfsEntiteForAnnonce = ancienneCommune.getNumTechMere(); // NumTechMere == noOFS pour les communes faîtières
+			    numeroOfsEntiteForAnnonce = ancienneCommune.getOfsCommuneMere();
 		} else {
 				numeroOfsEntiteForAnnonce = ancienneCommune.getNoOFS();
 		}
@@ -95,7 +95,7 @@ public class DepartPrincipal extends Depart {
 
 		// SIFISC-4230 Pour les evenements ech, les départs vaudois sont a priori ignorés
 		if (isDepartVaudois()) {
-			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomMinuscule());
+			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomOfficiel());
 			event.setCommentaireTraitement(message);
 		}
 	}

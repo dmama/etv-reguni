@@ -36,7 +36,7 @@
 		</display:column>
 		<display:column sortable ="true" titleKey="label.pays" >
 			<c:if test="${adresse.paysOFS != null }">
-				<unireg:infra entityId="${adresse.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+				<unireg:infra entityId="${adresse.paysOFS}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 			</c:if>
 		</display:column>
 		<display:column sortable ="true" titleKey="label.adresse.permanente" >

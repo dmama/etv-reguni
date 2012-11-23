@@ -399,7 +399,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 
 				adresseView.setTypeLocalite("pays");
 				Pays pays = getPays(adresseEtrangere);
-				adresseView.setPaysNpa(pays.getNomMinuscule());
+				adresseView.setPaysNpa(pays.getNomCourt());
 				adresseView.setPaysOFS(pays.getNoOFS());
 				adresseView.setLocaliteNpa(adresseEtrangere.getNumeroPostalLocalite());
 				adresseView.setComplementLocalite(adresseEtrangere.getComplementLocalite());
@@ -569,7 +569,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		if (noOfsPays != null) {
 			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
 			if (pays != null) {
-				addDispoView.setPaysNpa(pays.getNomMinuscule());
+				addDispoView.setPaysNpa(pays.getNomCourt());
 			}
 		}
 
@@ -603,7 +603,7 @@ public class AdresseManagerImpl extends TiersManager implements AdresseManager {
 		if (noOfsPays != null) {
 			Pays pays = getServiceInfrastructureService().getPays(noOfsPays);
 			if (pays != null) {
-				addDispoView.setPaysNpa(pays.getNomMinuscule());
+				addDispoView.setPaysNpa(pays.getNomCourt());
 			}
 		}
 

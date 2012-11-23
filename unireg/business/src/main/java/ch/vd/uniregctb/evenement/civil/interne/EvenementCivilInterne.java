@@ -436,7 +436,7 @@ public abstract class EvenementCivilInterne {
 	 *
 	 * @param contribuable             le contribuable en question.
 	 * @param dateChangement           la date de début de validité du nouveau for.
-	 * @param numeroOfsAutoriteFiscale le numéro OFS étendue de l'autorité fiscale du nouveau for.
+	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale du nouveau for.
 	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
 	 * @param typeAutorite             le type d'autorité fiscale
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.

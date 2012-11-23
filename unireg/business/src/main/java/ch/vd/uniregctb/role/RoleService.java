@@ -28,7 +28,7 @@ public interface RoleService {
 	 * @param anneePeriode
 	 *            l'année de la période fiscale considérée.
 	 * @param noOfsCommune
-	 *            le numéro Ofs étendu de la commune à traiter
+	 *            le numéro Ofs de la commune à traiter
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 * @return un rapport (technique) sur les rôles des contribuables de la commune spécifiée.
 	 */

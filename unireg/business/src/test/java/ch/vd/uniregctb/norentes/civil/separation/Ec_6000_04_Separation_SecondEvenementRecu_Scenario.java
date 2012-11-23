@@ -90,7 +90,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 				marieIndividus(indMomo, indBea, dateMariage);
 				separeIndividus(indMomo, indBea, dateSeparation);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeMomoVillars, dateAvantMariage);
@@ -161,7 +161,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+					"Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 
 			final Set<ForFiscal> forsFiscaux = mc.getForsFiscaux();
 			assertEquals(2, forsFiscaux.size(), "Nombre total de fors fiscaux faux");
@@ -172,7 +172,7 @@ public class Ec_6000_04_Separation_SecondEvenementRecu_Scenario extends Evenemen
 					assertEquals(dateMariage, ff.getDateDebut(), "Date de début du for secondaire fausse");
 					assertNull(ff.getDateFin(), "Date de fin du for secondaire fausse");
 					assertEquals(communeMariage.getNoOFS(), ff.getNumeroOfsAutoriteFiscale(),
-							"Le for secondaire n'est pas sur " + communeMariage.getNomMinuscule());
+							"Le for secondaire n'est pas sur " + communeMariage.getNomOfficiel());
 					++ nbForFiscauxSecondaires;
 				}
 			}

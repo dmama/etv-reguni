@@ -70,7 +70,7 @@ public class AdresseImpl implements Adresse, Serializable {
 		this.typeAdresse = initTypeAdresse(target.getTypeAdresse());
 
 		final CommuneImpl commune = CommuneImpl.get(target.getCommuneAdresse());
-		this.noOfsCommuneAdresse = commune == null ? null : commune.getNoOFSEtendu();
+		this.noOfsCommuneAdresse = commune == null ? null : commune.getNoOFS();
 
 		if (this.typeAdresse == TypeAdresseCivil.COURRIER || this.typeAdresse == TypeAdresseCivil.TUTEUR) {
 			// les adresses courrier (et tuteur) ne doivent pas posséder d'egid/ewid (= ça n'a pas de sens).

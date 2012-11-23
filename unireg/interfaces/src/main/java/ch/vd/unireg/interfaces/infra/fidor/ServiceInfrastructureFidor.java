@@ -2,20 +2,20 @@ package ch.vd.unireg.interfaces.infra.fidor;
 
 import javax.xml.ws.WebServiceException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 
-import ch.vd.fidor.ws.v2.Acces;
-import ch.vd.fidor.ws.v2.CommuneFiscale;
+import ch.vd.evd0007.v1.Country;
+import ch.vd.evd0012.v1.CommuneFiscale;
 import ch.vd.fidor.ws.v2.FidorBusinessException_Exception;
-import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -27,12 +27,16 @@ import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
+import ch.vd.unireg.interfaces.infra.data.District;
+import ch.vd.unireg.interfaces.infra.data.DistrictImpl;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.LogicielImpl;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
+import ch.vd.unireg.interfaces.infra.data.Region;
+import ch.vd.unireg.interfaces.infra.data.RegionImpl;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -40,7 +44,8 @@ import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.SimpleCacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
 import ch.vd.uniregctb.cache.UniregCacheManager;
-import ch.vd.uniregctb.webservice.fidor.FidorClient;
+import ch.vd.uniregctb.webservice.fidor.v5.FidorClient;
+import ch.vd.uniregctb.webservice.fidor.v5.FidorClientException;
 
 /**
  * Implémentation Fidor du service d'infrastructure [UNIREG-2187].
@@ -58,15 +63,18 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	private long lastTentative = 0;
 	private static final long fiveMinutes = 5L * 60L * 1000000000L; // en nanosecondes
 
+	private ch.vd.uniregctb.webservice.fidor.v2.FidorClient oldFidorClient;
 	private FidorClient fidorClient;
 	private UniregCacheManager uniregCacheManager;
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setFidorClient(FidorClient fidorClient) {
+	public void setFidorClientv2(ch.vd.uniregctb.webservice.fidor.v2.FidorClient oldFidorClient) {
+		this.oldFidorClient = oldFidorClient;
+	}
+
+	public void setFidorClientv5(FidorClient fidorClient) {
 		this.fidorClient = fidorClient;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUniregCacheManager(UniregCacheManager uniregCacheManager) {
 		this.uniregCacheManager = uniregCacheManager;
 	}
@@ -99,19 +107,19 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Pays> getPays() throws ServiceInfrastructureException {
 		try {
-			final Collection<ch.vd.fidor.ws.v2.Pays> list = fidorClient.getTousLesPays();
+			final List<Country> list = fidorClient.getTousLesPays();
 			if (list == null || list.isEmpty()) {
 				return Collections.emptyList();
 			}
 			else {
 				final List<Pays> pays = new ArrayList<Pays>();
-				for (ch.vd.fidor.ws.v2.Pays o : list) {
+				for (Country o : list) {
 					pays.add(PaysImpl.get(o));
 				}
 				return Collections.unmodifiableList(pays);
 			}
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -119,31 +127,21 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public Pays getPays(int numeroOFS) throws ServiceInfrastructureException {
 		try {
-			ch.vd.fidor.ws.v2.Pays p = fidorClient.getPaysDetail(numeroOFS);
+			final Country p = fidorClient.getPaysDetail(numeroOFS);
 			return PaysImpl.get(p);
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 		try {
-			// note : cette méthode est horriblement inefficace, mais comme le service infrastructure est sensé se trouver derrière un cache, on
-			// va comme ça.
-
-			final Collection<ch.vd.fidor.ws.v2.Pays> list = fidorClient.getTousLesPays();
-			if (list != null) {
-				for (ch.vd.fidor.ws.v2.Pays p : list) {
-					if (p.getIso2Id() != null && p.getIso2Id().equals(codePays)) {
-						return PaysImpl.get(p);
-					}
-				}
-			}
-			return null;
+			final Country p = fidorClient.getPaysDetail(codePays);
+			return PaysImpl.get(p);
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -161,23 +159,18 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		try {
-			final List<CommuneFiscale> all = fidorClient.getToutesLesCommunes();
-			if (all == null || all.isEmpty()) {
+			final List<CommuneFiscale> list = fidorClient.getCommunesParCanton(canton.getNoOFS(), null);
+			if (list == null || list.isEmpty()) {
 				return Collections.emptyList();
 			}
 
 			final List<Commune> communes = new ArrayList<Commune>();
-			for (CommuneFiscale commune : all) {
-				if (commune.getSigleCanton().equals(canton.getSigleOFS())) {
-					communes.add(CommuneImpl.get(commune));
-				}
+			for (CommuneFiscale commune : list) {
+				communes.add(CommuneImpl.get(commune));
 			}
 			return communes;
 		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -192,17 +185,13 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 
 			final List<Commune> communes = new ArrayList<Commune>();
 			for (CommuneFiscale commune : all) {
-				final List<CommuneFiscale> fractions = commune.getFractions();
-				if ((fractions == null || fractions.isEmpty()) && ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
+				if (!commune.isEstUneCommuneFaitiere() && ServiceInfrastructureRaw.SIGLE_CANTON_VD.equals(commune.getSigleCanton())) {
 					communes.add(CommuneImpl.get(commune));
 				}
 			}
 			return communes;
 		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -221,12 +210,37 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 			return communes;
 		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+
+		// on récupère toutes les communes
+		final List<ch.vd.fidor.ws.v2.CommuneFiscale> communes;
+		try {
+			communes = oldFidorClient.getToutesLesCommunes();
+		}
 		catch (WebServiceException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 		catch (FidorBusinessException_Exception e) {
 			throw new ServiceInfrastructureException(e);
 		}
+
+		// on détermine le mapping
+		final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
+		for (ch.vd.fidor.ws.v2.CommuneFiscale commune : communes) {
+			//noinspection deprecation
+			final Integer numeroTechnique = commune.getNoTechnique();
+			if (!commune.getNoOfs().equals(numeroTechnique)) {
+				map.put(commune.getNoOfs(), numeroTechnique);
+			}
+		}
+
+		return map;
 	}
 
 	@Override
@@ -264,10 +278,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 			}
 			return list;
 		}
-		catch (WebServiceException e) {
-			throw new ServiceInfrastructureException(e);
-		}
-		catch (FidorBusinessException_Exception e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -276,27 +287,16 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	public Integer getNoOfsCommuneByEgid(int egid, RegDate date) throws ServiceInfrastructureException {
 
 		try {
-			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(egid, reg2fidor(date));
+			final CommuneFiscale commune = fidorClient.getCommuneParBatiment(egid, date);
 			if (commune == null) {
 				return null;
 			}
 
-			return commune.getNoOfs();
+			return commune.getNumeroOfs();
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
-	}
-
-	private static FidorDate reg2fidor(RegDate date) {
-		if (date == null) {
-			return null;
-		}
-		FidorDate d = new FidorDate();
-		d.setYear(date.year());
-		d.setMonth(date.month());
-		d.setDay(date.day());
-		return d;
 	}
 
 	@Override
@@ -426,7 +426,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	}
 
 	private String getUrl(String app, String target) {
-		final String url = fidorClient.getUrl(app, Acces.INTERNE, target, null);
+		final String url = fidorClient.getUrl(app, "INTERNE", target, null);
 		if (url == null) {
 			LOGGER.error(String.format("Il manque l'url d'accès à %s (target %s) dans FiDoR !", app, target));
 		}
@@ -441,7 +441,7 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		try {
 			return LogicielImpl.get(fidorClient.getLogicielDetail(id));
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e);
 		}
 	}
@@ -449,20 +449,40 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		try {
-			final Collection<ch.vd.fidor.ws.v2.Logiciel> list = fidorClient.getTousLesLogiciels();
+			final List<ch.vd.evd0012.v1.Logiciel> list = fidorClient.getTousLesLogiciels();
 			if (list == null || list.isEmpty()) {
 				return Collections.emptyList();
 			}
 			else {
 				final List<Logiciel> logiciels = new ArrayList<Logiciel>();
-				for (ch.vd.fidor.ws.v2.Logiciel logicielFidor : list) {
+				for (ch.vd.evd0012.v1.Logiciel logicielFidor : list) {
 					logiciels.add(LogicielImpl.get(logicielFidor));
 				}
 				return Collections.unmodifiableList(logiciels);
 			}
 		}
-		catch (WebServiceException e) {
+		catch (FidorClientException e) {
 			throw new ServiceInfrastructureException(e.getMessage(), e);
+		}
+	}
+
+	@Override
+	public District getDistrict(int code) {
+		try {
+			return DistrictImpl.get(fidorClient.getDistrict(code));
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
+		}
+	}
+
+	@Override
+	public Region getRegion(int code) {
+		try {
+			return RegionImpl.get(fidorClient.getRegion(code));
+		}
+		catch (FidorClientException e) {
+			throw new ServiceInfrastructureException(e);
 		}
 	}
 }

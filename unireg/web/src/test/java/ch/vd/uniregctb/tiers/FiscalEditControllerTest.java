@@ -77,7 +77,7 @@ public class FiscalEditControllerTest extends WebTest {
 				forPrincipal.setTiers(eric);
 
 				ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
-						MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+						MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				forSecondaire.setTiers(eric);
 
 				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()

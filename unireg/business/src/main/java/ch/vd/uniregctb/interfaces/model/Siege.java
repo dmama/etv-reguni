@@ -20,7 +20,7 @@ public interface Siege {
 	RegDate getDateFin();
 
 	/**
-	 * @return le numéro OFS étendu de la commune suisse ou du pays de siège.
+	 * @return le numéro OFS de la commune suisse ou du pays de siège.
 	 */
 	int getNoOfsSiege();
 

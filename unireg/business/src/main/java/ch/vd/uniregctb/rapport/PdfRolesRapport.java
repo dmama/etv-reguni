@@ -60,14 +60,14 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 	}
 
 	/**
-	 * Construit une map qui donne le nom des communes par numéro OFS étendu
+	 * Construit une map qui donne le nom des communes par numéro OFS
 	 * @param communes communes à indexer
-	 * @return map d'indexation par numéro OFS étendu
+	 * @return map d'indexation par numéro OFS
 	 */
 	protected static Map<Integer, String> buildNomsCommunes(List<Commune> communes) {
 		final Map<Integer, String> map = new HashMap<Integer, String>(communes.size());
 		for (Commune commune : communes) {
-			map.put(commune.getNoOFSEtendu(), commune.getNomMinuscule());
+			map.put(commune.getNoOFS(), commune.getNomOfficiel());
 		}
 		return map;
 	}
@@ -92,7 +92,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 
 	protected final Commune getCommune(int noOfsCommune, RegDate date) {
 		try {
-			return infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, date);
+			return infraService.getCommuneByNumeroOfs(noOfsCommune, date);
 		}
 		catch (ServiceInfrastructureException e) {
 			return null;
@@ -124,7 +124,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 				Audit.error("Rôles: impossible de déterminer la commune avec le numéro Ofs = " + noOfs);
 				continue;
 			}
-			Assert.isEqual(noOfs, commune.getNoOFSEtendu());
+			Assert.isEqual(noOfs, commune.getNoOFS());
 			listCommunes.add(commune);
 		}
 
@@ -132,7 +132,7 @@ public abstract class PdfRolesRapport<T extends ProduireRolesResults> extends Pd
 			Collections.sort(listCommunes, new Comparator<Commune>() {
 				@Override
 				public int compare(Commune o1, Commune o2) {
-					return o1.getNomMinuscule().compareTo(o2.getNomMinuscule());
+					return o1.getNomOfficiel().compareTo(o2.getNomOfficiel());
 				}
 			});
 		}

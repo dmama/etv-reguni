@@ -110,7 +110,7 @@ public class TiersListControllerTest extends WebTest {
 		// Recherche tous les fors y compris les inactifs
 		{
 			HashMap<String, String> params = new HashMap<String, String>();
-			params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFSEtendu()));
+			params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFS()));
 			List<TiersIndexedDataView> list = getTiersList(params);
 			assertEquals(3, list.size());
 		}
@@ -123,7 +123,7 @@ public class TiersListControllerTest extends WebTest {
 
 		// Recherche seulement les fors actifs
 		HashMap<String, String> params = new HashMap<String, String>();
-		params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFSEtendu()));
+		params.put("noOfsFor", Integer.toString(MockCommune.Bussigny.getNoOFS()));
 		params.put("forPrincipalActif", "true");
 		List<TiersIndexedDataView> list = getTiersList(params);
 		assertEquals(1, list.size());

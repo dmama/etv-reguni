@@ -839,10 +839,10 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				public void modifyIndividu(MockIndividu individu) {
 					final MockAdresse oldAddress = (MockAdresse) individu.getAdresses().iterator().next();
 					oldAddress.setDateFinValidite(dateDepart);
-					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFSEtendu(), null));
+					oldAddress.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Cossonay.getNoOFS(), null));
 
 					final MockAdresse newAddress = new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDepart.getOneDayAfter(), null);
-					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFSEtendu(), null));
+					newAddress.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 					individu.getAdresses().add(newAddress);
 				}
 			});
@@ -900,7 +900,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final Iterator<Adresse> iterator = adresses.iterator();
 				final Adresse oldAddress = iterator.next();
 				Assert.assertNotNull(oldAddress.getLocalisationSuivante());
-				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFSEtendu(), oldAddress.getLocalisationSuivante().getNoOfs());
+				Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), oldAddress.getLocalisationSuivante().getNoOfs());
 				Assert.assertEquals(LocalisationType.CANTON_VD, oldAddress.getLocalisationSuivante().getType());
 				Assert.assertEquals(dateDepart, oldAddress.getDateFin());
 				Assert.assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), oldAddress.getLocalite());
@@ -908,7 +908,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				final Adresse newAddress = iterator.next();
 				Assert.assertNotNull(newAddress);
 				Assert.assertNotNull(newAddress.getLocalisationPrecedente());
-				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFSEtendu(), newAddress.getLocalisationPrecedente().getNoOfs());
+				Assert.assertEquals((Integer) MockCommune.Lausanne.getNoOFS(), newAddress.getLocalisationPrecedente().getNoOfs());
 				Assert.assertEquals(LocalisationType.CANTON_VD, newAddress.getLocalisationPrecedente().getType());
 				Assert.assertEquals(MockLocalite.CossonayVille.getNomAbregeMinuscule(), newAddress.getLocalite());
 			}
@@ -1224,7 +1224,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1290,7 +1290,7 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

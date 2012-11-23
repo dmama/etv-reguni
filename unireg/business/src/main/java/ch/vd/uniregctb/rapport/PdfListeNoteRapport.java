@@ -140,13 +140,13 @@ public class PdfListeNoteRapport extends PdfRapport {
 					String communeHC = null;
 
 					if (info.getCommuneHC() != null) {
-						communeHC = info.getCommuneHC().getNomMinuscule();
+						communeHC = info.getCommuneHC().getNomOfficiel();
 
 					}
 					final String nomCommuneHC = emptyInsteadNull(communeHC);
 					final String nomCantonHC = emptyInsteadNull(info.getNomCantonHC());
 
-					final String nomCommuneVaudoise = info.getCommuneVaudoise().getNomMinuscule();
+					final String nomCommuneVaudoise = info.getCommuneVaudoise().getNomOfficiel();
 					final String dateFermetureSecondaire = RegDateHelper.dateToDisplayString(info.getDateFermetureSecondaire());
 					final String motifFin = info.getMotifFinSecondaire().name();
 
@@ -155,12 +155,12 @@ public class PdfListeNoteRapport extends PdfRapport {
 					String nomPaysFin = null;
 
 					if (info.getCommuneFinPeriode() != null) {
-						nomCommFin = info.getCommuneFinPeriode().getNomMinuscule();
+						nomCommFin = info.getCommuneFinPeriode().getNomOfficiel();
 
 					}
 
 					if (info.getPaysFinPeriode() != null) {
-						nomPaysFin = info.getPaysFinPeriode().getNomMinuscule();
+						nomPaysFin = info.getPaysFinPeriode().getNomCourt();
 					}
 					final String nomCommuneFinPeriode = emptyInsteadNull(nomCommFin);
 					final String nomPaysFinPeriode = emptyInsteadNull(nomPaysFin);

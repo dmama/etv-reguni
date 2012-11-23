@@ -92,9 +92,9 @@ public class Ec_19000_09_Depart_DejaNonHabitant_Scenario extends DepartScenario 
 		assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 		// vérification que les adresses civiles sont à Chamblon
-		assertEquals(communeDepart.getNomMinuscule(),
+		assertEquals(communeDepart.getNomOfficiel(),
 				serviceCivilService.getAdresses(noIndCharles, RegDate.get(), false).principale.getLocalite(),
-				"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+				"L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 	}
 
 	@Etape(id=2, descr="Départ hors Canton du contribuable")

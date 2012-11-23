@@ -52,7 +52,7 @@ public class HistoriqueCommune implements CollatableDateRange {
 			return false;
 		}
 		else {
-			return commune1.getNoOFSEtendu() == commune2.getNoOFSEtendu();
+			return commune1.getNoOFS() == commune2.getNoOFS();
 		}
 	}
 

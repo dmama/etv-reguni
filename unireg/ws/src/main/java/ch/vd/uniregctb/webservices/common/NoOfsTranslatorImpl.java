@@ -1,12 +1,9 @@
 package ch.vd.uniregctb.webservices.common;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -67,17 +64,7 @@ public class NoOfsTranslatorImpl implements NoOfsTranslator {
 		if (communes == null) {
 
 			LOGGER.info("Chargement des correspondances entre numéros OFS et numéros techniques des communes");
-
-			final List<Commune> listeCommunes = infraService.getCommunes();
-			final Map<Integer, Integer> map = new HashMap<Integer, Integer>();
-			for (Commune commune : listeCommunes) {
-				//noinspection deprecation
-				final int numeroTechnique = commune.getNumeroTechnique();
-				if (commune.getNoOFSEtendu() != numeroTechnique) {
-					map.put(commune.getNoOFSEtendu(), numeroTechnique);
-				}
-			}
-
+			final Map<Integer, Integer> map = infraService.getNoOfs2NoTechniqueMappingForCommunes();
 			LOGGER.info(String.format("Récupéré %d commune(s) dont les numéros OFS et technique sont différents", map.size()));
 			communes = map;
 		}

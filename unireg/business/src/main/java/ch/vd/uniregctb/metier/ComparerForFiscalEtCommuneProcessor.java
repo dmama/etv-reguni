@@ -117,12 +117,12 @@ public class ComparerForFiscalEtCommuneProcessor {
 			rapport.get().nbCtbTotal++;
 			ForFiscalPrincipal forFiscal = contribuable.getDernierForFiscalPrincipal();
 			final Integer numeroAutoriteFiscale = forFiscal.getNumeroOfsAutoriteFiscale();
-			Commune communeFor = serviceInfra.getCommuneByNumeroOfsEtendu(numeroAutoriteFiscale, RegDate.get());
+			Commune communeFor = serviceInfra.getCommuneByNumeroOfs(numeroAutoriteFiscale, RegDate.get());
 			AdresseGenerique adresse = adresseService.getAdresseFiscale(contribuable, TypeAdresseFiscale.DOMICILE, RegDate.get(), false);
 			Commune communeAdresse = serviceInfra.getCommuneByAdresse(adresse, RegDate.get());
 			if(communeAdresse != null && communeFor!=null){
 				if (communeFor.getNoOFS() != communeAdresse.getNoOFS()) {
-					rapport.get().addCommunesDifferentes(forFiscal, communeFor.getNomMinuscule(), adresse, communeAdresse.getNomMinuscule());
+					rapport.get().addCommunesDifferentes(forFiscal, communeFor.getNomOfficiel(), adresse, communeAdresse.getNomOfficiel());
 				}
 			}
 

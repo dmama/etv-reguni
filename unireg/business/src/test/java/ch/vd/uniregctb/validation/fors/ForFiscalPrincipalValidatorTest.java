@@ -115,7 +115,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 
 		final ForFiscalPrincipal forFiscal = new ForFiscalPrincipal();
 		forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFSEtendu());
+		forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFS());
 		forFiscal.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		forFiscal.setMotifRattachement(MotifRattachement.DOMICILE);
 		forFiscal.setModeImposition(ModeImposition.ORDINAIRE);
@@ -157,7 +157,7 @@ public class ForFiscalPrincipalValidatorTest extends AbstractValidatorTest<ForFi
 		ffp.setMotifOuverture(MotifFor.ARRIVEE_HS);
 
 		for (TypeAutoriteFiscale taf : Arrays.asList(TypeAutoriteFiscale.COMMUNE_HC, TypeAutoriteFiscale.PAYS_HS)) {
-			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFSEtendu() : MockPays.France.getNoOFS());
+			ffp.setNumeroOfsAutoriteFiscale(taf == TypeAutoriteFiscale.COMMUNE_HC ? MockCommune.Neuchatel.getNoOFS() : MockPays.France.getNoOFS());
 			ffp.setTypeAutoriteFiscale(taf);
 
 			// sans mode d'imposition => erreur

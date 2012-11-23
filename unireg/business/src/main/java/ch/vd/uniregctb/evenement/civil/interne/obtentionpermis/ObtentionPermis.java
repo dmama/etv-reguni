@@ -37,9 +37,9 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 	protected static final Logger LOGGER = Logger.getLogger(ObtentionPermis.class);
 
 	/**
-	 * le numero OFS étendu de la commune vaudoise de l'adresse principale
+	 * le numero OFS de la commune vaudoise de l'adresse principale
 	 */
-	private Integer numeroOfsEtenduCommunePrincipale;
+	private Integer numeroOfsCommunePrincipale;
 
 	private TypePermis typePermis;
 
@@ -76,10 +76,10 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 				if (communePrincipale == null) {
 					throw new EvenementCivilException("Incohérence dans l'adresse principale");
 				}
-				this.numeroOfsEtenduCommunePrincipale = communePrincipale.getNoOFSEtendu();
+				this.numeroOfsCommunePrincipale = communePrincipale.getNoOFS();
 			}
 			else {
-				this.numeroOfsEtenduCommunePrincipale = 0;
+				this.numeroOfsCommunePrincipale = 0;
 			}
 		}
 		catch (ServiceInfrastructureException e) {
@@ -91,10 +91,10 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ObtentionPermis(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale,
+	protected ObtentionPermis(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsCommunePrincipale,
 	                          TypePermis typePermis, EvenementCivilContext context) {
 		super(individu, conjoint, TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, date, numeroOfsCommuneAnnonce, null, null, null, context);
-		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
+		this.numeroOfsCommunePrincipale = numeroOfsCommunePrincipale;
 		this.typePermis = typePermis;
 	}
 
@@ -125,8 +125,8 @@ public class ObtentionPermis extends ObtentionPermisCOuNationaliteSuisse {
 		return typePermis;
 	}
 
-	public Integer getNumeroOfsEtenduCommunePrincipale() {
-		return numeroOfsEtenduCommunePrincipale;
+	public Integer getNumeroOfsCommunePrincipale() {
+		return numeroOfsCommunePrincipale;
 	}
 
 	@Override

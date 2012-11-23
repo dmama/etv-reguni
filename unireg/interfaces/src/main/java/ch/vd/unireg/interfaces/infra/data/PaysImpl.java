@@ -2,12 +2,13 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import ch.vd.evd0007.v1.Country;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureRaw;
 
 public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 
-	private static final long serialVersionUID = 3690021946462334427L;
+	private static final long serialVersionUID = 800771468069068249L;
 
 	private final boolean valide;
 	private final boolean etatSouverain;
@@ -29,6 +30,14 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 		return new PaysImpl(target);
 	}
 
+	public static Pays get(Country target) {
+		if (target == null) {
+			return null;
+		}
+		return new PaysImpl(target.getCountry());
+	}
+
+
 	private PaysImpl(ch.vd.infrastructure.model.Pays target) {
 		super(target);
 		this.valide = true; // tous les pays retournés par host-interfaces sont valides
@@ -39,10 +48,19 @@ public class PaysImpl extends EntiteOFSImpl implements Pays, Serializable {
 	}
 
 	private PaysImpl(ch.vd.fidor.ws.v2.Pays target) {
-		super(target.getOfsId(), target.getNomCourtFr().toUpperCase(), target.getNomCourtFr(), target.getIso2Id());
+		super(target.getOfsId(), target.getNomCourtFr(), target.getNomOfficielFr(), target.getIso2Id());
 		this.valide = target.isValide();
 		this.etatSouverain = target.isEtat() != null && target.isEtat();
 		this.ofsEtatSouverainParent = target.getEtatSuperieur();
+		this.codeIso2 = target.getIso2Id();
+		this.codeIso3 = target.getIso3Id();
+	}
+
+	public PaysImpl(ch.ech.ech0072.v1.Country target) {
+		super(target.getId(), target.getShortNameFr(), target.getOfficialNameFr(), target.getIso2Id());
+		this.valide = target.isEntryValid();
+		this.etatSouverain = target.isState();
+		this.ofsEtatSouverainParent = target.getAreaState();
 		this.codeIso2 = target.getIso2Id();
 		this.codeIso3 = target.getIso3Id();
 	}

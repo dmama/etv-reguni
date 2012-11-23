@@ -19,10 +19,6 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static junit.framework.Assert.fail;
 
-/**
- * @author Jean Eric CUENDET
- *
- */
 public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 	private static final Logger LOGGER = Logger.getLogger(ServiceInfrastructureServiceTest.class);
@@ -41,7 +37,11 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 	@Test
 	public void testSuisse() throws Exception {
-		assertEquals("CH", service.getSuisse().getSigleOFS());
+		final Pays suisse = service.getSuisse();
+		assertNotNull(suisse);
+		assertEquals("Suisse", suisse.getNomCourt());
+		assertEquals("Confédération suisse", suisse.getNomOfficiel());
+		assertEquals("CH", suisse.getSigleOFS());
 	}
 
 	@Test
@@ -103,9 +103,9 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		assertNotNull(vaud);
 		assertEquals(22, vaud.getNoOFS());
 
-		final Commune lausanne = service.getCommuneByNumeroOfsEtendu(5586, null);
+		final Commune lausanne = service.getCommuneByNumeroOfs(5586, null);
 		assertNotNull(lausanne);
-		assertEquals("Lausanne", lausanne.getNomMinuscule());
+		assertEquals("Lausanne", lausanne.getNomOfficiel());
 
 		assertTrue(service.estDansLeCanton(lausanne));
 	}
@@ -115,15 +115,15 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		final Pays ch = service.getPays("CH");
 		assertEquals("CH", ch.getSigleOFS());
-		assertEquals("Suisse", ch.getNomMinuscule());
+		assertEquals("Suisse", ch.getNomCourt());
 
 		final Pays fr = service.getPays("FR");
 		assertEquals("FR", fr.getSigleOFS());
-		assertEquals("France", fr.getNomMinuscule());
+		assertEquals("France", fr.getNomCourt());
 
 		final Pays be = service.getPays("BE");
 		assertEquals("BE", be.getSigleOFS());
-		assertEquals("Belgique", be.getNomMinuscule());
+		assertEquals("Belgique", be.getNomCourt());
 	}
 
 	@Test
@@ -131,19 +131,19 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		final int noOfsLussery = 5487;
 		{
-			final Commune lussery = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1998, 12, 1));    // fusion au 31.12.1998
+			final Commune lussery = service.getCommuneByNumeroOfs(noOfsLussery, RegDate.get(1998, 12, 1));    // fusion au 31.12.1998
 			assertNotNull(lussery);
-			assertEquals("Lussery", lussery.getNomMinuscule());
+			assertEquals("Lussery", lussery.getNomOfficiel());
 		}
 		{
-			final Commune lusseryVillars = service.getCommuneByNumeroOfsEtendu(noOfsLussery, RegDate.get(1999, 1, 1));  // fusion au 31.12.1998
+			final Commune lusseryVillars = service.getCommuneByNumeroOfs(noOfsLussery, RegDate.get(1999, 1, 1));  // fusion au 31.12.1998
 			assertNotNull(lusseryVillars);
-			assertEquals("Lussery-Villars", lusseryVillars.getNomMinuscule());
+			assertEquals("Lussery-Villars", lusseryVillars.getNomOfficiel());
 		}
 		{
-			final Commune lusseryVillars = service.getCommuneByNumeroOfsEtendu(noOfsLussery, null);          // commune toujours ouverte
+			final Commune lusseryVillars = service.getCommuneByNumeroOfs(noOfsLussery, null);          // commune toujours ouverte
 			assertNotNull(lusseryVillars);
-			assertEquals("Lussery-Villars", lusseryVillars.getNomMinuscule());
+			assertEquals("Lussery-Villars", lusseryVillars.getNomOfficiel());
 		}
 	}
 
@@ -152,22 +152,21 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 
 		final int noOfsHerlisberg = 1029;       // commune clôturée le 31.12.2004
 		{
-			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, RegDate.get(2000, 1, 1));
+			final Commune herlisberg = service.getCommuneByNumeroOfs(noOfsHerlisberg, RegDate.get(2000, 1, 1));
 			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
 			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
 		}
 		{
-			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, RegDate.get(2005, 1, 1));
+			final Commune herlisberg = service.getCommuneByNumeroOfs(noOfsHerlisberg, RegDate.get(2005, 1, 1));
 			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
 			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
 		}
 		{
-			final Commune herlisberg = service.getCommuneByNumeroOfsEtendu(noOfsHerlisberg, null);
+			final Commune herlisberg = service.getCommuneByNumeroOfs(noOfsHerlisberg, null);
 			assertNotNull(herlisberg);      // la date ne devrait pas être prise en compte puisqu'il n'y a qu'une seule commune
 			assertEquals(RegDate.get(2004, 12, 31), herlisberg.getDateFinValidite());
 		}
 	}
-
 
 	@Test
 	public void testGetCommuneByEgidCommuneFusionneeAuCivilMaisPasAuFiscal() throws Exception {
@@ -179,37 +178,48 @@ public class ServiceInfrastructureServiceTest extends BusinessItTest {
 		{
 			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 4, 1));
 			assertNotNull(commune);
-			assertEquals(MockCommune.Riex.getNoOFSEtendu(), commune.getNoOFSEtendu());
-			assertEquals("Riex", commune.getNomMinuscule());
+			assertEquals(MockCommune.Riex.getNoOFS(), commune.getNoOFS());
+			assertEquals("Riex", commune.getNomOfficiel());
 		}
 
 		// après fusion civile MAIS avant fusion fiscale
 		{
 			final Commune commune = service.getCommuneByEgid(immeuble, date(2011, 10, 1));
 			assertNotNull(commune);
-			assertEquals(MockCommune.Riex.getNoOFSEtendu(), commune.getNoOFSEtendu());
-			assertEquals("Riex", commune.getNomMinuscule());
+			assertEquals(MockCommune.Riex.getNoOFS(), commune.getNoOFS());
+			assertEquals("Riex", commune.getNomOfficiel());
 		}
 
 		// après fusion civile ET après fusion fiscale
 		{
 			final Commune commune = service.getCommuneByEgid(immeuble, date(2012, 1, 1));
 			assertNotNull(commune);
-			assertEquals(MockCommune.BourgEnLavaux.getNoOFSEtendu(), commune.getNoOFSEtendu());
-			assertEquals("Bourg-en-Lavaux", commune.getNomMinuscule());
+			assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), commune.getNoOFS());
+			assertEquals("Bourg-en-Lavaux", commune.getNomOfficiel());
 		}
 	}
 
 	@Test
 	public void testGetCommuneHistoByNumeroOFS() throws Exception {
 
-		final List<Commune> list = service.getCommuneHistoByNumeroOfs(MockCommune.BourgEnLavaux.getNoOFSEtendu());
+		final List<Commune> list = service.getCommuneHistoByNumeroOfs(MockCommune.BourgEnLavaux.getNoOFS());
 		assertNotNull(list);
 		assertEquals(1, list.size());
 
 		final Commune commune = list.get(0);
-		assertEquals(MockCommune.BourgEnLavaux.getNoOFSEtendu(), commune.getNoOFSEtendu());
-		assertEquals("Bourg-en-Lavaux", commune.getNomMinuscule());
+		assertEquals(MockCommune.BourgEnLavaux.getNoOFS(), commune.getNoOFS());
+		assertEquals("Bourg-en-Lavaux", commune.getNomOfficiel());
 		assertEquals(RegDate.get(2012, 1, 1), commune.getDateDebutValidite());
+	}
+
+	/**
+	 * [SIFISC-6936] Vérifie que Fidor est bien capable de nous retourner une seule commune pour cet egid.
+	 */
+	@Test
+	public void testGetCommuneParEgid() throws Exception {
+		final Commune commune = service.getCommuneByEgid(280081618, date(2012, 11, 2));
+		assertNotNull(commune);
+		assertEquals(5434, commune.getNoOFS());
+		assertEquals("Saint-George", commune.getNomOfficiel());
 	}
 }

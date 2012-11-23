@@ -104,7 +104,7 @@ public class Ec_19000_02_Depart_1_Scenario extends EvenementCivilScenario {
 
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
 
 		assertBlocageRemboursementAutomatique(false);

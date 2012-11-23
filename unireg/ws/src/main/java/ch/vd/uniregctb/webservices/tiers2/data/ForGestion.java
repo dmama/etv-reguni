@@ -42,7 +42,7 @@ public class ForGestion implements Range {
 	public Date dateFin;
 
 	/**
-	 * Numéro OFS étendu de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)
+	 * Numéro OFS de la commune vaudoise (qui permet de déduire l'office d'impôt compétent)
 	 * <p/>
 	 * <b>Dans la version 3 du web-service :</b> <i>municipalityFSOId</i>.
 	 */

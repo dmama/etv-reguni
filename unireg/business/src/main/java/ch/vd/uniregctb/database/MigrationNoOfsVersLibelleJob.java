@@ -100,7 +100,7 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 		//initialisation de la map de conversion no ofs commune -> libelle commune
 		final Map<Integer, MapValue> mapConversion = new HashMap<Integer, MapValue>(2000);
 		for (Integer ofs : numerosOfs) {
-			final String libelle = serviceInfra.getCommuneByNumeroOfsEtendu(ofs, RegDate.get()).getNomMinuscule();
+			final String libelle = serviceInfra.getCommuneByNumeroOfs(ofs, RegDate.get()).getNomOfficiel();
 			if (libelle == null) {
 				LOGGER.warn("Le service infrastructure ne connait pas pas la commune no OFS " + ofs);
 				continue;

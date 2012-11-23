@@ -101,7 +101,7 @@ public class EntrepriseIndexable extends ContribuableIndexable {
 
 			final Commune commune = getCommuneForPM(ffp);
 			if (commune != null) {
-				communeDernierFfp = commune.getNomMinuscule();
+				communeDernierFfp = commune.getNomOfficiel();
 			}
 		}
 

@@ -375,13 +375,13 @@ public abstract class ExtractionDonneesRptResults extends ListesResults<Extracti
 			return null;
 		}
 
-		final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfs, dateReference);
+		final Commune commune = infraService.getCommuneByNumeroOfs(noOfs, dateReference);
 		if (commune != null && commune.isFraction()) {
 			final Commune faitiere = infraService.getCommuneFaitiere(commune, dateReference);
-			return faitiere.getNoOFSEtendu();
+			return faitiere.getNoOFS();
 		}
 		else {
-			return commune != null && commune.isVaudoise() ? commune.getNoOFSEtendu() : null;
+			return commune != null && commune.isVaudoise() ? commune.getNoOFS() : null;
 		}
 	}
 }

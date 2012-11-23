@@ -191,22 +191,22 @@ public class InfrastructureEditor implements Editor {
 		case COMMUNE:
 		case COMMUNE_HC:
 		case COMMUNE_VD:
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(id.intValue(), null);
+			final Commune commune = infraService.getCommuneByNumeroOfs(id.intValue(), null);
 			if (commune == null) {
 				return "?";
 			}
 			else {
 				if (commune.isVaudoise()) {
-					return commune.getNomMinuscule();
+					return commune.getNomOfficiel();
 				}
 				else {
-					return commune.getNomMinuscule() + " (" + commune.getSigleCanton() + ')';
+					return commune.getNomOfficiel() + " (" + commune.getSigleCanton() + ')';
 				}
 			}
 		case ETAT:
 		case TERRITOIRE:
 			final Pays pays = infraService.getPays(id.intValue());
-			return pays == null ? "?" : pays.getNomMinuscule();
+			return pays == null ? "?" : pays.getNomCourt();
 		case LOCALITE:
 			final Localite localite = infraService.getLocaliteByONRP(id.intValue());
 			return localite == null ? "?" : localite.getNomAbregeMinuscule();

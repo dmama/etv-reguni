@@ -150,7 +150,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement
 		 * manuel est nécessaire.
 		 */
-		if (nouvelleCommune != null && nouvelleCommune.getNoOFSEtendu() == EvenementCivilInterne.NO_OFS_FRACTION_SENTIER) {
+		if (nouvelleCommune != null && nouvelleCommune.getNoOFS() == EvenementCivilInterne.NO_OFS_FRACTION_SENTIER) {
 			warnings.addWarning("déménagement dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 		}
 	}
@@ -164,7 +164,7 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 		 * particulier de la fraction de commune
 		 */
 		if (getNouvelleCommunePrincipale().isFraction()) {
-			int numeroOfsCommuneEtendu = getNouvelleCommunePrincipale().getNoOFSEtendu();
+			int numeroOfsCommune = getNouvelleCommunePrincipale().getNoOFS();
 
 			// Date poussée au 1er janvier si la
 			// mutation est envoyé après le 20 décembre.
@@ -182,9 +182,9 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 				// les for principaux)
 				ForFiscalPrincipal forPrincipalHabitant = habitant.getForFiscalPrincipalAt(null);
 				if (forPrincipalHabitant != null) {
-					if ((forPrincipalHabitant.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalHabitant.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommuneEtendu))) {
+					if ((forPrincipalHabitant.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalHabitant.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 						// mise à jour du for fiscal habitant avec le même mode d'imposition
-						updateForFiscalPrincipal(habitant, dateEvenement, numeroOfsCommuneEtendu, MotifFor.DEMENAGEMENT_VD,
+						updateForFiscalPrincipal(habitant, dateEvenement, numeroOfsCommune, MotifFor.DEMENAGEMENT_VD,
 								TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
 						Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers habitant");
 					}
@@ -202,9 +202,9 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 					if(menage != null){
 						ForFiscalPrincipal forPrincipalMenage = menage.getForFiscalPrincipalAt(null);
 						if(forPrincipalMenage != null){
-							if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommuneEtendu))) {
+							if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 								// mise à jour du for fiscal menage commun avec le même mode d'imposition
-								updateForFiscalPrincipal(menage, dateEvenement, numeroOfsCommuneEtendu, MotifFor.DEMENAGEMENT_VD,
+								updateForFiscalPrincipal(menage, dateEvenement, numeroOfsCommune, MotifFor.DEMENAGEMENT_VD,
 										TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
 								Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
 							}
@@ -260,9 +260,9 @@ public class Demenagement extends EvenementCivilInterneAvecAdresses {
 				MenageCommun menage = ensembleTiersCouple.getMenage();
 				ForFiscalPrincipal forPrincipalMenage = menage.getForFiscalPrincipalAt(null);
 				if(forPrincipalMenage != null){
-					if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommuneEtendu))) {
+					if ((forPrincipalMenage.getNumeroOfsAutoriteFiscale() == null) || (!forPrincipalMenage.getNumeroOfsAutoriteFiscale().equals(numeroOfsCommune))) {
 						// mise à jour du for fiscal menage commun avec le même mode d'imposition
-						updateForFiscalPrincipal(menage, dateEvenement, numeroOfsCommuneEtendu, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
+						updateForFiscalPrincipal(menage, dateEvenement, numeroOfsCommune, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
 								true);
 						Audit.info(getNumeroEvenement(), "Mise à jour du for fiscal principal du tiers ménage commun");
 					}

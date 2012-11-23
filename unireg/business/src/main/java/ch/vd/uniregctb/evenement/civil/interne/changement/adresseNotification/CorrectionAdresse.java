@@ -77,7 +77,7 @@ public class CorrectionAdresse extends ModificationAdresseBase {
 			// la commune d'annonce de l'événement n'est pas forcément la commune de domicile
 			// de l'individu, donc il faut aller chercher la commune de domicile...
 			final Commune commune = getCommuneDomicileAtDate(pp, dateTraitement);
-			if (commune == null || commune.getNoOFSEtendu() != ofsCommune) {
+			if (commune == null || commune.getNoOFS() != ofsCommune) {
 				throw new EvenementCivilException("Evénement de correction d'adresse avec changement de commune");
 			}
 		}

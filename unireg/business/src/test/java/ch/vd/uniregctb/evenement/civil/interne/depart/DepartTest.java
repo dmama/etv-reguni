@@ -145,7 +145,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Cossonay.getNomMinuscule());
+				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -158,7 +158,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Cossonay.getNomMinuscule());
+				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -170,7 +170,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				adresse.setLocalite(MockLocalite.Zurich.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Zurich.getNomMinuscule());
+				adresse.setLieu(MockCommune.Zurich.getNomOfficiel());
 				adresse.setNumeroPostal("8001");
 				adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
 				adresse.setNpa("8001");
@@ -186,7 +186,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Cossonay.getNomMinuscule());
+				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -199,7 +199,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Cossonay.getNomMinuscule());
+				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -217,7 +217,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(cossonay.getNomMinuscule());
+				adresse.setLieu(cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -231,7 +231,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.Lausanne.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Lausanne.getNomMinuscule());
+				adresse.setLieu(MockCommune.Lausanne.getNomOfficiel());
 				adresse.setNumeroPostal("1004");
 				adresse.setNumeroOrdrePostal(MockLocalite.Lausanne.getNoOrdre());
 				adresse.setNpa("1004");
@@ -244,7 +244,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				if (residencePrincipaleHorsCanton) {
 					adresse.setLocalite(MockLocalite.Zurich.getNomCompletMajuscule());
-					adresse.setLieu(MockCommune.Zurich.getNomMinuscule());
+					adresse.setLieu(MockCommune.Zurich.getNomOfficiel());
 					adresse.setNumeroPostal("8001");
 					adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
 					adresse.setNpa("8001");
@@ -252,7 +252,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				}
 				else {
 					adresse.setLocalite(MockLocalite.Vevey.getNomCompletMajuscule());
-					adresse.setLieu(MockCommune.Vevey.getNomMinuscule());
+					adresse.setLieu(MockCommune.Vevey.getNomOfficiel());
 					adresse.setNumeroPostal("1043");
 					adresse.setNumeroOrdrePostal(MockLocalite.Vevey.getNoOrdre());
 					adresse.setNpa("1043");
@@ -269,7 +269,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setDateDebutValidite(dateDebut);
 				adresse.setDateFinValidite(dateEvenement);
 				adresse.setLocalite(MockLocalite.CossonayVille.getNomCompletMajuscule());
-				adresse.setLieu(MockCommune.Cossonay.getNomMinuscule());
+				adresse.setLieu(MockCommune.Cossonay.getNomOfficiel());
 				adresse.setNumeroPostal("1304");
 				adresse.setNumeroOrdrePostal(MockLocalite.CossonayVille.getNoOrdre());
 				adresse.setNpa("1304");
@@ -281,7 +281,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				adresse.setTypeAdresse(TypeAdresseCivil.PRINCIPALE);
 				adresse.setDateDebutValidite(dateEvenement.getOneDayAfter());
 				// adresse.setLocalite(MockLocalite.P);
-				// adresse.setLieu(MockCommune.Zurich.getNomMinuscule());
+				// adresse.setLieu(MockCommune.Zurich.getNomOfficiel());
 				adresse.setNumeroPostal("31320");
 				// adresse.setNumeroOrdrePostal(MockLocalite.Zurich.getNoOrdre());
 				adresse.setNpa("31320");
@@ -465,7 +465,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		}
 		else {
 			// j'ai mis "Croy", j'aurais pu mettre autre chose...
-			noOFS = MockCommune.Croy.getNoOFSEtendu();
+			noOFS = MockCommune.Croy.getNoOFS();
 		}
 
 
@@ -880,7 +880,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 		assertNotNull(ffp);
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertEquals(dateDepart, ffp.getDateDebut());
 	}
 
@@ -1122,7 +1122,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertEquals(date(2007, 12, 31), ffp.getDateFin());
 	}
 
@@ -1179,7 +1179,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertNull(ffp.getDateFin());
 	}
 
@@ -1247,7 +1247,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertNull(ffp.getDateFin());
 	}
 
@@ -1304,7 +1304,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		assertTrue("Class " + ffp.getClass(), ffp instanceof ForFiscalPrincipal);
 		assertFalse(ffp.isAnnule());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Leysin.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Leysin.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertEquals(dateMariage.getOneDayBefore(), ffp.getDateFin());
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(pp, null);
@@ -1363,7 +1363,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 		assertNotNull(ffp);
 		assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-		assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+		assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 		assertEquals(MotifFor.DEPART_HC, ffp.getMotifOuverture());
 		assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
 
@@ -1468,9 +1468,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(2, ff.size());
-		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFSEtendu(),
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Echallens.getNoOFS(),
 		                   MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
-		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(), MotifRattachement.DOMICILE,
 		                   ModeImposition.ORDINAIRE, ff.get(1));
 	}
 
@@ -1517,11 +1517,11 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(3, ff.size());
-		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, date(1999, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
-		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 12, 31), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(),
+		assertForPrincipal(date(2000, 1, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 12, 31), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(1));
-		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, ff.get(2));
 	}
 
@@ -1562,9 +1562,9 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		final List<ForFiscalPrincipal> ff = pp.getForsFiscauxPrincipauxActifsSorted();
 		assertNotNull(ff);
 		assertEquals(2, ff.size());
-		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+		assertForPrincipal(date(1976, 4, 30), MotifFor.MAJORITE, dateDepart, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ff.get(0));
-		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+		assertForPrincipal(dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Zurich.getNoOFS(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, ff.get(1));
 	}
 
@@ -1599,7 +1599,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFSEtendu(), true);
+				final Depart depart = createValidDepart(noIndividu, today, true, MockCommune.Aubonne.getNoOFS(), true);
 				final MessageCollector collector = buildMessageCollector();
 				handleDepart(depart, collector, collector);
 				assertEquals(1, collector.getErreurs().size());
@@ -1613,7 +1613,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				assertEquals(dateOuvertureFor, ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Aubonne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}
@@ -1650,7 +1650,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFSEtendu(), true);
+				final Depart depart = createValidDepart(noIndividu, dateDepart, true, MockCommune.Aubonne.getNoOFS(), true);
 				final MessageCollector collector = buildMessageCollector();
 				handleDepart(depart, collector, collector);
 				assertFalse(collector.hasErreurs());
@@ -1662,7 +1662,7 @@ public class DepartTest extends AbstractEvenementCivilInterneTest {
 				assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
 				assertNull(ffp.getDateFin());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

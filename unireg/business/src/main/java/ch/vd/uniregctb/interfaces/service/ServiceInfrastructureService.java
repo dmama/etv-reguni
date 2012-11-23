@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
@@ -128,7 +129,7 @@ public interface ServiceInfrastructureService {
 	Rue getRueByNumero(int numero) throws ServiceInfrastructureException;
 
 	/**
-	 * Retourne l'historique d'une commune à partir de son numéro OFS étendu donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.
+	 * Retourne l'historique d'une commune à partir de son numéro OFS donné. Cette méthode permet de gérer les 28 exceptions où deux communes se partagent le même numéro Ofs.
 	 *
 	 * @param noOfsCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
 	 * @return une liste avec 0, 1 ou 2 (cas exceptionnel) communes.
@@ -152,6 +153,12 @@ public interface ServiceInfrastructureService {
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
 	Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException;
+
+	/**
+	 * @return le mapping entre le numéro OFS et l'ancien numéro technique du Host pour les communes suisses (uniquement pour les communes dont le numéro technique est différent du numéro OFS).
+	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 */
+	Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException;
 
 	/**
 	 * @param noColAdm le numéro de collectivité administrative de l'office d'impôt
@@ -328,14 +335,14 @@ public interface ServiceInfrastructureService {
 	Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException;
 
 	/**
-	 * Retrouve la commune avec le numéro OFS étendu donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
+	 * Retrouve la commune avec le numéro OFS donné ; si plusieurs communes correspondent, renvoie celle qui est valide à la date donnée
 	 *
 	 * @param noCommune numéro OFS de la commune (ou technique de la fraction de commune vaudoise)
 	 * @param date      date de référence (<code>null</code> pour la date du jour)
 	 * @return Commune
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
 	 */
-	Commune getCommuneByNumeroOfsEtendu(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException;
+	Commune getCommuneByNumeroOfs(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException;
 
 	/**
 	 * Résoud la commune d'une adresse civile (s'il existe une commune directement attachée, on la prend, sinon on prend la commune correspondant à la localité de l'adresse - en Suisse)

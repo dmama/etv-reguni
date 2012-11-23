@@ -5,11 +5,8 @@ import ch.vd.unireg.interfaces.infra.data.LogicielMetier;
 
 public class LogicielView {
 	private String contactMetierMail;
-	private String contactMetierNom;
 	private String contactTechniqueMail;
-	private String contactTechniqueNom;
 	private String fournisseur;
-	private String fournisseurAdresse;
 	private long id;
 	private String libelle;
 	private String libelleComplet;
@@ -23,11 +20,8 @@ public class LogicielView {
 	public LogicielView(Logiciel logiciel) {
 		this.certifie = logiciel.isCertifie();
 		this.contactMetierMail = logiciel.getContactMetierMail();
-		this.contactMetierNom = logiciel.getContactMetierNom();
 		this.contactTechniqueMail = logiciel.getContactTechniqueMail();
-		this.contactTechniqueNom = logiciel.getContactTechniqueNom();
 		this.fournisseur = logiciel.getFournisseur();
-		this.fournisseurAdresse = logiciel.getFournisseurAdresse();
 		this.id = logiciel.getId();
 		this.libelle = logiciel.getLibelle();
 		this.metier = logiciel.getMetier();
@@ -43,14 +37,6 @@ public class LogicielView {
 		this.contactMetierMail = contactMetierMail;
 	}
 
-	public String getContactMetierNom() {
-		return contactMetierNom;
-	}
-
-	public void setContactMetierNom(String contactMetierNom) {
-		this.contactMetierNom = contactMetierNom;
-	}
-
 	public String getContactTechniqueMail() {
 		return contactTechniqueMail;
 	}
@@ -59,28 +45,12 @@ public class LogicielView {
 		this.contactTechniqueMail = contactTechniqueMail;
 	}
 
-	public String getContactTechniqueNom() {
-		return contactTechniqueNom;
-	}
-
-	public void setContactTechniqueNom(String contactTechniqueNom) {
-		this.contactTechniqueNom = contactTechniqueNom;
-	}
-
 	public String getFournisseur() {
 		return fournisseur;
 	}
 
 	public void setFournisseur(String fournisseur) {
 		this.fournisseur = fournisseur;
-	}
-
-	public String getFournisseurAdresse() {
-		return fournisseurAdresse;
-	}
-
-	public void setFournisseurAdresse(String fournisseurAdresse) {
-		this.fournisseurAdresse = fournisseurAdresse;
 	}
 
 	public long getId() {

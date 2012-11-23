@@ -54,7 +54,7 @@ public class Siege implements Range {
 	public TypeSiege typeSiege;
 
 	/**
-	 * Numéro OFS étendu de la commune suisse ou du pays de siège
+	 * Numéro OFS de la commune suisse ou du pays de siège
 	 * <p/>
 	 * <b>Dans la version 3 du web-service :</b> <i>fsoId</i>.
 	 */

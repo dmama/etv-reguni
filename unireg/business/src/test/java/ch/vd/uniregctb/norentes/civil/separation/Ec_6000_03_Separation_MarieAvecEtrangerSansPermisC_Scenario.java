@@ -80,7 +80,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 				separeIndividus(indMomo, indBea, dateSeparation);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, dateNaissanceMomo, null);
 				addPermis(indMomo, TypePermis.COURTE_DUREE, dateNaissanceMomo, null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.BoulevardGrancy, null, dateMariage, dateSeparation.getOneDayBefore());
@@ -148,7 +148,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+					"Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -180,7 +180,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 			final ModeImposition expected = ModeImposition.DEPENSE;
 			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
-			assertEquals(MockCommune.Chamblon.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(MockCommune.Chamblon.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 
@@ -193,7 +193,7 @@ public class Ec_6000_03_Separation_MarieAvecEtrangerSansPermisC_Scenario extends
 			final ModeImposition expected = ModeImposition.DEPENSE;
 			assertEquals(expected, ffp.getModeImposition(), "Le mode d'imposition n'est pas " + expected.texte());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture(), "Le motif de fermeture n'est pas SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT");
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
+			assertEquals(MockCommune.Lausanne.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Mauvaise commune de for");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
 		}
 

@@ -52,25 +52,25 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		final Contribuable ctb = addNonHabitantAvecAdresseCourierALausanne();
 		{
-			final ProduireRolesResults.InfoCommune infoRenens = results.getOrCreateInfoPourCommune(MockCommune.Renens.getNoOFSEtendu());
+			final ProduireRolesResults.InfoCommune infoRenens = results.getOrCreateInfoPourCommune(MockCommune.Renens.getNoOFS());
 			final ProduireRolesResults.InfoContribuable infoCtbRenens = infoRenens.getOrCreateInfoPourContribuable(ctb, anneeRoles, adresseService, tiersService);
 			infoCtbRenens.addFor(new ProduireRolesResults.InfoFor(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON,
 					date(1990, 7, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeRoles, 6, 1), MotifFor.VENTE_IMMOBILIER, ProduireRolesResults.InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF,
-					false, MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Renens.getNoOFSEtendu()));
+					false, MotifRattachement.IMMEUBLE_PRIVE, MockCommune.Renens.getNoOFS()));
 
-			final ProduireRolesResults.InfoCommune infoPrilly = results.getOrCreateInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFSEtendu());
+			final ProduireRolesResults.InfoCommune infoPrilly = results.getOrCreateInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFS());
 			final ProduireRolesResults.InfoContribuable infoCtbCheseaux = infoPrilly.getOrCreateInfoPourContribuable(ctb, anneeRoles, adresseService, tiersService);
 			infoCtbCheseaux.addFor(new ProduireRolesResults.InfoFor(ProduireRolesResults.InfoContribuable.TypeContribuable.HORS_CANTON,
 					date(anneeRoles, 10, 15), MotifFor.DEBUT_EXPLOITATION, null, null, ProduireRolesResults.InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF,
-					false, MotifRattachement.ACTIVITE_INDEPENDANTE, MockCommune.CheseauxSurLausanne.getNoOFSEtendu()));
+					false, MotifRattachement.ACTIVITE_INDEPENDANTE, MockCommune.CheseauxSurLausanne.getNoOFS()));
 
-			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.Renens.getNoOFSEtendu()));
-			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFSEtendu()));
+			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.Renens.getNoOFS()));
+			Assert.assertNotNull(results.getInfoPourCommune(MockCommune.CheseauxSurLausanne.getNoOFS()));
 		}
 
 		// Renens-Cossonay -> ne doit prendre en compte que le for de Renens
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFSEtendu(), MockCommune.Cossonay.getNoOFSEtendu()));
+			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.Cossonay.getNoOFS()));
 			Assert.assertNotNull(map);
 			Assert.assertEquals(1, map.size());
 
@@ -93,7 +93,7 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		// Renens-Cheseaux -> doit prendre tous les fors ajoutés
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFSEtendu(), MockCommune.CheseauxSurLausanne.getNoOFSEtendu()));
+			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Renens.getNoOFS(), MockCommune.CheseauxSurLausanne.getNoOFS()));
 			Assert.assertNotNull(map);
 			Assert.assertEquals(1, map.size());
 
@@ -114,7 +114,7 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		// Cheseaux-Renens-Aubonne -> doit prendre tous les fors ajoutés
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu(), MockCommune.Aubonne.getNoOFSEtendu()));
+			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Renens.getNoOFS(), MockCommune.Aubonne.getNoOFS()));
 			Assert.assertNotNull(map);
 			Assert.assertEquals(1, map.size());
 
@@ -135,7 +135,7 @@ public class ProduireRolesResultsTest extends BusinessTest {
 
 		// Cheseaux-Lausanne -> seulement le for de Cheseaux
 		{
-			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MockCommune.Lausanne.getNoOFSEtendu()));
+			final Map<Long, ProduireRolesResults.InfoContribuable> map = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.CheseauxSurLausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS()));
 			Assert.assertNotNull(map);
 			Assert.assertEquals(1, map.size());
 

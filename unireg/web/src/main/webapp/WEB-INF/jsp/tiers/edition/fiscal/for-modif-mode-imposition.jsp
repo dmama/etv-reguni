@@ -54,14 +54,14 @@
 					<td>
 						<c:choose>
 							<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">
-								<unireg:commune ofs="${command.numeroForFiscalCommune}" displayProperty="nomMinuscule" date="${command.regDateOuverture}"/>
+								<unireg:commune ofs="${command.numeroForFiscalCommune}" displayProperty="nomOfficiel" date="${command.regDateOuverture}"/>
 							</c:when>
 							<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_HC' }">
-								<unireg:commune ofs="${command.numeroForFiscalCommuneHorsCanton}" displayProperty="nomMinuscule" date="${command.regDateOuverture}"/>
+								<unireg:commune ofs="${command.numeroForFiscalCommuneHorsCanton}" displayProperty="nomOfficiel" date="${command.regDateOuverture}"/>
 								(<unireg:commune ofs="${command.numeroForFiscalCommuneHorsCanton}" displayProperty="sigleCanton" date="${command.regDateOuverture}"/>)
 							</c:when>
 							<c:when test="${command.typeAutoriteFiscale == 'PAYS_HS' }">
-								<unireg:infra entityId="${command.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+								<unireg:infra entityId="${command.numeroForFiscalPays}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 							</c:when>
 						</c:choose>
 					</td>

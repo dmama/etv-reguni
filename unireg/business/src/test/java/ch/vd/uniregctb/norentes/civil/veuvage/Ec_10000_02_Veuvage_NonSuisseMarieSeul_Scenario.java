@@ -70,7 +70,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 
 				marieIndividu(indMikkel, RegDate.get(1986, 4, 8));
 
-				addOrigine(indMikkel, MockPays.Danemark.getNomMinuscule());
+				addOrigine(indMikkel, MockPays.Danemark.getNomCourt());
 				addNationalite(indMikkel, MockPays.Danemark, RegDate.get(1961, 3, 12), null);
 				addEtatCivil(indMikkel, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indMikkel, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.RuelleDuCarroz, null, RegDate.get(1974, 3, 3), avantDateMariage);
@@ -119,7 +119,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, false);
@@ -162,7 +162,7 @@ public class Ec_10000_02_Veuvage_NonSuisseMarieSeul_Scenario extends EvenementCi
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " ouvert");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertEquals(dateVeuvage, ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 
 		// le survivant ne doit pas voir ses remboursements automatiques bloqués

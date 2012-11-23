@@ -616,7 +616,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(1, results.infosCommunes.size());
 
 		{
-			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Prilly.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Prilly.getNoOFS(), MockCommune.Renens.getNoOFS()));
 			assertNotNull(infosRegroupees);
 			assertEquals(1, infosRegroupees.size());
 
@@ -662,7 +662,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(0, results.ctbsIgnores.size());
 
 		{
-			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+			final Map<Long, InfoContribuable> infosRegroupees = results.buildInfosPourRegroupementCommunes(Arrays.asList(MockCommune.Lausanne.getNoOFS(), MockCommune.Renens.getNoOFS()));
 			assertNotNull(infosRegroupees);
 			assertEquals(6, infosRegroupees.size());
 
@@ -982,7 +982,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	 */
 	private Contribuable newCtbOrdinaireAvecDemenagementEnGardantImmeuble(MockCommune avant, MockCommune apres, MockCommune communeImmeuble) {
 		final Contribuable ctb = newCtbOrdinaireAvecDemenagement(avant, apres);
-		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 12), MotifFor.ACHAT_IMMOBILIER, communeImmeuble.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return ctb;
 	}
 
@@ -1021,9 +1021,9 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		final Contribuable pp = addNonHabitant("Fifi", "Brindacier", date(1970, 9, 12), Sexe.FEMININ);
 		addForPrincipal(pp, date(1988, 9, 12), MotifFor.MAJORITE, date(2007, 6, 11), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(pp, date(2007, 6, 12), MotifFor.DEPART_HC, MockCommune.Bern);
-		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(pp, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.RomainmotierEnvy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(pp, date(2004, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 5, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2003, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.RomainmotierEnvy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(pp, date(2004, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 		return pp;
 	}
 
@@ -1151,7 +1151,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(1, results.infosCommunes.size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFSEtendu());
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Bussigny.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
@@ -1178,7 +1178,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS, MockPays.Albanie);
 				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, departHc, MotifFor.DEPART_HC, MockCommune.Cossonay);
 				addForPrincipal(pp, departHc.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bern);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1191,7 +1191,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(1, results.infosCommunes.size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Cossonay.getNoOFSEtendu());
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Cossonay.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
@@ -1223,7 +1223,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
-				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -1236,7 +1236,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(2, results.infosCommunes.size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Echallens.getNoOFSEtendu());
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Echallens.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
@@ -1245,7 +1245,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Echallens.getNoOFS(), achat, null, MotifFor.ACHAT_IMMOBILIER, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Moudon.getNoOFSEtendu());
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Moudon.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
@@ -1292,7 +1292,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 		assertEquals(1, results.infosCommunes.size());
 
 		{
-			final InfoCommune infos = results.infosCommunes.get(MockCommune.Villette.getNoOFSEtendu());
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Villette.getNoOFS());
 			assertNotNull(infos);
 
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);

@@ -66,7 +66,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		final RegDate dateEvenement = RegDate.get(2008, 3, 10);
 		final EvenementCivilRegPP evenementArriveeCouple = new EvenementCivilRegPP(1L, TypeEvenementCivil.ARRIVEE_DANS_COMMUNE,
 				EtatEvenementCivil.A_TRAITER, dateEvenement, noIndividuPrincipal,
-				noIndividuConjoint, MockCommune.Lausanne.getNoOFSEtendu(), null);
+				noIndividuConjoint, MockCommune.Lausanne.getNoOFS(), null);
 
 		/*
 		 * Création et initialisation de l'adapter
@@ -85,7 +85,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		Assert.assertEquals(noIndividuConjoint, adapter.getNoIndividuConjoint().longValue());
 		Assert.assertEquals(dateEvenement, adapter.getDate());
 		Assert.assertNotNull(adapter.getNumeroOfsCommuneAnnonce());
-		Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), adapter.getNumeroOfsCommuneAnnonce().intValue());
+		Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), adapter.getNumeroOfsCommuneAnnonce().intValue());
 	}
 
 	@Test
@@ -118,7 +118,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 		 * Création d'un événement civil de mariage
 		 */
 		final EvenementCivilRegPP
-				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFSEtendu(), null);
+				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFS(), null);
 
 		// passage dans l'init de l'adapter
 		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, new MockTiersDAO(), null, null);

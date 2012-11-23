@@ -86,13 +86,13 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 				marieIndividu(indAlfredo, RegDate.get(1977, 4, 30));
 				marieIndividu(indArmando, RegDate.get(1982, 4, 25));
 
-				addOrigine(indAlfredo, MockPays.Albanie.getNomMinuscule());
+				addOrigine(indAlfredo, MockPays.Albanie.getNomCourt());
 				addNationalite(indAlfredo, MockPays.Albanie, dateNaissanceAlfredo, null);
 				addPermis(indAlfredo, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indAlfredo, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDebutAlfredo, null);
 				addAdresse(indAlfredo, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateDebutAlfredo, null);
 
-				addOrigine(indArmando, MockPays.Danemark.getNomMinuscule());
+				addOrigine(indArmando, MockPays.Danemark.getNomCourt());
 				addNationalite(indArmando, MockPays.Danemark, dateNaissanceArmando, null);
 				addPermis(indArmando, TypePermis.ETABLISSEMENT, null, null, false);
 				addAdresse(indArmando, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDemenagementArmando, null);
@@ -154,7 +154,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertNotNull(ffp, "For principal du ménage d'Alfredo est null");
 			assertEquals(dateMariageAlfredo, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 		}
 
 		{
@@ -170,7 +170,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertNotNull(ffp, "For principal du ménage d'Armando est null");
 			assertEquals(dateMariageArmando, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -211,7 +211,7 @@ public class Ec_4000_06_Mariage_FusionMenages_Scenario extends EvenementCivilSce
 			assertNotNull(ffp, "For principal du ménage est null");
 			assertEquals(dateMariageAlfredo, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 
 			SituationFamille sf = menageChoisi.getSituationFamilleActive();
 			assertNotNull(sf, "Aucune situation famille trouvée");

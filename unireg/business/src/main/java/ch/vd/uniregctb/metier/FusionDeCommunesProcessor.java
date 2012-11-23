@@ -321,24 +321,24 @@ public class FusionDeCommunesProcessor {
 	 */
 	private void checkNoOfs(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion) {
 		try {
-			final Commune nouvelleCommune = serviceInfra.getCommuneByNumeroOfsEtendu(nouveauNoOfs, dateFusion);
+			final Commune nouvelleCommune = serviceInfra.getCommuneByNumeroOfs(nouveauNoOfs, dateFusion);
 			if (nouvelleCommune == null) {
 				throw new MauvaiseCommuneException(String.format("La commune avec le numéro OFS %d n'existe pas.", nouveauNoOfs));
 			}
 			final String nouveauCanton = nouvelleCommune.getSigleCanton();
 			if (nouveauCanton == null) {
-				throw new MauvaiseCommuneException(String.format("La commune %s (%d) semble n'être rattachée à aucun canton suisse.", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()));
+				throw new MauvaiseCommuneException(String.format("La commune %s (%d) semble n'être rattachée à aucun canton suisse.", nouvelleCommune.getNomOfficiel(), nouvelleCommune.getNoOFS()));
 			}
 
 			for (Integer noOfs : anciensNoOfs) {
-				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, dateFusion.getOneDayBefore());
+				final Commune commune = serviceInfra.getCommuneByNumeroOfs(noOfs, dateFusion.getOneDayBefore());
 				if (commune == null) {
 					throw new MauvaiseCommuneException(String.format("La commune avec le numéro OFS %d n'existe pas.", noOfs));
 				}
 				final String canton = commune.getSigleCanton();
 				if (!nouveauCanton.equals(canton)) {
 					throw new MauvaiseCommuneException(String.format("L'ancienne commune %s (%d) est dans le canton %s, alors que la nouvelle commune %s (%d) est dans le canton %s",
-															 commune.getNomMinuscule(), noOfs, canton, nouvelleCommune.getNomMinuscule(), nouveauNoOfs, nouveauCanton));
+															 commune.getNomOfficiel(), noOfs, canton, nouvelleCommune.getNomOfficiel(), nouveauNoOfs, nouveauCanton));
 				}
 			}
 		}

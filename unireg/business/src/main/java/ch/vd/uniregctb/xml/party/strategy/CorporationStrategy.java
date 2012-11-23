@@ -425,7 +425,7 @@ public class CorporationStrategy extends TaxPayerStrategy<Corporation> {
 		case COMMUNE_CH:
 			final Commune commune;
 			try {
-				commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, null);
+				commune = serviceInfra.getCommuneByNumeroOfs(noOfs, null);
 			}
 			catch (ServiceInfrastructureException e) {
 				throw new RuntimeException("Impossible de récupérer la commune avec le numéro Ofs = [" + noOfs + ']', e);

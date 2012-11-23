@@ -25,8 +25,8 @@ public class ObtentionNationaliteSuisse extends ObtentionNationalite {
 	 * Pour les tests uniquement
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ObtentionNationaliteSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, numeroOfsEtenduCommunePrincipale, true, context);
+	protected ObtentionNationaliteSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsCommunePrincipale, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, numeroOfsCommunePrincipale, true, context);
 	}
 
 	@Override

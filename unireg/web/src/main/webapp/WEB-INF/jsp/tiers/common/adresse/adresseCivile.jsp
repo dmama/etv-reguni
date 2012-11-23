@@ -28,7 +28,7 @@
 					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
 						<c:if test="${adresseCivile.paysOFS != null }">
-							<unireg:infra entityId="${adresseCivile.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+							<unireg:infra entityId="${adresseCivile.paysOFS}" entityType="pays" entityPropertyName="nomCourt"/>
 						</c:if>
 					</display:column>
 					<display:setProperty name="paging.banner.all_items_found" value=""/>
@@ -63,7 +63,7 @@
 					<display:column sortable ="true" titleKey="label.localite" property="localite"/>
 					<display:column sortable ="true" titleKey="label.pays">
 						<c:if test="${adresseCivileConjoint.paysOFS != null }">
-							<unireg:infra entityId="${adresseCivileConjoint.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+							<unireg:infra entityId="${adresseCivileConjoint.paysOFS}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 						</c:if>
 					</display:column>
 					<display:setProperty name="paging.banner.all_items_found" value=""/>

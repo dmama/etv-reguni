@@ -81,12 +81,12 @@ public class Ec_4000_01_Mariage_CoupleArriveHorsSuisse_Scenario extends Evenemen
 
 				marieIndividus(indRafa, indMaria, dateMariage);
 
-				addOrigine(indRafa, MockPays.Espagne.getNomMinuscule());
+				addOrigine(indRafa, MockPays.Espagne.getNomCourt());
 				addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null);
 				addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 				addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
-				addOrigine(indMaria, MockPays.Espagne.getNomMinuscule());
+				addOrigine(indMaria, MockPays.Espagne.getNomCourt());
 				addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
 				addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 				addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);

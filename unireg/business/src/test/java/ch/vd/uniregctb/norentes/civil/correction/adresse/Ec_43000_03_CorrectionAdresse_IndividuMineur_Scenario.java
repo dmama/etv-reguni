@@ -52,7 +52,7 @@ public class Ec_43000_03_CorrectionAdresse_IndividuMineur_Scenario extends Evene
 				final RegDate aujourdhui = RegDate.get();
 				final MockIndividu indConceicao = addIndividu(noIndConceicao, naissance, "Conceiçao", "Aparecida Porto", false);
 
-				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
+				addOrigine(indConceicao, MockPays.Espagne.getNomCourt());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
 				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);

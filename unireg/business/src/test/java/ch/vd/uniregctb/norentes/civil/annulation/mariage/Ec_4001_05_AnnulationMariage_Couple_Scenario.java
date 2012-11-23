@@ -53,11 +53,11 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 		protected void init() {
 
 			MockIndividu alexandre = addIndividu(noIndAlexandre, dateNaissanceAlexandre, "Getaz", "Alexandre", true);
-			addOrigine(alexandre, MockPays.Suisse.getNomMinuscule());
+			addOrigine(alexandre, MockPays.Suisse.getNomCourt());
 			addNationalite(alexandre, MockPays.Suisse, dateNaissanceAlexandre, null);
 
 			MockIndividu sylvie = addIndividu(noIndSylvie, dateNaissanceSylvie, "Grandchamp", "Sylvie", false);
-			addOrigine(sylvie, MockPays.Suisse.getNomMinuscule());
+			addOrigine(sylvie, MockPays.Suisse.getNomCourt());
 			addNationalite(sylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 
 			marieIndividus(alexandre, sylvie , dateMariage);
@@ -185,7 +185,7 @@ public class Ec_4001_05_AnnulationMariage_Couple_Scenario extends EvenementCivil
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition(), "Le mode d'imposition n'est pas ORDINAIRE");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 		}
 	}
 

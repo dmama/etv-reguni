@@ -1,11 +1,14 @@
 package ch.vd.unireg.interfaces.infra.mock;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -17,10 +20,12 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -118,7 +123,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 		OfficeImpot office = c.getOfficeImpot();
 		if (office != null) { // les communes hors-canton ne possèdent pas d'oid
-			oidByNoOfsCommune.put(c.getNoOFSEtendu(), office);
+			oidByNoOfsCommune.put(c.getNoOFS(), office);
 			oidByNoColAdm.put(office.getNoColAdm(), office);
 		}
 	}
@@ -184,6 +189,11 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		return Collections.emptyMap();
+	}
+
+	@Override
 	public List<Commune> getListeCommunes(Canton canton) throws ServiceInfrastructureException {
 		return communesVaud;
 	}
@@ -245,7 +255,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 		for (Pays p : pays) {
 			if (p.getCodeIso2() != null && p.getCodeIso2().equals(codePays)) {
 				return p;
@@ -313,13 +323,13 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 	public List<Commune> getCommuneHistoByNumeroOfs(int noOfsCommune) throws ServiceInfrastructureException {
 		final List<Commune> list = new ArrayList<Commune>(2);
 		for (Commune c : communesVaud) {
-			int no = c.getNoOFSEtendu();
+			int no = c.getNoOFS();
 			if (no == noOfsCommune) {
 				list.add(c);
 			}
 		}
 		for (Commune c : communesHorsCanton) {
-			if (c.getNoOFSEtendu() == noOfsCommune) {
+			if (c.getNoOFS() == noOfsCommune) {
 				list.add(c);
 			}
 		}
@@ -354,7 +364,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		}
 
 		for (Commune c : communesVaud) {
-			int no = c.getNoOFSEtendu();
+			int no = c.getNoOFS();
 			if (no == noCommune) {
 				commune = c;
 				break;
@@ -362,7 +372,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 		}
 		if (commune == null) {
 			for (Commune c : communesHorsCanton) {
-				if (c.getNoOFSEtendu() == localite.getNoCommune()) {
+				if (c.getNoOFS() == localite.getNoCommune()) {
 					commune = c;
 				}
 			}
@@ -382,8 +392,8 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			if (lien.isValidAt(date)) {
 				if (commune != null) {
 					throw new RuntimeException(
-							"Le bâtiment avec l'egid [" + egid + "] est enregistré dans deux communes en même temps : numéro Ofs [" + commune.getNoOFSEtendu() + "] et numéro Ofs [" +
-									lien.getCommune().getNoOFSEtendu() + ']');
+							"Le bâtiment avec l'egid [" + egid + "] est enregistré dans deux communes en même temps : numéro Ofs [" + commune.getNoOFS() + "] et numéro Ofs [" +
+									lien.getCommune().getNoOFS() + ']');
 				}
 				commune = lien.getCommune();
 			}
@@ -393,7 +403,7 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 			return null;
 		}
 
-		return commune.getNoOFSEtendu();
+		return commune.getNoOFS();
 	}
 
 	@Override
@@ -482,6 +492,16 @@ public abstract class MockServiceInfrastructureService implements ServiceInfrast
 
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
+		return null;
+	}
+
+	@Override
+	public District getDistrict(int code) {
+		return null;
+	}
+
+	@Override
+	public Region getRegion(int code) {
 		return null;
 	}
 }

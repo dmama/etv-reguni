@@ -102,7 +102,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		List<Commune> communes = new ArrayList<Commune>();
 		for (Commune c : getCommunes()) {
 			if (c.isVaudoise()) {
-				CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFSEtendu());
+				CollectiviteAdministrative oi = getOfficeImpotDeCommune(c.getNoOFS());
 				if (oi != null && oi.getNoColAdm() == oid) {
 					communes.add(c);
 				}
@@ -333,7 +333,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		if (commune == null) {
 			final Integer noOfs = adresse.getNoOfsCommuneAdresse();
 			if (noOfs != null) {
-				final Commune candidate = getCommuneByNumeroOfsEtendu(noOfs, date);
+				final Commune candidate = getCommuneByNumeroOfs(noOfs, date);
 				// si la commune est attachée et que ce n'est pas une commune fractionnée, on la prend
 				// sinon, on prend l'adresse depuis la localité
 				if (candidate != null && !candidate.isPrincipale()) {
@@ -391,7 +391,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		}
 
 		// un second appel où il y a beaucoup de chances de trouver la commune dans le cache
-		return getCommuneByNumeroOfsEtendu(noOfs, date);
+		return getCommuneByNumeroOfs(noOfs, date);
 	}
 
 	@Override
@@ -404,8 +404,8 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		// C'est bidon ici !! on confond idTechnique et numéro OFS, mais on a de la chance : pour les communes
 		// faîtières des fractions vaudoises, c'est la même chose...
 		//
-		final int idCommuneMere = commune.getNumTechMere();
-		return getCommuneByNumeroOfsEtendu(idCommuneMere, dateReference);
+		final int idCommuneMere = commune.getOfsCommuneMere();
+		return getCommuneByNumeroOfs(idCommuneMere, dateReference);
 	}
 
 	@Override
@@ -469,7 +469,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	 */
 	@Override
 	public Canton getCantonByCommune(int noOfsCommune) throws ServiceInfrastructureException {
-		final Commune commune = getCommuneByNumeroOfsEtendu(noOfsCommune, null);
+		final Commune commune = getCommuneByNumeroOfs(noOfsCommune, null);
 		if (commune == null) {
 			throw new ServiceInfrastructureException("La commune avec le numéro Ofs " + noOfsCommune + " n'existe pas");
 		}
@@ -478,7 +478,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	}
 
 	@Override
-	public Commune getCommuneByNumeroOfsEtendu(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException {
+	public Commune getCommuneByNumeroOfs(int noCommune, @Nullable RegDate date) throws ServiceInfrastructureException {
 		final List<Commune> list = getCommuneHistoByNumeroOfs(noCommune);
 		return choisirCommune(list, date);
 	}
@@ -491,6 +491,11 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 	@Override
 	public Commune getCommuneByLocalite(Localite localite) throws ServiceInfrastructureException {
 		return rawService.getCommuneByLocalite(localite);
+	}
+
+	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		return rawService.getNoOfs2NoTechniqueMappingForCommunes();
 	}
 
 	/**
@@ -573,7 +578,7 @@ public class ServiceInfrastructureImpl implements ServiceInfrastructureService {
 		final Integer numero = adresse.getNumeroRue();
 		if (numero == null || numero == 0) {
 			final Integer noOfs = adresse.getNoOfsCommuneAdresse();
-			final Commune commune = (noOfs == null ? null : getCommuneByNumeroOfsEtendu(noOfs, adresse.getDateDebut()));
+			final Commune commune = (noOfs == null ? null : getCommuneByNumeroOfs(noOfs, adresse.getDateDebut()));
 			return commune != null && estDansLeCanton(commune);
 		}
 		else {

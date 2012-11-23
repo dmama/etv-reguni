@@ -6,43 +6,21 @@ import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
 public interface Commune extends EntiteOFS {
 
 	/**
-	 * Retourne la date de début de validité de la commune.
-	 *
 	 * @return la date de début de validité de la commune.
 	 */
 	RegDate getDateDebutValidite();
 
 	/**
-	 * Retourne la date de fin de validité de la commune.
-	 *
 	 * @return la date de fin de validité de la commune.
 	 */
 	RegDate getDateFinValidite();
 
 	/**
-	 * @return le numéro OFS étendu, c'est-à-dire le numéro OFS officiel pour les communes non-fractionnées et un pseudo-numéro OFS cantonal
-	 *         (> 8000) pour les fractions de commune.
+	 * @return le numéro Ofs de la commune à laquelle la commune est rattachée
 	 */
-	int getNoOFSEtendu();
+	int getOfsCommuneMere();
 
 	/**
-	 * Retourne le numéro technique de la commune à laquelle la commune est
-	 * rattachée.
-	 *
-	 * @return le numéro technique de la commune à laquelle la commune est
-	 *         rattachée
-	 */
-	int getNumTechMere();
-
-	/**
-	 * @return le numéro technique de la commune (toujours préférer le numéro OFS !)
-	 */
-	@Deprecated
-	int getNumeroTechnique();
-
-	/**
-	 * Retourne le sigle du canton de la commune.
-	 *
 	 * @return le sigle du canton de la commune.
 	 */
 	String getSigleCanton();
@@ -67,9 +45,13 @@ public interface Commune extends EntiteOFS {
 	 */
 	boolean isPrincipale();
 
-	/** retourne le district d ela commune
-	 *
-	 * @return
+	/**
+	 * @return le code du district de la commune vaudoise; ou <b>null</b> s'il s'agit d'une commune hors-canton.
 	 */
-	District getDistrict();
+	Integer getCodeDistrict();
+
+	/**
+	 * @return le code de la région de la commune vaudoise; ou <b>null</b> s'il s'agit d'une commune hors-canton.
+	 */
+	Integer getCodeRegion();
 }

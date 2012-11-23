@@ -75,7 +75,7 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 				addOrigine(indBea, commune);
 				addNationalite(indBea, MockPays.Suisse, RegDate.get(1963, 8, 20), null);
 
-				addOrigine(indMomo, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indMomo, MockPays.Suisse.getNomCourt());
 				addNationalite(indMomo, MockPays.Suisse, RegDate.get(1961, 3, 12), null);
 			}
 		});
@@ -128,7 +128,7 @@ public class Ec_7000_03_Reconciliation_Date_Future_Scenario extends EvenementCiv
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin(),
 					"Le dernier for fiscal principal du ménage commun possède une date de fin qui est fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + commune.getNomMinuscule());
+					"Le dernier for fiscal principal du ménage commun n'est pas sur la commune de " + commune.getNomOfficiel());
 		}
 	}
 

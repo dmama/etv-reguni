@@ -144,12 +144,12 @@ public class MockTiersDAO implements TiersDAO {
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
 		throw new NotImplementedException();
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion) {
 		throw new NotImplementedException();
 	}
 

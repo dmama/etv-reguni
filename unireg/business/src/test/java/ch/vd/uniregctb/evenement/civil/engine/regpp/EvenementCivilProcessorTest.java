@@ -782,7 +782,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 
 		// création et traitement de l'événement civil
 		final long evtId = 1234567890L;
-		saveEvenement(evtId, TypeEvenementCivil.CORREC_CONJOINT, dateMariage, noIndividuMonsieur, null, MockCommune.Lausanne.getNoOFSEtendu(), EtatEvenementCivil.A_TRAITER);
+		saveEvenement(evtId, TypeEvenementCivil.CORREC_CONJOINT, dateMariage, noIndividuMonsieur, null, MockCommune.Lausanne.getNoOFS(), EtatEvenementCivil.A_TRAITER);
 		traiteEvenements();
 
 		// vérification
@@ -853,7 +853,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 				evt.setDateEvenement(date(2011, 1, 1));
 				evt.setEtat(EtatEvenementCivil.A_TRAITER);
 				evt.setNumeroIndividuPrincipal(noIndividuMonsieur);
-				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+				evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 				return evenementCivilRegPPDAO.save(evt);
 			}
 		});
@@ -956,7 +956,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setDateEvenement(date(2009, 1, 1));
 					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 					evenementCivilRegPPDAO.save(evt);
 					return null;
 				}
@@ -1061,7 +1061,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setDateEvenement(date(2009, 1, 1));
 					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 					evenementCivilRegPPDAO.save(evt);
 					return null;
 				}
@@ -1180,7 +1180,7 @@ public class EvenementCivilProcessorTest extends BusinessTest {
 					evt.setDateEvenement(date(2009, 1, 1));
 					evt.setEtat(EtatEvenementCivil.EN_ERREUR);
 					evt.setNumeroIndividuPrincipal(noIndividu);
-					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFSEtendu());
+					evt.setNumeroOfsCommuneAnnonce(MockCommune.Lausanne.getNoOFS());
 					evenementCivilRegPPDAO.save(evt);
 					return null;
 				}

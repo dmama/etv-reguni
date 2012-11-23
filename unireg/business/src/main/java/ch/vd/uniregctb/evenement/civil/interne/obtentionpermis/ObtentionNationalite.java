@@ -33,9 +33,9 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 	protected static Logger LOGGER = Logger.getLogger(ObtentionNationalite.class);
 
 	/**
-	 * le numero OFS étendu de la commune de l'adresse principale
+	 * le numero OFS de la commune de l'adresse principale
 	 */
-	private Integer numeroOfsEtenduCommunePrincipale;
+	private Integer numeroOfsCommunePrincipale;
 
 	protected ObtentionNationalite(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		super(evenement, context, options);
@@ -52,7 +52,7 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 			// on récupère la commune de l'adresse principale en gérant les fractions
 			//à utiliser pour déterminer le numeroOFS si besoin d'ouvrir un nouveau for
 			final Commune communePrincipale = context.getServiceInfra().getCommuneByAdresse(getAdressePrincipale(), date);
-			this.numeroOfsEtenduCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFSEtendu();
+			this.numeroOfsCommunePrincipale = communePrincipale == null ? 0 : communePrincipale.getNoOFS();
 		}
 		catch (ServiceInfrastructureException e) {
 			throw new EvenementCivilException(e);
@@ -63,14 +63,14 @@ public abstract class ObtentionNationalite extends ObtentionPermisCOuNationalite
 	 * Pour le testing uniquement.
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ObtentionNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale, boolean nationaliteSuisse,
+	protected ObtentionNationalite(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsCommunePrincipale, boolean nationaliteSuisse,
 	                               EvenementCivilContext context) {
 		super(individu, conjoint, nationaliteSuisse ? TypeEvenementCivil.NATIONALITE_SUISSE : TypeEvenementCivil.NATIONALITE_NON_SUISSE, date, numeroOfsCommuneAnnonce, null, null, null, context);
-		this.numeroOfsEtenduCommunePrincipale = numeroOfsEtenduCommunePrincipale;
+		this.numeroOfsCommunePrincipale = numeroOfsCommunePrincipale;
 	}
 
-	public Integer getNumeroOfsEtenduCommunePrincipale() {
-		return numeroOfsEtenduCommunePrincipale;
+	public Integer getNumeroOfsCommunePrincipale() {
+		return numeroOfsCommunePrincipale;
 	}
 
 	@Override

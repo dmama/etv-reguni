@@ -1324,8 +1324,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 			}
 		}
 
-		if (canton != null && canton.getNomMinuscule() != null) {
-			return canton.getNomMinuscule();
+		if (canton != null && canton.getNomOfficiel() != null) {
+			return canton.getNomOfficiel();
 		}
 		else {
 			return emetteurId;

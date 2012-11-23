@@ -63,7 +63,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(noIndRosa, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
-			addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
+			addOrigine(rosa, MockPays.Espagne.getNomCourt());
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
 
 			addPermis(rosa, TypePermis.COURTE_DUREE, dateArrivee, dateObtentionPermisC.getOneDayBefore(), false);
@@ -109,7 +109,7 @@ public class Ec_16010_02_FinPermis_PermisCSansNationaliteSuisse_Scenario extends
 	public void step2() throws Exception {
 		mockServiceCivil.setupForTest();
 
-		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRosa, dateFinPermisC, communePermis.getNoOFSEtendu());
+		long id = addEvenementCivil(TypeEvenementCivil.FIN_CHANGEMENT_CATEGORIE_ETRANGER, noIndRosa, dateFinPermisC, communePermis.getNoOFS());
 		commitAndStartTransaction();
 		traiteEvenements(id);
 	}

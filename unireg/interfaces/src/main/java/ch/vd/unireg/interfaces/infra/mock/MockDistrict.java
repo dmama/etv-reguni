@@ -23,8 +23,8 @@ public class MockDistrict extends MockEntiteFiscale implements District {
 	public static final MockDistrict Yverdon = new MockDistrict(15, "Yverdon", MockRegion.Yverdon);
 
 	@Override
-	public Region getRegion() {
-		return region;
+	public Integer getCodeRegion() {
+		return region.getCode();
 	}
 
 	public MockDistrict(Region region) {

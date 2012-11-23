@@ -74,7 +74,7 @@ public class Ec_18000_06_Arrivee_HC_1_Scenario extends EvenementCivilScenario {
 		}
 
 		// vérification que les adresses civiles sont sur le sentier
-		assertEquals(MockCommune.Fraction.LeSentier.getNomMinuscule(), serviceCivilService.getAdresses(noIndAntoine, dateArriveeLeSentier, false).principale.getLocalite(),
+		assertEquals(MockCommune.Fraction.LeSentier.getNomOfficiel(), serviceCivilService.getAdresses(noIndAntoine, dateArriveeLeSentier, false).principale.getLocalite(),
 			"l'adresse principale n'est pas sur le Sentier");
 	}
 

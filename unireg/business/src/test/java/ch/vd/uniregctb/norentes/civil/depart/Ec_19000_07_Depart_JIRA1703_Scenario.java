@@ -143,9 +143,9 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Villars-sous-Yens
-			assertEquals(communeDepart.getNomMinuscule(),
+			assertEquals(communeDepart.getNomOfficiel(),
 					serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+					"L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -187,10 +187,10 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 			// vérification que les adresses civiles sont au Danemark
 			assertEquals(paysArrivee.getNoOFS(),
 					serviceCivilService.getAdresses(noIndSebastien, dateArrivee, false).principale.getNoOfsPays(),
-					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomMinuscule());
+					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomCourt());
 			assertEquals(paysArrivee.getNoOFS(),
 					serviceCivilService.getAdresses(noIndGloria, dateArrivee, false).principale.getNoOfsPays(),
-					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomMinuscule());
+					"L'adresse principale n'est pas dans le pays " + paysArrivee.getNomCourt());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -224,7 +224,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 
 		final MenageCommun menage = (MenageCommun) tiersDAO.get(noMenage);
 		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menage, dateArrivee, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
+		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomOfficiel()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menage.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {
@@ -257,7 +257,7 @@ public class Ec_19000_07_Depart_JIRA1703_Scenario extends DepartScenario {
 		assertEquals(paysArrivee.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le for n'est pas dans le bon pays");
 
 		final AdresseEnvoiDetaillee adresseEnvoi = adresseService.getAdresseEnvoi(menageCommun, dateArrivee, TypeAdresseFiscale.COURRIER, true);
-		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomMinuscule()), "Surcharge non prise en compte");
+		assertTrue(adresseEnvoi.getNpaEtLocalite().toString().contains(MockCommune.Lausanne.getNomOfficiel()), "Surcharge non prise en compte");
 
 		final Set<AdresseTiers> adresses = menageCommun.getAdressesTiers();
 		for (AdresseTiers adresse : adresses) {

@@ -3569,11 +3569,11 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
-		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertNull(listeLausanneSansFor);
 
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-		final List<Assujettissement> listeLausanneAvecForARenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanneAvecForARenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertNull(listeLausanneAvecForARenens);
 	}
 
@@ -3582,19 +3582,19 @@ public class AssujettissementServiceTest extends MetierTest {
 	public void testDeterminePourCommuneHorsCantonImmeuble() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFS()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFS()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 	}
@@ -3605,23 +3605,23 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final Contribuable ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsSuisse(date(2000, 9, 4), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFS()));
 		assertEquals(1, listeCroy.size());
 		assertHorsSuisse(date(2005, 6, 24), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFS()));
 		assertEquals(1, listeRenens.size());
 		assertHorsSuisse(date(2002, 7, 12), date(2006, 12, 2), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 
-		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFS(), MockCommune.Renens.getNoOFS()));
 		assertEquals(1, listeCroyRenens.size());
 		assertHorsSuisse(date(2002, 7, 12), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
@@ -3632,27 +3632,27 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final Contribuable ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(2000, 6, 1), MotifFor.ARRIVEE_HS, MockCommune.Aubonne);
-		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2000, 9, 4), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2005, 6, 24), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2002, 7, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 2), MotifFor.VENTE_IMMOBILIER, MockCommune.Renens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listeAubonne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
+		final List<Assujettissement> listeAubonne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFS()));
 		assertEquals(1, listeAubonne.size());
 		assertOrdinaire(date(2000, 6, 1), null, MotifFor.ARRIVEE_HS, null, listeAubonne.get(0));
 
-		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFSEtendu()));
+		final List<Assujettissement> listeLausanne = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
 		assertEquals(1, listeLausanne.size());
 		assertHorsCanton(date(2000, 6, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeLausanne.get(0));
 
-		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroy = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFS()));
 		assertEquals(1, listeCroy.size());
 		assertHorsCanton(date(2005, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroy.get(0));
 
-		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Renens.getNoOFS()));
 		assertEquals(1, listeRenens.size());
 		assertHorsCanton(date(2002, 1, 1), date(2006, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, listeRenens.get(0));
 
-		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFSEtendu(), MockCommune.Renens.getNoOFSEtendu()));
+		final List<Assujettissement> listeCroyRenens = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Croy.getNoOFS(), MockCommune.Renens.getNoOFS()));
 		assertEquals(1, listeCroyRenens.size());
 		assertHorsCanton(date(2002, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, listeCroyRenens.get(0));
 	}
@@ -3678,17 +3678,17 @@ public class AssujettissementServiceTest extends MetierTest {
 		// trou ici : pas de for principal entre le 29.5.2008 et le 6.7.2008
 		addForPrincipal(ctb, date(2008, 7, 7), MotifFor.ARRIVEE_HS, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
 		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, null, null, MockCommune.Vevey, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
-		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2008, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Vevey.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> listePrilly = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Prilly.getNoOFSEtendu()));
+		final List<Assujettissement> listePrilly = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Prilly.getNoOFS()));
 		assertEquals(1, listePrilly.size());
 		assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2005, 2, 18), MotifFor.INDETERMINE, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
 
-		final List<Assujettissement> listeBussigny = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFSEtendu()));
+		final List<Assujettissement> listeBussigny = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFS()));
 		assertNull(listeBussigny);
 
 		// c'est ici que cela explosait !
-		final List<Assujettissement> listeVevey = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFSEtendu()));
+		final List<Assujettissement> listeVevey = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFS()));
 		assertEquals(1, listeVevey.size());
 		assertSourcierMixteArt137Al2(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
@@ -3706,9 +3706,9 @@ public class AssujettissementServiceTest extends MetierTest {
 		addForPrincipal(ctb, date(2007, 1, 1), MotifFor.ARRIVEE_HS, date(2007, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Geneve, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
 		final ForFiscalPrincipal ffp = addForPrincipal(ctb, date(2007, 8, 1), MotifFor.INDETERMINE, MockCommune.Aubonne);
 		ffp.setModeImposition(ModeImposition.MIXTE_137_2);
-		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, date(2007, 9, 6), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-		final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFSEtendu()));
+		final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Aubonne.getNoOFS()));
 		assertEquals(1, liste.size());
 		assertSourcierMixteArt137Al2(date(2007, 1, 1), null, MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
@@ -3726,18 +3726,18 @@ public class AssujettissementServiceTest extends MetierTest {
 		final Contribuable ctb = createContribuableSansFor();
 		addForPrincipal(ctb, achat, MotifFor.ACHAT_IMMOBILIER, arrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
 		addForPrincipal(ctb, arrivee, MotifFor.ARRIVEE_HC, MockCommune.Moudon);
-		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		{
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
-			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFSEtendu()));
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFS()));
 			assertEquals(1, liste.size());
 			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
 		}
 
 		{
 			// du point de vue de Moudon, le contribuable est à l'ordinaire à partir du 1er janvier 2007, année de son arrivée dans la commune
-			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFSEtendu()));
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFS()));
 			assertEquals(1, liste.size());
 			assertOrdinaire(date(2007, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(0));
 		}
@@ -3756,18 +3756,18 @@ public class AssujettissementServiceTest extends MetierTest {
 		final Contribuable ctb = createContribuableSansFor();
 		addForPrincipal(ctb, date(1980, 1, 1), MotifFor.MAJORITE, depart, MotifFor.DEPART_HC, MockCommune.Moudon);
 		addForPrincipal(ctb, depart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Neuchatel);
-		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+		addForSecondaire(ctb, achat, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		{
 			// du point de vue d'Echallens, le contribuable est hors-canton à partir du 1er janvier 2001, année de l'achat de son immeuble.
-			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFSEtendu()));
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Echallens.getNoOFS()));
 			assertEquals(1, liste.size());
 			assertHorsCanton(date(2001, 1, 1), null, MotifFor.ACHAT_IMMOBILIER, null, liste.get(0));
 		}
 
 		{
 			// du point de vue de Moudon, le contribuable est à l'ordinaire jusqu'au 31 décembre 2006, année précédent son départ de la commune
-			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFSEtendu()));
+			final List<Assujettissement> liste = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Moudon.getNoOFS()));
 			assertEquals(1, liste.size());
 			assertOrdinaire(date(1980, 1, 1), date(2006, 12, 31), MotifFor.MAJORITE, MotifFor.DEPART_HC, liste.get(0));
 		}

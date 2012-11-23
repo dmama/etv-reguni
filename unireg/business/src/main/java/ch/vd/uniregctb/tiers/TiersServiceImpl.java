@@ -54,8 +54,6 @@ import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.unireg.interfaces.civil.data.TypeRelationVersIndividu;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.District;
-import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -3222,16 +3220,12 @@ public class TiersServiceImpl implements TiersService {
         final ForGestion forGestion = getDernierForGestionConnu(tiers, date);
         //RechercherComplementInformationContribuable de la commune du for de gestion
         if (forGestion != null) {
-            Commune communeGestion = serviceInfra.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), date);
+            Commune communeGestion = serviceInfra.getCommuneByNumeroOfs(forGestion.getNoOfsCommune(), date);
             if (communeGestion != null) {
-                District district = communeGestion.getDistrict();
-                if (district != null) {
-                    Region region = district.getRegion();
-                    if (region != null) {
-                        return tiersDAO.getCollectiviteAdministrativeForRegion(region.getCode());
-                    }
-
-                }
+                final Integer codeRegion = communeGestion.getCodeRegion();
+	            if (codeRegion != null) {
+                    return tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);
+	            }
             }
         }
         return null;
@@ -3559,9 +3553,9 @@ public class TiersServiceImpl implements TiersService {
                             final Integer ofs1 = o1.getNumeroOfsAutoriteFiscale();
                             final Integer ofs2 = o2.getNumeroOfsAutoriteFiscale();
                             try {
-                                Commune c1 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs1, o1.getDateFin());
-                                Commune c2 = serviceInfra.getCommuneByNumeroOfsEtendu(ofs2, o2.getDateFin());
-                                return c1.getNomMinuscule().compareTo(c2.getNomMinuscule());
+                                Commune c1 = serviceInfra.getCommuneByNumeroOfs(ofs1, o1.getDateFin());
+                                Commune c2 = serviceInfra.getCommuneByNumeroOfs(ofs2, o2.getDateFin());
+                                return c1.getNomOfficiel().compareTo(c2.getNomOfficiel());
                             } catch (ServiceInfrastructureException e) {
                                 LOGGER.warn("Impossible de trier les communes ofs=" + ofs1 + " et ofs=" + ofs2
                                         + " par nom, on trie sur le numéro Ofs à la place", e);
@@ -4312,19 +4306,16 @@ public class TiersServiceImpl implements TiersService {
     @Override
     public NumerosOfficesImpot getOfficesImpot(int noOfs, @Nullable RegDate date) {
 
-        final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(noOfs, date);
+        final Commune commune = serviceInfra.getCommuneByNumeroOfs(noOfs, date);
         if (commune == null || !commune.isVaudoise()) {
             return null;
         }
 
-        final District district = commune.getDistrict();
-        if (district == null) {
-            return null;
-        }
-
-        final Region region = district.getRegion();
-        final Integer codeDistrict = district.getCode();
-        final Integer codeRegion = region == null ? null : region.getCode();
+        final Integer codeDistrict = commune.getCodeDistrict();
+	    final Integer codeRegion = commune.getCodeRegion();
+	    if (codeDistrict == null && codeRegion == null) {
+		    return null;
+	    }
 
         final CollectiviteAdministrative oid = codeDistrict == null ? null : tiersDAO.getCollectiviteAdministrativeForDistrict(codeDistrict);
         final CollectiviteAdministrative oir = codeRegion == null ? null : tiersDAO.getCollectiviteAdministrativeForRegion(codeRegion);

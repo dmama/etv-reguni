@@ -1140,8 +1140,8 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", date(1967, 3, 25), Sexe.FEMININ);
 				addForPrincipal(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, MockCommune.Geneve);
-				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2008, 12, 18), MotifFor.ACHAT_IMMOBILIER, date(2009, 4, 15), MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2010, 7, 7), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});

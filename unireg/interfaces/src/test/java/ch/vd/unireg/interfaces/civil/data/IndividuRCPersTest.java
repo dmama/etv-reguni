@@ -577,12 +577,12 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		final Country country = new Country();
 		country.setCountryId(pays.getNoOFS());
 		country.setCountryIdISO2(pays.getCodeIso2());
-		country.setCountryNameShort(pays.getNomMinuscule());
+		country.setCountryNameShort(pays.getNomCourt());
 		return country;
 	}
 
 	private static SwissMunicipality newSwissMunicipality(Commune commune) {
-		return new SwissMunicipality(commune.getNoOFS(), commune.getNomMinuscule(), EchHelper.sigleCantonToAbbreviation(commune.getSigleCanton()), null);
+		return new SwissMunicipality(commune.getNoOFS(), commune.getNomOfficiel(), EchHelper.sigleCantonToAbbreviation(commune.getSigleCanton()), null);
 	}
 
 	private static DwellingAddress newDwellingAddress(RegDate movingDate, MockRue rue) {

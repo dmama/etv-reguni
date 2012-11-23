@@ -74,7 +74,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 
 	@Etape(id = 1, descr = "Envoi de l'événement de changement de catégorie d'étranger")
 	public void etape1() throws Exception {
-		final long id = addEvenementCivil(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, numeroIndividu, datePermis, commune.getNoOFSEtendu());
+		final long id = addEvenementCivil(TypeEvenementCivil.CHGT_CATEGORIE_ETRANGER, numeroIndividu, datePermis, commune.getNoOFS());
 		commitAndStartTransaction();
 		globalIndexer.sync();
 		traiteEvenements(id);
@@ -106,7 +106,7 @@ public class Ec_18000_21_Arrivee_JIRA3133_DecalageUnJour_Scenario extends Evenem
 			}
 		});
 
-		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, numeroIndividu, dateArrivee, commune.getNoOFSEtendu());
+		final long id = addEvenementCivil(TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, numeroIndividu, dateArrivee, commune.getNoOFS());
 		commitAndStartTransaction();
 		globalIndexer.sync();
 		traiteEvenements(id);

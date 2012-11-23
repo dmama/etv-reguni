@@ -144,7 +144,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final ArriveePrincipale adapter = new ArriveePrincipale(evenement, context, options);
 
 		assertEquals(MockLocalite.Lausanne.getNomAbregeMinuscule(), adapter.getAncienneAdresse().getLocalite());
-		assertEquals(MockCommune.Cossonay.getNomMinuscule(), adapter.getNouvelleCommune().getNomMinuscule());
+		assertEquals(MockCommune.Cossonay.getNomOfficiel(), adapter.getNouvelleCommune().getNomOfficiel());
 	}
 
 	@Test
@@ -205,7 +205,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(DATE_ANTERIEURE_ANCIENNE_ADRESSE);
 
 		arrivee = new ArriveePrincipale(serviceCivil.getIndividu(NUMERO_INDIVIDU_SEUL, date(2000, 12, 31)), null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS,
-				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFSEtendu(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
+				DATE_ANTERIEURE_ANCIENNE_ADRESSE, commune.getNoOFS(), ancienneCommune, commune, ancienneAdresse, nouvelleAdresse, context);
 		arrivee.validate(collector, collector);
 		Assert.notEmpty(collector.getErreurs(), "L'arrivée est antérieur à la date de début de validité de l'ancienne adresse, une erreur aurait du être déclenchée");
 
@@ -256,7 +256,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * 1er test : événement avec le tiers correspondant à l'individu manquant
 		 */
-		Arrivee arrivee = new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
+		Arrivee arrivee = new ArriveePrincipale(inconnu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(collector, collector);
 		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché à l'individu n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -264,7 +264,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		 * 2ème test : événement avec le tiers correspondant au conjoint manquant
 		 */
 		collector.clear();
-		arrivee = new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdressePrincipale, context);
+		arrivee = new ArriveePrincipale(inconnu, conjoint, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, commune.getNoOFS(), null, commune, null, nouvelleAdressePrincipale, context);
 		arrivee.validate(collector, collector);
 		Assert.isTrue(collector.getErreurs().isEmpty(), "Le tiers rattaché au conjoint n'existe pas, mais ceci est un cas valide et aucune erreur n'aurait dû être déclenchée");
 
@@ -327,14 +327,14 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
-		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFSEtendu(), null, commune, null, nouvelleAdresse, context);
+		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, commune.getNoOFS(), null, commune, null, nouvelleAdresse, context);
 	}
 
 	private Arrivee createValidArrivee(Individu individu, MockCommune communeAnnonce, MockCommune nouvelleCommune) {
 		final MockAdresse nouvelleAdresse = new MockAdresse();
 		nouvelleAdresse.setDateDebutValidite(DATE_VALIDE);
 
-		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFSEtendu(), null, nouvelleCommune, null, nouvelleAdresse, context);
+		return new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, DATE_VALIDE, communeAnnonce.getNoOFS(), null, nouvelleCommune, null, nouvelleAdresse, context);
 	}
 
 	/**
@@ -524,7 +524,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
 		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
@@ -549,8 +549,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			assertNotNull(fors);
 			assertEquals(2, fors.size());
 			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 		}
 		finally {
@@ -587,7 +587,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
 		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
@@ -612,8 +612,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			assertNotNull(fors);
 			assertEquals(2, fors.size());
 			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 		}
 		finally {
@@ -650,7 +650,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
 		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
@@ -705,7 +705,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement d'arrivée de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe d'arrivée doit être traduit en un événement fiscal interne d'arrivée, pas de surprise ici.
 		final EvenementCivilInterne interne = new ArriveeTranslationStrategy().create(externe, context, options);
@@ -726,8 +726,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(fors);
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+				MockCommune.Echallens.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 	}
 
@@ -763,7 +763,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			// Simule un événement de déménagement de la part de la commune fusionnée
 			final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-					MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+					MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 			// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
 			// parce que - du point de vue fiscal - les communes n'ont pas encore fusionné.
@@ -785,8 +785,8 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 			assertNotNull(fors);
 			assertEquals(2, fors.size());
 			assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateDemenagement.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-					MockCommune.Villette.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+					MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+			assertForPrincipal(dateDemenagement, MotifFor.DEMENAGEMENT_VD, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Grandvaux.getNoOFS(), MotifRattachement.DOMICILE,
 					ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 
 			assertEquals("Traité comme une arrivée car les communes Villette et Grandvaux ne sont pas encore fusionnées du point-de-vue fiscal.", externe.getCommentaireTraitement());

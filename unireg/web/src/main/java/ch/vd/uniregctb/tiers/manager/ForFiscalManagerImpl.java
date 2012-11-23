@@ -130,20 +130,20 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		switch (typeForFiscal) {
 		case COMMUNE_OU_FRACTION_VD:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
-				forFiscalView.setLibFractionCommune(commune == null ? "" : commune.getNomMinuscule());
+				final Commune commune = serviceInfra.getCommuneByNumeroOfs(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+				forFiscalView.setLibFractionCommune(commune == null ? "" : commune.getNomOfficiel());
 			}
 			break;
 		case COMMUNE_HC:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
-				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
-				forFiscalView.setLibCommuneHorsCanton(commune == null ? "" : commune.getNomMinuscule());
+				final Commune commune = serviceInfra.getCommuneByNumeroOfs(forFiscal.getNumeroOfsAutoriteFiscale(), forFiscal.getDateFin());
+				forFiscalView.setLibCommuneHorsCanton(commune == null ? "" : commune.getNomOfficiel());
 			}
 			break;
 		case PAYS_HS:
 			if (forFiscal.getNumeroOfsAutoriteFiscale() != null) {
 				final Pays pays = serviceInfra.getPays(forFiscal.getNumeroOfsAutoriteFiscale());
-				forFiscalView.setLibPays(pays == null ? "" : pays.getNomMinuscule());
+				forFiscalView.setLibPays(pays == null ? "" : pays.getNomCourt());
 			}
 			break;
 		default:

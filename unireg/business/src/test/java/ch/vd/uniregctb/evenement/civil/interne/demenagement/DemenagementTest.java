@@ -319,7 +319,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateEvenement);
 		nouvelleAdresse.setNumeroOrdrePostal(1342);
 
-		return new Demenagement(individu, conjoint, dateEvenement, nouvelleCommune.getNoOFSEtendu(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
+		return new Demenagement(individu, conjoint, dateEvenement, nouvelleCommune.getNoOFS(), nouvelleCommune, ancienneAdresse, nouvelleAdresse, context);
 	}
 
 	private boolean existTacheControlePourAncienOID(List<Tache> mesTaches,CollectiviteAdministrative collectiviteAttendue){
@@ -365,7 +365,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		// Simule un événement de déménagement de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, pas de surprise ici,
 		final EvenementCivilInterne interne = new DemenagementTranslationStrategy().create(externe, context, options);
@@ -387,8 +387,8 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 		assertNotNull(fors);
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(1990, 1, 1), MotifFor.MAJORITE, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Villette.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFSEtendu(), MotifRattachement.DOMICILE,
+				MockCommune.Villette.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForPrincipal(dateFusion, MotifFor.FUSION_COMMUNES, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.BourgEnLavaux.getNoOFS(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
 	}
 }

@@ -29,10 +29,8 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.PlusieursPersonnesPhysiquesAvecMemeNumeroIndividuException;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.WebContextUtils;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Element de code factorisés entre les managers des evt ech et regPP
@@ -85,7 +83,7 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 			Pays pays;
 			pays = (noOfsPays == null ? null : serviceInfrastructureService.getPays(noOfsPays));
 			if (pays != null && !pays.isSuisse()) {
-				localiteOuPays = pays.getNomMinuscule();
+				localiteOuPays = pays.getNomCourt();
 			}
 			else {
 				localiteOuPays = adresseCourrier.getLocalite();
@@ -104,9 +102,9 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 		final ForFiscalPrincipal forFiscalPrincipal = tiers.getDernierForFiscalPrincipal();
 		if (forFiscalPrincipal != null) {
 			final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
+			final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
 			if (commune != null) {
-				tiersAssocie.setForPrincipal(commune.getNomMinuscule());
+				tiersAssocie.setForPrincipal(commune.getNomOfficiel());
 			}
 			tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
 			tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());
@@ -171,9 +169,9 @@ abstract public class EvenementCivilManagerImpl implements MessageSourceAware {
 				final ForFiscalPrincipal forFiscalPrincipal = habitantPrincipal.getDernierForFiscalPrincipal();
 				if (forFiscalPrincipal != null) {
 					final Integer numeroOfsAutoriteFiscale = forFiscalPrincipal.getNumeroOfsAutoriteFiscale();
-					final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
+					final Commune commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalPrincipal.getDateFin());
 					if (commune != null) {
-						tiersAssocie.setForPrincipal(commune.getNomMinuscule());
+						tiersAssocie.setForPrincipal(commune.getNomOfficiel());
 					}
 					tiersAssocie.setDateOuvertureFor(forFiscalPrincipal.getDateDebut());
 					tiersAssocie.setDateFermetureFor(forFiscalPrincipal.getDateFin());

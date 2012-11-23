@@ -1,6 +1,8 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 
+import org.apache.commons.lang.StringUtils;
+
 public enum LogicielMetier {
 	ECH_99("ech-99"),
 	EMPACI("empaci");
@@ -28,6 +30,22 @@ public enum LogicielMetier {
 		default:
 			throw new IllegalArgumentException("Valeur de logicielMetier non-supportée : " + right);
 
+		}
+	}
+
+	public static LogicielMetier get(String right) {
+		if (StringUtils.isBlank(right)) {
+			return null;
+		}
+
+		if (ECH_99.name().equalsIgnoreCase(right)) {
+			return LogicielMetier.ECH_99;
+		}
+		else if (EMPACI.name().equalsIgnoreCase(right)) {
+			return LogicielMetier.EMPACI;
+		}
+		else {
+			throw new IllegalArgumentException("Valeur de logicielMetier non-supportée : " + right);
 		}
 	}
 }

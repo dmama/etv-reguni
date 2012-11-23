@@ -85,9 +85,9 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 		assertNull(ffp, "For principal de l'Habitant " + noTiersIan + " non null");
 		
 		// vérification que les adresses civiles sont à Lausanne
-		assertEquals(communeDepart.getNomMinuscule(), 
+		assertEquals(communeDepart.getNomOfficiel(),
 				serviceCivilService.getAdresses(noIndIan, RegDate.get(), false).principale.getLocalite(),
-				"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+				"L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 		
 	}
 	
@@ -108,7 +108,7 @@ public class Ec_19000_06_Depart_JIRA1286_Scenario extends DepartScenario {
 		// vérification que les adresses civiles sont à Zurich
 		assertEquals(paysArrivee.getNoOFS(), 
 				serviceCivilService.getAdresses(noIndIan, dateDepart.addDays(1), false).principale.getNoOfsPays(),
-				"L'adresse principale n'est pas à " + paysArrivee.getNomMinuscule());
+				"L'adresse principale n'est pas à " + paysArrivee.getNomCourt());
 	}
 	
 	@Etape(id=3, descr="Envoi de l'événement de départ")

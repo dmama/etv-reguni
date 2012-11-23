@@ -2,6 +2,8 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
 
 public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
@@ -9,21 +11,21 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 	private static final long serialVersionUID = -8262770098305127500L;
 
 	private final int noOFS;
-	private final String nomMajuscule;
-	private final String nomMinuscule;
+	private final String nomCourt;
+	private final String nomOfficiel;
 	private final String sigleOFS;
 
-	protected EntiteOFSImpl(int noOFS, String nomMajuscule, String nomMinuscule, String sigleOFS) {
+	protected EntiteOFSImpl(int noOFS, String nomCourt, String nomOfficiel, @Nullable String sigleOFS) {
 		this.noOFS = noOFS;
-		this.nomMajuscule = nomMajuscule;
-		this.nomMinuscule = nomMinuscule;
+		this.nomCourt = nomCourt;
+		this.nomOfficiel = nomOfficiel;
 		this.sigleOFS = sigleOFS;
 	}
 
 	public EntiteOFSImpl(ch.vd.infrastructure.model.EntiteOFS target) {
 		this.noOFS = target.getNoOFS();
-		this.nomMajuscule = target.getNomMajuscule();
-		this.nomMinuscule = target.getNomMinuscule();
+		this.nomCourt = target.getNomMinuscule();
+		this.nomOfficiel = target.getNomMinuscule();
 		this.sigleOFS = target.getSigleOFS();
 	}
 
@@ -33,13 +35,13 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 	}
 
 	@Override
-	public String getNomMajuscule() {
-		return nomMajuscule;
+	public String getNomCourt() {
+		return nomCourt;
 	}
 
 	@Override
-	public String getNomMinuscule() {
-		return nomMinuscule;
+	public String getNomOfficiel() {
+		return nomOfficiel;
 	}
 
 	@Override
@@ -55,8 +57,9 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 		final EntiteOFSImpl that = (EntiteOFSImpl) o;
 
 		if (noOFS != that.noOFS) return false;
-		if (nomMajuscule != null ? !nomMajuscule.equals(that.nomMajuscule) : that.nomMajuscule != null) return false;
-		if (nomMinuscule != null ? !nomMinuscule.equals(that.nomMinuscule) : that.nomMinuscule != null) return false;
+		if (nomCourt != null ? !nomCourt.equals(that.nomCourt) : that.nomCourt != null) return false;
+		if (nomOfficiel != null ? !nomOfficiel.equals(that.nomOfficiel) : that.nomOfficiel != null) return false;
+		//noinspection RedundantIfStatement
 		if (sigleOFS != null ? !sigleOFS.equals(that.sigleOFS) : that.sigleOFS != null) return false;
 
 		return true;
@@ -65,8 +68,8 @@ public abstract class EntiteOFSImpl implements EntiteOFS, Serializable {
 	@Override
 	public int hashCode() {
 		int result = noOFS;
-		result = 31 * result + (nomMajuscule != null ? nomMajuscule.hashCode() : 0);
-		result = 31 * result + (nomMinuscule != null ? nomMinuscule.hashCode() : 0);
+		result = 31 * result + (nomCourt != null ? nomCourt.hashCode() : 0);
+		result = 31 * result + (nomOfficiel != null ? nomOfficiel.hashCode() : 0);
 		result = 31 * result + (sigleOFS != null ? sigleOFS.hashCode() : 0);
 		return result;
 	}

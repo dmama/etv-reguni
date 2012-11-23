@@ -124,7 +124,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 
 	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Commune commune, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {
 		final TypeAutoriteFiscale typeAutoriteFiscale = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-		return addForFiscalPrincipal(tiers, commune.getNoOFSEtendu(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin);
+		return addForFiscalPrincipal(tiers, commune.getNoOFS(), typeAutoriteFiscale, debut, fin, motifDebut, motifFin);
 	}
 
 	protected ForFiscalPrincipal addForFiscalPrincipal(Tiers tiers, Pays pays, RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin) {

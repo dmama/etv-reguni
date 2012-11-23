@@ -29,8 +29,8 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 	 * Pour les tests uniquement
 	 */
 	@SuppressWarnings({"JavaDoc"})
-	protected ObtentionNationaliteNonSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsEtenduCommunePrincipale, EvenementCivilContext context) {
-		super(individu, conjoint, date, numeroOfsCommuneAnnonce, numeroOfsEtenduCommunePrincipale, false, context);
+	protected ObtentionNationaliteNonSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsCommunePrincipale, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, numeroOfsCommunePrincipale, false, context);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
 			pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
 			Audit.info(getNumeroEvenement(),
 					String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'", getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
-							nationalite.getPays().getNomMinuscule()));
+							nationalite.getPays().getNomCourt()));
 		}
 
 		Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");

@@ -267,14 +267,14 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(naissance, domicile.getDateDebut());
 			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(1);
 			assertEquals(arriveeZurich, domicile.getDateDebut());
 			assertEquals(arriveeAllemagne.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Zurich.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Zurich.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(2);
@@ -287,14 +287,14 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(arriveeCossonay, domicile.getDateDebut());
 			assertEquals(arriveeLeSentier.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Cossonay.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(4);
 			assertEquals(arriveeLeSentier, domicile.getDateDebut());
 			assertNull(domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 	}
 
@@ -333,7 +333,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(naissance, domicile.getDateDebut());
 			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(1);
@@ -346,14 +346,14 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(arriveeCossonay, domicile.getDateDebut());
 			assertEquals(arriveeLeSentier.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Cossonay.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(3);
 			assertEquals(arriveeLeSentier, domicile.getDateDebut());
 			assertNull(domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 	}
 
@@ -401,7 +401,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(naissance, domicile.getDateDebut());
 			assertEquals(arriveeZurich.getOneDayBefore(), domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(2);
@@ -414,7 +414,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(arriveeCossonay, domicile.getDateDebut());
 			assertEquals(departCossonay, domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Cossonay.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(4);
@@ -427,7 +427,7 @@ public class ServiceCivilServiceImplTest extends BusinessTest {
 			assertEquals(arriveeLeSentier, domicile.getDateDebut());
 			assertEquals(departLeSentier, domicile.getDateFin());
 			assertNotNull(domicile.getCommune());
-			assertEquals(MockCommune.Fraction.LeSentier.getNoOFSEtendu(), domicile.getCommune().getNoOFSEtendu());
+			assertEquals(MockCommune.Fraction.LeSentier.getNoOFS(), domicile.getCommune().getNoOFS());
 		}
 		{
 			final HistoriqueCommune domicile = domiciles.get(6);

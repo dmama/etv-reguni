@@ -78,7 +78,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 
 				marieIndividu(indPierre, dateMariage);
 
-				addOrigine(indPierre, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indPierre, MockPays.Suisse.getNomCourt());
 				addNationalite(indPierre, MockPays.Suisse, dateNaissance, null);
 				addEtatCivil(indPierre, dateVeuvage, TypeEtatCivil.VEUF);
 				addAdresse(indPierre, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.PlaceSaintFrancois, null, dateMariage, null);
@@ -127,7 +127,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, false);
@@ -160,7 +160,7 @@ public class Ec_10000_03_Veuvage_VeuvagePuisDecesMemeJour_Scenario extends Evene
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " ouvert");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertEquals(dateVeuvage, ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 			assertSituationFamille(dateMariage, dateVeuvage, EtatCivil.MARIE, 0, mc.getSituationFamilleAt(dateVeuvage), "Situation de famille du ménage le jour du veuvage:");
 			assertNull(mc.getSituationFamilleAt(lendemainDeces), "Le ménage ne devrait plus avoir de situation de famille le lendemain du veuvage.");
 		}

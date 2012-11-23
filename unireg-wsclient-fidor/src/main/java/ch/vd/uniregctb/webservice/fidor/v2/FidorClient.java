@@ -1,4 +1,4 @@
-package ch.vd.uniregctb.webservice.fidor;
+package ch.vd.uniregctb.webservice.fidor.v2;
 
 import java.util.Collection;
 import java.util.List;

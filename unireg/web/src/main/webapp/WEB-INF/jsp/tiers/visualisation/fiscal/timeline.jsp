@@ -143,7 +143,7 @@
 							<c:choose>
 								<c:when test="${fp.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">			
 									<td class="principal_vd tooltip_cell" id="ffp-${fp.id}" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
-									    <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fp.dateDebut}"/>
+									    <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fp.dateDebut}"/>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
@@ -155,7 +155,7 @@
 								</c:when>
 								<c:when test="${fp.typeAutoriteFiscale == 'COMMUNE_HC'}">
 									<td class="principal_hc tooltip_cell" id="ffp-${fp.id}" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
-                                        <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fp.dateDebut}"/>
+                                        <unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fp.dateDebut}"/>
                                         (<unireg:commune ofs="${fp.numeroOfsAutoriteFiscale}" displayProperty="sigleCanton" date="${fp.dateDebut}"/>)
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
@@ -168,7 +168,7 @@
 								</c:when>
 								<c:when test="${fp.typeAutoriteFiscale == 'PAYS_HS'}">
 									<td class="principal_hs tooltip_cell" id="ffp-${fp.id}" rowspan="<c:out value="${ligne.forPrincipal.longueurAffichage}" />">
-                                        <unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+                                        <unireg:infra entityId="${fp.numeroOfsAutoriteFiscale}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 										<div id="ffp-${fp.id}-tooltip" style="display:none;">
 										    For fiscal principal <b>#${fp.id}</b><br/>
 										    Ouverture : <b><unireg:date date="${fp.dateDebut}"/></b> - <b><fmt:message key="option.motif.ouverture.${fp.motifOuverture}"/></b><br/>
@@ -193,7 +193,7 @@
 							</c:when>
 							<c:when test="${!fs.span && !fs.filler}">
 								<td class="secondaire tooltip_cell" id="ffs-${fs.range.id}" rowspan="<c:out value="${fs.longueurAffichage}" />">
-                                    <unireg:commune ofs="${fs.range.numeroOfsAutoriteFiscale}" displayProperty="nomMinuscule" date="${fs.range.dateDebut}"/>
+                                    <unireg:commune ofs="${fs.range.numeroOfsAutoriteFiscale}" displayProperty="nomOfficiel" date="${fs.range.dateDebut}"/>
                                     <div id="ffs-${fs.range.id}-tooltip" style="display:none;">
                                         For fiscal secondaire <b>#${fs.range.id}</b><br/>
                                         Ouverture : <b><unireg:date date="${fs.range.dateDebut}"/></b><c:if test="${fs.range.motifOuverture != null}"> - <b><fmt:message key="option.motif.ouverture.${fs.range.motifOuverture}"/></b></c:if><br/>
@@ -217,7 +217,7 @@
 							<c:when test="${!ligne.forGestion.span && !ligne.forGestion.filler}">
 								<c:set var="fg" value="${ligne.forGestion.range}" />
 								<td class="gestion tooltip_cell" id="fg-<unireg:regdate regdate="${fg.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.forGestion.longueurAffichage}" />">
-                                    <unireg:commune ofs="${fg.noOfsCommune}" displayProperty="nomMinuscule" date="${fg.dateDebut}"/>
+                                    <unireg:commune ofs="${fg.noOfsCommune}" displayProperty="nomOfficiel" date="${fg.dateDebut}"/>
 	                                <div id="fg-<unireg:regdate regdate="${fg.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
 	                                    Ouverture : <b><unireg:date date="${fg.dateDebut}"/></b><br/>
 	                                    Fermeture : <b><unireg:date date="${fg.dateFin}"/></b><br/>

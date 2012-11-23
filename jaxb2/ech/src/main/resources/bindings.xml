@@ -134,7 +134,7 @@
 		</jxb:bindings>
 	</jxb:bindings>
 
-	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0071/1/eCH-0071-1-0.xsd">
+	<jxb:bindings schemaLocation="http://www.ech.ch/xmlns/eCH-0071/1/eCH-0071-1-1.xsd">
 		<jxb:schemaBindings>
 			<jxb:package name="ch.ech.ech0071.v1" />
 		</jxb:schemaBindings>

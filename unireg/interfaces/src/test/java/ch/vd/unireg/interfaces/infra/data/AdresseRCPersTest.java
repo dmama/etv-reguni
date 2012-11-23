@@ -40,7 +40,7 @@ public class AdresseRCPersTest extends WithoutSpringTest {
 			Assert.assertEquals((Integer) MockPays.PaysInconnu.getNoOFS(), localisation.getNoOfs());
 		}
 		{
-			final Country country = new Country(MockPays.France.getNoOFS(), MockPays.France.getCodeIso2(), MockPays.France.getNomMinuscule());
+			final Country country = new Country(MockPays.France.getNoOFS(), MockPays.France.getCodeIso2(), MockPays.France.getNomCourt());
 			final Destination.ForeignCountry foreignCountry = new Destination.ForeignCountry(country, null);
 			final Destination destination = new Destination(null, null, foreignCountry, null);
 			final Localisation localisation = AdresseRCPers.initLocalisation(destination, infraService);
@@ -49,7 +49,7 @@ public class AdresseRCPersTest extends WithoutSpringTest {
 			Assert.assertEquals((Integer) MockPays.France.getNoOFS(), localisation.getNoOfs());
 		}
 		{
-			final Country country = new Country(MockPays.Gibraltar.getNoOFS(), MockPays.Gibraltar.getCodeIso2(), MockPays.Gibraltar.getNomMinuscule());
+			final Country country = new Country(MockPays.Gibraltar.getNoOFS(), MockPays.Gibraltar.getCodeIso2(), MockPays.Gibraltar.getNomCourt());
 			final Destination.ForeignCountry foreignCountry = new Destination.ForeignCountry(country, null);
 			final Destination destination = new Destination(null, null, foreignCountry, null);
 			final Localisation localisation = AdresseRCPers.initLocalisation(destination, infraService);
@@ -67,20 +67,20 @@ public class AdresseRCPersTest extends WithoutSpringTest {
 			Assert.assertEquals((Integer) MockPays.PaysInconnu.getNoOFS(), localisation.getNoOfs());
 		}
 		{
-			final SwissMunicipality swissTown = new SwissMunicipality(MockCommune.Cossonay.getNoOFSEtendu(), MockCommune.Cossonay.getNomMinuscule(), CantonAbbreviation.VD, null);
+			final SwissMunicipality swissTown = new SwissMunicipality(MockCommune.Cossonay.getNoOFS(), MockCommune.Cossonay.getNomOfficiel(), CantonAbbreviation.VD, null);
 			final Destination destination = new Destination(null, swissTown, null, null);
 			final Localisation localisation = AdresseRCPers.initLocalisation(destination, infraService);
 			Assert.assertNotNull(localisation);
 			Assert.assertEquals(LocalisationType.CANTON_VD, localisation.getType());
-			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFSEtendu(), localisation.getNoOfs());
+			Assert.assertEquals((Integer) MockCommune.Cossonay.getNoOFS(), localisation.getNoOfs());
 		}
 		{
-			final SwissMunicipality swissTown = new SwissMunicipality(MockCommune.Bale.getNoOFSEtendu(), MockCommune.Bale.getNomMinuscule(), CantonAbbreviation.BS, null);
+			final SwissMunicipality swissTown = new SwissMunicipality(MockCommune.Bale.getNoOFS(), MockCommune.Bale.getNomOfficiel(), CantonAbbreviation.BS, null);
 			final Destination destination = new Destination(null, swissTown, null, null);
 			final Localisation localisation = AdresseRCPers.initLocalisation(destination, infraService);
 			Assert.assertNotNull(localisation);
 			Assert.assertEquals(LocalisationType.HORS_CANTON, localisation.getType());
-			Assert.assertEquals((Integer) MockCommune.Bale.getNoOFSEtendu(), localisation.getNoOfs());
+			Assert.assertEquals((Integer) MockCommune.Bale.getNoOFS(), localisation.getNoOfs());
 		}
 	}
 }

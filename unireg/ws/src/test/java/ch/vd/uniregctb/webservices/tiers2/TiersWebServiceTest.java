@@ -627,7 +627,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 				pp.setNom(null);        // <-- c'est là le problème de validation
 
 				addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
@@ -730,7 +730,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			private PersonnePhysique addPersonnePhysiqueAvecFor(@Nullable String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
 				final PersonnePhysique pp = addNonHabitant(prenom, nom, dateNaissance, sexe);
 				addForPrincipal(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, MockPays.Allemagne);
-				addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, debutAnnee, MotifFor.ACHAT_IMMOBILIER, venteImmeuble, MotifFor.VENTE_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp;
 			}
 
@@ -864,7 +864,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			assertEquals(ForFiscal.GenreImpot.REVENU_FORTUNE, arnold.forFiscalPrincipal.genreImpot);
 			assertEquals(ForFiscal.ModeImposition.ORDINAIRE, arnold.forFiscalPrincipal.modeImposition);
 			assertEquals(ForFiscal.TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, arnold.forFiscalPrincipal.typeAutoriteFiscale);
-			assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), arnold.forFiscalPrincipal.noOfsAutoriteFiscale);
+			assertEquals(MockCommune.Bussigny.getNoOFS(), arnold.forFiscalPrincipal.noOfsAutoriteFiscale);
 		}
 	}
 
@@ -903,7 +903,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
@@ -957,7 +957,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
@@ -1033,7 +1033,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Jules", "Tartempion", date(1947, 1, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(annee, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addCollAdm(MockCollectiviteAdministrative.CEDI);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);

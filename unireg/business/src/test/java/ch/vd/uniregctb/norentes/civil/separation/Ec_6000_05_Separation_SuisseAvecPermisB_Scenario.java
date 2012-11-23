@@ -79,7 +79,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 				separeIndividus(indMomo, indBea, dateSeparation);
 				divorceIndividus(indMomo, indBea, dateDivorce);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.SEJOUR, RegDate.get(1963, 8, 20), null, false);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.VillarsSousYens.CheminDuCollege, null, dateArriveeMomoVillars, dateAvantMariage);
@@ -147,7 +147,7 @@ public class Ec_6000_05_Separation_SuisseAvecPermisB_Scenario extends EvenementC
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+					"Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);

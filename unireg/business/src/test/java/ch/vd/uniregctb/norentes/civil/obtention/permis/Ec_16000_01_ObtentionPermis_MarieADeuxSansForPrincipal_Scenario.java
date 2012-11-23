@@ -64,7 +64,7 @@ public class Ec_16000_01_ObtentionPermis_MarieADeuxSansForPrincipal_Scenario ext
 
 				marieIndividus(indMomo, indBea, dateMariage);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addAdresse(indMomo, TypeAdresseCivil.PRINCIPALE, MockRue.Zurich.GloriaStrasse, null, dateMariage, null);

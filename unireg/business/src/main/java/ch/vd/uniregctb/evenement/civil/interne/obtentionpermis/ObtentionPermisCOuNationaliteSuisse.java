@@ -191,15 +191,15 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				throw new EvenementCivilException("Impossible de récupérer l'état civil courant de l'individu");
 			}
 
-			int noOfsEtendu = 0;
+			int noOfs = 0;
 			if(this instanceof ObtentionNationalite){
-				noOfsEtendu = ((ObtentionNationalite) this).getNumeroOfsEtenduCommunePrincipale();
+				noOfs = ((ObtentionNationalite) this).getNumeroOfsCommunePrincipale();
 			}
 			else if(this instanceof ObtentionPermis){
-				noOfsEtendu = ((ObtentionPermis) this).getNumeroOfsEtenduCommunePrincipale();
+				noOfs = ((ObtentionPermis) this).getNumeroOfsCommunePrincipale();
 			}
 
-			if (noOfsEtendu == 0) {
+			if (noOfs == 0) {
 				// récupération du numero OFS de la commune à partir de l'adresse du tiers
 				try {
 					final AdresseGenerique adresse = context.getAdresseService().getAdresseFiscale(habitant, TypeAdresseFiscale.DOMICILE, dateEvenement, false);
@@ -207,7 +207,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 						final Commune commune = getService().getServiceInfra().getCommuneByAdresse(adresse, dateEvenement);
 						// uniquement si la commune de domicile est vaudoise
 						if (commune != null && commune.isVaudoise()) {
-							noOfsEtendu = commune.getNoOFSEtendu();
+							noOfs = commune.getNoOFS();
 						}
 					}
 				}
@@ -220,9 +220,9 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			else {
 				// on vérifie que la commune principale est bien vaudoise...
 				try {
-					final Commune commune = getService().getServiceInfra().getCommuneByNumeroOfsEtendu(noOfsEtendu, dateEvenement);
+					final Commune commune = getService().getServiceInfra().getCommuneByNumeroOfs(noOfs, dateEvenement);
 					if (commune == null || !commune.isVaudoise()) {
-						noOfsEtendu = 0;
+						noOfs = 0;
 					}
 				}
 				catch (ServiceInfrastructureException e) {
@@ -231,14 +231,14 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 			}
 
 			// ouverture d'un for si la commune est vaudoise
-			if (noOfsEtendu != 0) {
-				if (noOfsEtendu == NO_OFS_FRACTION_SENTIER) {
+			if (noOfs != 0) {
+				if (noOfs == NO_OFS_FRACTION_SENTIER) {
 					warnings.addWarning("Ouverture d'un for dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 				}
 				//TODO chercher dans les adresses si arrivée après obtention permis pour ouvrir le for à la date d'arrivée (pas de for ouvert car bridage IS)
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun
 					if (menage != null) {
-						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfsEtendu, true);
+						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfs, true);
 						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
@@ -246,7 +246,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				else { // le for est ouvert sur l'individu
-					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfsEtendu, true);
+					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfs, true);
 					Audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
 			}

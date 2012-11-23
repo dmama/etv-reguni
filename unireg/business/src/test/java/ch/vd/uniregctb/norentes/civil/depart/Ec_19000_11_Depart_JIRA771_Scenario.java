@@ -143,9 +143,9 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Villars-sous-Yens
-			assertEquals(communeDepart.getNomMinuscule(), 
+			assertEquals(communeDepart.getNomOfficiel(),
 					serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+					"L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -183,9 +183,9 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 			assertEquals(communeDepart.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "For pas attaché à la bonne commune");
 
 			// vérification que les adresses civiles sont à Zurich
-			assertEquals(communeArrivee.getNomMinuscule(), 
+			assertEquals(communeArrivee.getNomOfficiel(),
 					serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
+					"L'adresse principale n'est pas à " + communeArrivee.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);
@@ -223,10 +223,10 @@ public class Ec_19000_11_Depart_JIRA771_Scenario extends DepartScenario {
 		
 		String messageHeader = "CTB [" + FormatNumeroHelper.numeroCTBToDisplay(tiers.getNumero()) + "] : ";
 		assertNotNull(adresses.domicile, "Aucune adresse domicile trouvée");
-		assertEquals(adresses.domicile.getLocalite(), commune.getNomMinuscule(), messageHeader + "l'adresse domicile n'est pas à la bonne commune");
+		assertEquals(adresses.domicile.getLocalite(), commune.getNomOfficiel(), messageHeader + "l'adresse domicile n'est pas à la bonne commune");
 		
 		assertNotNull(adresses.courrier, "Aucune adresse courier trouvée");
-		assertEquals(adresses.courrier.getLocalite(), commune.getNomMinuscule(), messageHeader + "l'adresse courier n'est pas à la bonne commune");
+		assertEquals(adresses.courrier.getLocalite(), commune.getNomOfficiel(), messageHeader + "l'adresse courier n'est pas à la bonne commune");
 	}
 
 	private void assertBlocageRemboursementAutomatique(boolean blocageAttenduSebastien, boolean blocageAttenduGloria, boolean blocageAttenduMenage) {

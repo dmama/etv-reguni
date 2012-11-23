@@ -126,7 +126,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idOrdinaire, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Ordinaire", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -145,7 +145,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idMixte1, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("MixteUn", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 22), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -164,7 +164,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idMixte2, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("MixteDeux", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 23), elt.identification.dateNaissance);
 			Assert.assertEquals("7568700351431", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -183,7 +183,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idIndigent, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Indigent", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 24), elt.identification.dateNaissance);
 			Assert.assertEquals("7569528331315", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -202,7 +202,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idDepense, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Dépense", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 25), elt.identification.dateNaissance);
 			Assert.assertEquals("7567902948722", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -360,7 +360,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idOrdinaire, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Ordinaire", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -380,7 +380,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idMixte1, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("MixteUn", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 22), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -400,7 +400,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idMixte2, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("MixteDeux", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 23), elt.identification.dateNaissance);
 			Assert.assertEquals("7568700351431", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -420,7 +420,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idIndigent, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Indigent", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 24), elt.identification.dateNaissance);
 			Assert.assertEquals("7569528331315", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -440,7 +440,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idDepense, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Dépense", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 25), elt.identification.dateNaissance);
 			Assert.assertEquals("7567902948722", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -612,7 +612,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 		Assert.assertNull(elt.identification.numeroAvs);
 		Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -740,7 +740,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -757,7 +757,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Croy.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 		Assert.assertNull(elt.identification.numeroAvs);
 		Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -786,7 +786,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -803,7 +803,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Croy.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, elt.autoriteFiscaleForPrincipal);
 		Assert.assertTrue(elt.limite);
 	}
@@ -823,7 +823,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -840,7 +840,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Croy.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Croy.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 		Assert.assertNull(elt.identification.numeroAvs);
 		Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -869,7 +869,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 11, 1), MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -902,7 +902,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -919,7 +919,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 		Assert.assertNull(elt.identification.numeroAvs);
 		Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -948,7 +948,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addNonHabitant("Toto", "Tartempion", date(1965, 2, 21), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -965,7 +965,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals(ppId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);
 		Assert.assertEquals("Tartempion", elt.identification.nom);
-		Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 		Assert.assertNull(elt.identification.numeroAvs);
 		Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1038,7 +1038,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals((long) ids.mcId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
 		Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
-		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
 		Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
 		Assert.assertEquals(ids.mId, elt.identification.noCtbPrincipal);
@@ -1110,7 +1110,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 		Assert.assertEquals((long) ids.mcId, elt.noCtb);
 		Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
 		Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
-		Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+		Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
 		Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
 		Assert.assertEquals(ids.mId, elt.identification.noCtbPrincipal);
@@ -1187,7 +1187,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idToto, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1206,7 +1206,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
 			Assert.assertEquals("Tata", elt.identification.prenom);
 			Assert.assertEquals("Tartempiona", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1290,7 +1290,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idToto, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1310,7 +1310,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
 			Assert.assertEquals("Tata", elt.identification.prenom);
 			Assert.assertEquals("Tartempiona", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1393,7 +1393,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
 			Assert.assertEquals("Tata", elt.identification.prenom);
 			Assert.assertEquals("Tartempiona", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1412,7 +1412,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
 			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
@@ -1488,7 +1488,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idTata, elt.noCtb);
 			Assert.assertEquals("Tata", elt.identification.prenom);
 			Assert.assertEquals("Tartempiona", elt.identification.nom);
-			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1966, 3, 12), elt.identification.dateNaissance);
 			Assert.assertEquals("7568935457472", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1572,7 +1572,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
 			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);      // principal seulement
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);            // principal seulement
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
@@ -1661,7 +1661,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals((long) ids.idMenage, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);      // principal seulement
 			Assert.assertEquals("Tartempion", elt.identification.nom);      // principal seulement
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);  // principal seulement
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);        // principal seulement
 			Assert.assertEquals(ids.idToto, elt.identification.noCtbPrincipal);
@@ -1724,7 +1724,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.LeLieu.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.LeLieu.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		}
 	}
 
@@ -1763,7 +1763,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.LeLieu.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.LeLieu.getNoOFS(), (int) elt.ofsCommuneForGestion);
 		}
 	}
 
@@ -1804,7 +1804,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1856,7 +1856,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1908,7 +1908,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -1996,7 +1996,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2101,7 +2101,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2120,7 +2120,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2205,7 +2205,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2240,7 +2240,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2258,7 +2258,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2292,7 +2292,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2325,7 +2325,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				addForPrincipal(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, date(2008, 4, 12), MotifFor.ARRIVEE_HS, MockPays.Danemark);
 				addForPrincipal(pp, date(2008, 4, 13), MotifFor.ARRIVEE_HS, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2005, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2343,7 +2343,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2377,7 +2377,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2395,7 +2395,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);
@@ -2428,7 +2428,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2459,7 +2459,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noInd);
 				final RegDate dateOuverture = date(2004, 2, 1);
 				addForPrincipal(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockPays.France, MotifRattachement.DIPLOMATE_ETRANGER);
-				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, dateOuverture, MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -2477,7 +2477,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertEquals(ppId, elt.noCtb);
 			Assert.assertEquals("Toto", elt.identification.prenom);
 			Assert.assertEquals("Tartempion", elt.identification.nom);
-			Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) elt.ofsCommuneForGestion);
+			Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) elt.ofsCommuneForGestion);
 			Assert.assertEquals(date(1965, 2, 21), elt.identification.dateNaissance);
 			Assert.assertEquals("7562025802593", elt.identification.numeroAvs);
 			Assert.assertNull(elt.identification.noCtbPrincipal);

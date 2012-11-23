@@ -2,25 +2,29 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.StringUtils;
+
 import ch.vd.fidor.ws.v2.CommuneFiscale;
+import ch.vd.fidor.ws.v2.District;
 import ch.vd.fidor.ws.v2.FidorDate;
+import ch.vd.fidor.ws.v2.Region;
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
 
-	private static final long serialVersionUID = 4126668258450436037L;
+	private static final long serialVersionUID = 2669596718922942191L;
 
 	private final RegDate dateDebut;
 	private final RegDate dateFin;
-	private final int noOFSEtendu;
-	private final int numTechMere;
+	private final int noOfsCommuneMere;
 	private final boolean vaudoise;
 	private final boolean fraction;
 	private final boolean principale;
 	private final String sigleCanton;
-	private final int numTechnique;
-	private final District district;
+	private final Integer codeDistrict;
+	private final Integer codeRegion;
 
 	public static CommuneImpl get(ch.vd.infrastructure.model.Commune target) {
 		if (target == null) {
@@ -36,6 +40,13 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 		return new CommuneImpl(target);
 	}
 
+	public static Commune get(ch.vd.evd0012.v1.CommuneFiscale target) {
+		if (target == null) {
+			return null;
+		}
+		return new CommuneImpl(target);
+	}
+
 	public static Commune get(CommuneFiscale target) {
 		if (target == null) {
 			return null;
@@ -44,49 +55,80 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	protected CommuneImpl(ch.vd.infrastructure.model.CommuneSimple target) {
-		super(target);
+		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
 		this.sigleCanton = target.getSigleCanton();
-		this.numTechMere = target.getNumTechMere();
-		this.numTechnique = target.getNoTechnique();
+		this.noOfsCommuneMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
-		this.district = null;
+		this.codeDistrict = null;
+		this.codeRegion = null;
 	}
 
 	protected CommuneImpl(ch.vd.infrastructure.model.Commune target) {
-		super(target);
+		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
 		this.dateDebut = RegDate.get(target.getDateDebutValidite());
 		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.noOFSEtendu = (target.isFraction() ? target.getNoTechnique() : target.getNoOFS());
 		this.sigleCanton = target.getSigleCanton();
-		this.numTechMere = target.getNumTechMere();
-		this.numTechnique = target.getNoTechnique();
+		this.noOfsCommuneMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = target.isFraction();
 		this.principale = target.isPrincipale();
-		this.district = null;
+		this.codeDistrict = null;
+		this.codeRegion = null;
 	}
 
 	protected CommuneImpl(CommuneFiscale target) {
-		super(target.getNoOfs(), toUpperCase(target.getNomOfficiel()), target.getNomOfficiel(), null);
+		super((target.getNoOFSFaitiere() == null ? target.getNoOfs() : target.getNoTechnique()), target.getNomCourt(), target.getNomOfficiel(), null);
 		this.dateDebut = fidor2reg(target.getDateDebutValidite());
 		this.dateFin = fidor2reg(target.getDateFinValidite());
-		this.noOFSEtendu = (target.getNoOFSFaitiere() == null ? target.getNoOfs() : target.getNoTechnique());
 		this.sigleCanton = target.getSigleCanton();
-		this.numTechMere = target.getNoOFSFaitiere() == null ? 0 : target.getNoOFSFaitiere();
-		this.numTechnique = target.getNoTechnique();
+		this.noOfsCommuneMere = target.getNoOFSFaitiere() == null ? 0 : target.getNoOFSFaitiere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
 		this.fraction = (target.getNoOFSFaitiere() != null);
 		this.principale = (target.getFractions() != null && !target.getFractions().isEmpty());
-		this.district = DistrictImpl.get(target.getDistrict());
+
+		final District district = target.getDistrict();
+		this.codeDistrict = district == null ? null : district.getCode();
+
+		final Region region = district == null ? null : district.getRegion();
+		this.codeRegion = region == null ? null : region.getCode();
 	}
 
-	private static String toUpperCase(String string) {
-		return string == null ? null : string.toUpperCase();
+	public CommuneImpl(ch.vd.evd0012.v1.CommuneFiscale target) {
+		super(target.getNumeroOfs(), target.getNomCourt(), target.getNomOfficiel(), null);
+		this.dateDebut = XmlUtils.xmlcal2regdate(target.getDateDebutValidite());
+		this.dateFin = XmlUtils.xmlcal2regdate(target.getDateFinValidite());
+		this.sigleCanton = target.getSigleCanton();
+		this.noOfsCommuneMere = target.isEstUneFractionDeCommune() ? link2OfsId(target.getCommuneFaitiereLink()) : -1;
+		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
+		this.fraction = target.isEstUneFractionDeCommune();
+		this.principale = target.isEstUneCommuneFaitiere();
+		this.codeDistrict = link2OfsId(target.getDistrictFiscalLink());
+		this.codeRegion = link2OfsId(target.getRegionFiscaleLink());
+	}
+
+	public static Integer link2OfsId(String link) {
+		if (StringUtils.isBlank(link)) {
+			return null;
+		}
+		// e.g. "districtFiscal/4" => 4
+		// e.g. "regionFiscale/1" => 1
+		// e.g. "communeFiscale/5871I19600101" => 5871
+
+		int slash = link.indexOf('/');
+		if (slash >= 0) {
+			link = link.substring(slash + 1);
+		}
+
+		int i = link.indexOf('I');
+		if (i >= 0) {
+			link = link.substring(0, i);
+		}
+
+		return Integer.parseInt(link);
 	}
 
 	private static RegDate fidor2reg(FidorDate date) {
@@ -104,23 +146,8 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	@Override
-	public int getNoOFSEtendu() {
-		return noOFSEtendu;
-	}
-
-	@Override
-	public int getNoOFS() {
-		return noOFSEtendu;
-	}
-
-	@Override
-	public int getNumTechMere() {
-		return numTechMere;
-	}
-
-	@Override
-	public int getNumeroTechnique() {
-		return numTechnique;
+	public int getOfsCommuneMere() {
+		return noOfsCommuneMere;
 	}
 
 	@Override
@@ -144,7 +171,12 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	@Override
-	public District getDistrict() {
-		return district;
+	public Integer getCodeDistrict() {
+		return codeDistrict;
+	}
+
+	@Override
+	public Integer getCodeRegion() {
+		return codeRegion;
 	}
 }

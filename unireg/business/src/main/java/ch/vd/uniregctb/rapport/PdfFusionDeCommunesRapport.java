@@ -114,7 +114,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 
 		Commune commune;
 		try {
-			commune = infraService.getCommuneByNumeroOfsEtendu(noOfs, dateReference);
+			commune = infraService.getCommuneByNumeroOfs(noOfs, dateReference);
 		}
 		catch (ServiceInfrastructureException e) {
 			commune = null;
@@ -124,7 +124,7 @@ public class PdfFusionDeCommunesRapport extends PdfRapport {
 			s.append("<unknown>");
 		}
 		else {
-			s.append(commune.getNomMinuscule());
+			s.append(commune.getNomOfficiel());
 		}
 
 		s.append(" (").append(noOfs).append(')');

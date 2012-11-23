@@ -114,7 +114,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 
 			if (typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD || typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_HC) {
 				try {
-					final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, dateDebut);
+					final Commune commune = serviceInfra.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, dateDebut);
 					if (commune == null) {
 						results.addError(String.format("La commune du for fiscal %s (%d) est inconnue dans l'infrastructure à la date de début du for", ff, ff.getNumeroOfsAutoriteFiscale()));
 					}
@@ -126,22 +126,22 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 							final String debutValiditeCommune = validiteCommune.getDateDebut() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateDebut());
 							final String finValiditeCommune = validiteCommune.getDateFin() == null ? "?" : RegDateHelper.dateToDisplayString(validiteCommune.getDateFin());
 							results.addError(String.format("La période de validité du for fiscal %s dépasse la période de validité de la commune %s (%d) à laquelle il est assigné (%s - %s)",
-									ff, commune.getNomMinuscule(), commune.getNoOFSEtendu(), debutValiditeCommune, finValiditeCommune));
+									ff, commune.getNomOfficiel(), commune.getNoOFS(), debutValiditeCommune, finValiditeCommune));
 						}
 					}
 					else {
 						// commune faîtière de fractions...
 						final String message = String.format("Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas",
-								ff, commune.getNomMinuscule(), numeroOfsAutoriteFiscale);
+								ff, commune.getNomOfficiel(), numeroOfsAutoriteFiscale);
 						results.addError(message);
 					}
 
 					// ajouté le test de la cohérence de la commune avec le type d'autorité fiscale
 					if (commune != null && commune.isVaudoise() && typeAutoriteFiscale != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomMinuscule(), commune.getNoOFSEtendu(), ff));
+						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomOfficiel(), commune.getNoOFS(), ff));
 					}
 					else if (commune != null && !commune.isVaudoise() && typeAutoriteFiscale == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomMinuscule(), commune.getNoOFSEtendu(), ff));
+						results.addError(String.format("Incohérence entre le type d'autorité fiscale %s et la commune non-vaudoise %s (%d) sur le for %s", typeAutoriteFiscale, commune.getNomOfficiel(), commune.getNoOFS(), ff));
 					}
 				}
 				catch (ServiceInfrastructureException e) {
@@ -158,7 +158,7 @@ public abstract class ForFiscalValidator<T extends ForFiscal> extends EntityVali
 						results.addError(String.format("Le for %s devrait être vaudois ou hors-canton", ff));
 					}
 					else if (!pays.isEtatSouverain()) {
-						results.addError(String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ff, pays.getNomMinuscule(), pays.getNoOFS()));
+						results.addError(String.format("Le pays du for fiscal %s (%s, %d) n'est pas un état souverain, mais un territoire", ff, pays.getNomCourt(), pays.getNoOFS()));
 					}
 				}
 				catch (ServiceInfrastructureException e) {

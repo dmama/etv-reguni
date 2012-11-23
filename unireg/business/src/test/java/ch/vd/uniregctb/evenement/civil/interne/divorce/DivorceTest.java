@@ -323,7 +323,7 @@ public class DivorceTest extends AbstractEvenementCivilInterneTest {
 				final Individu madame = serviceCivil.getIndividu(noMadame, dateDivorce);
 
 				// la date de l'événement divorce corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
-				final Divorce divorce = new Divorce(monsieur, madame, dateDivorce.getOneDayAfter(), MockCommune.Echallens.getNoOFSEtendu(), context);
+				final Divorce divorce = new Divorce(monsieur, madame, dateDivorce.getOneDayAfter(), MockCommune.Echallens.getNoOFS(), context);
 
 				final MessageCollector collector = buildMessageCollector();
 				divorce.validate(collector, collector);

@@ -392,7 +392,7 @@ public class AdresseServiceImpl implements AdresseService {
 		final String npa = adresse != null ? adresse.getNumeroPostal() : null;
 		final String localite = adresse != null ? adresse.getLocalite() : null;
 		final Pays pays = adresse != null ? buildPays(adresse) : null;
-		final String paysString = pays == null ? null : pays.getNomMinuscule();
+		final String paysString = pays == null ? null : pays.getNomCourt();
 		return new AdresseCourrierPourRF(nomPrenom1String, nomPrenom2String, rueEtNumeroString, npa, localite, paysString);
 	}
 

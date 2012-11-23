@@ -172,7 +172,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			expediteur.setLocaliteExpedition("Lausanne");
 		}
 		else {
-			expediteur.setLocaliteExpedition(StringUtils.capitalize(commune.getNomMinuscule()));
+			expediteur.setLocaliteExpedition(StringUtils.capitalize(commune.getNomOfficiel()));
 		}
 		return expediteur;
 	}
@@ -217,7 +217,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		Integer numeroOfsAutoriteFiscale = forGestion.getNoOfsCommune();
 		Commune commune;
 		try {
-			commune = infraService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forGestion.getDateFin());
+			commune = infraService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forGestion.getDateFin());
 		}
 		catch (ServiceInfrastructureException e) {
 			commune = null;
@@ -227,7 +227,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 			String message = "La commune correspondant au numéro " + numeroOfsAutoriteFiscale + " n'a pas pu être déterminée";
 			throw new EditiqueException(message);
 		}
-		return commune.getNomMinuscule();
+		return commune.getNomOfficiel();
 	}
 
 	/**

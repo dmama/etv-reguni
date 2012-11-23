@@ -399,19 +399,19 @@ public class CorrectionDateArriveeTest extends AbstractEvenementCivilInterneTest
 				Assert.assertFalse(ffPrecedent.isAnnule());
 				Assert.assertEquals(DATE_EVT.addYears(-4), ffPrecedent.getDateDebut());
 				Assert.assertEquals(DATE_EVT.getOneDayBefore(), ffPrecedent.getDateFin());
-				Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffPrecedent.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffPrecedent.getNumeroOfsAutoriteFiscale());
 
 				final ForFiscalPrincipal ffAnnule = (ForFiscalPrincipal) ff.get(1);
 				Assert.assertTrue(ffAnnule.isAnnule());
 				Assert.assertEquals(DATE_EVT.addDays(-10), ffAnnule.getDateDebut());
 				Assert.assertNull(ffAnnule.getDateFin());
-				Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) ffAnnule.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffAnnule.getNumeroOfsAutoriteFiscale());
 
 				final ForFiscalPrincipal ffRestant = (ForFiscalPrincipal) ff.get(2);
 				Assert.assertFalse(ffRestant.isAnnule());
 				Assert.assertEquals(DATE_EVT, ffRestant.getDateDebut());
 				Assert.assertNull(ffRestant.getDateFin());
-				Assert.assertEquals(MockCommune.Cossonay.getNoOFSEtendu(), (int) ffRestant.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Cossonay.getNoOFS(), (int) ffRestant.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

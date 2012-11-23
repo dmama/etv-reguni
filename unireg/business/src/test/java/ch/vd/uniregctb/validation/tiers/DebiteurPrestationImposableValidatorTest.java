@@ -41,7 +41,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2004, 8, 11));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Lausanne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -50,7 +50,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2006, 10, 1));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Vevey.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{ // ce for intermédiaire est ouvert => il doit entrer en conflit avec le for suivant
@@ -59,7 +59,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -68,7 +68,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2007, 3, 30));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -77,7 +77,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Bussigny.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 
@@ -131,7 +131,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2008, 2, 12));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 
@@ -142,7 +142,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2010, 12, 25));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 
@@ -153,7 +153,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(date(2011, 9, 20));
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 
@@ -163,7 +163,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 
@@ -223,7 +223,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -250,7 +250,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			debiteur.addForFiscal(forFiscal);
 		}
 		{
@@ -307,7 +307,7 @@ public class DebiteurPrestationImposableValidatorTest extends AbstractValidatorT
 			forFiscal.setDateFin(null);
 			forFiscal.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
 			forFiscal.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFSEtendu());
+			forFiscal.setNumeroOfsAutoriteFiscale(MockCommune.Aubonne.getNoOFS());
 			forFiscal.setAnnule(true);
 			debiteur.addForFiscal(forFiscal);
 		}

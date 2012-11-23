@@ -19,7 +19,7 @@
   
   <xs:import namespace="http://www.ech.ch/xmlns/eCH-0011/3" schemaLocation="http://www.ech.ch/xmlns/eCH-0011/3/eCH-0011-3-0.xsd"/>
   <xs:import namespace="http://www.ech.ch/xmlns/eCH-0044/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0044/1/eCH-0044-1-0.xsd"/>
-  <xs:import namespace="http://www.ech.ch/xmlns/eCH-0071/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0071/1/eCH-0071-1-0.xsd"/>
+  <xs:import namespace="http://www.ech.ch/xmlns/eCH-0071/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0071/1/eCH-0071-1-1.xsd"/>
   <xs:import namespace="http://www.ech.ch/xmlns/eCH-0072/1" schemaLocation="http://www.ech.ch/xmlns/eCH-0072/1/eCH-0072-1-0.xsd"/>
   
   <xs:complexType name="personInformationType">

@@ -253,7 +253,7 @@ public class ArriveePrincipale extends Arrivee {
 		/*
 		 * La commune d'annonce est différente de la commune d'arrivée cas possible avec les fractions if
 		 * (arrivee.getNumeroOfsCommuneAnnonce().intValue() != nouvelleCommune.getNoTechnique()) { erreurs.add(new EvenementCivilExterneErreur("La
-		 * nouvelle commune principale ("+nouvelleCommune.getNomMinuscule()+ ","+nouvelleCommune.getNoTechnique()+") ne correspond pas à la
+		 * nouvelle commune principale ("+nouvelleCommune.getNomOfficiel()+ ","+nouvelleCommune.getNoTechnique()+") ne correspond pas à la
 		 * commune d'annonce ("+arrivee.getNumeroOfsCommuneAnnonce()+")")); }
 		 */
 
@@ -261,7 +261,7 @@ public class ArriveePrincipale extends Arrivee {
 		 * Pour les communes du Sentier, il n'est pas possible de déterminer automatiquement le for principal. Un traitement manuel est
 		 * nécessaire.
 		 */
-		if (nouvelleCommune.getNoOFSEtendu() == NO_OFS_FRACTION_SENTIER) {
+		if (nouvelleCommune.getNoOFS() == NO_OFS_FRACTION_SENTIER) {
 			warnings.addWarning("arrivée dans la fraction de commune du Sentier: veuillez vérifier la fraction de commune du for principal");
 		}
 	}
@@ -311,7 +311,7 @@ public class ArriveePrincipale extends Arrivee {
 		if (FiscalDateHelper.isMajeurAt(getIndividu(), dateArriveeEffective)) {
 
 			MotifFor motifOuverture = getMotifOuvertureFor();
-			final int numeroOfsNouveau = nouvelleCommune.getNoOFSEtendu();
+			final int numeroOfsNouveau = nouvelleCommune.getNoOFS();
 			final ForFiscalPrincipal forFiscal = habitant.getForFiscalPrincipalAt(null);
 
 			// détermination du mode d'imposition
@@ -424,7 +424,7 @@ public class ArriveePrincipale extends Arrivee {
 			final ForFiscalPrincipal ffpHabitantPrincipal = principal.getForFiscalPrincipalAt(null);
 			final ForFiscalPrincipal ffpHabitantConjoint = (conjoint == null ? null : conjoint.getForFiscalPrincipalAt(null));
 			final ForFiscalPrincipal ffpMenage = menageCommun.getForFiscalPrincipalAt(null);
-			final int numeroOfsNouveau = commune.getNoOFSEtendu();
+			final int numeroOfsNouveau = commune.getNoOFS();
 
 			// pour un couple, le for principal est toujours sur le ménage commun
 			if (ffpHabitantPrincipal != null) {
@@ -554,9 +554,9 @@ public class ArriveePrincipale extends Arrivee {
 							final StringBuilder b = new StringBuilder();
 							for (int i = 1 ; i < communes.size() ; ++ i) {
 								final Commune ancienneCommune = communes.get(i - 1).getCommune();
-								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomMinuscule(), ancienneCommune.getNoOFSEtendu()) : "HC/HS";
+								final String nomAncienneCommune = ancienneCommune != null ? String.format("%s (%d)", ancienneCommune.getNomOfficiel(), ancienneCommune.getNoOFS()) : "HC/HS";
 								final Commune nouvelleCommune = communes.get(i).getCommune();
-								final String nomNouvelleCommune = nouvelleCommune != null ? String.format("%s (%d)", nouvelleCommune.getNomMinuscule(), nouvelleCommune.getNoOFSEtendu()) : "HC/HS";
+								final String nomNouvelleCommune = nouvelleCommune != null ? String.format("%s (%d)", nouvelleCommune.getNomOfficiel(), nouvelleCommune.getNoOFS()) : "HC/HS";
 								if (i > 1) {
 									b.append(", ");
 								}
@@ -602,7 +602,7 @@ public class ArriveePrincipale extends Arrivee {
 			else if (!principalVaudois) {
 				commune = residenceConjoint;
 			}
-			else if (residencePrincipal.getNoOFSEtendu() == residenceConjoint.getNoOFSEtendu()) {
+			else if (residencePrincipal.getNoOFS() == residenceConjoint.getNoOFS()) {
 				commune = residencePrincipal;      // même commune pour les deux conjoints -> ils sont tous les deux arrivés
 			}
 			else {
@@ -610,7 +610,7 @@ public class ArriveePrincipale extends Arrivee {
 				// y a-t-il déjà un for vaudois ouvert sur le couple (cette méthode est appelée avant la fermeture des fors...)
 				if (ffpArrivee != null && ffpArrivee.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 					// si le for principal vaudois sur le couple correspond à l'une des communes du principal ou du conjoint, on ne touche à rien
-					if (ffpArrivee.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFSEtendu() || ffpArrivee.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFSEtendu()) {
+					if (ffpArrivee.getNumeroOfsAutoriteFiscale() == residencePrincipal.getNoOFS() || ffpArrivee.getNumeroOfsAutoriteFiscale() == residenceConjoint.getNoOFS()) {
 						commune = null;
 					}
 					else {
@@ -677,7 +677,7 @@ public class ArriveePrincipale extends Arrivee {
 	private boolean isForDejaBon(Contribuable ctb, RegDate dateArrivee, boolean beginDateMustMatch) {
 		final ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(dateArrivee);
 		final MotifFor motifAttendu = getMotifOuvertureFor();
-		final int ofsCommuneArrivee = nouvelleCommune.getNoOFSEtendu();
+		final int ofsCommuneArrivee = nouvelleCommune.getNoOFS();
 		return ffp != null && (!beginDateMustMatch || ffp.getDateDebut() == dateArrivee) && motifAttendu == ffp.getMotifOuverture()
 				&& ofsCommuneArrivee == ffp.getNumeroOfsAutoriteFiscale() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}

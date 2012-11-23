@@ -58,10 +58,10 @@
 						<td>
 							<c:choose>
 								<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD' }">
-									<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomMinuscule" date="${command.dateDebut}"/>
+									<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}"/>
 								</c:when>
 								<c:when test="${command.typeAutoriteFiscale == 'COMMUNE_HC' }">
-									<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomMinuscule" date="${command.dateDebut}"/>
+									<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" date="${command.dateDebut}"/>
 									(<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="sigleCanton" date="${command.dateDebut}"/>)
 								</c:when>
 							</c:choose>

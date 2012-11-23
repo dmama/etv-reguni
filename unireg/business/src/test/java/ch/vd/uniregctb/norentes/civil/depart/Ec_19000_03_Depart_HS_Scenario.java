@@ -164,7 +164,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertNull(cedric.getDernierForFiscalPrincipal(), "For principal de l'Habitant " + FormatNumeroHelper.numeroCTBToDisplay(cedric.getNumero()) + " non null");
 
 			// vérification que les adresses civiles sont a Bex
-			assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndCedric, dateArriveeBex, false).principale.getLocalite(), "L'adresse principale n'est pas à Bex");
+			assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndCedric, dateArriveeBex, false).principale.getLocalite(), "L'adresse principale n'est pas à Bex");
 		}
 
 		{
@@ -173,7 +173,7 @@ public class Ec_19000_03_Depart_HS_Scenario extends DepartScenario {
 			assertNull(sandra.getDernierForFiscalPrincipal(), "For principal de l'Habitant " + FormatNumeroHelper.numeroCTBToDisplay(sandra.getNumero()) + " non null");
 
 			// vérification que les adresses civiles sont a Bex
-			assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndSandra, dateArriveeBex, false).principale.getLocalite(), "L'adresse principale n'est pas à Bex");
+			assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndSandra, dateArriveeBex, false).principale.getLocalite(), "L'adresse principale n'est pas à Bex");
 		}
 
 		{

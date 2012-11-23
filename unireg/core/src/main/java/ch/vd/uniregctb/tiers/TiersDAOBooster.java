@@ -232,12 +232,12 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
 		return target.getCollectiviteAdministrativeForDistrict(numeroDistrict);
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion) {
 		return target.getCollectiviteAdministrativeForRegion(numeroRegion);
 	}
 

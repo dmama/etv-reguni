@@ -1795,7 +1795,7 @@ public class MetierServiceImpl implements MetierService {
 					throw new LocalisationException("Adresse sans commune");
 				}
 				taf = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-				noOfs = commune.getNoOFSEtendu();
+				noOfs = commune.getNoOFS();
 			}
 			else {
 				taf = TypeAutoriteFiscale.PAYS_HS;
@@ -1811,7 +1811,7 @@ public class MetierServiceImpl implements MetierService {
 					throw new LocalisationException("Adresse sans commune");
 				}
 				taf = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-				noOfs = commune.getNoOFSEtendu();
+				noOfs = commune.getNoOFS();
 			}
 			else {
 				taf = TypeAutoriteFiscale.PAYS_HS;
@@ -1917,7 +1917,7 @@ public class MetierServiceImpl implements MetierService {
 			// [UNIREG-2143] prendre en compte l'adresse de domicile pour établissement du for
 			final LocalisationFor localisationFor = getLocalisationFor(date, pp);
 
-			final Integer noOfsEtendu;
+			final Integer noOfs;
 			final TypeAutoriteFiscale typeAutoriteFiscale;
 			if (localisationFor == null) {
 				// pas d'adresse de domicile connue -> on n'ouvre aucun for
@@ -1925,11 +1925,11 @@ public class MetierServiceImpl implements MetierService {
 						RegDateHelper.dateToDisplayString(date));
 				Audit.warn(numeroEvenement, message);
 
-				noOfsEtendu = null;
+				noOfs = null;
 				typeAutoriteFiscale = null;
 			}
 			else {
-				noOfsEtendu = localisationFor.getNoOfs();
+				noOfs = localisationFor.getNoOfs();
 				typeAutoriteFiscale = localisationFor.getTypeAutoriteFiscale();
 
 				if (typeAutoriteFiscale == TypeAutoriteFiscale.PAYS_HS) {
@@ -1949,9 +1949,9 @@ public class MetierServiceImpl implements MetierService {
 				}
 			}
 
-			if (noOfsEtendu != null) {
+			if (noOfs != null) {
 				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale);
-				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfsEtendu, typeAutoriteFiscale, nouveauMode.getModeImposition(),
+				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfs, typeAutoriteFiscale, nouveauMode.getModeImposition(),
 						motifOuverture, changeHabitantFlag);
 			}
 			else {

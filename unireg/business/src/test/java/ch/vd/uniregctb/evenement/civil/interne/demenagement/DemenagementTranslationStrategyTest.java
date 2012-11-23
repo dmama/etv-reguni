@@ -64,13 +64,13 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setMotifFermeture(null);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		f.setNumeroOfsAutoriteFiscale(MockCommune.Villette.getNoOFSEtendu());
+		f.setNumeroOfsAutoriteFiscale(MockCommune.Villette.getNoOFS());
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne d'arrivée,
 		// parce que - du point de vue fiscal - les communes n'ont pas encore fusionné.
@@ -113,13 +113,13 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setMotifFermeture(null);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		f.setNumeroOfsAutoriteFiscale(MockCommune.Villette.getNoOFSEtendu());
+		f.setNumeroOfsAutoriteFiscale(MockCommune.Villette.getNoOFS());
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.BourgEnLavaux.getNoOFSEtendu(), null);
+				MockCommune.BourgEnLavaux.getNoOFS(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, parce que
 		// même si - du point de vue fiscal - les communes n'ont pas encore fusionné, la commune de départ et celle d'arrivée est la même.
@@ -160,7 +160,7 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		f.setMotifFermeture(null);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_HC);
-		f.setNumeroOfsAutoriteFiscale(MockCommune.Zurich.getNoOFSEtendu());
+		f.setNumeroOfsAutoriteFiscale(MockCommune.Zurich.getNoOFS());
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
@@ -171,12 +171,12 @@ public class DemenagementTranslationStrategyTest extends AbstractEvenementCivilI
 		fs.setMotifFermeture(null);
 		fs.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		fs.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		fs.setNumeroOfsAutoriteFiscale(MockCommune.Cully.getNoOFSEtendu());
+		fs.setNumeroOfsAutoriteFiscale(MockCommune.Cully.getNoOFS());
 		fs.setMotifRattachement(MotifRattachement.IMMEUBLE_PRIVE);
 
 		// Simule l'arrivée du déménagement de la part de la commune fusionnée
 		final EvenementCivilRegPP externe = new EvenementCivilRegPP(0L, TypeEvenementCivil.DEMENAGEMENT_DANS_COMMUNE, EtatEvenementCivil.A_TRAITER, dateDemenagement, noInd, null,
-				MockCommune.Cully.getNoOFSEtendu(), null);
+				MockCommune.Cully.getNoOFS(), null);
 
 		// L'événement fiscal externe de déménagement doit être traduit en un événement fiscal interne de déménagement, parce que
 		// même si - du point de vue fiscal - les communes n'ont pas encore fusionné, la commune de départ et celle d'arrivée est la même.

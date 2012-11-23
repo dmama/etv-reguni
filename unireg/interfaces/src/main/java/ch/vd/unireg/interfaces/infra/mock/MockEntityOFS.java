@@ -7,8 +7,8 @@ import ch.vd.unireg.interfaces.civil.data.EntiteOFS;
 public abstract class MockEntityOFS implements EntiteOFS {
 
 	private int noOFS;
-	private String nomMajuscule;
-	private String nomMinuscule;
+	private String nomCourt;
+	private String nomOfficiel;
 	private String sigleOFS;
 
 	public MockEntityOFS() {
@@ -16,15 +16,16 @@ public abstract class MockEntityOFS implements EntiteOFS {
 
 	public MockEntityOFS(EntiteOFS entite) {
 		this.noOFS = entite.getNoOFS();
-		this.nomMajuscule = entite.getNomMajuscule();
-		this.nomMinuscule = entite.getNomMinuscule();
+		this.nomCourt = entite.getNomCourt();
+		this.nomOfficiel = entite.getNomOfficiel();
 		this.sigleOFS = entite.getSigleOFS();
 	}
 
-	public MockEntityOFS(int noOFS, @Nullable String sigleOFS, String nomMinuscule) {
+	public MockEntityOFS(int noOFS, @Nullable String sigleOFS, String nomCourt, String nomOfficiel) {
 		this.noOFS = noOFS;
 		this.sigleOFS = sigleOFS;
-		this.nomMinuscule = nomMinuscule;
+		this.nomCourt = nomCourt;
+		this.nomOfficiel = nomOfficiel;
 	}
 
 	@Override
@@ -37,21 +38,21 @@ public abstract class MockEntityOFS implements EntiteOFS {
 	}
 
 	@Override
-	public String getNomMajuscule() {
-		return nomMajuscule;
+	public String getNomCourt() {
+		return nomCourt;
 	}
 
-	public void setNomMajuscule(String nomMajuscule) {
-		this.nomMajuscule = nomMajuscule;
+	public void setNomCourt(String nomCourt) {
+		this.nomCourt = nomCourt;
 	}
 
 	@Override
-	public String getNomMinuscule() {
-		return nomMinuscule;
+	public String getNomOfficiel() {
+		return nomOfficiel;
 	}
 
-	public void setNomMinuscule(String nomMinuscule) {
-		this.nomMinuscule = nomMinuscule;
+	public void setNomOfficiel(String nomOfficiel) {
+		this.nomOfficiel = nomOfficiel;
 	}
 
 	@Override

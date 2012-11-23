@@ -158,7 +158,7 @@ public class AddressBuilder {
 		final Pays pays = from.getPays();
 		if (pays != null) {
 			info.setCountry(pays.getCodeIso2());
-			info.setCountryName(pays.getNomMinuscule());
+			info.setCountryName(pays.getNomCourt());
 			info.setCountryId(pays.getNoOFS());
 		}
 

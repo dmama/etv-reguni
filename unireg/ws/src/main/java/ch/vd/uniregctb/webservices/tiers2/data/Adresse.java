@@ -173,7 +173,7 @@ public class Adresse implements Range {
 				throw new BusinessException(e);
 			}
 			if (p != null && !p.isSuisse()) {
-				this.pays = p.getNomMinuscule();
+				this.pays = p.getNomCourt();
 			}
 		}
 

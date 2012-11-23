@@ -120,7 +120,7 @@ public interface Individu extends EntiteCivile {
 	Sexe getSexe();
 
 	/**
-	 * @return les origines de l'individu étendu.
+	 * @return les origines de l'individu .
 	 */
 	Collection<Origine> getOrigines();
 

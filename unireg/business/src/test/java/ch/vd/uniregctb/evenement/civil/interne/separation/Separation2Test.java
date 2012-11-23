@@ -314,7 +314,7 @@ public class Separation2Test extends AbstractEvenementCivilInterneTest {
 				final Individu madame = serviceCivil.getIndividu(noMadame, dateSeparation);
 
 				// la date de l'événement séparation corresponds au premier jour de non-appartenance ménage des composants (à l'inverse de la logique habituelle)
-				final Separation separation = new Separation(monsieur, madame, dateSeparation.getOneDayAfter(), MockCommune.Echallens.getNoOFSEtendu(), context);
+				final Separation separation = new Separation(monsieur, madame, dateSeparation.getOneDayAfter(), MockCommune.Echallens.getNoOFS(), context);
 
 				final MessageCollector collector = buildMessageCollector();
 				separation.validate(collector, collector);

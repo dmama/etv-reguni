@@ -87,7 +87,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de célibataire.");
 		Individu celibataire = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(celibataire, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFS(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -157,7 +157,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié seul.");
 		Individu marieSeul = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE_SEUL, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieSeul, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFS(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -217,7 +217,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 
 		LOGGER.debug("Test de traitement d'un événement d'obtention de permis de marié à deux.");
 		Individu marieADeux = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_MARIE, date(2007, 12, 31));
-		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFSEtendu(), 5586);
+		ObtentionPermis obtentionPermis = createValidObtentionPermis(marieADeux, DATE_OBTENTION_PERMIS, MockCommune.Lausanne.getNoOFS(), 5586);
 
 		final MessageCollector collector = buildMessageCollector();
 		obtentionPermis.validate(collector, collector);
@@ -323,7 +323,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Neuchatel.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Neuchatel.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -448,7 +448,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Lausanne.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -518,7 +518,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu julie = serviceCivil.getIndividu(NO_INDIVIDU_SOURCIER_CELIBATAIRE, date(2007, 12, 31));
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFSEtendu(), MockCommune.Lausanne.getNoOFS());
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(julie, dateObtentionPermis, MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getNoOFS());
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -597,7 +597,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -624,7 +624,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				assertNull(ffp.getDateFin());
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (long) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Geneve.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
 				assertEquals(MotifFor.PERMIS_C_SUISSE, ffp.getMotifOuverture());
 				return null;
 			}
@@ -676,7 +676,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -752,7 +752,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final Individu individu = serviceCivil.getIndividu(noIndividu, null);
-				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFSEtendu(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
+				final ObtentionPermis obtentionPermis = createValidObtentionPermis(individu, datePermisC, MockCommune.Echallens.getNoOFS(), 0);   // 0 car l'adresse principale est HC (voir constructeurs ObtentionPermis)
 
 				final MessageCollector collector = buildMessageCollector();
 				obtentionPermis.validate(collector, collector);
@@ -779,7 +779,7 @@ public class ObtentionPermisTest extends AbstractEvenementCivilInterneTest {
 				assertNull(ffp.getDateFin());
 				assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-				assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (long) ffp.getNumeroOfsAutoriteFiscale());
+				assertEquals(MockCommune.Echallens.getNoOFS(), (long) ffp.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

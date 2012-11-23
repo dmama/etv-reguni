@@ -265,8 +265,8 @@ public class JspTagBatchForm extends BodyTagSupport {
 
 		final String jobName = job.getName();
 		final Commune defaultCommune = (Commune) job.getJobDefinition().getDefaultWebValue(param.getName());
-		final String defaultNomCommune = (defaultCommune == null ? "" : defaultCommune.getNomMinuscule());
-		final String defaultNoOfsCommune = (defaultCommune == null ? "" : String.valueOf(defaultCommune.getNoOFSEtendu()));
+		final String defaultNomCommune = (defaultCommune == null ? "" : defaultCommune.getNomOfficiel());
+		final String defaultNoOfsCommune = (defaultCommune == null ? "" : String.valueOf(defaultCommune.getNoOFS()));
 
 		final String idInputNomCommune = jobName + "NomCommune";
 		final String nameInputNoOfs = getBatchParamNameInForm(param);

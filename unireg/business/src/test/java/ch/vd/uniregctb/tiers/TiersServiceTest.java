@@ -283,7 +283,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addPermis(pierre, TypePermis.COURTE_DUREE, RegDate.get(1953, 11, 2), null, false);
-				addOrigine(pierre, MockPays.France.getNomMinuscule());
+				addOrigine(pierre, MockPays.France.getNomCourt());
 			}
 		});
 
@@ -300,7 +300,7 @@ public class TiersServiceTest extends BusinessTest {
 			protected void init() {
 				MockIndividu pierre = addIndividu(NUMERO_INDIVIDU, RegDate.get(1953, 11, 2), "Dupont", "Pierre", true);
 				addPermis(pierre, TypePermis.ETABLISSEMENT, RegDate.get(1953, 11, 2), null, false);
-				addOrigine(pierre, MockPays.France.getNomMinuscule());
+				addOrigine(pierre, MockPays.France.getNomCourt());
 			}
 		});
 
@@ -609,12 +609,12 @@ public class TiersServiceTest extends BusinessTest {
 		habitant = (PersonnePhysique) tiersDAO.save(habitant);
 		assertEquals(0, habitant.getForsFiscaux().size());
 
-		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFSEtendu(),
+		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFS(),
 				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC, true);
 		assertEquals(1, habitant.getForsFiscaux().size());
 
 		ForFiscalPrincipal ff = (ForFiscalPrincipal) habitant.getForsFiscaux().toArray()[0];
-		assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), ff.getNumeroOfsAutoriteFiscale());
+		assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 		assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ff.getTypeAutoriteFiscale());
 		assertEquals(GenreImpot.REVENU_FORTUNE, ff.getGenreImpot());
 		assertEquals(MotifRattachement.DOMICILE, ff.getMotifRattachement());
@@ -3699,7 +3699,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
-				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
+				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
 						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
@@ -3824,7 +3824,7 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(autreFfp);
 				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				return null;
@@ -3842,7 +3842,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HC, MockCommune.Bern, MotifRattachement.DOMICILE);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HC, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(),
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
@@ -3862,7 +3862,7 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(autreFfp);
 				Assert.assertNull("Le for précédent n'a pas été ré-ouvert ?", autreFfp.getDateFin());
-				Assert.assertEquals(MockCommune.Bern.getNoOFSEtendu(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bern.getNoOFS(), (int) autreFfp.getNumeroOfsAutoriteFiscale());
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				return null;
@@ -3880,7 +3880,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Alastor", "Maugrey", date(1956, 9, 3), Sexe.MASCULIN);
 				addForPrincipal(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2005, 6, 1), MotifFor.ARRIVEE_HS, MockPays.Allemagne);
 				addForPrincipal(pp, date(2005, 6, 2), MotifFor.ARRIVEE_HS, MockCommune.Renens);
-				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(),
+				addForSecondaire(pp, date(2000, 5, 12), MotifFor.ACHAT_IMMOBILIER, date(2007, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.CheseauxSurLausanne.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 				pp.setBlocageRemboursementAutomatique(false);
 				return pp.getNumero();
@@ -4029,7 +4029,7 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
 				tiersService.closeForFiscalPrincipal(pp, date(2010, 5, 23), MotifFor.DEMENAGEMENT_VD);
-				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFSEtendu(),
+				tiersService.addForPrincipal(pp, date(2010, 5, 24), MotifFor.DEMENAGEMENT_VD, null, null, MotifRattachement.DOMICILE, MockCommune.Bex.getNoOFS(),
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE);
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
@@ -4142,7 +4142,7 @@ public class TiersServiceTest extends BusinessTest {
 		f.setMotifOuverture(MotifFor.ARRIVEE_HS);
 		f.setGenreImpot(GenreImpot.REVENU_FORTUNE);
 		f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-		f.setNumeroOfsAutoriteFiscale(MockCommune.LeLieu.getNoOFSEtendu());
+		f.setNumeroOfsAutoriteFiscale(MockCommune.LeLieu.getNoOFS());
 		f.setMotifRattachement(MotifRattachement.DOMICILE);
 		f.setModeImposition(ModeImposition.ORDINAIRE);
 
@@ -4153,7 +4153,7 @@ public class TiersServiceTest extends BusinessTest {
 		catch (ValidationException e) {
 			final String message =
 					String.format("[E] Le for fiscal %s ne peut pas être ouvert sur une commune faîtière de fractions de commune (ici %s / OFS %d), une fraction est attendue dans ce cas\n",
-							f, MockCommune.LeLieu.getNomMinuscule(), MockCommune.LeLieu.getNoOFSEtendu());
+							f, MockCommune.LeLieu.getNomOfficiel(), MockCommune.LeLieu.getNoOFS());
 			Assert.assertTrue(e.getMessage(), e.getMessage().endsWith(message));
 		}
 	}
@@ -4466,7 +4466,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
-				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
 				return null;
 			}
@@ -4547,7 +4547,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
-				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
 				return null;
 			}
@@ -4626,7 +4626,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
-				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
 				return null;
 			}
@@ -4710,7 +4710,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique fils = hibernateTemplate.get(PersonnePhysique.class, ids.fils);
 				assertNotNull(fils);
 
-				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFSEtendu(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
 						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
 				return null;
 			}

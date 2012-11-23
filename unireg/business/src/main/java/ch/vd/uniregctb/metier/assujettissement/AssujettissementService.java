@@ -19,7 +19,7 @@ public interface AssujettissementService {
 	List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException;
 
 	/**
-	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS étendus sont donnés en paramètre
+	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS sont donnés en paramètre
 	 * <p/><p/> <b>ATTENTION:</b> cette méthode n'est pas capable de faire la différence entre un vaudois avec for secondaire sur une commune (celle donnée en paramètre) différente de la commune de
 	 * domicile et un hors-canton qui a le même for secondaire... (en d'autres termes : l'assujettissement du vaudois vu de la commune où il a son for secondaire sera HorsCanton !!)
 	 *

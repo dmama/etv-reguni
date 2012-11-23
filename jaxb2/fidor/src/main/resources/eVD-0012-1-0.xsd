@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2008 rel. 2 sp2 (http://www.altova.com) by xsicdt (DIRECTION DES SYSTEMS D'INFORMATION) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:eVD-0012="http://evd.vd.ch/xmlns/eVD-0012/1" targetNamespace="http://evd.vd.ch/xmlns/eVD-0012/1" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<xs:simpleType name="entityLinkType">
+		<xs:restriction base="xs:string"/>
+	</xs:simpleType>
+	<xs:element name="listOfFiscalEntities">
+		<xs:annotation>
+			<xs:documentation>Liste des entités fiscales</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="numberOfResults" type="xs:int"/>
+				<xs:element name="listOfResults">
+					<xs:complexType>
+						<xs:choice>
+							<xs:element name="listOfBaremes" minOccurs="0">
+								<xs:annotation>
+									<xs:documentation>Liste des barèmes IS</xs:documentation>
+								</xs:annotation>
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="bareme" type="eVD-0012:BaremeType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfTauxCommunaux" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="tauxCommunal" type="eVD-0012:tauxCommunalType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfGenreImpot" minOccurs="0">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="eVD-0012:listOfGenreImpotType">
+											<xs:sequence>
+												<xs:element name="genreImpot" type="eVD-0012:genreImpotType" minOccurs="0" maxOccurs="unbounded"/>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfCommunesFiscales" minOccurs="0">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="eVD-0012:listOfCommunesFiscalesType">
+											<xs:sequence>
+												<xs:element name="communeFiscale" type="eVD-0012:communeFiscaleType" minOccurs="0" maxOccurs="unbounded">
+													<xs:annotation>
+														<xs:documentation>Commune fiscale</xs:documentation>
+													</xs:annotation>
+												</xs:element>
+											</xs:sequence>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfDistrictsFiscaux" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="districtFiscal" type="eVD-0012:districtFiscalType" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Un district fiscal se définit par une division de l'administration cantonale des impôts, d'étendue moyenne. Chaque district représente une région administrée fiscalement par un seul office d'impôt de district.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfRegionsFiscales" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="regionFiscale" type="eVD-0012:regionFiscaleType" minOccurs="0" maxOccurs="unbounded">
+											<xs:annotation>
+												<xs:documentation>Une région fiscale est une division de l'administration cantonale des impôts, comprenant plusieurs districts fiscaux. Chaque district représente une région administrée fiscalement par une seule direction régionale.</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfURL" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="url" type="eVD-0012:urlType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="listOfLogiciels" minOccurs="0">
+								<xs:complexType>
+									<xs:sequence>
+										<xs:element name="logiciel" type="eVD-0012:logicielType" minOccurs="0" maxOccurs="unbounded"/>
+									</xs:sequence>
+								</xs:complexType>
+							</xs:element>
+						</xs:choice>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="nextResults" type="xs:string" minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="TrancheType">
+		<xs:sequence>
+			<xs:element name="minimumAnnuel" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>Montant minimum du montant imposable.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="tauxGlobal">
+				<xs:annotation>
+					<xs:documentation>La somme du taux cantonal et du taux fédéral.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="8"/>
+						<xs:fractionDigits value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="tauxCantonal">
+				<xs:annotation>
+					<xs:documentation>Coefficient cantonal d'imposition. Ex: 0.1200 pour un taux de 12%.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="8"/>
+						<xs:fractionDigits value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="tauxFederal">
+				<xs:annotation>
+					<xs:documentation>Coefficient fédéral d'imposition. Ex: 0.0012 pour un taux de 0.12%.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="8"/>
+						<xs:fractionDigits value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="BaremeType">
+		<xs:sequence>
+			<xs:element name="idBareme" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>identifiant unique du barème</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="codeBareme" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Code du barème. Ex: A, B0, B1, B2, ADMIN, CAS, ...</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designationSuperieure" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Première partie de la description du code barème. Cette donnée est utilisée lors de l'édition, comme en-tête de colonne, la partie supérieure.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designationInferieure" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Deuxième partie de la description du code barème. Cette donnée est utilisée lors de l'édition, comme en-tête de colonne, la partie inférieure.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="periodeFiscale">
+				<xs:annotation>
+					<xs:documentation>Année. Ex: 2012</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1995"/>
+						<xs:maxInclusive value="2100"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="listOfTranches">
+				<xs:annotation>
+					<xs:documentation>Tranches correspondantes au barème.</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="tranche" type="eVD-0012:TrancheType" minOccurs="0" maxOccurs="unbounded"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="montantMaximumAnnuel" type="xs:unsignedInt">
+				<xs:annotation>
+					<xs:documentation>Représente la valeur de montant maximum annuel de la dernière tranche.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="tauxMaximum">
+				<xs:annotation>
+					<xs:documentation>Représenté par la somme du taux fédéral et du taux cantonal de la dernière tranche.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="8"/>
+						<xs:fractionDigits value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="tauxCommunalType">
+		<xs:sequence>
+			<xs:element name="idTauxCommunal" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique de la ressource</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="communeLink" type="eVD-0012:entityLinkType">
+				<xs:annotation>
+					<xs:documentation>Commune pour laquelle le taux s'applique</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="genreImpotLink" type="eVD-0012:entityLinkType">
+				<xs:annotation>
+					<xs:documentation>Catégorisation d'impôt</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designation" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Description ou informations historiques concernant la valeur du taux pour la commune.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="periodeFiscale">
+				<xs:annotation>
+					<xs:documentation>Année pour laquelle le taux communal est en vigueur.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:int">
+						<xs:minInclusive value="1900"/>
+						<xs:maxInclusive value="3000"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="etatValidite">
+				<xs:annotation>
+					<xs:documentation>Indique l'état du taux dans son cycle de vie: [C=Créé, V=Validé, I=Invalidé]</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="CREE"/>
+						<xs:enumeration value="VALIDE"/>
+						<xs:enumeration value="INVALIDE"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="perceptionParCanton" type="xs:boolean">
+				<xs:annotation>
+					<xs:documentation>Indique si pour un impôt communal, la commune a choisi de confier la perception au canton ou de le percevoir soi-même. [O, N]</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="coefficient">
+				<xs:annotation>
+					<xs:documentation>Représente la valeur de base qui, multiplié par l'unité, sera utilisé pour calculer le montant imposé.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="6"/>
+						<xs:fractionDigits value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="listOfGenreImpotType"/>
+	<xs:complexType name="genreImpotType">
+		<xs:sequence>
+			<xs:element name="idGenreImpot" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique de la ressource</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code">
+				<xs:annotation>
+					<xs:documentation>Code du genre impôt</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:maxLength value="5"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="designationCourte" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Description courte.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designationLongue" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Description longue.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="unite">
+				<xs:annotation>
+					<xs:documentation>Unité de base utilisée pour identifier le coefficient.</xs:documentation>
+				</xs:annotation>
+				<xs:simpleType>
+					<xs:restriction base="xs:decimal">
+						<xs:totalDigits value="4"/>
+						<xs:fractionDigits value="3"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="dateDebutValidite" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle débute la période de validité (yyyymmdd)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateFinValidite" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle se termine la période de validité (yyyymmdd)</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="utilisateurCreation" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Visa de l'utilisateur ayant créé le genre d'impôt.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateCreation" type="xs:date">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle le genre a été créé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="utilisateurValidation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Visa de l'utilisateur ayant validé le genre d'impôt.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateValidation" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle le taux a été validé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="utilisateurInvalidation" type="xs:string" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Visa de l'utilisateur ayant invalidé le genre d'impôt</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateInvalidation" type="xs:date" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>Date à laquelle letaux a été invalidé.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="listOfCommunesFiscalesType"/>
+	<xs:complexType name="communeFiscaleType">
+		<xs:sequence>
+			<xs:element name="idCommuneFiscale" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique de la commune fiscale. Equivalent à l'identifiant de l'entrée DB.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="numeroOfs" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Identifiant OFS de la commune. Un identifiant OFS est unique pour une date donnée et un numéro ofs donné.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateDebutValidite" type="xs:date"/>
+			<xs:element name="dateFinValidite" type="xs:date" minOccurs="0"/>
+			<xs:element name="nomCourt" type="xs:string"/>
+			<xs:element name="nomOfficiel" type="xs:string"/>
+			<xs:element name="sigleCanton">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:length value="2"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="communeFaitiereLink" type="eVD-0012:entityLinkType" minOccurs="0"/>
+			<xs:element name="districtFiscalLink" type="eVD-0012:entityLinkType" minOccurs="0"/>
+			<xs:element name="regionFiscaleLink" type="eVD-0012:entityLinkType" minOccurs="0"/>
+			<xs:element name="fractionsDeCommunes" minOccurs="0">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="communeFiscaleLink" type="eVD-0012:entityLinkType" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation>Lien REST vers la commune fiscale correspondante.</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="estUneFractionDeCommune" type="xs:boolean"/>
+			<xs:element name="estUneCommuneFaitiere" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="districtFiscalType">
+		<xs:sequence>
+			<xs:element name="idDistrictFiscal" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique du district fiscal.
+Equivalent à l'identifiant de l'entrée DB.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="code" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Identifiant permettant d'identifier de manière unique un district.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designation" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Titre permettant de décrire clairement le district.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="regionFiscaleLink" type="eVD-0012:entityLinkType">
+				<xs:annotation>
+					<xs:documentation>Lien vers la région</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="regionFiscaleType">
+		<xs:sequence>
+			<xs:element name="idRegionFiscale" type="xs:long"/>
+			<xs:element name="code" type="xs:int">
+				<xs:annotation>
+					<xs:documentation>Identifiant permettant d'identifier de manière unique une région.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="designation" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Titre permettant de décrire clairement la région.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="urlType">
+		<xs:sequence>
+			<xs:element name="idUrl" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique de l'URL . Equivalent à l'identifiant de l'entrée DB.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="acces">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="INTRANET"/>
+						<xs:enumeration value="EXTRANET"/>
+					</xs:restriction>
+				</xs:simpleType>
+			</xs:element>
+			<xs:element name="application" type="xs:string"/>
+			<xs:element name="targetType" type="xs:string"/>
+			<xs:element name="urlAddress" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="logicielType">
+		<xs:sequence>
+			<xs:element name="idLogiciel" type="xs:long">
+				<xs:annotation>
+					<xs:documentation>Identifiant unique du logiciel. Equivalent à l'identifiant de l'entrée DB.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="isCertifie" type="xs:boolean"/>
+			<xs:element name="fournisseur" type="xs:string"/>
+			<xs:element name="contactTechniqueEMail" type="xs:string"/>
+			<xs:element name="contactMetierEMail" type="xs:string"/>
+			<xs:element name="libelle" type="xs:string"/>
+			<xs:element name="metier" type="xs:string"/>
+			<xs:element name="version" type="xs:string"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

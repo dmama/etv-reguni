@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
-<%@page import="ch.vd.uniregctb.common.LengthConstants"%>
 
 <!-- Debut Adresse -->
 <form:form name="formAddAdresse" id="formAddAdresse">
@@ -47,7 +46,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td><fmt:message key="label.pays"/>&nbsp;:</td>
 						<td>
-							<unireg:infra entityId="${command.paysOFS}" entityType="pays" entityPropertyName="nomMinuscule"></unireg:infra>
+							<unireg:infra entityId="${command.paysOFS}" entityType="pays" entityPropertyName="nomCourt"></unireg:infra>
 						<td>
 					</tr>
 				</c:if>

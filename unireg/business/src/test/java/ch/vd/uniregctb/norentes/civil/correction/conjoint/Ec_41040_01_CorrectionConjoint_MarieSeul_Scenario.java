@@ -74,12 +74,12 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 			RegDate dateNaissanceMaria = RegDate.get(1975, 7, 31);
 			indMaria = addIndividu(noIndMaria, dateNaissanceMaria, "Nadalino", "Maria", false);
 
-			addOrigine(indRafa, MockPays.Espagne.getNomMinuscule());
+			addOrigine(indRafa, MockPays.Espagne.getNomCourt());
 			addNationalite(indRafa, MockPays.Espagne, dateNaissanceRafa, null);
 			addPermis(indRafa, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 			addAdresse(indRafa, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
 
-			addOrigine(indMaria, MockPays.Espagne.getNomMinuscule());
+			addOrigine(indMaria, MockPays.Espagne.getNomCourt());
 			addNationalite(indMaria, MockPays.Espagne, dateNaissanceMaria, null);
 			addPermis(indMaria, TypePermis.ETABLISSEMENT, RegDate.get(2008, 10, 1), null, false);
 			addAdresse(indMaria, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArrivee, null);
@@ -151,7 +151,7 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 			assertNotNull(mc.getRapportsObjet(), "Aucun rapport appartenance ménage trouvé");
 			assertEquals(1, mc.getRapportsObjet().size(), "Plus d'un rapport appartenance ménage trouvé, l'habitant devrait être marié seul");
 		}
@@ -191,7 +191,7 @@ public class Ec_41040_01_CorrectionConjoint_MarieSeul_Scenario extends Evenement
 			assertNotNull(ffp, "For principal du Ménage " + mc.getNumero() + " null");
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
-			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomMinuscule());
+			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Le dernier for n'est pas sur " + commune.getNomOfficiel());
 			assertNotNull(mc.getRapportsObjet(), "Aucun rapport appartenance ménage trouvé");
 			assertEquals(2, mc.getRapportsObjet().size(), "Les deux conjoints devraient appartenir au ménage commun");
 		}

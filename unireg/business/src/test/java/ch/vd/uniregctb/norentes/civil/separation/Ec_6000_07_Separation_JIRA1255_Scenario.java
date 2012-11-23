@@ -89,10 +89,10 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 				marieIndividus(indPatrick, indSylvie, dateMariageCivil);
 				separeIndividus(indPatrick, indSylvie, dateSeparationCivil);
 
-				addOrigine(indPatrick, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indPatrick, MockPays.Suisse.getNomCourt());
 				addNationalite(indPatrick, MockPays.Suisse, dateNaissancePatrick, null);
 
-				addOrigine(indSylvie, MockPays.Suisse.getNomMinuscule());
+				addOrigine(indSylvie, MockPays.Suisse.getNomCourt());
 				addNationalite(indSylvie, MockPays.Suisse, dateNaissanceSylvie, null);
 			}
 
@@ -158,7 +158,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
+					"Le dernier for n'est pas sur " + commune.getNomOfficiel());
 
 			{
 				SituationFamille sf = mc.getSituationFamilleActive();

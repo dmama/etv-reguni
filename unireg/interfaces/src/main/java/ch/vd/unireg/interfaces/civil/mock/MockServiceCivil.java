@@ -500,7 +500,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	protected void addOrigine(MockIndividu individu, Commune commune) {
-		addOrigine(individu, commune.getNomMinuscule());
+		addOrigine(individu, commune.getNomOfficiel());
 	}
 
 	protected void addOrigine(MockIndividu individu, String nomLieu) {

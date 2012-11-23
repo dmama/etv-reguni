@@ -140,7 +140,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			// vérification que les adresses civiles sont à Bex
 			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, RegDate.get(), false));
-			assertEquals(communeDepart.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomMinuscule());
+			assertEquals(communeDepart.getNomOfficiel(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeDepart.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(false);
@@ -166,7 +166,7 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			// vérification que les adresses civiles sont à Zurich
 			final AdressesCiviles adresses = new AdressesCiviles(serviceCivilService.getAdresses(noIndSebastien, dateDepart.addDays(1), false));
-			assertEquals(communeArrivee.getNomMinuscule(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomMinuscule());
+			assertEquals(communeArrivee.getNomOfficiel(), adresses.principale.getLocalite(), "L'adresse principale n'est pas à " + communeArrivee.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(false);
@@ -194,13 +194,13 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 
 			// For fermé sur Bex
 			final ForFiscalPrincipal ffpFerme = (ForFiscalPrincipal) list.get(list.size()-2);
-			assertEquals(dateDepart, ffpFerme.getDateFin(), "Le for sur " + communeDepart.getNomMinuscule() + " n'est pas fermé à la bonne date");
-			assertEquals(MotifFor.DEPART_HC, ffpFerme.getMotifFermeture(), "Le for sur " + communeDepart.getNomMinuscule() + " n'est pas fermé à la bonne date");
+			assertEquals(dateDepart, ffpFerme.getDateFin(), "Le for sur " + communeDepart.getNomOfficiel() + " n'est pas fermé à la bonne date");
+			assertEquals(MotifFor.DEPART_HC, ffpFerme.getMotifFermeture(), "Le for sur " + communeDepart.getNomOfficiel() + " n'est pas fermé à la bonne date");
 
 			// For ouvert sur Zurich
 			final ForFiscalPrincipal ffpOuvert = (ForFiscalPrincipal) list.get(list.size()-1);
-			assertEquals(dateDepart.addDays(1), ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomMinuscule() + " n'est pas ouvert à la bonne date");
-			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomMinuscule());
+			assertEquals(dateDepart.addDays(1), ffpOuvert.getDateDebut(), "Le for sur " + communeArrivee.getNomOfficiel() + " n'est pas ouvert à la bonne date");
+			assertEquals(communeArrivee.getNoOFS(), ffpOuvert.getNumeroOfsAutoriteFiscale(), "Le for ouvert n'est pas sur " + communeArrivee.getNomOfficiel());
 			assertEquals(MotifRattachement.DOMICILE, ffpOuvert.getMotifRattachement(), "Le motif de rattachement du for est faux");
 			assertEquals(GenreImpot.REVENU_FORTUNE, ffpOuvert.getGenreImpot(), "Le genre d'impot du for est faux");
 			assertEquals(ModeImposition.ORDINAIRE, ffpOuvert.getModeImposition(), "Le mode d'imposition du for est faux");

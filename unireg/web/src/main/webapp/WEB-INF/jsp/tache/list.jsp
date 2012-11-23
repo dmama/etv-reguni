@@ -63,7 +63,7 @@
 			</display:column>
 			<display:column titleKey="label.for.gestion" >
 				<c:if test="${tache.annulee}"><strike></c:if>
-					<unireg:commune ofs="${tache.numeroForGestion}" displayProperty="nomMinuscule"/>
+					<unireg:commune ofs="${tache.numeroForGestion}" displayProperty="nomOfficiel"/>
 				<c:if test="${tache.annulee}"></strike></c:if>
 			</display:column>
 			<display:column titleKey="label.office.impot" >

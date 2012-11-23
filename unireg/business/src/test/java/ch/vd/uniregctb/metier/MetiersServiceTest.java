@@ -772,7 +772,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateMariage, ffp.getDateDebut());
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -786,7 +786,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateSeparation, ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -800,7 +800,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateSeparation, ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 		}
 	}
@@ -991,7 +991,7 @@ public class MetiersServiceTest extends BusinessTest {
 						assertNull(adresse.getDateFin());
 						assertEquals(dateMariage, adresse.getDateDebut());
 						adresse.setDateFinValidite(dateSeparation.getOneDayBefore());
-						adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFSEtendu(), null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
+						adresse.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Aubonne.getNoOFS(), null)); // cette localisation ne doit pas être prise en compte puisqu'une adresse suivante existe
 
 						// domicile passe à Bex -> le for devra s'ouvrir là
 						individu.getAdresses().add(new MockAdresse(TypeAdresseCivil.PRINCIPALE, MockRue.Bex.RouteDuBoet, null, dateSeparation, null));
@@ -1034,7 +1034,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateMariage, ffp.getDateDebut());
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -1048,7 +1048,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateSeparation, ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -1174,7 +1174,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateMariage, ffp.getDateDebut());
 			assertEquals(dateSeparation.getOneDayBefore(), ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -1188,7 +1188,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateSeparation, ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
 			assertEquals(MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Bex.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -1513,7 +1513,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateMariage, ffp.getDateDebut());
 			assertEquals(dateDeces, ffp.getDateFin());
 			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -1536,7 +1536,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateDeces.getOneDayAfter(), ffp.getDateDebut());
 			assertNull(ffp.getDateFin());
 			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifOuverture());
-			assertEquals(MockCommune.Geneve.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Geneve.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale());
 		}
 	}
@@ -1643,7 +1643,7 @@ public class MetiersServiceTest extends BusinessTest {
 			assertEquals(dateMariage, ffp.getDateDebut());
 			assertEquals(dateDeces, ffp.getDateFin());
 			assertEquals(MotifFor.VEUVAGE_DECES, ffp.getMotifFermeture());
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+			assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
 		}
 
@@ -2318,7 +2318,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addHabitant(noIndividuMonsieur);
 				addForPrincipal(m, date(2000, 4, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
-				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(),
+				addForSecondaire(m, date(2004, 4, 28), MotifFor.ACHAT_IMMOBILIER, dateMariage.getOneDayBefore(), MotifFor.VENTE_IMMOBILIER, MockCommune.Echallens.getNoOFS(),
 						MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
@@ -2518,11 +2518,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 				addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.m = m.getNumero();
@@ -2576,7 +2576,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
 				Assert.assertNotNull(ffs);
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffs.getNumeroOfsAutoriteFiscale());
 				Assert.assertEquals(dateMariage, ffs.getDateDebut());
 				Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffs.getMotifOuverture());
 				Assert.assertNull(ffs.getDateFin());
@@ -2606,11 +2606,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 				addForPrincipal(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mme, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.m = m.getNumero();
@@ -2667,11 +2667,11 @@ public class MetiersServiceTest extends BusinessTest {
 					Assert.assertNotNull(ffs);
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
 
-					if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Echallens.getNoOFSEtendu()) {
+					if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Echallens.getNoOFS()) {
 						Assert.assertFalse("Double for à Echallens trouvé", foundEchallens);
 						foundEchallens = true;
 					}
-					else if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Croy.getNoOFSEtendu()) {
+					else if (ffs.getNumeroOfsAutoriteFiscale() == MockCommune.Croy.getNoOFS()) {
 						Assert.assertFalse("Double for à Croy trouvé", foundCroy);
 						foundCroy = true;
 					}
@@ -2710,11 +2710,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 				addForPrincipal(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockPays.RoyaumeUni);
-				addForSecondaire(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				addForSecondaire(mme, dateDebut, MotifFor.DEBUT_EXPLOITATION, MockCommune.Echallens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				final Ids ids = new Ids();
 				ids.m = m.getNumero();
@@ -2770,7 +2770,7 @@ public class MetiersServiceTest extends BusinessTest {
 				for (ForFiscalSecondaire ffs : fors.secondaires) {
 					Assert.assertNotNull(ffs);
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffs.getNumeroOfsAutoriteFiscale());
 
 					if (ffs.getMotifRattachement() == MotifRattachement.ACTIVITE_INDEPENDANTE) {
 						Assert.assertFalse("Double for pour activité indépendante trouvé", foundActiviteIndependante);
@@ -2815,11 +2815,11 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final PersonnePhysique m = addNonHabitant("Vernon", "Dursley", date(1975, 8, 31), Sexe.MASCULIN);
 				addForPrincipal(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(m, dateDebut, MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique mme = addNonHabitant("Petunia", "Dursley", date(1976, 10, 4), Sexe.FEMININ);
 				addForPrincipal(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockPays.RoyaumeUni);
-				addForSecondaire(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(mme, dateDebut.addMonths(1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Echallens.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.m = m.getNumero();
@@ -2873,7 +2873,7 @@ public class MetiersServiceTest extends BusinessTest {
 				for (ForFiscalSecondaire ffs : fors.secondaires) {
 					Assert.assertNotNull(ffs);
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffs.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(dateMariage, ffs.getDateDebut());
 					Assert.assertEquals(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, ffs.getMotifOuverture());
 					Assert.assertNull(ffs.getDateFin());
@@ -3115,7 +3115,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissance, "D'escampette", "Poudre", Sexe.FEMININ);
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateMariage, dateDepartElle);
-				adrElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFSEtendu(), null));
+				adrElle.setLocalisationSuivante(new Localisation(LocalisationType.HORS_CANTON, MockCommune.Bern.getNoOFS(), null));
 				addNationalite(elle, MockPays.Suisse, dateNaissance, null);
 
 				marieIndividus(elle, lui, dateMariage);
@@ -3175,7 +3175,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNull(ffpLui.getDateFin());
 				Assert.assertNull(ffpLui.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpLui.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFSEtendu(), ffpLui.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFS(), ffpLui.getNumeroOfsAutoriteFiscale());
 
 				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
 				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
@@ -3185,7 +3185,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNull(ffpElle.getDateFin());
 				Assert.assertNull(ffpElle.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffpElle.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Bern.getNoOFSEtendu(), ffpElle.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Bern.getNoOFS(), ffpElle.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}
@@ -3272,7 +3272,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNull(ffpLui.getDateFin());
 				Assert.assertNull(ffpLui.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpLui.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFSEtendu(), ffpLui.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFS(), ffpLui.getNumeroOfsAutoriteFiscale());
 
 				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
 				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
@@ -3309,7 +3309,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissance, "D'escampette", "Poudre", Sexe.FEMININ);
 				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Moudon.LeBourg, null, dateMariage, dateDepartElle);
-				adrElle.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFSEtendu(), null));
+				adrElle.setLocalisationSuivante(new Localisation(LocalisationType.CANTON_VD, MockCommune.Lausanne.getNoOFS(), null));
 				addNationalite(elle, MockPays.Suisse, dateNaissance, null);
 
 				marieIndividus(elle, lui, dateMariage);
@@ -3369,7 +3369,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNull(ffpLui.getDateFin());
 				Assert.assertNull(ffpLui.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpLui.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFSEtendu(), ffpLui.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFS(), ffpLui.getNumeroOfsAutoriteFiscale());
 
 				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
 				final ForFiscalPrincipal ffpElle = elle.getDernierForFiscalPrincipal();
@@ -3379,7 +3379,7 @@ public class MetiersServiceTest extends BusinessTest {
 				Assert.assertNull(ffpElle.getDateFin());
 				Assert.assertNull(ffpElle.getMotifFermeture());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpElle.getTypeAutoriteFiscale());
-				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFSEtendu(), ffpElle.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals((Integer) MockCommune.Moudon.getNoOFS(), ffpElle.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}

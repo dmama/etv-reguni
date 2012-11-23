@@ -401,8 +401,8 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 		if (forGestion != null) {
 			final int ofsCommune = forGestion.getNoOfsCommune();
 			try {
-				final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(ofsCommune, forGestion.getDateFin());
-				return commune == null ? "" : commune.getNomMinuscule();
+				final Commune commune = serviceInfra.getCommuneByNumeroOfs(ofsCommune, forGestion.getDateFin());
+				return commune == null ? "" : commune.getNomOfficiel();
 			}
 			catch (ServiceInfrastructureException e) {
 				LOGGER.error("Erreur lors de la récupération de la commune de gestion", e);

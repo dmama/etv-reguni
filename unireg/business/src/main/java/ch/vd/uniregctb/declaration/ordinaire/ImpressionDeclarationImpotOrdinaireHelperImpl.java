@@ -690,10 +690,10 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 					// plus de for de gestion, on prend le défaut sur la déclaration quand-même (c'est mieux qu'un crash, non ?)
 					noOfsCommune = informationsDocument.getNoOfsCommune();
 				}
-				final Commune commune = infraService.getCommuneByNumeroOfsEtendu(noOfsCommune, dateDeclaration);
+				final Commune commune = infraService.getCommuneByNumeroOfs(noOfsCommune, dateDeclaration);
 				if (commune != null) {
 					// best effort...
-					infoDI.setDESCOM(commune.getNomMinuscule());
+					infoDI.setDESCOM(commune.getNomOfficiel());
 				}
 			}
 			catch (ServiceInfrastructureException e) {

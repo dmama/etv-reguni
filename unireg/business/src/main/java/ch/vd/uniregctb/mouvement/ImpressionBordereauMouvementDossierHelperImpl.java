@@ -125,9 +125,9 @@ public class ImpressionBordereauMouvementDossierHelperImpl extends EditiqueAbstr
 			final ForGestion forGestion = tiersService.getDernierForGestionConnu(ctb, null);
 			dossier.setNumOFS(Integer.toString(forGestion.getNoOfsCommune()));
 
-			final Commune commune = infraService.getCommuneByNumeroOfsEtendu(forGestion.getNoOfsCommune(), forGestion.getDateFin());
+			final Commune commune = infraService.getCommuneByNumeroOfs(forGestion.getNoOfsCommune(), forGestion.getDateFin());
 			if (commune != null) {
-				dossier.setOFS(commune.getNomMinuscule());
+				dossier.setOFS(commune.getNomOfficiel());
 			}
 
 			dossiers.add(dossier);

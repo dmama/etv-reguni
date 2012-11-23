@@ -44,7 +44,7 @@ public class IdentificationIndividuTooltipView {
 				this.nationalite = null;
 			}
 			else {
-				this.nationalite = nationalite.getPays().getNomMinuscule();
+				this.nationalite = nationalite.getPays().getNomCourt();
 			}
 		}
 	}

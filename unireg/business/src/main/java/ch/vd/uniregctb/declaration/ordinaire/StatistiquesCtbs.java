@@ -79,7 +79,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 		public int hashCode() {
 			final int prime = 31;
 			int result = 1;
-			result = prime * result + ((commune == null) ? 0 : commune.getNoOFSEtendu());
+			result = prime * result + ((commune == null) ? 0 : commune.getNoOFS());
 			result = prime * result + ((oid == null) ? 0 : oid.hashCode());
 			result = prime * result + ((typeCtb == null) ? 0 : typeCtb.hashCode());
 			return result;
@@ -101,7 +101,7 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 			if (commune == null || key.commune == null) {
 				return false;
 			}
-			return commune.getNoOFSEtendu() == key.commune.getNoOFSEtendu();
+			return commune.getNoOFS() == key.commune.getNoOFS();
 		}
 
 		/**
@@ -120,9 +120,9 @@ public class StatistiquesCtbs extends JobResults<Long, StatistiquesCtbs> {
 				return -1;
 			}
 
-			if ((commune == null && o.commune != null) || (commune != null && o.commune == null) || (commune != null && o.commune != null && commune.getNoOFSEtendu() != o.commune.getNoOFSEtendu())) {
-				final String nomCommune1 = commune != null ? commune.getNomMinuscule() : "";
-				final String nomCommune2 = o.commune != null ? o.commune.getNomMinuscule() : "";
+			if ((commune == null && o.commune != null) || (commune != null && o.commune == null) || (commune != null && o.commune != null && commune.getNoOFS() != o.commune.getNoOFS())) {
+				final String nomCommune1 = commune != null ? commune.getNomOfficiel() : "";
+				final String nomCommune2 = o.commune != null ? o.commune.getNomOfficiel() : "";
 				return nomCommune1.compareTo(nomCommune2);
 			}
 

@@ -136,7 +136,7 @@ public class CorrectionFiliationTest extends AbstractEvenementCivilInterneTest {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					final Individu jean = serviceCivil.getIndividu(jeanNoInd, null, AttributeIndividu.PARENTS);
-					final CorrectionFiliation correction = new CorrectionFiliation(jean, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFSEtendu(), context);
+					final CorrectionFiliation correction = new CorrectionFiliation(jean, null, date(2009, 1, 1), MockCommune.Lausanne.getNoOFS(), context);
 					assertSansErreurNiWarning(correction);
 					return null;
 				}

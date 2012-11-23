@@ -231,7 +231,7 @@ public class DataHelper {
 	 * @param numeroOfsCommune le numéro Ofs de la commune
 	 * @param date             la date de validité
 	 * @param serviceInfra     le service d'infrastructure
-	 * @return le nom minuscule de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
+	 * @return le nom officiel de la commune; ou <b>null</b> si la commune n'existe pas ou en cas d'erreur d'accès à l'infrastructure.
 	 */
 	public static String getNomCommune(int numeroOfsCommune, RegDate date, ServiceInfrastructureService serviceInfra) {
 
@@ -239,9 +239,9 @@ public class DataHelper {
 
 		try {
 			Assert.notNull(serviceInfra);
-			final Commune commune = serviceInfra.getCommuneByNumeroOfsEtendu(numeroOfsCommune, date);
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(numeroOfsCommune, date);
 			if (commune != null) {
-				nomCommune = commune.getNomMinuscule();
+				nomCommune = commune.getNomOfficiel();
 			}
 		}
 		catch (ServiceInfrastructureException ignored) {

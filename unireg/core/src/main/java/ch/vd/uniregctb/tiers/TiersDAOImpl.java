@@ -940,7 +940,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(Integer numeroDistrict) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForDistrict(int numeroDistrict) {
 		Object[] criteria = {
 				Long.valueOf(numeroDistrict)
 		};
@@ -956,7 +956,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	}
 
 	@Override
-	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(Integer numeroRegion) {
+	public CollectiviteAdministrative getCollectiviteAdministrativeForRegion(int numeroRegion) {
 		Object[] criteria = {
 				Long.valueOf(numeroRegion)
 		};

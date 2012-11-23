@@ -71,7 +71,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 
 				marieIndividus(indMomo, indBea, dateMariage);
 
-				addOrigine(indMomo, MockPays.France.getNomMinuscule());
+				addOrigine(indMomo, MockPays.France.getNomCourt());
 				addNationalite(indMomo, MockPays.France, RegDate.get(1963, 8, 20), null);
 				addPermis(indMomo, TypePermis.ETABLISSEMENT, dateObtentionPermis, null, false);
 
@@ -130,7 +130,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 					"Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(communeMariage.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + communeMariage.getNomMinuscule());
+					"Le dernier for n'est pas sur " + communeMariage.getNomOfficiel());
 		}
 	}
 
@@ -153,7 +153,7 @@ public class Ec_16001_03_AnnulationPermis_MarieADeux_Scenario extends Annulation
 			MenageCommun mc = (MenageCommun)tiersDAO.get(noMenage);
 			ForFiscalPrincipal ffp = mc.getDernierForFiscalPrincipal();
 			assertEquals(dateMariage, ffp.getDateDebut(), "Le for sur Lausanne n'est pas ouvert à la bonne date");
-			assertNull(ffp.getDateFin(), "Le for sur " + communeMariage.getNomMinuscule() + " est fermé");
+			assertNull(ffp.getDateFin(), "Le for sur " + communeMariage.getNomOfficiel() + " est fermé");
 			assertNull(ffp.getMotifFermeture(), "Le motif de fermeture est faux");
 			// le ménage doit revenir a son ancient mode d'imposition
 			assertEquals(ffp.getModeImposition(), ModeImposition.ORDINAIRE, "Le mode d'imposition n'est pas ORDINAIRE");

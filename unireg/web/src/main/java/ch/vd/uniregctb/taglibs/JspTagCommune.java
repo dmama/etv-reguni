@@ -32,7 +32,7 @@ public class JspTagCommune extends BodyTagSupport {
 		Object property = null;
 		Object title = null;
 		try {
-			final Commune commune = service.getCommuneByNumeroOfsEtendu(ofs, date);
+			final Commune commune = service.getCommuneByNumeroOfs(ofs, date);
 			if (commune != null) {
 				final ReadOnlyPropertyDescriptor displayDescriptor = new ReadOnlyPropertyDescriptor(displayProperty, Commune.class);
 				property = displayDescriptor.getReadMethod().invoke(commune);

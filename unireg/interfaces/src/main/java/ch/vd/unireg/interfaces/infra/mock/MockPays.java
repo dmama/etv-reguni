@@ -45,8 +45,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 	private final String codeIso2;
 	private final String codeIso3;
 
-	public MockPays(int numeroOFS, String nomMiniscule, String codeIso2, String codeIso3) {
-		super(numeroOFS, null, nomMiniscule);
+	public MockPays(int numeroOFS, String nom, String codeIso2, String codeIso3) {
+		super(numeroOFS, null, nom, nom);
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.valide = true;
@@ -54,8 +54,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
-	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, String codeIso2, String codeIso3) {
-		super(numeroOFS, sigleOFS, nomMiniscule);
+	public MockPays(int numeroOFS, String nom, String sigleOFS, String codeIso2, String codeIso3) {
+		super(numeroOFS, sigleOFS, nom, nom);
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
 		this.valide = true;
@@ -63,8 +63,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 		DefaultMockServiceInfrastructureService.addPays(this);
 	}
 
-	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, boolean valide, String codeIso2, String codeIso3) {
-		super(numeroOFS, sigleOFS, nomMiniscule);
+	public MockPays(int numeroOFS, String nom, String sigleOFS, boolean valide, String codeIso2, String codeIso3) {
+		super(numeroOFS, sigleOFS, nom, nom);
 		this.valide = valide;
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;
@@ -75,8 +75,8 @@ public class MockPays extends MockEntityOFS implements Pays {
 	/**
 	 * Constructeur pour les territoires
 	 */
-	public MockPays(int numeroOFS, String nomMiniscule, String sigleOFS, boolean valide, String codeIso2, String codeIso3, int ofsEtatSouverainParent) {
-		super(numeroOFS, sigleOFS, nomMiniscule);
+	public MockPays(int numeroOFS, String nom, String sigleOFS, boolean valide, String codeIso2, String codeIso3, int ofsEtatSouverainParent) {
+		super(numeroOFS, sigleOFS, nom, nom);
 		this.valide = valide;
 		this.codeIso2 = codeIso2;
 		this.codeIso3 = codeIso3;

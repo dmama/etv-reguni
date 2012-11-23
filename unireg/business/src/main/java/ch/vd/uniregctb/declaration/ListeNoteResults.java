@@ -103,7 +103,7 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 			if (forGestion != null) {
 				try {
 					final int ofsCommune = forGestion.getNoOfsCommune();
-					this.communeVaudoise = infraService.getCommuneByNumeroOfsEtendu(ofsCommune, date);
+					this.communeVaudoise = infraService.getCommuneByNumeroOfs(ofsCommune, date);
 
 					OfficeImpot office = infraService.getOfficeImpotDeCommune(ofsCommune);
 					if (office != null) {
@@ -123,8 +123,8 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 			if (forPrincipal != null) {
 				final Integer autoriteFiscale = forPrincipal.getNumeroOfsAutoriteFiscale();
 				try {
-					this.communeHC = infraService.getCommuneByNumeroOfsEtendu(autoriteFiscale, date);
-					this.nomCantonHC = infraService.getCantonBySigle(communeHC.getSigleCanton()).getNomMinuscule();
+					this.communeHC = infraService.getCommuneByNumeroOfs(autoriteFiscale, date);
+					this.nomCantonHC = infraService.getCantonBySigle(communeHC.getSigleCanton()).getNomOfficiel();
 				}
 				catch (ServiceInfrastructureException e) {
 					LOGGER.warn("Résolution de la commune HC du contribuable " + ctb.getNumero() + " impossible", e);
@@ -140,14 +140,14 @@ public class ListeNoteResults extends JobResults<Long, ListeNoteResults> {
 			if (forPrincipalFinPeriode != null) {
 				try {
 					final int ofsCommune = forPrincipalFinPeriode.getNumeroOfsAutoriteFiscale();
-					this.communeFinPeriode = infraService.getCommuneByNumeroOfsEtendu(ofsCommune, date);
+					this.communeFinPeriode = infraService.getCommuneByNumeroOfs(ofsCommune, date);
 
 					if (communeFinPeriode == null) {
 						this.paysFinPeriode = infraService.getPays(ofsCommune);
 
 					}
 					else{
-						this.nomCantonFinPeriode = infraService.getCantonBySigle(communeFinPeriode.getSigleCanton()).getNomMinuscule();
+						this.nomCantonFinPeriode = infraService.getCantonBySigle(communeFinPeriode.getSigleCanton()).getNomOfficiel();
 					}
 
 				}

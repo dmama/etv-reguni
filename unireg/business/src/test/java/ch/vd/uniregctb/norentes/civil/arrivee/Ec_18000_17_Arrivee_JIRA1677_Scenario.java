@@ -90,7 +90,7 @@ public class Ec_18000_17_Arrivee_JIRA1677_Scenario extends EvenementCivilScenari
 		assertNotNull(mc, "Erreur lors de la création du ménage commun");
 
 		addForFiscalPrincipal(mc, MockCommune.Bern, dateMariage, null, MotifFor.ACHAT_IMMOBILIER, null);
-		addForFiscalSecondaire(mc, MockCommune.Lausanne.getNoOFSEtendu(), dateMariage, null);
+		addForFiscalSecondaire(mc, MockCommune.Lausanne.getNoOFS(), dateMariage, null);
 
 		noCtbOlivier = pp.getNumero();
 		noCtbMenage = mc.getNumero();

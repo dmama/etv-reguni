@@ -39,10 +39,10 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 				event.setCommentaireTraitement(message);
 				return new Demenagement(event, context, options);
 			}
-			else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
+			else if (communes.avant.getNoOFS() != communes.apres.getNoOFS()) {
 				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
 				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
-						communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
+						communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
 				Audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new ArriveePrincipale(event, context, options);
@@ -76,10 +76,10 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 				event.setCommentaireTraitement(message);
 				return new Demenagement(event, context, options);
 			}
-			else if (communes.avant.getNoOFSEtendu() != communes.apres.getNoOFSEtendu()) {
+			else if (communes.avant.getNoOFS() != communes.apres.getNoOFS()) {
 				// [UNIREG-3379] il s'agit d'un déménagement dans des communes fusionnées au niveau civil, mais pas encore fusionnées au niveau fiscal => on converti l'événement en arrivée.
 				final String message = String.format("Traité comme une arrivée car les communes %s et %s ne sont pas encore fusionnées du point-de-vue fiscal.",
-						communes.avant.getNomMinuscule(), communes.apres.getNomMinuscule());
+						communes.avant.getNomOfficiel(), communes.apres.getNomOfficiel());
 				Audit.info(event.getId(), message);
 				event.setCommentaireTraitement(message);
 				return new ArriveePrincipale(event, context, options);
@@ -106,7 +106,7 @@ public class DemenagementTranslationStrategy implements EvenementCivilTranslatio
 	@Override
 	public boolean isPrincipalementIndexation(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		final Communes communes = determineCommunesAvantEtApres(event, context);
-		return (communes.avant == null || communes.apres == null || communes.avant.getNoOFSEtendu() == communes.apres.getNoOFSEtendu());
+		return (communes.avant == null || communes.apres == null || communes.avant.getNoOFS() == communes.apres.getNoOFS());
 	}
 
 	private static class Communes {

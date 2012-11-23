@@ -52,14 +52,14 @@ public abstract class EntrepriseHelper {
 
 		final Commune commune;
 		try {
-			commune = serviceInfra.getCommuneByNumeroOfsEtendu(ffp.getNoOfsAutoriteFiscale(), ffp.getDateDebut());
+			commune = serviceInfra.getCommuneByNumeroOfs(ffp.getNoOfsAutoriteFiscale(), ffp.getDateDebut());
 		}
 		catch (ServiceInfrastructureException e) {
-			throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + ffp.getNoOfsAutoriteFiscale(), e);
+			throw new IndexerException("Commune pas trouvée: noOfs=" + ffp.getNoOfsAutoriteFiscale(), e);
 		}
 
 		if (commune == null) {
-			throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + ffp.getNoOfsAutoriteFiscale());
+			throw new IndexerException("Commune pas trouvée: noOfs=" + ffp.getNoOfsAutoriteFiscale());
 		}
 
 		return commune;

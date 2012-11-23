@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.infrastructure.fiscal.service.ServiceInfrastructureFiscal;
 import ch.vd.infrastructure.model.EnumPays;
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
@@ -27,6 +29,7 @@ import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrativeImpl;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.data.CommuneImpl;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciereImpl;
 import ch.vd.unireg.interfaces.infra.data.Localite;
@@ -34,6 +37,7 @@ import ch.vd.unireg.interfaces.infra.data.LocaliteImpl;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.RueImpl;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
@@ -161,6 +165,11 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		throw new NotImplementedException("La méthode 'getNoOfs2NoTechniqueMappingForCommunes' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		if (localitesByNPA==null) {
 			initLocaliteByNPA();
@@ -185,7 +194,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 		final List<Commune> list = new ArrayList<Commune>(2);
 		final List<Commune> communes = getCommunes();
 		for (Commune commune : communes) {
-			if (commune.getNoOFSEtendu() == noOfsCommune) {
+			if (commune.getNoOFS() == noOfsCommune) {
 				list.add(commune);
 			}
 		}
@@ -220,7 +229,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getPays' ne doit pas être appelée sur le service host-interfaces.");
 	}
 
@@ -599,5 +608,15 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		throw new NotImplementedException("La méthode 'getTousLesLogiciels' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
+	public District getDistrict(int code) {
+		throw new NotImplementedException("La méthode 'getDistrict' ne doit pas être appelée sur le service host-interfaces.");
+	}
+
+	@Override
+	public Region getRegion(int code) {
+		throw new NotImplementedException("La méthode 'getRegion' ne doit pas être appelée sur le service host-interfaces.");
 	}
 }

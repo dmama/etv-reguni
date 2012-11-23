@@ -173,8 +173,8 @@ public class ActivationServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Momo", "Bizuth", date(1980, 5, 12), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1998, 5, 12), MotifFor.MAJORITE, date(2000, 12, 3), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens);
 				addForPrincipal(pp, date(2000, 12, 4), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
-				addForSecondaire(pp, date(2002, 1, 16), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2004, 8, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2002, 1, 16), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2004, 8, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
 				addTacheControleDossier(TypeEtatTache.TRAITE, date(2002, 4, 1), pp, colAdm);
@@ -227,7 +227,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertNotNull(ffp);
 					Assert.assertFalse(ffp.isAnnule());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Echallens.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Echallens.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(date(2000, 12, 3), ffp.getDateFin());
 					Assert.assertEquals(MotifFor.DEMENAGEMENT_VD, ffp.getMotifFermeture());
 				}
@@ -238,7 +238,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertNotNull(ffp);
 					Assert.assertFalse(ffp.isAnnule());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffp.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffp.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffp.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(dateDesactivation, ffp.getDateFin());
 					Assert.assertEquals(MotifFor.ANNULATION, ffp.getMotifFermeture());
 				}
@@ -249,7 +249,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertNotNull(ffs);
 					Assert.assertFalse(ffs.isAnnule());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) ffs.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(dateDesactivation, ffs.getDateFin());
 					Assert.assertEquals(MotifFor.ANNULATION, ffs.getMotifFermeture());
 				}
@@ -260,7 +260,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertNotNull(ffs);
 					Assert.assertFalse(ffs.isAnnule());
 					Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale());
-					Assert.assertEquals(MockCommune.Aubonne.getNoOFSEtendu(), (int) ffs.getNumeroOfsAutoriteFiscale());
+					Assert.assertEquals(MockCommune.Aubonne.getNoOFS(), (int) ffs.getNumeroOfsAutoriteFiscale());
 					Assert.assertEquals(date(2006, 12, 31), ffs.getDateFin());
 					Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture());
 				}
@@ -393,8 +393,8 @@ public class ActivationServiceTest extends BusinessTest {
 			public Long doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addNonHabitant("Fée", "Nixe", date(1956, 3, 12), Sexe.FEMININ);
 				addForPrincipal(pp, date(2000, 4, 1), MotifFor.ARRIVEE_HS, dateDesactivation, MotifFor.ANNULATION, MockCommune.Bussigny);
-				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.CheseauxSurLausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 10, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -445,13 +445,13 @@ public class ActivationServiceTest extends BusinessTest {
 						Assert.assertFalse(forPrincipalTrouve);     // déjà vu un ?
 						forPrincipalTrouve = true;
 
-						Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) forFiscal.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) forFiscal.getNumeroOfsAutoriteFiscale());
 					}
 					else if (forFiscal instanceof ForFiscalSecondaire) {
 						Assert.assertFalse(forSecondaireTrouve);    // déjà vu un ?
 						forSecondaireTrouve = true;
 
-						Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFSEtendu(), (int) forFiscal.getNumeroOfsAutoriteFiscale());
+						Assert.assertEquals(MockCommune.CheseauxSurLausanne.getNoOFS(), (int) forFiscal.getNumeroOfsAutoriteFiscale());
 					}
 					else {
 						Assert.fail("Classe de for fiscale innattendue : " + forFiscal.getClass().getName());
@@ -874,9 +874,9 @@ public class ActivationServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Achille", "Talon", date(1948, 1, 26), Sexe.MASCULIN);
 				addForPrincipal(pp, date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(1990, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
 				addForPrincipal(pp, date(1991, 1, 1), MotifFor.DEMENAGEMENT_VD, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne);
-				addForSecondaire(pp, date(1991, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(pp, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation.addMonths(-1), MotifFor.ANNULATION, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(1991, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.ANNULATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(pp, date(2001, 1, 1), MotifFor.ACHAT_IMMOBILIER, dateDesactivation.addMonths(-1), MotifFor.ANNULATION, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				return pp.getNumero();
 			}
 		});
@@ -913,7 +913,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulation.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation, ffsAnnulation.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulation.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
 
 				// ne doit pas être ré-ouvert (pas bon motif de fermeture)
 				final ForFiscalSecondaire ffsVente = (ForFiscalSecondaire) forsTries.get(3);
@@ -921,7 +921,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffsVente.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation, ffsVente.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsVente.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
 
 				// ne doit pas être ré-ouvert (pas bonne date de fermeture)
 				final ForFiscalSecondaire ffsAnnulationPrecedente = (ForFiscalSecondaire) forsTries.get(4);
@@ -929,7 +929,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulationPrecedente.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation.addMonths(-1), ffsAnnulationPrecedente.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulationPrecedente.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}
@@ -980,7 +980,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulation.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation, ffsAnnulation.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulation.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffsAnnulation.getNumeroOfsAutoriteFiscale());
 
 				// ne doit pas être ré-ouvert (pas bon motif de fermeture)
 				final ForFiscalSecondaire ffsVente = (ForFiscalSecondaire) forsTries.get(4);
@@ -988,7 +988,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.VENTE_IMMOBILIER, ffsVente.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation, ffsVente.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsVente.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bussigny.getNoOFS(), (int) ffsVente.getNumeroOfsAutoriteFiscale());
 
 				// ne doit pas être ré-ouvert (pas bonne date de fermeture)
 				final ForFiscalSecondaire ffsAnnulationPrecedente = (ForFiscalSecondaire) forsTries.get(5);
@@ -996,7 +996,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertEquals(MotifFor.ANNULATION, ffsAnnulationPrecedente.getMotifFermeture());
 				Assert.assertEquals(dateDesactivation.addMonths(-1), ffsAnnulationPrecedente.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsAnnulationPrecedente.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Bex.getNoOFS(), (int) ffsAnnulationPrecedente.getNumeroOfsAutoriteFiscale());
 
 				final ForFiscalSecondaire ffsReactivation = (ForFiscalSecondaire) forsTries.get(6);
 				Assert.assertNotNull(ffsReactivation);
@@ -1005,7 +1005,7 @@ public class ActivationServiceTest extends BusinessTest {
 				Assert.assertNull(ffsReactivation.getMotifFermeture());
 				Assert.assertNull(ffsReactivation.getDateFin());
 				Assert.assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffsReactivation.getTypeAutoriteFiscale());
-				Assert.assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), (int) ffsReactivation.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(MockCommune.Lausanne.getNoOFS(), (int) ffsReactivation.getNumeroOfsAutoriteFiscale());
 
 				return null;
 			}

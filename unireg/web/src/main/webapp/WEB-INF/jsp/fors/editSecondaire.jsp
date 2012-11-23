@@ -135,7 +135,7 @@
 
 
 			// on initialise l'auto-completion de l'autorité fiscale
-			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomMinuscule"/>');
+			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel"/>');
 			Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
 
 			// on initialise les motifs au chargement de la page

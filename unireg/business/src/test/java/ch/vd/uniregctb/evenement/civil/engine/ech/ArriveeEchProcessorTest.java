@@ -1316,7 +1316,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 				assertEquals(dateArrivee, ffpMc.getDateDebut());
 				assertNull(ffpMc.getDateFin());
 				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
-				assertEquals((Integer) MockCommune.Echallens.getNoOFSEtendu(), ffpMc.getNumeroOfsAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
 				return null;
 			}
 		});

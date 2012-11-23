@@ -84,12 +84,12 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 		// il n'ont en commun que la date de naissance et le fait qu'ils sont non-habitants
 		final PersonnePhysique pp1 = addNonHabitant("Tartempion", "Bidule", dateNaissance, Sexe.MASCULIN);
 		addForFiscalPrincipal(pp1, MockCommune.Bern, date(2000, 1, 2), null, MotifFor.ACHAT_IMMOBILIER, null);
-		addForFiscalSecondaire(pp1, MockCommune.Lausanne.getNoOFSEtendu(), date(2000, 1, 2), null);
+		addForFiscalSecondaire(pp1, MockCommune.Lausanne.getNoOFS(), date(2000, 1, 2), null);
 		idMauvaisArrivant = pp1.getNumero();
 
 		final PersonnePhysique pp2 = addNonHabitant("Bouchet", "Olivier", dateNaissance, Sexe.MASCULIN);
 		addForFiscalPrincipal(pp2, MockCommune.Bale, date(2001, 5, 12), null, MotifFor.ACHAT_IMMOBILIER, null);
-		addForFiscalSecondaire(pp2, MockCommune.Bussigny.getNoOFSEtendu(), date(2001, 5, 12), null);
+		addForFiscalSecondaire(pp2, MockCommune.Bussigny.getNoOFS(), date(2001, 5, 12), null);
 		idBonArrivant = pp2.getNumero();
 	}
 
@@ -109,7 +109,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final ForFiscalPrincipal ffp = ffps.get(0);
 			assertNotNull(ffp, "Bizarre, comme collection de fors...");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
-			assertEquals(MockCommune.Bern.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Pas à Berne ?");
+			assertEquals(MockCommune.Bern.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Pas à Berne ?");
 			assertTrue(ffp.isValidAt(null), "For fermé ou annulé");
 
 			final List<ForFiscalSecondaire> ffss = forsParType.secondaires;
@@ -119,7 +119,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final ForFiscalSecondaire ffs = ffss.get(0);
 			assertNotNull(ffs, "Bizarre, comme collection de fors...");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
-			assertEquals(MockCommune.Lausanne.getNoOFSEtendu(), ffs.getNumeroOfsAutoriteFiscale(), "Pas à Lausanne ?");
+			assertEquals(MockCommune.Lausanne.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale(), "Pas à Lausanne ?");
 			assertTrue(ffs.isValidAt(null), "For fermé ou annulé");
 		}
 
@@ -136,7 +136,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final ForFiscalPrincipal ffp = ffps.get(0);
 			assertNotNull(ffp, "Bizarre, comme collection de fors...");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_HC, ffp.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
-			assertEquals(MockCommune.Bale.getNoOFSEtendu(), ffp.getNumeroOfsAutoriteFiscale(), "Pas à Bâle ?");
+			assertEquals(MockCommune.Bale.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(), "Pas à Bâle ?");
 			assertTrue(ffp.isValidAt(null), "For fermé ou annulé");
 
 			final List<ForFiscalSecondaire> ffss = forsParType.secondaires;
@@ -146,7 +146,7 @@ public class Ec_18000_20_Arrivee_JIRA2730_ArriveeJourDeLAn_Scenario extends Even
 			final ForFiscalSecondaire ffs = ffss.get(0);
 			assertNotNull(ffs, "Bizarre, comme collection de fors...");
 			assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffs.getTypeAutoriteFiscale(), "Mauvais type d'autorité fiscale");
-			assertEquals(MockCommune.Bussigny.getNoOFSEtendu(), ffs.getNumeroOfsAutoriteFiscale(), "Pas à Bussigny ?");
+			assertEquals(MockCommune.Bussigny.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale(), "Pas à Bussigny ?");
 			assertTrue(ffs.isValidAt(null), "For fermé ou annulé");
 		}
 	}

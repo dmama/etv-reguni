@@ -97,7 +97,7 @@ public abstract class TiersIndexable {
 					localitePays = localite;
 				}
 				else {
-					pays = p.getNomMinuscule();
+					pays = p.getNomCourt();
 					if (p.isSuisse()) {
 						localitePays = localite;
 					}
@@ -120,7 +120,7 @@ public abstract class TiersIndexable {
 				if (estDansLeCanton) {
 					final Commune c = serviceInfra.getCommuneByAdresse(domicile, null);
 					if (c != null) {
-						noOfsCommuneVD = c.getNoOFSEtendu();
+						noOfsCommuneVD = c.getNoOFS();
 					}
 				}
 			}
@@ -150,19 +150,19 @@ public abstract class TiersIndexable {
 
 			// Commune vaudoise
 			if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-					Commune com = serviceInfra.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
-					if (com == null) {
-						throw new IndexerException("Commune pas trouvée: noOfsEtendu=" + forF.getNumeroOfsAutoriteFiscale());
-					}
-					forStr = com.getNomMinuscule();
-			}
-			// Commune suisse
-			else if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_HC) {
-					Commune com = serviceInfra.getCommuneByNumeroOfsEtendu(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
+					Commune com = serviceInfra.getCommuneByNumeroOfs(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
 					if (com == null) {
 						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
 					}
-					forStr = com.getNomMinuscule();
+					forStr = com.getNomOfficiel();
+			}
+			// Commune suisse
+			else if (typeForFiscal == TypeAutoriteFiscale.COMMUNE_HC) {
+					Commune com = serviceInfra.getCommuneByNumeroOfs(forF.getNumeroOfsAutoriteFiscale(), forF.getDateFin());
+					if (com == null) {
+						throw new IndexerException("Commune pas trouvée: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
+					}
+					forStr = com.getNomOfficiel();
 			}
 			// Pays
 			else if (typeForFiscal == TypeAutoriteFiscale.PAYS_HS) {
@@ -170,7 +170,7 @@ public abstract class TiersIndexable {
 					if (p == null) {
 						throw new IndexerException("Pays pas trouvé: noOfs=" + forF.getNumeroOfsAutoriteFiscale());
 					}
-					forStr = p.getNomMinuscule();
+					forStr = p.getNomCourt();
 			}
 			else {
 				ch.vd.registre.base.utils.Assert.fail("Le Type du For doit toujours etre présent");

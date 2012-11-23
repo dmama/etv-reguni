@@ -1,6 +1,9 @@
 package ch.vd.unireg.interfaces.infra;
 
 import java.util.List;
+import java.util.Map;
+
+import org.jetbrains.annotations.NotNull;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
@@ -9,10 +12,12 @@ import ch.vd.unireg.interfaces.infra.data.ApplicationFiscale;
 import ch.vd.unireg.interfaces.infra.data.Canton;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Commune;
+import ch.vd.unireg.interfaces.infra.data.District;
 import ch.vd.unireg.interfaces.infra.data.InstitutionFinanciere;
 import ch.vd.unireg.interfaces.infra.data.Localite;
 import ch.vd.unireg.interfaces.infra.data.Logiciel;
 import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
+import ch.vd.unireg.interfaces.infra.data.Region;
 import ch.vd.unireg.interfaces.infra.data.Rue;
 import ch.vd.unireg.interfaces.infra.data.TypeEtatPM;
 import ch.vd.unireg.interfaces.infra.data.TypeRegimeFiscal;
@@ -76,7 +81,7 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
-	public Pays getPays(String codePays) throws ServiceInfrastructureException {
+	public Pays getPays(@NotNull String codePays) throws ServiceInfrastructureException {
 		return fidorService.getPays(codePays);
 	}
 
@@ -147,6 +152,11 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	}
 
 	@Override
+	public Map<Integer, Integer> getNoOfs2NoTechniqueMappingForCommunes() throws ServiceInfrastructureException {
+		return fidorService.getNoOfs2NoTechniqueMappingForCommunes();
+	}
+
+	@Override
 	public Localite getLocaliteByNPA(int npa) throws ServiceInfrastructureException {
 		return hostService.getLocaliteByNPA(npa);
 	}
@@ -184,5 +194,15 @@ public class ServiceInfrastructureMarshaller implements ServiceInfrastructureRaw
 	@Override
 	public List<Logiciel> getTousLesLogiciels() throws ServiceInfrastructureException {
 		return fidorService.getTousLesLogiciels();
+	}
+
+	@Override
+	public District getDistrict(int code) {
+		return fidorService.getDistrict(code);
+	}
+
+	@Override
+	public Region getRegion(int code) {
+		return fidorService.getRegion(code);
 	}
 }

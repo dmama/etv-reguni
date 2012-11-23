@@ -71,7 +71,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 		this.localite = localite.getNomAbregeMinuscule();
 		this.numeroPostal = localite.getNPA().toString();
 		final Commune c = localite.getCommuneLocalite();
-		this.noOfsCommuneAdresse = (c == null ? null : c.getNoOFSEtendu());
+		this.noOfsCommuneAdresse = (c == null ? null : c.getNoOFS());
 		this.noOfsPays = MockPays.Suisse.getNoOFS();
 		final Integer complementNPA = localite.getComplementNPA();
 		this.numeroPostalComplementaire = (complementNPA == null ? null : complementNPA.toString());
@@ -255,7 +255,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	}
 
 	public void setCommuneAdresse(Commune c) {
-		noOfsCommuneAdresse = (c == null ? null : c.getNoOFSEtendu());
+		noOfsCommuneAdresse = (c == null ? null : c.getNoOFS());
 	}
 
 	@Override

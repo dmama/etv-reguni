@@ -260,7 +260,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         Assert.assertEquals(debut, forFiscal.getDateDebut());
         Assert.assertEquals(fin, forFiscal.getDateFin());
         Assert.assertEquals(taf, forFiscal.getTypeAutoriteFiscale());
-        Assert.assertEquals(commune.getNoOFSEtendu(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
+        Assert.assertEquals(commune.getNoOFS(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
         Assert.assertEquals(genreImpot, forFiscal.getGenreImpot());
     }
 
@@ -269,7 +269,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         Assert.assertEquals(debut, forFiscal.getDateDebut());
         Assert.assertEquals(fin, forFiscal.getDateFin());
         Assert.assertEquals(taf, forFiscal.getTypeAutoriteFiscale());
-        Assert.assertEquals(commune.getNoOFSEtendu(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
+        Assert.assertEquals(commune.getNoOFS(), forFiscal.getNumeroOfsAutoriteFiscale().intValue());
         Assert.assertEquals(rattachement, forFiscal.getMotifRattachement());
     }
 
@@ -322,7 +322,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
      */
     protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, @Nullable MotifFor motifOuverture, MockCommune commune) {
         TypeAutoriteFiscale type = commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC;
-        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFSEtendu(), type, MotifRattachement.DOMICILE);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, null, null, commune.getNoOFS(), type, MotifRattachement.DOMICILE);
     }
 
     /**
@@ -361,7 +361,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected ForFiscalPrincipal addForPrincipal(Contribuable contribuable, RegDate ouverture, MotifFor motifOuverture, @Nullable RegDate fermeture, @Nullable MotifFor motifFermeture, MockCommune commune,
                                                  MotifRattachement motifRattachement) {
         final TypeAutoriteFiscale type = (commune.isVaudoise() ? TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD : TypeAutoriteFiscale.COMMUNE_HC);
-        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFSEtendu(), type, motifRattachement);
+        return addForPrincipal(contribuable, ouverture, motifOuverture, fermeture, motifFermeture, commune.getNoOFS(), type, motifRattachement);
     }
 
     /**
@@ -413,7 +413,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         f.setDateFin(fin);
         f.setGenreImpot(GenreImpot.DEBITEUR_PRESTATION_IMPOSABLE);
         f.setTypeAutoriteFiscale(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
-        f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
+        f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
         if (dpi.getDernierForDebiteur() == null) {
             tiersService.adaptPremierePeriodicite(dpi, debut);
         }
@@ -583,7 +583,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
         ForDebiteurPrestationImposable f = new ForDebiteurPrestationImposable();
         f.setTiers(dpi);
         f.setTypeAutoriteFiscale(typeAutorite);
-        f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
+        f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
         f.setDateDebut(dateDebut);
         f.setDateFin(dateFin);
         return f;
@@ -599,7 +599,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
             f.setMotifFermeture(MotifFor.FIN_EXPLOITATION);
         }
         f.setTypeAutoriteFiscale(taf);
-        f.setNumeroOfsAutoriteFiscale(commune.getNoOFSEtendu());
+        f.setNumeroOfsAutoriteFiscale(commune.getNoOFS());
         f.setMotifRattachement(rattachement);
         return tiersDAO.addAndSave(ctb, f);
     }

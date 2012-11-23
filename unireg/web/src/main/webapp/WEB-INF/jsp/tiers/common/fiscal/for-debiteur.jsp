@@ -15,7 +15,7 @@
 	
 	<display:column sortable ="true" titleKey="label.commune">
 		<c:if test="${forFiscal.annule}"><strike></c:if>
-			<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomMinuscule" titleProperty="noOFSEtendu" date="${forFiscal.regDateOuverture}"/>
+			<unireg:commune ofs="${forFiscal.numeroForFiscalCommune}" displayProperty="nomOfficiel" titleProperty="noOFS" date="${forFiscal.regDateOuverture}"/>
 		<c:if test="${forFiscal.annule}"></strike></c:if>
 	</display:column>
 

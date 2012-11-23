@@ -102,7 +102,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 		}
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(MockCommune.Bex.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
+		assertEquals(MockCommune.Bex.getNomOfficiel(), serviceCivilService.getAdresses(noIndAlain, dateArriveeBex, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Bex");
 
 		assertBlocageRemboursementAutomatique(false);
@@ -126,7 +126,7 @@ public class Ec_19000_01_Depart_1_Scenario extends EvenementCivilScenario {
 		}
 
 		// vérification que les adresses civiles sont a Zurich
-		assertEquals(MockCommune.Zurich.getNomMinuscule(), serviceCivilService.getAdresses(noIndAlain, dateArriveeZurich, false).principale.getLocalite(),
+		assertEquals(MockCommune.Zurich.getNomOfficiel(), serviceCivilService.getAdresses(noIndAlain, dateArriveeZurich, false).principale.getLocalite(),
 			"l'adresse principale n'est pas à Zurich");
 
 		assertBlocageRemboursementAutomatique(false);

@@ -52,7 +52,7 @@ public class Ec_43000_02_CorrectionAdresse_CommuneDifferente_Scenario extends Ev
 			protected void init() {
 				MockIndividu indConceicao = addIndividu(noIndConceicao, RegDate.get(1976, 7, 24), "Conceiçao", "Aparecida Porto", false);
 
-				addOrigine(indConceicao, MockPays.Espagne.getNomMinuscule());
+				addOrigine(indConceicao, MockPays.Espagne.getNomCourt());
 				addNationalite(indConceicao, MockPays.Espagne, indConceicao.getDateNaissance(), null);
 
 				addPermis(indConceicao, TypePermis.ETABLISSEMENT, RegDate.get(2008, 5, 21), null, false);

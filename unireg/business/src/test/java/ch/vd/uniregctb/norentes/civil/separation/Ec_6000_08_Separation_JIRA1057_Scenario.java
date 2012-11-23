@@ -124,7 +124,7 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 			assertEquals(dateMariage, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
+					"Le dernier for n'est pas sur " + commune.getNomOfficiel());
 			
 			assertEquals(2, forsParType.secondaires.size(), "Le ménage a plus de deux fors secondaires");
 			{

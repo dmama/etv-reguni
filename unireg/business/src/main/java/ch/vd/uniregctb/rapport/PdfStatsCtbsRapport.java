@@ -139,7 +139,7 @@ public class PdfStatsCtbsRapport extends PdfRapport {
 			return "<inconnu>";
 		}
 		else {
-			return commune.getNomMinuscule();
+			return commune.getNomOfficiel();
 		}
 	}
 

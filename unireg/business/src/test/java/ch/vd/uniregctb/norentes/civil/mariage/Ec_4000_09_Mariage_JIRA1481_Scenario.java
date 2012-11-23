@@ -76,14 +76,14 @@ public class Ec_4000_09_Mariage_JIRA1481_Scenario extends EvenementCivilScenario
 
 				indAdrian = addIndividu(noIndAdrian, dateNaissanceAdrian, "Fratila", "Adrian", true);
 
-				addOrigine(indAdrian, MockPays.Albanie.getNomMinuscule());
+				addOrigine(indAdrian, MockPays.Albanie.getNomCourt());
 				addNationalite(indAdrian, MockPays.Albanie, dateNaissanceAdrian, null);
 				addPermis(indAdrian, TypePermis.ETABLISSEMENT, date(2000, 6, 1), null, false);
 				addAdresse(indAdrian, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);
 				
 				indAngela = addIndividu(noIndAngela, dateNaissanceAngela, "Fratila", "Angela", false);
 
-				addOrigine(indAngela, MockPays.Albanie.getNomMinuscule());
+				addOrigine(indAngela, MockPays.Albanie.getNomCourt());
 				addNationalite(indAngela, MockPays.Albanie, dateNaissanceAngela, null);
 				addPermis(indAngela, TypePermis.ETABLISSEMENT, date(2000, 9, 15), null, false);
 				addAdresse(indAngela, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.RouteMaisonNeuve, null, dateArriveeAngela, null);

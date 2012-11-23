@@ -218,7 +218,7 @@ public class TiersIndexedData implements Serializable {
 	}
 
 	/**
-	 * @return le numéro Ofs étendu de la commune de domicile du tiers, ou <b>null</b> si cette information n'est pas disponible ou si le tiers n'est pas domicilié dans le canton.
+	 * @return le numéro Ofs de la commune de domicile du tiers, ou <b>null</b> si cette information n'est pas disponible ou si le tiers n'est pas domicilié dans le canton.
 	 */
 	public Integer getNoOfsCommuneDomicile() {
 		return noOfsCommuneDomicile;

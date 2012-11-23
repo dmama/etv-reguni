@@ -78,7 +78,7 @@ public class DepartSecondaire extends Depart {
 
 		// SIFISC-4912 Pour les événements ech, les départs secondaires vaudois a priori sont ignorés
 		if (isDepartVaudois()) {
-			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomMinuscule());
+			final String message = String.format("%s : la nouvelle commune de résidence %s est toujours dans le canton.", IGNORE_VD, nouvelleCommune.getNomOfficiel());
 			event.setCommentaireTraitement(message);
 		}
 	}
@@ -123,7 +123,7 @@ public class DepartSecondaire extends Depart {
 			final ForFiscalPrincipal ffp = contribuable.getForFiscalPrincipalAt(null);
 
 			// [UNIREG-1921] si la commune du for principal ne change pas suite au départ secondaire, rien à faire!
-			if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFSEtendu() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			if (commune != null && ffp.getNumeroOfsAutoriteFiscale() == commune.getNoOFS() && commune.isVaudoise() && ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 				// rien à faire sur les fors...
 			}
 			else {

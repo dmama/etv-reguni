@@ -110,11 +110,11 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 				final PersonnePhysique hcImmeuble = addNonHabitant("Bernois", "Immeuble", null, Sexe.MASCULIN);
 				addForPrincipal(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(hcImmeuble, date(2002, 7, 9), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique hsActiviteIndependante = addNonHabitant("Allemand", "Activité Indépendante", null, Sexe.FEMININ);
 				addForPrincipal(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
-				addForSecondaire(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				addForSecondaire(hsActiviteIndependante, date(2003, 12, 3), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				final PersonnePhysique sourcier = addNonHabitant("Vaudois", "Sourcier Pur", null, Sexe.MASCULIN);
 				addForPrincipal(sourcier, date(2004, 11, 24), MotifFor.ARRIVEE_HS, null, null, MockCommune.Renens, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
@@ -130,7 +130,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 				final PersonnePhysique sourcierMixte1 = addNonHabitant("Vaudois", "Mixte 1", null, Sexe.FEMININ);
 				addForPrincipal(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bex, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1);
-				addForSecondaire(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(sourcierMixte1, date(2007, 4, 25), MotifFor.ARRIVEE_HS, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final PersonnePhysique sourcierMixte2 = addNonHabitant("Vaudois", "Mixte 2", null, Sexe.MASCULIN);
 				addForPrincipal(sourcierMixte2, date(2008, 5, 23), MotifFor.ARRIVEE_HS, null, null, MockCommune.Bussigny, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
@@ -313,34 +313,34 @@ public class AcomptesProcessorTest extends BusinessTest {
 				// vaudois sans for secondaire (en fait, il en a un, mais celui-ci n'est pas valide au moment du calcul des acomptes)
 				final PersonnePhysique vdSans = addHabitant(idIndividuVaudoisSansForSecondaire);
 				addForPrincipal(vdSans, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdSans, date(2005, 12, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeAcomptes - 1, 12, 25), MotifFor.VENTE_IMMOBILIER, MockCommune.Lonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(vdSans, date(2005, 12, 1), MotifFor.ACHAT_IMMOBILIER, date(anneeAcomptes - 1, 12, 25), MotifFor.VENTE_IMMOBILIER, MockCommune.Lonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// vaudois avec un for secondaire sur la même commune que celle du for principal
 				final PersonnePhysique vdAvecMeme = addHabitant(idIndividuVaudoisAvecForSecondaireMemeCommune);
 				addForPrincipal(vdAvecMeme, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecMeme, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(vdAvecMeme, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aigle.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// vaudois avec un for secondaire sur une autre commune que celle du for principal
 				final PersonnePhysique vdAvecAutre = addHabitant(idIndividuVaudoisAvecForSecondaireCommuneDifferente);
 				addForPrincipal(vdAvecAutre, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecAutre, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(vdAvecAutre, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// vaudois avec deux fors secondaires
 				final PersonnePhysique vdAvecDeux = addHabitant(idIndividuVaudoisAvecDeuxForsSecondaires);
 				addForPrincipal(vdAvecDeux, date(2005, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Aigle);
-				addForSecondaire(vdAvecDeux, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(vdAvecDeux, date(2008, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(vdAvecDeux, date(2005, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(vdAvecDeux, date(2008, 5, 12), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// hors-canton
 				final PersonnePhysique hc = addNonHabitant("Gaspard", "Lekanar", date(1980, 10, 25), Sexe.MASCULIN);
 				addForPrincipal(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bern);
-				addForSecondaire(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(hc, date(2006, 7, 11), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// hors-Suisse
 				final PersonnePhysique hs = addNonHabitant("Lucie", "Lafourmi", date(1985, 8, 1), Sexe.FEMININ);
 				addForPrincipal(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockPays.France);
-				addForSecondaire(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lonay.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
-				addForSecondaire(hs, date(2008, 12, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(hs, date(2006, 11, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Lonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				addForSecondaire(hs, date(2008, 12, 25), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				final Ids ids = new Ids();
 				ids.idVaudoisSansForSecondaire = vdSans.getNumero();
@@ -376,12 +376,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idVaudoisAvecForSecondaireMemeCommune, ctb.getNumeroCtb());
 			Assert.assertNotNull(ctb.getAssujettissementIcc());
 			Assert.assertEquals(1, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aigle.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aigle.getNoOFS()));
 			Assert.assertNotNull(ctb.getAssujettissementIfd());
 			Assert.assertEquals(1, ctb.getAssujettissementIfd().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aigle.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aigle.getNoOFS()));
 		}
 
 		// vaudois avec un for secondaire sur une autre commune que celle du for principal
@@ -390,12 +390,12 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idVaudoisAvecForSecondaireCommuneDifferente, ctb.getNumeroCtb());
 			Assert.assertNotNull(ctb.getAssujettissementIcc());
 			Assert.assertEquals(1, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFS()));
 			Assert.assertNotNull(ctb.getAssujettissementIfd());
 			Assert.assertEquals(1, ctb.getAssujettissementIfd().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFS()));
 		}
 
 		// vaudois avec deux fors secondaires
@@ -404,14 +404,14 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertEquals(ids.idVaudoisAvecDeuxForsSecondaires, ctb.getNumeroCtb());
 			Assert.assertNotNull(ctb.getAssujettissementIcc());
 			Assert.assertEquals(2, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFSEtendu()));
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Bex.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIcc().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFS()));
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Bex.getNoOFS()));
 			Assert.assertNotNull(ctb.getAssujettissementIfd());
 			Assert.assertEquals(2, ctb.getAssujettissementIfd().ofsForsSecondaires.size());
-			Assert.assertEquals(MockCommune.Aigle.getNoOFSEtendu(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFSEtendu()));
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Bex.getNoOFSEtendu()));
+			Assert.assertEquals(MockCommune.Aigle.getNoOFS(), (long) ctb.getAssujettissementIfd().noOfsForPrincipal);
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Aubonne.getNoOFS()));
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Bex.getNoOFS()));
 		}
 
 		// hors-canton
@@ -421,7 +421,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertNotNull(ctb.getAssujettissementIcc());
 			Assert.assertEquals(1, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
 			Assert.assertNull(ctb.getAssujettissementIcc().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Croy.getNoOFSEtendu()));
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Croy.getNoOFS()));
 			Assert.assertNull(ctb.getAssujettissementIfd());
 		}
 
@@ -432,13 +432,13 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertNotNull(ctb.getAssujettissementIcc());
 			Assert.assertEquals(2, ctb.getAssujettissementIcc().ofsForsSecondaires.size());
 			Assert.assertNull(ctb.getAssujettissementIcc().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Lonay.getNoOFSEtendu()));
-			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Bussigny.getNoOFSEtendu()));
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Lonay.getNoOFS()));
+			Assert.assertTrue(ctb.getAssujettissementIcc().ofsForsSecondaires.contains(MockCommune.Bussigny.getNoOFS()));
 			Assert.assertNotNull(ctb.getAssujettissementIfd());
 			Assert.assertEquals(2, ctb.getAssujettissementIfd().ofsForsSecondaires.size());
 			Assert.assertNull(ctb.getAssujettissementIfd().noOfsForPrincipal);
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Lonay.getNoOFSEtendu()));
-			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Bussigny.getNoOFSEtendu()));
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Lonay.getNoOFS()));
+			Assert.assertTrue(ctb.getAssujettissementIfd().ofsForsSecondaires.contains(MockCommune.Bussigny.getNoOFS()));
 		}
 	}
 
@@ -476,14 +476,14 @@ public class AcomptesProcessorTest extends BusinessTest {
 		// ICC : 2010
 		{
 			final AcomptesResults.InfoAssujettissementContribuable a = assujetti.getAssujettissementIcc();
-			Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (long) a.noOfsForPrincipal);
+			Assert.assertEquals(MockCommune.Bex.getNoOFS(), (long) a.noOfsForPrincipal);
 			Assert.assertEquals(2010, a.anneeFiscale);
 			Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_MIXTE_137_1, a.typeContribuable);
 		}
 		// IFD : 2009
 		{
 			final AcomptesResults.InfoAssujettissementContribuable a = assujetti.getAssujettissementIfd();
-			Assert.assertEquals(MockCommune.Bex.getNoOFSEtendu(), (long) a.noOfsForPrincipal);
+			Assert.assertEquals(MockCommune.Bex.getNoOFS(), (long) a.noOfsForPrincipal);
 			Assert.assertEquals(2009, a.anneeFiscale);
 			Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_MIXTE_137_1, a.typeContribuable);
 		}

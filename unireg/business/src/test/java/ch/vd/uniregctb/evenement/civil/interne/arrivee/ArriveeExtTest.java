@@ -817,7 +817,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 		}
@@ -913,13 +913,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			List<ForFiscal> list = habitant.getForsFiscauxSorted();
 			ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 
 			ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 		}
@@ -1187,14 +1187,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			List<ForFiscal> list = habitant.getForsFiscauxSorted();
 			ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 			assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
 			ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			assertEquals(ModeImposition.SOURCE, cossonay.getModeImposition());
@@ -1332,7 +1332,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			ForFiscalPrincipal ff = menage.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
 
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 		}
@@ -1474,13 +1474,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			final List<ForFiscal> list = menage.getForsFiscauxSorted();
 			final ForFiscalPrincipal lausanne = (ForFiscalPrincipal) list.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArriveInitiale, lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 
 			final ForFiscalPrincipal cossonay = (ForFiscalPrincipal) list.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 		}
@@ -1614,14 +1614,14 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			List<ForFiscal> listMenage = menage.getForsFiscauxSorted();
 			ForFiscalPrincipal lausanne = (ForFiscalPrincipal) listMenage.get(0);
 			assertNotNull(lausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), lausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), lausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(RegDate.get(1980, 1, 1), lausanne.getDateDebut());
 			assertEquals(veilleArrivee, lausanne.getDateFin());
 			assertEquals(ModeImposition.SOURCE, lausanne.getModeImposition());
 
 			ForFiscalPrincipal cossonay = (ForFiscalPrincipal) listMenage.get(1);
 			assertNotNull(cossonay);
-			assertEquals(new Integer(MockCommune.Cossonay.getNoOFSEtendu()), cossonay.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Cossonay.getNoOFS()), cossonay.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, cossonay.getDateDebut());
 			assertNull(null, cossonay.getDateFin());
 			assertEquals(ModeImposition.SOURCE, cossonay.getModeImposition());
@@ -2021,7 +2021,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			 */
 			ForFiscalPrincipal ff = habitant.getForFiscalPrincipalAt(null);
 			assertNotNull(ff);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), ff.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), ff.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, ff.getDateDebut());
 			assertNull(null, ff.getDateFin());
 		}
@@ -2218,13 +2218,13 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 			
 			ForFiscalPrincipal forVevey = (ForFiscalPrincipal) listForsMenage.get(0);
 			assertNotNull(forVevey);
-			assertEquals(new Integer(MockCommune.Vevey.getNoOFSEtendu()), forVevey.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Vevey.getNoOFS()), forVevey.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArriveInitiale, forVevey.getDateDebut());
 			assertEquals(dateDepart, forVevey.getDateFin());
 
 			ForFiscalPrincipal forLausanne = (ForFiscalPrincipal) listForsMenage.get(1);
 			assertNotNull(forLausanne);
-			assertEquals(new Integer(MockCommune.Lausanne.getNoOFSEtendu()), forLausanne.getNumeroOfsAutoriteFiscale());
+			assertEquals(new Integer(MockCommune.Lausanne.getNoOFS()), forLausanne.getNumeroOfsAutoriteFiscale());
 			assertEquals(dateArrivee, forLausanne.getDateDebut());
 			assertNull(null, forLausanne.getDateFin());
 		}
@@ -2272,7 +2272,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final MessageCollector collector = buildMessageCollector();
@@ -2286,11 +2286,11 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 		assertEquals(3, fors.size());
-		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+		assertForPrincipal(date(1980, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 6, 30), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(0));
-		assertForPrincipal(date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFSEtendu(),
+		assertForPrincipal(date(2005, 7, 1), MotifFor.DEMENAGEMENT_VD, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(1));
-		assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1,
+		assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1,
 				(ForFiscalPrincipal) fors.get(2));
 	}
 
@@ -2335,7 +2335,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final MessageCollector collector = buildMessageCollector();
@@ -2392,7 +2392,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final Individu individu = serviceCivil.getIndividu(noInd, null);
 
 		final Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvelleAdresse,
 						context);
 
 		// Traite l'événement d'arrivée
@@ -2407,9 +2407,9 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		// on vérifie les fors fiscaux, en particulier le for principal créé par l'arrivée : son mode d'imposition doit être MIXTE_1
 		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 		assertEquals(3, fors.size());
-		assertForPrincipal(dateAchat, MotifFor.ACHAT_IMMOBILIER, dateArrivee.addDays(-1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
-		assertForSecondaire(dateAchat, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFSEtendu(), MotifRattachement.IMMEUBLE_PRIVE, (ForFiscalSecondaire) fors.get(1));
-		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(2));
+		assertForPrincipal(dateAchat, MotifFor.ACHAT_IMMOBILIER, dateArrivee.addDays(-1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, MockCommune.Bern.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+		assertForSecondaire(dateAchat, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE, (ForFiscalSecondaire) fors.get(1));
+		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_1, (ForFiscalPrincipal) fors.get(2));
 	}
 
 	@Ignore(value = "Cas très rare, on y réfléchira plus tard")
@@ -2521,7 +2521,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 				nouvelleAdresse.setDateDebutValidite(dateRetour);
 
 				final Arrivee arrivee =
-						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null,
+						new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateRetour, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null,
 								nouvelleAdresse, context);
 
 				// Traite l'événement d'arrivée
@@ -2584,7 +2584,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFSEtendu(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HS, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final MessageCollector collector = buildMessageCollector();
@@ -2638,7 +2638,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny, null,
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
@@ -2654,7 +2654,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-				MockCommune.Lausanne.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				MockCommune.Lausanne.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(dateArrivee, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				(ForFiscalPrincipal) fors.get(1));
 	}
@@ -2695,7 +2695,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null,
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_VAUDOISE, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny, null,
 						nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
@@ -2710,7 +2710,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 
 		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 		assertEquals(2, fors.size());
-		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFSEtendu(),
+		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, date(2009, 12, 31), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Lausanne.getNoOFS(),
 				MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(date(2010, 1, 1), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE,
 				ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(1));
@@ -2753,7 +2753,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		nouvelleAdresse.setDateDebutValidite(dateArrivee);
 
 		final Arrivee arrivee =
-				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFSEtendu(), null, MockCommune.Bussigny, null, nouvelleAdresse, context);
+				new ArriveePrincipale(individu, null, TypeEvenementCivil.ARRIVEE_PRINCIPALE_HC, dateArrivee, MockCommune.Bussigny.getNoOFS(), null, MockCommune.Bussigny, null, nouvelleAdresse, context);
 
 		// Traite l'événement d'arrivée
 		final MessageCollector collector = buildMessageCollector();
@@ -2768,7 +2768,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		final List<ForFiscal> fors = hab.getForsFiscauxSorted();
 		assertEquals(2, fors.size());
 		assertForPrincipal(date(1970, 1, 1), MotifFor.MAJORITE, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, 
-				MockCommune.Zurich.getNoOFSEtendu(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
+				MockCommune.Zurich.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, (ForFiscalPrincipal) fors.get(0));
 		assertForPrincipal(dateArrivee, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MockCommune.Bussigny.getNoOFS(), MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE,
 				(ForFiscalPrincipal) fors.get(1));
 	}

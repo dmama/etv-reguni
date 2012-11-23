@@ -68,7 +68,7 @@ public class FinPermisTest extends WithoutSpringTest {
 			RegDate dateNaissanceRoberto = RegDate.get(1961, 3, 12);
 			MockIndividu roberto = addIndividu(NUMERO_INDIVIDU, dateNaissanceRoberto, "Martin", "Roberto", true);
 			addDefaultAdressesTo(roberto);
-			addOrigine(roberto, MockPays.Espagne.getNomMinuscule());
+			addOrigine(roberto, MockPays.Espagne.getNomCourt());
 			addNationalite(roberto, MockPays.Espagne, dateNaissanceRoberto, null);
 			addNationalite(roberto, MockPays.Suisse, DATE_OBTENTION_NATIONALITE, null);
 			addPermis(roberto, TypePermis.COURTE_DUREE, RegDate.get(2005, 3, 12), DATE_DEBUT_PERMIS.getOneDayBefore(), false);
@@ -77,7 +77,7 @@ public class FinPermisTest extends WithoutSpringTest {
 			RegDate dateNaissanceRosa = RegDate.get(1980, 5, 30);
 			MockIndividu rosa = addIndividu(NUMERO_INDIVIDU_2, dateNaissanceRosa, "Rosa", "Martinez", false);
 			addDefaultAdressesTo(rosa);
-			addOrigine(rosa, MockPays.Espagne.getNomMinuscule());
+			addOrigine(rosa, MockPays.Espagne.getNomCourt());
 			addNationalite(rosa, MockPays.Espagne, dateNaissanceRosa, null);
 			addPermis(rosa, TypePermis.COURTE_DUREE, RegDate.get(2003, 10, 25), DATE_DEBUT_PERMIS.getOneDayBefore(), false);
 			addPermis(rosa, TypePermis.ETABLISSEMENT, DATE_DEBUT_PERMIS, DATE_FIN_PERMIS, false);

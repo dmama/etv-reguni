@@ -108,7 +108,7 @@ public class Ec_2000_10_Deces_CelibataireTuteur_Scenario extends EvenementCivilS
 		assertNull(tutelle.getDateFin(), "Date de fin tutelle fausse");
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(MockCommune.Lausanne.getNomMinuscule(), serviceCivilService.getAdresses(noIndCharles, dateArriveeVD, false).principale.getLocalite(), "l'adresse principale n'est pas à Lausanne");
+		assertEquals(MockCommune.Lausanne.getNomOfficiel(), serviceCivilService.getAdresses(noIndCharles, dateArriveeVD, false).principale.getLocalite(), "l'adresse principale n'est pas à Lausanne");
 
 		assertBlocageRemboursementAutomatique(false, false);
 	}

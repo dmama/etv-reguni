@@ -95,7 +95,7 @@ public class Ec_2000_08_Deces_CivilApresFiscal_Difference1Jour_Scenario extends 
 		}
 
 		// vérification que les adresses civiles sont a Bex
-		assertEquals(MockCommune.Lausanne.getNomMinuscule(), serviceCivilService.getAdresses(noIndGuillaume, dateArriveeVD, false).principale
+		assertEquals(MockCommune.Lausanne.getNomOfficiel(), serviceCivilService.getAdresses(noIndGuillaume, dateArriveeVD, false).principale
 				.getLocalite(), "l'adresse principale n'est pas à Lausanne");
 
 		assertBlocageRemboursementAutomatique(false);

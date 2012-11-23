@@ -91,7 +91,7 @@ public class MockLocalite implements Localite {
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
 		this.complementNPA = complementNPA;
-		this.noCommune = commune.getNoOFSEtendu();
+		this.noCommune = commune.getNoOFS();
 		this.nomCompletMinuscule = nomCompletMinuscule;
 		this.nomAbregeMinuscule = nomCompletMinuscule;
 		this.communeLocalite = commune;
@@ -103,7 +103,7 @@ public class MockLocalite implements Localite {
 		this.noOrdre = noOrdre;
 		this.nPA = nPA;
 		this.complementNPA = complementNPA;
-		this.noCommune = commune.getNoOFSEtendu();
+		this.noCommune = commune.getNoOFS();
 		this.nomCompletMinuscule = nomCompletMinuscule;
 		this.nomAbregeMinuscule = nomAbregeMinuscule;
 		this.communeLocalite = commune;

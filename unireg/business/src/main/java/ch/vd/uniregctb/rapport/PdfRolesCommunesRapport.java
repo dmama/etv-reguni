@@ -43,7 +43,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		final String titrePrincipal;
 		if (results.noOfsCommune != null) {
 		    final Commune commune = getCommune(results.noOfsCommune, RegDate.get(results.annee, 12, 31));
-		    titrePrincipal = String.format("Rapport des rôles pour la commune de %s", commune.getNomMinuscule());
+		    titrePrincipal = String.format("Rapport des rôles pour la commune de %s", commune.getNomOfficiel());
 		}
 		else {
 			titrePrincipal = "Rapport des rôles pour toutes les communes vaudoises";
@@ -121,7 +121,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		for (final Commune commune : communes) {
 
 		    if (results.noOfsCommune != null) {
-		        if (commune.getNoOFSEtendu() != results.noOfsCommune) {
+		        if (commune.getNoOFS() != results.noOfsCommune) {
 		            /*
 		             * On ignore toutes les autres communes lorsqu'un rapport a été demandé spécifiquement pour une commune (il est possible
 		             * et normal d'avoir des informations pour d'autres communes en raison des contribuables qui ont déménagé durant
@@ -131,17 +131,17 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		        }
 		    }
 
-		    final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFSEtendu());
+		    final ProduireRolesResults.InfoCommune infoCommune = results.infosCommunes.get(commune.getNoOFS());
 		    if (infoCommune == null) {
-		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomMinuscule()
-		                + "(n°ofs " + commune.getNoOFSEtendu() + ')');
+		        Audit.error("Rôle des communes: Impossible de trouver les informations pour la commune " + commune.getNomOfficiel()
+		                + "(n°ofs " + commune.getNoOFS() + ')');
 		        continue;
 		    }
 
 			newPage();
 
 		    // Entête de la commune
-		    final String nomCommune = commune.getNomMinuscule();
+		    final String nomCommune = commune.getNomOfficiel();
 		    final int totalContribuables = infoCommune.getInfosContribuables().size();
 		    addTitrePrincipal("Liste des rôles " + results.annee + " pour la commune de\n" + nomCommune);
 
@@ -170,7 +170,7 @@ public class PdfRolesCommunesRapport extends PdfRolesRapport<ProduireRolesCommun
 		    // Fichier CVS détaillé
 		    {
 			    final String[] contenu = asCsvFiles(nomsCommunes, infoCommune, status);
-			    writeFichierDetail(results, writer, contenu, totalContribuables == 0, Integer.toString(commune.getNoOFSEtendu()));
+			    writeFichierDetail(results, writer, contenu, totalContribuables == 0, Integer.toString(commune.getNoOFS()));
 		    }
 		}
 	}

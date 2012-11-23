@@ -97,7 +97,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 		dossier.setNumOffice(numeroOfsAutoriteFiscale.toString());
 		Commune commune;
 		try {
-			commune = serviceInfrastructureService.getCommuneByNumeroOfsEtendu(numeroOfsAutoriteFiscale, forFiscalGestion.getDateFin());
+			commune = serviceInfrastructureService.getCommuneByNumeroOfs(numeroOfsAutoriteFiscale, forFiscalGestion.getDateFin());
 		}
 		catch (ServiceInfrastructureException e) {
 			commune = null;
@@ -107,7 +107,7 @@ public class ImpressionNouveauxDossiersHelperImpl extends EditiqueAbstractHelper
 			throw new EditiqueException(message);
 		}
 
-		final String communeLabel = commune.getNomMinuscule();
+		final String communeLabel = commune.getNomOfficiel();
 		dossier.setCommune(communeLabel);
 
 		final Contrib1 contrib1 = ficheOuvertureDossier.addNewContrib1();

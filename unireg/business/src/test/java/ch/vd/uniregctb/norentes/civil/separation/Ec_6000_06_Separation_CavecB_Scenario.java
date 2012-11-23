@@ -77,12 +77,12 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 				marieIndividus(indEsad, indAida, dateMariage);
 				separeIndividus(indEsad, indAida, dateSeparation);
 
-				addOrigine(indEsad, MockPays.Albanie.getNomMinuscule());
+				addOrigine(indEsad, MockPays.Albanie.getNomCourt());
 				addNationalite(indEsad, MockPays.Albanie, dateNaissanceEsad, null);
 				addPermis(indEsad, TypePermis.ETABLISSEMENT, RegDate.get(2005, 1, 19), null, false);
 				addAdresse(indEsad, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2005, 1, 19), null);
 
-				addOrigine(indAida, MockPays.Albanie.getNomMinuscule());
+				addOrigine(indAida, MockPays.Albanie.getNomCourt());
 				addNationalite(indAida, MockPays.Albanie, dateNaissanceAida, null);
 				addPermis(indAida, TypePermis.SEJOUR, RegDate.get(2007, 7, 7), null, false);
 				addAdresse(indAida, TypeAdresseCivil.PRINCIPALE, MockRue.Renens.QuatorzeAvril, null, RegDate.get(2007, 7, 7), null);
@@ -141,7 +141,7 @@ public class Ec_6000_06_Separation_CavecB_Scenario extends EvenementCivilScenari
 			assertEquals(dateDebutForCouple, ffp.getDateDebut(), "Date de début du dernier for fausse");
 			assertNull(ffp.getDateFin(), "Date de fin du dernier for fausse");
 			assertEquals(commune.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale(),
-					"Le dernier for n'est pas sur " + commune.getNomMinuscule());
+					"Le dernier for n'est pas sur " + commune.getNomOfficiel());
 		}
 
 		assertBlocageRemboursementAutomatique(true, true, false);

@@ -69,14 +69,14 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 				final RegDate dateAmenagement = RegDate.get(2001, 3, 12);
 				
 				indSven = addIndividu(noIndSven, dateNaissanceSven, "Brise", "Sven", true);
-				addOrigine(indSven, MockPays.Danemark.getNomMinuscule());
+				addOrigine(indSven, MockPays.Danemark.getNomCourt());
 				addNationalite(indSven, MockPays.Danemark, dateNaissanceSven, null);
 				addAdresse(indSven, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				addAdresse(indSven, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				
 				final RegDate dateNaissanceElly = RegDate.get(1973, 3, 7);
 				indElly = addIndividu(noIndElly, dateNaissanceElly, "Brise", "Elly", false);
-				addOrigine(indElly, MockPays.Danemark.getNomMinuscule());
+				addOrigine(indElly, MockPays.Danemark.getNomCourt());
 				addNationalite(indElly, MockPays.Danemark, dateNaissanceElly, null);
 				addAdresse(indElly, TypeAdresseCivil.PRINCIPALE, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
 				addAdresse(indElly, TypeAdresseCivil.COURRIER, MockRue.Vallorbe.GrandRue, null, dateAmenagement, null);
@@ -122,9 +122,9 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 			assertNull(ffp, "For principal de l'Habitant " + sven.getNumero() + " non null");
 
 			// vérification que les adresses civiles sont à Vallorbe
-			assertEquals(commune.getNomMinuscule(), 
+			assertEquals(commune.getNomOfficiel(),
 					serviceCivilService.getAdresses(noIndSven, RegDate.get(), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + commune.getNomMinuscule());
+					"L'adresse principale n'est pas à " + commune.getNomOfficiel());
 		}
 		
 		{
@@ -134,9 +134,9 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 			assertNull(ffp, "For principal de l'Habitant " + elly.getNumero() + " non null");
 
 			// vérification que les adresses civiles sont à Vallorbe
-			assertEquals(commune.getNomMinuscule(), 
+			assertEquals(commune.getNomOfficiel(),
 					serviceCivilService.getAdresses(noIndElly, RegDate.get(), false).principale.getLocalite(),
-					"L'adresse principale n'est pas à " + commune.getNomMinuscule());
+					"L'adresse principale n'est pas à " + commune.getNomOfficiel());
 		}
 		
 		{
@@ -172,14 +172,14 @@ public class Ec_19000_05_Depart_JIRA1394_Scenario extends DepartScenario {
 			// vérification que les adresses civiles sont HS
 			assertEquals(paysDepart.getNoOFS(),
 					serviceCivilService.getAdresses(noIndSven, dateDepart.addDays(1), false).principale.getNoOfsPays(),
-					"L'adresse principale n'est pas à " + nouvelleCommune.getNomMinuscule());
+					"L'adresse principale n'est pas à " + nouvelleCommune.getNomOfficiel());
 		}
 		
 		{
 			// vérification que les adresses civiles sont HS
 			assertEquals(paysDepart.getNoOFS(),
 					serviceCivilService.getAdresses(noIndElly, dateDepart.addDays(1), false).principale.getNoOfsPays(),
-					"L'adresse principale n'est pas à " + nouvelleCommune.getNomMinuscule());
+					"L'adresse principale n'est pas à " + nouvelleCommune.getNomOfficiel());
 		}
 		
 		{

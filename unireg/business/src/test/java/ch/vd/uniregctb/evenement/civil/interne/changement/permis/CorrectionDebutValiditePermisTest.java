@@ -50,7 +50,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, null);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, null);
 				assertErreurs(evt, Arrays.asList(String.format("Aucun tiers contribuable ne correspond au numéro d'individu %d", noIndividu)));
 				return null;
 			}
@@ -86,7 +86,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -123,7 +123,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -160,7 +160,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -197,7 +197,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -235,7 +235,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -273,7 +273,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
@@ -315,7 +315,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
@@ -361,7 +361,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
@@ -406,7 +406,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -452,7 +452,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividuMme, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
@@ -488,7 +488,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -525,7 +525,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertSansErreurNiWarning(evt);
 				return null;
 			}
@@ -562,7 +562,7 @@ public class CorrectionDebutValiditePermisTest extends AbstractEvenementCivilInt
 		doInNewTransactionAndSession(new TxCallback<Object>() {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
-				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFSEtendu(), datePermis, ppId);
+				final CorrectionDebutValiditePermis evt = createEvt(noIndividu, MockCommune.Lausanne.getNoOFS(), datePermis, ppId);
 				assertErreurs(evt, Arrays.asList("Permis C sur individu majeur ou ayant un for fiscal actif : veuillez traiter le cas manuellement."));
 				return null;
 			}
