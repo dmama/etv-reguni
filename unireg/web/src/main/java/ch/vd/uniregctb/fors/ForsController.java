@@ -36,6 +36,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
+import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -227,10 +228,10 @@ public class ForsController {
 		}
 
 
-		tiersService.addForPrincipal(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
-		                             view.getTypeAutoriteFiscale(), view.getModeImposition());
+		final ForFiscalPrincipal newFor = tiersService.addForPrincipal(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
+		                                                               view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getModeImposition());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.GET)
@@ -274,8 +275,9 @@ public class ForsController {
 			return "fors/editPrincipal";
 		}
 
-		tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		final ForFiscalPrincipal newFor = tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
+
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/addSecondaire.do", method = RequestMethod.GET)
@@ -322,10 +324,10 @@ public class ForsController {
 			return "fors/addSecondaire";
 		}
 
-		tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(),
-		                              view.getMotifDebut(), view.getMotifFin());
+		final ForFiscalSecondaire newFor = tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
+		                                                                 view.getTypeAutoriteFiscale(), view.getMotifDebut(), view.getMotifFin());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.GET)
@@ -369,9 +371,9 @@ public class ForsController {
 			return "fors/editSecondaire";
 		}
 
-		tiersService.updateForSecondaire(ffs, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
+		final ForFiscalSecondaire newFor = tiersService.updateForSecondaire(ffs, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/addAutreElementImposable.do", method = RequestMethod.GET)
@@ -418,10 +420,10 @@ public class ForsController {
 			return "fors/addAutreElementImposable";
 		}
 
-		tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
-		                                         view.getNoAutoriteFiscale());
+		final ForFiscalAutreElementImposable newFor = tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
+		                                                                                       view.getMotifRattachement(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.GET)
@@ -465,9 +467,9 @@ public class ForsController {
 			return "fors/editAutreElementImposable";
 		}
 
-		tiersService.updateForAutreElementImposable(ffaei, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
+		final ForFiscalAutreElementImposable newFor = tiersService.updateForAutreElementImposable(ffaei, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/addAutreImpot.do", method = RequestMethod.GET)
@@ -514,9 +516,9 @@ public class ForsController {
 			return "fors/addAutreImpot";
 		}
 
-		tiersService.openForFiscalAutreImpot(ctb, view.getGenreImpot(), view.getDateEvenement(), view.getNoAutoriteFiscale());
+		final ForFiscalAutreImpot newFor = tiersService.openForFiscalAutreImpot(ctb, view.getGenreImpot(), view.getDateEvenement(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId;
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
 	@RequestMapping(value = "/addDebiteur.do", method = RequestMethod.GET)

@@ -16,16 +16,16 @@
 
 	<display:column style="width:16px;">
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal'}">
-			<div class="forPrincipalIconSmall" title="For fiscal principal"/>
+			<div id="ffid-${forFiscal.id}" class="forPrincipalIconSmall" title="For fiscal principal"/>
 		</c:if>
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire'}">
-			<div class="forSecondaireIconSmall" title="For fiscal secondaire"/>
+			<div id="ffid-${forFiscal.id}" class="forSecondaireIconSmall" title="For fiscal secondaire"/>
 		</c:if>
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable'}">
-			<div class="forAutreElementImposableIconSmall"  title="For fiscal autre élément imposable"/>
+			<div id="ffid-${forFiscal.id}" class="forAutreElementImposableIconSmall"  title="For fiscal autre élément imposable"/>
 		</c:if>
 		<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreImpot'}">
-			<div class="forAutreImpotIconSmall"  title="For fiscal autre impot"/>
+			<div id="ffid-${forFiscal.id}" class="forAutreImpotIconSmall"  title="For fiscal autre impot"/>
 		</c:if>
 	</display:column>
 	<display:column sortable ="true" titleKey="label.genre.impot">
@@ -113,4 +113,13 @@
 	<display:setProperty name="paging.banner.one_item_found" value=""/>
 	
 </display:table>
+<script type="text/javascript">
+
+	// mise-en-évidence d'un for qui vient d'être ajouté ou édité
+	var params = App.get_url_params();
+	if (params && params.highlightFor) {
+		$('#ffid-' + params.highlightFor).closest('tr').effect('highlight', 4000);
+	}
+
+</script>
 </c:if>
