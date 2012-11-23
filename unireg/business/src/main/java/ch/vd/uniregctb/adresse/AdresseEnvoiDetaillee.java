@@ -359,7 +359,12 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
 		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
 
-		return (rueVideOuInconnue && casePostaleInconnue) || localiteVideOuInconnue || paysVideOuInconnue;
+		boolean localiteInvalide = false;
+		if (!localiteVideOuInconnue) {
+			localiteInvalide = LocaliteInvalideMatcher.match(npaEtLocalite.getLocalite());
+		}
+
+		return (rueVideOuInconnue && casePostaleInconnue) || localiteVideOuInconnue || paysVideOuInconnue || localiteInvalide;
 
 
 	}

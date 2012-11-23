@@ -8038,6 +8038,24 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
 		assertNotNull(adresse0);
 		assertTrue(adresse0.isIncomplete());
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdressesEnvoiDetailleeLocaliteInvalide() throws Exception {
+
+		final RegDate dateDeces = date(2008, 5, 23);
+
+		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
+		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
+		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(1987, 2, 12), null,"inconnu","Partie en France",MockPays.France);
+
+		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+		assertNotNull(adresses);
+
+		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+		assertNotNull(adresse0);
+		assertTrue(adresse0.isIncomplete());
 
 
 	}
