@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -910,7 +911,8 @@ public class ProduireRolesProcessor {
 
 		final TypeAssujettissement typeAssujettissement;
 		if (communeActive) {
-			if (assujettissement.getMotifFractFin() != null) {
+			final Set<MotifFor> fractionnementsIgnores = EnumSet.of(MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE);
+			if (assujettissement.getMotifFractFin() != null && !fractionnementsIgnores.contains(assujettissement.getMotifFractFin())) {
 				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
 			}
 			else {

@@ -1157,7 +1157,7 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
 			assertNotNull(info);
 
-			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
+			assertInfo(ppId, TypeContribuable.MIXTE, MockCommune.Bussigny.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HS, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
 		}
 	}
 
@@ -1252,6 +1252,53 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 			assertNotNull(info);
 
 			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Moudon.getNoOFS(), arrivee, null, MotifFor.ARRIVEE_HC, null, InfoContribuable.TypeAssujettissement.POURSUIVI_APRES_PF, null, info);
+		}
+	}
+
+	/**
+	 * Documente comment le passage d'une commune avant à après fusion agit sur l'édition des rôles de l'ancienne commune
+	 */
+	@Test
+	public void testFusionDeCommunes() throws Exception {
+
+		final long noIndividu = 324561L;
+		final RegDate arrivee = date(2007, 7, 1);
+		final MockCommune communeAvant = MockCommune.Villette;
+		final MockCommune communeApres = MockCommune.BourgEnLavaux;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, date(1976, 3, 11), "Dantès", "Edmond", true);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Villette.CheminDeCreuxBechet, null, arrivee, null);
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, arrivee, MotifFor.ARRIVEE_HS, communeAvant.getDateFinValidite(), MotifFor.FUSION_COMMUNES, communeAvant);
+				addForPrincipal(pp, communeApres.getDateDebutValidite(), MotifFor.FUSION_COMMUNES, communeApres);
+				return pp.getNumero();
+			}
+		});
+
+		final ProduireRolesResults results = processor.runPourToutesCommunes(communeAvant.getDateFinValidite().year(), 1, null);
+		assertNotNull(results);
+		assertEquals(1, results.ctbsTraites);
+		assertEquals(0, results.ctbsEnErrors.size());
+		assertEquals(0, results.ctbsIgnores.size());
+		assertEquals(1, results.infosCommunes.size());
+
+		{
+			final InfoCommune infos = results.infosCommunes.get(MockCommune.Villette.getNoOFSEtendu());
+			assertNotNull(infos);
+
+			final InfoContribuable info = infos.getInfoPourContribuable(ppId);
+			assertNotNull(info);
+
+			assertInfo(ppId, TypeContribuable.ORDINAIRE, MockCommune.Villette.getNoOFS(), arrivee, communeAvant.getDateFinValidite(), MotifFor.ARRIVEE_HS, MotifFor.FUSION_COMMUNES, InfoContribuable.TypeAssujettissement.TERMINE_DANS_PF, null, info);
 		}
 	}
 }
