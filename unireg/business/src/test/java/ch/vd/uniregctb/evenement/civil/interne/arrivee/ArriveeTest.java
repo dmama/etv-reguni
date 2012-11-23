@@ -673,7 +673,7 @@ public class ArriveeTest extends AbstractEvenementCivilInterneTest {
 
 			final ValidationMessage erreur = e.getErrors().get(0);
 			assertEquals("La période de validité du for fiscal ForFiscalPrincipal (01.09.2010 - ?) dépasse " +
-					"la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 30.12.2010)", erreur.getMessage());
+					"la période de validité de la commune Riex (5608) à laquelle il est assigné (? - 31.12.2010)", erreur.getMessage());
 		}
 	}
 

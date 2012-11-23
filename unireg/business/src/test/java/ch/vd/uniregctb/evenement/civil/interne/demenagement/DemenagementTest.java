@@ -345,7 +345,7 @@ public class DemenagementTest extends AbstractEvenementCivilInterneTest {
 
 		final Long noInd = 1234L;
 		final RegDate dateFusion = MockCommune.dateFusion2011;
-		final RegDate dateDemenagement = date(2011, 1, 1);
+		final RegDate dateDemenagement = date(2011, 2, 1);
 
 		// Crée un individu qui déménage à l'intérieur d'une commune résultant de la fusion de plusieurs communes après la date de fusion fiscale
 		serviceCivil.setUp(new MockServiceCivil() {

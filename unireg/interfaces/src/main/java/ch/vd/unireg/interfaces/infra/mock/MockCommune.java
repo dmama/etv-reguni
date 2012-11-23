@@ -56,7 +56,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	// Quelques communes fusionnées civilement au 1er juillet 2011, mais seulement au 31 décembre 2011 fiscalement
 	// Note : date déplacée une année plus tôt pour pouvoir tester les événements civils qui ne supportent pas les dates dans le futur
 	//
-	public static final RegDate dateFusion2011 = RegDate.get(2010, 12, 31);
+	public static final RegDate dateFusion2011 = RegDate.get(2011, 1, 1);
 	public static final RegDate veilleFusion2011 = dateFusion2011.getOneDayBefore();
 
 	// -- Villette, Grandvaux, Cully, Riey, Epesses => Bourg-en-Lavaux
