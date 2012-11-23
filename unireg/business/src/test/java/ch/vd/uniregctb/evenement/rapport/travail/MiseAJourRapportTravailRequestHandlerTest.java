@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.evenement.rapport.travail;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Test;
@@ -8,6 +9,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
+import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -650,7 +652,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		assertEquals(2,rapportPrestations.size());
+		assertEquals(2, rapportPrestations.size());
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 		assertEquals(null,rapportPrestationImposable.getDateFin());
@@ -707,7 +710,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		assertEquals(2,rapportPrestations.size());
+		assertEquals(2, rapportPrestations.size());
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 		assertEquals(dateFinVersementSalaire,rapportPrestationImposable.getDateFin());
