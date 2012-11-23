@@ -2495,7 +2495,7 @@ public class TiersServiceImpl implements TiersService {
         Assert.notNull(tiers);
 
         // [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-        ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) forFiscal.duplicate();
+	    ForFiscalRevenuFortune forCorrige = (ForFiscalRevenuFortune) forFiscal.duplicate();
         forFiscal.setAnnule(true);
         forCorrige.setDateDebut(dateOuverture);
         forCorrige.setMotifOuverture(motifOuverture);
