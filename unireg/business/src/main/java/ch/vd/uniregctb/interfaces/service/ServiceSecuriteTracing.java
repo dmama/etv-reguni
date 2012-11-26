@@ -84,16 +84,19 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	@Override
 	public Operateur getOperateur(final long individuNoTechnique) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getOperateur(individuNoTechnique);
+			final Operateur operateur = target.getOperateur(individuNoTechnique);
+			items = operateur != null ? 1 : 0;
+			return operateur;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", new Object() {
+			tracing.end(time, t, "getOperateur", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("individuNoTechnique=%d", individuNoTechnique);
@@ -105,16 +108,19 @@ public class ServiceSecuriteTracing implements ServiceSecuriteService, Initializ
 	@Override
 	public Operateur getOperateur(final String visa) {
 		Throwable t = null;
+		int items = 0;
 		final long time = tracing.start();
 		try {
-			return target.getOperateur(visa);
+			final Operateur operateur = target.getOperateur(visa);
+			items = operateur != null ? 1 : 0;
+			return operateur;
 		}
 		catch (RuntimeException e) {
 			t = e;
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getOperateur", new Object() {
+			tracing.end(time, t, "getOperateur", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("visa=%s", visa);
