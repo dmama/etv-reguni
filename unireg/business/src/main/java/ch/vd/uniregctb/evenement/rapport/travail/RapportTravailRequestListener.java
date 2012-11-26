@@ -91,10 +91,10 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 	private void onMessage(EsbMessage message) throws Exception {
 
 		MiseAJourRapportTravailResponse result;
-
+		MiseAJourRapportTravailRequest request = null;
 		try {
 			// on décode la requête
-			final MiseAJourRapportTravailRequest request = parse(message.getBodyAsSource());
+			 request = parse(message.getBodyAsSource());
 			LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 			// on traite la requête
@@ -106,6 +106,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		catch (ServiceException e) {
 			LOGGER.error(e.getMessage(), e);
 			result = new MiseAJourRapportTravailResponse();
+			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
 			result.setExceptionInfo(e.getInfo());
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
