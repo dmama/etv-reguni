@@ -18,8 +18,6 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = Logger.getLogger(FiscalEditForDebiteurController.class);
 
-	public final static String TARGET_ANNULER_FOR = "annulerFor";
-
 	public final static String TARGET_REOUVRIR_FOR = "reOuvrirFor";
 
 	private TiersEditManager tiersEditManager;
@@ -35,9 +33,6 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 		this.forFiscalManager = forFiscalManager;
 	}
 
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		TiersEditView tiersView = new TiersEditView();
@@ -53,11 +48,6 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 		return tiersView;
 	}
 
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -68,10 +58,7 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 			String idForParam = getEventArgument();
 			if (idForParam != null) {
 				Long idFor = Long.parseLong(idForParam);
-				if (TARGET_ANNULER_FOR.equals(getTarget())) {
-					forFiscalManager.annulerFor(idFor);
-				}
-				else if (TARGET_REOUVRIR_FOR.equals(getTarget())) {
+				if (TARGET_REOUVRIR_FOR.equals(getTarget())) {
 					forFiscalManager.reouvrirFor(idFor);
 				}
 			}

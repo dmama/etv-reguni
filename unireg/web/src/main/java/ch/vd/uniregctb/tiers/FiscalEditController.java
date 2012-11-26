@@ -23,8 +23,6 @@ public class FiscalEditController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = Logger.getLogger(FiscalEditController.class);
 
-	public final static String TARGET_ANNULER_FOR = "annulerFor";
-
 	public final static String TARGET_ANNULER_SIT_FAM = "annulerSituationFamille";
 
 	private TiersEditManager tiersEditManager;
@@ -33,34 +31,18 @@ public class FiscalEditController extends AbstractTiersController {
 
 	private SituationFamilleManager situationFamilleManager;
 
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
-
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
-	}
-
-	public ForFiscalManager getForFiscalManager() {
-		return forFiscalManager;
 	}
 
 	public void setForFiscalManager(ForFiscalManager forFiscalManager) {
 		this.forFiscalManager = forFiscalManager;
 	}
 
-	public SituationFamilleManager getSituationFamilleManager() {
-		return situationFamilleManager;
-	}
-
 	public void setSituationFamilleManager(SituationFamilleManager situationFamilleManager) {
 		this.situationFamilleManager = situationFamilleManager;
 	}
 
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
-	 */
 	@Override
 	protected Object formBackingObject(HttpServletRequest request) throws Exception {
 		TiersEditView tiersView = new TiersEditView();
@@ -76,11 +58,6 @@ public class FiscalEditController extends AbstractTiersController {
 		return tiersView;
 	}
 
-
-	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
-	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
 			throws Exception {
@@ -88,14 +65,7 @@ public class FiscalEditController extends AbstractTiersController {
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
 		if (getTarget() != null) {
-			if (TARGET_ANNULER_FOR.equals(getTarget())) {
-				String idForParam = getEventArgument();
-				if (idForParam != null) {
-					Long idFor = Long.parseLong(idForParam);
-					forFiscalManager.annulerFor(idFor);
-				}
-			}
-			else if (TARGET_ANNULER_SIT_FAM.equals(getTarget())) {
+			if (TARGET_ANNULER_SIT_FAM.equals(getTarget())) {
 				String idSituationFamille = getEventArgument();
 				if(idSituationFamille != null) {
 					Long idSitFam = Long.parseLong(idSituationFamille);

@@ -69,19 +69,6 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return tiersEditView;
 	}
 
-	/**
-	 * Annulation du for
-	 */
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void annulerFor(Long idFor) {
-		ForFiscal forFiscal = forFiscalDAO.get(idFor);
-		if (forFiscal == null) {
-			throw new ObjectNotFoundException("Le for fiscal n°" + idFor + " n'existe pas.");
-		}
-		tiersService.annuleForFiscal(forFiscal);
-	}
-
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
 	public void reouvrirFor(Long idFor) {

@@ -17,6 +17,8 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockCollectiviteAdministrative;
@@ -29,11 +31,13 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
+import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -56,6 +60,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ForsControllerTest extends WebTestSpring3 {
 
@@ -939,6 +945,198 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertEquals(dateFermeture, r.getDateFin());
 				assertFalse(r.isAnnule());
 				return null;
+			}
+		});
+	}
+
+	/**
+	 * Cas JIRA UNIREG-573: l'annulation du for principal alors qu'un for secondaire subsiste doit : <ul> <li>ne pas être permise</li> <li>provoquer le réaffichage du formulaire avec des messages
+	 * d'erreur</li> </ul>
+	 */
+	@Test
+	public void testAnnuleForPrincipalAvecForSecondaireOuvert() throws Exception {
+
+		class Ids {
+			Long ericId;
+			Long forPrincipalId;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Un contribuable avec un for principal et un for secondaire
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.ericId = eric.getId();
+
+				ForFiscalPrincipal forPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, MockCommune.Lausanne);
+				ids.forPrincipalId = forPrincipal.getId();
+				forPrincipal.setTiers(eric);
+
+				ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
+				                                                     MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				forSecondaire.setTiers(eric);
+
+				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
+				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
+				hibernateTemplate.flush();
+				hibernateTemplate.clear();
+				return null;
+			}
+		});
+
+		// simulation de l'annulation du for principal
+		request.setMethod("POST");
+		request.addParameter("forId", ids.forPrincipalId.toString());
+		request.setRequestURI("/fors/cancelPrincipal.do");
+
+		// Appel au contrôleur
+		try {
+			handle(request, response);
+			fail("Une erreur de validation doit être levée");
+		}
+		catch (ValidationException e) {
+			// vérification que l'erreur a bien été catchée
+			final List<ValidationMessage> errors = e.getErrors();
+			assertNotNull(errors);
+			assertEquals(1, errors.size());
+			assertEquals("Il n'y a pas de for principal pour accompagner le for secondaire qui commence le 01.01.2000", errors.get(0).getMessage());
+
+			// Note : Avec les contrôleurs Spring 3, l'exception de validation est catchée par l'action exception resolver (voir ActionExceptionResolver)
+			//        qui s'occupe de réafficher automatiquement la page précédente en y ajoutant les détails des erreurs. On ne peut pas tester ce comportement ici.
+		}
+	}
+
+	/**
+	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal doit réouvrir le for précédent s'il celui-ci est adjacent.
+	 */
+	@Test
+	public void testAnnuleForPrincipalAvecPrecedentAdjacent() throws Exception {
+
+		class Ids {
+			Long ericId;
+			Long premierForPrincipalId;
+			Long secondForPrincipalId;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Un contribuable avec deux fors principaux adjacent
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.ericId = eric.getId();
+
+				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 3, 31),
+				                                                         MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+				ids.premierForPrincipalId = premierForPrincipal.getId();
+				premierForPrincipal.setTiers(eric);
+
+				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 4, 1), MotifFor.DEMENAGEMENT_VD,
+				                                                        MockCommune.Cossonay);
+				ids.secondForPrincipalId = secondForPrincipal.getId();
+				secondForPrincipal.setTiers(eric);
+
+				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
+				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
+				hibernateTemplate.flush();
+				hibernateTemplate.clear();
+				return null;
+			}
+		});
+
+		// simulation de l'annulation du second for principal
+		request.setMethod("POST");
+		request.addParameter("forId", ids.secondForPrincipalId.toString());
+		request.setRequestURI("/fors/cancelPrincipal.do");
+
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// vérification que le second for est bien annulé
+				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+				assertNotNull(secondForPrincipal);
+				assertTrue(secondForPrincipal.isAnnule());
+
+				// vérification que le premier for est bien ré-ouvert
+				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+				assertNotNull(premierForPrincipal);
+				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+				assertNull(premierForPrincipal.getDateFin());
+				assertNull(premierForPrincipal.getMotifFermeture());
+				assertFalse(premierForPrincipal.isAnnule());
+			}
+		});
+	}
+
+	/**
+	 * Case JIRA UNIREG-586: l'annulation d'un for fiscal principal ne doit pas réouvrir le for précédent s'il celui-ci n'est pas adjacent.
+	 */
+	@Test
+	public void testAnnuleForPrincipalAvecPrecedentNonAdjacents() throws Exception {
+
+		class Ids {
+			Long ericId;
+			Long premierForPrincipalId;
+			Long secondForPrincipalId;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				// Un contribuable avec deux fors principaux non-adjacents
+				Contribuable eric = addNonHabitant("Eric", "Bolomey", date(1965, 4, 13), Sexe.MASCULIN);
+				ids.ericId = eric.getId();
+
+				ForFiscalPrincipal premierForPrincipal = addForPrincipal(eric, date(1983, 4, 13), MotifFor.MAJORITE, date(2008, 2, 28),
+				                                                         MotifFor.DEPART_HC, MockCommune.Lausanne);
+				ids.premierForPrincipalId = premierForPrincipal.getId();
+				premierForPrincipal.setTiers(eric);
+
+				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 11, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+				ids.secondForPrincipalId = secondForPrincipal.getId();
+				secondForPrincipal.setTiers(eric);
+
+				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
+				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
+				hibernateTemplate.flush();
+				hibernateTemplate.clear();
+				return null;
+			}
+		});
+
+		// simulation de l'annulation du second for principal
+		request.setMethod("POST");
+		request.addParameter("forId", ids.secondForPrincipalId.toString());
+		request.setRequestURI("/fors/cancelPrincipal.do");
+
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				// vérification que le second for est bien annulé
+				final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
+				assertNotNull(secondForPrincipal);
+				assertTrue(secondForPrincipal.isAnnule());
+
+				// vérification que le premier for n'est pas ré-ouvert
+				final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
+				assertNotNull(premierForPrincipal);
+				assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
+				assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
+				assertEquals(date(2008, 2, 28), premierForPrincipal.getDateFin());
+				assertEquals(MotifFor.DEPART_HC, premierForPrincipal.getMotifFermeture());
+				assertFalse(premierForPrincipal.isAnnule());
 			}
 		});
 	}

@@ -46,7 +46,7 @@
 					<unireg:linkTo name="" action="/fors/editDebiteur.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 				</c:if>
 				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-					<unireg:raccourciAnnuler onClick="javascript:Fors.annulerFor(${forFiscal.id});" tooltip="Annulation de for"/>
+					<unireg:linkTo name="" action="/fors/cancelDebiteur.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete" title="Annulation de for" />
 				</c:if>
 			</c:if>
 		</c:if>

@@ -3265,7 +3265,10 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public void annuleForFiscal(ForFiscal forFiscal) throws ValidationException {
+    public ForFiscal annuleForFiscal(ForFiscal forFiscal) throws ValidationException {
+
+	    ForFiscal forReouvert = null;
+
         Assert.notNull(forFiscal, "le for fiscal doit être renseigné");
         final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers, "le for fiscal doit être rattaché à un tiers");
@@ -3300,7 +3303,7 @@ public class TiersServiceImpl implements TiersService {
                 }
             }
             if (forPrecedent != null) {
-                reopenForFiscalPrincipal(forPrecedent);
+	            forReouvert = reopenForFiscalPrincipal(forPrecedent);
             }
         }
         else if (forFiscal instanceof ForDebiteurPrestationImposable) {
@@ -3334,7 +3337,7 @@ public class TiersServiceImpl implements TiersService {
                 }
             }
             if (forPrecedent != null && forPrecedent.getDateFin() == forDPI.getDateDebut().getOneDayBefore()) {
-                reopenForDebiteur(forPrecedent);
+	            forReouvert = reopenForDebiteur(forPrecedent);
             }
         }
         forFiscal.setAnnule(true);
@@ -3346,11 +3349,13 @@ public class TiersServiceImpl implements TiersService {
         boolean envoi = false;
         if (forFiscal instanceof ForDebiteurPrestationImposable) {
             envoi = true;
-        } else if (forFiscal instanceof ForFiscalPrincipal) {
+        }
+        else if (forFiscal instanceof ForFiscalPrincipal) {
             if (TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD == forFiscal.getTypeAutoriteFiscale()) {
                 envoi = true;
             }
-        } else if (forFiscal instanceof ForFiscalSecondaire) {
+        }
+        else if (forFiscal instanceof ForFiscalSecondaire) {
             /*
 			 * Dans le cas d'un for secondaire pour un hors-Canton ou hors-Suisse, on envoie un événement, sauf s'il subsiste un autre for
 			 * secondaire avec le même motif de rattachement
@@ -3387,6 +3392,8 @@ public class TiersServiceImpl implements TiersService {
 
         // [UNIREG-2794] déblocage en cas d'ouverture de for fiscal principal vaudois
         resetFlagBlocageRemboursementAutomatiqueSelonFors(tiers);
+
+	    return forReouvert;
     }
 
 

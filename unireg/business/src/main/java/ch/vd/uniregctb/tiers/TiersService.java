@@ -943,17 +943,16 @@ public interface TiersService {
      */
     public void reopenForsClosedAt(RegDate date, MotifFor motifFermeture, Tiers tiers);
 
-    /**
-     * Annule le for fiscal passé en paramètre.
-     * Si le for spécifié est un for principal et qu'il existe un for principal précédent adjacent, ce dernier est réouvert.
-     *
-     *
-     * @param forFiscal          le for fiscal à annuler.
-     * @throws ValidationException si l'annulation du for principal n'est pas possible
-     */
-    public void annuleForFiscal(ForFiscal forFiscal) throws ValidationException;
+	/**
+	 * Annule le for fiscal passé en paramètre. Si le for spécifié est un for principal et qu'il existe un for principal précédent adjacent, ce dernier est réouvert.
+	 *
+	 * @param forFiscal le for fiscal à annuler.
+	 * @return le for fiscal qui a été réouvert en conséquence de l'annulation du for spécifié; ou <b>null</b> si aucun for fiscal n'a été réouvert.
+	 * @throws ValidationException si l'annulation du for principal n'est pas possible
+	 */
+	public ForFiscal annuleForFiscal(ForFiscal forFiscal) throws ValidationException;
 
-    /**
+	/**
      * Annule un tiers, et effectue toutes les tâches de cleanup et de maintient de la cohérence des données.
      *
      * @param tiers le tiers à annuler.

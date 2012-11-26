@@ -625,15 +625,6 @@ var Fors = {
 	/*
 	* Annuler un for
 	*/
-	annulerFor: function(idFor) {
-		if(confirm('Voulez-vous vraiment annuler ce for fiscal ?')) {
-			Form.doPostBack("theForm", "annulerFor", idFor);
-		}
-	},
-
-	/*
-	* Annuler un for
-	*/
 	reOuvrirFor: function(idFor) {
 		if(confirm('Voulez-vous vraiment ré-ouvrir ce for fiscal ?')) {
 			Form.doPostBack("theForm", "reOuvrirFor", idFor);

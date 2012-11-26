@@ -13,13 +13,6 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
 public interface ForFiscalManager {
 
 	/**
-	 * Annulation du for
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public abstract void annulerFor(Long idFor);
-
-
-	/**
 	 * Reouverture du for
 	 */
 	@Transactional(rollbackFor = Throwable.class)

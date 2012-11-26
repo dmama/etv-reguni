@@ -280,6 +280,27 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancelPrincipal.do", method = RequestMethod.POST)
+	public String cancelPrincipal(long forId) throws Exception {
+
+		final ForFiscalPrincipal forFiscal = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		final Autorisations auth = getAutorisations((Contribuable) tiers);
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
+		}
+
+		tiersService.annuleForFiscal(forFiscal);
+
+		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
+	}
+
 	@RequestMapping(value = "/editModeImposition.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editModeImposition(@RequestParam(value = "forId", required = true) long forId, Model model) {
@@ -424,6 +445,27 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancelSecondaire.do", method = RequestMethod.POST)
+	public String cancelSecondaire(long forId) throws Exception {
+
+		final ForFiscalSecondaire forFiscal = hibernateTemplate.get(ForFiscalSecondaire.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		final Autorisations auth = getAutorisations((Contribuable) tiers);
+		if (!auth.isForsSecondaires()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors secondaires.");
+		}
+
+		tiersService.annuleForFiscal(forFiscal);
+
+		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
+	}
+
 	@RequestMapping(value = "/addAutreElementImposable.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreElementImposable(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -520,6 +562,27 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancelAutreElementImposable.do", method = RequestMethod.POST)
+	public String cancelAutreElementImposable(long forId) throws Exception {
+
+		final ForFiscalAutreElementImposable forFiscal = hibernateTemplate.get(ForFiscalAutreElementImposable.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		final Autorisations auth = getAutorisations((Contribuable) tiers);
+		if (!auth.isForsAutresElementsImposables()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors autres éléments imposables.");
+		}
+
+		tiersService.annuleForFiscal(forFiscal);
+
+		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
+	}
+
 	@RequestMapping(value = "/addAutreImpot.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreImpot(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -569,6 +632,27 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancelAutreImpot.do", method = RequestMethod.POST)
+	public String cancelAutreImpot(long forId) throws Exception {
+
+		final ForFiscalAutreImpot forFiscal = hibernateTemplate.get(ForFiscalAutreImpot.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		final Autorisations auth = getAutorisations((Contribuable) tiers);
+		if (!auth.isForsAutresImpots()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors autres impôts.");
+		}
+
+		tiersService.annuleForFiscal(forFiscal);
+
+		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
+	}
+
 	@RequestMapping(value = "/addDebiteur.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addDebiteur(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
@@ -616,7 +700,7 @@ public class ForsController {
 	public String editDebiteur(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
 		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
@@ -635,7 +719,7 @@ public class ForsController {
 	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
-			throw new AccessDeniedException("Vous ne possédez aucun droit IfoSec de consultation pour l'application Unireg");
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
 		}
 
 		final ForDebiteurPrestationImposable fdpi = hibernateTemplate.get(ForDebiteurPrestationImposable.class, view.getId());
@@ -643,8 +727,8 @@ public class ForsController {
 			throw new ObjectNotFoundException("Le for débiteur avec l'id = " + view.getId() + " n'existe pas.");
 		}
 
-		final long ctbId = fdpi.getTiers().getNumero();
-		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+		final long dpiId = fdpi.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(dpiId);
 
 		if (result.hasErrors()) {
 			return "fors/editDebiteur";
@@ -652,7 +736,27 @@ public class ForsController {
 
 		tiersService.updateForDebiteur(fdpi, view.getDateFin());
 
-		return "redirect:/fiscal/edit-for-debiteur.do?id=" + ctbId;
+		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/cancelDebiteur.do", method = RequestMethod.POST)
+	public String cancelDebiteur(long forId) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
+		}
+
+		final ForDebiteurPrestationImposable forFiscal = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		tiersService.annuleForFiscal(forFiscal);
+
+		return "redirect:/fiscal/edit-for-debiteur.do?id=" + tiers.getId();
 	}
 
 	private Map<GenreImpot, String> getGenresImpotPourForAutreImpot() {
