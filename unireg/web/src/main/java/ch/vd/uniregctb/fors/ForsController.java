@@ -280,6 +280,54 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
+	@RequestMapping(value = "/editModeImposition.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editModeImposition(@RequestParam(value = "forId", required = true) long forId, Model model) {
+
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
+		if (ffp == null) {
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + forId + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(ffp.getTiers().getNumero());
+
+		model.addAttribute("command", new EditModeImpositionView(ffp));
+		model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
+		return "fors/editModeImposition";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/editModeImposition.do", method = RequestMethod.POST)
+	public String editModeImposition(@Valid @ModelAttribute("command") final EditModeImpositionView view, BindingResult result, Model model) throws Exception {
+
+		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
+		if (ffp == null) {
+			throw new ObjectNotFoundException("Le for principal avec l'id = " + view.getId() + " n'existe pas.");
+		}
+
+		final Autorisations auth = getAutorisations((Contribuable) ffp.getTiers());
+		if (!auth.isForsPrincipaux()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition de fors principaux.");
+		}
+
+		final long ctbId = ffp.getTiers().getNumero();
+		controllerUtils.checkAccesDossierEnEcriture(ctbId);
+
+		if (result.hasErrors()) {
+			model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
+			return "fors/editModeImposition";
+		}
+
+		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((Contribuable) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
+
+		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+	}
+
 	@RequestMapping(value = "/addSecondaire.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addSecondaire(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {

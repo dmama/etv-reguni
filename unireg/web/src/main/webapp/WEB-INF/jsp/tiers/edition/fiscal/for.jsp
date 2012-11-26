@@ -19,7 +19,7 @@
 				</c:if>
 
 				<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux}">
-					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fiscal/for.do" params="{idFor:${command.forsPrincipalActif.id},index:'modeimposition'}" link_class="add"/>
+					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fors/editModeImposition.do" params="{forId:${command.forsPrincipalActif.id}}" link_class="add"/>
 				</c:if>
 			</td>
 		</tr>

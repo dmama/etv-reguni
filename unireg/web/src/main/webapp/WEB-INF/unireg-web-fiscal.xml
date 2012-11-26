@@ -25,23 +25,6 @@
 		<property name="forFiscalDAO" ref="forFiscalDAO" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="tiersService" ref="tiersService" />
-		<property name="serviceInfra" ref="serviceInfrastructureService" />
-	</bean>
-
-	<bean id="forFiscalViewValidator" class="ch.vd.uniregctb.tiers.validator.ForFiscalViewValidator" >
-		<property name="tiersService" ref="tiersService" />
-		<property name="infraService" ref="serviceInfrastructureService" />
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<bean id="tiersForController" class="ch.vd.uniregctb.tiers.TiersForController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.ForFiscalView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="tiers/edition/fiscal/for-edit" />
-		<property name="successView" value="common/refresh-parent" />
-		<property name="forFiscalManager" ref="forFiscalManager" />
-		<property name="validator" ref="forFiscalViewValidator" />
 	</bean>
 
 	<bean id="tiersSituationFamilleController" class="ch.vd.uniregctb.tiers.TiersSituationFamilleController" parent="abstractTiersController">

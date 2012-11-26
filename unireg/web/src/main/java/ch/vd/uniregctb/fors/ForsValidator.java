@@ -43,6 +43,7 @@ public class ForsValidator implements Validator, InitializingBean {
 		subValidators.put(EditForSecondaireView.class, new EditForSecondaireValidator(hibernateTemplate));
 		subValidators.put(EditForAutreElementImposableView.class, new EditForAutreElementImposableValidator(hibernateTemplate));
 		subValidators.put(EditForDebiteurView.class, new EditForDebiteurValidator(hibernateTemplate));
+		subValidators.put(EditModeImpositionView.class, new EditModeImpositionValidator(hibernateTemplate, autorisationManager));
 	}
 
 	@Override
