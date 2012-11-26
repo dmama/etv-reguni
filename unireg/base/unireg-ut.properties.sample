@@ -101,3 +101,8 @@ testprop.webservice.rcpers.peopleBySocialNumberPath=persons/ch.vn
 testprop.webservice.rcpers.relationsPath=relations/ct.vd.rcpers
 testprop.webservice.rcpers.eventPath=event
 testprop.webservice.rcpers.searchPath=search
+
+# Paramétrage LocaliteInvalideMatcher
+testprop.localite.invalide.regexp.enabled = true
+testprop.localite.invalide.regexp.patterns = etranger,inconu,adrese,nonindique,parti,sdc
+testprop.localite.invalide.regexp.faux.positifs = particino,sainte-adresse

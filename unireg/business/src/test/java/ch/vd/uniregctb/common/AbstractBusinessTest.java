@@ -92,7 +92,8 @@ import static org.junit.Assert.assertNull;
         BusinessTestingConstants.UNIREG_BUSINESS_UT_JMS,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_SERVICES,
         BusinessTestingConstants.UNIREG_BUSINESS_UT_CLIENT_WEBSERVICE,
-        BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG
+        BusinessTestingConstants.UNIREG_BUSINESS_UT_CONFIG,
+		BusinessTestingConstants.UNIREG_BUSINESS_UT_ADRESSES
 })
 public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
 

@@ -8,10 +8,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
-
-import ch.vd.uniregctb.utils.UniregProperties;
 
 /**
  * <p>Cette classe possède une unique méthode {@link LocaliteInvalideMatcher#match} qui permet de controler si un libellé de commune est valide.
@@ -24,20 +23,20 @@ import ch.vd.uniregctb.utils.UniregProperties;
  *
  * <p>La méthode de detection est basée sur une analyse empirique des données présentes en production.
  * A partir de certain termes dénotant une adresse inconnue, on génère une expression régulière qui tentera de reconnaitre des dérivés proches
- * de cette expression. Cette méthode n'est donc pas parfaite et peut même à l'occasion signalé des libellés
+ * de cette expression. Cette méthode n'est donc pas parfaite et peut même à l'occasion signaler des libellés
  * comme étant faussement invalide (des faux-positifs)
  *
  * <p>Les propriétés décrites ci-dessous permettent d'affiner les resultats obtenues. (à renseigner dans unireg.properties)
  *
  * <ul>
- * 	<li><code>extprop.localite.invalide.regexp.enabled</code>: true ou false, active ou desactive de maniere globale le contrôle.
+ * 	<li><code>enabled</code>: true ou false, active ou desactive de maniere globale le contrôle.
  *
- *  <li><code>extprop.localite.invalide.regexp.patterns</code>:
+ *  <li><code>localitesInvalides</code>:
  *      la liste des termes, séparés par des virgules, utilisés pour construire les regexp qui vont servir à matcher les localités invalides
  *      <p>par exemple: <strong>"inconu,adrese"</strong> matchera <strong>"Inconnu", "Adressssse innnnccconnue", "S A N S - A D R E S S E",
  *      "parti sans laisser d'adresse"</strong> mais ne matchera pas <strong>"no address"</strong> (il faudrait enlever le 'e' à la fin du pattern)
  *
- *  <li><code>extprop.localite.invalide.regexp.faux.positifs</code>:
+ *  <li><code>fauxPositifs</code>:
  *      la liste des localités valides connues, séparées par des virgules, matchant les patterns d'invalidité.
  *      par exemple: la commune de "Sainte-Adresse" en France
  *      En les renseignant ici, elles ne resortiront plus comme étant invalides
@@ -48,33 +47,48 @@ import ch.vd.uniregctb.utils.UniregProperties;
  * <h1>Notes concernant l'implémentation
  *
  * <p>Les membres static de la classe et donc les paramètres du match sont initialisés
- * lors de l'instantiation d'un objet de cette classe par le conteneur spring.
+ * lors de l'instantiation d'un objet par le conteneur spring (cf. {@link ch.vd.uniregctb.adresse.LocaliteInvalideMatcher#afterPropertiesSet()}).
  *
- * <p>Cette mécanique est un peu bizarre mais pratique pour pouvoir benéficier des propriétés de unireg.properties
- * et de l'acces par membre static sans trop se casser la tête!
+ * <p>Cette mécanique est un peu bizarre mais pratique. Elle permet de paramètrer facilement le composant en utilisant des propriétés définies dans unireg.properties et
+ * d'accéder à la fonction {@link LocaliteInvalideMatcher#match(String) match()}  par l'intermédiaire d'un membre statique.
+ * match() est donc utilisable la méthode dans les classes qui ne sont pas instanciées par Spring, comme c'est le cas ici dans {@link AdresseEnvoiDetaillee}
+ *
+ * <p>Le pendant de cette façon de faire est qu'on ne peut pas instancier 2 LocaliteInvalideMatcher car l'instantiation du deuxieme ecraserait les paramètres
+ * initialisé par le premier.
 
+ *
  */
 public class LocaliteInvalideMatcher implements InitializingBean {
 
 	private static Logger LOGGER = Logger.getLogger(LocaliteInvalideMatcher.class);
 
-	private static LocaliteInvalideMatcherProperties actualProperties;
-	private static UniregProperties uniregProperties;
+	private static boolean enabled;
+	private static String localitesInvalides;
+	private static String fauxPositifs;
 
-	private static Map<String, String> conversionSpeciales = new HashMap<String, String>();
+	private static Map<Character, String> conversionSpeciales = new HashMap<Character, String>();
 	private static List<Pattern> patternsLocaliteInvalide = new ArrayList<Pattern>();
 	private static List<Pattern> patternsFauxPositif  = new ArrayList<Pattern>();
 
 	private static boolean initialized = false;
 
-	public void setUniregProperties(UniregProperties properties) {
-		LocaliteInvalideMatcher.uniregProperties = properties;
-	}
 
 	/**
 	 * Utile pour éviter les appels à la méthode match pendant que le bean initialise les champs statics
 	 */
 	private static ReadWriteLock lockInit = new ReentrantReadWriteLock();
+
+	public void setEnabled(boolean enabled) {
+		LocaliteInvalideMatcher.enabled = enabled;
+	}
+
+	public void setLocalitesInvalides(String propertyPatterns) {
+		LocaliteInvalideMatcher.localitesInvalides = propertyPatterns;
+	}
+
+	public void setFauxPositifs(String propertyFauxPositifs) {
+		LocaliteInvalideMatcher.fauxPositifs = propertyFauxPositifs;
+	}
 
 	/**
 	 * <p>Analyse si le paramètre ressemble à une localité invalide, résutat non-garantie!
@@ -87,28 +101,24 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	 * @return <code>true</code> si la localité correspond à un pattern de localité invalide
 	 */
 	public static boolean match(String localite) {
-		if (!initialized) {
-			try {
-				// Initialisation automatique
-				LOGGER.warn("LocaliteInvalideMatcher n'a pas été initialisé par Spring, initialisation automatique avec les paramètres par défaut");
-				new LocaliteInvalideMatcher().afterPropertiesSet();
-			}
-			catch (Exception e) {
-				LOGGER.error("Erreur lors de l'initialisation de LocaliteInvalideMatcher, service désactivé", e);
-				initialized = true;
-				disable();
-			}
-		}
 		lockInit.readLock().lock();
 		try {
-			if (!isEnabled()) {
+			if (!initialized) {
+				LOGGER.warn("LocaliteInvalideMatcher n'a pas été initialisé. match() renvoie toujours 'false'");
 				return false;
+			}
+			if (!enabled) {
+				return false;
+			}
+			if (StringUtils.isBlank(localite)) {
+				// Une chaine vide ou nulle n'est jamais une localité valide et donc "matche"
+				return true;
 			}
 			for1: for (Pattern p: patternsLocaliteInvalide) {
 				if (p.matcher(localite).find()) {
 					// la localité match un pattern localité invalide
 					for (Pattern q: patternsFauxPositif) {
-						if (q.matcher(localite).matches()) {
+						if (q.matcher(localite).find()) {
 							// C'est un faux positif
 							continue for1;
 						}
@@ -118,17 +128,10 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 				}
 			}
 			return false;
-		} finally {
+		}
+		finally {
 			lockInit.readLock().unlock();
 		}
-	}
-
-	private static boolean isEnabled() {
-		return actualProperties.isEnabled();
-	}
-
-	private static void disable() {
-		actualProperties.setEnabled(false);
 	}
 
 	// expression régulière mappant les caractères qui peuvent être utilisé comme séparateur dans les localités invalides
@@ -139,11 +142,11 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		StringBuilder sb = new StringBuilder();
 		for(Character c: terme.toCharArray()) {
 			sb.append("([");
-			if (conversionSpeciales.containsKey(c.toString())) {
-				sb.append(conversionSpeciales.get(c.toString()));
+			if (conversionSpeciales.containsKey(c)) {
+				sb.append(conversionSpeciales.get(c));
 			}
 			else {
-				sb.append(c.toString().toLowerCase()).append(c.toString().toUpperCase());
+				sb.append(Character.toLowerCase(c)).append(Character.toUpperCase(c));
 			}
 			sb.append("]+");
 			sb.append(REGEXP_SEPARATEURS);
@@ -157,10 +160,10 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		StringBuilder sb = new StringBuilder();
 		for(Character c: terme.toCharArray()) {
 			sb.append("[");
-			sb.append(c.toString().toLowerCase()).append(c.toString().toUpperCase());
+			sb.append(Character.toLowerCase(c)).append(Character.toUpperCase(c));
 			sb.append("]");
 		}
-		LOGGER.debug("regexp faux-positif" + terme + " = " + sb.toString());
+		LOGGER.debug("regexp faux-positif pour " + terme + " = " + sb.toString());
 		return sb.toString();
 	}
 
@@ -171,13 +174,15 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 	static void reset() {
 		lockInit.writeLock().lock();
 		try {
-			uniregProperties = null;
-			actualProperties = null;
-			conversionSpeciales = new HashMap<String, String>();
+			conversionSpeciales = new HashMap<Character, String>();
 			patternsLocaliteInvalide = new ArrayList<Pattern>();
 			patternsFauxPositif  = new ArrayList<Pattern>();
+			localitesInvalides = null;
+			fauxPositifs = null;
+			enabled = false;
 			initialized = false;
-		} finally {
+		}
+		finally {
 			lockInit.writeLock().unlock();
 		}
 	}
@@ -187,53 +192,51 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		lockInit.writeLock().lock();
 		try {
 			initialized = false;
-			initProperties();
-			if(!isEnabled()) return;
             initConversionsSpeciales();
             initPatternsLocalitesInvalides();
-			if(!isEnabled()) return;
 			initPatternsFauxPositifs();
+			initialized = true;
 		}
 		finally {
-			initialized = true;
 			lockInit.writeLock().unlock();
-		}
-	}
-
-	private void initProperties() {
-		if (uniregProperties != null) {
-			actualProperties = new LocaliteInvalideMatcherProperties(uniregProperties);
-		} else {
-			actualProperties = new LocaliteInvalideMatcherProperties(null);
 		}
 	}
 
 	private void initPatternsFauxPositifs() {
 		patternsFauxPositif.clear();
-		String[] fauxPositifs = actualProperties.getPatternsFauxPositifs();
-		if (fauxPositifs.length > 0) {
-			for(String fauxPositif : fauxPositifs) {
+		if (StringUtils.isNotBlank(fauxPositifs)) {
+			String[] arrayFauxPositifs = fauxPositifs.split(",");
+			for(String fauxPositif : arrayFauxPositifs) {
 				patternsFauxPositif.add(Pattern.compile(buildRegExpFauxPositif(fauxPositif)));
 			}
+			LOGGER.info("les " + arrayFauxPositifs.length + " termes suivants sont utilisés pour détecter les faux positifs : " + fauxPositifs);
+		} else {
+			LOGGER.warn("Aucun faux-positif n'est paramétré");
 		}
 	}
 
 	private void initPatternsLocalitesInvalides() {
 		patternsLocaliteInvalide.clear();
-		String[] termesInvalides = actualProperties.getPatternsInvalides();
-		for(String termeInvalide : termesInvalides) {
-			patternsLocaliteInvalide.add(Pattern.compile(buildRegExpLocaliteInvalide(termeInvalide)));
+		if (StringUtils.isNotBlank(localitesInvalides)) {
+			String[] arraylocalitesInvalides = localitesInvalides.split(",");
+			for(String termeInvalide : arraylocalitesInvalides) {
+				patternsLocaliteInvalide.add(Pattern.compile(buildRegExpLocaliteInvalide(termeInvalide)));
+			}
+			LOGGER.info("les " + arraylocalitesInvalides.length + " termes suivants sont utilisés pour détecter les libellés de localité invalide : " + localitesInvalides );
+		} else {
+			LOGGER.warn("Aucun libellé de localité n'est considéré invalide");
 		}
+
 	}
 
 	private void initConversionsSpeciales() {
 		conversionSpeciales.clear();
-		conversionSpeciales.put("a", "aäàáâãAÄÀÁÂÃ");
-		conversionSpeciales.put("e", "eëèéêẽEËÈÉÊẼ");
-		conversionSpeciales.put("i", "iïìíîĩIÏÌÍÎĨ");
-		conversionSpeciales.put("o", "oöòóôõOÖÒÓÔÕ");
-		conversionSpeciales.put("u", "uüùúûũUÜÙÚÛŨ");
-		conversionSpeciales.put("n", "nñNÑ");
+		conversionSpeciales.put('a', "aäàáâãAÄÀÁÂÃ");
+		conversionSpeciales.put('e', "eëèéêẽEËÈÉÊẼ");
+		conversionSpeciales.put('i', "iïìíîĩIÏÌÍÎĨ");
+		conversionSpeciales.put('o', "oöòóôõOÖÒÓÔÕ");
+		conversionSpeciales.put('u', "uüùúûũUÜÙÚÛŨ");
+		conversionSpeciales.put('n', "nñNÑ");
+		conversionSpeciales.put('c', "cçCÇ");
 	}
-
 }

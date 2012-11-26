@@ -28,8 +28,4 @@
 		<property name ="filename" value="${unireg.properties.path}" />
 	</bean>
 
-	<bean class="ch.vd.uniregctb.adresse.LocaliteInvalideMatcher">
-		<property name="uniregProperties" ref="uniregExternalProperties" />
-	</bean>
-
 </beans>
