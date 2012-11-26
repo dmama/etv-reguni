@@ -160,7 +160,7 @@ public class Ec_8000_03_Divorce_CivilApresFiscal_Scenario extends EvenementCivil
 
 	@Etape(id=2, descr="Divorce fiscal")
 	public void step2() throws Exception {
-		metierService.separe((MenageCommun) tiersDAO.get(noMenage), dateDivorce, null, EtatCivil.DIVORCE, true, null);
+		metierService.separe((MenageCommun) tiersDAO.get(noMenage), dateDivorce, null, EtatCivil.DIVORCE, null);
 	}
 
 	@Check(id=2, descr="Vérifie que le menage commun a été fermé et les Fors principaux des individus créés")

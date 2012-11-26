@@ -281,8 +281,7 @@ public class MetierServiceImpl implements MetierService {
 		return (MotifFor.DEPART_HC == motif || MotifFor.DEPART_HS == motif);
 	}
 
-	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement,
-	                                             boolean changeHabitantFlag) throws MetierServiceException {
+	private MenageCommun doMariageReconciliation(MenageCommun menageCommun, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws MetierServiceException {
 
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(menageCommun, date);
 
@@ -505,7 +504,7 @@ public class MetierServiceImpl implements MetierService {
 				 * Cas ou l'on créé un nouveau ménage commun, il aura pas de for ouvert
 				 */
 				tiersService.openForFiscalPrincipal(menageCommun, dateEffective, MotifRattachement.DOMICILE, noOfsCommune,
-						typeAutoriteCommune, modeImposition, motifOuverture, changeHabitantFlag);
+						typeAutoriteCommune, modeImposition, motifOuverture);
 			}
 
 			/*
@@ -751,7 +750,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag,
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
 	                          Long numeroEvenement) throws MetierServiceException {
 		/*
 		 * Création d'un tiers MenageCommun
@@ -763,7 +762,7 @@ public class MetierServiceImpl implements MetierService {
 		menageCommun = (MenageCommun) getTiersDAO().save(menageCommun);
 		Audit.info("Création d'un tiers MenageCommun");
 
-		return rattachToMenage(menageCommun, principal, conjoint, dateMariage, remarque, etatCivilFamille, changeHabitantFlag, numeroEvenement);
+		return rattachToMenage(menageCommun, principal, conjoint, dateMariage, remarque, etatCivilFamille, numeroEvenement);
 	}
 
 	private void setComplements(PersonnePhysique principal, PersonnePhysique conjoint, MenageCommun menageCommun) {
@@ -838,7 +837,7 @@ public class MetierServiceImpl implements MetierService {
 
 	@Override
 	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille,
-	                                    boolean changeHabitantFlag, Long numeroEvenement) throws MetierServiceException {
+	                                    Long numeroEvenement) throws MetierServiceException {
 
 		final RegDate dateFinRapport = getDateMaxRapportPourCauseDeces(principal, conjoint);
 
@@ -859,7 +858,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Mariage de 2 personnes
 		 */
-		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null, changeHabitantFlag);
+		return doMariageReconciliation(menage, date, remarque, etatCivilFamille, null);
 	}
 
 	private boolean isValidSituationFamille(RegDate date, Contribuable contribuable) {
@@ -1367,7 +1366,7 @@ public class MetierServiceImpl implements MetierService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, Long numeroEvenement) throws
 			MetierServiceException {
 
 		/*
@@ -1415,7 +1414,7 @@ public class MetierServiceImpl implements MetierService {
 		/*
 		 * Réunification du couple
 		 */
-		return doMariageReconciliation(menageCommun, date, remarque, mariesOuPacses(menageCommun) , numeroEvenement, changeHabitantFlag);
+		return doMariageReconciliation(menageCommun, date, remarque, mariesOuPacses(menageCommun) , numeroEvenement);
 	}
 
 	@Override
@@ -1507,7 +1506,7 @@ public class MetierServiceImpl implements MetierService {
 	}
 
 	@Override
-	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, Long numeroEvenement) throws
+	public void separe(MenageCommun menage, RegDate date, String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, Long numeroEvenement) throws
 			MetierServiceException {
 		if (menage == null) {
 			throw new MetierServiceException("Le ménage est null");
@@ -1541,12 +1540,10 @@ public class MetierServiceImpl implements MetierService {
 				final DivorceModeImpositionResolver divorceResolver = new DivorceModeImpositionResolver(tiersService, numeroEvenement);
 
 				// on ouvre un nouveau for fiscal pour chaque tiers
-				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
-						false);
+				createForFiscalPrincipalApresFermetureMenage(date, principal, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, numeroEvenement, false);
 				if (conjoint != null) {
 					// null si marié seul
-					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, changeHabitantFlag, numeroEvenement,
-							false);
+					createForFiscalPrincipalApresFermetureMenage(date, conjoint, forMenage, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, divorceResolver, numeroEvenement, false);
 				}
 			}
 
@@ -1903,14 +1900,13 @@ public class MetierServiceImpl implements MetierService {
 	 *
 	 * @param pp                 le contribuable pour qui on ouvre le nouveau for.
 	 * @param motifOuverture     le motif d'ouverture
-	 * @param changeHabitantFlag
 	 * @param numeroEvenement
 	 * @param autoriseSortieDuCantonVersEtranger
 	 *                           si <code>true</code>, un for couple vaudois pourra donner naissance à un for individuel HS, si <code>false</code> une erreur est levée dans ce cas
 	 * @return le for créé.
 	 */
 	private ForFiscalPrincipal createForFiscalPrincipalApresFermetureMenage(RegDate date, PersonnePhysique pp, ForFiscalPrincipal forMenage, MotifFor motifOuverture,
-	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, boolean changeHabitantFlag, Long numeroEvenement,
+	                                                                        TerminaisonCoupleModeImpositionResolver modeImpositionResolver, Long numeroEvenement,
 	                                                                        boolean autoriseSortieDuCantonVersEtranger) throws MetierServiceException {
 
 		try {
@@ -1951,8 +1947,7 @@ public class MetierServiceImpl implements MetierService {
 
 			if (noOfs != null) {
 				final ModeImpositionResolver.Imposition nouveauMode = modeImpositionResolver.resolve(pp, date, forMenage.getModeImposition(), typeAutoriteFiscale);
-				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfs, typeAutoriteFiscale, nouveauMode.getModeImposition(),
-						motifOuverture, changeHabitantFlag);
+				return tiersService.openForFiscalPrincipal(pp, nouveauMode.getDateDebut(), MotifRattachement.DOMICILE, noOfs, typeAutoriteFiscale, nouveauMode.getModeImposition(), motifOuverture);
 			}
 			else {
 				return null;
@@ -2419,7 +2414,7 @@ public class MetierServiceImpl implements MetierService {
 
 				// il faut alors simplement annuler le for fiscal principal
 				Audit.info(numeroEvenement, "Les deux conjoints sont décédés le même jour : annulation du for fiscal du deuxième défunt");
-				tiersService.annuleForFiscal(ffp, true);
+				tiersService.annuleForFiscal(ffp);
 
 				// le deuxième défunt doit avoir une situation de famille VEUF
 				final SituationFamille sf = defunt.getSituationFamilleAt(lendemainDeces);
@@ -2501,7 +2496,7 @@ public class MetierServiceImpl implements MetierService {
 
 						// d'abord le for fiscal principal
 						final ForFiscalPrincipal ffp =
-								createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, true, numeroEvenement, true);
+								createForFiscalPrincipalApresFermetureMenage(date.getOneDayAfter(), veuf, forMenage, MotifFor.VEUVAGE_DECES, decesResolver, numeroEvenement, true);
 						final MotifFor motifFermeture;
 						if (dateDecesVeuf != null) {
 							motifFermeture = MotifFor.VEUVAGE_DECES;

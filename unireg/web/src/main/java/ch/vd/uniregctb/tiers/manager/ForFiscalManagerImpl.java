@@ -79,7 +79,7 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		if (forFiscal == null) {
 			throw new ObjectNotFoundException("Le for fiscal n°" + idFor + " n'existe pas.");
 		}
-		tiersService.annuleForFiscal(forFiscal, true);
+		tiersService.annuleForFiscal(forFiscal);
 	}
 
 	@Override

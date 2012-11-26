@@ -485,6 +485,7 @@ public interface TiersService {
      * <b>Note:</b> pour ajouter un for fiscal fermé voir la méthode {@link #addForPrincipal(Contribuable, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor,
      * ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.uniregctb.type.MotifRattachement, int, ch.vd.uniregctb.type.TypeAutoriteFiscale, ch.vd.uniregctb.type.ModeImposition)}
      *
+     *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
@@ -492,11 +493,10 @@ public interface TiersService {
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param modeImposition           le mode d'imposition du for fiscal principal
      * @param motifOuverture           le motif d'ouverture du for fiscal principal
-     * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
      * @return le nouveau for fiscal principal
      */
     ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, RegDate dateOuverture, MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale,
-                                              TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture, boolean changeHabitantFlag);
+                                              TypeAutoriteFiscale typeAutoriteFiscale, ModeImposition modeImposition, MotifFor motifOuverture);
 
     /**
      * Ouvre un nouveau for fiscal secondaire sur un contribuable.
@@ -947,11 +947,11 @@ public interface TiersService {
      * Annule le for fiscal passé en paramètre.
      * Si le for spécifié est un for principal et qu'il existe un for principal précédent adjacent, ce dernier est réouvert.
      *
+     *
      * @param forFiscal          le for fiscal à annuler.
-     * @param changeHabitantFlag pour indiquer si le flag habitant doit être mis à jour lors de l'opération.
      * @throws ValidationException si l'annulation du for principal n'est pas possible
      */
-    public void annuleForFiscal(ForFiscal forFiscal, boolean changeHabitantFlag) throws ValidationException;
+    public void annuleForFiscal(ForFiscal forFiscal) throws ValidationException;
 
     /**
      * Annule un tiers, et effectue toutes les tâches de cleanup et de maintient de la cohérence des données.
@@ -1024,6 +1024,7 @@ public interface TiersService {
     /**
      * Ouvre et ferme un nouveau for fiscal principal sur un contribuable .
      *
+     *
      * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
      * @param dateOuverture            la date à laquelle le nouveau for est ouvert
      * @param motifRattachement        le motif de rattachement du nouveau for
@@ -1037,8 +1038,7 @@ public interface TiersService {
      */
     public ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
                                                              MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                             ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
-                                                             boolean changeHabitantFlag);
+                                                             ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture);
 
     /**
      * OUvre et ferme un for debiteur préstation imposable sur un débiteur

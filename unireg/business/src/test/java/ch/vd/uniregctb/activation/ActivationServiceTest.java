@@ -662,7 +662,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertEquals(2, fors.size());
 
 					final ForFiscalPrincipal ffp = achille.getDernierForFiscalPrincipal();
-					tiersService.annuleForFiscal(ffp, false);
+					tiersService.annuleForFiscal(ffp);
 
 					try {
 						activationService.desactiveTiers(achille, dateDesactivation);
@@ -686,7 +686,7 @@ public class ActivationServiceTest extends BusinessTest {
 					Assert.assertEquals(2, fors.size());
 
 					final ForFiscalPrincipal ffp = yoko.getDernierForFiscalPrincipal();
-					tiersService.annuleForFiscal(ffp, false);
+					tiersService.annuleForFiscal(ffp);
 
 					try {
 						activationService.desactiveTiers(yoko, dateDesactivation);

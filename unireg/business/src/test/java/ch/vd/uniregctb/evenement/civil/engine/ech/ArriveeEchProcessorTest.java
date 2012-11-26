@@ -612,7 +612,7 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			public Object execute(TransactionStatus status) throws Exception {
 				PersonnePhysique ppLui = addHabitant(noLui);
 				PersonnePhysique ppElle = addHabitant(noElle);
-				MenageCommun menage = metierService.marie(dateMariage,ppLui,ppElle,null, EtatCivil.MARIE,false,null);
+				MenageCommun menage = metierService.marie(dateMariage,ppLui,ppElle,null, EtatCivil.MARIE, null);
 				tiersService.closeAllForsFiscaux(menage,dateDepart,MotifFor.DEPART_HS);
 				addForPrincipal(menage,dateDepart.getOneDayAfter(),MotifFor.DEPART_HS,MockPays.France);
 				return null;

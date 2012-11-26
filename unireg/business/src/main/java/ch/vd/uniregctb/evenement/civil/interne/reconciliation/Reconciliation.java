@@ -133,7 +133,7 @@ public class Reconciliation extends EvenementCivilInterne {
 		}
 
 		try {
-			context.getMetierService().reconcilie(contribuable, conjoint, getDateReconciliation(), null, false, getNumeroEvenement());
+			context.getMetierService().reconcilie(contribuable, conjoint, getDateReconciliation(), null, getNumeroEvenement());
 		}
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);

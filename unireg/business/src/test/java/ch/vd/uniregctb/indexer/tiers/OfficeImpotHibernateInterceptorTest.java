@@ -288,7 +288,7 @@ public class OfficeImpotHibernateInterceptorTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = robin.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 				return null;
 			}
 		});

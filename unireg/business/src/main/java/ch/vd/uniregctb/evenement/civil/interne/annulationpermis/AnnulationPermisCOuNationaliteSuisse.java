@@ -57,7 +57,7 @@ public abstract class AnnulationPermisCOuNationaliteSuisse extends EvenementCivi
 				throw new EvenementCivilException("L'habitant " + habitant.getNumero() + " n'a pas de For principal précédant le For courrant");
 			}
 			//annule le for, réouvre le rpécédent et envoi evt fiscal
-			getService().annuleForFiscal(ffp, true);
+			getService().annuleForFiscal(ffp);
 		}
 		else if (ffp.getDateDebut().compareTo(dateObtention) > 0) {
 			// il y a eu d'autres opérations aprés l'obtention, passer en erreur

@@ -418,16 +418,15 @@ public abstract class EvenementCivilInterne {
 	 * @param typeAutoriteFiscale      le type d'autorité fiscale.
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
 	 * @param rattachement             le motif de rattachement du nouveau for
-	 * @param modeImposition           le mode d'imposition du for fiscal principal
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
-	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
+	 * @param modeImposition           le mode d'imposition du for fiscal principal
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
 	                                                    TypeAutoriteFiscale typeAutoriteFiscale, int numeroOfsAutoriteFiscale, MotifRattachement rattachement,
-	                                                    MotifFor motifOuverture, ModeImposition modeImposition, boolean changeHabitantFlag) {
+	                                                    MotifFor motifOuverture, ModeImposition modeImposition) {
 		Assert.notNull(motifOuverture, "Le motif d'ouverture est obligatoire sur un for principal dans le canton");
-		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, changeHabitantFlag);
+		return getService().openForFiscalPrincipal(contribuable, dateOuverture, rattachement, numeroOfsAutoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture);
 	}
 
 	/**
@@ -440,11 +439,10 @@ public abstract class EvenementCivilInterne {
 	 * @param motifFermetureOuverture  le motif de fermeture du for existant et le motif d'ouverture du nouveau for
 	 * @param typeAutorite             le type d'autorité fiscale
 	 * @param modeImposition           le mode d'imposition du nouveau for. Peut être <b>null</b> auquel cas le mode d'imposition de l'ancien for est utilisé.
-	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal updateForFiscalPrincipal(Contribuable contribuable, final RegDate dateChangement, int numeroOfsAutoriteFiscale, MotifFor motifFermetureOuverture,
-	                                                      TypeAutoriteFiscale typeAutorite, ModeImposition modeImposition, boolean changeHabitantFlag) {
+	                                                      TypeAutoriteFiscale typeAutorite, ModeImposition modeImposition) {
 
 		ForFiscalPrincipal forFiscalPrincipal = contribuable.getForFiscalPrincipalAt(null);
 		Assert.notNull(forFiscalPrincipal);
@@ -457,7 +455,7 @@ public abstract class EvenementCivilInterne {
 				modeImposition = forFiscalPrincipal.getModeImposition();
 			}
 			forFiscalPrincipal = openForFiscalPrincipal(contribuable, dateChangement, typeAutorite, numeroOfsAutoriteFiscale, forFiscalPrincipal.getMotifRattachement(), motifFermetureOuverture,
-					modeImposition, changeHabitantFlag);
+			                                            modeImposition);
 		}
 		return forFiscalPrincipal;
 	}
@@ -485,13 +483,12 @@ public abstract class EvenementCivilInterne {
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
 	 * @param motifOuverture           le motif d'ouverture du for fiscal principal
-	 * @param changeHabitantFlag       <b>vrai</b> s'il faut changer le flag habitant en fonction du type d'autorité fiscale
 	 * @return le nouveau for fiscal principal
 	 */
 	protected ForFiscalPrincipal openForFiscalPrincipalDomicileVaudoisOrdinaire(Contribuable contribuable, final RegDate dateOuverture,
-	                                                                            int numeroOfsAutoriteFiscale, MotifFor motifOuverture, boolean changeHabitantFlag) {
+	                                                                            int numeroOfsAutoriteFiscale, MotifFor motifOuverture) {
 		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, motifOuverture,
-				ModeImposition.ORDINAIRE, changeHabitantFlag);
+				ModeImposition.ORDINAIRE);
 	}
 
 	public static void addValidationResults(EvenementCivilErreurCollector errors, EvenementCivilWarningCollector warnings, ValidationResults resultat) {

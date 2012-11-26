@@ -339,7 +339,7 @@ public class OuvertureForsContribuablesMajeursProcessor {
 		}
 
 		tiersService.openForFiscalPrincipal(habitant, dateMajorite, MotifRattachement.DOMICILE, data.getNumeroOfsAutoriteFiscale(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, MotifFor.MAJORITE, true);
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, modeImposition, MotifFor.MAJORITE);
 		habitant.setMajoriteTraitee(Boolean.TRUE);
 
 		if (LOGGER.isDebugEnabled()) {

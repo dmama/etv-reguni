@@ -270,10 +270,10 @@ public class Mariage extends EvenementCivilInterne {
 				}
 
 				if (ancienMenage != null) {
-					context.getMetierService().rattachToMenage(ancienMenage, contribuable, conjointContribuable, getDate(), null, etatCivilUnireg, false, getNumeroEvenement());
+					context.getMetierService().rattachToMenage(ancienMenage, contribuable, conjointContribuable, getDate(), null, etatCivilUnireg, getNumeroEvenement());
 				}
 				else {
-					context.getMetierService().marie(getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, false, getNumeroEvenement());
+					context.getMetierService().marie(getDate(), contribuable, conjointContribuable, null, etatCivilUnireg, getNumeroEvenement());
 				}
 			}
 		}

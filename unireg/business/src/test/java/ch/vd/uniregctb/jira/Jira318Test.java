@@ -70,7 +70,7 @@ public class Jira318Test extends BusinessTest {
 		// Mariage
 		{
 			try {
-				metierService.marie(dateMariageNOK, nh1, nh2, null, null, true, null);
+				metierService.marie(dateMariageNOK, nh1, nh2, null, null, null);
 				fail();
 			}
 			catch (Exception e) {
@@ -114,7 +114,7 @@ public class Jira318Test extends BusinessTest {
 
 		// Mariage
 		{
-			MenageCommun mc = metierService.marie(dateMariageOK, nh1, nh2, null, null, true, null);
+			MenageCommun mc = metierService.marie(dateMariageOK, nh1, nh2, null, null, null);
 			assertNotNull(mc);
 		}
 	}

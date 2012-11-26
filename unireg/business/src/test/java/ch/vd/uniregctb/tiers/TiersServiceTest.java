@@ -610,7 +610,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertEquals(0, habitant.getForsFiscaux().size());
 
 		tiersService.openForFiscalPrincipal(habitant, dateOuverture, MotifRattachement.DOMICILE, MockCommune.Cossonay.getNoOFS(),
-				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC, true);
+				TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HC);
 		assertEquals(1, habitant.getForsFiscaux().size());
 
 		ForFiscalPrincipal ff = (ForFiscalPrincipal) habitant.getForsFiscaux().toArray()[0];
@@ -1309,7 +1309,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertNotNull(secondForPrincipal);
 
 		// annulation du second for principal
-		tiersService.annuleForFiscal(secondForPrincipal, true);
+		tiersService.annuleForFiscal(secondForPrincipal);
 
 		// vérification que le second for est bien annulé
 		assertTrue(secondForPrincipal.isAnnule());
@@ -1363,7 +1363,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertNotNull(forFiscalSecondaire);
 
 		// annulation du for fiscal secondaire
-		tiersService.annuleForFiscal(forFiscalSecondaire, true);
+		tiersService.annuleForFiscal(forFiscalSecondaire);
 
 	}
 
@@ -1447,7 +1447,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertNotNull(secondForPrincipal);
 
 		// annulation du second for principal
-		tiersService.annuleForFiscal(secondForPrincipal, true);
+		tiersService.annuleForFiscal(secondForPrincipal);
 
 		// vérification que le second for est bien annulé
 		assertTrue(secondForPrincipal.isAnnule());
@@ -1505,7 +1505,7 @@ public class TiersServiceTest extends BusinessTest {
 
 		// annulation du premier for principal
 		try {
-			tiersService.annuleForFiscal(premierForPrincipal, true);
+			tiersService.annuleForFiscal(premierForPrincipal);
 			fail();
 		}
 		catch (ValidationException ignored) {
@@ -2534,7 +2534,7 @@ public class TiersServiceTest extends BusinessTest {
 				tiersService.closeForFiscalPrincipal(mc, date(2001, 12, 31), MotifFor.DEMENAGEMENT_VD);
 				tiersService
 						.openForFiscalPrincipal(mc, date(2002, 1, 1), MotifRattachement.DOMICILE, MockCommune.Aubonne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE,
-								MotifFor.DEMENAGEMENT_VD, true);
+								MotifFor.DEMENAGEMENT_VD);
 				return null;
 			}
 		});
@@ -2610,7 +2610,7 @@ public class TiersServiceTest extends BusinessTest {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(idMenage);
 				final ForFiscalPrincipal ffp = mc.getForFiscalPrincipalAt(date(2010, 2, 24));
-				tiersService.annuleForFiscal(ffp, true);
+				tiersService.annuleForFiscal(ffp);
 				return null;
 			}
 		});
@@ -2656,7 +2656,7 @@ public class TiersServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, ffpId);
 				assertNotNull(ffp);
 				assertFalse(ffp.isAnnule());
-				tiersService.annuleForFiscal(ffp, true);
+				tiersService.annuleForFiscal(ffp);
 				return null;
 			}
 		});
@@ -2669,7 +2669,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(ffp);
 				assertTrue(ffp.isAnnule());
 				try {
-					tiersService.annuleForFiscal(ffp, true);
+					tiersService.annuleForFiscal(ffp);
 					fail("La deuxième annulation du for fiscal aurait dû être refusée !");
 				}
 				catch (ValidationException e) {
@@ -3700,7 +3700,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Bale.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
-						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3729,7 +3729,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockPays.RoyaumeUni.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE,
-						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+						MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3758,7 +3758,7 @@ public class TiersServiceTest extends BusinessTest {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 				tiersService.openForFiscalPrincipal(pp, date(2000, 5, 12), MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, false);
+						ModeImposition.ORDINAIRE, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 				return null;
 			}
@@ -3787,7 +3787,7 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 				Assert.assertNull(pp.getDernierForFiscalPrincipal());
 				Assert.assertTrue(pp.getBlocageRemboursementAutomatique());
 
@@ -3819,7 +3819,7 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 
 				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(autreFfp);
@@ -3857,7 +3857,7 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 
 				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(autreFfp);
@@ -3895,7 +3895,7 @@ public class TiersServiceTest extends BusinessTest {
 				Assert.assertFalse(pp.getBlocageRemboursementAutomatique());
 
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 
 				final ForFiscalPrincipal autreFfp = pp.getDernierForFiscalPrincipal();
 				Assert.assertNotNull(autreFfp);
@@ -4467,7 +4467,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE);
 				return null;
 			}
 		});
@@ -4548,7 +4548,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE);
 				return null;
 			}
 		});
@@ -4627,7 +4627,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE);
 				return null;
 			}
 		});
@@ -4711,7 +4711,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(fils);
 
 				tiersService.openForFiscalPrincipal(fils, date(2011, 2, 8), MotifRattachement.DOMICILE, MockCommune.Bussigny.getNoOFS(), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
-						ModeImposition.ORDINAIRE, MotifFor.MAJORITE, false);
+						ModeImposition.ORDINAIRE, MotifFor.MAJORITE);
 				return null;
 			}
 		});
@@ -5673,7 +5673,7 @@ public class TiersServiceTest extends BusinessTest {
 				assertNotNull(adresse);
 				assertFalse(adresse.isAnnule());
 
-				tiersService.annuleForFiscal(ffp, true);
+				tiersService.annuleForFiscal(ffp);
 				// l'update du flag habitant est maintenant découplée des fors fiscaux -> ajouté l'appel explicitement dans le test
 				tiersService.updateHabitantFlag(pp, pp.getNumeroIndividu(), dateFinResidenceVD, null);
 				return null;

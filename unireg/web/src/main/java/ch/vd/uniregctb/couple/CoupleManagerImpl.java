@@ -179,7 +179,7 @@ public class CoupleManagerImpl implements CoupleManager {
 		case SEUL:
 		case COUPLE:
 			if (mcId == null) {
-				return metierService.marie(dateDebut, premierPP, secondPP, remarque, etatCivil, false, null);
+				return metierService.marie(dateDebut, premierPP, secondPP, remarque, etatCivil, null);
 			}
 			else {
 				if (futurMc instanceof PersonnePhysique) {
@@ -219,11 +219,11 @@ public class CoupleManagerImpl implements CoupleManager {
 
 				// rattachement des tiers au ménage
 				final MenageCommun menage = (MenageCommun) tiersService.getTiers(mcId);
-				return metierService.rattachToMenage(menage, premierPP, secondPP, dateDebut, remarque, etatCivil, false, null);
+				return metierService.rattachToMenage(menage, premierPP, secondPP, dateDebut, remarque, etatCivil, null);
 			}
 
 		case RECONCILIATION:
-			return metierService.reconcilie(premierPP, secondPP, dateDebut, remarque, false, null);
+			return metierService.reconcilie(premierPP, secondPP, dateDebut, remarque, null);
 
 		case RECONSTITUTION_MENAGE: {
 			final CoupleManager.Couple couple = getCoupleForReconstitution(premierPP, secondPP, dateDebut);

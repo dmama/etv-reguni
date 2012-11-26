@@ -1349,7 +1349,7 @@ public class TiersServiceImpl implements TiersService {
 		this.evenementCivilEchDAO = evenementCivilEchDAO;
 	}
 
-	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal, boolean changeHabitantFlag) {
+	private ForFiscalPrincipal reopenForFiscalPrincipal(ForFiscalPrincipal forFiscalPrincipal) {
         forFiscalPrincipal.setDateFin(null);
         forFiscalPrincipal.setMotifFermeture(null);
 		return forFiscalPrincipal;
@@ -1370,13 +1370,12 @@ public class TiersServiceImpl implements TiersService {
      * @param typeAutoriteFiscale      le type d'autorité fiscale.
      * @param modeImposition           le mode d'imposition du for fiscal principal
      * @param motifOuverture           le motif d'ouverture
-     * @param changeHabitantFlag       pour indiquer si le flag habitant doit être mis à jour lors de l'opération.
      * @return le nouveau for fiscal principal
      */
     @Override
     public ForFiscalPrincipal openForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
                                                      MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                     ModeImposition modeImposition, MotifFor motifOuverture, boolean changeHabitantFlag) {
+                                                     ModeImposition modeImposition, MotifFor motifOuverture) {
 
         Assert.isNull(contribuable.getForFiscalPrincipalAt(null), "Le contribuable possède déjà un for principal ouvert");
 
@@ -1413,14 +1412,12 @@ public class TiersServiceImpl implements TiersService {
      * @param motifOuverture           le motif d'ouverture
      * @param dateFermeture            la date de fermeture du for	 *
      * @param motifFermeture           le motif de fermeture
-     * @param changeHabitantFlag
      * @return le nouveau for fiscal principal
      */
     @Override
     public ForFiscalPrincipal openAndCloseForFiscalPrincipal(Contribuable contribuable, final RegDate dateOuverture,
                                                              MotifRattachement motifRattachement, int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale,
-                                                             ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
-                                                             boolean changeHabitantFlag) {
+                                                             ModeImposition modeImposition, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
 
 
         // Ouvre un nouveau for à la date d'événement
@@ -2528,9 +2525,9 @@ public class TiersServiceImpl implements TiersService {
 
         final ForFiscalPrincipal forRtr;
         if (dateFin == null) {
-            forRtr = openForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, true);
+            forRtr = openForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture);
         } else {
-            forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture, true);
+            forRtr = openAndCloseForFiscalPrincipal(contribuable, dateDebut, motifRattachement, autoriteFiscale, typeAutoriteFiscale, modeImposition, motifOuverture, dateFin, motifFermeture);
         }
 
         if (motifOuverture == MotifFor.PERMIS_C_SUISSE || motifOuverture == MotifFor.CHGT_MODE_IMPOSITION) {
@@ -3268,7 +3265,7 @@ public class TiersServiceImpl implements TiersService {
      * {@inheritDoc}
      */
     @Override
-    public void annuleForFiscal(ForFiscal forFiscal, boolean changeHabitantFlag) throws ValidationException {
+    public void annuleForFiscal(ForFiscal forFiscal) throws ValidationException {
         Assert.notNull(forFiscal, "le for fiscal doit être renseigné");
         final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers, "le for fiscal doit être rattaché à un tiers");
@@ -3303,7 +3300,7 @@ public class TiersServiceImpl implements TiersService {
                 }
             }
             if (forPrecedent != null) {
-                reopenForFiscalPrincipal(forPrecedent, changeHabitantFlag);
+                reopenForFiscalPrincipal(forPrecedent);
             }
         }
         else if (forFiscal instanceof ForDebiteurPrestationImposable) {

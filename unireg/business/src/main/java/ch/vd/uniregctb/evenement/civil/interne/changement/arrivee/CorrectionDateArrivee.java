@@ -122,7 +122,7 @@ public class CorrectionDateArrivee extends EvenementCivilInterne {
 				Audit.info(getNumeroEvenement(), msg);
 			}
 			else {
-				context.getTiersService().annuleForFiscal(ffp, false);
+				context.getTiersService().annuleForFiscal(ffp);
 				context.getTiersService().addForPrincipal((Contribuable) tiersDeterminant, getDate(), ffp.getMotifOuverture(), ffp.getDateFin(), ffp.getMotifFermeture(), ffp.getMotifRattachement(),
 						ffp.getNumeroOfsAutoriteFiscale(), ffp.getTypeAutoriteFiscale(), ffp.getModeImposition());
 			}

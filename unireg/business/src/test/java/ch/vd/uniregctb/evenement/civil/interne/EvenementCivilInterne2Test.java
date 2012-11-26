@@ -92,7 +92,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		habitant.setNumeroIndividu(NUMERO_INDIVIDU);
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
-		dummyEvent.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFS(), MotifFor.ARRIVEE_HC, true);
+		dummyEvent.openForFiscalPrincipalDomicileVaudoisOrdinaire(habitant, dateInitiale, MockCommune.Cossonay.getNoOFS(), MotifFor.ARRIVEE_HC);
 		assertEquals(1, habitant.getForsFiscaux().size());
 		final ForFiscalPrincipal forInitial = (ForFiscalPrincipal) habitant.getForsFiscauxSorted().get(0);
 
@@ -104,9 +104,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
-					true
-			);
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.Cossonay.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 			assertEquals(1, habitant.getForsFiscaux().size());
 			assertNull(forInitial.getDateFin());
 		}
@@ -116,9 +114,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		 */
 		{
 			assertEquals(1, habitant.getForsFiscaux().size());
-			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null,
-					true
-			);
+			dummyEvent.updateForFiscalPrincipal(habitant, dateChangement, MockCommune.LesClees.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 			assertEquals(2, habitant.getForsFiscaux().size());
 			assertEquals(veilleChangement, forInitial.getDateFin());
 
@@ -146,7 +142,7 @@ public class EvenementCivilInterne2Test extends BusinessTest {
 		habitant = (PersonnePhysique)tiersDAO.save(habitant);
 
 		// déménagement sur Lausanne
-		dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null, true);
+		dummyEvent.updateForFiscalPrincipal(habitant, RegDate.get(2004,7,1), MockCommune.Lausanne.getNoOFS(), MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, null);
 
 		// on vérifie que le type d'autorité fiscale, le motif de rattachement et le mode d'imposition restent inchangés
 		final List<ForFiscal> fors = habitant.getForsFiscauxSorted();

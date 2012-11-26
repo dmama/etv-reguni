@@ -97,7 +97,7 @@ public class SeparationRecapManagerImpl implements SeparationRecapManager {
 			break;
 		}
 
-		metierService.separe(menage, dateSeparation, separationRecapView.getRemarque(), etatCivilFamille, true, null);
+		metierService.separe(menage, dateSeparation, separationRecapView.getRemarque(), etatCivilFamille, null);
 	}
 
 	@Override

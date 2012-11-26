@@ -238,7 +238,7 @@ public class FusionDeCommunesProcessor {
 			else {
 				tiersService.closeForFiscalPrincipal(principal, dateFusion.getOneDayBefore(), MotifFor.FUSION_COMMUNES);
 				tiersService.openForFiscalPrincipal((Contribuable) principal.getTiers(), dateFusion, principal.getMotifRattachement(), nouveauNoOfs,
-						principal.getTypeAutoriteFiscale(), principal.getModeImposition(), MotifFor.FUSION_COMMUNES, true);
+						principal.getTypeAutoriteFiscale(), principal.getModeImposition(), MotifFor.FUSION_COMMUNES);
 			}
 		}
 	}

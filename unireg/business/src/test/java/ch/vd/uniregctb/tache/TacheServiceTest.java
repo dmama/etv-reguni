@@ -986,7 +986,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				tiersService.closeForFiscalPrincipal(raoul, date(2008, 5, 23), MotifFor.DEPART_HC);
 				tiersService.openForFiscalPrincipal(raoul, date(2008, 5, 24), MotifRattachement.DOMICILE, MockCommune.Neuchatel.getNoOFS(), TypeAutoriteFiscale.COMMUNE_HC, ModeImposition.ORDINAIRE,
-						MotifFor.DEPART_HC, true);
+						MotifFor.DEPART_HC);
 
 				return null;
 			}
@@ -1362,7 +1362,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNotNull(madame);
 
 				// mariage au 11 novembre 2007
-				MenageCommun menage = metierService.marie(dateMariage, monsieur, madame, "", EtatCivil.MARIE, true, null);
+				MenageCommun menage = metierService.marie(dateMariage, monsieur, madame, "", EtatCivil.MARIE, null);
 				ids.menageId = menage.getNumero();
 
 				return null;
@@ -1478,7 +1478,7 @@ public class TacheServiceTest extends BusinessTest {
 				}
 
 				// Divorce au 11 novembre 2007
-				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, true, null);
+				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
 
 				return null;
 			}
@@ -1641,7 +1641,7 @@ public class TacheServiceTest extends BusinessTest {
 				}
 
 				// Divorce au 11 novembre 2007
-				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, true, null);
+				metierService.separe(menage, dateDivorce, "", EtatCivil.DIVORCE, null);
 
 				return null;
 			}
@@ -1934,7 +1934,7 @@ public class TacheServiceTest extends BusinessTest {
 				// Arrivée de hors-Suisse traitée tardivement
 				tiersService.closeForFiscalPrincipal(simon, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HS);
 				tiersService.openForFiscalPrincipal(simon, dateArrivee, MotifRattachement.DOMICILE, MockCommune.Lausanne.getNoOFS(),
-						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS, true);
+						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ModeImposition.ORDINAIRE, MotifFor.ARRIVEE_HS);
 				return null;
 			}
 		});
@@ -1998,7 +1998,7 @@ public class TacheServiceTest extends BusinessTest {
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
 				addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
-				tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)), true);
+				tiersService.annuleForFiscal(raoul.getForFiscalPrincipalAt(date(2008, 1, 1)));
 				return null;
 			}
 		});
@@ -2570,7 +2570,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
 				assertNotNull(ffp);
 				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
-				tiersService.annuleForFiscal(ffp, false);
+				tiersService.annuleForFiscal(ffp);
 
 				return null;
 			}
@@ -2628,7 +2628,7 @@ public class TacheServiceTest extends BusinessTest {
 		final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
 		final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(mc, null);
 
-		metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+		metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, null);
 
 		// vérification des tâches générées : pour lui
 		{
@@ -2696,7 +2696,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersService.getTiers(ids.idMenage);
-				metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, false, null);
+				metierService.separe(mc, date(2009, 6, 12), "Test", EtatCivil.SEPARE, null);
 				return null;
 			}
 		});
@@ -2798,7 +2798,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = hibernateTemplate.get(MenageCommun.class, ids.menage);
-				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, false, null);
+				metierService.separe(menage, date(2008, 11, 15), null, EtatCivil.DIVORCE, null);
 				return null;
 			}
 		});
@@ -3722,7 +3722,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffp2 = hibernateTemplate.get(ForFiscal.class, ids.ffp2);
 				assertNotNull(ffp2);
-				tiersService.annuleForFiscal(ffp2, false);
+				tiersService.annuleForFiscal(ffp2);
 				return null;
 			}
 		});
@@ -3744,7 +3744,7 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final ForFiscal ffp1 = hibernateTemplate.get(ForFiscal.class, ids.ffp1);
 				assertNotNull(ffp1);
-				tiersService.annuleForFiscal(ffp1, false);
+				tiersService.annuleForFiscal(ffp1);
 				return null;
 			}
 		});
@@ -4229,7 +4229,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNotNull(pp);
 
 				tiersService.closeForFiscalPrincipal(pp, dateDepart, MotifFor.DEPART_HS);
-				tiersService.openForFiscalPrincipal(pp, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS, true);
+				tiersService.openForFiscalPrincipal(pp, dateDepart.getOneDayAfter(), MotifRattachement.DOMICILE, MockPays.Albanie.getNoOFS(), TypeAutoriteFiscale.PAYS_HS, ModeImposition.ORDINAIRE, MotifFor.DEPART_HS);
 				return null;
 			}
 		});
@@ -4716,7 +4716,7 @@ public class TacheServiceTest extends BusinessTest {
 				assertNull(forHS.getDateFin());
 				assertEquals(TypeAutoriteFiscale.PAYS_HS, forHS.getTypeAutoriteFiscale());
 
-				tiersService.annuleForFiscal(forHS, true);
+				tiersService.annuleForFiscal(forHS);
 				return null;
 			}
 		});

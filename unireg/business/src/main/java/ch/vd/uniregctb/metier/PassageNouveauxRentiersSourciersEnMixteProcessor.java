@@ -276,7 +276,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 		 */
 		tiersService.closeForFiscalPrincipal(contribuable, dateRentier.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION);
 		tiersService.openForFiscalPrincipal(contribuable, dateRentier, dernierForFiscalPrincipal.getMotifRattachement(), dernierForFiscalPrincipal.getNumeroOfsAutoriteFiscale(),
-				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION, false);
+				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION);
 		LOGGER.info("ouverture du for mixte pour le contribuable [" + contribuable.getNumero() +"]");
 		rapport.addSourcierConverti(contribuable.getNumero());
 		if (data.isMenage() && conjoint != null) {

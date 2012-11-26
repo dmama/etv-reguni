@@ -54,13 +54,15 @@ public interface MetierService {
 	 *            l'état civil pour la nouvelle situation de famille si différent de celui dans le registre civil
 	 * @param numeroEvenement
 	 *            (optionnel) le numéro d'événement civil déclenchant le mariage
-	 * 
+	 *
 	 * @return le ménage commun marié
 	 */
-	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
+	public MenageCommun marie(RegDate dateMariage, PersonnePhysique principal, PersonnePhysique conjoint, @Nullable String remarque, EtatCivil etatCivilFamille,
+	                          @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 
-	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
+	public MenageCommun rattachToMenage(MenageCommun menage, PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, @Nullable String remarque,
+	                                    EtatCivil etatCivilFamille, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 	
 	/**
@@ -170,7 +172,7 @@ public interface MetierService {
 	 *            (optionnel) le numéro d'événement civil déclenchant la réconciliation
 	 * @return le ménage commun.
 	 */
-	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
+	public MenageCommun reconcilie(PersonnePhysique principal, PersonnePhysique conjoint, RegDate date, String remarque, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 	
 	/**
@@ -236,13 +238,12 @@ public interface MetierService {
 	 * @param date
 	 *            la date de séparation
 	 * @param remarque
-	 *            sera ajoutée à la fin de la remarque de tous les contribuables mis à jour
+ *            sera ajoutée à la fin de la remarque de tous les contribuables mis à jour
 	 * @param etatCivilFamille
-	 *            l'état civil pour la nouvelle situation de famille si différent de celui dans le registre civil
+*            l'état civil pour la nouvelle situation de famille si différent de celui dans le registre civil
 	 * @param numeroEvenement
-	 *            (optionnel) le numéro d'événement civil déclenchant la séparation
 	 */
-	public void separe(MenageCommun menage, RegDate date, @Nullable String remarque, ch.vd.uniregctb.type.EtatCivil etatCivilFamille, boolean changeHabitantFlag, @Nullable Long numeroEvenement) throws
+	public void separe(MenageCommun menage, RegDate date, @Nullable String remarque, EtatCivil etatCivilFamille, @Nullable Long numeroEvenement) throws
 			MetierServiceException;
 
 	/**

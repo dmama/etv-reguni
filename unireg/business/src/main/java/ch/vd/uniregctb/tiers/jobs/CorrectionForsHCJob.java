@@ -198,7 +198,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 								Audit.info(String.format("Rattachement du for à la commune # %d", ffpConjoint.getNumeroOfsAutoriteFiscale()));
 								ForFiscalPrincipal nouveauFor = (ForFiscalPrincipal) ffp.duplicate();
 								// annuler le for car il est pas rattaché à la bonne commune
-								tiersService.annuleForFiscal(ffp, true);
+								tiersService.annuleForFiscal(ffp);
 								// ouvrir une nouveau for rattaché à la bonne commune
 								nouveauFor.setTypeAutoriteFiscale(ffpConjoint.getTypeAutoriteFiscale());
 								nouveauFor.setNumeroOfsAutoriteFiscale(ffpConjoint.getNumeroOfsAutoriteFiscale());

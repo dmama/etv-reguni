@@ -128,7 +128,7 @@ public class Ec_4000_07_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 
 	@Etape(id=2, descr="Création du mariage")
 	public void etape2() throws Exception {
-		metierService.marie(dateMariage, (PersonnePhysique) tiersDAO.get(noCtbRafa), (PersonnePhysique) tiersDAO.get(noCtbMaria), null, EtatCivil.MARIE, true, null);
+		metierService.marie(dateMariage, (PersonnePhysique) tiersDAO.get(noCtbRafa), (PersonnePhysique) tiersDAO.get(noCtbMaria), null, EtatCivil.MARIE, null);
 	}
 
 	@Check(id=2, descr="Vérifie que le for du ménage est assujetti sur Lausanne")

@@ -172,7 +172,7 @@ public class Ec_6000_07_Separation_JIRA1255_Scenario extends EvenementCivilScena
 	@Etape(id=2, descr="Envoi de l'événement de séparation")
 	public void etape2() throws Exception {
 		try {
-			metierService.separe((MenageCommun) tiersDAO.get(noMenage), dateSeparation, null, EtatCivil.SEPARE, true, null);
+			metierService.separe((MenageCommun) tiersDAO.get(noMenage), dateSeparation, null, EtatCivil.SEPARE, null);
 		}
 		catch(MetierServiceException eche) {
 			errorFound = true;

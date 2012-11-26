@@ -160,7 +160,7 @@ public class Ec_4000_08_Mariage_HabitantAvecNonHabitant_Scenario extends Eveneme
 		
 		ValidationResults results = metierService.validateMariage(dateMariage, rafa, maria);
 		if (!results.hasErrors()) {
-			metierService.marie(dateMariage, rafa, maria, null, EtatCivil.MARIE, true, null);
+			metierService.marie(dateMariage, rafa, maria, null, EtatCivil.MARIE, null);
 		}
 		else {
 			throw new NorentesException(results.getErrors().toString());

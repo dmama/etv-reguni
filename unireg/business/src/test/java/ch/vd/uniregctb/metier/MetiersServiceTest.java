@@ -115,7 +115,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique fabrice = (PersonnePhysique) tiersDAO.get(ids.fabrice);
 				assertNotNull(fabrice);
-				final MenageCommun menageCommun = metierService.marie(date(2008, 11, 23), fabrice, null, "test", EtatCivil.MARIE, true, null);
+				final MenageCommun menageCommun = metierService.marie(date(2008, 11, 23), fabrice, null, "test", EtatCivil.MARIE, null);
 				assertNotNull(menageCommun);
 				ids.menage = menageCommun.getNumero();
 				return null;
@@ -179,7 +179,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(menage);
-				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, true, null);
+				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
 				return null;
 			}
 		});
@@ -248,7 +248,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun menage = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(menage);
-				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, true, null);
+				metierService.separe(menage, date(2008, 11, 23), "test", EtatCivil.MARIE, null);
 				return null;
 			}
 		});
@@ -755,7 +755,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				metierService.separe(mc, dateSeparation, "test", null, null);
 				return null;
 			}
 		});
@@ -904,7 +904,7 @@ public class MetiersServiceTest extends BusinessTest {
 				assertNotNull(mc);
 
 				try {
-					metierService.separe(mc, dateSeparation, "test", null, true, null);
+					metierService.separe(mc, dateSeparation, "test", null, null);
 					fail("La séparation aurait dû partir en erreur puisque l'on passe pour Georgette d'un couple vaudois à un for hors-Suisse");
 				}
 				catch (MetierServiceException e) {
@@ -1017,7 +1017,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
 
-				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				metierService.separe(mc, dateSeparation, "test", null, null);
 				return null;
 			}
 		});
@@ -1157,7 +1157,7 @@ public class MetiersServiceTest extends BusinessTest {
 
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				metierService.separe(mc, dateSeparation, "test", null, null);
 				return null;
 			}
 		});
@@ -1270,7 +1270,7 @@ public class MetiersServiceTest extends BusinessTest {
 				public Object execute(TransactionStatus status) throws Exception {
 					final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 					assertNotNull(mc);
-					metierService.separe(mc, dateSeparation, "test", null, true, null);
+					metierService.separe(mc, dateSeparation, "test", null, null);
 					return null;
 				}
 			});
@@ -1375,7 +1375,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.menage);
 				assertNotNull(mc);
-				metierService.separe(mc, dateSeparation, "test", null, true, null);
+				metierService.separe(mc, dateSeparation, "test", null, null);
 				return null;
 			}
 		});
@@ -2324,7 +2324,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique mme = addHabitant(noIndividuMadame);
 				addForPrincipal(mme, date(2002, 8, 12), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, null, EtatCivil.MARIE, true, null);
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, null, EtatCivil.MARIE, null);
 				Assert.assertNotNull(mc);
 
 				final Ids ids = new Ids();
@@ -2544,7 +2544,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
 				Assert.assertNotNull(mme);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, false, null);
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
 				return mc.getNumero();
 			}
 		});
@@ -2632,7 +2632,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
 				Assert.assertNotNull(mme);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents sur la commune", EtatCivil.MARIE, false, null);
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents sur la commune", EtatCivil.MARIE, null);
 				return mc.getNumero();
 			}
 		});
@@ -2736,7 +2736,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
 				Assert.assertNotNull(mme);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents selon leur motif de rattachement", EtatCivil.MARIE, false, null);
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires différents selon leur motif de rattachement", EtatCivil.MARIE, null);
 				return mc.getNumero();
 			}
 		});
@@ -2841,7 +2841,7 @@ public class MetiersServiceTest extends BusinessTest {
 				final PersonnePhysique mme = (PersonnePhysique) tiersService.getTiers(ids.mme);
 				Assert.assertNotNull(mme);
 
-				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, false, null);
+				final MenageCommun mc = metierService.marie(dateMariage, m, mme, "Mariage avec fors secondaires identiques", EtatCivil.MARIE, null);
 				return mc.getNumero();
 			}
 		});
@@ -2923,7 +2923,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				try {
-					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, false, null);
+					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, null);
 				}
 				catch (MetierServiceException e) {
 					throw new RuntimeException(e);
@@ -2996,7 +2996,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
 				try {
-					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, false, null);
+					metierService.marie(dateMariage, pp, null, null, EtatCivil.MARIE, null);
 					fail("Mariage post-mortem interdit !");
 				}
 				catch (MetierServiceException e) {
@@ -3152,7 +3152,7 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, false, null);
+				metierService.separe(mc, dateSeparation, null, null, null);
 				return null;
 			}
 		});
@@ -3249,7 +3249,7 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, false, null);
+				metierService.separe(mc, dateSeparation, null, null, null);
 				return null;
 			}
 		});
@@ -3346,7 +3346,7 @@ public class MetiersServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final MenageCommun mc = (MenageCommun) tiersDAO.get(ids.idMenage);
-				metierService.separe(mc, dateSeparation, null, null, false, null);
+				metierService.separe(mc, dateSeparation, null, null, null);
 				return null;
 			}
 		});
@@ -3428,7 +3428,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
 				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, true, null);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
 				return null;
 			}
 		});
@@ -3513,7 +3513,7 @@ public class MetiersServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique lui = (PersonnePhysique) tiersDAO.get(ids.idLui);
 				final PersonnePhysique elle = (PersonnePhysique) tiersDAO.get(ids.idElle);
-				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, true, null);
+				metierService.marie(dateMariage, lui, elle, null, EtatCivil.MARIE, null);
 				return null;
 			}
 		});

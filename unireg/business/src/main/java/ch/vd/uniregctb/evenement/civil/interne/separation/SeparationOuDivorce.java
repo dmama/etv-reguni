@@ -247,7 +247,7 @@ public abstract class SeparationOuDivorce extends EvenementCivilInterne {
 		final ch.vd.uniregctb.type.EtatCivil etatCivilUnireg = EtatCivilHelper.civil2core(etatCivil.getTypeEtatCivil());
 		// traitement de la séparation
 		try {
-			context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, false, getNumeroEvenement());
+			context.getMetierService().separe(menageCommun, dateEvt, null, etatCivilUnireg, getNumeroEvenement());
 		}
 		catch (MetierServiceException e) {
 			throw new EvenementCivilException(e.getMessage(), e);

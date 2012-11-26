@@ -88,13 +88,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	                                                            ForFiscalPrincipal reference,
 	                                                            RegDate dateOuverture,
 	                                                            MotifFor motifOuverture,
-	                                                            ModeImposition nouveauModeImposition,
-	                                                            boolean changeHabitantFlag) {
+	                                                            ModeImposition nouveauModeImposition) {
 		// [UNIREG-1979] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
 		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
 		contribuable.scheduleReindexationOn(debutMoisProchain);
 
-		openForFiscalPrincipal(contribuable, dateOuverture, reference.getTypeAutoriteFiscale(), reference.getNumeroOfsAutoriteFiscale(), reference.getMotifRattachement(), motifOuverture, nouveauModeImposition, changeHabitantFlag);
+		openForFiscalPrincipal(contribuable, dateOuverture, reference.getTypeAutoriteFiscale(), reference.getNumeroOfsAutoriteFiscale(), reference.getMotifRattachement(), motifOuverture, nouveauModeImposition);
 	}
 
 	/**
@@ -104,17 +103,15 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 	 * @param contribuable             le contribuable sur lequel le nouveau for est ouvert
 	 * @param dateOuverture            la date à laquelle le nouveau for est ouvert
 	 * @param numeroOfsAutoriteFiscale le numéro OFS de l'autorité fiscale sur laquelle est ouverte le nouveau fort.
-	 * @param changeHabitantFlag       vrai s'il faut changer en habitant le contribuable spécifié.
 	 * @return le nouveau for fiscal principal
 	 */
-	private ForFiscalPrincipal openForFiscalPrincipalChangementModeImpositionImplicite(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale,
-	                                                                                   boolean changeHabitantFlag) {
+	private ForFiscalPrincipal openForFiscalPrincipalChangementModeImpositionImplicite(Contribuable contribuable, final RegDate dateOuverture, int numeroOfsAutoriteFiscale) {
 		// [UNIREG-1979][SIFISC-1199] On schedule un réindexation pour le début du mois suivant (les changements d'assujettissement source->ordinaire sont décalés en fin de mois)
 		final RegDate debutMoisProchain = RegDate.get(dateOuverture.year(), dateOuverture.month(), 1).addMonths(1);
 		contribuable.scheduleReindexationOn(debutMoisProchain);
 
 		return openForFiscalPrincipal(contribuable, dateOuverture, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, numeroOfsAutoriteFiscale, MotifRattachement.DOMICILE, MotifFor.PERMIS_C_SUISSE,
-				ModeImposition.ORDINAIRE, changeHabitantFlag);
+				ModeImposition.ORDINAIRE);
 	}
 
 	/**
@@ -152,12 +149,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				//obtention permis ou nationalité le jour de l'arrivée
 				if (forPrincipalHabitant.getDateDebut().isAfterOrEqual(dateEvenement) &&
 						(MotifFor.ARRIVEE_HC == forPrincipalHabitant.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalHabitant.getMotifOuverture())) {
-					getService().annuleForFiscal(forPrincipalHabitant, true);
-					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, forPrincipalHabitant.getDateDebut(), forPrincipalHabitant.getMotifOuverture(), ModeImposition.ORDINAIRE, true);
+					getService().annuleForFiscal(forPrincipalHabitant);
+					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, forPrincipalHabitant.getDateDebut(), forPrincipalHabitant.getMotifOuverture(), ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise au rôle ordinaire de l'individu");
 				} else {
 					closeForFiscalPrincipal(habitant, dateEvenement.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
-					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE, true);
+					openForFiscalPrincipalChangementModeImposition(habitant, forPrincipalHabitant, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise à jour du for principal de l'individu au rôle ordinaire");
 				}
 			}
@@ -171,12 +168,12 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				//obtention permis ou nationalité le jour de l'arrivée
 				if (forPrincipalMenage.getDateDebut().isAfterOrEqual(dateEvenement) &&
 						(MotifFor.ARRIVEE_HC == forPrincipalMenage.getMotifOuverture() || MotifFor.ARRIVEE_HS == forPrincipalMenage.getMotifOuverture())) {
-					getService().annuleForFiscal(forPrincipalMenage, true);
-					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, forPrincipalMenage.getDateDebut(), forPrincipalMenage.getMotifOuverture(), ModeImposition.ORDINAIRE, true);
+					getService().annuleForFiscal(forPrincipalMenage);
+					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, forPrincipalMenage.getDateDebut(), forPrincipalMenage.getMotifOuverture(), ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise au role ordinaire du ménage");
 				} else {
 					closeForFiscalPrincipal(menage, dateEvenement.getOneDayBefore(), MotifFor.PERMIS_C_SUISSE);
-					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE, true);
+					openForFiscalPrincipalChangementModeImposition(menage, forPrincipalMenage, dateEvenement, MotifFor.PERMIS_C_SUISSE, ModeImposition.ORDINAIRE);
 					Audit.info(getNumeroEvenement(), "Mise à jour du for principal du ménage au rôle ordinaire");
 				}
 			}
@@ -238,7 +235,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 				//TODO chercher dans les adresses si arrivée après obtention permis pour ouvrir le for à la date d'arrivée (pas de for ouvert car bridage IS)
 				if (EtatCivilHelper.estMarieOuPacse(etatCivilIndividu)) { // le for est ouvert sur le ménage commun
 					if (menage != null) {
-						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfs, true);
+						openForFiscalPrincipalChangementModeImpositionImplicite(menage, dateEvenement, noOfs);
 						Audit.info(getNumeroEvenement(), "Ouverture du for principal du ménage au rôle ordinaire");
 					}
 					else {
@@ -246,7 +243,7 @@ public abstract class ObtentionPermisCOuNationaliteSuisse extends EvenementCivil
 					}
 				}
 				else { // le for est ouvert sur l'individu
-					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfs, true);
+					openForFiscalPrincipalChangementModeImpositionImplicite(habitant, dateEvenement, noOfs);
 					Audit.info(getNumeroEvenement(), "Ouverture du for principal de l'individu au rôle ordinaire");
 				}
 			}
