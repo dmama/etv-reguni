@@ -11,7 +11,6 @@ import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
-import ch.vd.unireg.xml.party.relation.v1.ActivityType;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.DocumentType;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationStatusType;
@@ -452,22 +451,7 @@ public abstract class EnumHelper {
 		}
 	}
 
-	public static ActivityType coreToXML(ch.vd.uniregctb.type.TypeActivite typeActivite) {
-		if (typeActivite == null) {
-			return null;
-		}
 
-		switch (typeActivite) {
-		case ACCESSOIRE:
-			return ActivityType.ACCESSORY;
-		case COMPLEMENTAIRE:
-			return ActivityType.COMPLEMENTARY;
-		case PRINCIPALE:
-			return ActivityType.MAIN;
-		default:
-			throw new IllegalArgumentException("Type d'activité inconnu = [" + typeActivite + ']');
-		}
-	}
 
 	public static DocumentType coreToXML(ch.vd.uniregctb.type.TypeDocument type) {
 		if (type == null) {

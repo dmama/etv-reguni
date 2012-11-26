@@ -281,8 +281,6 @@ public class TiersManager implements MessageSourceAware {
 
 				if (rapportEntreTiers instanceof RapportPrestationImposable) {
 					final RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-					rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
-					rapportView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
 				}
 				else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 					final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;
@@ -443,8 +441,6 @@ public class TiersManager implements MessageSourceAware {
 			RapportPrestationView rapportPrestationView = new RapportPrestationView();
 			rapportPrestationView.setId(rapport.getId());
 			rapportPrestationView.setAnnule(rapport.isAnnule());
-			rapportPrestationView.setTypeActivite(rapport.getTypeActivite());
-			rapportPrestationView.setTauxActivite(rapport.getTauxActivite());
 			rapportPrestationView.setDateDebut(rapport.getDateDebut());
 			rapportPrestationView.setDateFin(rapport.getDateFin());
 			Tiers tiersObjet = tiersDAO.get(rapport.getSujetId());

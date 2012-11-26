@@ -27,7 +27,6 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -410,16 +409,15 @@ public interface TiersService {
     /**
      * Ajoute un rapport prestation imposable
      *
+     *
      * @param sourcier     le sourcier sur lequel le debiteur doit être ajouté
      * @param debiteur     le debiteur à ajouter au sourcier
      * @param dateDebut    la date de début de validité de la relation entre tiers
      * @param dateFin      la date de fin de validité de la relation entre tiers (peut être nulle)
-     * @param typeActivite le type d'activite
-     * @param tauxActivite le taux d'activite
      * @return le rapport-prestation-imposable avec les références mises-à-jour des objets sauvés
      */
     public RapportPrestationImposable addRapportPrestationImposable(PersonnePhysique sourcier, DebiteurPrestationImposable debiteur,
-                                                                    RegDate dateDebut, RegDate dateFin, TypeActivite typeActivite, Integer tauxActivite);
+                                                                    RegDate dateDebut, RegDate dateFin);
 
 
     /**

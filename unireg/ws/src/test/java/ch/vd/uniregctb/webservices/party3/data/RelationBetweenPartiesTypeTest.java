@@ -7,7 +7,6 @@ import ch.vd.uniregctb.webservices.party3.EnumTest;
 import ch.vd.uniregctb.webservices.party3.impl.EnumHelper;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 /**
  * Test qui vérifie que l'enum exposé dans les web-services est compatible avec celui utilisé en interne par Unireg.
@@ -22,7 +21,6 @@ public class RelationBetweenPartiesTypeTest extends EnumTest {
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeActivite) null));
 		assertEquals(RelationBetweenPartiesType.GUARDIAN, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.TUTELLE));
 		assertEquals(RelationBetweenPartiesType.WELFARE_ADVOCATE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.CURATELLE));
 		assertEquals(RelationBetweenPartiesType.LEGAL_ADVISER, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.CONSEIL_LEGAL));

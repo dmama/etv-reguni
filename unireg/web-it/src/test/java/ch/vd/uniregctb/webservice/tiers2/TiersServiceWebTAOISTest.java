@@ -45,7 +45,6 @@ import ch.vd.uniregctb.webservices.tiers2.TiersIdArray;
 import ch.vd.uniregctb.webservices.tiers2.TiersInfo;
 import ch.vd.uniregctb.webservices.tiers2.TiersInfoArray;
 import ch.vd.uniregctb.webservices.tiers2.TiersPart;
-import ch.vd.uniregctb.webservices.tiers2.TypeActivite;
 import ch.vd.uniregctb.webservices.tiers2.TypeAffranchissement;
 import ch.vd.uniregctb.webservices.tiers2.TypeAutoriteFiscale;
 import ch.vd.uniregctb.webservices.tiers2.TypeRapportEntreTiers;
@@ -322,8 +321,6 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(1678432L, rapport.getAutreTiersNumero()); // 1678432 = N° débiteur
 		assertSameDay(newDate(2008, 1, 29), rapport.getDateDebut());
 		assertNull(rapport.getDateFin());
-		assertEquals(TypeActivite.PRINCIPALE, rapport.getTypeActivite());
-		assertEquals(Integer.valueOf(100), rapport.getTauxActivite()); // 100%
 	}
 
 	@Test
@@ -352,8 +349,6 @@ public class TiersServiceWebTAOISTest extends AbstractTiersServiceWebTest {
 		assertEquals(1678432L, rapport.getAutreTiersNumero()); // 1678432 = N° débiteur
 		assertSameDay(newDate(2008, 1, 29), rapport.getDateDebut());
 		assertNull(rapport.getDateFin());
-		assertEquals(TypeActivite.PRINCIPALE, rapport.getTypeActivite());
-		assertEquals(Integer.valueOf(100), rapport.getTauxActivite()); // 100%
 	}
 
 	@Test

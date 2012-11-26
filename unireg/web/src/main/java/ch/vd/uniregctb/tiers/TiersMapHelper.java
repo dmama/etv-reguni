@@ -33,7 +33,6 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TexteCasePostale;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAdresseRetour;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -78,7 +77,6 @@ public class TiersMapHelper extends CommonMapHelper {
 	private Map<EtatCivil, String> mapEtatsCivil;
 	private Map<TypeAdresseTiers, String> mapTypeAdresse;
 	private Map<TypeAdresseTiers, String> mapTypeAdresseFiscale;
-	private Map<TypeActivite, String> mapTypeActivite;
 	private Map<TypeDocument, String> mapTypesDeclarationImpot;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotOrdinaire;
 	private Map<TypeDocument, String> mapTypesDeclarationImpotPourParam;
@@ -419,17 +417,7 @@ public class TiersMapHelper extends CommonMapHelper {
 		return mapTypeAdresseFiscale;
 	}
 
-	/**
-	 * Initialise la map des types d'activite
-	 *
-	 * @return une map
-	 */
-	public Map<TypeActivite, String> getMapTypeActivite() {
-		if (mapTypeActivite == null) {
-			mapTypeActivite = initMapEnum(ApplicationConfig.masterKeyTypeActivite, TypeActivite.class);
-		}
-		return mapTypeActivite;
-	}
+
 
 	/**
 	 * Initialise la map des types de declaration d'impot pour l'écran de paramétrage

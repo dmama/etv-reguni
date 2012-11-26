@@ -22,20 +22,6 @@
 					<fmt:formatDate value="${rapportPrestation.dateFin}" pattern="dd.MM.yyyy"/>
 				<c:if test="${rapportPrestation.annule}"></strike></c:if>
 			</display:column>
-			<display:column titleKey="label.type.activite" >
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<c:if test="${rapportPrestation.typeActivite != ''}">
-						<fmt:message key="option.type.activite.${rapportPrestation.typeActivite}" />
-					</c:if>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>
-			</display:column>
-			<display:column sortable ="true" titleKey="label.taux.activite" sortProperty="tauxActivite" sortName="tauxActivite">
-				<c:if test="${rapportPrestation.annule}"><strike></c:if>
-					<c:if test="${rapportPrestation.tauxActivite  != null}">
-						${rapportPrestation.tauxActivite}%
-					</c:if>
-				<c:if test="${rapportPrestation.annule}"></strike></c:if>	
-			</display:column>
 			<display:column sortable="true" titleKey="label.numero.contribuable" sortProperty="sujetId" sortName="sujetId" >
 				<c:if test="${rapportPrestation.annule}"><strike></c:if>
 					<a href="../tiers/visu.do?id=${rapportPrestation.numero}"><unireg:numCTB numero="${rapportPrestation.numero}"></unireg:numCTB></a>

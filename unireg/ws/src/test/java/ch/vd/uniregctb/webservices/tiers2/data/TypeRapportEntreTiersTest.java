@@ -6,7 +6,6 @@ import ch.vd.uniregctb.webservices.tiers2.EnumTest;
 import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 
 /**
  * Test qui vérifie que l'enum exposé dans les web-services est compatible avec celui utilisé en interne par Unireg.
@@ -21,7 +20,6 @@ public class TypeRapportEntreTiersTest extends EnumTest {
 
 	@Test
 	public void testFromValue() {
-		assertNull(EnumHelper.coreToWeb((ch.vd.uniregctb.type.TypeActivite) null));
 		assertEquals(RapportEntreTiers.Type.TUTELLE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.TUTELLE));
 		assertEquals(RapportEntreTiers.Type.CURATELLE, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.CURATELLE));
 		assertEquals(RapportEntreTiers.Type.CONSEIL_LEGAL, EnumHelper.coreToWeb(ch.vd.uniregctb.type.TypeRapportEntreTiers.CONSEIL_LEGAL));

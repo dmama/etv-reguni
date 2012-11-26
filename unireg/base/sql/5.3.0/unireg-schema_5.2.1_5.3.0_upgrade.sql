@@ -6,3 +6,10 @@ ALTER TABLE TIERS add NH_LIBELLE_COMMUNE_ORIGINE NVARCHAR2(250);
 
 -- [SIFISC-7179] Ajout d'une colonne texte dans l'événement d'identification de contribuable pour stocker les métadonnées du message entrant
 ALTER TABLE EVENEMENT_IDENTIFICATION_CTB ADD META_DATA NVARCHAR2(1023);
+
+
+--[SIFISC-6951] Suppression des colonnes taux d'activité et type d'activité pour les rapports de travail
+
+ALTER TABLE RAPPORT_ENTRE_TIERS DROP COLUMN TAUX_ACTIVITE;
+
+ALTER TABLE RAPPORT_ENTRE_TIERS DROP COLUMN TYPE_ACTIVITE;

@@ -20,7 +20,6 @@ import ch.vd.uniregctb.webservices.tiers2.data.RapportEntreTiers;
 import ch.vd.uniregctb.webservices.tiers2.data.Sexe;
 import ch.vd.uniregctb.webservices.tiers2.data.TarifImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.TiersPart;
-import ch.vd.uniregctb.webservices.tiers2.data.TypeActivite;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeAffranchissement;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeDocument;
 import ch.vd.uniregctb.webservices.tiers2.data.TypeRecherche;
@@ -250,15 +249,7 @@ public abstract class EnumHelper {
 		return value;
 	}
 
-	public static TypeActivite coreToWeb(ch.vd.uniregctb.type.TypeActivite typeActivite) {
-		if (typeActivite == null) {
-			return null;
-		}
 
-		final TypeActivite value = TypeActivite.fromValue(typeActivite.name());
-		Assert.notNull(value);
-		return value;
-	}
 
 	public static TypeDocument coreToWeb(ch.vd.uniregctb.type.TypeDocument type) {
 		if (type == null) {

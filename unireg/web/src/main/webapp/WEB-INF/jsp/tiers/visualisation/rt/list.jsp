@@ -32,20 +32,6 @@
 						<unireg:regdate regdate="${rapportPrestation.dateFin}"/>
 					<c:if test="${rapportPrestation.annule}"></strike></c:if>
 				</display:column>
-				<display:column sortable="true" titleKey="label.type.activite" >
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<c:if test="${rapportPrestation.typeActivite != ''}">
-							<fmt:message key="option.type.activite.${rapportPrestation.typeActivite}" />
-						</c:if>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
-				</display:column>
-				<display:column sortable="true" titleKey="label.taux.activite">
-					<c:if test="${rapportPrestation.annule}"><strike></c:if>
-						<c:if test="${rapportPrestation.tauxActivite  != null}">
-							${rapportPrestation.tauxActivite}%
-						</c:if>
-					<c:if test="${rapportPrestation.annule}"></strike></c:if>
-				</display:column>
 				<display:column sortable="true" titleKey="label.numero.contribuable">
 					<c:if test="${rapportPrestation.annule}"><strike></c:if>
 						<a href="../tiers/visu.do?id=${rapportPrestation.noCTB}"><unireg:numCTB numero="${rapportPrestation.noCTB}"></unireg:numCTB></a>

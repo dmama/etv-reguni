@@ -189,8 +189,6 @@
     <column>TIERS_OBJET_ID</column>
     <column>DATE_DEBUT</column>
     <column>DATE_FIN</column>
-    <column>TYPE_ACTIVITE</column>
-    <column>TAUX_ACTIVITE</column>
     <row>
       <value>2008-01-01</value>
       <value>5</value>
@@ -198,8 +196,6 @@
       <value>12600003</value>
       <value>12600004</value>
       <value>19900703</value>
-      <null/>
-      <null/>
       <null/>
     </row>
     <row>
@@ -209,8 +205,6 @@
       <value>12600009</value>
       <value>12600004</value>
       <value>19900703</value>
-      <null/>
-      <null/>
       <null/>
     </row>
   </table>

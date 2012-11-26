@@ -30,7 +30,6 @@ public class AbstractRapportPrestationController extends AbstractSimpleFormContr
 	protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
 		Map<String, Object> data = new HashMap<String, Object>();
-		data.put(TYPES_ACTIVITE_MAP_NAME, tiersMapHelper.getMapTypeActivite());
 		return data;
 	}
 

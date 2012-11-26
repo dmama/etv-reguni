@@ -4,7 +4,6 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
-import ch.vd.uniregctb.type.TypeActivite;
 
 public class RapportsPrestationView {
 
@@ -14,8 +13,6 @@ public class RapportsPrestationView {
 		public boolean annule;
 		public RegDate dateDebut;
 		public RegDate dateFin;
-		public TypeActivite typeActivite;
-		public Integer tauxActivite;
 		public Long noCTB;
 		public String nomCourrier1;
 		public String nomCourrier2;
@@ -51,22 +48,6 @@ public class RapportsPrestationView {
 
 		public void setDateFin(RegDate dateFin) {
 			this.dateFin = dateFin;
-		}
-
-		public TypeActivite getTypeActivite() {
-			return typeActivite;
-		}
-
-		public void setTypeActivite(TypeActivite typeActivite) {
-			this.typeActivite = typeActivite;
-		}
-
-		public Integer getTauxActivite() {
-			return tauxActivite;
-		}
-
-		public void setTauxActivite(Integer tauxActivite) {
-			this.tauxActivite = tauxActivite;
 		}
 
 		public Long getNoCTB() {

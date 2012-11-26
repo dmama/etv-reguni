@@ -21,8 +21,6 @@ public class RelationBetweenPartiesBuilder {
 		if (rapport instanceof ch.vd.uniregctb.tiers.RapportPrestationImposable) {
 			final ch.vd.uniregctb.tiers.RapportPrestationImposable rpi = (ch.vd.uniregctb.tiers.RapportPrestationImposable) rapport;
 
-			r.setActivityType(EnumHelper.coreToXML(rpi.getTypeActivite()));
-			r.setActivityRate(rpi.getTauxActivite());
 			r.setEndDateOfLastTaxableItem(DataHelper.coreToXML(rpi.getFinDernierElementImposable()));
 		}
 

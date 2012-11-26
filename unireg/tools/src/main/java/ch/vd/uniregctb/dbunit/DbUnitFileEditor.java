@@ -46,7 +46,7 @@ public class DbUnitFileEditor {
 		// ~~~~~~~ modifier ici ~~~~~~~
 
 		// supprime la colonne CTB_DPI_ID sur le table TIERS
-		IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "HAB_PRINCIPAL");
+		IDataSet outputDataSet = new DropColumnDataSet(inputDataSet, "TAUX_ACTIVITE");
 		//IDataSet outputDataSet = new ModifPPDataSet(inputDataSet);
 		//IDataSet outputDataSet = new ModifAdresseDataSet(inputDataSet);
 
@@ -64,7 +64,7 @@ public class DbUnitFileEditor {
 	public static void main(String[] args) throws Exception {
 
 		traiteFichier("web/src/main/resources/DBUnit4Import/tiers-basic.xml");
-		traiteFichier("web/src/test/resources/ch/vd/uniregctb/evenement/AbstractEvenementControllerTest.xml");
+		//traiteFichier("web/src/test/resources/ch/vd/uniregctb/evenement/AbstractEvenementControllerTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServiceTAOISTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServiceTest.xml");
 		traiteFichier("web-it/src/test/resources/ch/vd/uniregctb/webservice/party3/PartyWebServicePoursuiteTest.xml");
@@ -75,6 +75,11 @@ public class DbUnitFileEditor {
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/arrivee/ArriveeTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/DetermineDIsJobTest.xml");
 		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/EnvoiDIsJobTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/ImpressionDeclarationImpotOrdinaireHelperTest2.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/declaration/ordinaire/echoirDiTiersInvalide.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/evenement/civil/interne/depart/deparHC26012004.xml");
+		traiteFichier("business/src/test/resources/ch/vd/uniregctb/editique/ListeRecapJobTest.xml");
 
 		
 //		String repBase = "C:/projets/registre/branches/UniregCTB/2.7/04-Implementation/unireg/";

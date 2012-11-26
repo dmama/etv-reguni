@@ -37,7 +37,6 @@ public abstract class LengthConstants {
 	public final static int SITUATIONFAMILLE_TARIF = 11;
 	public final static int SITUATIONFAMILLE_ETATCIVIL = 34;
 
-	public final static int RAPPORT_TYPEACTIVITE = 14;
 
 	public final static int DPI_NOM1 = 250;
 	public final static int DPI_NOM2 = 250;

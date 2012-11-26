@@ -23,7 +23,6 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -146,7 +145,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 			RegDate dateFinNouveauRapport = rapportsConcernes.get(lastRapportPos).getDateFin();
 
 			// on créer un nouveau rapport
-			RapportPrestationImposable nouveauRapport= tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebutNouveauRapport,dateFinNouveauRapport, TypeActivite.PRINCIPALE, 100);
+			RapportPrestationImposable nouveauRapport= tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebutNouveauRapport,dateFinNouveauRapport);
 
 			//on annule touts les rapports précédents
 			for (RapportPrestationImposable rapportsConcerne : rapportsConcernes) {
@@ -472,7 +471,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		RegDate dateFin = calculerDateFinRapportTravail(request);
 
 
-		tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebut, dateFin, TypeActivite.PRINCIPALE, 100);
+		tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebut, dateFin);
 
 		final String message = String.format("Création d'un nouveau rapport de travail entre le débiteur %s et le sourcier %s." +
 				"  Date début du rapport: %s, date de fin: %s", FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),

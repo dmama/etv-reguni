@@ -128,8 +128,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 				rapportView.setAllowed(false);
 			}
 			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-			rapportView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
-			rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
 			rapportView.setNatureRapportEntreTiers(rapportPrestationImposable.getClass().getSimpleName());
 		}
 		else if (rapportEntreTiers.getType() == TypeRapportEntreTiers.APPARTENANCE_MENAGE) {
@@ -204,8 +202,6 @@ public class RapportEditManagerImpl extends TiersManager implements RapportEditM
 			rapportEntreTiers.setDateFin(rapportView.getRegDateFin());
 			if (rapportEntreTiers instanceof RapportPrestationImposable) {
 				RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-				rapportPrestationImposable.setTauxActivite(rapportView.getTauxActivite());
-				rapportPrestationImposable.setTypeActivite(rapportView.getTypeActivite());
 			}
 			else if (rapportEntreTiers instanceof RepresentationConventionnelle) {
 				final RepresentationConventionnelle repres = (RepresentationConventionnelle) rapportEntreTiers;

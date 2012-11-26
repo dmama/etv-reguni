@@ -28,7 +28,6 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.Niveau;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 /**
@@ -97,7 +96,6 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		RapportPrestationView rapportView =  new RapportPrestationView();
 
 		rapportView.setProvenance(provenance);
-		rapportView.setTypeActivite(TypeActivite.PRINCIPALE);
 
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(numeroSrc);
 		if (sourcier == null) {
@@ -147,8 +145,6 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 		rapportView.setNatureRapportEntreTiers(rapportEntreTiers.getClass().getSimpleName());
 		if (rapportEntreTiers instanceof RapportPrestationImposable) {
 			RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportEntreTiers;
-			rapportView.setTauxActivite(rapportPrestationImposable.getTauxActivite());
-			rapportView.setTypeActivite(rapportPrestationImposable.getTypeActivite());
 			rapportView.setNatureRapportEntreTiers(rapportPrestationImposable.getClass().getSimpleName());
 		}
 
@@ -184,7 +180,7 @@ public class RapportPrestationEditManagerImpl implements RapportPrestationEditMa
 
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(rapportView.getSourcier().getNumero());
 		DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersService.getTiers(rapportView.getDebiteur().getNumero());
-		getTiersService().addRapportPrestationImposable(sourcier, debiteur, rapportView.getRegDateDebut(), null, rapportView.getTypeActivite(), rapportView.getTauxActivite());
+		getTiersService().addRapportPrestationImposable(sourcier, debiteur, rapportView.getRegDateDebut(), null);
 
 	}
 

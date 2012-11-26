@@ -16,20 +16,6 @@
 			<td width="25%">&nbsp;</td>
 			<td width="25%">&nbsp;</td>
 		</tr>
-		<tr class="<unireg:nextRowClass/>" >
-			<td width="25%"><fmt:message key="label.type.activite" />&nbsp;:</td>
-			<td width="25%">
-				<form:select path="typeActivite"  items="${typesActivite}"
-					id="typeActivite" onchange="Rapport.selectTypeActivite(this.options[this.selectedIndex].value);" />
-			</td>
-			<td width="25%"><div id="tauxActiviteLabel" ><fmt:message key="label.taux.activite" />&nbsp;:</div></td>
-			<td width="25%">
-				<div id="tauxActiviteInput" style="display:block;">
-					<form:input path="tauxActivite" cssErrorClass="input-with-errors" size ="3" maxlength="3" />%
-					<form:errors path="tauxActivite" cssClass="error"/>
-				</div>
-			</td>
-		</tr>
 	</table>
 	
 </fieldset>

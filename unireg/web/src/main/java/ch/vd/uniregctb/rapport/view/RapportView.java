@@ -30,7 +30,6 @@ import ch.vd.uniregctb.tiers.RepresentationLegale;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.tiers.Tutelle;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -83,9 +82,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 	// --- uniquement pour RapportPrestationImposable ----
 
-	private TypeActivite typeActivite;
-
-	private Integer tauxActivite;
 
 	// -- uniquement pour RepresentationConventionnelle --
 
@@ -120,8 +116,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 
 		if (rapport instanceof RapportPrestationImposable) {
 			final RapportPrestationImposable rpi = (RapportPrestationImposable) rapport;
-			this.typeActivite = rpi.getTypeActivite();
-			this.tauxActivite = rpi.getTauxActivite();
 		}
 
 		if (rapport instanceof RepresentationConventionnelle) {
@@ -162,21 +156,6 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 		this.annule = annule;
 	}
 
-	public TypeActivite getTypeActivite() {
-		return typeActivite;
-	}
-
-	public void setTypeActivite(TypeActivite typeActivite) {
-		this.typeActivite = typeActivite;
-	}
-
-	public Integer getTauxActivite() {
-		return tauxActivite;
-	}
-
-	public void setTauxActivite(Integer tauxActivite) {
-		this.tauxActivite = tauxActivite;
-	}
 
 	public TypeRapportEntreTiersWeb getTypeRapportEntreTiers() {
 		return typeRapportEntreTiers;

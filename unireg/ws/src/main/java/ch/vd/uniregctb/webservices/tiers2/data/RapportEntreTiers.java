@@ -18,7 +18,7 @@ import ch.vd.uniregctb.webservices.tiers2.impl.EnumHelper;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RapportEntreTiers", propOrder = {
-		"type", "dateDebut", "dateFin", "dateAnnulation", "autreTiersNumero", "typeActivite", "tauxActivite", "finDernierElementImposable", "extensionExecutionForcee"
+		"type", "dateDebut", "dateFin", "dateAnnulation", "autreTiersNumero", "finDernierElementImposable", "extensionExecutionForcee"
 })
 public class RapportEntreTiers {
 
@@ -117,22 +117,6 @@ public class RapportEntreTiers {
 	public Long autreTiersNumero;
 
 	/**
-	 * Type d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.
-	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>activityType</i>.
-	 */
-	@XmlElement(required = false)
-	public TypeActivite typeActivite;
-
-	/**
-	 * Taux d'activité d'un tiers par rapport au débiteur imposable associé. Seulement valable pour le type = PRESTATION_IMPOSABLE.
-	 * <p/>
-	 * <b>Dans la version 3 du web-service :</b> <i>activityRate</i>.
-	 */
-	@XmlElement(required = false)
-	public Integer tauxActivite;
-
-	/**
 	 * Seulement valable pour le type = PRESTATION_IMPOSABLE.
 	 * <p/>
 	 * <b>Dans la version 3 du web-service :</b> <i>endDateOfLastTaxableItem</i>.
@@ -161,13 +145,9 @@ public class RapportEntreTiers {
 		if (rapport instanceof ch.vd.uniregctb.tiers.RapportPrestationImposable) {
 			final ch.vd.uniregctb.tiers.RapportPrestationImposable rpi = (ch.vd.uniregctb.tiers.RapportPrestationImposable) rapport;
 
-			this.typeActivite = EnumHelper.coreToWeb(rpi.getTypeActivite());
-			this.tauxActivite = rpi.getTauxActivite();
 			this.finDernierElementImposable = DataHelper.coreToWeb(rpi.getFinDernierElementImposable());
 		}
 		else {
-			this.typeActivite = null;
-			this.tauxActivite = 0;
 			this.finDernierElementImposable = null;
 		}
 

@@ -735,21 +735,7 @@ var Rapport = {
 	/**
 	* Affiche le taux d'activité seulement si le type d'activité est PRINCIPAL
 	*/
-	selectTypeActivite: function(type)
-	{
-		var divTauxActiviteLabel 	= document.getElementById('tauxActiviteLabel');
-		var divTauxActiviteInput 	= document.getElementById('tauxActiviteInput');
-		var form = document.getElementById('formModifRapport');
-		/** @namespace form.tauxActivite */
-		if (type == 'PRINCIPALE') {
-			divTauxActiviteLabel.style.display = '';
-			divTauxActiviteInput.style.display = '';
-		} else {
-			divTauxActiviteLabel.style.display = 'none';
-			divTauxActiviteInput.style.display = 'none';
-			form.tauxActivite.value = '';
-		}
-	},
+
 
 	/*
 	* Annuler un rapport

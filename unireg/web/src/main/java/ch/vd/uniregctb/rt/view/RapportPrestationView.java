@@ -8,7 +8,6 @@ import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.rapport.SensRapportEntreTiers;
-import ch.vd.uniregctb.type.TypeActivite;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class RapportPrestationView implements Comparable<RapportPrestationView> {
@@ -26,10 +25,6 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 	private RegDate dateDebut;
 
 	private RegDate dateFin;
-
-	private TypeActivite typeActivite;
-
-	private Integer tauxActivite;
 
 	private TiersGeneralView debiteur;
 
@@ -95,22 +90,6 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 
 	public void setDateFin(Date dateFin) {
 		this.dateFin = RegDate.get(dateFin);
-	}
-
-	public TypeActivite getTypeActivite() {
-		return typeActivite;
-	}
-
-	public void setTypeActivite(TypeActivite typeActivite) {
-		this.typeActivite = typeActivite;
-	}
-
-	public Integer getTauxActivite() {
-		return tauxActivite;
-	}
-
-	public void setTauxActivite(Integer tauxActivite) {
-		this.tauxActivite = tauxActivite;
 	}
 
 	public TiersGeneralView getDebiteur() {

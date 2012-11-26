@@ -21,9 +21,7 @@ public class TiersRapportValidator implements Validator {
 		if (rapportView.getDateDebut() == null) {
 			ValidationUtils.rejectIfEmpty(errors, "dateDebut", "error.date.debut.vide");
 		}
-		if( rapportView.getTauxActivite() != null && ( rapportView.getTauxActivite() > 100 || rapportView.getTauxActivite() < 0)){
-			errors.rejectValue("tauxActivite", "error.tauxActivite.invalide");
-		}
+
 	}
 
 }

@@ -228,8 +228,6 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			rapport.noCTB = r.getSujetId();
 			rapport.dateDebut = r.getDateDebut();
 			rapport.dateFin = r.getDateFin();
-			rapport.typeActivite = rpi.getTypeActivite();
-			rapport.tauxActivite = rpi.getTauxActivite();
 			rapport.noCTB = rpi.getSujetId();
 			rapports.add(rapport);
 
