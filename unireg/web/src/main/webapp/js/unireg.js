@@ -622,15 +622,6 @@ var Fors = {
 		});
 	},
 
-	/*
-	* Annuler un for
-	*/
-	reOuvrirFor: function(idFor) {
-		if(confirm('Voulez-vous vraiment ré-ouvrir ce for fiscal ?')) {
-			Form.doPostBack("theForm", "reOuvrirFor", idFor);
-		}
-	},
-
 	/**
 	 * Construit la représentation Html de la table qui contient le résultat de simulation d'une action sur un for fiscal.
 	 */

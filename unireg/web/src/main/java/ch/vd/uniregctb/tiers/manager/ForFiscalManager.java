@@ -13,12 +13,6 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
 public interface ForFiscalManager {
 
 	/**
-	 * Reouverture du for
-	 */
-	@Transactional(rollbackFor = Throwable.class)
-	public abstract void reouvrirFor(Long idFor);
-
-	/**
 	 * Charge les informations dans TiersView
 	 * @return un objet TiersView
 	 */

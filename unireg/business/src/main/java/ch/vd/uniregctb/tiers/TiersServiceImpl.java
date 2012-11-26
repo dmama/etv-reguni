@@ -4295,16 +4295,11 @@ public class TiersServiceImpl implements TiersService {
     }
 
     @Override
-    public void traiterReOuvertureForDebiteur(ForFiscal forFiscal) {
-
-        if (forFiscal instanceof ForDebiteurPrestationImposable) {
-            ForDebiteurPrestationImposable forDebiteur = (ForDebiteurPrestationImposable) forFiscal;
-            final RegDate dateFin = forDebiteur.getDateFin();
-            reopenForDebiteur(forDebiteur);
-            DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) forDebiteur.getTiers();
-            reopenRapportsPrestationImposableFermesAt(dpi, dateFin);
-        }
-
+    public void reouvrirForDebiteur(@NotNull ForDebiteurPrestationImposable forDebiteur) {
+	    final RegDate dateFin = forDebiteur.getDateFin();
+	    reopenForDebiteur(forDebiteur);
+	    DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) forDebiteur.getTiers();
+	    reopenRapportsPrestationImposableFermesAt(dpi, dateFin);
     }
 
     @Override

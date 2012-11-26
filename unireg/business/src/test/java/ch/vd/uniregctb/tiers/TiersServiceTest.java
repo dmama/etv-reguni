@@ -5550,7 +5550,7 @@ public class TiersServiceTest extends BusinessTest {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				ForFiscal forDebiteur = forFiscalDAO.get(ids.idFor2);
-				tiersService.traiterReOuvertureForDebiteur(forDebiteur);
+				tiersService.reouvrirForDebiteur((ForDebiteurPrestationImposable) forDebiteur);
 				return null;
 			}
 		});

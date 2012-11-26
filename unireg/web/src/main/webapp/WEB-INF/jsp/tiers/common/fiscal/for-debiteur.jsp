@@ -30,7 +30,8 @@
 			<c:if test="${forFiscal.dateFermeture != null}">
 				<c:if test="${page == 'edit' }">
 					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-						<unireg:raccourciReOpenForDebiteur onClick="javascript:Fors.reOuvrirFor(${forFiscal.id});" tooltip="Ré-ouvrir le for"/>
+						<unireg:linkTo name="" action="/fors/reopenDebiteur.do" method="POST" params="{forId:${forFiscal.id}}" link_class="reOpenFor"
+						               title="Ré-ouvrir de for" confirm="Voulez-vous vraiment ré-ouvrir ce for fiscal ?" />
 					</c:if>
 				</c:if>
 			</c:if>
@@ -46,7 +47,8 @@
 					<unireg:linkTo name="" action="/fors/editDebiteur.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 				</c:if>
 				<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-					<unireg:linkTo name="" action="/fors/cancelDebiteur.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete" title="Annulation de for" />
+					<unireg:linkTo name="" action="/fors/cancelDebiteur.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
+					               title="Annulation de for" confirm="Voulez-vous vraiment annuler ce for fiscal ?"/>
 				</c:if>
 			</c:if>
 		</c:if>

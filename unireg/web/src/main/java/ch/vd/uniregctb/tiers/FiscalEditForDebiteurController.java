@@ -18,8 +18,6 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 	 */
 	protected final Logger LOGGER = Logger.getLogger(FiscalEditForDebiteurController.class);
 
-	public final static String TARGET_REOUVRIR_FOR = "reOuvrirFor";
-
 	private TiersEditManager tiersEditManager;
 	private ForFiscalManager forFiscalManager;
 
@@ -54,16 +52,8 @@ public class FiscalEditForDebiteurController extends AbstractTiersController {
 		TiersEditView bean = (TiersEditView) command;
 		checkAccesDossierEnEcriture(bean.getTiers().getId());
 
-		if (getTarget() != null) {
-			String idForParam = getEventArgument();
-			if (idForParam != null) {
-				Long idFor = Long.parseLong(idForParam);
-				if (TARGET_REOUVRIR_FOR.equals(getTarget())) {
-					forFiscalManager.reouvrirFor(idFor);
-				}
-			}
-		} // button retour liste
-		else if (request.getParameter(BUTTON_BACK_TO_LIST) != null) {
+		// button retour liste
+		if (request.getParameter(BUTTON_BACK_TO_LIST) != null) {
 			return new ModelAndView("redirect:../tiers/list.do");
 		} // button retour visualisation
 		else if (request.getParameter(BUTTON_BACK_TO_VISU) != null) {

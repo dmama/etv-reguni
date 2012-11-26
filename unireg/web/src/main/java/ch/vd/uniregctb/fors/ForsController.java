@@ -759,6 +759,26 @@ public class ForsController {
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + tiers.getId();
 	}
 
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/reopenDebiteur.do", method = RequestMethod.POST)
+	public String reopenDebiteur(long forId) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
+			throw new AccessDeniedException("Vous ne possédez pas le droit IfoSec d'édition des débiteurs de prestations imposables dans Unireg");
+		}
+
+		final ForDebiteurPrestationImposable forFiscal = hibernateTemplate.get(ForDebiteurPrestationImposable.class, forId);
+		if (forFiscal == null) {
+			throw new ObjectNotFoundException("Le for fiscal n°" + forId + " n'existe pas.");
+		}
+		final Tiers tiers = forFiscal.getTiers();
+		controllerUtils.checkAccesDossierEnEcriture(tiers.getId());
+
+		tiersService.reouvrirForDebiteur(forFiscal);
+
+		return "redirect:/fiscal/edit-for-debiteur.do?id=" + tiers.getId();
+	}
+
 	private Map<GenreImpot, String> getGenresImpotPourForAutreImpot() {
 		if (genresImpotsForAutreImpot == null) {
 			genresImpotsForAutreImpot = tiersMapHelper.getMapGenreImpot(GenreImpot.GAIN_IMMOBILIER, GenreImpot.DROIT_MUTATION, GenreImpot.PRESTATION_CAPITAL, GenreImpot.SUCCESSION, GenreImpot.FONCIER,

@@ -4,13 +4,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
-import ch.vd.uniregctb.tiers.ForFiscal;
-import ch.vd.uniregctb.tiers.ForFiscalDAO;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.view.TiersEditView;
 
@@ -19,12 +16,6 @@ import ch.vd.uniregctb.tiers.view.TiersEditView;
  * @author xcifde
  */
 public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManager {
-
-	private ForFiscalDAO forFiscalDAO;
-
-	public void setForFiscalDAO(ForFiscalDAO forFiscalDAO) {
-		this.forFiscalDAO = forFiscalDAO;
-	}
 
 	/**
 	 * Charge les informations dans TiersView
@@ -69,13 +60,4 @@ public class ForFiscalManagerImpl extends TiersManager implements ForFiscalManag
 		return tiersEditView;
 	}
 
-	@Override
-	@Transactional(rollbackFor = Throwable.class)
-	public void reouvrirFor(Long idFor) {
-		ForFiscal forFiscal = forFiscalDAO.get(idFor);
-		if (forFiscal == null) {
-			throw new ObjectNotFoundException("Le for fiscal n°" + idFor + " n'existe pas.");
-		}
-		tiersService.traiterReOuvertureForDebiteur(forFiscal);
-	}
 }

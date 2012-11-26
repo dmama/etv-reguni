@@ -1235,9 +1235,9 @@ public interface TiersService {
      * Permet de traiter la éouverture d'un for fiscal d'un débiteur. Entraine également la réouverture
      * de tous les rapports de travail fermés à la même date que le for.
      *
-     * @param forFiscal
+     * @param forDebiteur le for à réouvrir
      */
-    public void traiterReOuvertureForDebiteur(ForFiscal forFiscal);
+    public void reouvrirForDebiteur(@NotNull ForDebiteurPrestationImposable forDebiteur);
 
     /**
      * Détermine et retourne les numéros de tiers des offices d'impôt de district et de région pour une commune donnée.
