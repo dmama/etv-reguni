@@ -37,7 +37,6 @@ import ch.vd.unireg.xml.party.debtor.v1.DebtorPeriodicity;
 import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
-import ch.vd.unireg.xml.party.relation.v1.ActivityType;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenParties;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
@@ -306,8 +305,6 @@ public class PartyWebServiceTAOISTest extends AbstractPartyWebServiceTest {
 		assertEquals(1678432L, rapport.getOtherPartyNumber()); // 1678432 = N° débiteur
 		assertSameDay(newDate(2008, 1, 29), rapport.getDateFrom());
 		assertNull(rapport.getDateTo());
-		assertEquals(ActivityType.MAIN, rapport.getActivityType());
-		assertEquals(Integer.valueOf(100), rapport.getActivityRate()); // 100%
 	}
 
 	@Test
