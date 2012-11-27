@@ -1,46 +1,37 @@
 package ch.vd.uniregctb.tache;
 
-import java.util.ArrayList;
-import java.util.Collections;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Query;
+import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 
-import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
-import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeTache;
 
 public class ProduireListeTachesEnInstanceParOIDProcessor {
 
-	private static final int BATCH_SIZE = 100;
-
 	final Logger LOGGER = Logger.getLogger(ProduireListeTachesEnInstanceParOIDProcessor.class);
 
 	private final HibernateTemplate hibernateTemplate;
-	private final PlatformTransactionManager transactionManager;
 
-	private final ServiceInfrastructureService serviceInfrastructureService;
 	private final TiersService tiersService;
 	private final AdresseService adresseService;
 
 
 	public ProduireListeTachesEnInstanceParOIDProcessor(HibernateTemplate hibernateTemplate,
-	                                                    ServiceInfrastructureService serviceInfrastructureService, PlatformTransactionManager transactionManager, TiersService tiersService,
+	                                                    TiersService tiersService,
 	                                                    AdresseService adresseService) {
 		this.hibernateTemplate = hibernateTemplate;
-		this.transactionManager = transactionManager;
-
-		this.serviceInfrastructureService = serviceInfrastructureService;
 		this.tiersService = tiersService;
 		this.adresseService = adresseService;
 	}
@@ -53,22 +44,23 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 
 		status.setMessage("Récupération des OID à vérifier...");
 
-		final List<Long> ids = getOidIds();
-		final String query = "SELECT tache.contribuable.officeImpotId," +
-				"tache.class," +
-				"count(*)" +
-				" FROM Tache tache " +
-				" WHERE" +
-				" tache.etat = 'EN_INSTANCE'" +
-				" AND tache.annulationDate is null " +
-				" AND tache.dateEcheance <="+dateTraitement.index()+
-				" AND tache.contribuable.annulationDate is null" +
-				" AND tache.contribuable.officeImpotId is not null" +
-				" ORDER BY tache.contribuable.officeImpotId,tache.class" +
-				" GROUP BY tache.contribuable.officeImpotId,tache.class";
+		final String sql = "SELECT CA.NUMERO_CA, TA.TACHE_TYPE, COUNT(*)"
+				+ " FROM TACHE TA"
+				+ " JOIN TIERS CA ON CA.NUMERO=TA.CA_ID"
+				+ " WHERE TA.ETAT='EN_INSTANCE'"
+				+ " AND TA.ANNULATION_DATE IS NULL"
+				+ " AND TA.DATE_ECHEANCE <= " + dateTraitement.index()
+				+ " GROUP BY CA.NUMERO_CA, TA.TACHE_TYPE"
+				+ " ORDER BY CA.NUMERO_CA, TA.TACHE_TYPE";
 
-
-		final List<Object[]> tachesTrouvees = hibernateTemplate.find(query);
+		@SuppressWarnings("unchecked")
+		final List<Object[]> tachesTrouvees = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
+			@Override
+			public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
+				final Query query = session.createSQLQuery(sql);
+				return query.list();
+			}
+		});
 
 		traiterTaches(tachesTrouvees, rapportFinal, dateTraitement);
 
@@ -105,43 +97,19 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 		return rapportFinal;
 	}
 
-	private List<Long> getOidIds() throws ServiceInfrastructureException {
-		List<EnumTypeCollectivite> typesCollectivite = new ArrayList<EnumTypeCollectivite>();
-		typesCollectivite.add(EnumTypeCollectivite.SIGLE_CIR);
-		List<CollectiviteAdministrative> collectivites = serviceInfrastructureService
-				.getCollectivitesAdministratives(typesCollectivite);
-		List<Long> listId = new ArrayList<Long>();
-		for (CollectiviteAdministrative collectiviteAdministrative : collectivites) {
-			listId.add((long) collectiviteAdministrative.getNoColAdm());
-		}
-		Collections.sort(listId);
-		return listId;
-	}
-
-
-
-
 	private void traiterTaches(List<Object[]> tachesTrouvees, ListeTachesEnInstanceParOID rapport, RegDate dateTraitement) throws Exception {
-
-
-
 		for (Object[] objects : tachesTrouvees) {
-			int numeroOID = (Integer) objects[0];
-			TypeTache typeTache = translateTypeTache((String) objects[1]);
-			long  nombre = (Long) objects[2];
-			String nameType = typeTache.name();
-
-
-
+			final int numeroOID = ((Number) objects[0]).intValue();
+			final TypeTache typeTache = translateTypeTache((String) objects[1]);
+			final long nombre = ((Number) objects[2]).longValue();
+			final String nameType = typeTache.name();
 			rapport.addTypeDeTacheEnInstance(numeroOID, nameType, nombre);
 		}
-
 	}
-	private TypeTache translateTypeTache(String code){
 
+	private TypeTache translateTypeTache(String code){
 		if ("NOUVEAU_DOSSIER".equals(code)) {
 			return TypeTache.TacheNouveauDossier;
-
 		}
 		else if("TRANS_DOSSIER".equals(code)){
 			return TypeTache.TacheTransmissionDossier;
@@ -156,6 +124,5 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 			return TypeTache.TacheAnnulationDeclarationImpot;
 		}
 		return null;
-
 	}
 }

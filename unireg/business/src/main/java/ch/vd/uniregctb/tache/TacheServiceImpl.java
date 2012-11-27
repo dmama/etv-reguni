@@ -1179,8 +1179,7 @@ public class TacheServiceImpl implements TacheService {
 
 	@Override
 	public ListeTachesEnInstanceParOID produireListeTachesEnInstanceParOID(RegDate dateTraitement, StatusManager status) throws Exception {
-		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, serviceInfra, transactionManager, tiersService,
-				adresseService);
+		final ProduireListeTachesEnInstanceParOIDProcessor processor = new ProduireListeTachesEnInstanceParOIDProcessor(hibernateTemplate, tiersService, adresseService);
 		return processor.run(dateTraitement, status);
 	}
 
