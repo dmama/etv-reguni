@@ -207,7 +207,7 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		if (StringUtils.isNotBlank(fauxPositifs)) {
 			String[] arrayFauxPositifs = fauxPositifs.split(",");
 			for(String fauxPositif : arrayFauxPositifs) {
-				patternsFauxPositif.add(Pattern.compile(buildRegExpFauxPositif(fauxPositif)));
+				patternsFauxPositif.add(Pattern.compile(buildRegExpFauxPositif(fauxPositif.trim())));
 			}
 			LOGGER.info("les " + arrayFauxPositifs.length + " termes suivants sont utilisés pour détecter les faux positifs : " + fauxPositifs);
 		} else {
@@ -220,7 +220,7 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 		if (StringUtils.isNotBlank(localitesInvalides)) {
 			String[] arraylocalitesInvalides = localitesInvalides.split(",");
 			for(String termeInvalide : arraylocalitesInvalides) {
-				patternsLocaliteInvalide.add(Pattern.compile(buildRegExpLocaliteInvalide(termeInvalide)));
+				patternsLocaliteInvalide.add(Pattern.compile(buildRegExpLocaliteInvalide(termeInvalide.trim())));
 			}
 			LOGGER.info("les " + arraylocalitesInvalides.length + " termes suivants sont utilisés pour détecter les libellés de localité invalide : " + localitesInvalides );
 		} else {

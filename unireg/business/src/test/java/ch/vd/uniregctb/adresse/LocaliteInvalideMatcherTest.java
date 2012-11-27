@@ -137,6 +137,30 @@ public class LocaliteInvalideMatcherTest extends WithoutSpringTest {
 		assertFalse(LocaliteInvalideMatcher.match("D-37880 INCONUSBURG"));
 	}
 
+	/**
+	 * Les espaces entourant les virgules dans les propriétés localiteInvalide et fauxPositif
+	 * ne doivent pas avoir d'incidence sur le résultat
+	 *
+	 */
+	@Test
+	public void testAvecDesEspacesAutourDesVirgules() throws Exception {
+		LocaliteInvalideMatcher bean = new LocaliteInvalideMatcher();
+		bean.setEnabled(true);
+		bean.setLocalitesInvalides("adrese , etranger ,inconu");
+		bean.setFauxPositifs("sainte-adresse , etrangerio , inconusburg");
+		bean.afterPropertiesSet();
+		assertTrue(LocaliteInvalideMatcher.match("adrese"));
+		assertTrue(LocaliteInvalideMatcher.match("adresse"));
+		assertTrue(LocaliteInvalideMatcher.match("etranger"));
+		assertTrue(LocaliteInvalideMatcher.match("E T R A N G E R"));
+		assertTrue(LocaliteInvalideMatcher.match("inconu"));
+		assertTrue(LocaliteInvalideMatcher.match("innconue"));
+		assertFalse(LocaliteInvalideMatcher.match("Sainte-Adresse-Sur-Venoge"));
+		assertFalse(LocaliteInvalideMatcher.match("ETrangerio"));
+		assertFalse(LocaliteInvalideMatcher.match("D-37880 INCONUSBURG"));
+	}
+
+
 	private final String [] patternsInvalidesLesPlusCourantDansUnireg = new String [] {
 			"Sans Adresse",
 			"Inconnu",
