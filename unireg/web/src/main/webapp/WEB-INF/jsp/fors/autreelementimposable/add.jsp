@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.fors.AddForSecondaireView"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.fors.AddForAutreElementImposableView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
-  		<fmt:message key="title.creation.for.secondaire">
+  		<fmt:message key="title.creation.for.autre.element.imposable">
   			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
@@ -16,7 +16,7 @@
 				padding-left: 40px;
 				padding-top: 4px;
 				height: 32px;
-				background: url(../css/x/fors/secondaire_32.png) no-repeat;
+				background: url(../css/x/fors/autreelementimposable_32.png) no-repeat;
 			}
 		</style>
 	</tiles:put>
@@ -24,16 +24,18 @@
 
 		<div style="float: right; margin: 0.5em;">
 			<authz:authorize ifAnyGranted="ROLE_FOR_PRINC_ORDDEP_HAB,ROLE_FOR_PRINC_ORDDEP_HCHS,ROLE_FOR_PRINC_ORDDEP_GRIS,ROLE_FOR_PRINC_SOURC_HAB,ROLE_FOR_PRINC_SOURC_HCHS,ROLE_FOR_PRINC_SOURC_GRIS">
-				<unireg:linkTo name="Créer un for principal" action="/fors/addPrincipal.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
+				<unireg:linkTo name="Créer un for principal" action="/fors/principal/add.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
+			</authz:authorize>
+			<authz:authorize ifAnyGranted="ROLE_FOR_SECOND_PP">
+				<unireg:linkTo name="Créer un for secondaire" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
 			</authz:authorize>
 			<authz:authorize ifAnyGranted="ROLE_FOR_AUTRE">
-				<unireg:linkTo name="Créer un for autre élément imposable" action="/fors/addAutreElementImposable.do" params="{tiersId:${command.tiersId}}" link_class="createAutreElementLink"/>
-				<unireg:linkTo name="Créer un for autre impôt" action="/fors/addAutreImpot.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
+				<unireg:linkTo name="Créer un for autre impôt" action="/fors/autreimpot/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreLink"/>
 			</authz:authorize>
 		</div>
 		<div style="clear: right;"/>
 
-		<form:form commandName="command" action="addSecondaire.do">
+		<form:form commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 
@@ -53,7 +55,7 @@
 					<tr class="<unireg:nextRowClass/>" >
 						<td width="20%"><fmt:message key="label.genre.impot"/>&nbsp;:</td>
 						<td><fmt:message key="option.genre.impot.REVENU_FORTUNE"/></td>
-						<td width="20%"><fmt:message key="label.rattachement"/>&nbsp;:</td>
+						<td width="20%" ><fmt:message key="label.rattachement"/>&nbsp;:</td>
 						<td>
 							<%--@elvariable id="rattachements" type="java.util.Map<MotifRattachement, String>"--%>
 							<form:select path="motifRattachement" items="${rattachements}" id="rattachement" onchange="updateMotifsFors();"/>

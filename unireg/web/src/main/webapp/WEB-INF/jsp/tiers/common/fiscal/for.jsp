@@ -89,25 +89,25 @@
 		<c:if test="${page == 'edit' }">
 			<c:if test="${!forFiscal.annule}">
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalPrincipal' && autorisations.forsPrincipaux}">
-					<unireg:linkTo name="" action="/fors/editPrincipal.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<unireg:linkTo name="" action="/fors/principal/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
 					<c:if test="${forFiscal.dernierForPrincipalOuDebiteur}">
-						<unireg:linkTo name="" action="/fors/cancelPrincipal.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
+						<unireg:linkTo name="" action="/fors/principal/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
 						               title="Annulation de for" confirm="Voulez-vous vraiment annuler ce for fiscal ?"/>
 					</c:if>
 				</c:if>
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalSecondaire' && autorisations.forsSecondaires}">
-					<unireg:linkTo name="" action="/fors/editSecondaire.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
-					<unireg:linkTo name="" action="/fors/cancelSecondaire.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
+					<unireg:linkTo name="" action="/fors/secondaire/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<unireg:linkTo name="" action="/fors/secondaire/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
 					               title="Annulation de for" confirm="Voulez-vous vraiment annuler ce for fiscal ?"/>
 				</c:if>
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreElementImposable' && autorisations.forsAutresElementsImposables}">
-					<unireg:linkTo name="" action="/fors/editAutreElementImposable.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
-					<unireg:linkTo name="" action="/fors/cancelAutreElementImposable.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
+					<unireg:linkTo name="" action="/fors/autreelementimposable/edit.do" method="GET" params="{forId:${forFiscal.id}}" link_class="edit" title="Edition de for" />
+					<unireg:linkTo name="" action="/fors/autreelementimposable/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
 					               title="Annulation de for" confirm="Voulez-vous vraiment annuler ce for fiscal ?"/>
 				</c:if>
 				<c:if test="${forFiscal.natureForFiscal == 'ForFiscalAutreImpot' && autorisations.forsAutresImpots}">
 					<span class="button_placeholder">&nbsp;</span>
-					<unireg:linkTo name="" action="/fors/cancelAutreImpot.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
+					<unireg:linkTo name="" action="/fors/autreimpot/cancel.do" method="POST" params="{forId:${forFiscal.id}}" link_class="delete"
 					               title="Annulation de for" confirm="Voulez-vous vraiment annuler ce for fiscal ?"/>
 				</c:if>
 			</c:if>

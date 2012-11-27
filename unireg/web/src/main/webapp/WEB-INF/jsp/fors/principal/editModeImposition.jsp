@@ -14,7 +14,7 @@
 			<tr valign="top">
 				<td>
 
-					<form:form name="formFor" id="formFor">
+					<form:form name="formFor" id="formFor" action="editModeImposition.do">
 						<fieldset>
 							<legend><span><fmt:message key="label.for.fiscal"/></span></legend>
 

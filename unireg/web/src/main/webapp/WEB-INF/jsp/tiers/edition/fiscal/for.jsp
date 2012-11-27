@@ -9,17 +9,17 @@
 			<td>
 				<unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 				<c:if test="${autorisations.forsPrincipaux}">
-					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addPrincipal.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/principal/add.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
 				</c:if>
 				<c:if test="${!autorisations.forsPrincipaux && autorisations.forsSecondaires}">
-					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addSecondaire.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/secondaire/add.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
 				</c:if>
 				<c:if test="${!autorisations.forsPrincipaux && !autorisations.forsSecondaires && autorisations.forsAutresElementsImposables}">
-					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/addAutreElementImposable.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+					<unireg:linkTo name="Ajouter" title="Ajouter un for" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
 				</c:if>
 
 				<c:if test="${command.forsPrincipalActif != null && autorisations.forsPrincipaux}">
-					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fors/editModeImposition.do" params="{forId:${command.forsPrincipalActif.id}}" link_class="add"/>
+					<unireg:linkTo name="Changer le mode d'imposition" title="Changer le mode d'imposition" action="/fors/principal/editModeImposition.do" params="{forId:${command.forsPrincipalActif.id}}" link_class="add"/>
 				</c:if>
 			</td>
 		</tr>

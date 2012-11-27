@@ -10,7 +10,7 @@
 	</tiles:put>
 
 	<tiles:put name="body">
-		<form:form name="formFor" id="formFor">
+		<form:form name="formFor" id="formFor" action="edit.do">
 
 			<form:hidden path="id"/>
 

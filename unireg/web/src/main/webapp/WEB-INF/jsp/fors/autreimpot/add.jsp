@@ -24,18 +24,18 @@
 
 		<div style="float: right; margin: 0.5em;">
 			<authz:authorize ifAnyGranted="ROLE_FOR_PRINC_ORDDEP_HAB,ROLE_FOR_PRINC_ORDDEP_HCHS,ROLE_FOR_PRINC_ORDDEP_GRIS,ROLE_FOR_PRINC_SOURC_HAB,ROLE_FOR_PRINC_SOURC_HCHS,ROLE_FOR_PRINC_SOURC_GRIS">
-				<unireg:linkTo name="Créer un for principal" action="/fors/addPrincipal.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
+				<unireg:linkTo name="Créer un for principal" action="/fors/principal/add.do" params="{tiersId:${command.tiersId}}" link_class="createPrincipalLink"/>
 			</authz:authorize>
 			<authz:authorize ifAnyGranted="ROLE_FOR_SECOND_PP">
-				<unireg:linkTo name="Créer un for secondaire" action="/fors/addSecondaire.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
+				<unireg:linkTo name="Créer un for secondaire" action="/fors/secondaire/add.do" params="{tiersId:${command.tiersId}}" link_class="createSecondaireLink"/>
 			</authz:authorize>
 			<authz:authorize ifAnyGranted="ROLE_FOR_AUTRE">
-				<unireg:linkTo name="Créer un for autre élément imposable" action="/fors/addAutreElementImposable.do" params="{tiersId:${command.tiersId}}" link_class="createAutreElementLink"/>
+				<unireg:linkTo name="Créer un for autre élément imposable" action="/fors/autreelementimposable/add.do" params="{tiersId:${command.tiersId}}" link_class="createAutreElementLink"/>
 			</authz:authorize>
 		</div>
 		<div style="clear: right;"/>
 
-		<form:form commandName="command" action="addAutreImpot.do">
+		<form:form commandName="command" action="add.do">
 			<fieldset>
 				<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 

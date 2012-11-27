@@ -179,7 +179,7 @@ public class ForsController {
 		return autorisationManager.getAutorisations(ctb, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
 	}
 
-	@RequestMapping(value = "/addPrincipal.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/principal/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addPrincipal(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -199,11 +199,11 @@ public class ForsController {
 		model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
 		model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
 		model.addAttribute("command", new AddForPrincipalView(tiersId));
-		return "fors/addPrincipal";
+		return "fors/principal/add";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/addPrincipal.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/principal/add.do", method = RequestMethod.POST)
 	public String addPrincipal(@Valid @ModelAttribute("command") final AddForPrincipalView view, BindingResult result, Model model) throws Exception {
 
 		final long ctbId = view.getTiersId();
@@ -224,7 +224,7 @@ public class ForsController {
 			model.addAttribute("rattachements", getMotifsRattachementPourForPrincipal());
 			model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscale());
-			return "fors/addPrincipal";
+			return "fors/principal/add";
 		}
 
 
@@ -234,7 +234,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
-	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/principal/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editPrincipal(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
@@ -251,11 +251,11 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ffp.getTiers().getNumero());
 
 		model.addAttribute("command", new EditForPrincipalView(ffp));
-		return "fors/editPrincipal";
+		return "fors/principal/edit";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/editPrincipal.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/principal/edit.do", method = RequestMethod.POST)
 	public String editPrincipal(@Valid @ModelAttribute("command") final EditForPrincipalView view, BindingResult result, Model model) throws Exception {
 
 		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
@@ -272,7 +272,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			return "fors/editPrincipal";
+			return "fors/principal/edit";
 		}
 
 		final ForFiscalPrincipal newFor = tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
@@ -281,7 +281,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/cancelPrincipal.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/principal/cancel.do", method = RequestMethod.POST)
 	public String cancelPrincipal(long forId) throws Exception {
 
 		final ForFiscalPrincipal forFiscal = hibernateTemplate.get(ForFiscalPrincipal.class, forId);
@@ -301,7 +301,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
 	}
 
-	@RequestMapping(value = "/editModeImposition.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/principal/editModeImposition.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editModeImposition(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
@@ -319,11 +319,11 @@ public class ForsController {
 
 		model.addAttribute("command", new EditModeImpositionView(ffp));
 		model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
-		return "fors/editModeImposition";
+		return "fors/principal/editModeImposition";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/editModeImposition.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/principal/editModeImposition.do", method = RequestMethod.POST)
 	public String editModeImposition(@Valid @ModelAttribute("command") final EditModeImpositionView view, BindingResult result, Model model) throws Exception {
 
 		final ForFiscalPrincipal ffp = hibernateTemplate.get(ForFiscalPrincipal.class, view.getId());
@@ -341,7 +341,7 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("modesImposition", tiersMapHelper.getMapModeImposition());
-			return "fors/editModeImposition";
+			return "fors/principal/editModeImposition";
 		}
 
 		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((Contribuable) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
@@ -349,7 +349,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
-	@RequestMapping(value = "/addSecondaire.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/secondaire/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addSecondaire(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -367,11 +367,11 @@ public class ForsController {
 
 		model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
 		model.addAttribute("command", new AddForSecondaireView(tiersId));
-		return "fors/addSecondaire";
+		return "fors/secondaire/add";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/addSecondaire.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/secondaire/add.do", method = RequestMethod.POST)
 	public String addSecondaire(@Valid @ModelAttribute("command") final AddForSecondaireView view, BindingResult result, Model model) throws Exception {
 
 		final long ctbId = view.getTiersId();
@@ -390,7 +390,7 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMotifsRattachementPourForSecondaire());
-			return "fors/addSecondaire";
+			return "fors/secondaire/add";
 		}
 
 		final ForFiscalSecondaire newFor = tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
@@ -399,7 +399,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
-	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/secondaire/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editSecondaire(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
@@ -416,11 +416,11 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ffs.getTiers().getNumero());
 
 		model.addAttribute("command", new EditForSecondaireView(ffs));
-		return "fors/editSecondaire";
+		return "fors/secondaire/edit";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/editSecondaire.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/secondaire/edit.do", method = RequestMethod.POST)
 	public String editSecondaire(@Valid @ModelAttribute("command") final EditForSecondaireView view, BindingResult result, Model model) throws Exception {
 
 		final ForFiscalSecondaire ffs = hibernateTemplate.get(ForFiscalSecondaire.class, view.getId());
@@ -437,7 +437,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			return "fors/editSecondaire";
+			return "fors/secondaire/edit";
 		}
 
 		final ForFiscalSecondaire newFor = tiersService.updateForSecondaire(ffs, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
@@ -446,7 +446,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/cancelSecondaire.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/secondaire/cancel.do", method = RequestMethod.POST)
 	public String cancelSecondaire(long forId) throws Exception {
 
 		final ForFiscalSecondaire forFiscal = hibernateTemplate.get(ForFiscalSecondaire.class, forId);
@@ -466,7 +466,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
 	}
 
-	@RequestMapping(value = "/addAutreElementImposable.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/autreelementimposable/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreElementImposable(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -484,11 +484,11 @@ public class ForsController {
 
 		model.addAttribute("rattachements", getMotifsRattachementPourForAutreElementImposable());
 		model.addAttribute("command", new AddForAutreElementImposableView(tiersId));
-		return "fors/addAutreElementImposable";
+		return "fors/autreelementimposable/add";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/addAutreElementImposable.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/autreelementimposable/add.do", method = RequestMethod.POST)
 	public String addAutreElementImposable(@Valid @ModelAttribute("command") final AddForAutreElementImposableView view, BindingResult result, Model model) throws Exception {
 
 		final long ctbId = view.getTiersId();
@@ -507,7 +507,7 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("rattachements", getMotifsRattachementPourForAutreElementImposable());
-			return "fors/addAutreElementImposable";
+			return "fors/autreelementimposable/add";
 		}
 
 		final ForFiscalAutreElementImposable newFor = tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
@@ -516,7 +516,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
 	}
 
-	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/autreelementimposable/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editAutreElementImposable(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
@@ -533,11 +533,11 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ffaei.getTiers().getNumero());
 
 		model.addAttribute("command", new EditForAutreElementImposableView(ffaei));
-		return "fors/editAutreElementImposable";
+		return "fors/autreelementimposable/edit";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/editAutreElementImposable.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/autreelementimposable/edit.do", method = RequestMethod.POST)
 	public String editAutreElementImposable(@Valid @ModelAttribute("command") final EditForAutreElementImposableView view, BindingResult result, Model model) throws Exception {
 
 		final ForFiscalAutreElementImposable ffaei = hibernateTemplate.get(ForFiscalAutreElementImposable.class, view.getId());
@@ -554,7 +554,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(ctbId);
 
 		if (result.hasErrors()) {
-			return "fors/editAutreElementImposable";
+			return "fors/autreelementimposable/edit";
 		}
 
 		final ForFiscalAutreElementImposable newFor = tiersService.updateForAutreElementImposable(ffaei, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
@@ -563,7 +563,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/cancelAutreElementImposable.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/autreelementimposable/cancel.do", method = RequestMethod.POST)
 	public String cancelAutreElementImposable(long forId) throws Exception {
 
 		final ForFiscalAutreElementImposable forFiscal = hibernateTemplate.get(ForFiscalAutreElementImposable.class, forId);
@@ -583,7 +583,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
 	}
 
-	@RequestMapping(value = "/addAutreImpot.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/autreimpot/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addAutreImpot(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -601,11 +601,11 @@ public class ForsController {
 
 		model.addAttribute("genresImpot", getGenresImpotPourForAutreImpot());
 		model.addAttribute("command", new AddForAutreImpotView(tiersId));
-		return "fors/addAutreImpot";
+		return "fors/autreimpot/add";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/addAutreImpot.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/autreimpot/add.do", method = RequestMethod.POST)
 	public String addAutreImpot(@Valid @ModelAttribute("command") final AddForAutreImpotView view, BindingResult result, Model model) throws Exception {
 
 		final long ctbId = view.getTiersId();
@@ -624,7 +624,7 @@ public class ForsController {
 
 		if (result.hasErrors()) {
 			model.addAttribute("genresImpot", getGenresImpotPourForAutreImpot());
-			return "fors/addAutreImpot";
+			return "fors/autreimpot/add";
 		}
 
 		final ForFiscalAutreImpot newFor = tiersService.openForFiscalAutreImpot(ctb, view.getGenreImpot(), view.getDateEvenement(), view.getNoAutoriteFiscale());
@@ -633,7 +633,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/cancelAutreImpot.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/autreimpot/cancel.do", method = RequestMethod.POST)
 	public String cancelAutreImpot(long forId) throws Exception {
 
 		final ForFiscalAutreImpot forFiscal = hibernateTemplate.get(ForFiscalAutreImpot.class, forId);
@@ -653,7 +653,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit.do?id=" + tiers.getId() + "&highlightFor=" + forFiscal.getId();
 	}
 
-	@RequestMapping(value = "/addDebiteur.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/debiteur/add.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String addDebiteur(@RequestParam(value = "tiersId", required = true) long tiersId, Model model) {
 
@@ -665,11 +665,11 @@ public class ForsController {
 		model.addAttribute("anneeMinimaleForDebiteur", paramService.getAnneeMinimaleForDebiteur());
 		model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscaleDPI());
 		model.addAttribute("command", new AddForDebiteurView(tiersId));
-		return "fors/addDebiteur";
+		return "fors/debiteur/add";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/addDebiteur.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/debiteur/add.do", method = RequestMethod.POST)
 	public String addDebiteur(@Valid @ModelAttribute("command") final AddForDebiteurView view, BindingResult result, Model model) throws Exception {
 
 		final long dpiId = view.getTiersId();
@@ -682,7 +682,7 @@ public class ForsController {
 		if (result.hasErrors()) {
 			model.addAttribute("anneeMinimaleForDebiteur", paramService.getAnneeMinimaleForDebiteur());
 			model.addAttribute("typesForFiscal", tiersMapHelper.getMapTypeAutoriteFiscaleDPI());
-			return "fors/addDebiteur";
+			return "fors/debiteur/add";
 		}
 
 		final DebiteurPrestationImposable debiteur = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
@@ -695,7 +695,7 @@ public class ForsController {
 		return "redirect:/fiscal/edit-for-debiteur.do?id=" + dpiId;
 	}
 
-	@RequestMapping(value = "/editDebiteur.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/debiteur/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public String editDebiteur(@RequestParam(value = "forId", required = true) long forId, Model model) {
 
@@ -711,11 +711,11 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(fdpi.getTiers().getNumero());
 
 		model.addAttribute("command", new EditForDebiteurView(fdpi));
-		return "fors/editDebiteur";
+		return "fors/debiteur/edit";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/editDebiteur.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/debiteur/edit.do", method = RequestMethod.POST)
 	public String editDebiteur(@Valid @ModelAttribute("command") final EditForDebiteurView view, BindingResult result, Model model) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
@@ -731,7 +731,7 @@ public class ForsController {
 		controllerUtils.checkAccesDossierEnEcriture(dpiId);
 
 		if (result.hasErrors()) {
-			return "fors/editDebiteur";
+			return "fors/debiteur/edit";
 		}
 
 		tiersService.updateForDebiteur(fdpi, view.getDateFin());
@@ -740,7 +740,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/cancelDebiteur.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/debiteur/cancel.do", method = RequestMethod.POST)
 	public String cancelDebiteur(long forId) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {
@@ -760,7 +760,7 @@ public class ForsController {
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/reopenDebiteur.do", method = RequestMethod.POST)
+	@RequestMapping(value = "/debiteur/reopen.do", method = RequestMethod.POST)
 	public String reopenDebiteur(long forId) throws Exception {
 
 		if (!SecurityHelper.isGranted(securityProvider, Role.CREATE_DPI)) {

@@ -7,7 +7,7 @@
 	<table border="0">
 		<tr class="<unireg:nextRowClass/>" >
 			<td>
-				<unireg:linkTo name="Ajouter" title="Ajouter for" action="/fors/addDebiteur.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
+				<unireg:linkTo name="Ajouter" title="Ajouter for" action="/fors/debiteur/add.do" params="{tiersId:${command.tiers.numero}}" link_class="add"/>
 			</td>
 		</tr>
 	</table>

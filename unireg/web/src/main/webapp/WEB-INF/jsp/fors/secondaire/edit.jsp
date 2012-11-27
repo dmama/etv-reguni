@@ -1,11 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
-<%--@elvariable id="command" type="ch.vd.uniregctb.fors.EditForPrincipalView"--%>
+<%--@elvariable id="command" type="ch.vd.uniregctb.fors.EditForSecondaireView"--%>
 
 <tiles:insert template="/WEB-INF/jsp/templates/template.jsp">
   	<tiles:put name="title">
-  		<fmt:message key="title.edition.for.principal">
+  		<fmt:message key="title.edition.for.secondaire">
   			<fmt:param><unireg:numCTB numero="${command.tiersId}"/></fmt:param>
   		</fmt:message>
   	</tiles:put>
@@ -16,7 +16,7 @@
 				padding-left: 40px;
 				padding-top: 4px;
 				height: 32px;
-				background: url(../css/x/fors/principal_32.png) no-repeat;
+				background: url(../css/x/fors/secondaire_32.png) no-repeat;
 			}
 		</style>
 	</tiles:put>
@@ -24,7 +24,7 @@
 
 		<table border="0"><tr valign="top">
 		<td>
-			<form:form commandName="command" action="editPrincipal.do">
+			<form:form commandName="command" action="edit.do">
 				<fieldset>
 					<legend><span><fmt:message key="label.for.fiscal" /></span></legend>
 
@@ -41,25 +41,30 @@
 						</tr>
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.date.ouverture" />&nbsp;:</td>
-							<td><unireg:regdate regdate="${command.dateDebut}"/></td>
+							<td>
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="dateDebut" />
+									<jsp:param name="id" value="dateDebut" />
+									<jsp:param name="onChange" value="updateSyncActions" />
+									<jsp:param name="onkeyup" value="updateSyncActions" />
+								</jsp:include>
+							</td>
 							<td><fmt:message key="label.date.fermeture" />&nbsp;:</td>
 							<td>
-								<c:if test="${command.dateFinEditable}">
-									<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-										<jsp:param name="path" value="dateFin"/>
-										<jsp:param name="id" value="dateFin"/>
-										<jsp:param name="onChange" value="updateSyncActions"/>
-										<jsp:param name="onkeyup" value="updateSyncActions"/>
-									</jsp:include>
-								</c:if>
-								<c:if test="${!command.dateFinEditable}">
-									<unireg:regdate regdate="${command.dateFin}"/>
-								</c:if>
+								<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+									<jsp:param name="path" value="dateFin" />
+									<jsp:param name="id" value="dateFin" />
+									<jsp:param name="onChange" value="updateSyncActions" />
+									<jsp:param name="onkeyup" value="updateSyncActions" />
+								</jsp:include>
 							</td>
 						</tr>
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.motif.ouverture" />&nbsp;:</td>
-							<td><fmt:message key="option.motif.ouverture.${command.motifDebut}" /></td>
+							<td>
+								<form:select path="motifDebut" cssStyle="width:30ex" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
+								<form:errors path="motifDebut" cssClass="error" />
+							</td>
 							<td><fmt:message key="label.motif.fermeture" />&nbsp;:</td>
 							<td>
 								<form:select path="motifFin" cssStyle="width:30ex" onchange="updateSyncActions();" onkeyup="updateSyncActions();"/>
@@ -69,23 +74,10 @@
 
 						<tr class="<unireg:nextRowClass/>" >
 							<td><fmt:message key="label.type.for.fiscal"/>&nbsp;:</td>
-							<td><fmt:message key="option.type.for.fiscal.${command.typeAutoriteFiscale}" /></td>
+							<td><fmt:message key="option.type.for.fiscal.COMMUNE_OU_FRACTION_VD" /></td>
+							<td><label for="autoriteFiscale"><fmt:message key="label.commune.fraction"/>&nbsp;:</label></td>
 							<td>
-								<label for="autoriteFiscale">
-								<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
-									<fmt:message key="label.commune.fraction"/>
-								</c:if>
-								<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
-									<fmt:message key="label.commune"/>
-								</c:if>
-								<c:if test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
-									<fmt:message key="label.pays"/>
-								</c:if>
-								&nbsp;:
-								</label>
-							</td>
-							<td>
-								<input id="autoriteFiscale" size="25">
+								<input id="autoriteFiscale" size="25" />
 								<form:errors path="noAutoriteFiscale" cssClass="error" />
 								<form:hidden path="noAutoriteFiscale" />
 							</td>
@@ -93,7 +85,6 @@
 					</table>
 				</fieldset>
 
-				<form:errors cssClass="error" />
 				<table border="0">
 					<tr>
 						<td width="25%">&nbsp;</td>
@@ -113,8 +104,8 @@
 		<script type="text/javascript">
 			function updateSyncActions() {
 
-				var motifsDebut = '${command.motifDebut}';
-				var dateDebut = '<unireg:regdate regdate="${command.dateDebut}" />';
+				var motifsDebut = $('#motifDebut').val();
+				var dateDebut = $('#dateDebut').val();
 				var motifsFin = $('#motifFin').val();
 				var dateFin = $('#dateFin').val();
 
@@ -142,21 +133,14 @@
 				}, 'json').error(Ajax.notifyErrorHandler("simulation des changements"));
 			}
 
-			// on initialise les motifs au chargement de la page
-			Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'REVENU_FORTUNE', '${command.motifRattachement}', '${command.motifFin}');
 
-			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
+			// on initialise l'auto-completion de l'autorité fiscale
 			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel"/>');
 			Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
-			</c:if>
-			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
-			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel"/>');
-			Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
-			</c:if>
-			<c:if test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
-			$('#autoriteFiscale').val('<unireg:infra entityType="pays" entityId="${command.noAutoriteFiscale}" entityPropertyName="nomCourt"/>');
-			Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
-			</c:if>
+
+			// on initialise les motifs au chargement de la page
+			Fors.updateMotifsOuverture($('#motifDebut'), '${command.tiersId}', 'REVENU_FORTUNE', '${command.motifRattachement}', '${command.motifDebut}');
+			Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'REVENU_FORTUNE', '${command.motifRattachement}', '${command.motifFin}');
 		</script>
 
 	</tiles:put>

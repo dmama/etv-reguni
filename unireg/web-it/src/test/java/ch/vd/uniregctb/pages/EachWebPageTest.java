@@ -97,12 +97,12 @@ public class EachWebPageTest extends WebitTest {
 	// Page de visualisation d'un for
 	@Test
 	public void testTiersEditFor() throws Exception {
-		assertPage("/fors/editPrincipal.do?forId=7", "Edition d'un for fiscal principal sur le contribuable n°129.000.01");
+		assertPage("/fors/principal/edit.do?forId=7", "Edition d'un for fiscal principal sur le contribuable n°129.000.01");
 	}
 
 	@Test
 	public void testTiersEditForInexistant() throws Exception {
-		assertPage("/fors/editPrincipal.do?forId=12345678", "Page d'erreur", "Le for principal avec l'id = 12345678 n'existe pas");
+		assertPage("/fors/principal/edit.do?forId=12345678", "Page d'erreur", "Le for principal avec l'id = 12345678 n'existe pas");
 	}
 
 	// Page de visualisation d'une adresse

@@ -85,7 +85,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -133,7 +133,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -181,7 +181,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -228,7 +228,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -277,7 +277,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -326,7 +326,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -375,7 +375,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", "COMMUNE_OU_FRACTION_VD");
 		request.addParameter("noAutoriteFiscale", "5586");
 		request.addParameter("modeImposition", "ORDINAIRE");
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -425,7 +425,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.PAYS_HS.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockPays.RDA.getNoOFS()));
 		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 		request.setMethod("POST");
 
 		// Appel au contrôleur
@@ -532,7 +532,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.PAYS_HS.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockPays.France.getNoOFS()));
 		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -650,7 +650,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.VillarsSousYens.getNoOFS()));
 		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
-		request.setRequestURI("/fors/addPrincipal.do");
+		request.setRequestURI("/fors/principal/add.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -707,7 +707,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateDebut", RegDateHelper.dateToDisplayString(dateOuvertureNouveauFor));
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Vevey.getNoOFS()));
-		request.setRequestURI("/fors/addDebiteur.do");
+		request.setRequestURI("/fors/debiteur/add.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -777,7 +777,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateFin", "30.12.2010");
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Villette.getNoOFS()));
-		request.setRequestURI("/fors/addDebiteur.do");
+		request.setRequestURI("/fors/debiteur/add.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -853,7 +853,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("modeImposition", ModeImposition.ORDINAIRE.name());
 		request.addParameter("motifDebut", MotifFor.DEPART_HS.name());
 		request.addParameter("motifFin", MotifFor.ARRIVEE_HS.name());
-		request.setRequestURI("/fors/editPrincipal.do");
+		request.setRequestURI("/fors/principal/edit.do");
 		request.setMethod("POST");
 
 		final ModelAndView mav = handle(request, response);
@@ -910,7 +910,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		request.addParameter("dateFin", RegDateHelper.dateToDisplayString(dateFermeture));
 		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
 		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Bex.getNoOFS()));
-		request.setRequestURI("/fors/editDebiteur.do");
+		request.setRequestURI("/fors/debiteur/edit.do");
 
 		// Appel au contrôleur
 		final ModelAndView mav = handle(request, response);
@@ -989,7 +989,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		// simulation de l'annulation du for principal
 		request.setMethod("POST");
 		request.addParameter("forId", ids.forPrincipalId.toString());
-		request.setRequestURI("/fors/cancelPrincipal.do");
+		request.setRequestURI("/fors/principal/cancel.do");
 
 		// Appel au contrôleur
 		try {
@@ -1050,7 +1050,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		// simulation de l'annulation du second for principal
 		request.setMethod("POST");
 		request.addParameter("forId", ids.secondForPrincipalId.toString());
-		request.setRequestURI("/fors/cancelPrincipal.do");
+		request.setRequestURI("/fors/principal/cancel.do");
 
 		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
@@ -1116,7 +1116,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 		// simulation de l'annulation du second for principal
 		request.setMethod("POST");
 		request.addParameter("forId", ids.secondForPrincipalId.toString());
-		request.setRequestURI("/fors/cancelPrincipal.do");
+		request.setRequestURI("/fors/principal/cancel.do");
 
 		final ModelAndView mav = handle(request, response);
 		assertNotNull(mav);
