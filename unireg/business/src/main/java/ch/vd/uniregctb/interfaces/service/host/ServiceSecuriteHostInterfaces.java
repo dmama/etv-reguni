@@ -2,6 +2,7 @@ package ch.vd.uniregctb.interfaces.service.host;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,10 +44,10 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 			throw new ServiceSecuriteException("impossible de récupérer les collectivités de l'utilisateur " + visaOperateur, e);
 		}
 		catch (SecuriteException e) {
-			if (isOperateurInconnuException(e)) {
-				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null, on
+			if (isOperateurInconnuException(e) || isOperateurTermineException(e)) {
+				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null/vide, on
 				// corrige ce comportement ici
-				return null;
+				return Collections.emptyList();
 			}
 			throw new ServiceSecuriteException("impossible de récupérer les collectivités de l'utilisateur " + visaOperateur, e);
 		}
@@ -79,7 +80,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 					+ codeCollectivite, e);
 		}
 		catch (SecuriteException e) {
-			if (isOperateurInconnuException(e)) {
+			if (isOperateurInconnuException(e) || isOperateurTermineException(e)) {
 				// [hack] L'EJB du service sécurité lève une exception lorsque l'opérateur n'est pas connu, plutôt que de retourner null, on
 				// corrige ce comportement ici
 				return null;
@@ -97,6 +98,21 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 		if (root instanceof ProxyBuisnessException) {
 			final ProxyBuisnessException pbe = (ProxyBuisnessException) root;
 			if (pbe.getMessage().endsWith("rateur n'existe pas.")) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Dans le cas où on demande les collectivités d'un opérateur maintenant invalide (= terminé), Host-Interface nous renvoie une exception...
+	 * @return vrai si l'exception spécifiée est levée par host-interface parce que l'opérateur est terminé (= avec une date de fin de validité)
+	 */
+	private static boolean isOperateurTermineException(SecuriteException e) {
+		final Exception root = getRootException(e);
+		if (root instanceof ProxyBuisnessException) {
+			final ProxyBuisnessException pbe = (ProxyBuisnessException) root;
+			if (pbe.getMessage().endsWith("rateur est terminé.")) {
 				return true;
 			}
 		}
@@ -155,11 +171,11 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	@Override
 	public Operateur getOperateur(long individuNoTechnique) {
 		try {
-			return serviceSecurite.getOperateur(individuNoTechnique);
+			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
+			return serviceSecurite.getOperateurTous(individuNoTechnique);
 		}
 		catch (Exception e) {
-			throw new ServiceSecuriteException("impossible de récupérer  l'utilisateur correspondant au numéro d'individu "
-					+ individuNoTechnique, e);
+			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au numéro d'individu " + individuNoTechnique, e);
 		}
 	}
 
@@ -169,10 +185,11 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	@Override
 	public Operateur getOperateur(String visa) {
 		try {
-			return serviceSecurite.getOperateur(visa);
+			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
+			return serviceSecurite.getOperateurTous(visa);
 		}
 		catch (Exception e) {
-			throw new ServiceSecuriteException("impossible de récupérer  l'utilisateur correspondant au visa " + visa, e);
+			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au visa " + visa, e);
 		}
 	}
 }
