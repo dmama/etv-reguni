@@ -3,6 +3,7 @@ package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
@@ -407,6 +408,15 @@ public class ArriveePrincipale extends Arrivee {
 		Assert.notNull(menageCommun);
 
 		final EnsembleTiersCouple ensemble = getService().getEnsembleTiersCouple(menageCommun, getDate());
+		//SIFISC-6065
+		//Cause de cet effet de bord: aucun composant du ménage trouvé à cette date
+		if (ensemble.getPrincipal() == null && ensemble.getConjoint() == null) {
+			throw new EvenementCivilException(String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement mais aucun lien d'appartenance ménage n'a" +
+					"été trouvé pour cette date: [%s] vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
+					FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),
+					RegDateHelper.dateToDashString(getDate())));
+		}
+
 		final Pair<Commune, RegDate> infosFor = getCommuneForSuiteArriveeCouple(arrivant, ensemble);
 		if (infosFor == null) {
 			// pas de for à créer...
