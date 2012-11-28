@@ -21,34 +21,12 @@ import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
-/**
- * <!-- begin-user-doc -->
- * <!-- end-user-doc -->
- * @author jec
- *
- * @uml.annotations
- *     derived_abstraction="platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_FGO9IOqgEdySTq6PFlf9jQ"
- * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_FGO9IOqgEdySTq6PFlf9jQ"
- */
 @Entity
 @Table(name = "PERIODE_FISCALE")
 public class PeriodeFiscale extends HibernateEntity {
 
-	private static final long serialVersionUID = 561783498855916445L;
-
-	/**
-	 * The ID
-	 */
 	private Long id;
-
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_PdMJ4OqgEdySTq6PFlf9jQ"
-	 */
 	private Integer annee;
-
 	private Set<ModeleDocument> modelesDocument;
 
 	@Transient
@@ -57,82 +35,36 @@ public class PeriodeFiscale extends HibernateEntity {
 		return id;
 	}
 
-	/**
-	 * @return the id
-	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	public Long getId() {
 		return id;
 	}
 
-	/**
-	 * @param id
-	 *            the id to set
-	 */
 	public void setId(Long theId) {
 		this.id = theId;
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the annee
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_PdMJ4OqgEdySTq6PFlf9jQ?GETTER"
-	 */
 	@Column(name = "ANNEE", unique = true, nullable = false)
 	public Integer getAnnee() {
-		// begin-user-code
 		return annee;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theAnnee the annee to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_PdMJ4OqgEdySTq6PFlf9jQ?SETTER"
-	 */
 	public void setAnnee(Integer theAnnee) {
-		// begin-user-code
 		annee = theAnnee;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 *
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BAJV8eCPEd2HTeC2f-Vvpg"
-	 */
 	private Set<ParametrePeriodeFiscale> parametrePeriodeFiscale;
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @return the parametrePeriodeFiscale
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BAJV8eCPEd2HTeC2f-Vvpg?GETTER"
-	 */
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JoinColumn(name = "PERIODE_ID")
 	@ForeignKey(name = "FK_PARAM_PF_ID")
 	public Set<ParametrePeriodeFiscale> getParametrePeriodeFiscale() {
-		// begin-user-code
 		return parametrePeriodeFiscale;
-		// end-user-code
 	}
 
-	/**
-	 * <!-- begin-user-doc -->
-	 * <!-- end-user-doc -->
-	 * @param theParametrePeriodeFiscale the parametrePeriodeFiscale to set
-	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_BAJV8eCPEd2HTeC2f-Vvpg?SETTER"
-	 */
-	public void setParametrePeriodeFiscale(
-			Set<ParametrePeriodeFiscale> theParametrePeriodeFiscale) {
-		// begin-user-code
+	public void setParametrePeriodeFiscale(	Set<ParametrePeriodeFiscale> theParametrePeriodeFiscale) {
 		parametrePeriodeFiscale = theParametrePeriodeFiscale;
-		// end-user-code
 	}
 
 	public void addParametrePeriodeFiscale(ParametrePeriodeFiscale param) {
@@ -165,7 +97,6 @@ public class PeriodeFiscale extends HibernateEntity {
 	}
 
 	/**
-	 * @param typeContribuable
 	 * @return le {@link ParametrePeriodeFiscale} en fonction du {@link TypeContribuable} pour la période
 	 */
 	public ParametrePeriodeFiscale getParametrePeriodeFiscale(TypeContribuable typeContribuable) {
@@ -307,6 +238,5 @@ public class PeriodeFiscale extends HibernateEntity {
 		}
 		return false;
 	}
-
 
 }

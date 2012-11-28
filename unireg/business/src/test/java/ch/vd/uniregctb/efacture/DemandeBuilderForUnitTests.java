@@ -47,57 +47,57 @@ class DemandeBuilderForUnitTests {
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setBillerId(String billerId) {
+	DemandeBuilderForUnitTests billerId(String billerId) {
 		this.billerId = billerId;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setProviderId(String providerId) {
+	DemandeBuilderForUnitTests providerId(String providerId) {
 		this.providerId = providerId;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setBusinessPayerId(String businessPayerId) {
+	DemandeBuilderForUnitTests businessPayerId(String businessPayerId) {
 		this.businessPayerId = businessPayerId;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests seteBillAccountId(BigInteger eBillAccountId) {
+	DemandeBuilderForUnitTests eBillAccountId(BigInteger eBillAccountId) {
 		this.eBillAccountId = eBillAccountId;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setLastName(String lastName) {
+	DemandeBuilderForUnitTests lastName(String lastName) {
 		this.lastName = lastName;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setFirstName(String firstName) {
+	DemandeBuilderForUnitTests firstName(String firstName) {
 		this.firstName = firstName;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setDateDemande(RegDate dateDemande) {
+	DemandeBuilderForUnitTests dateDemande(RegDate dateDemande) {
 		this.dateDemande = dateDemande;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setEmail(String email) {
+	DemandeBuilderForUnitTests email(String email) {
 		this.email = email;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setRegistrationMode(RegistrationMode registrationMode) {
+	DemandeBuilderForUnitTests registrationMode(RegistrationMode registrationMode) {
 		this.registrationMode = registrationMode;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setStatus(RegistrationRequestStatus status) {
+	DemandeBuilderForUnitTests status(RegistrationRequestStatus status) {
 		this.status= status;
 		return this;
 	}
 
-	DemandeBuilderForUnitTests setNoAvs(String noAvs) {
+	DemandeBuilderForUnitTests noAvs(String noAvs) {
 		this.noAvs = noAvs;
 		return this;
 	}

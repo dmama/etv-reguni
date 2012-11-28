@@ -30,49 +30,49 @@ public class DemandeTest extends WithoutSpringTest {
 		demande = nouvelleDemande().build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setNoAvs("756.581.724.90.33").build();
+		demande = nouvelleDemande().noAvs("756.581.724.90.33").build();
 		assertPerformBasicValidationOK();
 
 		//noinspection NullableProblems
-		demande = nouvelleDemande().setNoAvs(null).build();
+		demande = nouvelleDemande().noAvs(null).build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("").build();
+		demande = nouvelleDemande().noAvs("").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("XXXXXXXXXXXXX").build();
+		demande = nouvelleDemande().noAvs("XXXXXXXXXXXXX").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("75658172490").build();
+		demande = nouvelleDemande().noAvs("75658172490").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("75658172490330").build();
+		demande = nouvelleDemande().noAvs("75658172490330").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("07565817249033").build();
+		demande = nouvelleDemande().noAvs("07565817249033").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
-		demande = nouvelleDemande().setNoAvs("7565817249034").build();
+		demande = nouvelleDemande().noAvs("7565817249034").build();
 		assertPerformBasicValidationFailWith(NUMERO_AVS_INVALIDE);
 
 		// [SIFISC-7123] la validité de l'adresse email n'est plus verifiée par unireg
 		//noinspection NullableProblems
-		demande = nouvelleDemande().setEmail(null).build();
+		demande = nouvelleDemande().email(null).build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setEmail("").build();
+		demande = nouvelleDemande().email("").build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setEmail("toto").build();
+		demande = nouvelleDemande().email("toto").build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setEmail("toto@").build();
+		demande = nouvelleDemande().email("toto@").build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setEmail("toto@tutu").build();
+		demande = nouvelleDemande().email("toto@tutu").build();
 		assertPerformBasicValidationOK();
 
-		demande = nouvelleDemande().setEmail("toto@@gmail.com").build();
+		demande = nouvelleDemande().email("toto@@gmail.com").build();
 		assertPerformBasicValidationOK();
 	}
 

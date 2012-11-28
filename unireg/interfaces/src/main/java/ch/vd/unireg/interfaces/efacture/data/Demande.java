@@ -123,6 +123,4 @@ public class Demande {
 	public String getNoAvs() {
 		return noAvs;
 	}
-
-
 }

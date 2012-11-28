@@ -3,12 +3,13 @@ package ch.vd.uniregctb.evenement.civil.interne;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.easymock.IAnswer;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Before;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
+import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
@@ -16,18 +17,14 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.tiers.MockTiersDAO;
+import ch.vd.uniregctb.tiers.TiersDAO;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static junit.framework.Assert.fail;
 
-public class EvenementCivilInterneCompositeTest {
+public class EvenementCivilInterneCompositeTest extends WithoutSpringTest {
 
 	private EvenementCivilInterne[] mockEvenementsComposants;
 	private EvenementCivilEch mockEvenementCivilEch;
@@ -38,24 +35,65 @@ public class EvenementCivilInterneCompositeTest {
 
 	@Before
 	public void init() throws EvenementCivilException {
-		final MockTiersDAO mockTiersDAO = new MockTiersDAO();
-		mockEvenementsComposants = new EvenementCivilInterne[] {
-				createMock(EvenementCivilInterne.class),
-				createMock(EvenementCivilInterne.class),
-				createMock(EvenementCivilInterne.class)
-		};
-		mockEvenementCivilEch = createMock(EvenementCivilEch.class);
-		mockEvenementCivilContext = createMock(EvenementCivilContext.class);
-		mockEvenementCivilOptions = createMock(EvenementCivilOptions.class);
-		mockEvtCivErrCol = createMock(EvenementCivilErreurCollector.class);
-		mockEvtCivWarnCol = createMock(EvenementCivilWarningCollector.class);
 
-		//Scenario pour les mocks lors de l'instanciation d l'evenement composite
-		expect(mockEvenementCivilEch.getDateEvenement()).andReturn(RegDate.get(2011, 1, 1));
-		expect(mockEvenementCivilEch.getId()).andReturn(1L);
-		expect(mockEvenementCivilEch.getNumeroIndividu()).andReturn(1234567L);
-		expect(mockEvenementCivilContext.getTiersDAO()).andReturn(mockTiersDAO);
-		expect(mockEvenementCivilOptions.isRefreshCache()).andReturn(false);
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock(),
+				new EvenementCivilInterneMock(),
+				new EvenementCivilInterneMock()
+		};
+		mockEvenementCivilEch = new EvenementCivilEch() {
+			@Override
+			public RegDate getDateEvenement() {
+				return RegDate.get(2011, 1, 1);
+			}
+
+			@Override
+			public Long getId() {
+				return 1L;
+			}
+
+			@Override
+			public Long getNumeroIndividu() {
+				return 1234567L;
+			}
+		};
+		mockEvenementCivilContext = new EvenementCivilContext(null, null, null) {
+			private MockTiersDAO mockTiersDAO = new MockTiersDAO();
+			@Override
+			public TiersDAO getTiersDAO() {
+				return mockTiersDAO;
+			}
+		};
+		mockEvenementCivilOptions = new EvenementCivilOptions(false);
+		mockEvtCivErrCol = new EvenementCivilErreurCollector() {
+
+			@Override
+			public void addErreur(Exception e) {
+
+			}
+
+			@Override
+			public void addErreur(String msg) {
+
+			}
+
+			@Override
+			public boolean hasErreurs() {
+				return false;
+			}
+		};
+		mockEvtCivWarnCol = new EvenementCivilWarningCollector() {
+
+			@Override
+			public void addWarning(String msg) {
+
+			}
+
+			@Override
+			public boolean hasWarnings() {
+				return false;
+			}
+		};
 
 	}
 
@@ -66,17 +104,44 @@ public class EvenementCivilInterneCompositeTest {
 		//
 		// - On s'attend à ce que toutes les méthodes validateXXX() des événements composants soient appelées lors de
 		//   l'appel de validate() sur le composite
+		final boolean[] flags =  new boolean[6];
 
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			m.validateCommon(mockEvtCivErrCol);
-			m.validateSpecific(mockEvtCivErrCol, mockEvtCivWarnCol);
-		}
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock() {
+					@Override
+					protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[0] = true;
+					}
 
-		// Fin de la définition du scénario, on passe les mocks en mode replay
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			replay(m);
-		}
-    	replay(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
+					@Override
+					protected void validateCommon(EvenementCivilErreurCollector erreurs) {
+						flags[1] = true;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[2] = true;
+					}
+
+					@Override
+					protected void validateCommon(EvenementCivilErreurCollector erreurs) {
+						flags[3] = true;
+					}
+
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[4] = true;
+					}
+
+					@Override
+					protected void validateCommon(EvenementCivilErreurCollector erreurs) {
+						flags[5] = true;
+					}
+				}
+		};
 
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
@@ -87,10 +152,11 @@ public class EvenementCivilInterneCompositeTest {
     	evtComposite.validate(mockEvtCivErrCol, mockEvtCivWarnCol);
 
 		// Vérification que le scénario c'est bien déroulé
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			verify(m);
+		for(boolean flag : flags ) {
+			if (!flag) {
+				fail("Une méthode validate sur un objet composant n'a pas été appelée");
+			}
 		}
-		verify(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
 
 	}
 
@@ -104,11 +170,42 @@ public class EvenementCivilInterneCompositeTest {
 		//
 		// - Dans ce cas, tous les evenements sont traités, le handleStatus du composite doit aussi être traités
 
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			expect(m.handle(mockEvtCivWarnCol)).andReturn(HandleStatus.TRAITE);
-		}
+		final boolean[] flags =  new boolean[3];
+
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock() {
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[0] = true;
+						return HandleStatus.TRAITE;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[1] = true;
+						return HandleStatus.TRAITE;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[2] = true;
+						return HandleStatus.TRAITE;
+					}
+				}
+		};
+
 		final HandleStatus hs = testHandle();
 		assertEquals(HandleStatus.TRAITE, hs);
+		for(boolean flag : flags ) {
+			if (!flag) {
+				fail("Une méthode handle sur un objet composant n'a pas été appelée");
+			}
+		}
 	}
 
 	@Test
@@ -122,12 +219,44 @@ public class EvenementCivilInterneCompositeTest {
 		// - Dans ce cas, tous un evenement est traité et les autres sont redondants
 		//   le handleStatus du composite doit être traité
 
-		expect(mockEvenementsComposants[0].handle(mockEvtCivWarnCol)).andReturn(HandleStatus.TRAITE);
-		expect(mockEvenementsComposants[1].handle(mockEvtCivWarnCol)).andReturn(HandleStatus.REDONDANT);
-		expect(mockEvenementsComposants[2].handle(mockEvtCivWarnCol)).andReturn(HandleStatus.REDONDANT);
+		final boolean[] flags =  new boolean[3];
+
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock() {
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[0] = true;
+						return HandleStatus.TRAITE;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[1] = true;
+						return HandleStatus.REDONDANT;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[2] = true;
+						return HandleStatus.REDONDANT;
+					}
+				}
+		};
 
 		HandleStatus hs = testHandle();
 		assertEquals(HandleStatus.TRAITE, hs);
+
+		for(boolean flag : flags ) {
+			if (!flag) {
+				fail("Une méthode handle sur un objet composant n'a pas été appelée");
+			}
+		}
+
 	}
 
 	@Test
@@ -140,11 +269,44 @@ public class EvenementCivilInterneCompositeTest {
 		//
 		// - Dans ce cas, tous les evenements sont redondants, le handleStatus du composite doit aussi être redondant
 
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			expect(m.handle(mockEvtCivWarnCol)).andReturn(HandleStatus.REDONDANT);
-		}
+		final boolean[] flags =  new boolean[3];
+
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock() {
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[0] = true;
+						return HandleStatus.REDONDANT;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[1] = true;
+						return HandleStatus.REDONDANT;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@NotNull
+					@Override
+					public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+						flags[2] = true;
+						return HandleStatus.REDONDANT;
+					}
+				}
+		};
+
 		HandleStatus hs = testHandle();
 		assertEquals(HandleStatus.REDONDANT, hs);
+
+		for(boolean flag : flags ) {
+			if (!flag) {
+				fail("Une méthode handle sur un objet composant n'a pas été appelée");
+			}
+		}
+
 	}
 
 	/*
@@ -152,70 +314,43 @@ public class EvenementCivilInterneCompositeTest {
 	 */
 	private HandleStatus testHandle() throws EvenementCivilException {
 
-		// Fin de la définition du scénario, on passe les mocks en mode replay
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			replay(m);
-		}
-		replay(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
-
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
 				mockEvenementCivilEch, mockEvenementCivilContext,mockEvenementCivilOptions,
 				mockEvenementsComposants);
 
-		// Appel de la méthode testée
-		final HandleStatus hs = evtComposite.handle(mockEvtCivWarnCol);
-
-		// Vérification que le scénario c'est bien déroulé
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			verify(m);
-		}
-		verify(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
-
-		// Retour du résultat du test
-		return hs;
+		return evtComposite.handle(mockEvtCivWarnCol);
 	}
 
 	@Test
 	public void testFillRequiredParts() throws EvenementCivilException {
-
-		/*
-		 * Classe Implementant l'appel à fillRequiredPart sur les mocks d'EvenementCivilInterne
-		 */
-		class AnswerToFillRequiredParts implements  IAnswer {
-
-			private AttributeIndividu attr;
-
-			AnswerToFillRequiredParts (AttributeIndividu attr) {
-				this.attr = attr;
-			}
-
-			@Override
-			@SuppressWarnings("unchecked")
-			public Object answer() {
-				Set<AttributeIndividu> arg1 = (Set<AttributeIndividu>) getCurrentArguments()[0];
-				arg1.add(attr);
-				return null;
-			}
-		}
 
 		// Scénario:
 		//
 		// - Chaque événements possède une part differente le composite devrait en possède 3
 
 		final Set<AttributeIndividu> attrs = new HashSet<AttributeIndividu>();
-		mockEvenementsComposants[0].fillRequiredParts(attrs);
-		expectLastCall().andAnswer(new AnswerToFillRequiredParts(AttributeIndividu.ADRESSES));
-		mockEvenementsComposants[1].fillRequiredParts(attrs);
-		expectLastCall().andAnswer(new AnswerToFillRequiredParts(AttributeIndividu.ADOPTIONS));
-		mockEvenementsComposants[2].fillRequiredParts(attrs);
-		expectLastCall().andAnswer(new AnswerToFillRequiredParts(AttributeIndividu.NATIONALITE));
 
-		// Fin de la définition du scénario, on passe les mocks en mode replay
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			replay(m);
-		}
-		replay(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock(){
+					@Override
+					protected void fillRequiredParts(Set<AttributeIndividu> parts) {
+						parts.add(AttributeIndividu.ADOPTIONS);
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected void fillRequiredParts(Set<AttributeIndividu> parts) {
+						parts.add(AttributeIndividu.ADRESSES);
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected void fillRequiredParts(Set<AttributeIndividu> parts) {
+						parts.add(AttributeIndividu.NATIONALITE);
+					}
+				}
+		};
 
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
@@ -226,12 +361,6 @@ public class EvenementCivilInterneCompositeTest {
 		assertTrue(attrs.isEmpty());
 		evtComposite.fillRequiredParts(attrs);
 		assertEquals(3, attrs.size());
-
-		// Vérification que le scénario c'est bien déroulé
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			verify(m);
-		}
-		verify(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
 	}
 
 	@Test
@@ -239,13 +368,39 @@ public class EvenementCivilInterneCompositeTest {
 		// Scénario:
 		// - Aucun des evenements composants ne doit connaitre le contribuable avant le traitement,
 		//   Dans ce cas, le composite non plus.
+		final boolean[] flags =  new boolean[3];
 
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			expect(m.isContribuableObligatoirementConnuAvantTraitement()).andReturn(false);
-		}
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						flags[0] = true;
+						return false;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						flags[1] = true;
+						return false;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						flags[2] = true;
+						return false;
+					}
+				}
+		};
+
 		boolean res = testIsContribuableObligatoirementConnuAvantTraitement();
 		assertFalse(res);
-
+		for(boolean flag : flags ) {
+			if (!flag) {
+				fail("Une méthode isContribuableObligatoirementConnuAvantTraitement sur un objet composant n'a pas été appelée");
+			}
+		}
 	}
 
 	@Test
@@ -253,11 +408,27 @@ public class EvenementCivilInterneCompositeTest {
 		// Scénario:
 		// - Certain evenements composant doivent connaitre le contribuable avant le traitement,
 		//   Dans ce cas, le composite aussi.
-		
-		expect(mockEvenementsComposants[0].isContribuableObligatoirementConnuAvantTraitement()).andReturn(false).anyTimes();
-		expect(mockEvenementsComposants[1].isContribuableObligatoirementConnuAvantTraitement()).andReturn(true).anyTimes();
-		expect(mockEvenementsComposants[2].isContribuableObligatoirementConnuAvantTraitement()).andReturn(false).anyTimes();
 
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return false;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return true;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return false;
+					}
+				}
+		};
 		boolean res = testIsContribuableObligatoirementConnuAvantTraitement();
 		assertTrue(res);
 	}
@@ -268,39 +439,56 @@ public class EvenementCivilInterneCompositeTest {
 		// - Tous les evenements composants doivent connaitre le contribuable avant le traitement,
 		//   Dans ce cas, le composite aussi.
 
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			expect(m.isContribuableObligatoirementConnuAvantTraitement()).andReturn(true).anyTimes();
-		}
+		mockEvenementsComposants = new EvenementCivilInterne[] {
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return true;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return true;
+					}
+				},
+				new EvenementCivilInterneMock(){
+					@Override
+					protected boolean isContribuableObligatoirementConnuAvantTraitement() {
+						return true;
+					}
+				}
+		};
 		boolean res = testIsContribuableObligatoirementConnuAvantTraitement();
 		assertTrue(res);
-	
+
 	}
 
 	private boolean testIsContribuableObligatoirementConnuAvantTraitement() throws EvenementCivilException {
-		
-		// Fin de la définition du scénario, on passe les mocks en mode replay
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			replay(m);
-		}
-		replay(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
 
 		// Création de l'instance à tester
 		EvenementCivilInterne evtComposite = new EvenementCivilInterneComposite(
 				mockEvenementCivilEch, mockEvenementCivilContext,mockEvenementCivilOptions,
 				mockEvenementsComposants);
 
-		// Appel de la méthode testée
-		final boolean res = evtComposite.isContribuableObligatoirementConnuAvantTraitement();
-
-		// Vérification que le scénario c'est bien déroulé
-		for(EvenementCivilInterne m : mockEvenementsComposants ) {
-			verify(m);
-		}
-		verify(mockEvenementCivilEch, mockEvenementCivilContext, mockEvenementCivilOptions);
-
-		// Retour du résultat du test
-		return res;
+		return evtComposite.isContribuableObligatoirementConnuAvantTraitement();
 	}
 
 }
 
+class EvenementCivilInterneMock extends EvenementCivilInterne {
+
+	protected EvenementCivilInterneMock() {
+		//noinspection NullableProblems
+		super(null, null, null, null, null);
+	}
+
+	@NotNull
+	@Override
+	public HandleStatus handle(EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		return HandleStatus.TRAITE;
+	}
+
+	@Override
+	protected void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {}
+}
