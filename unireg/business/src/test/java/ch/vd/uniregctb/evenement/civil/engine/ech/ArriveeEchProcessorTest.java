@@ -17,6 +17,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
 import ch.vd.uniregctb.metier.MetierService;
@@ -1321,4 +1322,99 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 			}
 		});
 	}
+
+	//SIFISC-6065
+	//Test la detection de personne marie appartenant à un menage commun à la date d el'évènement mais qui ont des rapports entre tiers incohérents avec les dates du civil
+	@Test (timeout = 10000L)
+	public void testArriveeCoupleAvecIncoherenceEtatCivilRapportMenage() throws Exception {
+
+		final long noLui = 246L;
+		final long noElle = 3342L;
+		final RegDate dateArrivee = date(2010, 7, 31);
+		final RegDate dateMariage = date(2001, 10, 1);
+		final RegDate dateDebutRapport = date(2010, 9, 8);
+		class Ids {
+			Long monsieur;
+			Long madame;
+		}
+		final Ids ids = new Ids();
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate naissanceLui = date(1970, 3, 12);
+				final MockIndividu lui = addIndividu(noLui, naissanceLui, "Tartempion", "François", true);
+				final RegDate naissanceElle = date(1971, 6, 21);
+				final MockIndividu elle = addIndividu(noElle, naissanceElle, "Tartempion", "Françoise", false);
+				addNationalite(lui, MockPays.France, naissanceLui, null);
+				addNationalite(elle, MockPays.France, naissanceElle, null);
+				marieIndividus(lui, elle, dateMariage);
+
+				final MockAdresse adrLui = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				adrLui.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD, MockCommune.Bussigny.getNoOFS(), null));
+
+				final MockAdresse adrElle = addAdresse(elle, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDeMarcelin, null, dateArrivee, null);
+				adrElle.setLocalisationPrecedente(new Localisation(LocalisationType.CANTON_VD,MockCommune.Bussigny.getNoOFS(), null));
+			}
+		});
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateDebutRapport, null);
+				addForPrincipal(etc.getMenage(), dateDebutRapport, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Bussigny);
+				ids.monsieur = lui.getNumero();
+				ids.madame = elle.getNumero();
+				return null;
+			}
+		});
+
+
+		// création de l'événement civil pour l'arrivée de monsieur
+		final long evtLui = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée de monsieur
+		traiterEvenements(noLui);
+
+		// vérification du traitement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtLui);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.EN_ERREUR, evt.getEtat());
+				final Set<EvenementCivilEchErreur> erreurs = evt.getErreurs();
+				assertNotNull(erreurs);
+				assertEquals(1, erreurs.size());
+				final EvenementCivilEchErreur erreur = erreurs.iterator().next();
+				assertNotNull(erreur);
+				assertEquals(TypeEvenementErreur.ERROR, erreur.getType());
+				final String messageErreurAttendu = String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement ainsi qu'un ménage commun. " +
+						"Cependant, aucun lien d'appartenance ménage n'a été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
+						FormatNumeroHelper.numeroCTBToDisplay(ids.monsieur),
+						RegDateHelper.dateToDashString(dateArrivee));
+				assertEquals(messageErreurAttendu,
+						erreur.getMessage());
+				return null;
+			}
+		});
+	}
+
+
 }

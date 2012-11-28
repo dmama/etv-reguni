@@ -411,8 +411,8 @@ public class ArriveePrincipale extends Arrivee {
 		//SIFISC-6065
 		//Cause de cet effet de bord: aucun composant du ménage trouvé à cette date
 		if (ensemble.getPrincipal() == null && ensemble.getConjoint() == null) {
-			throw new EvenementCivilException(String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement mais aucun lien d'appartenance ménage n'a" +
-					"été trouvé pour cette date: [%s] vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
+			throw new EvenementCivilException(String.format("L'arrivant(e) [%s] a un état civil marié ou pacsé à la date de l'évènement ainsi qu'un ménage commun. Cependant, aucun lien d'appartenance ménage n'a " +
+					"été trouvé pour cette date: [%s]. Vérifier si il n'y a pas une incohérence entre les dates civiles et fiscales",
 					FormatNumeroHelper.numeroCTBToDisplay(arrivant.getNumero()),
 					RegDateHelper.dateToDashString(getDate())));
 		}
