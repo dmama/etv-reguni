@@ -29,12 +29,14 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 	public static class LigneTacheInstance {
 
 		private long numeroOID;
+		private String nomCollectivite;
 		private String typeTache;
 		private long nombreTache;
 
-		public LigneTacheInstance(long numeroOID, String typeTache, long nombreTache) {
+		public LigneTacheInstance(long numeroOID,String nomCollectivite, String typeTache, long nombreTache) {
 			super();
 			this.numeroOID = numeroOID;
+			this.nomCollectivite = nomCollectivite;
 			this.typeTache = typeTache;
 			this.nombreTache = nombreTache;
 
@@ -65,16 +67,22 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 			this.nombreTache = nombreTache;
 		}
 
+		public String getNomCollectivite() {
+			return nomCollectivite;
+		}
 
+		public void setNomCollectivite(String nomCollectivite) {
+			this.nomCollectivite = nomCollectivite;
+		}
 	}
 
 
 	private final List<LigneTacheInstance> tachesEnIsntancesParOID = new ArrayList<LigneTacheInstance>();
 
 
-	public void addTypeDeTacheEnInstance(long numeroOID, String typeTache, long nombreTache) {
+	public void addTypeDeTacheEnInstance(long numeroOID, String nomCollectivite, String typeTache, long nombreTache) {
 		tachesEnIsntancesParOID.add(
-				new LigneTacheInstance(numeroOID, typeTache, nombreTache)
+				new LigneTacheInstance(numeroOID,nomCollectivite, typeTache, nombreTache)
 		);
 	}
 
@@ -82,7 +90,7 @@ public class ListeTachesEnInstanceParOID extends TachesResults<Long, ListeTaches
 	@Override
 	public void addErrorException(Long numeroOID, Exception e) {
 		tachesEnIsntancesParOID.add(
-				new LigneTacheInstance(numeroOID, "ErreurType.EXCEPTION.description()", 0)
+				new LigneTacheInstance(numeroOID,null, "ErreurType.EXCEPTION.description()", 0)
 		);
 	}
 

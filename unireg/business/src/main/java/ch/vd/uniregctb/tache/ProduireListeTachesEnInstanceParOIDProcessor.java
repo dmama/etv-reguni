@@ -103,7 +103,8 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 			final TypeTache typeTache = translateTypeTache((String) objects[1]);
 			final long nombre = ((Number) objects[2]).longValue();
 			final String nameType = typeTache.name();
-			rapport.addTypeDeTacheEnInstance(numeroOID, nameType, nombre);
+			final String nomCollectivite = tiersService.getNomCollectiviteAdministrative(numeroOID);
+			rapport.addTypeDeTacheEnInstance(numeroOID, nomCollectivite, nameType, nombre);
 		}
 	}
 

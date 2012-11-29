@@ -83,6 +83,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 				@Override
 				public void fillHeader(CsvHelper.LineFiller b) {
 					b.append("Numéro de l'OID").append(COMMA);
+					b.append("Nom de l'OID ou de la collectivité").append(COMMA);
 					b.append("Type de tâche").append(COMMA);
 					b.append("Nombre de tâches");
 				}
@@ -90,6 +91,7 @@ public class PdfListeTacheEnInstanceParOIDRapport extends PdfRapport {
 				@Override
 				public boolean fillLine(CsvHelper.LineFiller b, ListeTachesEnInstanceParOID.LigneTacheInstance ligne) {
 					b.append(ligne.getNumeroOID()).append(COMMA);
+					b.append(ligne.getNomCollectivite()).append(COMMA);
 					b.append(ligne.getTypeTache()).append(COMMA);
 					b.append(ligne.getNombreTache());
 					return true;
