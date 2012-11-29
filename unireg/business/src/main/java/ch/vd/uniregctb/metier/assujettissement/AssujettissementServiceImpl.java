@@ -1,12 +1,11 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -1432,11 +1431,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
-		private static final Set<MotifFor> DEBUT_ASSUJETTISSEMENT = new HashSet<MotifFor>(Arrays.asList(MotifFor.INDETERMINE,
-		                                                                                                MotifFor.VENTE_IMMOBILIER,
-		                                                                                                MotifFor.ANNULATION,
-		                                                                                                MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
-		                                                                                                MotifFor.FIN_EXPLOITATION));
+		private static final Set<MotifFor> DEBUT_ASSUJETTISSEMENT = EnumSet.of(MotifFor.INDETERMINE,
+                                                                               MotifFor.VENTE_IMMOBILIER,
+                                                                               MotifFor.ANNULATION,
+                                                                               MotifFor.FIN_ACTIVITE_DIPLOMATIQUE,
+                                                                               MotifFor.FIN_EXPLOITATION);
 
 		/**
 		 * Collections des motifs de fermeture de for qui ne donnent normalement pas lieu à une fin d'assujettissement
@@ -1444,11 +1443,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * {@link #merge(ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, ch.vd.registre.base.date.RegDate, ch.vd.uniregctb.type.MotifFor, java.util.Set) merge}
 		 */
 		@SuppressWarnings({"deprecation"})
-		private static final Set<MotifFor> FIN_ASSUJETTISSEMENT = new HashSet<MotifFor>(Arrays.asList(MotifFor.INDETERMINE,
-		                                                                                              MotifFor.ACHAT_IMMOBILIER,
-		                                                                                              MotifFor.REACTIVATION,
-		                                                                                              MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
-		                                                                                              MotifFor.DEBUT_EXPLOITATION));
+		private static final Set<MotifFor> FIN_ASSUJETTISSEMENT = EnumSet.of(MotifFor.INDETERMINE,
+                                                                             MotifFor.ACHAT_IMMOBILIER,
+	                                                                         MotifFor.REACTIVATION,
+	                                                                         MotifFor.DEBUT_ACTIVITE_DIPLOMATIQUE,
+	                                                                         MotifFor.DEBUT_EXPLOITATION);
 
 		private Data(RegDate debut, RegDate fin, MotifFor motifDebut, MotifFor motifFin, Type type, TypeAutoriteFiscale typeAut) {
 			this.debut = debut;

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.Set;
 
 import junit.framework.Assert;
@@ -48,7 +47,7 @@ public class EvenementCivilEchTranslatorTest extends BusinessTest {
 
 	@Test(timeout = 10000L)
 	public void testCouvertureStrategies() throws Exception {
-		final Set<TypeEvenementCivilEch> typesIgnores = new HashSet<TypeEvenementCivilEch>(Arrays.asList(TypeEvenementCivilEch.TESTING));
+		final Set<TypeEvenementCivilEch> typesIgnores = EnumSet.of(TypeEvenementCivilEch.TESTING);
 		for (TypeEvenementCivilEch type : TypeEvenementCivilEch.values()) {
 			if (!typesIgnores.contains(type)) {
 				for (ActionEvenementCivilEch action : ActionEvenementCivilEch.values()) {

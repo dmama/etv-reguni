@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.security;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -147,7 +147,7 @@ public class SecuriteDossierServiceImpl implements SecuriteDossierService {
 		final List<Niveau> niveaux = new ArrayList<Niveau>(ids.size());
 
 		// Récupère la liste des ménages-commun existant dans la liste d'ids spécifiée.
-		final List<MenageCommun> menages = tiersDAO.getMenagesCommuns(ids, new HashSet<Parts>(Arrays.asList(Parts.RAPPORTS_ENTRE_TIERS)));
+		final List<MenageCommun> menages = tiersDAO.getMenagesCommuns(ids, EnumSet.of(Parts.RAPPORTS_ENTRE_TIERS));
 		final Map<Long, MenageCommun> map = new HashMap<Long, MenageCommun>(menages.size());
 		for (MenageCommun mc : menages) {
 			map.put(mc.getNumero(), mc);

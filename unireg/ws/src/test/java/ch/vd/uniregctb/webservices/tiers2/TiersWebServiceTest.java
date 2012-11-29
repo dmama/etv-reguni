@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,7 +138,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 		final GetBatchTiersHisto params = new GetBatchTiersHisto();
 		params.login = login;
 		params.tiersNumbers = new HashSet<Long>(Arrays.asList(ids.paul, ids.janine));
-		params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.FORS_FISCAUX, TiersPart.FORS_FISCAUX_VIRTUELS, TiersPart.ADRESSES_ENVOI));
+		params.parts = EnumSet.of(TiersPart.FORS_FISCAUX, TiersPart.FORS_FISCAUX_VIRTUELS, TiersPart.ADRESSES_ENVOI);
 
 		final BatchTiersHisto batch = service.getBatchTiersHisto(params);
 		assertNotNull(batch);
@@ -218,7 +219,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiers params = new GetTiers();
 			params.login = login;
 			params.tiersNumber = ids.menage;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
@@ -236,7 +237,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersHisto params = new GetTiersHisto();
 			params.login = login;
 			params.tiersNumber = ids.menage;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final MenageCommunHisto menage = (MenageCommunHisto) service.getTiersHisto(params);
 			assertNotNull(menage);
@@ -281,7 +282,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiers params = new GetTiers();
 			params.login = login;
 			params.tiersNumber = idDpi;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final Debiteur dpi = (Debiteur) service.getTiers(params);
 			assertNotNull(dpi);
@@ -346,7 +347,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiers params = new GetTiers();
 			params.login = login;
 			params.tiersNumber = ids.menage;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final MenageCommun menage = (MenageCommun) service.getTiers(params);
 			assertNotNull(menage);
@@ -364,7 +365,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersHisto params = new GetTiersHisto();
 			params.login = login;
 			params.tiersNumber = ids.menage;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final MenageCommunHisto menage = (MenageCommunHisto) service.getTiersHisto(params);
 			assertNotNull(menage);
@@ -437,7 +438,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiers params = new GetTiers();
 			params.login = login;
 			params.tiersNumber = ids.tiia;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique tiia = (ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique) service.getTiers(params);
 			assertNotNull(tiia);
@@ -491,7 +492,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiersHisto params = new GetTiersHisto();
 			params.login = login;
 			params.tiersNumber = ids.tiia;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI));
+			params.parts = EnumSet.of(TiersPart.ADRESSES, TiersPart.ADRESSES_ENVOI);
 
 			final PersonnePhysiqueHisto tiia = (PersonnePhysiqueHisto) service.getTiersHisto(params);
 			assertNotNull(tiia);
@@ -852,7 +853,7 @@ public class TiersWebServiceTest extends WebserviceTest {
 			final GetTiers params = new GetTiers();
 			params.login = login;
 			params.tiersNumber = id;
-			params.parts = new HashSet<TiersPart>(Arrays.asList(TiersPart.FORS_FISCAUX_VIRTUELS));
+			params.parts = EnumSet.of(TiersPart.FORS_FISCAUX_VIRTUELS);
 
 			// on s'assure que l'appartenance ménage annulé n'est pas pris en compte (s'il l'était, on recevrait une exception avec le message "Détecté 2 fors fiscaux principaux valides à la même date")
 			final ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique arnold = (ch.vd.uniregctb.webservices.tiers2.data.PersonnePhysique) service.getTiers(params);

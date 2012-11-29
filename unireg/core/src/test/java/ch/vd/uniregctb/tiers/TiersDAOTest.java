@@ -1219,7 +1219,7 @@ public class TiersDAOTest extends CoreDAOTest {
 
 		final List<Long> ids = Arrays.asList(10006789L, 1001234L, 9876L, 10007890L, 10008901L, 10001111L, 2002222L, 10000010L, 10000001L, 10000002L, 10000004L,
 				10000005L);
-		final Set<Parts> parts = new HashSet<Parts>(Arrays.asList(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE));
+		final Set<Parts> parts = EnumSet.of(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
 		final List<Tiers> listBatch = doInNewTransaction(new TxCallback<List<Tiers>>() {
@@ -1360,7 +1360,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		});
 
 		// Charge le contribuable principal à travers getBatch et en demandant les rapports-entre-tiers (va tirer le ménage commun) et la liste des fors fiscaux
-		final List<Tiers> list = dao.getBatch(Arrays.asList(id), new HashSet<Parts>(Arrays.asList(Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS)));
+		final List<Tiers> list = dao.getBatch(Arrays.asList(id), EnumSet.of(Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS));
 		assertEquals(1, list.size());
 
 		final PersonnePhysique paul = (PersonnePhysique) list.get(0);
