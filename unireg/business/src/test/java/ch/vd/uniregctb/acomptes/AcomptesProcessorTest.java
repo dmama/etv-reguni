@@ -488,4 +488,63 @@ public class AcomptesProcessorTest extends BusinessTest {
 			Assert.assertEquals(AcomptesResults.TypeContribuableAcompte.VAUDOIS_MIXTE_137_1, a.typeContribuable);
 		}
 	}
+
+	/**
+	 * Ce test est là pour décrire le comportement d'unireg en cas de déménagement au 31.12.XXXX lors du calcul
+	 * de la population assujettie aux acomptes ICC de l'année XXXX + 1 (= paramètre à passer au batch d'extraction).
+	 * <p/>
+	 * En effet, la spécification demande de regarder l'assujettissement au 31.12.XXXX, et le code semble plutôt regarder l'assujettissement
+	 * l'année suivante. Cela ne pose pas de problème tant que l'année XXXX n'est pas terminée (l'absence de fors ouverts dans le futur
+	 * permet de rendre équivalentes les analyses des assujettissements XXXX et XXXX + 1), ce qui est toujours le cas lors des tirs de
+	 * novembre et décembre, mais cela n'est plus vrai dès que janvier arrive...
+	 * <p/>
+	 * D'un autre côté, les acomptes ICC sont justement ceux qui concerneront l'année XXXX + 1, donc la commune qui nous intéresse est bien
+	 * celle du for existant en XXXX + 1...
+	 * <p/>
+	 * En résumé, on ne change rien du comportement actuel et ce test est là pour détecter les éventuels changements futurs et la non-régression.
+	 * En particulier, lors d'une fusion de commune (ou d'un déménagement au 31.12...) :
+	 * <ul>
+	 *     <li>avant que l'année XXXX ne se termine, les fors de l'extraction "XXXX + 1" sont ceux <b>d'avant</b> la fusion/déménagement ;</li>
+	 *     <li>une fois l'année XXXX terminée, les fors de l'extraction "XXXX + 1" sont ceux <b>d'après</b> la fusion/déménagement ;</li>
+	 * </ul>
+	 */
+	@Test
+	public void testDemenagementFinAnnee() throws Exception {
+
+		final int anneeAcomptes = 2011;
+
+		serviceCivil.setUp(new DefaultMockServiceCivil() {
+			@Override
+			protected void init() {
+			}
+		});
+
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// déménagement au 31.12 de l'année précédent les acomptes
+				final PersonnePhysique pp = addNonHabitant("Carole", "Luciole", date(1985, 8, 1), Sexe.FEMININ);
+				addForPrincipal(pp, date(2005, 5, 12), MotifFor.ARRIVEE_HS, date(anneeAcomptes - 1, 12, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Aigle);
+				addForPrincipal(pp, date(anneeAcomptes, 1, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Aubonne);
+				return pp.getNumero();
+			}
+		});
+
+		final AcomptesResults results = processor.run(RegDate.get(), 1, anneeAcomptes, null);
+		Assert.assertNotNull(results);
+
+		final List<AcomptesResults.InfoContribuableAssujetti> assujettis = results.getListeContribuablesAssujettis();
+		Assert.assertNotNull(assujettis);
+		Assert.assertEquals(1, assujettis.size());
+
+		// vérification des résultats pour le contribuable
+		final AcomptesResults.InfoContribuableAssujetti info = assujettis.get(0);
+		Assert.assertNotNull(info);
+		Assert.assertEquals(ppId, info.getNumeroCtb());
+
+		final AcomptesResults.InfoAssujettissementContribuable icc = info.getAssujettissementIcc();
+		Assert.assertNotNull(icc);
+		Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), icc.noOfsForGestion);
+		Assert.assertEquals((Integer) MockCommune.Aubonne.getNoOFS(), icc.noOfsForPrincipal);
+	}
 }
