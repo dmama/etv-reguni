@@ -519,23 +519,35 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@SuppressWarnings({"unchecked"})
 	private static <T> List<T> queryObjectsByIds(String hql, Set<Long> ids, Session session) {
 
+		// [SIFISC-7271] on doit faire en sorte que l'ensemble des IDs ne contient jamais de null (hibernate n'aime pas ça...)
+		if (ids.size() > 0 && ids.contains(null)) {
+			// on crée une nouvelle instance de Set pour se prémunir dans le cas où le Set en entrée serait Read-Only
+			ids = new HashSet<Long>(ids);
+			ids.remove(null);
+		}
+
 		final List<T> list;
 		final int size = ids.size();
-		final Query query = session.createQuery(hql);
-		if (size <= MAX_IN_SIZE) {
-			// on charge les entités en vrac
-			query.setParameterList("ids", ids);
-			list = query.list();
+		if (size > 0) {
+			final Query query = session.createQuery(hql);
+			if (size <= MAX_IN_SIZE) {
+				// on charge les entités en vrac
+				query.setParameterList("ids", ids);
+				list = query.list();
+			}
+			else {
+				// on charge les entités par sous lots
+				list = new ArrayList<T>(size);
+				final List<Long> l = new ArrayList<Long>(ids);
+				for (int i = 0; i < size; i += MAX_IN_SIZE) {
+					final List<Long> sub = l.subList(i, Math.min(size, i + MAX_IN_SIZE));
+					query.setParameterList("ids", sub);
+					list.addAll(query.list());
+				}
+			}
 		}
 		else {
-			// on charge les entités par sous lots
-			list = new ArrayList<T>(size);
-			final List<Long> l = new ArrayList<Long>(ids);
-			for (int i = 0; i < size; i += MAX_IN_SIZE) {
-				final List<Long> sub = l.subList(i, Math.min(size, i + MAX_IN_SIZE));
-				query.setParameterList("ids", sub);
-				list.addAll(query.list());
-			}
+			list = Collections.emptyList();
 		}
 
 		return list;

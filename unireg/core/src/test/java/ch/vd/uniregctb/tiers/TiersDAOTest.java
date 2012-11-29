@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -1856,5 +1858,49 @@ public class TiersDAOTest extends CoreDAOTest {
 	@SuppressWarnings({"unchecked", "UnusedAssignment"})
 	private void loadDatabase() throws Exception {
 		TiersBasic.loadDatabase(hibernateTemplate, transactionManager);
+	}
+
+	/**
+	 * SIFISC-7271 : NPE qui sortait du getMenagesCommuns si l'un des IDs passés est null
+	 */
+	@Test
+	public void testGetMenagesCommunsWithNullId() throws Exception {
+
+		// mise en place des contribuables
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Gudule", "Tartempion", null, Sexe.FEMININ);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				@SuppressWarnings("ConstantConditions") final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList((Long) null), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(mcs);
+				Assert.assertEquals(0, mcs.size());
+				return null;
+			}
+		});
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList(null, ppId), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(mcs);
+				Assert.assertEquals(0, mcs.size());
+				return null;
+			}
+		});
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<MenageCommun> mcs = tiersDAO.getMenagesCommuns(Arrays.asList(ppId,  null), EnumSet.of(Parts.FORS_FISCAUX));
+				Assert.assertNotNull(mcs);
+				Assert.assertEquals(0, mcs.size());
+				return null;
+			}
+		});
 	}
 }
