@@ -13,17 +13,21 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.message.Message;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;
 
-import ch.vd.uniregctb.webservices.tiers2.AdresseEnvoi;
-import ch.vd.uniregctb.webservices.tiers2.BatchTiers;
-import ch.vd.uniregctb.webservices.tiers2.BatchTiersEntry;
-import ch.vd.uniregctb.webservices.tiers2.GetBatchTiers;
-import ch.vd.uniregctb.webservices.tiers2.Tiers;
-import ch.vd.uniregctb.webservices.tiers2.TiersPart;
-import ch.vd.uniregctb.webservices.tiers2.TiersPort;
-import ch.vd.uniregctb.webservices.tiers2.TiersService;
-import ch.vd.uniregctb.webservices.tiers2.UserLogin;
+import ch.vd.unireg.webservices.party3.BatchParty;
+import ch.vd.unireg.webservices.party3.BatchPartyEntry;
+import ch.vd.unireg.webservices.party3.GetBatchPartyRequest;
+import ch.vd.unireg.webservices.party3.GetPartyRequest;
+import ch.vd.unireg.webservices.party3.PartyPart;
+import ch.vd.unireg.webservices.party3.PartyWebService;
+import ch.vd.unireg.webservices.party3.PartyWebServiceFactory;
+import ch.vd.unireg.webservices.party3.WebServiceException;
+import ch.vd.unireg.xml.common.v1.UserLogin;
+import ch.vd.unireg.xml.party.address.v1.Address;
+import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
+import ch.vd.unireg.xml.party.v1.Party;
 
 /**
  * Outil pour aller chercher les adresses d'envoi (sur six lignes, donc) des tiers
@@ -32,17 +36,17 @@ import ch.vd.uniregctb.webservices.tiers2.UserLogin;
 public class AdresseExtractor {
 
 	// INTEGRATION
-//	private static final String urlWebServiceTiers2 = "http://ssv0309v.etat-de-vaud.ch:41060/fiscalite/int-unireg/ws/tiers2";
-//	private static final String userWebService = "web-it";
+//	private static final String urlWebService = "http://unireg-in.etat-de-vaud.ch/fiscalite/int-unireg/ws/party3";
+//	private static final String userWebService = "unireg";
 //	private static final String pwdWebService = "unireg_1014";
 
 	// PRE-PRODUCTION
-	private static final String urlWebServiceTiers2 = "http://unireg-pp.etat-de-vaud.ch:80/fiscalite/unireg/ws/tiers2";
+	private static final String urlWebService = "http://unireg-pp.etat-de-vaud.ch/fiscalite/unireg/ws/party3";
 	private static final String userWebService = "web-it";
 	private static final String pwdWebService = "unireg_1014";
 
 	// PRODUCTION
-//	private static final String urlWebServiceTiers2 = "http://unireg-pr.etat-de-vaud.ch:80/fiscalite/unireg/ws/tiers2";
+//	private static final String urlWebService = "http://unireg-pr.etat-de-vaud.ch/fiscalite/unireg/ws/party3";
 //	private static final String userWebService = "se renseigner...";
 //	private static final String pwdWebService = "se renseigner...";
 
@@ -52,25 +56,27 @@ public class AdresseExtractor {
 	private static final int TAILLE_LOT = 100;
 	private static final String nomFichier = "tiers.csv";
 	private static final String fichierDestination = "/tmp/tiers-avec-adresse.csv";
-	
+
 	public static void main(String[] args) throws Exception {
 
-		final TiersPort tiersPort = initWebService(urlWebServiceTiers2, userWebService, pwdWebService);
-		final GetBatchTiers batchTiers = new GetBatchTiers();
-		final UserLogin login = new UserLogin();
-		login.setOid(oid);
-		login.setUserId(userId);
-		batchTiers.setLogin(login);
-		batchTiers.getParts().add(TiersPart.ADRESSES_ENVOI);
+		final PartyWebService service = initWebService(urlWebService, userWebService, pwdWebService);
+		final GetBatchPartyRequest batchPartyRequest = new GetBatchPartyRequest();
+		final UserLogin login = new UserLogin(userId, oid);
+		batchPartyRequest.setLogin(login);
+		batchPartyRequest.getParts().add(PartyPart.ADDRESSES);
+
+		final GetPartyRequest partyRequest = new GetPartyRequest();
+		partyRequest.setLogin(login);
+		partyRequest.getParts().add(PartyPart.ADDRESSES);
 
 		final InputStream in = AdresseExtractor.class.getResourceAsStream(nomFichier);
 		final BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 
 		// on lit le contenu du fichier
-		final List<Long> ctbs = new ArrayList<Long>();
+		final List<Integer> ctbs = new ArrayList<Integer>();
 		String line = reader.readLine();
 		while (line != null) {
-			final Long ctb = Long.valueOf(line);
+			final Integer ctb = Integer.valueOf(line);
 		    ctbs.add(ctb);
 			line = reader.readLine();
 		}
@@ -78,9 +84,9 @@ public class AdresseExtractor {
 
 		// ensuite, on fait des groupes de TAILLE_LOT
 		final int nbLots = ctbs.size() / TAILLE_LOT + 1;
-		final List<List<Long>> lots = new ArrayList<List<Long>>(nbLots);
+		final List<List<Integer>> lots = new ArrayList<List<Integer>>(nbLots);
 		for (int i = 0 ; i < nbLots ; ++ i) {
-			final List<Long> lot = ctbs.subList(i * TAILLE_LOT, Math.min((i + 1) * TAILLE_LOT, ctbs.size()));
+			final List<Integer> lot = ctbs.subList(i * TAILLE_LOT, Math.min((i + 1) * TAILLE_LOT, ctbs.size()));
 			if (!lot.isEmpty()) {
 				lots.add(lot);
 			}
@@ -99,28 +105,28 @@ public class AdresseExtractor {
 		}
 
 		// et on boucle sur les lots
-		for (List<Long> lot : lots) {
-			batchTiers.getTiersNumbers().clear();
-			batchTiers.getTiersNumbers().addAll(lot);
+		for (List<Integer> lot : lots) {
+			batchPartyRequest.getPartyNumbers().clear();
+			batchPartyRequest.getPartyNumbers().addAll(lot);
 
-			final BatchTiers result = tiersPort.getBatchTiers(batchTiers);
-			for (BatchTiersEntry entry : result.getEntries()) {
-				final Tiers tiers = entry.getTiers();
-				if (tiers == null) {
-					System.err.println(String.format("%d n'a pas été trouvé (%s)", entry.getNumber(), entry.getExceptionMessage()));
+			try {
+				final BatchParty result = service.getBatchParty(batchPartyRequest);
+				for (BatchPartyEntry entry : result.getEntries()) {
+					final Party tiers = entry.getParty();
+					dumpTiers(tiers, entry.getNumber(), entry.getExceptionInfo(), ps);
 				}
-				else if (tiers.getAdresseEnvoi() == null) {
-					System.err.println(String.format("%d n'a pas d'adresse d'envoi", entry.getNumber()));
-				}
-				else {
-					final AdresseEnvoi adr = tiers.getAdresseEnvoi();
-					ps.println(String.format("%d;%s;%s;%s;%s;%s;%s", entry.getNumber(),
-							StringUtils.trimToEmpty(adr.getLigne1()),
-							StringUtils.trimToEmpty(adr.getLigne2()),
-							StringUtils.trimToEmpty(adr.getLigne3()),
-							StringUtils.trimToEmpty(adr.getLigne4()),
-							StringUtils.trimToEmpty(adr.getLigne5()),
-							StringUtils.trimToEmpty(adr.getLigne6())));
+			}
+			catch (WebServiceException e) {
+				// problème... on essaie un par un
+				for (Integer id : lot) {
+					partyRequest.setPartyNumber(id);
+					try {
+						final Party indivResult = service.getParty(partyRequest);
+						dumpTiers(indivResult, id, null, ps);
+					}
+					catch (WebServiceException e1) {
+						dumpTiers(null, id, e1.getMessage(), ps);
+					}
 				}
 			}
 		}
@@ -130,10 +136,40 @@ public class AdresseExtractor {
 		}
 	}
 
-	private static TiersPort initWebService(String serviceUrl, String username, String password) throws Exception {
-		URL wsdlUrl = ResourceUtils.getURL("classpath:TiersService2.wsdl");
-		final TiersService ts = new TiersService(wsdlUrl);
-		final TiersPort service = ts.getTiersPortPort();
+	private static void dumpTiers(@Nullable Party party, long tiersNumber, @Nullable Object exceptionInfo, PrintStream ps) {
+		if (party == null) {
+			System.err.println(String.format("%d n'a pas été trouvé (%s)", tiersNumber, exceptionInfo));
+		}
+		else {
+			// il faut maintenant trouver la bonne adresse (= celle qui n'a pas de date de fin...)
+			Address adrEnvoi = null;
+			for (Address adresse : party.getMailAddresses()) {
+				if (adresse.getDateTo() == null) {
+					adrEnvoi = adresse;
+					break;
+				}
+			}
+
+			if (adrEnvoi == null) {
+				System.err.println(String.format("%d n'a pas d'adresse d'envoi", tiersNumber));
+			}
+			else {
+				final FormattedAddress adr = adrEnvoi.getFormattedAddress();
+				ps.println(String.format("%d;%s;%s;%s;%s;%s;%s", tiersNumber,
+				                         StringUtils.trimToEmpty(adr.getLine1()),
+				                         StringUtils.trimToEmpty(adr.getLine2()),
+				                         StringUtils.trimToEmpty(adr.getLine3()),
+				                         StringUtils.trimToEmpty(adr.getLine4()),
+				                         StringUtils.trimToEmpty(adr.getLine5()),
+				                         StringUtils.trimToEmpty(adr.getLine6())));
+			}
+		}
+	}
+
+	private static PartyWebService initWebService(String serviceUrl, String username, String password) throws Exception {
+		final URL wsdlUrl = ResourceUtils.getURL("classpath:PartyService3.wsdl");
+		final PartyWebServiceFactory ts = new PartyWebServiceFactory(wsdlUrl);
+		final PartyWebService service = ts.getService();
 		final Map<String, Object> context = ((BindingProvider) service).getRequestContext();
 		if (StringUtils.isNotBlank(username)) {
 			context.put(BindingProvider.USERNAME_PROPERTY, username);
