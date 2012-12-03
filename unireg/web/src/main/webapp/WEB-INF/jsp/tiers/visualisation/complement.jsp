@@ -2,12 +2,12 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 <!-- Debut Complements -->
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
-<c:if test="${autorisations.complements}">
+<c:if test="${autorisations.complementsCommunications}">
 	<table border="0">
 		<tr>
 			<td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:linkTo name="Modifier" title="Modifier les compléments" action="/complements/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
+					<unireg:linkTo name="Modifier" title="Modifier les points de communications" action="/complements/communications/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
 				</c:if>
 			</td>
 		</tr>
@@ -54,6 +54,18 @@
         </unireg:ifEfacture>
 	</table>
 </fieldset>
+
+<c:if test="${autorisations.complementsCoordonneesFinancieres}">
+	<table border="0" style="margin-top: 0.5em;">
+		<tr>
+			<td>
+				<c:if test="${empty param['message'] && empty param['retour']}">
+					<unireg:linkTo name="Modifier" title="Modifier les coordonnées financières" action="/complements/coordfinancieres/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
+				</c:if>
+			</td>
+		</tr>
+	</table>
+</c:if>
 <fieldset>
 	<legend><span><fmt:message key="label.complement.coordFinancieres" /></span></legend>
 	<unireg:nextRowClass reset="1"/>

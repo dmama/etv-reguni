@@ -1,21 +1,22 @@
 package ch.vd.uniregctb.complements;
 
-import org.apache.commons.lang.StringUtils;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import ch.vd.uniregctb.common.TiersNotFoundException;
-import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
-import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.utils.ValidatorUtils;
 
-public class ComplementsValidator implements Validator {
+public class ComplementsValidator implements Validator, InitializingBean {
 
 	private IbanValidator ibanValidator;
 	private HibernateTemplate hibernateTemplate;
+
+	private Map<Class<?>, Validator> subValidators = new HashMap<Class<?>, Validator>();
 
 	public void setIbanValidator(IbanValidator ibanValidator) {
 		this.ibanValidator = ibanValidator;
@@ -26,70 +27,19 @@ public class ComplementsValidator implements Validator {
 	}
 
 	@Override
+	public void afterPropertiesSet() throws Exception {
+		subValidators.put(ComplementsEditCommunicationsView.class, new ComplementsEditCommunicationsValidator(hibernateTemplate));
+		subValidators.put(ComplementsEditCoordonneesFinancieresView.class, new ComplementsEditCoordonneesFinancieresValidator(ibanValidator, hibernateTemplate));
+	}
+
+		@Override
 	public boolean supports(Class clazz) {
-		return ComplementsEditView.class.equals(clazz);
+		return subValidators.containsKey(clazz);
 	}
 
 	@Override
-	@Transactional(readOnly = true)
-	public void validate(Object obj, Errors errors) {
-		final ComplementsEditView view = (ComplementsEditView) obj;
-
-		final long id = view.getId();
-		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
-		if (tiers == null) {
-			throw new TiersNotFoundException(id);
-		}
-		view.initReadOnlyData(tiers);
-
-		// --------- --------------Onglets Complements------------------------
-
-		if (StringUtils.isNotBlank(view.getNumeroTelecopie())) {
-			if (!ValidatorUtils.isNumberTel(view.getNumeroTelecopie())) {
-				errors.rejectValue("numeroTelecopie", "error.telephone");
-			}
-		}
-
-		if (StringUtils.isNotBlank(view.getNumeroTelephonePrive())) {
-			if (!ValidatorUtils.isNumberTel(view.getNumeroTelephonePrive())) {
-				errors.rejectValue("numeroTelephonePrive", "error.telephone");
-			}
-		}
-
-		if (StringUtils.isNotBlank(view.getNumeroTelephonePortable())) {
-			if (!ValidatorUtils.isNumberTel(view.getNumeroTelephonePortable())) {
-				errors.rejectValue("numeroTelephonePortable", "error.telephone");
-			}
-		}
-
-		if (StringUtils.isNotBlank(view.getNumeroTelephoneProfessionnel())) {
-			if (!ValidatorUtils.isNumberTel(view.getNumeroTelephoneProfessionnel())) {
-				errors.rejectValue("numeroTelephoneProfessionnel", "error.telephone");
-			}
-		}
-
-		if (StringUtils.isNotBlank(view.getAdresseCourrierElectronique())) {
-			if (!ValidatorUtils.isValidEmail(view.getAdresseCourrierElectronique())) {
-				errors.rejectValue("adresseCourrierElectronique", "error.email");
-			}
-		}
-
-		final String iban = view.getIban();
-		if (StringUtils.isNotBlank(iban)) {
-			//[UNIREG-1449] il ne faudrait pas bloquer la sauvegarde de la page des "compléments" si l'IBAN, inchangé, est invalide.
-			if (!iban.equals(tiers.getNumeroCompteBancaire())) {
-				try {
-					ibanValidator.validate(iban);
-				}
-				catch (IbanValidationException e) {
-					if (StringUtils.isBlank(e.getMessage())) {
-						errors.rejectValue("numeroCompteBancaire", "error.iban");
-					}
-					else {
-						errors.rejectValue("numeroCompteBancaire", "error.iban.detail", new Object[]{e.getMessage()}, "IBAN invalide");
-					}
-				}
-			}
-		}
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public void validate(Object target, Errors errors) {
+		subValidators.get(target.getClass()).validate(target, errors);
 	}
 }

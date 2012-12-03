@@ -55,9 +55,9 @@ public class ComplementsController {
 		binder.setValidator(validator);
 	}
 
-	@RequestMapping(value = "/edit.do", method = RequestMethod.GET)
+	@RequestMapping(value = "/communications/edit.do", method = RequestMethod.GET)
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
-	public String edit(@RequestParam(value = "id", required = false) Long id, Model model) throws Exception {
+	public String editCommunications(@RequestParam(value = "id", required = false) Long id, Model model) throws Exception {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		if (tiers == null) {
@@ -72,15 +72,15 @@ public class ComplementsController {
 		controllerUtils.checkAccesDossierEnEcriture(id);
 
 
-		final ComplementsEditView view = new ComplementsEditView(tiers);
+		final ComplementsEditCommunicationsView view = new ComplementsEditCommunicationsView(tiers);
 		model.addAttribute("command", view);
 
-		return "complements/edit";
+		return "complements/communications/edit";
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
-	@RequestMapping(value = "/edit.do", method = RequestMethod.POST)
-	public String edit(@Valid @ModelAttribute("command") final ComplementsEditView view, BindingResult result, Model model) throws Exception {
+	@RequestMapping(value = "/communications/edit.do", method = RequestMethod.POST)
+	public String editCommunications(@Valid @ModelAttribute("command") final ComplementsEditCommunicationsView view, BindingResult result, Model model) throws Exception {
 
 		final long id = view.getId();
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
@@ -89,40 +89,85 @@ public class ComplementsController {
 		}
 
 		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
-		if (!autorisations.isComplements()) {
-			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
+		if (!autorisations.isComplements() || !autorisations.isComplementsCommunications()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des points de communication d'un tiers");
 		}
 
 		controllerUtils.checkAccesDossierEnEcriture(id);
 
 		if (result.hasErrors()) {
 			model.addAttribute("modifie", true);
-			return "complements/edit";
+			return "complements/communications/edit";
 		}
 
 		// On met-à-jour les données.
-		if (autorisations.isComplementsCommunications()) {
-			if (tiers instanceof DebiteurPrestationImposable) {
-				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
-				if (dpi.getContribuableId() == null) {
-					dpi.setNom1(view.getNom1());
-					dpi.setNom2(view.getNom2());
-				}
+		if (tiers instanceof DebiteurPrestationImposable) {
+			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
+			if (dpi.getContribuableId() == null) {
+				dpi.setNom1(view.getNom1());
+				dpi.setNom2(view.getNom2());
 			}
-			tiers.setPersonneContact(view.getPersonneContact());
-			tiers.setComplementNom(view.getComplementNom());
-			tiers.setNumeroTelephonePrive(view.getNumeroTelephonePrive());
-			tiers.setNumeroTelephonePortable(view.getNumeroTelephonePortable());
-			tiers.setNumeroTelephoneProfessionnel(view.getNumeroTelephoneProfessionnel());
-			tiers.setNumeroTelecopie(view.getNumeroTelecopie());
-			tiers.setAdresseCourrierElectronique(view.getAdresseCourrierElectronique());
+		}
+		tiers.setPersonneContact(view.getPersonneContact());
+		tiers.setComplementNom(view.getComplementNom());
+		tiers.setNumeroTelephonePrive(view.getNumeroTelephonePrive());
+		tiers.setNumeroTelephonePortable(view.getNumeroTelephonePortable());
+		tiers.setNumeroTelephoneProfessionnel(view.getNumeroTelephoneProfessionnel());
+		tiers.setNumeroTelecopie(view.getNumeroTelecopie());
+		tiers.setAdresseCourrierElectronique(view.getAdresseCourrierElectronique());
+
+		return "redirect:/tiers/visu.do?id=" + id;
+	}
+
+	@RequestMapping(value = "/coordfinancieres/edit.do", method = RequestMethod.GET)
+	@Transactional(readOnly = true, rollbackFor = Throwable.class)
+	public String editCoordFinancieres(@RequestParam(value = "id", required = false) Long id, Model model) throws Exception {
+
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
+		if (tiers == null) {
+			throw new TiersNotFoundException(id);
 		}
 
-		if (autorisations.isComplementsCoordonneesFinancieres()) {
-			tiers.setNumeroCompteBancaire(view.getIban());
-			tiers.setTitulaireCompteBancaire(view.getTitulaireCompteBancaire());
-			tiers.setAdresseBicSwift(view.getAdresseBicSwift());
+		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+		if (!autorisations.isComplements()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des compléments d'un tiers");
 		}
+
+		controllerUtils.checkAccesDossierEnEcriture(id);
+
+
+		final ComplementsEditCoordonneesFinancieresView view = new ComplementsEditCoordonneesFinancieresView(tiers);
+		model.addAttribute("command", view);
+
+		return "complements/coordfinancieres/edit";
+	}
+
+	@Transactional(rollbackFor = Throwable.class)
+	@RequestMapping(value = "/coordfinancieres/edit.do", method = RequestMethod.POST)
+	public String editCoordFinancieres(@Valid @ModelAttribute("command") final ComplementsEditCoordonneesFinancieresView view, BindingResult result, Model model) throws Exception {
+
+		final long id = view.getId();
+		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
+		if (tiers == null) {
+			throw new TiersNotFoundException(id);
+		}
+
+		final Autorisations autorisations = autorisationManager.getAutorisations(tiers, AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID());
+		if (!autorisations.isComplements() || !autorisations.isComplementsCoordonneesFinancieres()) {
+			throw new AccessDeniedException("Vous ne possédez pas les droits IfoSec d'édition des coordonnées financières d'un tiers");
+		}
+
+		controllerUtils.checkAccesDossierEnEcriture(id);
+
+		if (result.hasErrors()) {
+			model.addAttribute("modifie", true);
+			return "complements/coordfinancieres/edit";
+		}
+
+		// On met-à-jour les données.
+		tiers.setNumeroCompteBancaire(view.getIban());
+		tiers.setTitulaireCompteBancaire(view.getTitulaireCompteBancaire());
+		tiers.setAdresseBicSwift(view.getAdresseBicSwift());
 
 		return "redirect:/tiers/visu.do?id=" + id;
 	}

@@ -126,10 +126,10 @@
 }
 
 fieldset {
-	margin-top: 10px;
+	margin-top: 6px;
 	margin-left: 2px;
 	margin-right: 2px;
-	margin-bottom: 2px;
+	margin-bottom: 6px;
 	border: 1px solid #cdcdcd;
 	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;

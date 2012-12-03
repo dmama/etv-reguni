@@ -4,7 +4,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 
 @SuppressWarnings("UnusedDeclaration")
-public class ComplementsEditView {
+public class ComplementsEditCommunicationsView {
 
 	private long id;
 
@@ -22,15 +22,10 @@ public class ComplementsEditView {
 	private String numeroTelecopie;
 	private String adresseCourrierElectronique;
 
-	// coordonnées financières
-	private String iban;
-	private String titulaireCompteBancaire;
-	private String adresseBicSwift;
-
-	public ComplementsEditView() {
+	public ComplementsEditCommunicationsView() {
 	}
 
-	public ComplementsEditView(Tiers tiers) {
+	public ComplementsEditCommunicationsView(Tiers tiers) {
 		initReadOnlyData(tiers);
 		if (tiers instanceof DebiteurPrestationImposable) {
 			final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiers;
@@ -38,7 +33,6 @@ public class ComplementsEditView {
 			this.nom2 = dpi.getNom2();
 		}
 
-		// points de communications
 		this.personneContact = tiers.getPersonneContact();
 		this.complementNom = tiers.getComplementNom();
 		this.numeroTelephonePrive = tiers.getNumeroTelephonePrive();
@@ -46,11 +40,6 @@ public class ComplementsEditView {
 		this.numeroTelephoneProfessionnel = tiers.getNumeroTelephoneProfessionnel();
 		this.numeroTelecopie = tiers.getNumeroTelecopie();
 		this.adresseCourrierElectronique = tiers.getAdresseCourrierElectronique();
-
-		// coordonnées financières
-		this.iban = tiers.getNumeroCompteBancaire();
-		this.titulaireCompteBancaire = tiers.getTitulaireCompteBancaire();
-		this.adresseBicSwift = tiers.getAdresseBicSwift();
 	}
 
 	public void initReadOnlyData(Tiers tiers) {
@@ -140,29 +129,5 @@ public class ComplementsEditView {
 
 	public void setAdresseCourrierElectronique(String adresseCourrierElectronique) {
 		this.adresseCourrierElectronique = adresseCourrierElectronique;
-	}
-
-	public String getIban() {
-		return iban;
-	}
-
-	public void setIban(String iban) {
-		this.iban = iban;
-	}
-
-	public String getTitulaireCompteBancaire() {
-		return titulaireCompteBancaire;
-	}
-
-	public void setTitulaireCompteBancaire(String titulaireCompteBancaire) {
-		this.titulaireCompteBancaire = titulaireCompteBancaire;
-	}
-
-	public String getAdresseBicSwift() {
-		return adresseBicSwift;
-	}
-
-	public void setAdresseBicSwift(String adresseBicSwift) {
-		this.adresseBicSwift = adresseBicSwift;
 	}
 }

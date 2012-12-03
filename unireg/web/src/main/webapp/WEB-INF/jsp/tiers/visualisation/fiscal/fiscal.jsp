@@ -39,7 +39,7 @@
 	<c:when test="${command.natureTiers == 'DebiteurPrestationImposable'}">
 		<jsp:include page="debiteur.jsp"/>
 		<c:if test="${autorisations.donneesFiscales}">
-			<table border="0">
+			<table border="0" style="margin-top: 0.5em;">
 				<tr><td>
 					<unireg:raccourciModifier link="../fiscal/edit-for-debiteur.do?id=${command.tiers.numero}" tooltip="Modifier les fors du débiteur" display="label.bouton.modifier"/>
 				</td></tr>
