@@ -32,6 +32,7 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.indexer.TooManyResultsIndexerException;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -39,6 +40,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
@@ -440,7 +442,6 @@ public abstract class Arrivee extends Mouvement {
 		 * Récupération/création des habitants
 		 */
 		final PersonnePhysique arrivant = getOrCreatePersonnePhysique(individu, numeroEvenement, FindBehavior.ASSUJETTISSEMENT_NON_OBLIGATOIRE_NO_ERROR_IF_SEVERAL);
-		final boolean arrivantWasNonHabitant = !arrivant.isHabitantVD();
 
 		// [SIFISC-6841] on met-à-jour le flag habitant en fonction de ses adresses de résidence civiles
 		context.getTiersService().updateHabitantFlag(arrivant, getNoIndividu(), dateEvenement, getNumeroEvenement());
@@ -452,7 +453,6 @@ public abstract class Arrivee extends Mouvement {
 		else {
 			conjointDeLArrivant = null;
 		}
-		final boolean conjointDeLArrivantWasNonHabitant = conjointDeLArrivant != null && !conjointDeLArrivant.isHabitantVD();
 
 		/*
 		 * Récupération/création du ménage commun et du rapports entre tiers
@@ -460,12 +460,11 @@ public abstract class Arrivee extends Mouvement {
 
 		// trouve la date du mariage (qui peut avoir eu lieu bien avant l'arrivée !)
 		final RegDate dateDebutMenage = findDateDebutMenageAvant(individu, getDate());
-
-		 // [SIFISC-6032] Fermeture d'eventuel for personnel ouvert pour des anciens non-habitants  avant de créer le ménage.
-		if (arrivantWasNonHabitant) {
+		 // Fermeture de l'eventuel for personnel ouvert en dehors du canton.
+		if (contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(arrivant)) {
 			context.getTiersService().closeForFiscalPrincipal(arrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
-		if (conjointDeLArrivant != null && conjointDeLArrivantWasNonHabitant ) {
+		if (conjointDeLArrivant != null && contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(conjointDeLArrivant)) {
 			context.getTiersService().closeForFiscalPrincipal(conjointDeLArrivant, dateDebutMenage.getOneDayBefore(), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 		}
 
@@ -486,6 +485,18 @@ public abstract class Arrivee extends Mouvement {
 		doHandleCreationForMenage(arrivant, menageCommun, warnings);
 
 		return HandleStatus.TRAITE;
+	}
+
+	/**
+	 *
+	 * @return true si le contribuable en paramètre possède un for fiscal personnel ouvert en dehors du canton
+	 */
+	private boolean contribuableAUnForFiscalPrincipalPersonnelOuvertEnDehorsDuCanton(PersonnePhysique ctb) {
+		if (ctb == null) {
+			return false;
+		}
+		ForFiscalPrincipal ffp = ctb.getForFiscalPrincipalAt(null);
+		return ffp != null && ffp.getDateFin() == null && ffp.getTypeAutoriteFiscale() != TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
 	}
 
 	/**

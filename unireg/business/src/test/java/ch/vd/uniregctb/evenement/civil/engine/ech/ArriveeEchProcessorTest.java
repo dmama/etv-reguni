@@ -1416,5 +1416,99 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+	/**
+	 * SIFISC-7276
+	 *
+	 * Test non-regression dans le cas d'une personne revenant sur le canton comme  marié alors qu'elle est partie célibataire
+	 * On ferme le for meme si le flag habitant est renseigné à true (ce qui est en soit incoherent puisque la personne arrive
+	 * depuis Hors-Suisse...)
+	 *
+	 */
+	@Test(timeout = 10000L)
+	public void testArriveePersonneMarieConnueHorsSuisseCelibataireAvecFlagHabitant() throws Exception {
+
+		final long noIndividu = 32673256L;
+		final RegDate debutHS = date(2009, 9, 1);
+		final RegDate dateMariage = date(2011, 6, 6);
+		final RegDate dateArrivee = date(2012, 5, 5);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final RegDate dateNaissance = date(1980, 10, 25);
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Tine", "Albert", Sexe.MASCULIN);
+				marieIndividu(ind, dateMariage);
+				addAdresse(ind, TypeAdresseCivil.PRINCIPALE, "Rue de la tour Eiffel", "23", 75007, null, "Paris", MockPays.France, debutHS, dateArrivee.getOneDayBefore());
+				final MockAdresse adresseVD = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Echallens.GrandRue, null, dateArrivee, null);
+				adresseVD.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = tiersService.createNonHabitantFromIndividu(noIndividu);
+				addForPrincipal(pp, debutHS, MotifFor.DEPART_HS, MockPays.France);
+				pp.setHabitant(true);
+				return pp.getNumero();
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(14532L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'arrivée
+		traiterEvenements(noIndividu);
+
+		// vérification de l'état de l'événement
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+				assertNull(evt.getCommentaireTraitement());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				assertNotNull(pp);
+				final ForFiscalPrincipal ffpPP = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffpPP);
+				assertEquals(debutHS, ffpPP.getDateDebut());
+				assertEquals(TypeAutoriteFiscale.PAYS_HS, ffpPP.getTypeAutoriteFiscale());
+				assertEquals(dateMariage.getOneDayBefore(), ffpPP.getDateFin());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, dateMariage);
+				assertNotNull(couple);
+				assertNull(couple.getConjoint());
+
+				final MenageCommun mc = couple.getMenage();
+				assertNotNull(mc);
+				final ForFiscalPrincipal ffpMc = mc.getDernierForFiscalPrincipal();
+				assertNotNull(ffpMc);
+				assertEquals(dateArrivee, ffpMc.getDateDebut());
+				assertNull(ffpMc.getDateFin());
+				assertEquals(TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, ffpMc.getTypeAutoriteFiscale());
+				assertEquals((Integer) MockCommune.Echallens.getNoOFS(), ffpMc.getNumeroOfsAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
+
 
 }
