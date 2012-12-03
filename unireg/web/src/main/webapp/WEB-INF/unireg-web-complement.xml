@@ -2,17 +2,16 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="complementEditController" class="ch.vd.uniregctb.tiers.ComplementEditController" parent="abstractTiersController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
-		<property name="formView" value="tiers/edition/complement/edit" />
-		<property name="tiersEditManager" ref="tiersEditManager" />
-		<property name="validator" ref="complementEditValidator" />
-	</bean>
-	
-	<bean id="complementEditValidator" class="ch.vd.uniregctb.tiers.validator.ComplementEditValidator" >
+	<bean id="complementValidator" class="ch.vd.uniregctb.complements.ComplementsValidator" >
 		<property name="ibanValidator" ref="ibanValidator" />
-		<property name="tiersService" ref="tiersService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
+
+	<bean id="complementController" class="ch.vd.uniregctb.complements.ComplementsController">
+		<property name="autorisationManager" ref="autorisationManager"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="validator" ref="complementValidator"/>
+	</bean>
+
 </beans>

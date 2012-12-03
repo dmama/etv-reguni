@@ -21,10 +21,6 @@ public class CivilEditController extends AbstractTiersController {
 
 	private TiersEditManager tiersEditManager;
 
-	public TiersEditManager getTiersEditManager() {
-		return tiersEditManager;
-	}
-
 	public void setTiersEditManager(TiersEditManager tiersEditManager) {
 		this.tiersEditManager = tiersEditManager;
 	}
@@ -41,7 +37,7 @@ public class CivilEditController extends AbstractTiersController {
 			if (!"".equals(idParam)) {
 				//gestion des droits d'édition d'un tier par tiersEditManager
 				checkAccesDossierEnLecture(id);
-				tiersView = tiersEditManager.getComplementView(id);
+				tiersView = tiersEditManager.getCivilView(id);
 			}
 		}
 		return tiersView;

@@ -49,7 +49,7 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public TiersEditView getComplementView(Long numero) throws AdresseException, ServiceInfrastructureException {
+	public TiersEditView getCivilView(Long numero) throws AdresseException, ServiceInfrastructureException {
 
 		TiersEditView tiersEditView = new TiersEditView();
 		if ( numero == null) {

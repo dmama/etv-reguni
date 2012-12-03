@@ -25,7 +25,7 @@ public interface TiersEditManager {
 	 * @throws ServiceInfrastructureException
 	 */
 	@Transactional(readOnly = true)
-	TiersEditView getComplementView(Long numero) throws AdresseException, ServiceInfrastructureException;
+	TiersEditView getCivilView(Long numero) throws AdresseException, ServiceInfrastructureException;
 
 	/**
 	 * Charge les informations dans un objet qui servira de view

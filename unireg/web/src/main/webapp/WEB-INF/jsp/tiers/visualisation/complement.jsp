@@ -7,8 +7,8 @@
 		<tr>
 			<td>
 				<c:if test="${empty param['message'] && empty param['retour']}">
-					<unireg:raccourciModifier link="../complement/edit.do?id=${command.tiers.numero}" tooltip="Modifier les compléments" display="label.bouton.modifier"/>
-				</c:if>	
+					<unireg:linkTo name="Modifier" title="Modifier les compléments" action="/complements/edit.do" params="{id:${command.tiers.numero}}" link_class="edit"/>
+				</c:if>
 			</td>
 		</tr>
 	</table>
