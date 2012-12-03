@@ -129,7 +129,7 @@ public class JspTagRaccourci extends BodyTagSupport implements MessageSourceAwar
 	 */
 	protected String getBody() {
 		final String display = getDisplay();
-		return estVide(display) ? NBSP : NBSP + getMessage(display);
+		return estVide(display) ? NBSP : getMessage(display);
 	}
 
 	protected String getHRef() {

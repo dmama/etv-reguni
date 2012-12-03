@@ -6,7 +6,7 @@
 	<table border="0">
 		<tr><td>
 			<c:if test="${empty param['message'] && empty param['retour']}">
-				<unireg:linkTo name="&nbsp;Modifier" title="Modifier les DIs" action="/di/list.do" params="{tiersId:${command.tiers.numero}}" link_class="edit"/>
+				<unireg:linkTo name="Modifier" title="Modifier les DIs" action="/di/list.do" params="{tiersId:${command.tiers.numero}}" link_class="edit"/>
 			</c:if>
 		</td></tr>
 	</table>

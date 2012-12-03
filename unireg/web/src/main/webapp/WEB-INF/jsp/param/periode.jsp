@@ -92,7 +92,7 @@
 			<fmt:message key="label.param.periode.arg" var="titleParametres">
 				<fmt:param value="${periodeSelectionnee.annee}" />
 			</fmt:message> 
-			<a href="parametres-pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}">&nbsp;<fmt:message key="label.param.edit"/>&nbsp;</a>
+			<a href="parametres-pf-edit.do?pf=${periodeSelectionnee.id}" class="edit" title="${titleParametres}"><fmt:message key="label.param.edit"/>&nbsp;</a>
 		<table>
 			<tr>
 				<th></th>

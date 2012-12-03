@@ -51,7 +51,7 @@
 					</display:column>
 					<display:column style="action">
 						<c:if test="${!di.annule}">
-							<unireg:linkTo name="&nbsp;" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
+							<unireg:linkTo name="" action="/di/editer.do" method="get" params="{id:${di.id}}" title="Editer la déclaration" link_class="edit"/>
 						</c:if>
 						<authz:authorize ifAnyGranted="ROLE_DI_DESANNUL_PP">
 							<c:if test="${di.annule}">

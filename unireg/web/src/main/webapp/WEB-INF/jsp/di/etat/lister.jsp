@@ -44,7 +44,7 @@
 				</c:if>
 				<c:if test="${!command.depuisTache && command.allowedQuittancement}">
 					<c:if test="${!etat.annule && etat.etat == 'RETOURNEE'}">
-						<unireg:linkTo name="&nbsp;" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
+						<unireg:linkTo name="" title="Annuler le quittancement" confirm="Voulez-vous vraiment annuler ce quittancement ?"
 						               action="/di/etat/annuler.do" method="post" params="{id:${etat.id}}" link_class="delete"/>
 					</c:if>
 				</c:if>
