@@ -867,7 +867,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				// on doit arrondir au début du mois
 				final RegDate newDebut = RegDate.get(debut.year(), debut.month(), 1);
 				if (newDebut != debut) {
-					if (precedent != null && precedent.getDateFin().getOneDayAfter() == debut) {
+					if (precedent != null && precedent.getDateFin().isAfterOrEqual(newDebut)) {
 						final AdaptionResult r = adapteDateFin(precedent, newDebut.getOneDayBefore(), assujettissements);
 						if (r == AdaptionResult.LISTE_MODIFIEE) {
 							res = AdaptionResult.LISTE_MODIFIEE;
@@ -884,7 +884,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					// on doit arrondir à la fin du mois
 					final RegDate newFin = RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
 					if (newFin != fin) {
-						if (suivant != null && suivant.getDateDebut().getOneDayBefore() == fin) {
+						if (suivant != null && suivant.getDateDebut().isBeforeOrEqual(newFin)) {
 							final AdaptionResult r = adapteDateDebut(suivant, newFin.getOneDayAfter(), assujettissements);
 							if (r == AdaptionResult.LISTE_MODIFIEE) {
 								res = AdaptionResult.LISTE_MODIFIEE;
@@ -960,7 +960,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// et il faut descendre dans la liste d'assujettissement pour adapter le suivant du suivant
 			if (index < assujettissements.size()) {
 				Assujettissement suivantsuivant = assujettissements.get(index);
-				adapteDateDebut(suivantsuivant, newDateDebut, assujettissements);
+				if (suivantsuivant.getDateDebut().isBefore(newDateDebut)) { // [SIFISC-7312] on n'adapte la date de début du suivant que si c'est nécessaire, of course
+					adapteDateDebut(suivantsuivant, newDateDebut, assujettissements);
+				}
 			}
 
 			return AdaptionResult.LISTE_MODIFIEE;

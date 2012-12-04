@@ -884,7 +884,7 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
-	protected void assertSourcierPur(RegDate debut, RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
+	protected void assertSourcierPur(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin, TypeAutoriteFiscale typeAutorite, Assujettissement assujettissement) {
 		assertNotNull(assujettissement);
 		assertInstanceOf(SourcierPur.class, assujettissement);
 		final SourcierPur a = (SourcierPur) assujettissement;

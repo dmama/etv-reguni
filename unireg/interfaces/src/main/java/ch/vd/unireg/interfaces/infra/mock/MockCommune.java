@@ -53,6 +53,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	public static final MockCommune Aigle = new MockCommune(5401, "Aigle", VAUD, MockOfficeImpot.OID_AIGLE, MockDistrict.Aigle);
 	public static final MockCommune Grandson = new MockCommune(5561, "Grandson", VAUD, MockOfficeImpot.OID_GRANDSON, MockDistrict.Grandson);
 	public static final MockCommune ChateauDoex = new MockCommune(5841, "Chateau-d'Oex", VAUD, MockOfficeImpot.OID_PAYS_D_ENHAUT, MockDistrict.PaysDenHaut);
+	public static final MockCommune Mies = new MockCommune(5723, "Mies", VAUD, MockOfficeImpot.OID_NYON, MockDistrict.Nyon);
 
 	//
 	// Quelques communes fusionnées civilement au 1er juillet 2011, mais seulement au 31 décembre 2011 fiscalement
