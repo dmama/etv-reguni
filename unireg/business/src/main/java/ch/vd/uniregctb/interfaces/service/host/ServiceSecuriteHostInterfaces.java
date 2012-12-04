@@ -186,7 +186,7 @@ public class ServiceSecuriteHostInterfaces implements ServiceSecuriteService {
 	public Operateur getOperateur(String visa) {
 		try {
 			// [SIFISC-7231] On ne veut pas se limiter aux opérateurs actuellement valides
-			return serviceSecurite.getOperateurTous(visa);
+			return serviceSecurite.getOperateur(visa);
 		}
 		catch (Exception e) {
 			throw new ServiceSecuriteException("impossible de récupérer l'utilisateur correspondant au visa " + visa, e);
