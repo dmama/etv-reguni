@@ -102,7 +102,7 @@
             <c:set var="expertiserButtonName">
                 <fmt:message key="label.bouton.expertiser" />
             </c:set>
-            &nbsp;<unireg:buttonTo action="/identification/gestion-messages/edit.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${command.demandeIdentificationView.id},expertiser:expertiser}"/>
+            &nbsp;<unireg:buttonTo action="/identification/gestion-messages/edit.do" method="post" name="${expertiserButtonName}" confirm="Voulez-vous soumettre à expertise le message ?" params="{id:${command.demandeIdentificationView.id},expertiser:'expertiser'}"/>
 		</authz:authorize>
 		<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN">
             <c:set var="nonIdentifiableButtonName">
