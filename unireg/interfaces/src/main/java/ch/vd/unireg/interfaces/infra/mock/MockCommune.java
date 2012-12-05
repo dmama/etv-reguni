@@ -7,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.data.Commune;
-import ch.vd.unireg.interfaces.infra.data.District;
-import ch.vd.unireg.interfaces.infra.data.OfficeImpot;
 
 public class MockCommune extends MockEntityOFS implements Commune {
 
@@ -89,7 +87,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 
 	public static class CommuneFractionnee extends MockCommune {
 
-		private CommuneFractionnee(int noOfs, String nom, String sigleCanton, OfficeImpot oid) {
+		private CommuneFractionnee(int noOfs, String nom, String sigleCanton, MockOfficeImpot oid) {
 			super(noOfs, nom, sigleCanton, oid);
 		}
 
@@ -118,15 +116,14 @@ public class MockCommune extends MockEntityOFS implements Commune {
 
 		private final int noTechniqueCommuneMere;
 
-		private Fraction(int noOFS, String nom, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere) {
+		private Fraction(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid, int noTechniqueCommuneMere) {
 			super(noOFS, nom, sigleCanton, oid);
 			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
 		}
 
-		private Fraction(int noOFS, String nom, String sigleCanton, OfficeImpot oid, int noTechniqueCommuneMere, District district) {
+		private Fraction(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid, int noTechniqueCommuneMere, MockDistrict district) {
 			super(noOFS, nom, sigleCanton, oid, district);
 			this.noTechniqueCommuneMere = noTechniqueCommuneMere;
-
 		}
 
 		@Override
@@ -194,19 +191,19 @@ public class MockCommune extends MockEntityOFS implements Commune {
 	private RegDate dateDebutValidite;
 	private RegDate dateFinValidite;
 	private final String sigleCanton;
-	private final OfficeImpot officeImpot;
-	private District district;
+	private final MockOfficeImpot officeImpot;
+	private MockDistrict district;
 
 
 	private final List<MockLienCommuneBatiment> liensBatiments = new ArrayList<MockLienCommuneBatiment>();
 
-	private MockCommune(int noOFS, String nom, String sigleCanton, OfficeImpot oid, RegDate dateDebutValidite, RegDate dateFinValidite) {
+	private MockCommune(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid, RegDate dateDebutValidite, RegDate dateFinValidite) {
 		this(noOFS, nom, sigleCanton, oid);
 		this.dateDebutValidite = dateDebutValidite;
 		this.dateFinValidite = dateFinValidite;
 	}
 
-	private MockCommune(int noOFS, String nom, String sigleCanton, OfficeImpot oid) {
+	private MockCommune(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid) {
 		super(noOFS, null, nom, nom);
 		this.sigleCanton = sigleCanton;
 		this.officeImpot = oid;
@@ -214,7 +211,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		DefaultMockServiceInfrastructureService.addCommune(this);
 	}
 
-	private MockCommune(int noOFS, String nom, String sigleCanton, OfficeImpot oid, District district) {
+	private MockCommune(int noOFS, String nom, String sigleCanton, MockOfficeImpot oid, MockDistrict district) {
 		this(noOFS, nom, sigleCanton, oid);
 		this.district = district;
 	}
@@ -272,7 +269,7 @@ public class MockCommune extends MockEntityOFS implements Commune {
 		return district == null ? null : district.getCodeRegion();
 	}
 
-	public OfficeImpot getOfficeImpot() {
+	public MockOfficeImpot getOfficeImpot() {
 		return officeImpot;
 	}
 

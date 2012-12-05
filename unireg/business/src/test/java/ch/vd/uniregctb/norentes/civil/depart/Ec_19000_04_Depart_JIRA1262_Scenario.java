@@ -18,6 +18,7 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.EtatDeclarationHelper;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
@@ -112,6 +113,13 @@ public class Ec_19000_04_Depart_JIRA1262_Scenario extends DepartScenario {
 		}
 
 		addDeclarationImpot(sebastien, date(2008, 1, 1), date(2008, 12, 31), date(2009, 1, 13), 90);
+
+		// nécessaire pour le calcul des tâches d'envoi de DI
+		for (int i = 2009 ; i < RegDate.get().year() ; ++i ) {
+			final PeriodeFiscale periode = new PeriodeFiscale();
+			periode.setAnnee(i);
+			periodeFiscaleDAO.save(periode);
+		}
 	}
 
 	private void addEtat(DeclarationImpotOrdinaire di, RegDate dateObtention, TypeEtatDeclaration typeEtat) {

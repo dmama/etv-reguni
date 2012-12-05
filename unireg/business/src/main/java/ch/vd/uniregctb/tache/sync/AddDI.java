@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.tache.sync;
 
+import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
@@ -11,6 +13,7 @@ import ch.vd.uniregctb.type.TypeEtatTache;
  * Action permettant d'ajouter une tâche d'envoi de déclaration d'impôt.
  */
 public class AddDI extends SynchronizeAction {
+
 	public final PeriodeImposition periodeImposition;
 
 	public AddDI(PeriodeImposition periodeImposition) {
@@ -28,8 +31,19 @@ public class AddDI extends SynchronizeAction {
 			collectivite = context.officeSuccessions;
 		}
 		else {
-			// autrement, on prend les valeurs par défaut
-			dateEcheance = null;
+			final RegDate today = getToday();
+			final int todaysYear = today.year();
+			final int year = periodeImposition.getDateDebut().year();
+			final PeriodeFiscale pf = context.periodeFiscaleDAO.getPeriodeFiscaleByYear(year);
+			if (todaysYear == year + 1 && RegDateHelper.isBefore(today, pf.getLatestDateFinEnvoiMasseDI(), NullDateBehavior.LATEST)) {
+				// si on est dans la période de début d'année d'envoi des déclarations d'impôt, l'échéance de la tâche doit être placée en conséquence
+				// (sauf si cela fait arriver la tâche à échéance avant le processus normal)
+				dateEcheance = RegDateHelper.maximum(pf.getLatestDateFinEnvoiMasseDI(), TacheEnvoiDeclarationImpot.getDefaultEcheance(today), NullDateBehavior.EARLIEST);
+			}
+			else {
+				// autrement, on prend les valeurs par défaut
+				dateEcheance = null;
+			}
 			collectivite = context.collectivite;
 		}
 
@@ -38,6 +52,14 @@ public class AddDI extends SynchronizeAction {
 						periodeImposition.getTypeContribuable(), periodeImposition.getTypeDocument(), periodeImposition.getQualification(), periodeImposition.getCodeSegment(),
 						periodeImposition.getAdresseRetour(), collectivite);
 		context.tacheDAO.save(tache);
+	}
+
+	/**
+	 * Surchargeable pour les tests afin de choisir quelle date est choisie comme date de référence (pour le calcul de la date d'échéance de la tâche)
+	 * @return la date qui doit être considérée comme la date du jour
+	 */
+	protected RegDate getToday() {
+		return RegDate.get();
 	}
 
 	@Override

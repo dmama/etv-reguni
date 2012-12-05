@@ -41,6 +41,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
@@ -89,6 +90,7 @@ public class TacheServiceImpl implements TacheService {
 
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO diDAO;
+	private PeriodeFiscaleDAO pfDAO;
 	private DeclarationImpotService diService;
 	private ParametreAppService parametres;
 	private HibernateTemplate hibernateTemplate;
@@ -108,6 +110,11 @@ public class TacheServiceImpl implements TacheService {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDiDAO(DeclarationImpotOrdinaireDAO diDAO) {
 		this.diDAO = diDAO;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setPeriodeFiscaleDAO(PeriodeFiscaleDAO pfDAO) {
+		this.pfDAO = pfDAO;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -582,7 +589,7 @@ public class TacheServiceImpl implements TacheService {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final CollectiviteAdministrative collectivite = getOfficeImpot(contribuable);
 
-			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO);
+			final Context context = new Context(contribuable, collectivite, tacheDAO, diService, officeSuccessions, diDAO, pfDAO);
 
 			for (SynchronizeAction action : actions) {
 				action.execute(context);

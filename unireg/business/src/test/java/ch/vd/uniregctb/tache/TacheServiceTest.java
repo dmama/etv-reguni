@@ -35,6 +35,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.EtatDeclarationRetournee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
@@ -127,6 +128,7 @@ public class TacheServiceTest extends BusinessTest {
 	private TacheDAO tacheDAO;
 	private DeclarationImpotOrdinaireDAO  diDAO;
 	private PeriodeImpositionService periodeImpositionService;
+	private PeriodeFiscaleDAO pfDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -138,6 +140,7 @@ public class TacheServiceTest extends BusinessTest {
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		diDAO = getBean(DeclarationImpotOrdinaireDAO.class, "diDAO");
 		periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
+		pfDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
@@ -157,6 +160,9 @@ public class TacheServiceTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
 					addCollAdm(ca);
+				}
+				for (int pf = 2003 ; pf < RegDate.get().year() ; ++ pf) {
+					addPeriodeFiscale(pf);
 				}
 				return null;
 			}
@@ -368,10 +374,10 @@ public class TacheServiceTest extends BusinessTest {
 				MenageCommun menage = ensemble.getMenage();
 				assertNotNull(menage);
 
-				PeriodeFiscale pf2006 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
-				PeriodeFiscale pf2007 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
-				ModeleDocument modele2006 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
-				ModeleDocument modele2007 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
+				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
+				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
 				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
 				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
@@ -425,11 +431,11 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
-				final PeriodeFiscale periode2009 = addPeriodeFiscale(2009);
+				final PeriodeFiscale periode2009 = pfDAO.getPeriodeFiscaleByYear(2009);
 				final ModeleDocument modele2009 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2009);
 
 				PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
@@ -521,9 +527,9 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
 				final PersonnePhysique pp = addNonHabitant("Hubert", "Duchemole", date(1922, 7, 13), Sexe.MASCULIN);
@@ -596,10 +602,10 @@ public class TacheServiceTest extends BusinessTest {
 				forFiscalPrincipal.setMotifOuverture(MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION);
 				menage.addForFiscal(forFiscalPrincipal);
 
-				PeriodeFiscale pf2006 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 6L);
-				PeriodeFiscale pf2007 = tacheDAO.getHibernateTemplate().get(PeriodeFiscale.class, 7L);
-				ModeleDocument modele2006 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 1L);
-				ModeleDocument modele2007 = tacheDAO.getHibernateTemplate().get(ModeleDocument.class, 5L);
+				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+				ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2006);
+				ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf2007);
 				addDeclarationImpot(menage, pf2006, date(2006, 1, 1), date(2006, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2006);
 				addDeclarationImpot(menage, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele2007);
 
@@ -711,9 +717,9 @@ public class TacheServiceTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final PeriodeFiscale periode2006 = pfDAO.getPeriodeFiscaleByYear(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
 				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
@@ -754,13 +760,13 @@ public class TacheServiceTest extends BusinessTest {
 				final CollectiviteAdministrative cedi = tiersService.getCollectiviteAdministrative(MockCollectiviteAdministrative.CEDI.getNoColAdm());
 				ids.oidCedi = cedi.getId();
 
-				PeriodeFiscale pf2003 = addPeriodeFiscale(2003);
-				PeriodeFiscale pf2004 = addPeriodeFiscale(2004);
-				PeriodeFiscale pf2005 = addPeriodeFiscale(2005);
-				PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
-				PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
-				PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
-				PeriodeFiscale pf2009 = addPeriodeFiscale(2009);
+				PeriodeFiscale pf2003 = pfDAO.getPeriodeFiscaleByYear(2003);
+				PeriodeFiscale pf2004 = pfDAO.getPeriodeFiscaleByYear(2004);
+				PeriodeFiscale pf2005 = pfDAO.getPeriodeFiscaleByYear(2005);
+				PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+				PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
+				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
+				PeriodeFiscale pf2009 = pfDAO.getPeriodeFiscaleByYear(2009);
 				ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2003);
 				addModeleFeuilleDocument("Déclaration", "210", modele2003);
 				addModeleFeuilleDocument("Annexe 1", "220", modele2003);
@@ -906,9 +912,9 @@ public class TacheServiceTest extends BusinessTest {
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final PeriodeFiscale periode2006 = pfDAO.getPeriodeFiscaleByYear(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
 				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
@@ -961,7 +967,7 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PeriodeFiscale periode2008 = addPeriodeFiscale(2008);
+				final PeriodeFiscale periode2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2008);
 
 				final Contribuable raoul = addNonHabitant("Raoul", "Lavanchy", date(1963, 1, 1), Sexe.MASCULIN);
@@ -1061,9 +1067,9 @@ public class TacheServiceTest extends BusinessTest {
 		final Long id = doInNewTransactionAndSession(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				final PeriodeFiscale periode2006 = addPeriodeFiscale(2006);
+				final PeriodeFiscale periode2006 = pfDAO.getPeriodeFiscaleByYear(2006);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2006);
-				final PeriodeFiscale periode2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale periode2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2007 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2007);
 
 				final PersonnePhysique pp = addNonHabitant("François", "Dardare-style", date(1977, 1, 1), Sexe.MASCULIN);
@@ -1221,9 +1227,9 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final PeriodeFiscale periode2003 = addPeriodeFiscale(2003);
+				final PeriodeFiscale periode2003 = pfDAO.getPeriodeFiscaleByYear(2003);
 				final ModeleDocument modele2003 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2003);
-				final PeriodeFiscale periode2004 = addPeriodeFiscale(2004);
+				final PeriodeFiscale periode2004 = pfDAO.getPeriodeFiscaleByYear(2004);
 				final ModeleDocument modele2004 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2004);
 
 				// Contribuable français
@@ -1342,7 +1348,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				// Ajoute les déclarations qui vont bien
 				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(monsieur, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 					addDeclarationImpot(madame, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
@@ -1472,7 +1478,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				// Ajoute les déclarations qui vont bien
 				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
@@ -1635,7 +1641,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				// Ajoute les déclarations qui vont bien
 				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
@@ -1800,7 +1806,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				// Ajoute les déclarations qui vont bien
 				for (int i = 2003; i <= 2008; ++i) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(menage, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
@@ -1926,7 +1932,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForSecondaire(simon, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cossonay.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				for (int i = 2003; i < RegDate.get().year(); ++i) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(simon, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.HORS_SUISSE, modele);
 				}
@@ -1994,7 +2000,7 @@ public class TacheServiceTest extends BusinessTest {
 				Contribuable raoul = addHabitant(100000);
 				addForPrincipal(raoul, date(2008, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				ids.raoulId = raoul.getNumero();
-				PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
+				PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
 				addDeclarationImpot(raoul, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -2039,7 +2045,7 @@ public class TacheServiceTest extends BusinessTest {
 				ids.raoulId = raoul.getNumero();
 				addForPrincipal(raoul, date(1980, 1, 1), MotifFor.MAJORITE, MockCommune.Lausanne);
 				for (int i = 2003; i <= 2008; i++) {
-					PeriodeFiscale periode = addPeriodeFiscale(i);
+					PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 					ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 					addDeclarationImpot(raoul, periode, date(i, 1, 1), date(i, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele).getId();
 				}
@@ -2846,8 +2852,8 @@ public class TacheServiceTest extends BusinessTest {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 
-				final PeriodeFiscale pf2006 = addPeriodeFiscale(2006);
-				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale pf2006 = pfDAO.getPeriodeFiscaleByYear(2006);
+				final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				final ModeleDocument modele2006 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2006);
 				addModeleFeuilleDocument("Déclaration", "210", modele2006);
 				addModeleFeuilleDocument("Annexe 1", "220", modele2006);
@@ -3054,7 +3060,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3077,7 +3083,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration qui couvre le premier mois de l'année (incorrect) avec un type de contribuable vaudois ordinaire (correct)
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 1, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3103,7 +3109,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode);
 		// une déclaration qui couvre tout l'année (incorrect) avec un type de contribuable vaudois dépense (incorrect)
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
@@ -3130,7 +3136,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration qui est correcte
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
@@ -3188,7 +3194,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable non-assujetti
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration émise seulement
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3214,7 +3220,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable non-assujetti
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3240,7 +3246,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable non-assujetti
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une déclaration déjà annulée
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3268,7 +3274,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
 		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3295,7 +3301,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modeleComplete = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		final ModeleDocument modeleDepense = addModeleDocument(TypeDocument.DECLARATION_IMPOT_DEPENSE, periode);
 		// une première déclaration qui couvre la période en Suisse (correct) avec un type de contribuable dépense (incorrect)
@@ -3323,7 +3329,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une première déclaration qui couvre toute l'année (incorrect) avec un type de contribuable HS (incorrect aussi)
 		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_SUISSE, modele);
@@ -3352,7 +3358,7 @@ public class TacheServiceTest extends BusinessTest {
 		// Contribuable non-assujetti
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneePrecedente);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneePrecedente);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode);
 		// une première déclaration
 		final DeclarationImpotOrdinaire di0 = addDeclarationImpot(pp, periode, date(anneePrecedente, 1, 1), date(anneePrecedente, 6, 30), TypeContribuable.HORS_SUISSE, modele);
@@ -3540,13 +3546,13 @@ public class TacheServiceTest extends BusinessTest {
 				final ForFiscalSecondaire ffs =
 						addForSecondaire(pp, date(anneeAvantAvant, 1, 7), MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
-				final PeriodeFiscale periode1 = addPeriodeFiscale(anneeAvantAvant);
+				final PeriodeFiscale periode1 = pfDAO.getPeriodeFiscaleByYear(anneeAvantAvant);
 				final ModeleDocument modele1 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode1);
 				final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode1, date(anneeAvantAvant, 1, 1), date(anneeAvantAvant, 12, 31), TypeContribuable.HORS_CANTON, modele1);
 				addEtatDeclarationEmise(di1, date(anneeAvant, 1, 15));
 				addEtatDeclarationRetournee(di1, date(anneeAvant, 4, 19));
 
-				final PeriodeFiscale periode2 = addPeriodeFiscale(anneeAvant);
+				final PeriodeFiscale periode2 = pfDAO.getPeriodeFiscaleByYear(anneeAvant);
 				final ModeleDocument modele2 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periode2);
 				final DeclarationImpotOrdinaire di2 = addDeclarationImpot(pp, periode2, date(anneeAvant, 1, 1), date(anneeAvant, 12, 31), TypeContribuable.HORS_CANTON, modele2);
 				addEtatDeclarationEmise(di2, date(anneeCourante, 1, 15));
@@ -3690,7 +3696,7 @@ public class TacheServiceTest extends BusinessTest {
 				final ForFiscalPrincipal ffp2 = addForPrincipal(pp, date(2009, 1, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
 
 				for (int annee = 2004; annee < anneeCourante; ++annee) {
-					final PeriodeFiscale periode = addPeriodeFiscale(annee);
+					final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(annee);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 					final DeclarationImpotOrdinaire di1 = addDeclarationImpot(pp, periode, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 					addEtatDeclarationEmise(di1, date(annee - 1, 1, 15));
@@ -3827,7 +3833,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				final ForFiscalPrincipal ffp = addForPrincipal(pp, RegDate.get(anneeDerniere, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.DEPART_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDerniere);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeDerniere);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, RegDate.get(anneeDerniere, 1, 1), RegDate.get(anneeDerniere, 12, 31), null, modele);
 
@@ -3891,20 +3897,20 @@ public class TacheServiceTest extends BusinessTest {
 
 				// déclaration 2005-2007 (rien de spécial)
 				for (int annee = 2005; annee < 2008; annee++) {
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 					addDeclarationImpot(pp, pf, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
 
 				// déclaration 2008 (manque le type de contribuable)
-				final PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
+				final PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				final ModeleDocument modele2008 = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008);
 				final DeclarationImpotOrdinaire declaration2008 = addDeclarationImpot(pp, pf2008, RegDate.get(2008, 1, 1), RegDate.get(2008, 12, 31), null, modele2008);
 
 
 				// déclaration 2009-année courante (rien de spécial)
 				for (int annee = 2009; annee < anneeCourante; annee++) {
-					final PeriodeFiscale pf = addPeriodeFiscale(annee);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(annee);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 					addDeclarationImpot(pp, pf, RegDate.get(annee, 1, 1), RegDate.get(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
@@ -4001,7 +4007,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HS, MockPays.Albanie);
 				addForSecondaire(pp, RegDate.get(anneeDerniere, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Croy.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeDerniere);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeDerniere);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, RegDate.get(anneeDerniere, 1, 1), RegDate.get(anneeDerniere, 12, 31), null, modele);
 
@@ -4129,7 +4135,7 @@ public class TacheServiceTest extends BusinessTest {
 					final TypeDocument typeD = (ancienMode == ModeImposition.DEPENSE ? TypeDocument.DECLARATION_IMPOT_DEPENSE : TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 					final TypeContribuable typeC = (ancienMode == ModeImposition.DEPENSE ? TypeContribuable.VAUDOIS_DEPENSE : TypeContribuable.VAUDOIS_ORDINAIRE);
 					for (int i = 2003; i < anneeCourante; i++) {
-						PeriodeFiscale periode = addPeriodeFiscale(i);
+						PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(i);
 						ModeleDocument modele = addModeleDocument(typeD, periode);
 						addDeclarationImpot(pp, periode, date(i, 1, 1), date(i, 12, 31), typeC, modele);
 					}
@@ -4185,7 +4191,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pfPrecedente = addPeriodeFiscale(anneeCourante - 1);
+				final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
 				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
 
@@ -4335,7 +4341,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-				final PeriodeFiscale pfPrecedente = addPeriodeFiscale(anneeCourante - 1);
+				final PeriodeFiscale pfPrecedente = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 				final ModeleDocument modelePfPrecedente = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pfPrecedente);
 				addDeclarationImpot(pp, pfPrecedente, dateArrivee, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modelePfPrecedente);
 
@@ -5039,7 +5045,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				// on crée déjà la DI de l'an dernier
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, dateDebutActivite, date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -5092,7 +5098,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForSecondaire(pp, dateAchat, MotifFor.ACHAT_IMMOBILIER, aujourdhui, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// on crée déjà la DI de l'an dernier
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, pf);
 				addDeclarationImpot(pp, pf, dateAchat, date(anneeCourante - 1, 12, 31), TypeContribuable.HORS_CANTON, modele);
 
@@ -5145,9 +5151,9 @@ public class TacheServiceTest extends BusinessTest {
 				addForSecondaire(pp, dateArrivee, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Bussigny.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 				// on crée déjà les DIs 2007 et 2008
-				final PeriodeFiscale pf2007 = addPeriodeFiscale(2007);
+				final PeriodeFiscale pf2007 = pfDAO.getPeriodeFiscaleByYear(2007);
 				addDeclarationImpot(pp, pf2007, date(2007, 1, 1), date(2007, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2007));
-				final PeriodeFiscale pf2008 = addPeriodeFiscale(2008);
+				final PeriodeFiscale pf2008 = pfDAO.getPeriodeFiscaleByYear(2008);
 				addDeclarationImpot(pp, pf2008, date(2008, 1, 1), date(2008, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf2008));
 
 				final CollectiviteAdministrative oi = tiersService.getCollectiviteAdministrative(15, true);
@@ -5205,7 +5211,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, aujourdhui, MotifFor.FIN_EXPLOITATION, MockCommune.Bussigny.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 				// on crée déjà la DI de l'an dernier
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, date(anneeCourante - 1, 1, 1), date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -5299,12 +5305,12 @@ public class TacheServiceTest extends BusinessTest {
 
 				// on crée déjà la DI de l'an dernier et de l'année d'avant
 				{
-					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 2);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 2);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 					addDeclarationImpot(pp, pf, date(anneeCourante - 2, 1, 1), date(anneeCourante - 2, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}
 				{
-					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante - 1);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante - 1);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 					addDeclarationImpot(pp, pf, date(anneeCourante - 1, 1, 1), date(anneeCourante - 1, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				}

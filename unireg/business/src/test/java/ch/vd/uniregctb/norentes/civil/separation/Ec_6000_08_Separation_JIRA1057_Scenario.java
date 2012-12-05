@@ -7,6 +7,7 @@ import ch.vd.unireg.interfaces.civil.mock.DefaultMockServiceCivil;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.norentes.annotation.Check;
 import ch.vd.uniregctb.norentes.annotation.Etape;
 import ch.vd.uniregctb.norentes.common.EvenementCivilScenario;
@@ -84,6 +85,13 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		// Hélène
 		final PersonnePhysique bea = addHabitant(noIndBea);
 		noHabBea = bea.getNumero();
+
+		// nécessaire pour le calcul des tâches d'envoi de DI
+		for (int i = 2003 ; i < RegDate.get().year() ; ++i ) {
+			final PeriodeFiscale periode = new PeriodeFiscale();
+			periode.setAnnee(i);
+			periodeFiscaleDAO.save(periode);
+		}
 
 		// ménage
 		{

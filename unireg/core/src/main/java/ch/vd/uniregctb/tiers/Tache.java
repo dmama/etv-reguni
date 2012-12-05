@@ -100,18 +100,24 @@ public abstract class Tache extends HibernateEntity {
 		this.collectiviteAdministrativeAssignee = collectivite;
 
 		if (dateEcheance == null) {
-			// [UNIREG-1987] on place l'échéance de la tâche à dimanche prochain
-			final RegDate aujourdhui = RegDate.get();
-			final RegDate.WeekDay jour = aujourdhui.getWeekDay();
-			dateEcheance = aujourdhui.addDays(RegDate.WeekDay.SUNDAY.ordinal() - jour.ordinal());
+			dateEcheance = getDefaultEcheance(RegDate.get());
 		}
 		this.dateEcheance = dateEcheance;
 	}
 
-public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
-		this(etat, dateEcheance, contribuable,null);
+	/**
+	 * @param today date de référence
+	 * @return le dimanche qui suit la date passée en paramètre (ou cette date si c'est déjà un dimanche)
+	 */
+	public static RegDate getDefaultEcheance(RegDate today) {
+		// [UNIREG-1987] on place l'échéance de la tâche à dimanche prochain
+		final RegDate.WeekDay jour = today.getWeekDay();
+		return today.addDays(RegDate.WeekDay.SUNDAY.ordinal() - jour.ordinal());
 	}
 
+	public Tache(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable) {
+		this(etat, dateEcheance, contribuable,null);
+	}
 
 	@Transient
 	@Override

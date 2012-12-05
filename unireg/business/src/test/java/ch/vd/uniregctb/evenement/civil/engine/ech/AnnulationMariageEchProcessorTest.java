@@ -30,6 +30,22 @@ import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 })
 public class AnnulationMariageEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
+	@Override
+	protected void runOnSetUp() throws Exception {
+		super.runOnSetUp();
+
+		// nécessaire pour le calcul des tâches d'envoi de DI
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				for (int i = 2003 ; i < RegDate.get().year() ; ++i ) {
+					addPeriodeFiscale(i);
+				}
+				return null;
+			}
+		});
+	}
+
 	@Test(timeout = 10000L)
 	public void testAnnulationMariage() throws Exception {
 		
