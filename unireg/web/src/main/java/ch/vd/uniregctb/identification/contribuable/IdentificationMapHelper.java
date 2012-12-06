@@ -21,6 +21,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEme
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 
 public class IdentificationMapHelper extends CommonMapHelper {
 
@@ -334,5 +335,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 			sorted.put(item.getKey(), item.getValue());
 		}
 		return sorted;
+	}
+
+	public static boolean isMessageATraiter(IdentificationMessagesEditView bean)  {
+		Etat etatCourant = bean.getDemandeIdentificationView().getEtatMessage();
+		return etatCourant.isEncoreATraiter();
 	}
 }

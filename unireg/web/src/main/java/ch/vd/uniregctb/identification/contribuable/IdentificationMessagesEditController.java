@@ -10,6 +10,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
@@ -130,60 +131,75 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 
 		IdentificationMessagesEditView bean = (IdentificationMessagesEditView) command;
-		HttpSession session = request.getSession();
+		final Long idMessage = bean.getDemandeIdentificationView().getId();
+		final IdentificationMessagesEditView messageAModifier = identificationMessagesEditManager.getView(idMessage);
+		if (IdentificationMapHelper.isMessageATraiter(messageAModifier)) {
 
 
-		if (getTarget() != null) {
-			if (TARGET_IDENTIFIER.equals(getTarget())) {
-				String idCtbAsString = getEventArgument();
-				Long idCtb = Long.parseLong(idCtbAsString);
-				if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
-					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
-							Etat.TRAITE_MAN_EXPERT);
-				}
-				else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
-					identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
-							Etat.TRAITE_MANUELLEMENT);
-				}
-				else {
-					throw new AccessDeniedException("Vous ne possédez pas le droit d'identifier un contribuable manuellement");
-				}
+			HttpSession session = request.getSession();
 
+
+			if (getTarget() != null) {
+				if (TARGET_IDENTIFIER.equals(getTarget())) {
+					String idCtbAsString = getEventArgument();
+					Long idCtb = Long.parseLong(idCtbAsString);
+					if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO, Role.MW_IDENT_CTB_ADMIN)) {
+						identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
+								Etat.TRAITE_MAN_EXPERT);
+					}
+					else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_CELLULE_BO, Role.NCS_IDENT_CTB_CELLULE_BO, Role.LISTE_IS_IDENT_CTB_CELLULE_BO)) {
+						identificationMessagesEditManager.forceIdentification(bean.getDemandeIdentificationView().getId(), idCtb,
+								Etat.TRAITE_MANUELLEMENT);
+					}
+					else {
+						throw new AccessDeniedException("Vous ne possédez pas le droit d'identifier un contribuable manuellement");
+					}
+
+					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+
+					mav.setView(new RedirectView("listEnCours.do"));
+
+					return mav;
+				}
+			}
+
+			if (request.getParameter(BOUTON_EXPERTISER) != null) {
+				identificationMessagesEditManager.expertiser(bean.getDemandeIdentificationView().getId());
+				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+				// permettre que la vu soit recharger après modif
+				removeModuleFromSession(request, PP_CRITERIA_NAME);
+
+				mav.setView(new RedirectView("listEnCours.do"));
+
+				return mav;
+			}
+
+			if (request.getParameter(BOUTON_IMPOSSIBLE_A_IDENTIFIER) != null) {
+				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
 
 				mav.setView(new RedirectView("listEnCours.do"));
 
 				return mav;
 			}
-		}
 
-		if (request.getParameter(BOUTON_EXPERTISER) != null) {
-			identificationMessagesEditManager.expertiser(bean.getDemandeIdentificationView().getId());
-			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
-			// permettre que la vu soit recharger après modif
-			removeModuleFromSession(request, PP_CRITERIA_NAME);
+			session.setAttribute(PP_CRITERIA_NAME, bean);
+			if (request.getParameter(BOUTON_EFFACER) != null) {
+				mav.setView(new RedirectView("edit.do?action=effacer&id=" + bean.getDemandeIdentificationView().getId()));
+			}
+			else {
+				mav.setView(new RedirectView("edit.do?id=" + bean.getDemandeIdentificationView().getId()));
+			}
 
-			mav.setView(new RedirectView("listEnCours.do"));
-
-			return mav;
-		}
-
-		if (request.getParameter(BOUTON_IMPOSSIBLE_A_IDENTIFIER) != null) {
-			identificationMessagesEditManager.impossibleAIdentifier(null);
-			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
-
-			mav.setView(new RedirectView("listEnCours.do"));
-
-			return mav;
-		}
-
-		session.setAttribute(PP_CRITERIA_NAME, bean);
-		if (request.getParameter(BOUTON_EFFACER) != null) {
-			mav.setView(new RedirectView("edit.do?action=effacer&id=" + bean.getDemandeIdentificationView().getId()));
 		}
 		else {
-			mav.setView(new RedirectView("edit.do?id=" + bean.getDemandeIdentificationView().getId()));
+			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
+			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
+			mav.setView(new RedirectView("listEnCours.do"));
 		}
+
 		return mav;
 	}
+
+
 }

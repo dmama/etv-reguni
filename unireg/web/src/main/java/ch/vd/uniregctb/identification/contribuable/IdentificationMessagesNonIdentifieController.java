@@ -9,6 +9,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 import ch.vd.uniregctb.security.AccessDeniedException;
@@ -31,7 +32,6 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 	public final static String ID_PARAMETER_NAME = "id";
 	public final static String SOURCE_PARAMETER = "source";
 	public final static String UNLOCK_PARAMETER = "unlock";
-
 
 
 	/**
@@ -79,10 +79,9 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 	}
 
 
-
 	/**
-	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest,
-	 *      javax.servlet.http.HttpServletResponse, java.lang.Object, org.springframework.validation.BindException)
+	 * @see org.springframework.web.servlet.mvc.SimpleFormController#onSubmit(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse, java.lang.Object,
+	 *      org.springframework.validation.BindException)
 	 */
 	@Override
 	protected ModelAndView onSubmit(HttpServletRequest request, HttpServletResponse response, Object command, BindException errors)
@@ -92,23 +91,31 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 
 		IdentificationMessagesEditView bean = (IdentificationMessagesEditView) command;
 		HttpSession session = request.getSession();
+		final Long idMessage = bean.getDemandeIdentificationView().getId();
+		final IdentificationMessagesEditView messageAModifier = identificationMessagesEditManager.getView(idMessage);
+
+		if (IdentificationMapHelper.isMessageATraiter(messageAModifier)){
+			session.setAttribute(PP_CRITERIA_NAME, bean);
+			if (request.getParameter(BOUTON_ANNULER) != null) {
+				mav.setView(new RedirectView("edit.do?id=" + idMessage));
+			}
+			else {
 
 
+				identificationMessagesEditManager.impossibleAIdentifier(bean);
+				identificationMessagesEditManager.deVerouillerMessage(idMessage);
 
-		session.setAttribute(PP_CRITERIA_NAME, bean);
-		if (request.getParameter(BOUTON_ANNULER) != null) {
-			mav.setView(new RedirectView("edit.do?id=" + bean.getDemandeIdentificationView().getId()));
-		} else {
+				mav.setView(new RedirectView("listEnCours.do"));
 
-
-			identificationMessagesEditManager.impossibleAIdentifier(bean);
-			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
-
-			mav.setView(new RedirectView("listEnCours.do"));
-
+			}
 		}
+		else {
+			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
+			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
+			mav.setView(new RedirectView("listEnCours.do"));
+		}
+
 		return mav;
 	}
-
 
 }
