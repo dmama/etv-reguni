@@ -105,6 +105,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -4364,6 +4365,51 @@ public class TiersServiceImpl implements TiersService {
 		}
 	}
 
+	@Override
+	public StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun) {
 
+		final EnsembleTiersCouple ensemble = getEnsembleTiersCouple(menageCommun, null);
+
+		final Set<RapportEntreTiers> rapports = menageCommun.getRapportsObjet();
+		if (rapports == null || rapports.isEmpty()) {
+			// il n'y a pas de relation du tout, le ménage est nul
+			return null;
+		}
+
+		AppartenanceMenage derniereAppartenance = null;
+		for (RapportEntreTiers rapport : rapports) {
+			if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage) {
+				if (derniereAppartenance == null || RegDateHelper.isAfter(rapport.getDateDebut(), derniereAppartenance.getDateDebut(), NullDateBehavior.EARLIEST)) {
+					derniereAppartenance = (AppartenanceMenage) rapport;
+				}
+			}
+		}
+
+		if (derniereAppartenance == null) {
+			// il n'y a pas d'appartenance non-annulée, le ménage est nul
+			return null;
+		}
+
+		final RegDate dateFermeture = derniereAppartenance.getDateFin();
+		if (dateFermeture == null) {
+			// la dernière appartenance est toujours en cours, le ménage est actif
+			return StatutMenageCommun.EN_VIGUEUR;
+		}
+
+		final RegDate dateDecesPrincipal = getDateDeces(ensemble.getPrincipal());
+		if (dateDecesPrincipal == dateFermeture) {
+			// le ménage est terminé, mais en raison du décès du principal.
+			return StatutMenageCommun.TERMINE_SUITE_DECES;
+		}
+
+		final RegDate dateDecesConjoint = getDateDeces(ensemble.getConjoint());
+		if (dateDecesConjoint == dateFermeture) {
+			// le ménage est terminé, mais en raison du décès du conjoint
+			return StatutMenageCommun.TERMINE_SUITE_DECES;
+		}
+
+		// dans tous les autres cas, il s'agit d'une séparation/divorce normal
+		return StatutMenageCommun.TERMINE_SUITE_SEPARATION;
+	}
 
 }

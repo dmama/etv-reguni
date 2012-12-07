@@ -9,6 +9,7 @@ import ch.vd.unireg.xml.party.debtor.v1.WithholdingTaxDeclarationPeriodicity;
 import ch.vd.unireg.xml.party.immovableproperty.v1.ImmovablePropertyType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.MutationType;
 import ch.vd.unireg.xml.party.immovableproperty.v1.OwnershipType;
+import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
 import ch.vd.unireg.xml.party.person.v1.Sex;
 import ch.vd.unireg.xml.party.relation.v1.RelationBetweenPartiesType;
@@ -31,6 +32,7 @@ import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypePermis;
 
 public abstract class EnumHelper {
@@ -774,6 +776,39 @@ public abstract class EnumHelper {
 			throw new IllegalArgumentException("unknown Sex = [" + sex + ']');
 		}
 	}
+
+	public static StatutMenageCommun xmlToCore(CommonHouseholdStatus chs) {
+		if (chs == null) {
+			return null;
+		}
+		switch (chs) {
+		case ACTIVE:
+			return StatutMenageCommun.EN_VIGUEUR;
+		case ENDED_BY_DEATH:
+			return StatutMenageCommun.TERMINE_SUITE_DECES;
+		case SEPARATED_DIVORCED:
+			return StatutMenageCommun.TERMINE_SUITE_SEPARATION;
+		default:
+			throw new IllegalArgumentException("unknown CommonHouseholdStatus = [" + chs + ']');
+		}
+	}
+
+	public static CommonHouseholdStatus coreToXML(StatutMenageCommun setc) {
+		if (setc == null) {
+			return null;
+		}
+		switch (setc) {
+		case EN_VIGUEUR:
+			return CommonHouseholdStatus.ACTIVE;
+		case TERMINE_SUITE_DECES:
+			return CommonHouseholdStatus.ENDED_BY_DEATH;
+		case TERMINE_SUITE_SEPARATION:
+			return CommonHouseholdStatus.SEPARATED_DIVORCED;
+		default:
+			throw new IllegalArgumentException("unknown StatutMenageCommun = [" + setc + ']');
+		}
+	}
+
 
 
 }

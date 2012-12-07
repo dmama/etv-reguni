@@ -4,17 +4,12 @@ import java.util.Set;
 
 import org.jetbrains.annotations.Nullable;
 
-import ch.vd.registre.base.date.NullDateBehavior;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.v1.PartyPart;
-import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
-import ch.vd.uniregctb.tiers.MenageCommun;
-import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.xml.Context;
+import ch.vd.uniregctb.xml.EnumHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 import ch.vd.uniregctb.xml.party.PartyBuilder;
 
@@ -80,48 +75,7 @@ public class CommonHouseholdStrategy extends TaxPayerStrategy<CommonHousehold> {
 	 * @return le statut du ménage
 	 */
 	private static CommonHouseholdStatus initStatus(EnsembleTiersCouple ensemble, Context context) {
-
-		final MenageCommun menageCommun = ensemble.getMenage();
-
-		final Set<RapportEntreTiers> rapports = menageCommun.getRapportsObjet();
-		if (rapports == null || rapports.isEmpty()) {
-			// il n'y a pas de relation du tout, le ménage est nul
-			return null;
-		}
-
-		AppartenanceMenage derniereAppartenance = null;
-		for (RapportEntreTiers rapport : rapports) {
-			if (!rapport.isAnnule() && rapport instanceof AppartenanceMenage) {
-				if (derniereAppartenance == null || RegDateHelper.isAfter(rapport.getDateDebut(), derniereAppartenance.getDateDebut(), NullDateBehavior.EARLIEST)) {
-					derniereAppartenance = (AppartenanceMenage) rapport;
-				}
-			}
-		}
-
-		if (derniereAppartenance == null) {
-			// il n'y a pas d'appartenance non-annulée, le ménage est nul
-			return null;
-		}
-
-		final RegDate dateFermeture = derniereAppartenance.getDateFin();
-		if (dateFermeture == null) {
-			// la dernière appartenance est toujours en cours, le ménage est actif
-			return CommonHouseholdStatus.ACTIVE;
-		}
-
-		final RegDate dateDecesPrincipal = context.tiersService.getDateDeces(ensemble.getPrincipal());
-		if (dateDecesPrincipal == dateFermeture) {
-			// le ménage est terminé, mais en raison du décès du principal.
-			return CommonHouseholdStatus.ENDED_BY_DEATH;
-		}
-
-		final RegDate dateDecesConjoint = context.tiersService.getDateDeces(ensemble.getConjoint());
-		if (dateDecesConjoint == dateFermeture) {
-			// le ménage est terminé, mais en raison du décès du conjoint
-			return CommonHouseholdStatus.ENDED_BY_DEATH;
-		}
-
-		// dans tous les autres cas, il s'agit d'une séparation/divorce normal
-		return CommonHouseholdStatus.SEPARATED_DIVORCED;
+    		return EnumHelper.coreToXML(context.tiersService.getStatutMenageCommun(ensemble.getMenage()));
 	}
+
 }

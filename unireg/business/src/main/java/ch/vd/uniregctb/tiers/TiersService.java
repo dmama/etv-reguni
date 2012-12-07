@@ -27,6 +27,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 /**
@@ -91,6 +92,12 @@ public interface TiersService {
 	 */
 	@NotNull
 	public PersonnePhysique createNonHabitantFromIndividu(long numeroIndividu);
+
+	/**
+	 * @return  le statut du ménage commun
+	 */
+	public StatutMenageCommun getStatutMenageCommun(MenageCommun menageCommun);
+
 
 	enum UpdateHabitantFlagResultat {
 		PAS_DE_CHANGEMENT,

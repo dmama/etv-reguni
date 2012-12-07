@@ -60,6 +60,7 @@ import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.PeriodeDecompte;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.StatutMenageCommun;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
@@ -6064,4 +6065,68 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	@Test
+	public void testStatutMenageCommun() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), null);
+					assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+					pp2.setDateDeces(date(2010, 1, 1));
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+					pp1.setDateDeces(date(2010, 1, 1));
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final PersonnePhysique pp2 = addNonHabitant("Tata", "Tutu", date(1980, 1, 1), Sexe.FEMININ);
+					pp1.setDateDeces(date(2010, 1, 1));
+					pp2.setDateDeces(date(2010, 1, 1));
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, pp2, date(2000, 1, 1), date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+
+				// Marié seul
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), null);
+					assertEquals(StatutMenageCommun.EN_VIGUEUR, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_SEPARATION, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				{
+					final PersonnePhysique pp1 = addNonHabitant("Toto", "Tutu", date(1980, 1, 1), Sexe.MASCULIN);
+					final EnsembleTiersCouple etc = addEnsembleTiersCouple(pp1, null, date(2000, 1, 1), date(2010, 1, 1));
+					pp1.setDateDeces(date(2010, 1, 1));
+					assertEquals(StatutMenageCommun.TERMINE_SUITE_DECES, tiersService.getStatutMenageCommun(etc.getMenage()));
+				}
+				return null;
+			}
+		});
+	}
 }
+
