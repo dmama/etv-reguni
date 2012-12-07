@@ -204,17 +204,16 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				etatEmise.setDeclaration(di);
 				di.setEtats(Collections.singleton(etatEmise));
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
-
+				FichierImpressionDocument fichier;
 				try {
-					FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
-					assertEquals("On devrait avoir 2 documents pour les séparés", 2, fichier.getFichierImpression().getDocumentArray().length);
-					assertNotNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
-					assertNotNull(fichier.getFichierImpression().getDocumentArray(1).getInfoDocument().getSepares());
+					fichier = impressionSommationDIHelper.remplitSommationDI(params);
 				}
 				catch (EditiqueException e) {
 					throw new RuntimeException(e);
 				}
-
+				assertEquals("On devrait avoir 2 documents pour les séparés", 2, fichier.getFichierImpression().getDocumentArray().length);
+				assertNotNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
+				assertNotNull(fichier.getFichierImpression().getDocumentArray(1).getInfoDocument().getSepares());
 				return null;
 			}
 		});

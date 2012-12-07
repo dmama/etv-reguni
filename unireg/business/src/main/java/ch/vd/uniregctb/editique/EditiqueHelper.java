@@ -131,6 +131,7 @@ public interface EditiqueHelper {
 
 	/**
 	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
+	 *
 	 * @param typeDocument le type de document qui nous intéresse
 	 * @param noTiers le numéro du tiers concerné par le document
 	 * @param cleArchivage la clé d'archivage du document
@@ -138,6 +139,19 @@ public interface EditiqueHelper {
 	 * @return la structure de demande d'archivage remplie
 	 */
 	public InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
+
+	/**
+	 * Remplit une structure éditique pour une demande d'archivage de document lors de sa génération
+	 *
+	 * @param infoArchivage  la structure à remplir
+	 * @param typeDocument   le type de document qui nous intéresse
+	 * @param noTiers        le numéro du tiers concerné par le document
+	 * @param cleArchivage   la clé d'archivage du document
+	 * @param dateTraitement la date de génération du document
+	 * @return la structure de demande d'archivage remplie
+	 */
+	InfoArchivage fillInfoArchivage(InfoArchivage infoArchivage, TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement);
+
 
 	/**
 	 * @return le code du type de dossier à donner au service d'archivage (pour tous les documents gérés par Unireg)
@@ -167,10 +181,11 @@ public interface EditiqueHelper {
 	/**
 	 * Remplit un objet de type {@link TypAdresse.Adresse} avec les données d'un objet du type {@link AdresseEnvoi}
 	 *
-	 * @param adresseEnvoi la source
-	 * @param adresseDestinataire la cible
+	 * @param adresseEnvoiSource la source
+	 * @param adresseCible la cible
 	 *
 	 * @return la cible
 	 */
-	TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoi, TypAdresse.Adresse adresseDestinataire);
+	TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoiSource, TypAdresse.Adresse adresseCible);
+
 }

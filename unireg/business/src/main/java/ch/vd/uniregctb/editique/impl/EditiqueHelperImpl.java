@@ -111,20 +111,39 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		TypAdresse porteAdresse = infoEnteteDocument.addNewPorteAdresse();
 		TypAdresse.Adresse adressePorteAdresse = porteAdresse.addNewAdresse();
 		TypAdresse.Adresse adressePorteAdresseImpression = remplitAdresse(adresseEnvoi, adressePorteAdresse);
-		porteAdresse.setAdresse(adressePorteAdresseImpression);
 		// porteAdresse.setNumRecommande(numRecommande);
 		return porteAdresse;
 	}
 
 	@Override
-	public TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoi, TypAdresse.Adresse adresseDestinataire) {
-		adresseDestinataire.setAdresseCourrierLigne1(adresseEnvoi.getLigne1());
-		adresseDestinataire.setAdresseCourrierLigne2(adresseEnvoi.getLigne2());
-		adresseDestinataire.setAdresseCourrierLigne3(adresseEnvoi.getLigne3());
-		adresseDestinataire.setAdresseCourrierLigne4(adresseEnvoi.getLigne4());
-		adresseDestinataire.setAdresseCourrierLigne5(adresseEnvoi.getLigne5());
-		adresseDestinataire.setAdresseCourrierLigne6(adresseEnvoi.getLigne6());
-		return adresseDestinataire;
+	public TypAdresse.Adresse remplitAdresse(AdresseEnvoi source, TypAdresse.Adresse cible) {
+
+		// On teste la non-nullité des champs avant l'assignation car si on assigne un
+		// null dans un element qui a été déclaré avec l'attribut nillable="true" dans la XSD
+		// alors une AssertionError est levée par xmlbeans lorsqu'on accede à cet objet.
+		// L'exception est générée via un assert, donc seulement vrai si '-ea' est spécifié au démarrage de la JVM
+		//
+		// cf. https://issues.apache.org/jira/browse/XMLBEANS-317
+
+		if (source.getLigne1() != null) {
+			cible.setAdresseCourrierLigne1(source.getLigne1());
+		}
+		if (source.getLigne2() != null) {
+			cible.setAdresseCourrierLigne2(source.getLigne2());
+		}
+		if (source.getLigne3() != null) {
+			cible.setAdresseCourrierLigne3(source.getLigne3());
+		}
+		if (source.getLigne4() != null) {
+			cible.setAdresseCourrierLigne4(source.getLigne4());
+		}
+		if (source.getLigne5() != null) {
+			cible.setAdresseCourrierLigne5(source.getLigne5());
+		}
+		if (source.getLigne6() != null) {
+			cible.setAdresseCourrierLigne6(source.getLigne6());
+		}
+		return cible;
 	}
 
 	/**
@@ -149,17 +168,25 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		adresseExpediteur.setAdresseCourrierLigne1(ca.getNomComplet1());
-		adresseExpediteur.setAdresseCourrierLigne2(ca.getNomComplet2());
-		adresseExpediteur.setAdresseCourrierLigne3(ca.getNomComplet3());
-		adresseExpediteur.setAdresseCourrierLigne4(adresse.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
-		adresseExpediteur.setAdresseCourrierLigne6(null);
-		expediteur.setAdresse(adresseExpediteur);
-		expediteur.setAdrMes(ca.getAdresseEmail());
-		expediteur.setNumTelephone(ca.getNoTelephone());
-		expediteur.setNumFax(ca.getNoFax());
-		expediteur.setNumCCP(ca.getNoCCP());
+		AdresseEnvoi adresseEnvoi = new AdresseEnvoi();
+		adresseEnvoi.addLine(ca.getNomComplet1());
+		adresseEnvoi.addLine(ca.getNomComplet2());
+		adresseEnvoi.addLine(ca.getNomComplet3());
+		adresseEnvoi.addLine(adresse.getRue());
+		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
+		remplitAdresse(adresseEnvoi, adresseExpediteur);
+		if (ca.getAdresseEmail() != null) {
+			expediteur.setAdrMes(ca.getAdresseEmail());
+		}
+		if (ca.getNoTelephone() != null) {
+			expediteur.setNumTelephone(ca.getNoTelephone());
+		}
+		if(ca.getNoFax() != null) {
+			expediteur.setNumFax(ca.getNoFax());
+		}
+		if(ca.getNoCCP() != null) {
+			expediteur.setNumFax(ca.getNoCCP());
+		}
 		expediteur.setTraitePar("");
 		// Apparement la commune de l'aci n'est pas renseignée dans le host ...
 		if (commune == null) {
@@ -302,22 +329,21 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		return expediteur;
 	}
 
-	/**
-	 * Construit une structure éditique pour une demande d'archivage de document lors de sa génération
-	 *
-	 * @param typeDocument   le type de document qui nous intéresse
-	 * @param noTiers        le numéro du tiers concerné par le document
-	 * @param cleArchivage   la clé d'archivage du document
-	 * @param dateTraitement la date de génération du document
-	 * @return la structure de demande d'archivage remplie
-	 */
 	@Override
 	public InfoArchivage buildInfoArchivage(TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement) {
 		if (typeDocument.getCodeDocumentArchivage() == null) {
 			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
 		}
-
 		final InfoArchivage infoArchivage = InfoArchivageDocument.Factory.newInstance().addNewInfoArchivage();
+		fillInfoArchivage(infoArchivage, typeDocument, noTiers, cleArchivage, dateTraitement);
+		return infoArchivage;
+	}
+
+	@Override
+	public InfoArchivage fillInfoArchivage(InfoArchivage infoArchivage, TypeDocumentEditique typeDocument, long noTiers, String cleArchivage, RegDate dateTraitement) {
+		if (typeDocument.getCodeDocumentArchivage() == null) {
+			throw new IllegalArgumentException("Archivage non-supporté pour le document de type " + typeDocument);
+		}
 		infoArchivage.setPrefixe(buildPrefixeInfoArchivage(typeDocument));
 		infoArchivage.setNomApplication(APPLICATION_ARCHIVAGE);
 		infoArchivage.setTypDossier(getTypeDossierArchivage());
@@ -362,11 +388,11 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 					break;
 
 				default:
-					affranchissement.setZone(null);
+					affranchissement.setZone("");
 				}
 			}
 			else {
-				affranchissement.setZone(null);
+				affranchissement.setZone("");
 			}
 		}
 
