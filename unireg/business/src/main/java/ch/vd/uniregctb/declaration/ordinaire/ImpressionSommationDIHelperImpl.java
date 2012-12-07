@@ -29,7 +29,10 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative;
 import ch.vd.unireg.interfaces.infra.data.Localite;
+import ch.vd.uniregctb.adresse.AdresseEnvoi;
+import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
+import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -65,11 +68,12 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 	}
 
 	public ImpressionSommationDIHelperImpl(ServiceInfrastructureService serviceInfrastructureService, AdresseService adresseService, TiersService tiersService,
-											EditiqueHelper editiqueHelper) {
+											EditiqueHelper editiqueHelper, DelaisService delaisService) {
 		this.serviceInfrastructureService = serviceInfrastructureService;
 		this.adresseService = adresseService;
 		this.tiersService = tiersService;
 		this.editiqueHelper = editiqueHelper;
+		this.delaisService = delaisService;
 	}
 
 	@Override
@@ -289,6 +293,22 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			}
 			return sLocalite;
 		}
+
+		InfoDocument remplitInfoDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {
+			final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+			final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
+			infoDocument.setPrefixe(prefixe);
+			infoDocument.setTypDoc("SD");
+			infoDocument.setCodDoc("SOMM_DI");
+			infoDocument.setVersion(VERSION_XSD);
+			infoDocument.setLogo(LOGO_CANTON);
+			infoDocument.setPopulations(POPULATION_PP);
+			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
+			final CleRgp cleRgp = infoDocument.addNewCleRgp();
+			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
+
+			return infoDocument;
+		}
 	}
 
 	/**
@@ -321,21 +341,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			return mainDocument;
 		}
 
-		private InfoDocument remplitInfoDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {
-			final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
-			final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
-			infoDocument.setPrefixe(prefixe);
-			infoDocument.setTypDoc("SD");
-			infoDocument.setCodDoc("SOMM_DI");
-			infoDocument.setVersion(VERSION_XSD);
-			infoDocument.setLogo(LOGO_CANTON);
-			infoDocument.setPopulations(POPULATION_PP);
-			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
-			final CleRgp cleRgp = infoDocument.addNewCleRgp();
-			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
 
-			return infoDocument;
-		}
 	}
 
 	/**
@@ -353,11 +359,59 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		}
 
 		@Override
-		public FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) {
-			return null;
+		public FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
+			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
+			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
+			InfoDocument infoDocument1 = remplitInfoDocument(params, separe1, separe2, 1);
+			InfoDocument infoDocument2 = remplitInfoDocument(params, separe2, separe1, 2);
+			InfoArchivage infoArchivage1 = remplitInfoArchivage(params);
+			InfoArchivage infoArchivage2 = remplitInfoArchivage(params);
+			InfoEnteteDocument infoEnteteDocument1, infoEnteteDocument2;
+			try {
+				infoEnteteDocument1 = remplitEnteteDocument(params);
+				infoEnteteDocument2 = remplitEnteteDocument(params);
+			}
+			catch (EditiqueException e) {
+				throw e;
+			}
+			catch (Exception e) {
+				throw new EditiqueException(e);
+			}
+
+			Document document1 = typeFichierImpression.addNewDocument();
+			document1.setSommationDI(remplitSpecifiqueSommationDI(params));
+			document1.setInfoEnteteDocument(infoEnteteDocument1);
+			document1.setInfoDocument(infoDocument1);
+			document1.setInfoArchivage(infoArchivage1);
+
+			Document document2 = typeFichierImpression.addNewDocument();
+			document2.setSommationDI(remplitSpecifiqueSommationDI(params));
+			document2.setInfoEnteteDocument(infoEnteteDocument2);
+			document2.setInfoDocument(infoDocument2);
+			document2.setInfoArchivage(infoArchivage2);
+
+			typeFichierImpression.setDocumentArray(new Document[]{ document1, document2 });
+			return mainDocument;
+		}
+
+		private InfoDocument remplitInfoDocument(ImpressionSommationDIHelperParams params, PersonnePhysique destinataire, PersonnePhysique exConjoint, int noSepare) throws EditiqueException {
+			// remplissage de la partie commune
+			final InfoDocument infoDocument = remplitInfoDocument(params);
+
+			// remplissage de la partie spécifique aux séparés
+			InfoDocument.Separes separes = infoDocument.addNewSepares();
+			separes.setNumero(Integer.toString(noSepare));
+			separes.setEnvoieA(tiersService.getNomPrenom(exConjoint));
+			TypAdresse.Adresse adresse = separes.addNewAdresse();
+			try {
+				AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(destinataire, null, TypeAdresseFiscale.COURRIER, false);
+				editiqueHelper.remplitAdresse(adresseEnvoi, adresse);
+			}
+			catch (AdresseException e) {
+				throw new EditiqueException(e);
+			}
+			return infoDocument;
 		}
 	}
-
-
 
 }

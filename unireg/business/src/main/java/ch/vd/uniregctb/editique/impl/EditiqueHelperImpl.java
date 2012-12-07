@@ -116,14 +116,8 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		return porteAdresse;
 	}
 
-	/**
-	 * Alimente la partie Adresse
-	 *
-	 * @param adresseEnvoi
-	 * @param adresseDestinataire
-	 * @return
-	 */
-	private TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoi, TypAdresse.Adresse adresseDestinataire) {
+	@Override
+	public TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoi, TypAdresse.Adresse adresseDestinataire) {
 		adresseDestinataire.setAdresseCourrierLigne1(adresseEnvoi.getLigne1());
 		adresseDestinataire.setAdresseCourrierLigne2(adresseEnvoi.getLigne2());
 		adresseDestinataire.setAdresseCourrierLigne3(adresseEnvoi.getLigne3());

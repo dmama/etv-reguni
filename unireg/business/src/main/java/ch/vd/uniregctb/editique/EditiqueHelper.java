@@ -11,6 +11,7 @@ import noNamespace.TypAdresse;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
+import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
@@ -162,4 +163,14 @@ public interface EditiqueHelper {
 	 * @throws EditiqueException
 	 */
 	public void remplitAffranchissement(InfoDocument infoDocument, AdresseEnvoiDetaillee adresseEnvoiDetaillee) throws EditiqueException;
+
+	/**
+	 * Remplit un objet de type {@link TypAdresse.Adresse} avec les données d'un objet du type {@link AdresseEnvoi}
+	 *
+	 * @param adresseEnvoi la source
+	 * @param adresseDestinataire la cible
+	 *
+	 * @return la cible
+	 */
+	TypAdresse.Adresse remplitAdresse(AdresseEnvoi adresseEnvoi, TypAdresse.Adresse adresseDestinataire);
 }

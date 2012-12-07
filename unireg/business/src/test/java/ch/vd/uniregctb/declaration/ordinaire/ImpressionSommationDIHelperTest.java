@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.util.Collections;
 import java.util.GregorianCalendar;
 
 import noNamespace.FichierImpressionDocument;
@@ -20,10 +21,13 @@ import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.declaration.EtatDeclaration;
+import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
@@ -33,6 +37,9 @@ import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class ImpressionSommationDIHelperTest extends BusinessTest {
 
 	private static final Logger LOGGER = Logger.getLogger(ImpressionDeclarationImpotOrdinaireHelperTest.class);
@@ -41,6 +48,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	private AdresseService adresseService;
 	private TiersService tiersService;
 	private EditiqueHelper editiqueHelper;
+	private DelaisService delaisService;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -49,8 +57,9 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 		tiersService = getBean(TiersService.class, "tiersService");
 		editiqueHelper =  getBean(EditiqueHelper.class, "editiqueHelper");
+		delaisService =  getBean(DelaisService.class, "delaisService");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
-		impressionSommationDIHelper = new ImpressionSommationDIHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper);
+		impressionSommationDIHelper = new ImpressionSommationDIHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
 	}
 
 	@Test
@@ -160,7 +169,7 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				final MockIndividu jean = addIndividu(noIndividu, null, "Dupont", "Jean", Sexe.MASCULIN);
 				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDivorce, null);
 				final MockIndividu marie = addIndividu(noIndividu + 1, null, "Dupont", "Marie", Sexe.FEMININ);
-				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeLaGare, null, dateDivorce, null);
+				addAdresse(marie, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeLaGare, null, dateDivorce, null);
 				divorceIndividus(jean, marie, dateDivorce);
 			}
 		});
@@ -172,23 +181,35 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				final PersonnePhysique jean = addHabitant(noIndividu);
 				final PersonnePhysique marie = addHabitant(noIndividu + 1);
 
-				final EnsembleTiersCouple etc = addEnsembleTiersCouple(jean, marie, dateDivorce.addYears(-3), dateDivorce);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(jean, marie, dateDivorce.addYears(-3), dateDivorce.getOneDayBefore());
 
 				addForPrincipal(etc.getMenage(),
 						dateDivorce.addYears(-3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
-						dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 						MockCommune.Lausanne);
+
+				addForPrincipal(jean,
+						dateDivorce, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+
+				addForPrincipal(marie,
+						dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
 				addCollAdm(MockOfficeImpot.OID_LAUSANNE_VILLE);
 				addCedi();
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(etc.getMenage(), pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				EtatDeclaration etatEmise = new EtatDeclarationEmise();
+				etatEmise.setDateObtention(date(2010, 1, 1));
+				etatEmise.setDeclaration(di);
+				di.setEtats(Collections.singleton(etatEmise));
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
 
 				try {
 					FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
-					// assertEquals(2, fichier.getFichierImpression().getDocumentArray().length);
+					assertEquals("On devrait avoir 2 documents pour les séparés", 2, fichier.getFichierImpression().getDocumentArray().length);
+					assertNotNull(fichier.getFichierImpression().getDocumentArray(0).getInfoDocument().getSepares());
+					assertNotNull(fichier.getFichierImpression().getDocumentArray(1).getInfoDocument().getSepares());
 				}
 				catch (EditiqueException e) {
 					throw new RuntimeException(e);
