@@ -2,6 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.GregorianCalendar;
 
+import noNamespace.FichierImpressionDocument;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
@@ -10,10 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
+import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
@@ -21,9 +24,12 @@ import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
+import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
 
@@ -137,6 +143,57 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 							String.format("Exception lors du calcul de l'affranchissement de l'adresse du tiers %d (Impossible de trouver l'individu n°%d)", pp.getNumero(), noIndividu);
 					Assert.assertEquals(expectedMessage, e.getMessage());
 				}
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testRemplitSommationDIPourLesSepares() throws Exception {
+
+		final long noIndividu = 213567254L;
+		final RegDate dateDivorce = date(2010, 6, 1);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu jean = addIndividu(noIndividu, null, "Dupont", "Jean", Sexe.MASCULIN);
+				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeBeaulieu, null, dateDivorce, null);
+				final MockIndividu marie = addIndividu(noIndividu + 1, null, "Dupont", "Marie", Sexe.FEMININ);
+				addAdresse(jean, TypeAdresseCivil.COURRIER, MockRue.Lausanne.AvenueDeLaGare, null, dateDivorce, null);
+				divorceIndividus(jean, marie, dateDivorce);
+			}
+		});
+
+		// préparation fiscale
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique jean = addHabitant(noIndividu);
+				final PersonnePhysique marie = addHabitant(noIndividu + 1);
+
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(jean, marie, dateDivorce.addYears(-3), dateDivorce);
+
+				addForPrincipal(etc.getMenage(),
+						dateDivorce.addYears(-3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Lausanne);
+
+				addCollAdm(MockOfficeImpot.OID_LAUSANNE_VILLE);
+				addCedi();
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(etc.getMenage(), pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+
+				try {
+					FichierImpressionDocument fichier = impressionSommationDIHelper.remplitSommationDI(params);
+					// assertEquals(2, fichier.getFichierImpression().getDocumentArray().length);
+				}
+				catch (EditiqueException e) {
+					throw new RuntimeException(e);
+				}
+
 				return null;
 			}
 		});
