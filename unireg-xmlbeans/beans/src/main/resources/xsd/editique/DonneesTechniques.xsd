@@ -344,56 +344,24 @@
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="separes" minOccurs="0">
-					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="numero" type="xs:string">
-								<xs:annotation>
-									<xs:documentation>1,2</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-							<xs:element name="adresse">
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="adresseCourrierLigne1" type="xs:token" minOccurs="0">
-											<xs:annotation>
-												<xs:documentation>e.g. Monsieur, Madame</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="adresseCourrierLigne2" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Ligne adresse 2</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="adresseCourrierLigne3" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Ligne adresse 3</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="adresseCourrierLigne4" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Ligne adresse 4</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="adresseCourrierLigne5" type="xs:string">
-											<xs:annotation>
-												<xs:documentation>Ligne adresse 5</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-										<xs:element name="adresseCourrierLigne6">
-											<xs:annotation>
-												<xs:documentation>Ligne adresse 6</xs:documentation>
-											</xs:annotation>
-										</xs:element>
-									</xs:sequence>
-								</xs:complexType>
-							</xs:element>
-							<xs:element name="envoieA" type="xs:string" minOccurs="0">
-								<xs:annotation>
-									<xs:documentation>Prenom Nom du séparé non destinataire</xs:documentation>
-								</xs:annotation>
-							</xs:element>
-						</xs:sequence>
+				<xs:element name="separes" minOccurs="0" >
+					<xs:complexType >
+						<xs:complexContent>
+							<xs:extension base="typAdresse">
+								<xs:sequence>
+									<xs:element name="numero" type="xs:string">
+										<xs:annotation>
+											<xs:documentation>1,2</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="envoieA" type="xs:string" minOccurs="0">
+										<xs:annotation>
+											<xs:documentation>Prenom Nom du séparé non destinataire</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+								</xs:sequence>
+							</xs:extension>
+						</xs:complexContent>
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>
