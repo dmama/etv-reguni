@@ -78,8 +78,9 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	@Override
-	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, final Long numeroSourcier, boolean activesOnly) {
+	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, final Long numeroSourcier, boolean activesOnly, boolean doNotAutoFlush) {
 		final StringBuilder b = new StringBuilder();
+		final FlushMode mode = (doNotAutoFlush ? FlushMode.MANUAL : null);
 		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur and rapport.sujetId = :sourcier");
 		if (activesOnly) {
 			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");
@@ -93,6 +94,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 				final Query queryObject = session.createQuery(query);
 				queryObject.setParameter("debiteur", numeroDebiteur);
 				queryObject.setParameter("sourcier", numeroSourcier);
+				queryObject.setFlushMode(mode);
 
 				return queryObject.list();
 			}

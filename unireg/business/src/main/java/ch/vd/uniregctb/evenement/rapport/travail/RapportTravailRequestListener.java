@@ -28,9 +28,15 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import ch.vd.registre.base.tx.TxCallback;
+import ch.vd.registre.base.tx.TxCallbackException;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
@@ -45,6 +51,7 @@ import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.ServiceException;
 
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour
@@ -52,10 +59,10 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 
 	private static final Logger LOGGER = Logger.getLogger(RapportTravailRequestListener.class);
 
+	private final Context context = new Context();
 	private EsbMessageFactory esbMessageFactory;
 	private final ObjectFactory objectFactory = new ObjectFactory();
 	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
-	private HibernateTemplate hibernateTemplate;
 
 	private RapportTravailRequestHandler rapportTravailRequestHandler;
 
@@ -63,7 +70,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 
 
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
+		this.context.hibernateTemplate = hibernateTemplate;
 	}
 
 	public void setRapportTravailRequestHandler(RapportTravailRequestHandler rapportTravailRequestHandler) {
@@ -88,28 +95,49 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		}
 	}
 
-	private void onMessage(EsbMessage message) throws Exception {
+	private void onMessage(final EsbMessage message) throws Exception {
 
 		MiseAJourRapportTravailResponse result;
-		MiseAJourRapportTravailRequest request = null;
+
 		try {
 			// on décode la requête
-			 request = parse(message.getBodyAsSource());
+			final MiseAJourRapportTravailRequest request = parse(message.getBodyAsSource());
 			LOGGER.info(String.format("Arrivée d'un événement (BusinessID = '%s') %s", message.getBusinessId(), request));
 
 			// on traite la requête
 			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request, message.getBusinessId());
-			result = rapportTravailRequestHandler.handle(miseAjourRapportTravail);
+
+
+			final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
+			template.setReadOnly(false);
+			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+			try {
+				result = template.execute(new TxCallback<MiseAJourRapportTravailResponse>() {
+					@Override
+					public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+						return rapportTravailRequestHandler.handle(miseAjourRapportTravail);
+					}
+				});
+			}
+			catch (TxCallbackException txe) {
+				ServiceException e =(ServiceException) txe.getCause();
+				LOGGER.error(e.getMessage(), e);
+				result = new MiseAJourRapportTravailResponse();
+				result.setExceptionInfo(e.getInfo());
+			}
+			catch (ValidationException e) {
+				String msg = String.format("Exception de validation pour le message {businessId: %s}: Debiteur ou sourcier invalide dans Unireg.", message.getBusinessId());
+				LOGGER.error(msg, e);
+				result = new MiseAJourRapportTravailResponse();
+				final BusinessExceptionInfo exceptionInfo = new BusinessExceptionInfo();
+				exceptionInfo.setCode(BusinessExceptionCode.VALIDATION.value());
+				exceptionInfo.setMessage(msg);
+				result.setExceptionInfo(exceptionInfo);
+			}
+
 			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
-			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
-		catch (ServiceException e) {
-			LOGGER.error(e.getMessage(), e);
-			result = new MiseAJourRapportTravailResponse();
-			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
-			result.setExceptionInfo(e.getInfo());
-			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
-		}
+
 		catch (UnmarshalException e) {
 			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not valid", message.getBusinessId());
 			LOGGER.error(msg, e);
@@ -117,8 +145,8 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			final TechnicalExceptionInfo exceptionInfo = new TechnicalExceptionInfo();
 			exceptionInfo.setMessage(msg);
 			result.setExceptionInfo(exceptionInfo);
-			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
 		}
+
 
 		// on répond
 		try {
@@ -158,7 +186,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 	public int getNombreMessagesRecus() {
 		return nbMessagesRecus.intValue();
 	}
-
 
 
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {

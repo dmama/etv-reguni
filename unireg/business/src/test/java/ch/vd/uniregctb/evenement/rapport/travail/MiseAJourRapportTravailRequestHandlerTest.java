@@ -150,12 +150,17 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final RegDate dateDebutVersementSalaire = date(2012, 1, 1);
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
 
-		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier, periodeDeclaration, dateDebutVersementSalaire, null);
+		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
 		assertEquals(1,rapports.size());
 		RapportPrestationImposable rapport = rapports.get(0);
 		assertEquals(dateDebutVersementSalaire,rapport.getDateDebut());
@@ -200,11 +205,16 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(idDebiteur, idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(idSourcier);
-		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
 		assertEquals(0,rapports.size());
 
 	}
@@ -248,7 +258,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -296,7 +311,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -345,7 +365,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setFermetureRapportTravail(new FermetureRapportTravail());
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -401,7 +426,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		request.setFinRapportTravail(finRapportTravail);
 		request.setDateFinVersementSalaire(dateFinVersementSalaire);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -451,7 +481,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -500,7 +535,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 		request.setDateFinVersementSalaire(dateFinVersementSalaire);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -546,7 +586,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -601,7 +646,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		finRapportTravail.setDateEvenement(dateEvenement);
 		request.setFinRapportTravail(finRapportTravail);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -647,7 +697,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -705,7 +760,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		finRapportTravail.setDateEvenement(DataHelper.coreToXML(dateFinVersementSalaire));
 		request.setFinRapportTravail(finRapportTravail);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
@@ -759,11 +819,16 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
-		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true);
+		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
 
 		assertEquals(1,rapportPrestations.size());
 		RapportPrestationImposable rapportPrestationImposable = rapportPrestations.get(0);
@@ -817,7 +882,12 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinCore);
 
-		MiseAJourRapportTravailResponse response =  handler.handle(MiseAjourRapportTravail.get(request, null));
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
 		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();

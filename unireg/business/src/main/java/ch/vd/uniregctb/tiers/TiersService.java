@@ -1271,11 +1271,13 @@ public interface TiersService {
 	 *
 	 *
 	 *
+	 *
 	 * @param dpi un débiteur
 * @param sourcier un sourcier
 * @param nonAnnuleOnly
+	 * @param doNotAutoFlush
 	 * @return la listes des rapports de prestations
 	*/
-	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, boolean nonAnnuleOnly);
+	public List<RapportPrestationImposable> getAllRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, boolean nonAnnuleOnly, boolean doNotAutoFlush);
 }
 

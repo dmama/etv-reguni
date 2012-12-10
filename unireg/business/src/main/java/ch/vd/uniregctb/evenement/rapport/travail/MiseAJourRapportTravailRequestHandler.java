@@ -13,6 +13,7 @@ import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
@@ -40,7 +41,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 
 	@Override
-	public MiseAJourRapportTravailResponse handle(MiseAjourRapportTravail request) throws ServiceException {
+	public MiseAJourRapportTravailResponse handle(MiseAjourRapportTravail request) throws ServiceException,ValidationException {
 
 
 		//Initialisation de la période de déclaration
@@ -127,7 +128,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		final DateRange periodeDeclaration = new DateRangeHelper.Range(request.getDateDebutPeriodeDeclaration(),request.getDateFinPeriodeDeclaration());
 
-		final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true);
+		final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
 		final List<RapportPrestationImposable> rapportsConcernes = new ArrayList<RapportPrestationImposable>();
 		for (RapportPrestationImposable rapport : rapports) {
 				if(DateRangeHelper.intersect(periodeDeclaration,rapport)){
@@ -433,7 +434,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 * @return le premier rapport de travail qui est concerne par la période de déclaration
 	 */
 	private List<RapportPrestationImposable> findRapportPrestationImposable(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
-		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true);
+		List<RapportPrestationImposable> listeRapport = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
 		return listeRapport;
 	}
 

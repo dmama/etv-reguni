@@ -25,7 +25,6 @@ import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementHelper;
-import ch.vd.uniregctb.xml.ServiceException;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -128,10 +127,6 @@ abstract class RapportTravailRequestListenerItTest extends BusinessItTest {
 
 		final JAXBElement element = (JAXBElement) u.unmarshal(message.getBodyAsSource());
 		final MiseAJourRapportTravailResponse reponse = (MiseAJourRapportTravailResponse)element.getValue();
-		if(reponse.getExceptionInfo()!=null){
-			throw new ServiceException(reponse.getExceptionInfo());
-
-		}
 		return reponse;
 	}
 }
