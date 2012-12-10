@@ -64,25 +64,33 @@ public class ValidationJobThread extends Thread {
 
 	@Override
 	public void run() {
+		try {
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
+			boolean continueProcessing;
 
-		final TransactionTemplate template = new TransactionTemplate(transactionManager);
-		boolean continueProcessing;
-
-		// Valide les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
-		do {
-			continueProcessing = template.execute(new TransactionCallback<Boolean>() {
-				@Override
-				public Boolean doInTransaction(TransactionStatus status) {
-					try {
-						processBatch();
+			// Valide les tiers dans la queue en procédant par batchs, ceci pour limiter le nombre d'objets en mémoire
+			do {
+				continueProcessing = template.execute(new TransactionCallback<Boolean>() {
+					@Override
+					public Boolean doInTransaction(TransactionStatus status) {
+						try {
+							processBatch();
+						}
+						catch (InterruptedException e) {
+							return Boolean.FALSE;
+						}
+						return !(queue.isEmpty() && noMoreInput);
 					}
-					catch (InterruptedException e) {
-						return Boolean.FALSE;
-					}
-					return !(queue.isEmpty() && noMoreInput);
-				}
-			});
-		} while (continueProcessing);
+				});
+			}
+			while (continueProcessing);
+		}
+		catch (Exception e) {
+			LOGGER.error("Le thread " + getName() + " va être stoppé en raison d'une exception", e);
+		}
+		finally {
+			LOGGER.info("Thread " + getName() + " arrêté.");
+		}
 	}
 
 	private void processBatch() throws InterruptedException {
@@ -113,12 +121,22 @@ public class ValidationJobThread extends Thread {
 	}
 
 	private void checkValidation(final Tiers tiers, ValidationJobResults results) {
-		final ValidationResults r = validationService.validate(tiers);
-		if (r.hasErrors()) {
-			if (LOGGER.isDebugEnabled()) {
-				LOGGER.debug("Le tiers n°" + tiers.getNumero() + " est invalide");
+		try {
+			final ValidationResults r = validationService.validate(tiers);
+			if (r.hasErrors()) {
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug("Le tiers n°" + tiers.getNumero() + " est invalide");
+				}
+				results.addErrorTiersInvalide(tiers, r);
 			}
-			results.addErrorTiersInvalide(tiers, r);
+		}
+		catch (Exception e) {
+			final String message = "La validation du tiers " + tiers.getNumero() + " a levé une exception";
+			LOGGER.error(message, e);
+
+			final ValidationResults vr = new ValidationResults();
+			vr.addError(message, e);
+			results.addErrorTiersInvalide(tiers, vr);
 		}
 	}
 

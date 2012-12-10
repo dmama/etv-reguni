@@ -273,8 +273,10 @@ public class ServiceInfrastructureFidor implements ServiceInfrastructureRaw, Uni
 		try {
 			final List<Commune> list = new ArrayList<Commune>();
 			final List<CommuneFiscale> l = fidorClient.getCommunesParNoOFS(noOfsCommune);
-			for (CommuneFiscale c : l) {
-				list.add(CommuneImpl.get(c));
+			if (l != null) {
+				for (CommuneFiscale c : l) {
+					list.add(CommuneImpl.get(c));
+				}
 			}
 			return list;
 		}
