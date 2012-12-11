@@ -81,6 +81,7 @@
 							return "Chargement...";
 						}
 					});
+                    $(".civTip").click(function() { return false; });
 
 					$(".adrTip").tooltip({
 						items: "[name]",
@@ -91,6 +92,7 @@
 							return "Chargement...";
 						}
 					});
+                    $(".adrTip").click(function() { return false; });
 				});
 			</script>
 
