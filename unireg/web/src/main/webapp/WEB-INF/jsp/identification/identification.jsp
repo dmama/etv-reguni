@@ -38,12 +38,12 @@
 						</c:if>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.nom.prenom" >
-					 <a href="${personne.numero}" class="civTip" id="civildata" name="${personne.numero}">
+					 <span class="civTip" id="civildata" name="${personne.numero}">
 						<c:out value="${personne.nom1}" />
 						<c:if test="${personne.nom2 != null}">
 							<br><c:out value="${personne.nom2}" />
 						</c:if>
-						</a>
+						</span>
 				</display:column>
 				<display:column titleKey="label.date.naissance" sortable="true" sortName="dateNaissance" sortProperty="dateNaissance">
 						<unireg:date date="${personne.dateNaissance}"></unireg:date>
@@ -52,9 +52,9 @@
 						<c:out value="${personne.npa}" />
 				</display:column>
 				<display:column sortable ="true" titleKey="label.localitePays" >
-					 <a href="${personne.numero}" class="adrTip" id="adressedata" name="${personne.numero}">
+					 <span  class="adrTip" id="adressedata" name="${personne.numero}">
 						<c:out value="${personne.localiteOuPays}" />
-					</a>
+					</span>
 				</display:column>
 				<display:column sortable ="true" titleKey="label.for.principal" >
 						<c:out value="${personne.forPrincipal}" />
@@ -81,7 +81,6 @@
 							return "Chargement...";
 						}
 					});
-                    $(".civTip").click(function() { return false; });
 
 					$(".adrTip").tooltip({
 						items: "[name]",
@@ -92,7 +91,6 @@
 							return "Chargement...";
 						}
 					});
-                    $(".adrTip").click(function() { return false; });
 				});
 			</script>
 
