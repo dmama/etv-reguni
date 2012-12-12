@@ -27,6 +27,9 @@
 
 	<bean id="accessLoggerFilter" class="ch.vd.uniregctb.security.AccessLogProcessingFilter" />
 
+	<!-- Filtre qui stocker la dernière URL valide pour utilisation dans le ActionExceptionResolver -->
+	<bean id="actionExceptionFilter" class="ch.vd.uniregctb.servlet.ActionExceptionFilter" />
+
 	<!-- Filtre sur les adresses IP -->
 	<bean id="remoteHostSpringFilter" class="ch.vd.unireg.servlet.security.RemoteHostSpringFilter">
 		<property name="allowed" value="${extprop.remoteHostFilter.allow}" />
@@ -59,7 +62,7 @@
 			<security:filter-chain pattern="/chooseoid.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter" />
 			<security:filter-chain pattern="/authenticationFailed.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter" />
 			<!-- Version IAM + IFOSEC -->
-			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter" />
+			<security:filter-chain pattern="/**/*.do" filters="securityContextPersistenceFilter,remoteHostSpringFilter,logoutFilter,exceptionTranslationFilter,bypassSecurityFilter,iamAuthFilter,accessLoggerFilter,chooseOIDFilter,ifoSecProfileFilter,contextHolderAwareRequestFilter,actionExceptionFilter" />
 			<security:filter-chain pattern="/**" filters="securityContextPersistenceFilter" />
 		</security:filter-chain-map>
 	</bean>

@@ -3,6 +3,7 @@ package ch.vd.uniregctb.servlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.HandlerExceptionResolver;
@@ -16,7 +17,8 @@ import ch.vd.uniregctb.common.ActionException;
 import ch.vd.uniregctb.metier.MetierServiceException;
 
 /**
- * Ce resolver va détecter les erreurs de validation et d'action, et rediriger automatiquement l'appelant vers la page précédente en y ajoutant le détails des erreurs levées.
+ * Ce resolver va détecter les erreurs de validation et d'action, et rediriger automatiquement l'appelant vers la dernière page valide (à utiliser en conjonction avec un filtre {@link
+ * ActionExceptionFilter}) en y ajoutant le détails des erreurs levées.
  */
 public class ActionExceptionResolver implements HandlerExceptionResolver, Ordered {
 
@@ -41,11 +43,11 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 
 	private static ModelAndView handleException(HttpServletRequest request, Throwable ex) {
 
-		final String referrer = request.getHeader("referer"); // Yes, with the legendary misspelling.
+		final String referrer = getReferrer(request);
 
 		ModelAndView mav = null;
 		if (ex instanceof ValidationException) {
-			LOGGER.debug("Validation exception catched -> redisplaying form : " + ex.getMessage());
+			LOGGER.debug("Validation exception catched : " + ex.getMessage() + "\n-> redisplaying page " + referrer);
 			final ValidationException ve = (ValidationException) ex;
 			for (ValidationMessage s : ve.getErrors()) {
 				ActionErrors.addError(s.toString());
@@ -56,7 +58,7 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			mav = new ModelAndView("redirect:" + referrer);
 		}
 		else if (ex instanceof ActionException) {
-			LOGGER.debug("Action exception catched -> redisplaying form : " + ex.getMessage());
+			LOGGER.debug("Action exception catched : " + ex.getMessage() + "\n-> redisplaying page " + referrer);
 			final ActionException ae = (ActionException) ex;
 			for (String s : ae.getErrors()) {
 				ActionErrors.addError(s);
@@ -67,7 +69,7 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			mav = new ModelAndView("redirect:" + referrer);
 		}
 		else if (ex instanceof MetierServiceException) {
-			LOGGER.debug("MetierServiceException exception catched -> redisplaying form : " + ex.getMessage());
+			LOGGER.debug("MetierServiceException exception catched : " + ex.getMessage() + "\n-> redisplaying page " + referrer);
 			ActionErrors.addError(ex.getMessage());
 			mav = new ModelAndView("redirect:" + referrer);
 		}
@@ -79,5 +81,13 @@ public class ActionExceptionResolver implements HandlerExceptionResolver, Ordere
 			// on ignore les autres erreurs
 		}
 		return mav;
+	}
+
+	private static String getReferrer(HttpServletRequest request) {
+		String referrer = (String) request.getSession().getAttribute(ActionExceptionFilter.LAST_GET_URL);
+		if (StringUtils.isBlank(referrer)) {
+			referrer = request.getHeader("referer"); // Yes, with the legendary misspelling.
+		}
+		return referrer;
 	}
 }
