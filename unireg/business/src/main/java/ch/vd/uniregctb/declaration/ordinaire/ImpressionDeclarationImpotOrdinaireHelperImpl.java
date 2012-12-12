@@ -217,7 +217,7 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		final AdresseEnvoiDetaillee adresse = adresseService.getAdresseEnvoi(oid, null, TypeAdresseFiscale.COURRIER, false);
 		final Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		final TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		remplitAdresse(adresseExpediteur, adresse);
+		editiqueHelper.remplitAdresse(adresse, adresseExpediteur);
 		expediteur.setAdresse(adresseExpediteur);
 
 		final ch.vd.unireg.interfaces.infra.data.CollectiviteAdministrative collectivite = infraService.getOfficeImpot(oid.getNumeroCollectiviteAdministrative());
@@ -234,16 +234,6 @@ public class ImpressionDeclarationImpotOrdinaireHelperImpl extends EditiqueAbstr
 		expediteur.setDateExpedition(dateExpedition);
 
 		return expediteur;
-	}
-
-
-	private static void remplitAdresse(TypAdresse.Adresse adresseExpediteur, AdresseEnvoiDetaillee adresse) {
-		adresseExpediteur.setAdresseCourrierLigne1(adresse.getLigne1());
-		adresseExpediteur.setAdresseCourrierLigne2(adresse.getLigne2());
-		adresseExpediteur.setAdresseCourrierLigne3(adresse.getLigne3());
-		adresseExpediteur.setAdresseCourrierLigne4(adresse.getLigne4());
-		adresseExpediteur.setAdresseCourrierLigne5(adresse.getLigne5());
-		adresseExpediteur.setAdresseCourrierLigne6(adresse.getLigne6());
 	}
 
 	/**
