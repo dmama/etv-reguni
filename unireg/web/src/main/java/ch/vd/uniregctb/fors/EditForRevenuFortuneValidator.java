@@ -28,6 +28,24 @@ public abstract class EditForRevenuFortuneValidator extends EditForValidator {
 			throw new ObjectNotFoundException("Impossible de trouver le for fiscal avec l'id=" + view.getId());
 		}
 
+		// validation du motif de debut
+		if (view.getDateDebut() != null) {
+			if (view.getMotifDebut() == null) {
+				errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
+			}
+			else {
+				final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
+				final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
+
+				if (!MotifsForHelper.getMotifsOuverture(typeFor).contains(view.getMotifDebut())) {
+					errors.rejectValue("motifDebut", "Motif ouverture invalide");
+				}
+			}
+		}
+		else if (view.getMotifDebut() != null) { // [SIFISC-7381] les dates et motifs doivent être renseignés tous les deux, ou nuls tous les deux
+			errors.rejectValue("dateDebut", "error.date.ouverture.vide");
+		}
+
 		// validation du motif de fin
 		if (view.getDateFin() != null) {
 			if (view.getMotifFin() == null) {
@@ -41,6 +59,9 @@ public abstract class EditForRevenuFortuneValidator extends EditForValidator {
 					errors.rejectValue("motifFin", "Motif fermeture invalide");
 				}
 			}
+		}
+		else if (view.getMotifFin() != null) { // [SIFISC-7381] les dates et motifs doivent être renseignés tous les deux, ou nuls tous les deux
+			errors.rejectValue("dateFin", "error.date.fermeture.vide");
 		}
 	}
 }

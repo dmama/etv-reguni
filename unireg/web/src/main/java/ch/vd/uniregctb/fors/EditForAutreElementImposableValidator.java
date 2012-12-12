@@ -32,5 +32,10 @@ public class EditForAutreElementImposableValidator extends EditForRevenuFortuneV
 		view.initReadOnlyData(ffaei); // on ré-initialise les données en lecture-seule parce qu'elles ne font pas partie du formulaire (et ne doivent pas l'être pour des raisons de sécurité)
 
 		super.validate(target, errors);
+
+		// [SIFISC-7381] si aucun changement n'a été saisi, on réaffiche le formulaire
+		if (ffaei.getMotifFermeture() == view.getMotifFin() && ffaei.getDateFin() == view.getDateFin() && ffaei.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+			errors.reject("global.error.aucun.changement");
+		}
 	}
 }

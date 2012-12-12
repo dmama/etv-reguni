@@ -39,6 +39,12 @@ public class EditForPrincipalValidator extends EditForRevenuFortuneValidator {
 
 		super.validate(target, errors);
 
+		// [SIFISC-7381] si aucun changement n'a été saisi, on réaffiche le formulaire
+		if (ffp.getMotifFermeture() == view.getMotifFin() && ffp.getDateFin() == view.getDateFin() && ffp.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+			errors.reject("global.error.aucun.changement");
+			return;
+		}
+
 		// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
 		final List<DateRange> fors = new ArrayList<DateRange>();
 		for (ForFiscal f : ffp.getTiers().getForsFiscauxPrincipauxActifsSorted()) {
