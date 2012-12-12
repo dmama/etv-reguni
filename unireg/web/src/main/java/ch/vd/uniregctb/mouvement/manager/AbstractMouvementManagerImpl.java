@@ -309,7 +309,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			nomUtilisateur = nomPrenomOperateur.getNomPrenom();
 			visaOperateur = operateur.getCode();
 			final List<ch.vd.infrastructure.model.CollectiviteAdministrative> collectivites = serviceSecuriteService.getCollectivitesUtilisateur(visaOperateur);
-			if (collectivites != null) {
+			if (collectivites != null && collectivites.size() > 0) {
 				final ch.vd.infrastructure.model.CollectiviteAdministrative collectivite = collectivites.get(0);
 				final IfoSecProfil profileUtilisateur = serviceSecuriteService.getProfileUtilisateur(visaOperateur, collectivite.getNoColAdm());
 				if (profileUtilisateur != null && !StringUtils.isBlank(profileUtilisateur.getNoTelephone())) {
