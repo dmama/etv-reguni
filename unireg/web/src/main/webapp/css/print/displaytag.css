@@ -1,12 +1,6 @@
 th.sortable {
 	cursor: pointer;
-	background-repeat: no-repeat;
-	background-image: url(arrow_off.png);
-	background-position: right;
-	padding-top: 0;
-	padding-right: 20px;
-	padding-bottom: 1px;
-	padding-left: 4px;
+	padding: 0 20px 1px 4px;
 	color: #336CA6;
 }
 

@@ -235,6 +235,10 @@ div.newMc {
 	padding: 0.2em;
 }
 
+#remarquesContentDiv {
+	margin-top: 0.5em;
+}
+
 #remarques table.remarques {
 	margin-top: 0.5em;
 	color: gray;

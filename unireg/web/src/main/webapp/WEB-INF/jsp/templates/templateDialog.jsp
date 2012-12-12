@@ -6,11 +6,8 @@
 		<title><tiles:getAsString name='title' ignore='true'/></title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
-
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
+		<%@ include file="cssInclude.jsp" %>
+		<%@ include file="jsInclude.jsp" %>
 
 		<tiles:getAsString name='head' ignore='true'/>
 	</head>

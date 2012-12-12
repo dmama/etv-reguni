@@ -18,19 +18,15 @@ legend a.delete {
 	float: left;
 }
 
-.complements, .civil, .fiscal, .tiers, .menage, entreprises{
+.complements, .civil, .fiscal, .tiers, .menage, .entreprises {
 	border: 1px solid #bcbcbc;
 	padding: 10px;
 	position: relative;
 	top: 10px;
 	z-index: 1;
-	margin-top: -11px;
-	margin-right: 0px;
-	margin-bottom: 10px;  
-	margin-left: 0px;
+	margin: -11px 0 10px;
 	display: block;
 	float: left;
-	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 	width: 100%;
 }
@@ -41,13 +37,9 @@ legend a.delete {
 	position: relative;
 	top: 10px;
 	z-index: 1;
-	margin-top: -11px;
-	margin-right: 0px;
-	margin-bottom: 10px;  
-	margin-left: 0px;
+	margin: -11px 0 10px;
 	display: block;
 	float: left;
-	background-image: url(bgpannelouter.jpg);
 	background-repeat: repeat;
 	width: 100%;
 }
@@ -62,7 +54,6 @@ legend a.delete {
 	z-index: 1;
 	display: inherit;
 	float: left;
-	background-image: url(bgpannelinner.jpg);
 	background-repeat: repeat;
 }
 
@@ -79,27 +70,11 @@ legend a.delete {
 	float: right;
 	bottom: 38px;
 	left: 11px;
-	background-color: #EFEFEF;
+	background: #EFEFEF no-repeat right center;
 	z-index: 2;
-	background-image: url(delete_on.gif);
-	background-repeat: no-repeat;
-	background-position: right center;
-	padding-top: 5px;
-	padding-right: 20px;
-	padding-bottom: 5px;
-	padding-left: 5px;
-	border-top-width: thin;
-	border-right-width: thin;
-	border-bottom-width: thin;
-	border-left-width: thin;
-	border-top-style: solid;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-left-style: solid;
-	border-top-color: #000000;
-	border-right-color: #000000;
+	padding: 5px 20px 5px 5px;
+	border: thin solid #000000;
 	border-bottom-color: #EFEFEF;
-	border-left-color: #000000;
 }
 
 .groupes-evenement {
@@ -115,8 +90,7 @@ legend a.delete {
 	z-index: 1;
 	display: inline;
 	float: left;
-	background-image: url(bgpannelinner.jpg);
-	background-repeat: repeat;
+	background: repeat;
 	width: 21%;
 	position: relative;
 	height: 110px;

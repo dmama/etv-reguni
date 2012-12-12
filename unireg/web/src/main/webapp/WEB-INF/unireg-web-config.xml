@@ -9,4 +9,12 @@
 		<property name="efactureEnabled" value="${extprop.efacture.enabled}" />
 	</bean>
 
+	<bean class="org.springframework.web.context.support.ServletContextAttributeExporter">
+		<property name="attributes">
+			<map>
+				<entry key="uniregEnvironnement" value="${extprop.environnement}" />
+			</map>
+		</property>
+	</bean>
+
 </beans>

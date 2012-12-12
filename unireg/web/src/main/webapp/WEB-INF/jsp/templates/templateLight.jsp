@@ -9,15 +9,9 @@
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
-		<link media="screen" href="<c:url value="/css/x/jquery-ui.css"/>" rel="stylesheet" type="text/css">
-		<link media="screen" href="<c:url value="/css/x/screen-all.css"/>" rel="stylesheet" type="text/css">
-
+		<%@ include file="cssInclude.jsp" %>
 		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
-
-		<link media="print" href="<c:url value="/css/print/print-all.css"/>" rel="stylesheet" type="text/css">
-
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/jquery-all.js"/>"></script>
-		<script type="text/javascript" language="Javascript" src="<c:url value="/js/unireg.js"/>"></script>
+		<%@ include file="jsInclude.jsp" %>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>
 		<tiles:getAsString name='head' ignore='true'/>

@@ -363,6 +363,82 @@
 			</plugin>
 
 			<plugin>
+				<groupId>com.samaxes.maven</groupId>
+				<artifactId>minify-maven-plugin</artifactId>
+				<version>1.5.2</version>
+				<!-- Fusionne les fichiers CSS et Javascript en un seul pour limiter le nombre de ressource à télécharger -->
+				<executions>
+					<execution>
+						<id>merge-css-x</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<cssSourceDir>css/x</cssSourceDir>
+							<cssSourceFiles>
+								<cssSourceFile>layout.css</cssSourceFile>
+								<cssSourceFile>tabs.css</cssSourceFile>
+								<cssSourceFile>tools.css</cssSourceFile>
+								<cssSourceFile>displaytag.css</cssSourceFile>
+								<cssSourceFile>unireg.css</cssSourceFile>
+								<cssSourceFile>tooltip.css</cssSourceFile>
+								<cssSourceFile>jquery.jgrowl.css</cssSourceFile>
+							</cssSourceFiles>
+							<skipMinify>true</skipMinify>
+							<cssTargetDir>css/x</cssTargetDir>
+							<cssFinalFile>screen-all.css</cssFinalFile>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>merge-css-print</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<cssSourceDir>css/print</cssSourceDir>
+							<cssSourceFiles>
+								<cssSourceFile>common.css</cssSourceFile>
+								<cssSourceFile>displaytag.css</cssSourceFile>
+								<cssSourceFile>layout.css</cssSourceFile>
+								<cssSourceFile>tabs.css</cssSourceFile>
+								<cssSourceFile>tools.css</cssSourceFile>
+								<cssSourceFile>unireg.css</cssSourceFile>
+							</cssSourceFiles>
+							<skipMinify>true</skipMinify>
+							<cssTargetDir>css/print</cssTargetDir>
+							<cssFinalFile>print-all.css</cssFinalFile>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>merge-javascript</id>
+						<phase>process-resources</phase>
+						<configuration>
+							<jsSourceDir>js/original</jsSourceDir>
+							<jsSourceFiles>
+								<jsSourceFile>jquery.js</jsSourceFile>
+								<jsSourceFile>jquery.bgiframe.js</jsSourceFile>
+								<jsSourceFile>jquery-ui.js</jsSourceFile>
+								<jsSourceFile>jquery.ui.datepicker-fr-CH.js</jsSourceFile>
+								<jsSourceFile>jquery.ui.tooltip.js</jsSourceFile>
+								<jsSourceFile>jquery.cookie.js</jsSourceFile>
+								<jsSourceFile>jquery.timers.js</jsSourceFile>
+								<jsSourceFile>jquery.form.js</jsSourceFile>
+								<jsSourceFile>jquery.jgrowl.js</jsSourceFile>
+							</jsSourceFiles>
+							<skipMinify>true</skipMinify>
+							<jsTargetDir>js</jsTargetDir>
+							<jsFinalFile>jquery-all.js</jsFinalFile>
+						</configuration>
+						<goals>
+							<goal>minify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
