@@ -46,27 +46,27 @@
 								<xs:documentation>e.g. Monsieur, Madame</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="adresseCourrierLigne2" type="typCdata" nillable="true">
+						<xs:element name="adresseCourrierLigne2" type="typCdata" nillable="true" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Ligne adresse 2</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="adresseCourrierLigne3" type="typCdata" nillable="true">
+						<xs:element name="adresseCourrierLigne3" type="typCdata" nillable="true" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Ligne adresse 3</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="adresseCourrierLigne4" type="typCdata" nillable="true">
+						<xs:element name="adresseCourrierLigne4" type="typCdata" nillable="true" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Ligne adresse 4</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="adresseCourrierLigne5" type="typCdata" nillable="true">
+						<xs:element name="adresseCourrierLigne5" type="typCdata" nillable="true" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Ligne adresse 5</xs:documentation>
 							</xs:annotation>
 						</xs:element>
-						<xs:element name="adresseCourrierLigne6" type="typCdata" nillable="true">
+						<xs:element name="adresseCourrierLigne6" type="typCdata" nillable="true" minOccurs="0">
 							<xs:annotation>
 								<xs:documentation>Ligne adresse 6</xs:documentation>
 							</xs:annotation>
