@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -35,6 +37,7 @@ import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
+import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalAutreImpot;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
@@ -231,7 +234,7 @@ public class ForsController {
 		final ForFiscalPrincipal newFor = tiersService.addForPrincipal(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getMotifRattachement(),
 		                                                               view.getNoAutoriteFiscale(), view.getTypeAutoriteFiscale(), view.getModeImposition());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@RequestMapping(value = "/principal/edit.do", method = RequestMethod.GET)
@@ -277,7 +280,14 @@ public class ForsController {
 
 		final ForFiscalPrincipal newFor = tiersService.updateForPrincipal(ffp, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
+	}
+
+	private static String buildHighlightForParam(@Nullable ForFiscal newFor) {
+		if (newFor == null) {
+			return StringUtils.EMPTY;
+		}
+		return "&highlightFor=" + newFor.getId();
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -346,7 +356,7 @@ public class ForsController {
 
 		final ForFiscalPrincipal newFor = tiersService.changeModeImposition((Contribuable) ffp.getTiers(), view.getDateChangement(), view.getModeImposition(), view.getMotifChangement());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@RequestMapping(value = "/secondaire/add.do", method = RequestMethod.GET)
@@ -396,7 +406,7 @@ public class ForsController {
 		final ForFiscalSecondaire newFor = tiersService.addForSecondaire(ctb, view.getDateDebut(), view.getDateFin(), view.getMotifRattachement(), view.getNoAutoriteFiscale(),
 		                                                                 view.getTypeAutoriteFiscale(), view.getMotifDebut(), view.getMotifFin());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@RequestMapping(value = "/secondaire/edit.do", method = RequestMethod.GET)
@@ -442,7 +452,7 @@ public class ForsController {
 
 		final ForFiscalSecondaire newFor = tiersService.updateForSecondaire(ffs, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -513,7 +523,7 @@ public class ForsController {
 		final ForFiscalAutreElementImposable newFor = tiersService.addForAutreElementImposable(ctb, view.getDateDebut(), view.getMotifDebut(), view.getDateFin(), view.getMotifFin(),
 		                                                                                       view.getMotifRattachement(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@RequestMapping(value = "/autreelementimposable/edit.do", method = RequestMethod.GET)
@@ -559,7 +569,7 @@ public class ForsController {
 
 		final ForFiscalAutreElementImposable newFor = tiersService.updateForAutreElementImposable(ffaei, view.getDateFin(), view.getMotifFin(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)
@@ -629,7 +639,7 @@ public class ForsController {
 
 		final ForFiscalAutreImpot newFor = tiersService.openForFiscalAutreImpot(ctb, view.getGenreImpot(), view.getDateEvenement(), view.getNoAutoriteFiscale());
 
-		return "redirect:/fiscal/edit.do?id=" + ctbId + "&highlightFor=" + newFor.getId();
+		return "redirect:/fiscal/edit.do?id=" + ctbId + buildHighlightForParam(newFor);
 	}
 
 	@Transactional(rollbackFor = Throwable.class)

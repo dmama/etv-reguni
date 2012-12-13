@@ -2534,6 +2534,7 @@ public class TiersServiceImpl implements TiersService {
         return forRtr;
     }
 
+	@Nullable
 	@Override
 	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture, Integer noOfsAutoriteFiscale) {
 
@@ -2557,6 +2558,7 @@ public class TiersServiceImpl implements TiersService {
 		return updated;
 	}
 
+	@Nullable
 	@Override
 	public ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
 	                                               int noOfsAutoriteFiscale) {
@@ -2581,6 +2583,7 @@ public class TiersServiceImpl implements TiersService {
 		return updated;
 	}
 
+	@Nullable
 	@Override
 	public ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
 
@@ -2599,6 +2602,7 @@ public class TiersServiceImpl implements TiersService {
 		return updated;
 	}
 
+	@Nullable
 	@Override
 	public ForDebiteurPrestationImposable updateForDebiteur(ForDebiteurPrestationImposable fdpi, RegDate dateFermeture) {
 
