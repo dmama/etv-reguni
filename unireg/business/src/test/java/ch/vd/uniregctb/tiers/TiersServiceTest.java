@@ -6128,5 +6128,222 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 	}
+
+	/**
+	 * Test {@link TiersService#getDateDecesDepuisDernierForPrincipal(PersonnePhysique)}
+	 *
+	 * Cas ou la date de décès est deductible depuis les fors
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetDateDecesDepuisDernierForPrincipal_1() throws Exception {
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertEquals(date(2010,1,1), dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertEquals(date(2010,1,1), dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010, 1, 1), MotifFor.VEUVAGE_DECES);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertEquals(date(2010,1,1), dateDeces);
+					return null;
+				}
+			});
+		}
+	}
+
+	/**
+	 * Test {@link TiersService#getDateDecesDepuisDernierForPrincipal(PersonnePhysique)}
+	 *
+	 * Cas ou la date de décès n'est deductible depuis les fors (derniers for pas fermé)
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetDateDecesDepuisDernierForPrincipal_2() throws Exception {
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(null, null);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(null, null);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(null, null);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+	}
+
+	/**
+	 * Test {@link TiersService#getDateDecesDepuisDernierForPrincipal(PersonnePhysique)}
+	 *
+	 * Cas ou la date de décès n'est deductible depuis les fors (derniers for fermé mais avec un motif autre que veuvage/décès)
+	 *
+	 * @throws Exception
+	 */
+	@Test
+	public void testGetDateDecesDepuisDernierForPrincipal_3() throws Exception {
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(date(2010,1,1), MotifFor.DEPART_HS);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenage(date(2010,1,1), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+		{
+			final Long noLui = testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(date(2010,1,1), MotifFor.DEPART_HC);
+			doInNewTransactionAndSession(new TransactionCallback<Long>() {
+				@Override
+				public Long doInTransaction(TransactionStatus status) {
+					final PersonnePhysique lui = (PersonnePhysique) tiersService.getTiers(noLui);
+					final RegDate dateDeces = tiersService.getDateDecesDepuisDernierForPrincipal(lui);
+					assertNull(dateDeces);
+					return null;
+				}
+			});
+		}
+	}
+
+	private Long testGetDateDecesDepuisDernierForPrincipalAvecMenage(@Nullable final RegDate dateFermetureFor, @Nullable final MotifFor motifFermeture) throws Exception {
+
+		final Long noLui = 1234567L;
+		final Long noElle = 1234568L;
+		final RegDate dateMariage = date(1954,1,1);
+
+		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateFermetureFor);
+				addForPrincipal(
+						etc.getMenage(),
+						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						dateFermetureFor, motifFermeture,
+						MockCommune.Aigle
+				);
+				return lui.getNumero();
+			}
+		});
+	}
+
+	private Long testGetDateDecesDepuisDernierForPrincipalAvecMenageSepare(@Nullable final RegDate dateFermetureFor, @Nullable final MotifFor motifFermeture) throws Exception {
+
+		final Long noLui = 1234567L;
+		final Long noElle = 1234568L;
+		final RegDate dateMariage = date(1954,1,1);
+		final RegDate dateSeparation = date(2005,1,1);
+
+		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				final PersonnePhysique elle = addHabitant(noElle);
+				final EnsembleTiersCouple etc = addEnsembleTiersCouple(lui, elle, dateMariage, dateSeparation.getOneDayBefore());
+				addForPrincipal(
+						etc.getMenage(),
+						dateMariage, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						dateSeparation.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						MockCommune.Aigle
+				);
+				addForPrincipal(
+						lui,
+						dateSeparation, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+						dateFermetureFor, motifFermeture,
+						MockCommune.Aigle
+				);
+				return lui.getNumero();
+			}
+		});
+
+	}
+
+	private Long testGetDateDecesDepuisDernierForPrincipalAvecPersonnePhysique(@Nullable final RegDate dateFermetureFor, @Nullable final MotifFor motifFermeture) throws Exception {
+
+		final Long noLui = 1234567L;
+		final RegDate dateMajorite = date(1954,1,1);
+
+		// Mise en place du fiscal
+		return doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noLui);
+				addForPrincipal(
+						lui,
+						dateMajorite, MotifFor.MAJORITE,
+						dateFermetureFor, motifFermeture,
+						MockCommune.Aigle
+				);
+				return lui.getNumero();
+			}
+		});
+	}
+
 }
 

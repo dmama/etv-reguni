@@ -8,10 +8,15 @@ public class AnnulationDecesRecapView {
 	private TiersGeneralView personne;
 
 	private RegDate dateDeces;
+	private RegDate dateDecesDepuisDernierForPrincipal;
 
 	private RegDate dateVeuvage;
 
 	private boolean marieSeulAndVeuf;
+
+	private boolean warningDateDecesModifie;
+
+
 
 	public TiersGeneralView getPersonne() {
 		return personne;
@@ -43,5 +48,21 @@ public class AnnulationDecesRecapView {
 
 	public void setMarieSeulAndVeuf(boolean marieSeulAndVeuf) {
 		this.marieSeulAndVeuf = marieSeulAndVeuf;
+	}
+
+	public boolean isWarningDateDecesModifie() {
+		return warningDateDecesModifie;
+	}
+
+	public void setWarningDateDecesModifie(boolean warningDateDecesModifie) {
+		this.warningDateDecesModifie = warningDateDecesModifie;
+	}
+
+	public RegDate getDateDecesDepuisDernierForPrincipal() {
+		return dateDecesDepuisDernierForPrincipal;
+	}
+
+	public void setDateDecesDepuisDernierForPrincipal(RegDate dateDecesDepuisDernierForPrincipal) {
+		this.dateDecesDepuisDernierForPrincipal = dateDecesDepuisDernierForPrincipal;
 	}
 }

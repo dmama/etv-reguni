@@ -856,7 +856,20 @@ public interface TiersService {
      */
     public RegDate getDateDeces(@Nullable PersonnePhysique pp);
 
-    /**
+	/**
+	 * Déduit la date de décès d'une {@link PersonnePhysique} à partir de son dernier for ou de celui de son eventuel
+	 * ménage commun. le for doit être fermé (la date de fermeture renseignée) et le motif de fermeture doit être
+	 * {@link MotifFor.VEUVAGE_DECES}
+	 *
+	 * @param pp une personne physique
+	 *
+	 * @return la date de décès déduite d'apres le dernier for ou <code>null</code> si le dernier for principal
+	 * est ouvert ou s'il est fermé pour un motif autre que {@link MotifFor.VEUVAGE_DECES}
+	 */
+	public RegDate getDateDecesDepuisDernierForPrincipal(PersonnePhysique pp);
+
+
+	/**
      * @param pp une personne physique
      * @return true si la personne est décédé, false si la personne n'est pas décédée.
      */

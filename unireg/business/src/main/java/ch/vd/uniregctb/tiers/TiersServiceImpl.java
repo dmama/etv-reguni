@@ -3112,7 +3112,32 @@ public class TiersServiceImpl implements TiersService {
         }
     }
 
-    /**
+	@Override
+	public RegDate getDateDecesDepuisDernierForPrincipal(PersonnePhysique pp) {
+
+		// 1. On détermine si on doit se baser sur la personne physique ou sur un eventuel ménage
+		Contribuable ctb = pp;
+		final ForFiscalPrincipal dernierForPrincipalPP = pp.getDernierForFiscalPrincipal();
+		final MenageCommun menage = findDernierMenageCommun(pp);
+		if (menage != null) {
+			final ForFiscalPrincipal dernierForPrincipalMenage = menage.getDernierForFiscalPrincipal();
+			if ( dernierForPrincipalMenage != null) {
+				if (dernierForPrincipalPP  == null || dernierForPrincipalMenage.getDateDebut().isAfter(dernierForPrincipalPP.getDateDebut())) {
+					ctb = menage;
+				}
+			}
+		}
+
+		// 2. On verifie que le dernier for principal du contribuable concerné est bien fermé avec un motif veuvage/décès
+		final ForFiscalPrincipal dernierForPrincipal = ctb.getDernierForFiscalPrincipal();
+		if (dernierForPrincipal == null || dernierForPrincipal.getDateFin() == null || dernierForPrincipal.getMotifFermeture() != MotifFor.VEUVAGE_DECES) {
+			return null; // D'apres son dernier for, cette personne est toujours vivante
+		} else {
+			return dernierForPrincipal.getDateFin(); // Le jour du décès est le jour de la date de fermeture du for
+		}
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

@@ -36,19 +36,34 @@
 
 				</span></legend>
 				<table>
-					<tr class="<unireg:nextRowClass/>" >
-
-							 <c:choose>
-								<c:when test="${command.marieSeulAndVeuf}">
-									<td width="25%"><fmt:message key="label.date.veuvage" />&nbsp;:</td>
-									<td width="75%"><unireg:regdate regdate="${command.dateVeuvage}" /></td>
-								</c:when>
-								<c:otherwise>
-									<td width="25%"><fmt:message key="label.date.deces" />&nbsp;:</td>
-									<td width="75%"><unireg:regdate regdate="${command.dateDeces}" /></td>
-								</c:otherwise>
-							</c:choose>
-					</tr>
+					 <c:choose>
+						<c:when test="${command.marieSeulAndVeuf}">
+							<tr class="<unireg:nextRowClass/>" >
+								<td width="25%"><fmt:message key="label.date.veuvage" />&nbsp;:</td>
+								<td width="75%"><unireg:regdate regdate="${command.dateVeuvage}" /></td>
+							</tr>
+						</c:when>
+						<c:when test="${command.warningDateDecesModifie}">
+							<tr class="<unireg:nextRowClass/>">
+								<td width="25%"><em><fmt:message key="label.validation.warning" />&nbsp;:</em></td>
+								<td width="75%"><em><fmt:message key="label.avertissement.date.deces.modifiee.1" /></em></td>
+							</tr>
+							<tr class="<unireg:nextRowClass/>">
+								<td width="25%"><fmt:message key="label.avertissement.date.deces.modifiee.2" />:&nbsp;</td>
+								<td width="75%"><unireg:regdate regdate="${command.dateDeces}" /></td>
+							</tr>
+							<tr class="<unireg:nextRowClass/>">
+								<td width="25%"><fmt:message key="label.avertissement.date.deces.modifiee.3" />:&nbsp;</td>
+								<td width="75%"><unireg:regdate regdate="${command.dateDecesDepuisDernierForPrincipal}" /></td>
+							</tr>
+						</c:when>
+						<c:otherwise>
+						<tr class="<unireg:nextRowClass/>">
+							<td width="25%"><fmt:message key="label.date.deces" />&nbsp;:</td>
+							<td width="75%"><unireg:regdate regdate="${command.dateDeces}" /></td>
+						</tr>
+						</c:otherwise>
+					</c:choose>
 				</table>
 			</fieldset>
 			<!-- Debut Boutons -->

@@ -62,7 +62,6 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	@Transactional(readOnly = true)
 	public AnnulationDecesRecapView get(Long numero) {
 		AnnulationDecesRecapView annulationDecesRecapView = new AnnulationDecesRecapView();
-		//FIXME (CGD) impléementer Ifosec
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numero);
 		if (pp == null) {
 			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.pp.inexistante", null, WebContextUtils.getDefaultLocale()));
@@ -72,8 +71,11 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 		annulationDecesRecapView.setMarieSeulAndVeuf(isVeuvageMarieSeul(pp));
 
 		if (tiersService.isDecede(pp)) {
-			annulationDecesRecapView.setDateDeces(tiersService.getDateDeces(pp));
-
+			RegDate dateDeces = tiersService.getDateDeces(pp);
+			RegDate dateDecesDepuisFor = tiersService.getDateDecesDepuisDernierForPrincipal(pp);
+			annulationDecesRecapView.setDateDeces(dateDeces);
+			annulationDecesRecapView.setDateDecesDepuisDernierForPrincipal(dateDecesDepuisFor);
+			annulationDecesRecapView.setWarningDateDecesModifie(dateDecesDepuisFor != null && dateDeces != dateDecesDepuisFor);
 			if (annulationDecesRecapView.getDateDeces() == null) {
 				throw new ObjectNotFoundException("Impossible de déterminer la date de décès du contribuable");
 			}
@@ -103,7 +105,12 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 			metierService.annuleVeuvage(pp, dateVeuvage, 0L);
 		}
 		else {
-			metierService.annuleDeces(pp, annulationDecesRecapView.getDateDeces());
+			if (annulationDecesRecapView.isWarningDateDecesModifie()) {
+				metierService.annuleDeces(pp, annulationDecesRecapView.getDateDecesDepuisDernierForPrincipal());
+			} else {
+				metierService.annuleDeces(pp, annulationDecesRecapView.getDateDeces());
+			}
+
 		}
 
 
