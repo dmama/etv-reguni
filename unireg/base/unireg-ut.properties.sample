@@ -82,7 +82,7 @@ testprop.documents.repository=/projets/tmp/unireg-documents-unittests
 #testprop.documents.repository=c:\projets\tmp\unireg-documents-unittests
 
 # SIPF BVR Plus WebService
-testprop.webservice.sipf.bvrplus.url=http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlusImpl
+testprop.webservice.sipf.bvrplus.url=http://ssv0214v:64804/fiscalite/form-sipf/bvrplus/SipfBVRPlus
 testprop.webservice.sipf.bvrplus.username=
 testprop.webservice.sipf.bvrplus.password=
 
