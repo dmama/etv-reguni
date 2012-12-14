@@ -53,6 +53,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	private int rethrowDelayMinutes = 0;
 	private RethrowerThread rethrowerThread;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
+	private Mode processingMode;
 	private boolean running;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -73,6 +74,11 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setRethrowDelayMinutes(int rethrowDelayMinutes) {
 		this.rethrowDelayMinutes = rethrowDelayMinutes;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setProcessingMode(Mode processingMode) {
+		this.processingMode = processingMode;
 	}
 
 	@Override
@@ -139,7 +145,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			// de rejetter en erreur (ou exception) le message entrant...
 
 			try {
-				receptionHandler.handleEvent(event, Mode.BATCH);
+				receptionHandler.handleEvent(event, processingMode);
 			}
 			catch (Exception e) {
 				// le traitement sera re-tenté au plus tard au prochain démarrage de l'application...
