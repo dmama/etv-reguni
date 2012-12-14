@@ -207,10 +207,10 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 			return null;
 		}
 		final Set<Long> numeros = new HashSet<Long>();
-		final List<RelationVersIndividu> conjoints = individu.getParents();
-		if (conjoints != null) {
-			for (RelationVersIndividu conjoint : conjoints) {
-				numeros.add(conjoint.getNumeroAutreIndividu());
+		final List<RelationVersIndividu> filiations = individu.getParents();
+		if (filiations != null) {
+			for (RelationVersIndividu filiation : filiations) {
+				numeros.add(filiation.getNumeroAutreIndividu());
 			}
 		}
 		return numeros;
