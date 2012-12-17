@@ -550,7 +550,14 @@ public class DeclarationImpotController {
 		controllerUtils.checkAccesDossierEnEcriture(ctb.getId());
 
 		// On quittance la DI
-		manager.quittancerDI(view.getId(), view.getTypeDocument(), view.getDateRetour());
+		final TypeDocument typeDocument;
+		if (di.getTypeDeclaration() == TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH && view.getTypeDocument() == TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL) {
+			typeDocument = TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH; // inutile de changer le type de batch à local
+		}
+		else {
+			typeDocument = view.getTypeDocument();
+		}
+		manager.quittancerDI(view.getId(), typeDocument, view.getDateRetour());
 
 		return "redirect:/di/editer.do?id=" + di.getId();
 	}

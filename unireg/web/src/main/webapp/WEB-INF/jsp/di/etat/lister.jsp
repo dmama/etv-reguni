@@ -4,7 +4,7 @@
 <fieldset>
 	<legend><span><fmt:message key="label.etats"/></span></legend>
 
-	<c:if test="${!command.depuisTache && command.allowedQuittancement && command.typeDocument.ordinaire}">
+	<c:if test="${!command.depuisTache && command.allowedQuittancement}">
 		<table id="quittancerBouton" border="0">
 			<tr>
 				<td>
