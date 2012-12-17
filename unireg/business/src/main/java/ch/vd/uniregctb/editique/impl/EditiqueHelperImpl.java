@@ -86,11 +86,11 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
 		adresseDestinataire.setAdresseCourrierLigne1("Archives");
-		adresseDestinataire.setAdresseCourrierLigne2(null);
-		adresseDestinataire.setAdresseCourrierLigne3(null);
-		adresseDestinataire.setAdresseCourrierLigne4(null);
-		adresseDestinataire.setAdresseCourrierLigne5(null);
-		adresseDestinataire.setAdresseCourrierLigne6(null);
+		adresseDestinataire.setNilAdresseCourrierLigne2();
+		adresseDestinataire.setNilAdresseCourrierLigne3();
+		adresseDestinataire.setNilAdresseCourrierLigne4();
+		adresseDestinataire.setNilAdresseCourrierLigne5();
+		adresseDestinataire.setNilAdresseCourrierLigne6();
 		return destinataire;
 	}
 
@@ -130,18 +130,28 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		}
 		if (source.getLigne2() != null) {
 			cible.setAdresseCourrierLigne2(source.getLigne2());
+		} else {
+			cible.setNilAdresseCourrierLigne2();
 		}
 		if (source.getLigne3() != null) {
 			cible.setAdresseCourrierLigne3(source.getLigne3());
+		} else {
+			cible.setNilAdresseCourrierLigne3();
 		}
 		if (source.getLigne4() != null) {
 			cible.setAdresseCourrierLigne4(source.getLigne4());
+		} else {
+			cible.setNilAdresseCourrierLigne4();
 		}
 		if (source.getLigne5() != null) {
 			cible.setAdresseCourrierLigne5(source.getLigne5());
+		} else {
+			cible.setNilAdresseCourrierLigne5();
 		}
 		if (source.getLigne6() != null) {
 			cible.setAdresseCourrierLigne6(source.getLigne6());
+		} else {
+			cible.setNilAdresseCourrierLigne6();
 		}
 		return cible;
 	}
@@ -175,18 +185,12 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		adresseEnvoi.addLine(adresse.getRue());
 		adresseEnvoi.addLine(adresse.getNumeroPostal() + ' ' + adresse.getLocalite());
 		remplitAdresse(adresseEnvoi, adresseExpediteur);
-		if (ca.getAdresseEmail() != null) {
-			expediteur.setAdrMes(ca.getAdresseEmail());
-		}
-		if (ca.getNoTelephone() != null) {
-			expediteur.setNumTelephone(ca.getNoTelephone());
-		}
-		if(ca.getNoFax() != null) {
-			expediteur.setNumFax(ca.getNoFax());
-		}
-		if(ca.getNoCCP() != null) {
-			expediteur.setNumFax(ca.getNoCCP());
-		}
+		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
+		expNilValues.setAdrMes(ca.getAdresseEmail());
+		expNilValues.setNumFax(ca.getNoFax());
+		expNilValues.setNumCCP(ca.getNoCCP());
+		expNilValues.setNumTelephone(ca.getNoTelephone());
+		expNilValues.fill(expediteur);
 		expediteur.setTraitePar("");
 		// Apparement la commune de l'aci n'est pas renseignée dans le host ...
 		if (commune == null) {
@@ -264,16 +268,22 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		adresseExpediteur.setAdresseCourrierLigne1(aciImpotSource.getNomComplet1());
-		adresseExpediteur.setAdresseCourrierLigne2(aciImpotSource.getNomComplet2());
-		adresseExpediteur.setAdresseCourrierLigne3(aciImpotSource.getNomComplet3());
-		adresseExpediteur.setAdresseCourrierLigne4(adresseAciImpotSource.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(adresseAciImpotSource.getNumeroPostal() + ' ' + adresseAciImpotSource.getLocalite());
-		adresseExpediteur.setAdresseCourrierLigne6(null);
-		expediteur.setAdresse(adresseExpediteur);
-		expediteur.setAdrMes(aciImpotSource.getAdresseEmail());
-		expediteur.setNumFax(aciImpotSource.getNoFax());
-		expediteur.setNumCCP(aciImpotSource.getNoCCP());
+		AdresseEnvoi adresseExpACI = new AdresseEnvoi();
+		adresseExpACI.addLine(aciImpotSource.getNomComplet1());
+		adresseExpACI.addLine(aciImpotSource.getNomComplet2());
+		adresseExpACI.addLine(aciImpotSource.getNomComplet3());
+		adresseExpACI.addLine(adresseAciImpotSource.getRue());
+		adresseExpACI.addLine(adresseAciImpotSource.getNumeroPostal() + ' ' + adresseAciImpotSource.getLocalite());
+		remplitAdresse(adresseExpACI, adresseExpediteur);
+		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
+		expNilValues.setAdrMes(aciImpotSource.getAdresseEmail());
+		expNilValues.setNumFax(aciImpotSource.getNoFax());
+		expNilValues.setNumCCP(aciImpotSource.getNoCCP());
+		//UNIREG-3309
+		//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )
+		// Modifier le n° de téléphone pour mettre celui du CAT. (le n° de fax doit rester inchangé).
+		expNilValues.setNumTelephone(infraService.getCAT().getNoTelephone());
+		expNilValues.fill(expediteur);
 		if (traitePar != null) {
 			expediteur.setTraitePar(traitePar);
 		}
@@ -281,17 +291,13 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		final RegDate dateExpedition;
 		final EtatDeclarationSommee sommee = (EtatDeclarationSommee) declaration.getDernierEtatOfType(TypeEtatDeclaration.SOMMEE);
 		dateExpedition = sommee.getDateEnvoiCourrier();
-		//UNIREG-3309
-		//Il faut que pour les sommations de LR ( et UNIQUEMENT les sommations de LR )
-		// Modifier le n° de téléphone pour mettre celui du CAT. (le n° de fax doit rester inchangé).
-		expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 
 		return expediteur;
 	}
 
-
+	
 	/**
 	 * Alimente la partie expéditeur d'une LR
 	 */
@@ -305,16 +311,19 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 		Expediteur expediteur = infoEnteteDocument.addNewExpediteur();
 		TypAdresse.Adresse adresseExpediteur = expediteur.addNewAdresse();
-		adresseExpediteur.setAdresseCourrierLigne1(aci.getNomComplet1());
-		adresseExpediteur.setAdresseCourrierLigne2(IMPOT_A_LA_SOURCE_MIN);
-		adresseExpediteur.setAdresseCourrierLigne3(aci.getNomComplet3());
-		adresseExpediteur.setAdresseCourrierLigne4(aciAdresse.getRue());
-		adresseExpediteur.setAdresseCourrierLigne5(aciAdresse.getNumeroPostal() + ' ' + aciAdresse.getLocalite());
-		adresseExpediteur.setAdresseCourrierLigne6(null);
-		expediteur.setAdresse(adresseExpediteur);
-		expediteur.setAdrMes(aci.getAdresseEmail());
-		expediteur.setNumFax(aci.getNoFax());
-		expediteur.setNumCCP(aci.getNoCCP());
+		AdresseEnvoi adresseEnvoiExp = new AdresseEnvoi();
+		adresseEnvoiExp.addLine(aci.getNomComplet1());
+		adresseEnvoiExp.addLine(IMPOT_A_LA_SOURCE_MIN);
+		adresseEnvoiExp.addLine(aci.getNomComplet3());
+		adresseEnvoiExp.addLine(aciAdresse.getRue());
+		adresseEnvoiExp.addLine(aciAdresse.getNumeroPostal() + ' ' + aciAdresse.getLocalite());
+		remplitAdresse(adresseEnvoiExp, adresseExpediteur);
+		ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
+		expNilValues.setAdrMes(aci.getAdresseEmail());
+		expNilValues.setNumFax(aci.getNoFax());
+		expNilValues.setNumCCP(aci.getNoCCP());
+		expNilValues.setNumTelephone(infraService.getCAT().getNoTelephone());
+		expNilValues.fill(expediteur);
 		if (traitePar != null) {
 			expediteur.setTraitePar(traitePar);
 		}
@@ -322,7 +331,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		expediteur.setLocaliteExpedition("Lausanne");
 		final RegDate dateExpedition;
 		dateExpedition = RegDate.get();
-		expediteur.setNumTelephone(infraService.getCAT().getNoTelephone());
 		expediteur.setDateExpedition(Integer.toString(dateExpedition.index()));
 		expediteur.setNotreReference(FormatNumeroHelper.numeroCTBToDisplay(declaration.getTiers().getNumero()));
 
@@ -398,7 +406,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	}
 
-
 	@Override
 	public void remplitAffranchissement(InfoDocument infoDocument, Tiers tiers) throws EditiqueException {
 		AdresseEnvoiDetaillee adresse;
@@ -414,4 +421,5 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	public void setInfraService(ServiceInfrastructureService infraService) {
 		this.infraService = infraService;
 	}
+
 }
