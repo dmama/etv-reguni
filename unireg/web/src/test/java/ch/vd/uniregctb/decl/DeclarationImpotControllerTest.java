@@ -18,6 +18,7 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.declaration.Declaration;
+import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.di.view.AjouterDelaiDeclarationView;
@@ -226,5 +227,109 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 
 		final AjouterDelaiDeclarationView ajouterView = (AjouterDelaiDeclarationView) mav.getModel().get("command");
 		assertNotNull(ajouterView);
+	}
+
+	/**
+	 * [SIFISC-7486] Ce test s'assure qu'il est possible de quittancer une déclaration d'impôt hors-canton
+	 */
+	@Test
+	public void testQuittancerDIHorsCanton() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				addCollAdm(ServiceInfrastructureService.noCEDI);
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneePrecedente, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
+
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneePrecedente);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periodeFiscale);
+				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
+				addEtatDeclarationEmise(declaration, date(anneePrecedente + 1, 1, 15));
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateQuittance = date(anneePrecedente + 1, 3, 15);
+
+		request.setMethod("POST");
+		request.addParameter("id", diId.toString());
+		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE.name());
+		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
+		request.setRequestURI("/di/etat/ajouter.do");
+
+		// exécution de la requête
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie qu'il n'y a pas d'erreur
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEmpty(result.getAllErrors());
+
+		// On vérifie que la déclaration est bien quittancée et qu'elle est restée de type 'hors canton'
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				assertNotNull(di);
+				assertEquals(dateQuittance, di.getDateRetour());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, di.getTypeDeclaration());
+			}
+		});
+	}
+
+	/**
+	 * Ce test s'assure qu'il est possible de quittancer une déclaration d'impôt ordinaire 'batch' sans qu'elle passe à 'local'.
+	 */
+	@Test
+	public void testQuittancerDIOrdinaireBatch() throws Exception {
+
+		final int anneePrecedente = RegDate.get().year() - 1;
+
+		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				addCollAdm(ServiceInfrastructureService.noCEDI);
+				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
+				addForPrincipal(pp, date(anneePrecedente, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneePrecedente);
+				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periodeFiscale);
+				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				addEtatDeclarationEmise(declaration, date(anneePrecedente + 1, 1, 15));
+				return declaration.getId();
+			}
+		});
+
+		final RegDate dateQuittance = date(anneePrecedente + 1, 3, 15);
+
+		request.setMethod("POST");
+		request.addParameter("id", diId.toString());
+		request.addParameter("typeDocument", TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL.name());
+		request.addParameter("dateRetour", RegDateHelper.dateToDisplayString(dateQuittance));
+		request.setRequestURI("/di/etat/ajouter.do");
+
+		// exécution de la requête
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie qu'il n'y a pas d'erreur
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEmpty(result.getAllErrors());
+
+		// On vérifie que le type de document est resté 'batch'
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final DeclarationImpotOrdinaire di = hibernateTemplate.get(DeclarationImpotOrdinaire.class, diId);
+				assertNotNull(di);
+				assertEquals(dateQuittance, di.getDateRetour());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, di.getTypeDeclaration());
+			}
+		});
 	}
 }
