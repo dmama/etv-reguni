@@ -35,6 +35,7 @@ import ch.vd.uniregctb.validation.ValidationService;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -60,7 +61,7 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 		adresseService = getBean(AdresseService.class, "adresseService");
 
 		// création du processeur à la main de manière à pouvoir appeler les méthodes protégées
-		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, adresseService);
+		processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, validationInterceptor, adresseService);
 
 		// Annexion de Croy et Vaulion par Romainmôtier (scénario prophétique et stimulant)
 		anciensNoOfs = new HashSet<Integer>();
@@ -700,5 +701,52 @@ public class FusionDeCommunesProcessorTest extends BusinessTest {
 			                                             MockCommune.Lausanne.getNomOfficiel(), MockCommune.Lausanne.getNoOFS(), MockCommune.Lausanne.getSigleCanton());
 			assertEquals(expectedMessage, e.getMessage());
 		}
+	}
+
+	/**
+	 * SIFISC-7313
+	 * @throws Exception
+	 */
+	@Test
+	public void testTiersAvec2ForsConcernesParLaFusion() throws Exception {
+
+		// Le contribuable à son for principal et un for secondaire sur la commune à fusionner
+		final Long id = doInNewTransactionAndSessionWithoutValidation(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				PersonnePhysique bruno = addNonHabitant("Bruno", "Majoritaire", date(1966, 8, 1), Sexe.MASCULIN);
+				addForPrincipal(bruno, date(1964, 8, 1), MotifFor.MAJORITE, MockCommune.Cully);
+				addForSecondaire(bruno, date(1984, 8, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.Cully.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				return bruno.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Set<Integer> anciennesCommunes = new HashSet<Integer>(Arrays.asList(MockCommune.Cully.getNoOFS()));
+				final int nouvelleCommune = MockCommune.BourgEnLavaux.getNoOFS();
+				final FusionDeCommunesResults results = processor.run(anciennesCommunes, nouvelleCommune, date(2011, 1, 1), RegDate.get(), null);
+				assertNotNull(results);
+				assertEquals(1, results.getNbTiersTotal());
+				PersonnePhysique bruno = (PersonnePhysique) tiersService.getTiers(id);
+				assertEquals("Bruno doit avoir 2 nouveaux fors ouverts, donc 4 au total", 4, bruno.getForsFiscaux().size());
+				assertEquals("Bruno doit avoir 2 fors ouverts", 2, bruno.getForsFiscauxValidAt(date(2011, 1, 1)).size());
+				boolean forFiscalPrincipalFound = false;
+				boolean forFiscalSecondaireFound = false;
+				for (ForFiscal f : bruno.getForsFiscauxValidAt(date(2011, 1, 1))) {
+					assertEquals(date(2011, 1, 1), f.getDateDebut());
+					assertNull(f.getDateFin());
+					assertEquals(f.getNumeroOfsAutoriteFiscale().longValue(), MockCommune.BourgEnLavaux.getNoOFS());
+					if (f instanceof ForFiscalSecondaire) {
+						forFiscalSecondaireFound = true;
+					} else if (f instanceof ForFiscalPrincipal) {
+						forFiscalPrincipalFound = true;
+					}
+				}
+				assertTrue(forFiscalPrincipalFound && forFiscalSecondaireFound);
+				return null;
+			}
+		});
 	}
 }

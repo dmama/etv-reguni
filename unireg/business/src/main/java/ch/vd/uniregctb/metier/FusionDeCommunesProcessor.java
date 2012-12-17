@@ -40,6 +40,7 @@ import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 /**
@@ -58,6 +59,7 @@ public class FusionDeCommunesProcessor {
 	private final TiersService tiersService;
 	private final ServiceInfrastructureService serviceInfra;
 	private final ValidationService validationService;
+	private final ValidationInterceptor validationInterceptor;
 	private final AdresseService adresseService;
 
 	private final Map<Class<? extends ForFiscal>, Strategy> strategies = new HashMap<Class<? extends ForFiscal>, Strategy>();
@@ -65,12 +67,13 @@ public class FusionDeCommunesProcessor {
 	protected FusionDeCommunesResults rapport;
 
 	public FusionDeCommunesProcessor(PlatformTransactionManager transactionManager, HibernateTemplate hibernateTemplate, TiersService tiersService, ServiceInfrastructureService serviceInfra,
-	                                 ValidationService validationService, AdresseService adresseService) {
+	                                 ValidationService validationService, ValidationInterceptor validationInterceptor, AdresseService adresseService) {
 		this.transactionManager = transactionManager;
 		this.hibernateTemplate = hibernateTemplate;
 		this.tiersService = tiersService;
 		this.serviceInfra = serviceInfra;
 		this.validationService = validationService;
+		this.validationInterceptor = validationInterceptor;
 		this.adresseService = adresseService;
 
 		this.strategies.put(ForFiscalPrincipal.class, new ForPrincipalStrategy());
@@ -159,8 +162,10 @@ public class FusionDeCommunesProcessor {
 
 		final Tiers tiers = hibernateTemplate.get(Tiers.class, id);
 		Assert.notNull(tiers);
-
+		boolean wasValidationInterceptorEnabled = validationInterceptor.isEnabled();
 		try {
+			// Desactivation de validation automatique par l'intercepteur
+			validationInterceptor.setEnabled(false);
 
 			boolean forIgnore = false;
 			boolean forTraite = false;
@@ -198,6 +203,12 @@ public class FusionDeCommunesProcessor {
 				forTraite = true;
 			}
 
+			// Validation manuelle après le traitement de tous les fors
+			final ValidationResults validationResults = validationService.validate(tiers);
+			if (validationResults.hasErrors()) {
+				throw new ValidationException(tiers, validationResults);
+			}
+
 			if (forTraite) {
 				rapport.tiersTraites.add(id);
 			}
@@ -216,6 +227,9 @@ public class FusionDeCommunesProcessor {
 			else {
 				throw e;
 			}
+		}
+		finally {
+			validationInterceptor.setEnabled(wasValidationInterceptorEnabled);
 		}
 	}
 

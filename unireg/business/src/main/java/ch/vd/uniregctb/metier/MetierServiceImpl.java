@@ -78,6 +78,7 @@ import ch.vd.uniregctb.type.TarifImpotSource;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 import ch.vd.uniregctb.utils.UniregModeHelper;
+import ch.vd.uniregctb.validation.ValidationInterceptor;
 import ch.vd.uniregctb.validation.ValidationService;
 
 public class MetierServiceImpl implements MetierService {
@@ -93,6 +94,7 @@ public class MetierServiceImpl implements MetierService {
 	private SituationFamilleService situationFamilleService;
 	private RemarqueDAO remarqueDAO;
 	private ValidationService validationService;
+	private ValidationInterceptor validationInterceptor;
 	private EFactureService eFactureService;
 	private ParametreAppService parametreAppService;
 
@@ -153,6 +155,10 @@ public class MetierServiceImpl implements MetierService {
 
 	public void setValidationService(ValidationService validationService) {
 		this.validationService = validationService;
+	}
+
+	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
+		this.validationInterceptor = validationInterceptor;
 	}
 
 	public void seteFactureService(EFactureService eFactureService) {
@@ -1462,7 +1468,8 @@ public class MetierServiceImpl implements MetierService {
 	 */
 	@Override
 	public FusionDeCommunesResults fusionDeCommunes(Set<Integer> anciensNoOfs, int nouveauNoOfs, RegDate dateFusion, RegDate dateTraitement, StatusManager status) {
-		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, adresseService);
+		final FusionDeCommunesProcessor processor = new FusionDeCommunesProcessor(transactionManager, hibernateTemplate, tiersService, serviceInfra, validationService, validationInterceptor,
+				adresseService);
 		return processor.run(anciensNoOfs, nouveauNoOfs, dateFusion, dateTraitement, status);
 	}
 

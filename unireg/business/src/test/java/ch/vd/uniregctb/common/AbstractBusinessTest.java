@@ -105,7 +105,7 @@ public abstract class AbstractBusinessTest extends AbstractCoreDAOTest {
     protected GlobalTiersIndexer globalTiersIndexer;
     protected GlobalTiersSearcher globalTiersSearcher;
     protected TacheSynchronizerInterceptor tacheSynchronizer;
-    private ValidationInterceptor validationInterceptor;
+    protected ValidationInterceptor validationInterceptor;
 
     @Override
     protected void runOnSetUp() throws Exception {

@@ -2709,10 +2709,7 @@ public class TiersServiceImpl implements TiersService {
 
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
+		@Override
     public ForFiscalSecondaire addForSecondaire(Contribuable contribuable, RegDate dateOuverture, @Nullable RegDate dateFermeture, MotifRattachement motifRattachement,
                                                 int numeroOfsAutoriteFiscale, TypeAutoriteFiscale typeAutoriteFiscale, MotifFor motifOuverture, @Nullable MotifFor motifFermeture) {
 

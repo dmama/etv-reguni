@@ -79,6 +79,7 @@
 		<property name="situationFamilleService" ref="situationFamilleService" />
 		<property name="remarqueDAO" ref="remarqueDAO" />
 		<property name="validationService" ref="validationService" />
+		<property name="validationInterceptor" ref="validationInterceptor" />
 		<property name="eFactureService" ref="efactureService" />
 		<property name="parametreAppService" ref="parametreAppService" />
 	</bean>
