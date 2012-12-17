@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -63,16 +64,21 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 		final Long individuPrincipal = evt.getNumeroIndividuPrincipal();
 		fill(evt, evtView);
 		evtView.setNoIndividu(individuPrincipal);
-		evtView.setIndividuPrincipal(retrieveIndividu(individuPrincipal));
-		evtView.setAdressePrincipal(retrieveAdresse(individuPrincipal));
-		retrieveTiersAssociePrincipal(evt.getId(), individuPrincipal, evtView);
-		retrieveTiersAssocieMenage(evt.getId(), individuPrincipal, evtView);
+		try {
+			evtView.setIndividuPrincipal(retrieveIndividu(individuPrincipal));
+			evtView.setAdressePrincipal(retrieveAdresse(individuPrincipal));
+			retrieveTiersAssociePrincipal(evt.getId(), individuPrincipal, evtView);
+			retrieveTiersAssocieMenage(evt.getId(), individuPrincipal, evtView);
 
-		final Long conjoint = evt.getNumeroIndividuConjoint();
-		if (conjoint != null) {
-			evtView.setIndividuConjoint(retrieveIndividu(conjoint));
-			evtView.setAdresseConjoint(retrieveAdresse(conjoint));
-			retrieveTiersAssocieConjoint(evt.getId(), conjoint , evtView);
+			final Long conjoint = evt.getNumeroIndividuConjoint();
+			if (conjoint != null) {
+				evtView.setIndividuConjoint(retrieveIndividu(conjoint));
+				evtView.setAdresseConjoint(retrieveAdresse(conjoint));
+				retrieveTiersAssocieConjoint(evt.getId(), conjoint , evtView);
+			}
+		}
+		catch (ServiceCivilException e) {
+			evtView.setIndividuError(e.getMessage());
 		}
 
 		return evtView;
@@ -136,11 +142,17 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 		try {
 			final PersonnePhysique habitantPrincipal = tiersService.getPersonnePhysiqueByNumeroIndividu(evt.getNumeroIndividuPrincipal());
 			if (habitantPrincipal != null) {
-				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
-				if (couple != null && couple.getMenage() != null) {
-					evtRegPPElementListeView.setNumeroCTB(couple.getMenage().getNumero());
+				try {
+					final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(habitantPrincipal, null);
+					if (couple != null && couple.getMenage() != null) {
+						evtRegPPElementListeView.setNumeroCTB(couple.getMenage().getNumero());
+					}
+					else {
+						evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
+					}
 				}
-				else {
+				catch (ServiceCivilException e) {
+					LOGGER.warn("Impossible de reconstruire le couple du contribuable " + habitantPrincipal.getNumero(), e);
 					evtRegPPElementListeView.setNumeroCTB(habitantPrincipal.getNumero());
 				}
 			}
@@ -150,7 +162,6 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 		}
 
 		try {
-
 			if (evt.getNumeroIndividuPrincipal() != null) {
 				String nom1 = adresseService.getNomCourrier(evt.getNumeroIndividuPrincipal());
 				evtRegPPElementListeView.setNom1(nom1);
@@ -164,6 +175,11 @@ public class EvenementCivilRegPPManagerImpl extends EvenementCivilManagerImpl im
 			// [UNIREG-1545] on cas d'incoherence des données, on évite de crasher (dans la mesure du possible)
 			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
 			evtRegPPElementListeView.setNom1("<erreur: individu introuvable>");
+		}
+		catch (ServiceCivilException e) {
+			// [SIFISC-7485] il ne faut plas planter l'écran si RCPers revoie une erreur...
+			LOGGER.warn("Impossible d'afficher toutes les données de l'événement civil n°" + evt.getId(), e);
+			evtRegPPElementListeView.setNom1("<erreur: individu inaccessible dans le registre civil>");
 		}
 
 		return evtRegPPElementListeView;
