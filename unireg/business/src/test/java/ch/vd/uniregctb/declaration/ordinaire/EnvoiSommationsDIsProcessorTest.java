@@ -93,6 +93,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals("La DI n'aurait même pas dû être vue", 0, results.getTotalDisTraitees());
 
 		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalSommations(2008));
 		Assert.assertEquals(0, results.getTotalIndigent());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
@@ -138,6 +139,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals("La DI n'aurait même pas dû être vue", 0, results.getTotalDisTraitees());
 
 		Assert.assertEquals(0, results.getTotalDisSommees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalSommations(2008));
 		Assert.assertEquals(0, results.getTotalIndigent());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
@@ -178,7 +180,8 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 
 		final RegDate dateTraitement = delaiInitial.addDays(5);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
-		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(1, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -223,6 +226,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(1, results.getTotalDisSommees());
 		Assert.assertEquals(1, results.getTotalSommations(anneePf));
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalIndigent());
 		Assert.assertEquals(0, results.getTotalNonAssujettissement());
 		Assert.assertEquals(0, results.getTotalSommationsEnErreur());
@@ -271,8 +275,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 
 		final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
 		Assert.assertEquals(dateEnvoiCourrier,etatSomme.getDateEnvoiCourrier());
-
-
 	}
 
 	@Test
@@ -309,6 +311,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(1, results.getTotalIndigent());
@@ -351,6 +354,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -394,6 +398,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -438,6 +443,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(1, results.getTotalDisSommees());
 		Assert.assertEquals(1, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -502,6 +508,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
 
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -545,6 +552,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(1, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -594,6 +602,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addYears(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());
@@ -605,7 +614,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testNonSommationLrDejaSommee() throws Exception {
+	public void testNonSommationDiDejaSommee() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
 		final RegDate delaiInitial = RegDate.get(2009, 3, 15);
@@ -639,6 +648,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addYears(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		Assert.assertEquals(0, results.getTotalDisTraitees());
+		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
 		Assert.assertEquals(0, results.getTotalDisSommees());
 		Assert.assertEquals(0, results.getTotalSommations(anneePf));
 		Assert.assertEquals(0, results.getTotalIndigent());

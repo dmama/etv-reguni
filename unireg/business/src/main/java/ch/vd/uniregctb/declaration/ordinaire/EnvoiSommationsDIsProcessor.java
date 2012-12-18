@@ -238,9 +238,11 @@ public class EnvoiSommationsDIsProcessor  {
 					LOGGER.error(e.getMessage(), e);
 					throw new RuntimeException(e);
 				}
-			} else {
-				LOGGER.info(String.format("le délai de la DI (au %s) + le délai de sommation effective (au %s) n'est pas dépassé",
-				                          RegDateHelper.dateToDisplayString(di.getDelaiAccordeAu()), RegDateHelper.dateToDisplayString(finDelai)));
+			}
+			else {
+				LOGGER.info(String.format("le délai de la DI (au %s) + le délai de sommation effective (au %s) n'est pas dépassé pour le contribuable %d",
+				                          RegDateHelper.dateToDisplayString(di.getDelaiAccordeAu()), RegDateHelper.dateToDisplayString(finDelai), di.getTiers().getNumero()));
+				r.addDelaiEffectifNonEchu(di, finDelai);
 			}
 		}
 	}

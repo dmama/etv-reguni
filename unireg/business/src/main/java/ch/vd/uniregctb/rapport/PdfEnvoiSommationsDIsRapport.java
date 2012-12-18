@@ -62,6 +62,7 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
                     for (Integer annee : results.getListeAnnees()) {
                         table.addLigne(String.format("Période %s :", annee), String.valueOf(results.getTotalSommations(annee)));
                     }
+                    table.addLigne("Nombre de DI non sommées pour cause de délai effectif non-échu :", String.valueOf(results.getTotalDelaisEffectifsNonEchus()));
                     table.addLigne("Nombre de DI non sommées pour cause de non assujettisement :", String.valueOf(results.getTotalNonAssujettissement()));
                     table.addLigne("Nombre de DI non sommées pour cause de contribuable indigent :", String.valueOf(results.getTotalIndigent()));
 	                table.addLigne("Nombre de DI non sommées pour cause de contribuable sourcier Pur :", String.valueOf(results.getTotalSourcierPur()));
@@ -79,6 +80,15 @@ public class PdfEnvoiSommationsDIsRapport extends PdfRapport {
             String contenu = asCsvFileSommationDI(results.getListeSommationsEnErreur(), filename, status);
             String titre = "Liste des déclarations impossibles à sommer";
             String listVide = "(aucune déclaration à sommer en erreur)";
+            addListeDetaillee(writer, titre, listVide, filename, contenu);
+        }
+
+        // DI avec délai effectif non échu
+        {
+            String filename = "delai_effectif_non_echu.csv";
+            String contenu = asCsvFileSommationDI(results.getListeDisDelaiEffectifNonEchu(), filename, status);
+            String titre = "Liste des déclarations dont le délai effectif n'est pas échu";
+            String listVide = "(aucune)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);
         }
 

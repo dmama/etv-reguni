@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,6 @@ import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
 import ch.vd.uniregctb.tiers.TiersService;
 
 public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration, EnvoiSommationsDIsResults> {
-
 
 	public static class Info {
 		protected static final String COMMA = ";";
@@ -109,17 +109,38 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 			return String.format("%s\"%s\"", COMMA, StringUtils.isNotBlank(cause) ? cause.replaceAll("[\";]", "_") : StringUtils.EMPTY);
 		}
 	}
+
+	public static class DelaiEffectifNonEchuInfo extends Info {
+
+		private final RegDate delaiEffectif;
+
+		public DelaiEffectifNonEchuInfo(DeclarationImpotOrdinaire di, RegDate delaiEffectif) {
+			super(di);
+			this.delaiEffectif = delaiEffectif;
+		}
+
+		@Override
+		protected String appendMeEntete() {
+			return COMMA + "Délai effectif";
+		}
+
+		@Override
+		protected String appendMe() {
+			return String.format("%s%s", COMMA, RegDateHelper.dateToDisplayString(delaiEffectif));
+		}
+	}
 	
 	private RegDate dateTraitement;
 	private boolean miseSousPliImpossible;
 	private int nombreMaxSommations;
 	private boolean interrompu;
-	private final List<ErrorInfo> sommationsEnErreur = new ArrayList<ErrorInfo>();
+	private final List<ErrorInfo> sommationsEnErreur = new LinkedList<ErrorInfo>();
 	private final Map<Integer, List<Info>> sommationsParPeriode = new HashMap<Integer, List<Info>>();
-	private final List<Info> disContribuablesNonAssujettis = new ArrayList<Info>();
-	private final List<Info> disContribuablesSourcierPur = new ArrayList<Info>();
-	private final List<Info> disContribuablesIndigents = new ArrayList<Info>();
-	private final List<Info> disOptionnelles = new ArrayList<Info>();
+	private final List<Info> disContribuablesNonAssujettis = new LinkedList<Info>();
+	private final List<Info> disContribuablesSourcierPur = new LinkedList<Info>();
+	private final List<Info> disContribuablesIndigents = new LinkedList<Info>();
+	private final List<Info> disOptionnelles = new LinkedList<Info>();
+	private final List<DelaiEffectifNonEchuInfo> disDelaiEffectifNonEchu = new LinkedList<DelaiEffectifNonEchuInfo>();
 
 	public EnvoiSommationsDIsResults(TiersService tiersService, AdresseService adresseService) {
 		super(tiersService, adresseService);
@@ -132,6 +153,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		this.disContribuablesIndigents.addAll(right.disContribuablesIndigents);
 		this.disContribuablesSourcierPur.addAll(right.disContribuablesSourcierPur);
 		this.disOptionnelles.addAll(right.disOptionnelles);
+		this.disDelaiEffectifNonEchu.addAll(right.disDelaiEffectifNonEchu);
 		List<Integer> annees = new ArrayList<Integer>(sommationsParPeriode.keySet());
 		for (Integer annee : annees) {
 			if (right.sommationsParPeriode.containsKey(annee)) {
@@ -152,11 +174,22 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		sommationsEnErreur.add(new ErrorInfo(di, cause));
 	}
 
-
 	@Override
 	public void addErrorException(IdentifiantDeclaration element, Exception e) {
-		String message = buildErrorMessage(e);
-		sommationsEnErreur.add(new ErrorInfo(element.getNumeroTiers(),message ));
+		final String message = buildErrorMessage(e);
+		sommationsEnErreur.add(new ErrorInfo(element.getNumeroTiers(), message));
+	}
+
+	public void addDelaiEffectifNonEchu(DeclarationImpotOrdinaire di, RegDate delaiEffectif) {
+		disDelaiEffectifNonEchu.add(new DelaiEffectifNonEchuInfo(di, delaiEffectif));
+	}
+
+	public int getTotalDelaisEffectifsNonEchus() {
+		return disDelaiEffectifNonEchu.size();
+	}
+
+	public List<DelaiEffectifNonEchuInfo> getListeDisDelaiEffectifNonEchu() {
+		return Collections.unmodifiableList(disDelaiEffectifNonEchu);
 	}
 
 	public void addDiSommee(Integer periode, DeclarationImpotOrdinaire di) {
@@ -167,7 +200,7 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 		}
 		dis.add(new Info(di));
 	}
-	
+
 	public int getTotalDisSommees() {
 		int total = 0;
 		for(List<Info> list : sommationsParPeriode.values()) {
@@ -199,7 +232,13 @@ public class EnvoiSommationsDIsResults extends JobResults<IdentifiantDeclaration
 	}
 	
 	public int getTotalDisTraitees() {
-		return getTotalDisSommees() + getTotalSommationsEnErreur() + getTotalNonAssujettissement() + getTotalIndigent() +getTotalSourcierPur()+ getTotalDisOptionnelles();
+		return getTotalDisSommees()
+				+ getTotalSommationsEnErreur()
+				+ getTotalDelaisEffectifsNonEchus()
+				+ getTotalNonAssujettissement()
+				+ getTotalIndigent()
+				+ getTotalSourcierPur()
+				+ getTotalDisOptionnelles();
 	}
 
 	public RegDate getDateTraitement() {
