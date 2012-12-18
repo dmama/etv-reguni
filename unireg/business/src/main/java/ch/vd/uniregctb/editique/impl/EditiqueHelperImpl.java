@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.editique.impl;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 import noNamespace.InfoArchivageDocument;
@@ -20,7 +19,6 @@ import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.adresse.AdresseEnvoi;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.AdresseException;
-import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.declaration.Declaration;
@@ -55,10 +53,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	/**
 	 * Alimente la partie Destinataire du document
 	 *
-	 * @param tiers
-	 * @param infoEnteteDocument
-	 * @return
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	public Destinataire remplitDestinataire(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
@@ -71,8 +65,7 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		final AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 		final Destinataire destinataire = infoEnteteDocument.addNewDestinataire();
 		final TypAdresse.Adresse adresseDestinataire = destinataire.addNewAdresse();
-		final TypAdresse.Adresse adresseDestinataireImpression = remplitAdresse(adresseEnvoi, adresseDestinataire);
-		destinataire.setAdresse(adresseDestinataireImpression);
+		remplitAdresse(adresseEnvoi, adresseDestinataire);
 		return destinataire;
 	}
 
@@ -97,21 +90,13 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 	/**
 	 * Alimente la partie PorteAdresse du document
 	 *
-	 * @param tiers
-	 * @param infoEnteteDocument
-	 * @return
-	 * @throws AdressesResolutionException
 	 */
 	@Override
 	public TypAdresse remplitPorteAdresse(Tiers tiers, InfoEnteteDocument infoEnteteDocument) throws AdresseException {
-		//
-		// Porte adresse
-		//
 		AdresseEnvoi adresseEnvoi = adresseService.getAdresseEnvoi(tiers, null, TypeAdresseFiscale.COURRIER, false);
 		TypAdresse porteAdresse = infoEnteteDocument.addNewPorteAdresse();
 		TypAdresse.Adresse adressePorteAdresse = porteAdresse.addNewAdresse();
-		TypAdresse.Adresse adressePorteAdresseImpression = remplitAdresse(adresseEnvoi, adressePorteAdresse);
-		// porteAdresse.setNumRecommande(numRecommande);
+		remplitAdresse(adresseEnvoi, adressePorteAdresse);
 		return porteAdresse;
 	}
 
@@ -122,6 +107,8 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 		// null dans un element qui a été déclaré avec l'attribut nillable="true" dans la XSD
 		// alors une AssertionError est levée par xmlbeans lorsqu'on accede à cet objet.
 		// L'exception est générée via un assert, donc seulement vrai si '-ea' est spécifié au démarrage de la JVM
+		//
+		// il faut utiliser les méthodes setNilXXX() pour renseigner un champs à nill
 		//
 		// cf. https://issues.apache.org/jira/browse/XMLBEANS-317
 
@@ -158,13 +145,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	/**
 	 * Alimente la partie expéditeur du document
-	 *
-	 * @param infoEnteteDocument
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws RemoteException
-	 * @throws ServiceInfrastructureException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	public Expediteur remplitExpediteurACI(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
@@ -204,13 +184,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 
 	/**
 	 * Alimente la partie expéditeur CAT du document
-	 *
-	 * @param infoEnteteDocument
-	 * @return
-	 * @throws ServiceInfrastructureException
-	 * @throws RemoteException
-	 * @throws ServiceInfrastructureException
-	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	public Expediteur remplitExpediteurCAT(InfoEnteteDocument infoEnteteDocument) throws ServiceInfrastructureException {
@@ -403,7 +376,6 @@ public class EditiqueHelperImpl extends EditiqueAbstractHelper implements Editiq
 				affranchissement.setZone("");
 			}
 		}
-
 	}
 
 	@Override

@@ -16,7 +16,6 @@ import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.DefaultMockServiceInfrastructureService;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
-import ch.vd.unireg.interfaces.infra.mock.MockOfficeImpot;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
@@ -49,6 +48,8 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	private TiersService tiersService;
 	private EditiqueHelper editiqueHelper;
 	private DelaisService delaisService;
+	private PeriodeFiscale periodeFiscale;
+	private ModeleDocument modeleDocument;
 
 	@Override
 	protected void runOnSetUp() throws Exception {
@@ -60,18 +61,28 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		delaisService =  getBean(DelaisService.class, "delaisService");
 		serviceInfra.setUp(new DefaultMockServiceInfrastructureService());
 		impressionSommationDIHelper = new ImpressionSommationDIHelperImpl(serviceInfra, adresseService, tiersService,  editiqueHelper, delaisService);
+
+		final Object[] res = doInTransaction(new TransactionCallback<Object[]>() {
+			@Override
+			public Object[] doInTransaction(TransactionStatus status) {
+				addCedi();
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
+				return new Object[]{pf, md};
+			}
+		});
+		periodeFiscale = (PeriodeFiscale) res[0];
+		modeleDocument = (ModeleDocument) res[1];
 	}
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitIdArchivageDocument");
-		String idArchivageAttendu = "200802 Sommation DI        0101123020000";
+		String idArchivageAttendu = "200902 Sommation DI        0101123020000";
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
-		declaration.setNumero(Integer.valueOf(2));
-		PeriodeFiscale periodeFiscale = new PeriodeFiscale();
-		periodeFiscale.setAnnee(Integer.valueOf(2008));
+		declaration.setNumero(2);
 		declaration.setPeriode(periodeFiscale);
 		GregorianCalendar cal = new GregorianCalendar(2007, 0, 1, 12, 30, 20);
 		declaration.setLogCreationDate(cal.getTime());
@@ -83,12 +94,10 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocument() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocument");
-		String idArchivageAttendu = "200802 Sommation DI         200701011230";
+		String idArchivageAttendu = "200902 Sommation DI         200701011230";
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
-		declaration.setNumero(Integer.valueOf(2));
-		PeriodeFiscale periodeFiscale = new PeriodeFiscale();
-		periodeFiscale.setAnnee(Integer.valueOf(2008));
+		declaration.setNumero(2);
 		declaration.setPeriode(periodeFiscale);
 		GregorianCalendar cal = new GregorianCalendar(2007, 0, 1, 12, 30, 20);
 		declaration.setLogCreationDate(cal.getTime());
@@ -102,12 +111,10 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testConstruitAncienIdArchivageDocumentPourOnLine() throws Exception {
 		LOGGER.debug("EditiqueHelperTest - testConstruitAncienIdArchivageDocumentPourOnLine");
-		String idArchivageAttendu = "200802 Sommation DI         20070101123020000";
+		String idArchivageAttendu = "200902 Sommation DI         20070101123020000";
 
 		DeclarationImpotOrdinaire declaration = new DeclarationImpotOrdinaire();
-		declaration.setNumero(Integer.valueOf(2));
-		PeriodeFiscale periodeFiscale = new PeriodeFiscale();
-		periodeFiscale.setAnnee(Integer.valueOf(2008));
+		declaration.setNumero(2);
 		declaration.setPeriode(periodeFiscale);
 		GregorianCalendar cal = new GregorianCalendar(2007, 0, 1, 12, 30, 20);
 		declaration.setLogCreationDate(cal.getTime());
@@ -137,11 +144,8 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 			public Object doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
 				addForPrincipal(pp, date(2009, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 12, 31), MotifFor.DEPART_HS, MockCommune.Lausanne);
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_VILLE);
-				addCedi();
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				di.setEtats(Collections.<EtatDeclaration>singleton(new EtatDeclarationEmise(date(2009, 1, 1))));
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
 				try {
 					impressionSommationDIHelper.remplitSommationDI(params);
@@ -175,9 +179,9 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		});
 
 		// préparation fiscale
-		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+		final DeclarationImpotOrdinaire di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinaire>() {
 			@Override
-			public Object doInTransaction(TransactionStatus status) {
+			public DeclarationImpotOrdinaire doInTransaction(TransactionStatus status) {
 				final PersonnePhysique jean = addHabitant(noIndividu);
 				final PersonnePhysique marie = addHabitant(noIndividu + 1);
 
@@ -187,22 +191,24 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 						dateDivorce.addYears(-3), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
 						dateDivorce.getOneDayBefore(), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
 						MockCommune.Lausanne);
-
 				addForPrincipal(jean,
 						dateDivorce, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
-
 				addForPrincipal(marie,
 						dateDivorce, MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MockCommune.Lausanne);
 
-				addCollAdm(MockOfficeImpot.OID_LAUSANNE_VILLE);
-				addCedi();
-				final PeriodeFiscale pf = addPeriodeFiscale(2009);
-				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pf);
-				final DeclarationImpotOrdinaire di = addDeclarationImpot(etc.getMenage(), pf, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, md);
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(etc.getMenage(), periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
 				EtatDeclaration etatEmise = new EtatDeclarationEmise();
 				etatEmise.setDateObtention(date(2010, 1, 1));
 				etatEmise.setDeclaration(di);
 				di.setEtats(Collections.singleton(etatEmise));
+				return di;
+			}
+		});
+
+		// Test Sommation
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
 				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
 				FichierImpressionDocument fichier;
 				try {
@@ -217,6 +223,6 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 				return null;
 			}
 		});
-	}
 
+	}
 }

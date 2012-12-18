@@ -4,14 +4,9 @@ import java.text.SimpleDateFormat;
 
 import noNamespace.CleRgpDocument.CleRgp;
 import noNamespace.FichierImpressionDocument;
-import noNamespace.InfoArchivageDocument.InfoArchivage;
-import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoDocumentDocument1.InfoDocument;
-import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument;
-import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Destinataire;
 import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
-import noNamespace.SommationDIDocument;
 import noNamespace.SommationDIDocument.SommationDI;
 import noNamespace.SommationDIDocument.SommationDI.LettreSom;
 import noNamespace.TypAdresse;
@@ -38,6 +33,7 @@ import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.editique.impl.ExpediteurNillableValuesFiller;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -177,83 +173,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		abstract FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException;
 
-		InfoArchivage remplitInfoArchivage(ImpressionSommationDIHelperParams params) {
-			final DeclarationImpotOrdinaire di = params.getDi();
-			return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(), di.getTiers().getNumero(), construitIdArchivageDocument(di), params.getDateTraitement());
-		}
-
-		InfoEnteteDocument remplitEnteteDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {
-			InfoEnteteDocument infoEnteteDocument = InfoEnteteDocumentDocument1.Factory.newInstance().addNewInfoEnteteDocument();
-
-			try {
-				TypAdresse porteAdresse = editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
-				infoEnteteDocument.setPorteAdresse(porteAdresse);
-				Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
-				if (params.isBatch()) {
-					expediteur.setDateExpedition(
-							RegDateHelper.toIndexString(
-									delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(params.getDateTraitement())));
-				} else {
-					expediteur.setDateExpedition(RegDateHelper.toIndexString(params.getDateTraitement()));
-				}
-				if (params.isOnline() && !StringUtils.isEmpty(params.getNoTelephone())) {
-					expediteur.setNumTelephone(params.getNoTelephone());
-				} else {
-					expediteur.setNumTelephone(serviceInfrastructureService.getCAT().getNoTelephone());
-					expediteur.setNumFax(serviceInfrastructureService.getCAT().getNoFax());
-				}
-				expediteur.setTraitePar(params.getTraitePar());
-				expediteur.setLocaliteExpedition(getLocaliteExpedition(params.getDi()));
-				expediteur.setAdrMes(params.getAdrMsg());
-				infoEnteteDocument.setExpediteur(expediteur);
-				Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
-				infoEnteteDocument.setDestinataire(destinataire);
-			}
-			catch (EditiqueException e) {
-				throw e;
-			}
-			catch (Exception e) {
-				throw new EditiqueException(e);
-			}
-
-			return infoEnteteDocument;
-		}
-
-		SommationDI remplitSpecifiqueSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
-			final SommationDI sommationDI  = SommationDIDocument.Factory.newInstance().addNewSommationDI();
-			final TypPeriode periode = sommationDI.addNewPeriode();
-			final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
-			periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
-			periode.setOrigDuplicat(ORIGINAL);
-			periode.setHorsSuisse("");
-			periode.setHorsCanton("");
-			periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-			periode.setDateDecompte(
-					RegDateHelper.toIndexString(
-							params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()
-					)
-			);
-			periode.setDatDerCalculAc("");
-			final Entete entete = periode.addNewEntete();
-			final Tit tit = entete.addNewTit();
-			tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
-			tit.setLibTit(
-					String.format(
-							"Invitation à déposer la déclaration %s - Sommation",
-							params.getDi().getPeriode().getAnnee().toString()));
-			final ImpCcn impCcn = entete.addNewImpCcn();
-			impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
-			impCcn.setLibImpCcn("");
-
-			final LettreSom lettreSom = sommationDI.addNewLettreSom();
-			lettreSom.setOFS(editiqueHelper.getCommune(params.getDi()));
-			final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
-			lettreSom.setCivil(formuleAppel);
-			lettreSom.setPeriodeFiscal(params.getDi().getPeriode().getAnnee().toString());
-			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
-			return sommationDI;
-		}
-
 		String getLocaliteExpedition(DeclarationImpotOrdinaire di) throws EditiqueException {
 
 			final Integer oid =  tiersService.getOfficeImpotId(di.getTiers());
@@ -294,8 +213,79 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			return sLocalite;
 		}
 
-		InfoDocument remplitInfoDocument(ImpressionSommationDIHelperParams params) throws EditiqueException {
-			final InfoDocument infoDocument = InfoDocumentDocument1.Factory.newInstance().addNewInfoDocument();
+
+		void ajouteInfoEnteteDocument(Document document, ImpressionSommationDIHelperParams params) throws AdresseException, EditiqueException {
+			InfoEnteteDocument infoEnteteDocument = document.addNewInfoEnteteDocument();
+			editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
+			Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
+			ExpediteurNillableValuesFiller expNilValues = new ExpediteurNillableValuesFiller();
+			expNilValues.init(expediteur);
+			if (params.isBatch()) {
+				expediteur.setDateExpedition(
+						RegDateHelper.toIndexString(
+								delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(params.getDateTraitement())));
+			} else {
+				expediteur.setDateExpedition(RegDateHelper.toIndexString(params.getDateTraitement()));
+			}
+			if (params.isOnline() && !StringUtils.isEmpty(params.getNoTelephone())) {
+				expNilValues.setNumTelephone(params.getNoTelephone());
+			} else {
+				expNilValues.setNumTelephone(serviceInfrastructureService.getCAT().getNoTelephone());
+				expNilValues.setNumFax(serviceInfrastructureService.getCAT().getNoFax());
+			}
+			expediteur.setTraitePar(params.getTraitePar());
+			expediteur.setLocaliteExpedition(getLocaliteExpedition(params.getDi()));
+			expNilValues.setAdrMes(params.getAdrMsg());
+			expNilValues.fill(expediteur);
+			editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
+		}
+
+		void ajouteSommationDI(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
+			SommationDI sommationDI = document.addNewSommationDI();
+			final TypPeriode periode = sommationDI.addNewPeriode();
+			final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
+			periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
+			periode.setOrigDuplicat(ORIGINAL);
+			periode.setHorsSuisse("");
+			periode.setHorsCanton("");
+			periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
+			periode.setDateDecompte(
+					RegDateHelper.toIndexString(
+							params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()
+					)
+			);
+			periode.setDatDerCalculAc("");
+			final Entete entete = periode.addNewEntete();
+			final Tit tit = entete.addNewTit();
+			tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
+			tit.setLibTit(
+					String.format(
+							"Invitation à déposer la déclaration %s - Sommation",
+							params.getDi().getPeriode().getAnnee().toString()));
+			final ImpCcn impCcn = entete.addNewImpCcn();
+			impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
+			impCcn.setLibImpCcn("");
+
+			final LettreSom lettreSom = sommationDI.addNewLettreSom();
+			lettreSom.setOFS(editiqueHelper.getCommune(params.getDi()));
+			final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
+			lettreSom.setCivil(formuleAppel);
+			lettreSom.setPeriodeFiscal(params.getDi().getPeriode().getAnnee().toString());
+			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
+		}
+
+		void ajouteInfoArchivage(Document document, ImpressionSommationDIHelperParams params) {
+			final DeclarationImpotOrdinaire di = params.getDi();
+			editiqueHelper.fillInfoArchivage(
+					document.addNewInfoArchivage(),
+					getTypeDocumentEditique(),
+					di.getTiers().getNumero(),
+					construitIdArchivageDocument(di),
+					params.getDateTraitement());
+		}
+
+		InfoDocument ajouteInfoDocument(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
+			final InfoDocument infoDocument = document.addNewInfoDocument();
 			final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
 			infoDocument.setPrefixe(prefixe);
 			infoDocument.setTypDoc("SD");
@@ -306,7 +296,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
 			final CleRgp cleRgp = infoDocument.addNewCleRgp();
 			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
-
 			return infoDocument;
 		}
 	}
@@ -320,11 +309,8 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 		FichierImpressionDocument remplitSommationDI(ImpressionSommationDIHelperParams params) throws EditiqueException {
 			final FichierImpressionDocument mainDocument = FichierImpressionDocument.Factory.newInstance();
 			TypFichierImpression typeFichierImpression = mainDocument.addNewFichierImpression();
-			InfoDocument infoDocument = remplitInfoDocument(params);
-			InfoArchivage infoArchivage = remplitInfoArchivage(params);
-			InfoEnteteDocument infoEnteteDocument;
 			try {
-				infoEnteteDocument = remplitEnteteDocument(params);
+				ajouteDocument(typeFichierImpression, params);
 			}
 			catch (EditiqueException e) {
 				throw e;
@@ -332,14 +318,18 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			catch (Exception e) {
 				throw new EditiqueException(e);
 			}
-			Document document = typeFichierImpression.addNewDocument();
-			document.setSommationDI(remplitSpecifiqueSommationDI(params));
-			document.setInfoEnteteDocument(infoEnteteDocument);
-			document.setInfoDocument(infoDocument);
-			document.setInfoArchivage(infoArchivage);
-			typeFichierImpression.setDocumentArray(new Document[]{ document });
 			return mainDocument;
 		}
+
+		private void ajouteDocument(TypFichierImpression typeFichierImpression, ImpressionSommationDIHelperParams params) throws EditiqueException, AdresseException {
+			Document document = typeFichierImpression.addNewDocument();
+			ajouteInfoDocument(document, params);
+			ajouteInfoEnteteDocument(document, params);
+			ajouteSommationDI(document, params);
+			ajouteInfoArchivage(document, params);
+
+		}
+
 
 
 	}
@@ -385,30 +375,10 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		}
 
-		private void ajouteInfoArchivage(Document document, ImpressionSommationDIHelperParams params) {
-			final DeclarationImpotOrdinaire di = params.getDi();
-			editiqueHelper.fillInfoArchivage(
-					document.addNewInfoArchivage(),
-					getTypeDocumentEditique(),
-					di.getTiers().getNumero(),
-					construitIdArchivageDocument(di),
-					params.getDateTraitement());
-		}
-
 		private void ajouteInfoDocument(Document document, ImpressionSommationDIHelperParams params, PersonnePhysique destinataire, PersonnePhysique exConjoint, int noSepare) throws
 				EditiqueException, AdresseException {
 			// remplissage de la partie commune
-			final InfoDocument infoDocument = document.addNewInfoDocument();
-			final String prefixe = buildPrefixeInfoDocument(getTypeDocumentEditique());
-			infoDocument.setPrefixe(prefixe);
-			infoDocument.setTypDoc("SD");
-			infoDocument.setCodDoc("SOMM_DI");
-			infoDocument.setVersion(VERSION_XSD);
-			infoDocument.setLogo(LOGO_CANTON);
-			infoDocument.setPopulations(POPULATION_PP);
-			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
-			final CleRgp cleRgp = infoDocument.addNewCleRgp();
-			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
+			final InfoDocument infoDocument = super.ajouteInfoDocument(document, params);
 
 			// remplissage de la partie spécifique aux séparés
 			InfoDocument.Separes separes = infoDocument.addNewSepares();
@@ -419,64 +389,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			editiqueHelper.remplitAdresse(adresseEnvoi, adresse);
 		}
 
-		private void ajouteInfoEnteteDocument(Document document, ImpressionSommationDIHelperParams params) throws AdresseException, EditiqueException {
-			InfoEnteteDocument infoEnteteDocument = document.addNewInfoEnteteDocument();
-			editiqueHelper.remplitPorteAdresse(params.getDi().getTiers(), infoEnteteDocument);
-			Expediteur expediteur = editiqueHelper.remplitExpediteurACI(infoEnteteDocument);
-			if (params.isBatch()) {
-				expediteur.setDateExpedition(
-						RegDateHelper.toIndexString(
-								delaisService.getDateFinDelaiCadevImpressionDeclarationImpot(params.getDateTraitement())));
-			} else {
-				expediteur.setDateExpedition(RegDateHelper.toIndexString(params.getDateTraitement()));
-			}
-			if (params.isOnline() && !StringUtils.isEmpty(params.getNoTelephone())) {
-				expediteur.setNumTelephone(params.getNoTelephone());
-			} else {
-				expediteur.setNumTelephone(serviceInfrastructureService.getCAT().getNoTelephone());
-				expediteur.setNumFax(serviceInfrastructureService.getCAT().getNoFax());
-			}
-			expediteur.setTraitePar(params.getTraitePar());
-			expediteur.setLocaliteExpedition(getLocaliteExpedition(params.getDi()));
-			expediteur.setAdrMes(params.getAdrMsg());
-			infoEnteteDocument.setExpediteur(expediteur);
-			Destinataire destinataire = editiqueHelper.remplitDestinataire(params.getDi().getTiers(), infoEnteteDocument);
-			infoEnteteDocument.setDestinataire(destinataire);
-		}
-
-		private void ajouteSommationDI(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
-			SommationDI sommationDI = document.addNewSommationDI();
-			final TypPeriode periode = sommationDI.addNewPeriode();
-			final TypeDocumentEditique typeDocumentEditique = getTypeDocumentEditique();
-			periode.setPrefixe(buildPrefixePeriode(typeDocumentEditique));
-			periode.setOrigDuplicat(ORIGINAL);
-			periode.setHorsSuisse("");
-			periode.setHorsCanton("");
-			periode.setAnneeFiscale(params.getDi().getPeriode().getAnnee().toString());
-			periode.setDateDecompte(
-					RegDateHelper.toIndexString(
-							params.getDi().getDernierEtatOfType(TypeEtatDeclaration.EMISE).getDateObtention()
-					)
-			);
-			periode.setDatDerCalculAc("");
-			final Entete entete = periode.addNewEntete();
-			final Tit tit = entete.addNewTit();
-			tit.setPrefixe(buildPrefixeTitreEntete(typeDocumentEditique));
-			tit.setLibTit(
-					String.format(
-							"Invitation à déposer la déclaration %s - Sommation",
-							params.getDi().getPeriode().getAnnee().toString()));
-			final ImpCcn impCcn = entete.addNewImpCcn();
-			impCcn.setPrefixe(buildPrefixeImpCcnEntete(typeDocumentEditique));
-			impCcn.setLibImpCcn("");
-
-			final LettreSom lettreSom = sommationDI.addNewLettreSom();
-			lettreSom.setOFS(editiqueHelper.getCommune(params.getDi()));
-			final String formuleAppel = adresseService.getFormulePolitesse(params.getDi().getTiers()).formuleAppel();
-			lettreSom.setCivil(formuleAppel);
-			lettreSom.setPeriodeFiscal(params.getDi().getPeriode().getAnnee().toString());
-			lettreSom.setDateEnrg(RegDateHelper.toIndexString(params.getDateTraitement()));
-		}
 
 	}
 

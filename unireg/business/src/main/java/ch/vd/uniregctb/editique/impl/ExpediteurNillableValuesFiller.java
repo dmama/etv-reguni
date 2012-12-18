@@ -29,26 +29,44 @@ public class ExpediteurNillableValuesFiller {
 		this.numTelephone = numTelephone;
 	}
 
-	public void fill(InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteur) {
+	/**
+	 * Remplit l'objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur} cible
+	 * avec les value
+	 * @param expediteurCible objet cible
+	 */
+	public void fill(InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteurCible) {
 		if (adrMes != null) {
-			expediteur.setAdrMes(adrMes);
+			expediteurCible.setAdrMes(adrMes);
 		} else {
-			expediteur.setNilAdrMes();
+			expediteurCible.setNilAdrMes();
 		}
 		if (numFax != null) {
-			expediteur.setNumFax(numFax);
+			expediteurCible.setNumFax(numFax);
 		} else {
-			expediteur.setNilNumFax();
+			expediteurCible.setNilNumFax();
 		}
 		if (numCCP != null) {
-			expediteur.setNumCCP(numCCP);
+			expediteurCible.setNumCCP(numCCP);
 		} else {
-			expediteur.setNilNumCCP();
+			expediteurCible.setNilNumCCP();
 		}
 		if (numTelephone != null) {
-			expediteur.setNumTelephone(numTelephone);
+			expediteurCible.setNumTelephone(numTelephone);
 		} else {
-			expediteur.setNilNumTelephone();
+			expediteurCible.setNilNumTelephone();
 		}
+	}
+
+	/**
+	 * Initialise les champs du Filler avec les valeurs des champs correpondant
+	 * d'un objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur}
+	 *
+	 * @param expediteurSource l'objet source
+	 */
+	public void init(InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteurSource) {
+		adrMes = expediteurSource.getAdrMes();
+		numTelephone = expediteurSource.getNumTelephone();
+		numFax = expediteurSource.getNumFax();
+		numCCP = expediteurSource.getNumCCP();
 	}
 }
