@@ -293,7 +293,6 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			infoDocument.setVersion(VERSION_XSD);
 			infoDocument.setLogo(LOGO_CANTON);
 			infoDocument.setPopulations(POPULATION_PP);
-			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
 			final CleRgp cleRgp = infoDocument.addNewCleRgp();
 			cleRgp.setAnneeFiscale(Integer.toString(params.getDi().getPeriode().getAnnee()));
 			return infoDocument;
@@ -330,7 +329,13 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 
 		}
 
-
+		InfoDocument ajouteInfoDocument(Document document, ImpressionSommationDIHelperParams params) throws EditiqueException {
+			// remplissage de la partie commune
+			final InfoDocument infoDocument = super.ajouteInfoDocument(document, params);
+			// remplissage de la partie spécifique au traitement standard
+			remplitAffranchissement(infoDocument, params.getDi().getTiers(), null, params.isMiseSousPliImpossible());
+			return infoDocument;
+		}
 
 	}
 
@@ -381,6 +386,7 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 			final InfoDocument infoDocument = super.ajouteInfoDocument(document, params);
 
 			// remplissage de la partie spécifique aux séparés
+			remplitAffranchissement(infoDocument, destinataire, null, params.isMiseSousPliImpossible());
 			InfoDocument.Separes separes = infoDocument.addNewSepares();
 			separes.setNumero(Integer.toString(noSepare));
 			separes.setEnvoieA(tiersService.getNomPrenom(exConjoint));
