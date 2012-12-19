@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
@@ -17,8 +18,10 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
  */
 public class IndexationPureTranslationStrategy implements EvenementCivilEchTranslationStrategy {
 
+	private static final String MESSAGE_INDEXATION_PURE = "Événemement traité sans modification Unireg.";
+
 	@Override
-	public EvenementCivilInterne create(EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+	public EvenementCivilInterne create(final EvenementCivilEch event, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
 		return new EvenementCivilInterne(event, context, options) {
 			@NotNull
 			@Override
@@ -26,6 +29,11 @@ public class IndexationPureTranslationStrategy implements EvenementCivilEchTrans
 				final PersonnePhysique pp = getPrincipalPP();
 				if (pp != null) {
 					context.getIndexer().schedule(pp.getNumero());
+				}
+				if (!StringUtils.isBlank(event.getCommentaireTraitement())) {
+					event.setCommentaireTraitement(event.getCommentaireTraitement() + " " + MESSAGE_INDEXATION_PURE);
+				} else {
+					event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 				}
 				return HandleStatus.TRAITE;
 			}

@@ -30,7 +30,6 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 	private static final EvenementCivilEchTranslationStrategy INDEXATION_PURE = new IndexationPureTranslationStrategy();
 	private static final EvenementCivilEchTranslationStrategy TRAITEMENT_MANUEL = new TraitementManuelTranslationStrategy();
 
-	private static final String MESSAGE_INDEXATION_PURE = "Evénement ignoré car sans impact fiscal.";
 	private static final String MESSAGE_ANCIEN_HABITANT = "Evénement civil de correction sur un ancien habitant du canton.";
 	private static final String SEPARATEUR = ", ";
 
@@ -111,7 +110,6 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		final EvenementCivilEchTranslationStrategy strategieApplicable;
 		if (isFiscalementNeutre(originel, correction, champsModifies)) {
 			strategieApplicable = INDEXATION_PURE;
-			event.setCommentaireTraitement(MESSAGE_INDEXATION_PURE);
 		}
 		else {
 			// il y a des différences... on ne peut rien faire automatiquement -> traitement manuel.

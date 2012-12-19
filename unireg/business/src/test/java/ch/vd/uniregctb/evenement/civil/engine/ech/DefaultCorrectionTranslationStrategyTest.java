@@ -110,7 +110,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Evénement ignoré car sans impact fiscal.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -241,7 +241,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Evénement ignoré car sans impact fiscal.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
@@ -808,7 +808,7 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 				final EvenementCivilEch evt = evtCivilDAO.get(idEvtCorrection);
 				Assert.assertNotNull(evt);
 				Assert.assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
-				Assert.assertEquals("Evénement ignoré car sans impact fiscal.", evt.getCommentaireTraitement());
+				Assert.assertEquals("Événemement traité sans modification Unireg.", evt.getCommentaireTraitement());
 				return null;
 			}
 		});
