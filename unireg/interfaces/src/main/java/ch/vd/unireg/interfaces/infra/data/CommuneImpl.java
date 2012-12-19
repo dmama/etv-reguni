@@ -9,6 +9,7 @@ import ch.vd.fidor.ws.v2.District;
 import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.fidor.ws.v2.Region;
 import ch.vd.infrastructure.model.EnumCanton;
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -133,7 +134,7 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 	}
 
 	private static RegDate fidor2reg(FidorDate date) {
-		return date == null ? null : RegDate.get(date.getYear(), date.getMonth(), date.getDay());
+		return date == null ? null : RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
 	}
 
 	@Override

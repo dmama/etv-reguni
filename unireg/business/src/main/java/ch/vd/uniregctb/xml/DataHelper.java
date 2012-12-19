@@ -18,6 +18,7 @@ import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -84,7 +85,7 @@ public abstract class DataHelper {
 		if (date == null) {
 			return null;
 		}
-		return RegDate.get(date.getYear(), date.getMonth(), date.getDay());
+		return RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
 	}
 
 	public static List<Address> coreToXML(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws ServiceException {

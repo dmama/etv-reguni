@@ -19,8 +19,10 @@ import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocu
 import ch.vd.fiscalite.registre.identificationContribuable.InformationAdresseType;
 import ch.vd.fiscalite.registre.identificationContribuable.ModeIdentificationType;
 import ch.vd.fiscalite.registre.identificationContribuable.TypeErreurType;
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresAdresse.TypeAdresse;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
@@ -345,7 +347,7 @@ public abstract class XmlEntityAdapter {
 			final int month = anneeMoisJour.get(Calendar.MONTH) + 1;
 			final int day = anneeMoisJour.get(Calendar.DAY_OF_MONTH);
 			try {
-				return RegDate.get(year, month, day);
+				return RegDateHelper.get(year, month, day, DateConstants.EXTENDED_VALIDITY_RANGE);
 			}
 			catch (IllegalArgumentException e) {
 				LOGGER.warn("Date invalide (sera ignorée) : " + date, e);
@@ -358,7 +360,7 @@ public abstract class XmlEntityAdapter {
 			final int year = anneeMois.get(Calendar.YEAR);
 			final int month = anneeMois.get(Calendar.MONTH) + 1;
 			try {
-				return RegDate.get(year, month);
+				return RegDateHelper.get(year, month, DateConstants.EXTENDED_VALIDITY_RANGE);
 			}
 			catch (IllegalArgumentException e) {
 				LOGGER.warn("Date invalide (sera ignorée) : " + date, e);
@@ -369,7 +371,7 @@ public abstract class XmlEntityAdapter {
 		final Calendar annee = date.getAnnee();
 		try {
 			Assert.notNull(annee);
-			return RegDate.get(annee.get(Calendar.YEAR));
+			return RegDateHelper.get(annee.get(Calendar.YEAR), DateConstants.EXTENDED_VALIDITY_RANGE);
 		}
 		catch (IllegalArgumentException e) {
 			LOGGER.warn("Date invalide (sera ignorée) : " + date, e);

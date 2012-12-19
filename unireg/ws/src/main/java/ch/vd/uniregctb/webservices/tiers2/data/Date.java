@@ -7,6 +7,9 @@ import javax.xml.bind.annotation.XmlType;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import ch.vd.registre.base.date.DateConstants;
+import ch.vd.registre.base.date.RegDateHelper;
+
 /**
  * Date spécifique à Unireg définissant le jour, le mois et l'année. La time-zone implicite à celle du canton de Vaud, et le calendrier est
  * grégorien.
@@ -84,7 +87,7 @@ public class Date implements Comparable<Date> {
 		if (date == null) {
 			return null;
 		}
-		return ch.vd.registre.base.date.RegDate.get(date.year, date.month, date.day);
+		return RegDateHelper.get(date.year, date.month, date.day, DateConstants.EXTENDED_VALIDITY_RANGE);
 	}
 
 	public static java.util.Date asJavaDate(Date date) {

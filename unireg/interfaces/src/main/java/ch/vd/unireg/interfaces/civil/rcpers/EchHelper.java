@@ -6,7 +6,9 @@ import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0044.v2.DatePartiallyKnown;
 import org.apache.commons.lang.StringUtils;
 
+import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.TypeEtatCivil;
 import ch.vd.uniregctb.common.XmlUtils;
@@ -84,16 +86,16 @@ public abstract class EchHelper {
 		final RegDate date;
 		if (from.getYearMonthDay() == null) {
 			if (from.getYearMonth() == null) {
-				date = RegDate.get(from.getYear().getYear());
+				date = RegDateHelper.get(from.getYear().getYear(), DateConstants.EXTENDED_VALIDITY_RANGE);
 			}
 			else {
 				XMLGregorianCalendar cal = from.getYearMonth();
-				date = RegDate.get(cal.getYear(), cal.getMonth());
+				date = RegDateHelper.get(cal.getYear(), cal.getMonth(), DateConstants.EXTENDED_VALIDITY_RANGE);
 			}
 		}
 		else {
 			XMLGregorianCalendar cal = from.getYearMonthDay();
-			date = RegDate.get(cal.getYear(), cal.getMonth(), cal.getDay());
+			date = RegDateHelper.get(cal.getYear(), cal.getMonth(), cal.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
 		}
 
 		return date;
