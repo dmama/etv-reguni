@@ -3,6 +3,7 @@ package ch.vd.uniregctb.tiers.view;
 import java.util.Date;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.type.EtatCivil;
 import ch.vd.uniregctb.type.TarifImpotSource;
@@ -82,7 +83,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 	}
 
 	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDate.get(dateDebut);
+		this.dateDebut = RegDateHelper.get(dateDebut);
 	}
 
 	public Date getDateFin() {
@@ -90,7 +91,7 @@ public class SituationFamilleView implements Comparable<SituationFamilleView>, A
 	}
 
 	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDate.get(dateFin);
+		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	public Integer getNombreEnfants() {

@@ -37,8 +37,8 @@ public class SearchTiersResults {
 			this.npa = data.getNpa();
 			this.localitePays = data.getLocaliteOuPays();
 			this.forPrincipal = data.getForPrincipal();
-			this.dateOuverture = RegDate.get(data.getDateOuvertureFor());
-			this.dateFermeture = RegDate.get(data.getDateFermetureFor());
+			this.dateOuverture = RegDateHelper.get(data.getDateOuvertureFor());
+			this.dateFermeture = RegDateHelper.get(data.getDateFermetureFor());
 			this.annule = data.isAnnule();
 			this.debiteurInactif = data.isDebiteurInactif();
 		}

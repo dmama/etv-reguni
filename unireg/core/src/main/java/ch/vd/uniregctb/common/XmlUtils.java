@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
 public abstract class XmlUtils {
 
@@ -67,7 +68,7 @@ public abstract class XmlUtils {
 		}
 		else {
 			final Date date = xmlcal2date(cal);
-			return RegDate.get(date);
+			return RegDateHelper.get(date);
 		}
 	}
 

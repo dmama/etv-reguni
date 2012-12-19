@@ -217,7 +217,7 @@ public class AdressesCivilesHisto {
 	 * @return la première date définie dans l'historique des adresses courriers ou principales, ou <b>lateDate</b> si aucune adresse n'est définie.
 	 */
 	public RegDate getVeryFirstDate() {
-		RegDate first = RegDate.getLateDate();
+		RegDate first = RegDateHelper.getLateDate();
 		if (principales != null && !principales.isEmpty()) {
 			Adresse a = principales.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebut(), NullDateBehavior.EARLIEST);
@@ -233,7 +233,7 @@ public class AdressesCivilesHisto {
 	 * @return la dernière date définie dans l'historique des adresses courriers ou principales, ou <b>earlyDate</b> si aucune adresse n'est définie.
 	 */
 	public RegDate getVeryLastDate() {
-		RegDate last = RegDate.getEarlyDate();
+		RegDate last = RegDateHelper.getEarlyDate();
 		if (principales != null && !principales.isEmpty()) {
 			Adresse a = principales.get(principales.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFin(), NullDateBehavior.LATEST);

@@ -8,6 +8,7 @@ import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.deces.view.DecesRecapView;
@@ -36,7 +37,7 @@ public class DecesRecapValidator implements Validator {
 
 		boolean veuvageMarieSeul = decesRecapView.isMarieSeul() && decesRecapView.isVeuf();
 
-		final RegDate dateDeces = RegDate.get(decesRecapView.getDateDeces());
+		final RegDate dateDeces = RegDateHelper.get(decesRecapView.getDateDeces());
 		if (dateDeces == null) {
 			if (veuvageMarieSeul) {
 				ValidationUtils.rejectIfEmpty(errors, "dateDeces", "error.date.veuvage.vide");
@@ -56,13 +57,13 @@ public class DecesRecapValidator implements Validator {
 				if (dateDecesFuture) {
 					errors.rejectValue("dateDeces", "error.date.veuvage.future");
 				}
-				results = metierService.validateVeuvage(pp, RegDate.get(decesRecapView.getDateDeces()));
+				results = metierService.validateVeuvage(pp, RegDateHelper.get(decesRecapView.getDateDeces()));
 			}
 			else {
 				if (dateDecesFuture) {
 					errors.rejectValue("dateDeces", "error.date.deces.future");
 				}
-				results = metierService.validateDeces(pp, RegDate.get(decesRecapView.getDateDeces()));
+				results = metierService.validateDeces(pp, RegDateHelper.get(decesRecapView.getDateDeces()));
 			}
 			List<String> erreurs = results.getErrors();
 			ValidatorUtils.rejectErrors(erreurs, errors);

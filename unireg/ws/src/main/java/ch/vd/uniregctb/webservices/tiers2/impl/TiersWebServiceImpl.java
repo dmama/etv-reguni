@@ -254,7 +254,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 	public Tiers getTiers(GetTiers params) throws BusinessException, AccessDeniedException, TechnicalException {
 
 		try {
-			final ch.vd.registre.base.date.RegDate date = ch.vd.registre.base.date.RegDate.get(Date.asJavaDate(params.date));
+			final ch.vd.registre.base.date.RegDate date = RegDateHelper.get(Date.asJavaDate(params.date));
 			Tiers data;
 
 			final ch.vd.uniregctb.tiers.Tiers tiers = context.tiersService.getTiers(params.tiersNumber);
@@ -399,7 +399,7 @@ public class TiersWebServiceImpl implements TiersWebService {
 			}
 
 
-			final ch.vd.registre.base.date.RegDate date = ch.vd.registre.base.date.RegDate.get(Date.asJavaDate(params.date));
+			final ch.vd.registre.base.date.RegDate date = RegDateHelper.get(Date.asJavaDate(params.date));
 
 			final Map<Long, Object> results = mapTiers(params.tiersNumbers, date, params.parts, new MapCallback() {
 				@Override

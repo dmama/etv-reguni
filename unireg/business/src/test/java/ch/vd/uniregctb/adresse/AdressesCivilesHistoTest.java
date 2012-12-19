@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.infra.mock.MockAdresse;
 
@@ -18,7 +19,7 @@ public class AdressesCivilesHistoTest {
 	public void testGetVeryFirstDateAucuneAdresse() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		assertEquals(RegDate.getLateDate(), adresses.getVeryFirstDate());
+		assertEquals(RegDateHelper.getLateDate(), adresses.getVeryFirstDate());
 	}
 
 	@Test
@@ -95,7 +96,7 @@ public class AdressesCivilesHistoTest {
 	public void testGetVeryLastDateAucuneAdresse() throws Exception {
 
 		final AdressesCivilesHisto adresses = new AdressesCivilesHisto();
-		assertEquals(RegDate.getEarlyDate(), adresses.getVeryLastDate());
+		assertEquals(RegDateHelper.getEarlyDate(), adresses.getVeryLastDate());
 	}
 
 	@Test

@@ -2,7 +2,7 @@ package ch.vd.uniregctb.deces.manager;
 
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.deces.view.DecesRecapView;
 import ch.vd.uniregctb.general.manager.TiersGeneralManager;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -68,10 +68,10 @@ public class DecesRecapManagerImpl implements DecesRecapManager  {
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(decesRecapView.getPersonne().getNumero());
 
 		if (decesRecapView.isMarieSeul() && decesRecapView.isVeuf()) {
-			metierService.veuvage(pp, RegDate.get(decesRecapView.getDateDeces()), decesRecapView.getRemarque(), null);
+			metierService.veuvage(pp, RegDateHelper.get(decesRecapView.getDateDeces()), decesRecapView.getRemarque(), null);
 		}
 		else {
-			metierService.deces(pp, RegDate.get(decesRecapView.getDateDeces()), decesRecapView.getRemarque(), null);
+			metierService.deces(pp, RegDateHelper.get(decesRecapView.getDateDeces()), decesRecapView.getRemarque(), null);
 		}
 
 	}

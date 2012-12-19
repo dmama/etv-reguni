@@ -222,7 +222,7 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 				// ici, on va prendre la période max (pour limiter l'appel à la méthode du DAO)
 				final List<RegDate> boundaries = DateRangeHelper.extractBoundaries(periodesActivite);
 				Assert.isTrue(boundaries.size() >= 1);
-				final RegDate toutDebut = boundaries.get(0) != null ? boundaries.get(0) : RegDate.getEarlyDate();
+				final RegDate toutDebut = boundaries.get(0) != null ? boundaries.get(0) : RegDateHelper.getEarlyDate();
 				final RegDate finUltime;
 				{
 					final RegDate fin = boundaries.get(boundaries.size() - 1);

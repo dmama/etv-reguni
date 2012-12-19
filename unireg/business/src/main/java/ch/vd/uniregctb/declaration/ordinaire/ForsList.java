@@ -27,8 +27,8 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 	private final List<T> list;
 	private final Set<MotifRattachement> rattachements = new HashSet<MotifRattachement>();
 	private final Set<TypeAutoriteFiscale> typesAutoritesFiscales = new HashSet<TypeAutoriteFiscale>();
-	private RegDate minDateDebut = RegDate.getLateDate();
-	private RegDate maxDateFin = RegDate.getEarlyDate();
+	private RegDate minDateDebut = RegDateHelper.getLateDate();
+	private RegDate maxDateFin = RegDateHelper.getEarlyDate();
 
 	public ForsList() {
 		this.list = new ArrayList<T>();
@@ -132,8 +132,8 @@ public class ForsList<T extends ForFiscalRevenuFortune> implements List<T> {
 		rattachements.clear();
 		typesAutoritesFiscales.clear();
 		list.clear();
-		minDateDebut = RegDate.getLateDate();
-		maxDateFin = RegDate.getEarlyDate();
+		minDateDebut = RegDateHelper.getLateDate();
+		maxDateFin = RegDateHelper.getEarlyDate();
 	}
 
 	@Override

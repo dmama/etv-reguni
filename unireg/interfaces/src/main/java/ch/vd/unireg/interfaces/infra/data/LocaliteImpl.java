@@ -3,6 +3,7 @@ package ch.vd.unireg.interfaces.infra.data;
 import java.io.Serializable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
 public class LocaliteImpl implements Localite, Serializable {
 
@@ -30,7 +31,7 @@ public class LocaliteImpl implements Localite, Serializable {
 
 	private LocaliteImpl(ch.vd.infrastructure.model.Localite target) {
 		this.commune = CommuneImpl.get(target.getCommuneLocalite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.chiffreComplementaire = target.getChiffreComplementaire();
 		this.complementNPA = initComplementNPA(target.getComplementNPA());
 		this.npa = target.getNPA();

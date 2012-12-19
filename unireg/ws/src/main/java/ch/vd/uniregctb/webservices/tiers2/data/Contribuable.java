@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
@@ -123,7 +124,7 @@ public abstract class Contribuable extends Tiers {
 							// [UNIREG-910] la période d'imposition courante est laissée ouverte
 							if (this.periodeImposition.dateFin != null) {
 								final RegDate aujourdhui = RegDate.get();
-								final RegDate dateFin = RegDate.get(this.periodeImposition.dateFin.asJavaDate());
+								final RegDate dateFin = RegDateHelper.get(this.periodeImposition.dateFin.asJavaDate());
 								if (dateFin.isAfter(aujourdhui)) {
 									this.periodeImposition.dateFin = null;
 								}

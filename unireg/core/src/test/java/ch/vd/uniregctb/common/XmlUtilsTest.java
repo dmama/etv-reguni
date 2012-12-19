@@ -9,6 +9,7 @@ import org.junit.Test;
 import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 
 public class XmlUtilsTest extends WithoutSpringTest {
 
@@ -17,7 +18,7 @@ public class XmlUtilsTest extends WithoutSpringTest {
 		final Date date = DateHelper.getDate(2012, 3, 12);
 		final XMLGregorianCalendar xml = XmlUtils.date2xmlcal(date);
 		final RegDate converted = XmlUtils.xmlcal2regdate(xml);
-		Assert.assertEquals(RegDate.get(date), converted);
+		Assert.assertEquals(RegDateHelper.get(date), converted);
 	}
 
 	@Test
@@ -42,6 +43,6 @@ public class XmlUtilsTest extends WithoutSpringTest {
 		final XMLGregorianCalendar xml = XmlUtils.date2xmlcal(date);
 		final RegDate regDate = XmlUtils.xmlcal2regdate(xml);
 		Assert.assertNotNull(regDate);
-		Assert.assertEquals(RegDate.get(date), regDate);
+		Assert.assertEquals(RegDateHelper.get(date), regDate);
 	}
 }

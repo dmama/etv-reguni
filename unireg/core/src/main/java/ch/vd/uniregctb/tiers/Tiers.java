@@ -1153,7 +1153,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	@Deprecated
 	public boolean isActif(Date date) {
 		return !isAnnule()
-				&& RegDateHelper.isBetween(RegDate.get(date), getDateDebutActivite(), getDateFinActivite(), NullDateBehavior.LATEST);
+				&& RegDateHelper.isBetween(RegDateHelper.get(date), getDateDebutActivite(), getDateFinActivite(), NullDateBehavior.LATEST);
 	}
 
 	/**
@@ -1170,7 +1170,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RegDate getDateDebutActivite() {
-		RegDate date = RegDate.getLateDate();
+		RegDate date = RegDateHelper.getLateDate();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
 				if (forFiscal.isAnnule()) {
@@ -1179,7 +1179,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				date = RegDateHelper.minimum(date, forFiscal.getDateDebut(), NullDateBehavior.EARLIEST);
 			}
 		}
-		if (date == RegDate.getLateDate()) {
+		if (date == RegDateHelper.getLateDate()) {
 			date = null;
 		}
 		return date;
@@ -1193,7 +1193,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	@Transient
 	public RegDate getDateFinActivite() {
-		RegDate date = RegDate.getEarlyDate();
+		RegDate date = RegDateHelper.getEarlyDate();
 		if (forsFiscaux != null) {
 			for (ForFiscal forFiscal : forsFiscaux) {
 				if (forFiscal.isAnnule()) {
@@ -1202,7 +1202,7 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 				date = RegDateHelper.maximum(date, forFiscal.getDateFin(), NullDateBehavior.LATEST);
 			}
 		}
-		if (date == RegDate.getEarlyDate()) {
+		if (date == RegDateHelper.getEarlyDate()) {
 			date = null;
 		}
 		return date;

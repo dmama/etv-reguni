@@ -69,7 +69,7 @@ public class AdressesPMHisto {
 	 * @return la première date définie dans l'historique des adresses, ou <b>lateDate</b> si aucune adresse n'est définie.
 	 */
 	public RegDate getVeryFirstDate() {
-		RegDate first = RegDate.getLateDate();
+		RegDate first = RegDateHelper.getLateDate();
 		if (!sieges.isEmpty()) {
 			AdresseEntreprise a = sieges.get(0);
 			first = RegDateHelper.minimum(first, a.getDateDebutValidite(), NullDateBehavior.EARLIEST);
@@ -89,7 +89,7 @@ public class AdressesPMHisto {
 	 * @return la dernière date définie dans l'historique des adresses, ou <b>earlyDate</b> si aucune adresse n'est définie.
 	 */
 	public RegDate getVeryLastDate() {
-		RegDate last = RegDate.getEarlyDate();
+		RegDate last = RegDateHelper.getEarlyDate();
 		if (!sieges.isEmpty()) {
 			AdresseEntreprise a = sieges.get(sieges.size() - 1);
 			last = RegDateHelper.maximum(last, a.getDateFinValidite(), NullDateBehavior.EARLIEST);

@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.webservices.tiers2.impl.DataHelper;
 
@@ -125,7 +126,7 @@ public class Assujettissement implements Range {
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
 		if (result != null && result.dateFin != null) {
 			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = RegDate.get(result.dateFin.asJavaDate());
+			final RegDate dateFin = RegDateHelper.get(result.dateFin.asJavaDate());
 			if (dateFin.isAfter(aujourdhui)) {
 				result.dateFin = null;
 			}
@@ -170,7 +171,7 @@ public class Assujettissement implements Range {
 		// [UNIREG-1517] l'assujettissement courant est laissé ouvert
 		if (result != null && result.dateFin != null) {
 			final RegDate aujourdhui = RegDate.get();
-			final RegDate dateFin = RegDate.get(result.dateFin.asJavaDate());
+			final RegDate dateFin = RegDateHelper.get(result.dateFin.asJavaDate());
 			if (dateFin.isAfter(aujourdhui)) {
 				result.dateFin = null;
 			}

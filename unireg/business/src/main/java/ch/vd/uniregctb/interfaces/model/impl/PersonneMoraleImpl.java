@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntrepriseImpl;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
@@ -63,9 +64,9 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private PersonneMoraleImpl(ch.vd.registre.pm.model.PersonneMorale target) {
-		this.dateDebut = RegDate.get(target.getDateConstitution());
-		this.dateFin = RegDate.get(target.getDateFinActivite());
-		this.dateBouclementFuture = RegDate.get(target.getDateBouclementFuture());
+		this.dateDebut = RegDateHelper.get(target.getDateConstitution());
+		this.dateFin = RegDateHelper.get(target.getDateFinActivite());
+		this.dateBouclementFuture = RegDateHelper.get(target.getDateBouclementFuture());
 		this.designationAbregee = target.getDesignationAbregee();
 		this.telephoneContact = target.getTelephoneContact();
 		this.titulaireCompte = target.getTitulaireCompte();

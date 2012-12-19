@@ -158,7 +158,7 @@ public class DataHelper {
 			coreCriteria.setNomRaison(criteria.nomCourrier);
 			coreCriteria.setNumeroAVS(criteria.numeroAVS);
 			if (criteria.dateNaissance != null) {
-				coreCriteria.setDateNaissance(RegDate.get(criteria.dateNaissance.asJavaDate()));
+				coreCriteria.setDateNaissance(RegDateHelper.get(criteria.dateNaissance.asJavaDate()));
 			}
 			if (criteria.noOfsFor != null) {
 				coreCriteria.setNoOfsFor(criteria.noOfsFor.toString());

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.Annulable;
@@ -182,7 +183,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	}
 
 	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDate.get(dateDebut);
+		this.dateDebut = RegDateHelper.get(dateDebut);
 	}
 
 	public Date getDateFin() {
@@ -190,7 +191,7 @@ public class RapportView implements Comparable<RapportView>, Annulable {
 	}
 
 	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDate.get(dateFin);
+		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	/**

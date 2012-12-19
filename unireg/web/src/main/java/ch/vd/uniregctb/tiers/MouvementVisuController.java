@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
 import ch.vd.uniregctb.tiers.manager.MouvementVisuManager;
 import ch.vd.uniregctb.utils.WebContextUtils;
@@ -69,7 +70,7 @@ public class MouvementVisuController implements MessageSourceAware {
 		}
 
 		public RegDate getDateMouvement() {
-			return RegDate.get(view.getDateMouvement());
+			return RegDateHelper.get(view.getDateMouvement());
 		}
 
 		public String getTypeMouvement() {

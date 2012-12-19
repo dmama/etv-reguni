@@ -4,7 +4,7 @@ import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -172,7 +172,7 @@ public class EvenementExterneServiceImpl implements EvenementExterneService {
 
 			// on crée le nouvel état "retourné"
 			final EtatDeclaration etatDeclaration = new EtatDeclarationRetournee();
-			etatDeclaration.setDateObtention(RegDate.get(quittance.getDateEvenement()));
+			etatDeclaration.setDateObtention(RegDateHelper.get(quittance.getDateEvenement()));
 			etatDeclaration.setAnnule(false);
 			declarationImpotSource.addEtat(etatDeclaration);
 		}

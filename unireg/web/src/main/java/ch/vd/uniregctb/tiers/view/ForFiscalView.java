@@ -291,7 +291,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	 * @param dateOuverture the dateOuverture to set
 	 */
 	public void setDateOuverture(Date dateOuverture) {
-		this.dateOuverture = RegDate.get(dateOuverture);
+		this.dateOuverture = RegDateHelper.get(dateOuverture);
 	}
 
 	/**
@@ -307,7 +307,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	 * @param dateFermeture the dateFermeture to set
 	 */
 	public void setDateFermeture(Date dateFermeture) {
-		this.dateFermeture = RegDate.get(dateFermeture);
+		this.dateFermeture = RegDateHelper.get(dateFermeture);
 	}
 
 	/**
@@ -321,7 +321,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	 * @param dateEvenement the dateEvenement to set
 	 */
 	public void setDateEvenement(Date dateEvenement) {
-		this.dateEvenement = RegDate.get(dateEvenement);
+		this.dateEvenement = RegDateHelper.get(dateEvenement);
 	}
 
 	public ModeImposition getModeImposition() {
@@ -341,7 +341,7 @@ public class ForFiscalView implements Comparable<ForFiscalView>, DateRange, Annu
 	}
 
 	public void setDateChangement(Date dateChangement) {
-		this.dateChangement = RegDate.get(dateChangement);
+		this.dateChangement = RegDateHelper.get(dateChangement);
 	}
 
 

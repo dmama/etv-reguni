@@ -7,6 +7,7 @@ import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDate.WeekDay;
+import ch.vd.registre.base.date.RegDateHelper;
 
 public class JoursFeriesProviderImpl implements JoursFeriesProvider {
 
@@ -52,7 +53,7 @@ public class JoursFeriesProviderImpl implements JoursFeriesProvider {
   }
 
   private RegDate getPaques(int annee) {
-	  return RegDate.get(findEaster(annee).getTime());
+	  return RegDateHelper.get(findEaster(annee).getTime());
   }
 
   public RegDate getLundiPaques(int annee) {

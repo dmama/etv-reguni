@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 
 /**
@@ -20,8 +21,8 @@ public class RegimeFiscalImpl implements RegimeFiscal {
 	}
 
 	public RegimeFiscalImpl(ch.vd.registre.pm.model.RegimeFiscal target) {
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.code = target.getCode();
 	}
 

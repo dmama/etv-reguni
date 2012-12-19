@@ -20,7 +20,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
@@ -257,7 +257,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		if (right == null || left == null) {
 			return false;
 		}
-		return RegDate.get(left) == RegDate.get(right);
+		return RegDateHelper.get(left) == RegDateHelper.get(right);
 	}
 
 	private static final String QUERY_STRING = "select distinct" +

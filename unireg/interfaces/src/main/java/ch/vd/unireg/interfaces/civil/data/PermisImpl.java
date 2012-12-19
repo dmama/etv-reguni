@@ -26,9 +26,9 @@ public class PermisImpl implements Permis, Serializable {
 	}
 
 	private PermisImpl(ch.vd.registre.civil.model.Permis target) {
-		this.dateDebut = RegDate.get(target.getDateDebutValidite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
-		this.dateAnnulation = RegDate.get(target.getDateAnnulation());
+		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
+		this.dateAnnulation = RegDateHelper.get(target.getDateAnnulation());
 		this.noSequence = target.getNoSequence();
 		this.typePermis = initTypePermis(target.getTypePermis());
 	}

@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
 import ch.vd.registre.base.avs.AvsHelper;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.securite.model.Operateur;
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Pays;
@@ -547,7 +548,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	private void setUpAdresse(IdentificationContribuable message, CriteresAdresse criteresAdresse, Integer onrp,
 	                          AdresseSuisse adresseCourrier) {
 		adresseCourrier.setUsage(TypeAdresseTiers.COURRIER);
-		adresseCourrier.setDateDebut(RegDate.get(message.getLogCreationDate()));
+		adresseCourrier.setDateDebut(RegDateHelper.get(message.getLogCreationDate()));
 		String complement = null;
 		if (criteresAdresse.getLigneAdresse1() != null) {
 			complement = criteresAdresse.getLigneAdresse1();

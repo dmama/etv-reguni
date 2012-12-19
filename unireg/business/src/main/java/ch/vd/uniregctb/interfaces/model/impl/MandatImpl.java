@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Mandat;
 import ch.vd.uniregctb.interfaces.model.TypeMandataire;
 
@@ -21,8 +22,8 @@ public class MandatImpl implements Mandat {
 
 	private MandatImpl(ch.vd.registre.pm.model.Mandat target) {
 		this.target = target;
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.typeMandataire = TypeMandataire.valueOf(target.getTypeMandataire().name());
 	}
 

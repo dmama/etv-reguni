@@ -22,6 +22,7 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.schema.registreCivil.x20070914.evtRegCivil.EvtRegCivilDocument;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.LengthConstants;
@@ -76,7 +77,7 @@ public class EvenementCivilRegPP extends HibernateEntity {
 		this.id = (long)bean.getNoTechnique();
 		this.type = TypeEvenementCivil.valueOf(bean.getCode());
 		this.etat = EtatEvenementCivil.A_TRAITER;
-		this.dateEvenement = RegDate.get(bean.getDateEvenement().getTime());
+		this.dateEvenement = RegDateHelper.get(bean.getDateEvenement().getTime());
 		this.numeroIndividuPrincipal = (long) bean.getNoIndividu();
 		this.dateTraitement = DateHelper.getCurrentDate();
 		this.numeroOfsCommuneAnnonce = bean.getNumeroOFS();

@@ -29,8 +29,8 @@ public class CapitalImpl implements Capital, Serializable {
 	}
 
 	public CapitalImpl(ch.vd.registre.pm.model.Capital target) {
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.capitalAction = target.getCapitalAction();
 		this.capitalLibere = target.getCapitalLibere();
 		this.editionFosc = EditionFoscImpl.get(target.getEditionFosc());

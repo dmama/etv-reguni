@@ -27,8 +27,8 @@ public class AssujettissementPMImpl implements AssujettissementPM, Serializable 
 	}
 
 	private AssujettissementPMImpl(ch.vd.registre.fiscal.model.Assujettissement target) {
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.noSequence = target.getNoSequence();
 		this.type = Type.valueOf(target.getTypeAssujettissement().getName());
 	}

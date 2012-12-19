@@ -24,8 +24,8 @@ public class ForPMImpl implements ForPM {
 	}
 
 	public ForPMImpl(ch.vd.registre.pm.model.ForPM target) {
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.noOfsAutoriteFiscale = target.getNoOfsAutoriteFiscale();
 		this.typeAutoriteFiscale = TypeNoOfs.valueOf(target.getTypeAutoriteFiscale().name());
 	}

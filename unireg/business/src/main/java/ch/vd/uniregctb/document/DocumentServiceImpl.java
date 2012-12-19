@@ -19,6 +19,7 @@ import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 
 /**
@@ -288,7 +289,7 @@ public class DocumentServiceImpl implements DocumentService {
 	 * Construit le chemin d'accès (relatif au répertoire de base des fichiers) en fonction du type de document et de la date courante.
 	 */
 	private <T extends Document> String buildSubPath(Class<T> typeDoc, Date d) {
-		RegDate date = RegDate.get(d);
+		RegDate date = RegDateHelper.get(d);
 		String subPath = String.valueOf(date.year());
 		subPath = addPath(subPath, String.valueOf(date.month()));
 		subPath = addPath(subPath, typeDoc.getSimpleName().toLowerCase());

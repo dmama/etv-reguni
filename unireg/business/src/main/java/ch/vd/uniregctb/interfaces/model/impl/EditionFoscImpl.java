@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
 
 /**
@@ -22,7 +23,7 @@ public class EditionFoscImpl implements EditionFosc {
 	public EditionFoscImpl(ch.vd.registre.pm.model.EditionFosc target) {
 		this.annee = target.getAnnee();
 		this.numero = target.getNumero();
-		this.dateParution = RegDate.get(target.getDateParution());
+		this.dateParution = RegDateHelper.get(target.getDateParution());
 	}
 
 	@Override

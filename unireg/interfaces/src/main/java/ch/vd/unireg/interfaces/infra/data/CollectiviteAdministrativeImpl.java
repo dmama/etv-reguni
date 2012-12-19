@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import ch.vd.infrastructure.model.EnumTypeCollectivite;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 
 public class CollectiviteAdministrativeImpl implements CollectiviteAdministrative, Serializable {
@@ -41,7 +42,7 @@ public class CollectiviteAdministrativeImpl implements CollectiviteAdministrativ
 
 	protected CollectiviteAdministrativeImpl(ch.vd.infrastructure.model.CollectiviteAdministrative target) {
 		this.adresse = AdresseImpl.get(target.getAdresse());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.adresseEmail = target.getAdresseEmail();
 		this.noCCP = target.getNoCCP();
 		this.noColAdm = target.getNoColAdm();

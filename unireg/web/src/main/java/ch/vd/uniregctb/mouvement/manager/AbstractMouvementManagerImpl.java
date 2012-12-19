@@ -15,6 +15,7 @@ import org.springframework.context.MessageSourceAware;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.securite.model.Operateur;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -370,7 +371,7 @@ public class AbstractMouvementManagerImpl implements AbstractMouvementManager, M
 			view.setNumeroTelephoneUtilisateur(infoCollaborateur.noTelephoneDansOid);
 			view.setUtilisateurReception(infoCollaborateur.visaOperateur);
 		}
-		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null && RegDate.get(reception.getLogCreationDate()).isAfter(dateMeP11R1)) {
+		else if (reception instanceof ReceptionDossierArchives && ((ReceptionDossierArchives) reception).getBordereau() != null && RegDateHelper.get(reception.getLogCreationDate()).isAfter(dateMeP11R1)) {
 			final Object[] params = {Integer.toString(reception.getDateMouvement().year())};
 			final String localisationStr = messageSource.getMessage("option.localisation.archives.periode", params, WebContextUtils.getDefaultLocale());
 			view.setDestinationUtilisateur(localisationStr);

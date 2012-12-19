@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.FormeJuridique;
 
 /**
@@ -21,8 +22,8 @@ public class FormeJuridiqueImpl implements FormeJuridique {
 
 
 	private FormeJuridiqueImpl(ch.vd.registre.pm.model.FormeJuridique target) {
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 		this.code = target.getCode();
 	}
 

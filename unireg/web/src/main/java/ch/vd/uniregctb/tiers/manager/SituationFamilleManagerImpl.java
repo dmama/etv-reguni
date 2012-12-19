@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
@@ -124,7 +125,7 @@ public class SituationFamilleManagerImpl extends TiersManager implements Situati
 		}
 
 		situationFamille.setAnnule(situationFamilleView.isAnnule());
-		final RegDate dateDebut = RegDate.get(situationFamilleView.getDateDebut());
+		final RegDate dateDebut = RegDateHelper.get(situationFamilleView.getDateDebut());
 		situationFamille.setDateDebut(dateDebut);
 		situationFamille.setDateFin(null);
 		situationFamille.setEtatCivil(situationFamilleView.getEtatCivil());

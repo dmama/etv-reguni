@@ -53,8 +53,8 @@ public class AdresseImpl implements Adresse, Serializable {
 	}
 
 	private AdresseImpl(ch.vd.common.model.Adresse target) {
-		this.dateDebut = RegDate.get(target.getDateDebutValidite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.casePostale = CasePostale.parse(target.getCasePostale());
 		this.localiteAbregeMinuscule = target.getLocaliteAbregeMinuscule();
 		this.numero = target.getNumero();

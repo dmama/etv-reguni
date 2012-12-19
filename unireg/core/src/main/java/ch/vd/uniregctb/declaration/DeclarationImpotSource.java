@@ -12,6 +12,7 @@ import java.util.Set;
 import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -142,7 +143,7 @@ public class DeclarationImpotSource extends Declaration {
 				calSommation.setTime(dateObtention.asJavaDate());
 				calSommation.add(Calendar.MONTH, 1);
 				calSommation.add(Calendar.DATE, 15);
-				dateSommation = RegDate.get(calSommation.getTime());
+				dateSommation = RegDateHelper.get(calSommation.getTime());
 			}
 		}
 		return dateSommation;

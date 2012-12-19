@@ -12,7 +12,6 @@ import noNamespace.TypFichierImpression;
 import org.apache.commons.lang.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
-import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.editique.EditiqueAbstractHelper;
@@ -70,14 +69,14 @@ public class ImpressionDocumentEfactureHelperImpl extends EditiqueAbstractHelper
 
 	private InfoArchivageDocument.InfoArchivage remplitInfoArchivage(ImpressionDocumentEfactureParams params) {
 		return editiqueHelper.buildInfoArchivage(getTypeDocumentEditique(params.getTypeDocument()), params.getTiers().getNumero(), construitIdArchivageDocument(params),
-				RegDate.get(params.getDateTraitement()));
+				RegDateHelper.get(params.getDateTraitement()));
 	}
 
 	@Override
 	public String construitIdArchivageDocument(ImpressionDocumentEfactureParams params) {
 		return String.format(
 				"%s%s %s %s",
-				RegDate.get(params.getDateTraitement()).year(),
+				RegDateHelper.get(params.getDateTraitement()).year(),
 				StringUtils.leftPad("1", 2, '0'),
 				StringUtils.rightPad(getLibelleCourt(params.getTypeDocument()), 19, ' '),
 				new SimpleDateFormat("MMddHHmmssSSS").format(

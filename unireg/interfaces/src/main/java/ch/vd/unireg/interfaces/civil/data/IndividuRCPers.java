@@ -431,7 +431,7 @@ public class IndividuRCPers implements Individu, Serializable {
 		final List<Adresse> residences = new ArrayList<Adresse>(adresses.size());
 
 		// d'abord, on cherche la date de début la plus ancienne
-		RegDate bigBang = RegDate.getLateDate();
+		RegDate bigBang = RegDateHelper.getLateDate();
 		for (Adresse adr : adresses) {
 			if (RegDateHelper.isBefore(adr.getDateDebut(), bigBang, NullDateBehavior.EARLIEST)) {
 				bigBang = adr.getDateDebut();
@@ -635,11 +635,11 @@ public class IndividuRCPers implements Individu, Serializable {
 		if (residenceHistory == null || residenceHistory.isEmpty()) {
 			return null;
 		}
-		RegDate dateArrivee = RegDate.getLateDate();
+		RegDate dateArrivee = RegDateHelper.getLateDate();
 		for (Residence residence : residenceHistory) {
 			dateArrivee = RegDateHelper.minimum(dateArrivee, XmlUtils.xmlcal2regdate(residence.getArrivalDate()), NullDateBehavior.EARLIEST);
 		}
-		return dateArrivee == RegDate.getLateDate() ? null : dateArrivee;
+		return dateArrivee == RegDateHelper.getLateDate() ? null : dateArrivee;
 	}
 
 	@Override

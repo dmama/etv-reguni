@@ -25,8 +25,8 @@ public final class ForFiscalComparator implements Comparator<ForFiscal> {
 		private final RegDate dateFin;
 
 		public ForFiscalWrapper(ForFiscal f) {
-			this.dateDebut = RegDate.get(Date.asJavaDate(f.dateOuverture));
-			this.dateFin = RegDate.get(Date.asJavaDate(f.dateFermeture));
+			this.dateDebut = RegDateHelper.get(Date.asJavaDate(f.dateOuverture));
+			this.dateFin = RegDateHelper.get(Date.asJavaDate(f.dateFermeture));
 		}
 
 		@Override

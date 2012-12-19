@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.tiers.NatureTiers;
@@ -147,7 +148,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	 * @param dateDebut the dateDebut to set
 	 */
 	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDate.get(dateDebut);
+		this.dateDebut = RegDateHelper.get(dateDebut);
 	}
 
 	/**
@@ -161,7 +162,7 @@ public class AdresseView  implements Comparable<AdresseView>, Annulable{
 	 * @param dateFin the dateFin to set
 	 */
 	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDate.get(dateFin);
+		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	/**

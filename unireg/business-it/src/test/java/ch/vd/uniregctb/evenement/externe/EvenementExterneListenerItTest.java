@@ -17,6 +17,7 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
@@ -106,7 +107,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		final QuittanceLR q = (QuittanceLR) events.get(0);
 		assertNotNull(q);
 		Assert.assertEquals(1500001L, q.getTiersId().longValue());
-		assertEquals(RegDate.get(2009, 12, 7), RegDate.get(q.getDateEvenement()));
+		assertEquals(RegDate.get(2009, 12, 7), RegDateHelper.get(q.getDateEvenement()));
 		assertEquals(RegDate.get(2008, 1, 1), q.getDateDebut());
 		assertEquals(RegDate.get(2008, 1, 31), q.getDateFin());
 		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());
@@ -140,7 +141,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 		final QuittanceLR q = (QuittanceLR) events.get(0);
 		assertNotNull(q);
 		Assert.assertEquals(1500001L, q.getTiersId().longValue());
-		assertEquals(RegDate.get(2009, 12, 7), RegDate.get(q.getDateEvenement()));
+		assertEquals(RegDate.get(2009, 12, 7), RegDateHelper.get(q.getDateEvenement()));
 		assertEquals(RegDate.get(2008, 1, 1), q.getDateDebut());
 		assertEquals(RegDate.get(2008, 1, 31), q.getDateFin());
 		Assert.assertEquals(TypeQuittance.QUITTANCEMENT, q.getType());

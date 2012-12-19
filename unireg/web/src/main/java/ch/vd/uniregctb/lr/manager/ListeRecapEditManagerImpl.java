@@ -489,11 +489,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			etat = new EtatDeclarationEmise();
 			etat.setDateObtention(RegDate.get());
 			lr.addEtat(etat);
-			lr.setDateDebut(RegDate.get(lrEditView.getDateDebutPeriode()));
-			lr.setDateFin(RegDate.get(lrEditView.getDateFinPeriode()));
+			lr.setDateDebut(RegDateHelper.get(lrEditView.getDateDebutPeriode()));
+			lr.setDateFin(RegDateHelper.get(lrEditView.getDateFinPeriode()));
 			lr.setModeCommunication(dpi.getModeCommunication());
 			lr.setPeriodicite(lrEditView.getPeriodicite());
-			int annee = RegDate.get(lrEditView.getDateDebutPeriode()).year();
+			int annee = RegDateHelper.get(lrEditView.getDateDebutPeriode()).year();
 			PeriodeFiscale periodeFiscale = periodeFiscaleDAO.getPeriodeFiscaleByYear(annee);
 			if (periodeFiscale == null) {
 				throw new ValidationException(lr, "Veuillez initialiser la période fiscale correspondante.");
@@ -522,9 +522,9 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 			lr = lrDAO.get(lrEditView.getId());
 			if (lrEditView.getRegDateRetour() != null && lrEditView.getRegDateRetour() != lr.getDateRetour()) {
 				etat = new EtatDeclarationRetournee();
-				etat.setDateObtention(RegDate.get(lrEditView.getDateRetour()));
+				etat.setDateObtention(RegDateHelper.get(lrEditView.getDateRetour()));
 				lr.addEtat(etat);
-				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDate.get(lrEditView.getDateRetour()));
+				evenementFiscalService.publierEvenementFiscalRetourLR(dpi, lr, RegDateHelper.get(lrEditView.getDateRetour()));
 			}
 		}
 

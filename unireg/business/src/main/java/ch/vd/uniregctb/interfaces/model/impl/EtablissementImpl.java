@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Etablissement;
 
 public class EtablissementImpl implements Etablissement {
@@ -19,8 +20,8 @@ public class EtablissementImpl implements Etablissement {
 
 	private EtablissementImpl(ch.vd.registre.pm.model.Etablissement target) {
 		this.target = target;
-		this.dateDebut = RegDate.get(target.getDateDebut());
-		this.dateFin = RegDate.get(target.getDateFin());
+		this.dateDebut = RegDateHelper.get(target.getDateDebut());
+		this.dateFin = RegDateHelper.get(target.getDateFin());
 	}
 
 	@Override

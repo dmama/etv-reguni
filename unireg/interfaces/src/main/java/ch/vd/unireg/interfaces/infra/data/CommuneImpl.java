@@ -10,6 +10,7 @@ import ch.vd.fidor.ws.v2.FidorDate;
 import ch.vd.fidor.ws.v2.Region;
 import ch.vd.infrastructure.model.EnumCanton;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 
 public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable {
@@ -56,8 +57,8 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	protected CommuneImpl(ch.vd.infrastructure.model.CommuneSimple target) {
 		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
-		this.dateDebut = RegDate.get(target.getDateDebutValidite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);
@@ -69,8 +70,8 @@ public class CommuneImpl extends EntiteOFSImpl implements Commune, Serializable 
 
 	protected CommuneImpl(ch.vd.infrastructure.model.Commune target) {
 		super((target.isFraction() ? target.getNoTechnique() : target.getNoOFS()), target.getNomMinuscule(), target.getNomMinuscule(), target.getSigleOFS());
-		this.dateDebut = RegDate.get(target.getDateDebutValidite());
-		this.dateFin = RegDate.get(target.getDateFinValidite());
+		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
+		this.dateFin = RegDateHelper.get(target.getDateFinValidite());
 		this.sigleCanton = target.getSigleCanton();
 		this.noOfsCommuneMere = target.getNumTechMere();
 		this.vaudoise = EnumCanton.SIGLE_VAUD.getName().equals(sigleCanton);

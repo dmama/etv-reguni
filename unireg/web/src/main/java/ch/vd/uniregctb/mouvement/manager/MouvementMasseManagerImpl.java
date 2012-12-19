@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
@@ -114,7 +115,7 @@ public class MouvementMasseManagerImpl extends AbstractMouvementManagerImpl impl
 	 * @return les critères utilisables par le DAO
 	 */
 	private MouvementDossierCriteria createCoreCriteria(MouvementMasseCriteriaView view, Integer noCollAdmInitiatrice) {
-		final DateRange range = new DateRangeHelper.Range(RegDate.get(view.getDateMouvementMin()), RegDate.get(view.getDateMouvementMax()));
+		final DateRange range = new DateRangeHelper.Range(RegDateHelper.get(view.getDateMouvementMin()), RegDateHelper.get(view.getDateMouvementMax()));
 		final MouvementDossierCriteria criteria = new MouvementDossierCriteria();
 		criteria.setNoCtb(view.getNoCtb());
 		criteria.setRangeDateMouvement(range);

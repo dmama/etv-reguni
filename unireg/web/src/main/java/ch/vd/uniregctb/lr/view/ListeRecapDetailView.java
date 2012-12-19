@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.di.view.DelaiDeclarationView;
@@ -201,7 +202,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	}
 
 	public void setDateDebutPeriode(Date dateDebutPeriode) {
-		this.dateDebutPeriode = RegDate.get(dateDebutPeriode);
+		this.dateDebutPeriode = RegDateHelper.get(dateDebutPeriode);
 	}
 
 	public Date getDateFinPeriode() {
@@ -209,7 +210,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	}
 
 	public void setDateFinPeriode(Date dateFinPeriode) {
-		this.dateFinPeriode = RegDate.get(dateFinPeriode);
+		this.dateFinPeriode = RegDateHelper.get(dateFinPeriode);
 	}
 
 	public Date getDateRetour() {
@@ -217,7 +218,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	}
 
 	public void setDateRetour(Date dateRetour) {
-		this.dateRetour = RegDate.get(dateRetour);
+		this.dateRetour = RegDateHelper.get(dateRetour);
 	}
 
 	public Date getDelaiAccorde() {
@@ -225,7 +226,7 @@ public class ListeRecapDetailView implements Comparable<ListeRecapDetailView> {
 	}
 
 	public void setDelaiAccorde(Date delaiAccorde) {
-		this.delaiAccorde = RegDate.get(delaiAccorde);
+		this.delaiAccorde = RegDateHelper.get(delaiAccorde);
 	}
 
 	public TypeEtatDeclaration getEtat() {

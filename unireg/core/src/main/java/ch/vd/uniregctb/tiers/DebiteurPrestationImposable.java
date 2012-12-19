@@ -19,6 +19,7 @@ import org.hibernate.annotations.Type;
 
 import ch.vd.registre.base.date.DateRangeComparator;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.LengthConstants;
 import ch.vd.uniregctb.declaration.Periodicite;
@@ -297,7 +298,7 @@ public class DebiteurPrestationImposable extends Tiers {
 			//On retourne la periodicite presente sur le debiteur
 			//ce mecanisme est temporaire, il permet d'eviter les nullPointeurExceptiosn
 			//pour les tiers n'ayant pas encore d'historique de périodicités.
-			return new Periodicite(periodiciteDecompteAvantMigration, periodeDecompteAvantMigration, RegDate.get(getLogCreationDate()), null);
+			return new Periodicite(periodiciteDecompteAvantMigration, periodeDecompteAvantMigration, RegDateHelper.get(getLogCreationDate()), null);
 		}
 		else {
 

@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.DateRangeHelper.Range;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.webservices.tiers2.exception.BusinessException;
 import ch.vd.uniregctb.webservices.tiers2.impl.Context;
@@ -189,7 +190,7 @@ public abstract class ContribuableHisto extends TiersHisto {
 			// [UNIREG-910] la période d'imposition courante est laissée ouverte
 			if (derniere != null && derniere.dateFin != null) {
 				final RegDate aujourdhui = RegDate.get();
-				final RegDate dateFin = RegDate.get(derniere.dateFin.asJavaDate());
+				final RegDate dateFin = RegDateHelper.get(derniere.dateFin.asJavaDate());
 				if (dateFin.isAfter(aujourdhui)) {
 					derniere.dateFin = null;
 				}

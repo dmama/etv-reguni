@@ -11,6 +11,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -58,7 +59,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 		final RegDate dateDebut = date(annee, 1, 1);
 		final RegDate dateFin = date(annee, 3, 31);
 		final Date quittancement = DateHelper.getCurrentDate();
-		final RegDate obtentionRetour = RegDate.get(quittancement);
+		final RegDate obtentionRetour = RegDateHelper.get(quittancement);
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -152,7 +153,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
 				final EtatDeclaration etat = lr.getDernierEtat();
 				Assert.assertNotNull(etat);
-				Assert.assertEquals(RegDate.get(quittancement), etat.getDateObtention());
+				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
 
 				// et l'événement traité
@@ -227,7 +228,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				final DeclarationImpotSource lr = (DeclarationImpotSource) dpi.getDeclarationActive(dateDebut);
 				final EtatDeclaration etat = lr.getDernierEtat();
 				Assert.assertNotNull(etat);
-				Assert.assertEquals(RegDate.get(quittancement), etat.getDateObtention());
+				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
 
 				// et l'événement traité
@@ -267,7 +268,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				addForDebiteur(dpi,dateDebut,null, MockCommune.Lausanne);
 				final PeriodeFiscale pf = addPeriodeFiscale(annee);
 				final DeclarationImpotSource lr = addLR(dpi, dateDebut, dateFin, pf);
-				lr.addEtat(new EtatDeclarationRetournee(RegDate.get(premierQuittancement), "TEST"));      // premier quittancement
+				lr.addEtat(new EtatDeclarationRetournee(RegDateHelper.get(premierQuittancement), "TEST"));      // premier quittancement
 
 				final QuittanceLR quittance = new QuittanceLR();
 				quittance.setTiers(dpi);
@@ -318,7 +319,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				for (EtatDeclaration etat : etats) {
 					if (etat.isAnnule() && etat.getEtat() == TypeEtatDeclaration.RETOURNEE) {
 						etatRetourneAnnuleTrouve = true;
-						Assert.assertEquals(RegDate.get(premierQuittancement), etat.getDateObtention());
+						Assert.assertEquals(RegDateHelper.get(premierQuittancement), etat.getDateObtention());
 					}
 				}
 				Assert.assertTrue(etatRetourneAnnuleTrouve);
@@ -326,7 +327,7 @@ public class EvenementExterneProcessorTest extends BusinessTest {
 				// test de l'état final de la déclaration après traitement de l'événement
 				final EtatDeclaration etat = lr.getDernierEtat();
 				Assert.assertNotNull(etat);
-				Assert.assertEquals(RegDate.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
+				Assert.assertEquals(RegDateHelper.get(quittancement), etat.getDateObtention());       // la date de quittancement a été changée
 				Assert.assertEquals(TypeEtatDeclaration.RETOURNEE, etat.getEtat());
 
 				return null;

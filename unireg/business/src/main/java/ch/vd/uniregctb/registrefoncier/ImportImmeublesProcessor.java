@@ -627,7 +627,7 @@ public class ImportImmeublesProcessor {
 			if (date == null) {
 				throw new ParseException("Date '" + str + "' cannot be parsed.", 0);
 			}
-			final RegDate regDate = RegDate.get(date);
+			final RegDate regDate = RegDateHelper.get(date);
 			if (regDate == null) {
 				throw new ParseException("Date '" + str + "' cannot be parsed.", 0);
 			}

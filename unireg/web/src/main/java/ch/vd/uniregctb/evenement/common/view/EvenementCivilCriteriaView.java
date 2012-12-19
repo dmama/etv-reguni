@@ -6,6 +6,7 @@ import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilCriteria;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -129,7 +130,7 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setDateEvenementDebut(Date dateEvenementDebut) {
-		setRegDateEvenementDebut(RegDate.get(dateEvenementDebut));
+		setRegDateEvenementDebut(RegDateHelper.get(dateEvenementDebut));
 	}
 
 	@SuppressWarnings("UnusedDeclaration")
@@ -139,6 +140,6 @@ abstract public class EvenementCivilCriteriaView<TYPE_EVT extends Enum<TYPE_EVT>
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setDateEvenementFin(Date dateEvenementFin) {
-		setRegDateEvenementFin(RegDate.get(dateEvenementFin));
+		setRegDateEvenementFin(RegDateHelper.get(dateEvenementFin));
 	}
 }

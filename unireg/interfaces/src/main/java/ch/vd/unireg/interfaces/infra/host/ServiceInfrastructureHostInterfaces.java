@@ -437,7 +437,7 @@ public class ServiceInfrastructureHostInterfaces implements ServiceInfrastructur
 	private static boolean isValid(Date dateFinValidite) {
 		final boolean valide;
 		if (dateFinValidite != null) {
-			final RegDate finValidite = RegDate.get(dateFinValidite);
+			final RegDate finValidite = RegDateHelper.get(dateFinValidite);
 			final RegDate now = RegDate.get();
 			valide = RegDateHelper.isAfterOrEqual(finValidite, now, NullDateBehavior.LATEST);
 		}

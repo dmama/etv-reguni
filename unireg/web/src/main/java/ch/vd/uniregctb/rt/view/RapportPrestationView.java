@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.common.BaseComparator;
 import ch.vd.uniregctb.common.NomCourrierViewPart;
 import ch.vd.uniregctb.general.view.TiersGeneralView;
@@ -81,7 +82,7 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 	}
 
 	public void setDateDebut(Date dateDebut) {
-		this.dateDebut = RegDate.get(dateDebut);
+		this.dateDebut = RegDateHelper.get(dateDebut);
 	}
 
 	public Date getDateFin() {
@@ -89,7 +90,7 @@ public class RapportPrestationView implements Comparable<RapportPrestationView> 
 	}
 
 	public void setDateFin(Date dateFin) {
-		this.dateFin = RegDate.get(dateFin);
+		this.dateFin = RegDateHelper.get(dateFin);
 	}
 
 	public TiersGeneralView getDebiteur() {
