@@ -13,7 +13,7 @@
 		<input class="noprint" id="showforsFiscauxPMHisto" type="checkbox" onclick="refreshforsFiscauxPM(this);" />
 		<label class="noprint" for="showforsFiscauxPMHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.entreprise.forsFiscaux}" id="forsFiscauxPM" class="display">
+		<display:table name="${command.entreprise.forsFiscaux}" id="forsFiscauxPM" requestURI="visu.do" class="display">
 
 			<display:column sortable ="true" titleKey="label.genre.impot">
 				<fmt:message key="option.genre.impot.${forsFiscauxPM.genreImpot}"  />
