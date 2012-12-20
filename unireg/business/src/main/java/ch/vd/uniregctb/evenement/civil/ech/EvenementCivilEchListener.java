@@ -8,6 +8,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -154,6 +156,48 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 		}
 	}
 
+	private static void checkValidIncomingEventData(EvenementCivilEch ech) throws EvenementCivilException {
+		final List<String> attributs = new ArrayList<String>();
+		if (ech.getAction() == null) {
+			attributs.add("action");
+		}
+		if (ech.getDateEvenement() == null) {
+			attributs.add("date");
+		}
+		if (ech.getId() == null) {
+			attributs.add("identifiant");
+		}
+		if (ech.getType() == null) {
+			attributs.add("type");
+		}
+
+		final int size = attributs.size();
+		if (size > 0) {
+			final String msg;
+			if (size == 1) {
+				msg = String.format("L'attribut '%s' est obligatoire pour un événement civil à l'entrée dans Unireg", attributs.get(0));
+			}
+			else {
+				final StringBuilder b = new StringBuilder("Les attributs ");
+				for (int i = 0 ; i < size; ++ i) {
+					final String attr = attributs.get(i);
+					if (i > 0) {
+						if (i < size - 1) {
+							b.append(", ");
+						}
+						else {
+							b.append(" et ");
+						}
+					}
+					b.append('\'').append(attr).append('\'');
+				}
+				b.append(" sont obligatoires pour un événement civil à l'entrée dans Unireg");
+				msg = b.toString();
+			}
+			throw new EvenementCivilException(msg);
+		}
+	}
+
 	private EvenementCivilEch decodeEvenementCivil(Source xml) throws EvenementCivilException {
 
 		try {
@@ -168,6 +212,9 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			catch (IllegalArgumentException e) {
 				throw new EvenementCivilException(e);
 			}
+
+			// 1'. validation des données de base
+			checkValidIncomingEventData(ech);
 
 			// 2. événement ignoré ?
 			if (isIgnored(ech)) {
