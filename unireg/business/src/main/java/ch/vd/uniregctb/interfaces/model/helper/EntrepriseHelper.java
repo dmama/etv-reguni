@@ -1,5 +1,11 @@
 package ch.vd.uniregctb.interfaces.model.helper;
 
+import java.util.Date;
+
+import ch.vd.registre.base.date.DateValidityRange;
+import ch.vd.registre.base.date.DateValidityRangeImpl;
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -9,6 +15,23 @@ import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 
 public abstract class EntrepriseHelper {
+
+	/**
+	 * La plage de validité des dates en provenance de Reg-PM.
+	 * <p/>
+	 * Le 1er janvier 1527 est la plus ancienne date valide trouvée dans la base et elle correspond à la date de fondation de la Société des Fusilliers de la Bourgeoisie des Moudon (PM n°19739).
+	 */
+	private static final DateValidityRange VALIDITY_RANGE = new DateValidityRangeImpl(RegDate.get(1527, 1, 1), RegDate.get(2399, 12, 31));
+
+	/**
+	 * Converti une date Java dans une RegDate en tenant compte de la plage de validité des dates en provenance de Reg-PM.
+	 *
+	 * @param date une date java
+	 * @return une date RegDate complète, ou <b>null</b> si la date passée en paramètre n'est pas dans la place de validité.
+	 */
+	public static RegDate get(Date date) {
+		return RegDateHelper.get(date, VALIDITY_RANGE);
+	}
 
 	/**
 	 * Détermine et retourne le type d'autorité fiscale complet (VD/CH/HS) à partir du type d'autorité fiscal partiel (CH/HS) utilisé pour les fors PMs.

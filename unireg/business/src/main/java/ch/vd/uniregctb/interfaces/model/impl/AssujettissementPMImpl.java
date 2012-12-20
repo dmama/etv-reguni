@@ -6,6 +6,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -27,8 +28,8 @@ public class AssujettissementPMImpl implements AssujettissementPM, Serializable 
 	}
 
 	private AssujettissementPMImpl(ch.vd.registre.fiscal.model.Assujettissement target) {
-		this.dateDebut = RegDateHelper.get(target.getDateDebut());
-		this.dateFin = RegDateHelper.get(target.getDateFin());
+		this.dateDebut = EntrepriseHelper.get(target.getDateDebut());
+		this.dateFin = EntrepriseHelper.get(target.getDateFin());
 		this.noSequence = target.getNoSequence();
 		this.type = Type.valueOf(target.getTypeAssujettissement().getName());
 	}

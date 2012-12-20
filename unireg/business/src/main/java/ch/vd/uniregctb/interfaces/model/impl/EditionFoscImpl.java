@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.EditionFosc;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -23,7 +23,7 @@ public class EditionFoscImpl implements EditionFosc {
 	public EditionFoscImpl(ch.vd.registre.pm.model.EditionFosc target) {
 		this.annee = target.getAnnee();
 		this.numero = target.getNumero();
-		this.dateParution = RegDateHelper.get(target.getDateParution());
+		this.dateParution = EntrepriseHelper.get(target.getDateParution());
 	}
 
 	@Override

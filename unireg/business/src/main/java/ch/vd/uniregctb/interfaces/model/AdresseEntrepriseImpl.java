@@ -6,10 +6,10 @@ import java.util.Date;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.pm.model.EnumTypeAdresseEntreprise;
 import ch.vd.unireg.interfaces.civil.data.Pays;
 import ch.vd.unireg.interfaces.infra.data.PaysImpl;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 import ch.vd.uniregctb.type.TypeAdressePM;
 
 public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
@@ -51,7 +51,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	}
 
 	private AdresseEntrepriseImpl(ch.vd.registre.pm.model.AdresseEntreprise target, RegDate today) {
-		this.dateDebut = RegDateHelper.get(target.getDateDebutValidite());
+		this.dateDebut = EntrepriseHelper.get(target.getDateDebutValidite());
 		this.dateFin = initDateFin(target.getDateFinValidite(), today);
 		this.pays = PaysImpl.get(target.getPays());
 		this.complement = target.getComplement();
@@ -85,7 +85,7 @@ public class AdresseEntrepriseImpl implements AdresseEntreprise, Serializable {
 	}
 
 	private static RegDate initDateFin(Date dateFinValidite, RegDate today) {
-		final RegDate df = RegDateHelper.get(dateFinValidite);
+		final RegDate df = EntrepriseHelper.get(dateFinValidite);
 		// [SIFISC-4625] les dates dans le futur sont ignorées
 		return df == null || df.isAfter(today) ? null : df;
 	}

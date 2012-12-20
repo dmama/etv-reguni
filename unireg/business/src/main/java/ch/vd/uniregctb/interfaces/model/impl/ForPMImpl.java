@@ -5,6 +5,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.ForPM;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -24,8 +25,8 @@ public class ForPMImpl implements ForPM {
 	}
 
 	public ForPMImpl(ch.vd.registre.pm.model.ForPM target) {
-		this.dateDebut = RegDateHelper.get(target.getDateDebut());
-		this.dateFin = RegDateHelper.get(target.getDateFin());
+		this.dateDebut = EntrepriseHelper.get(target.getDateDebut());
+		this.dateFin = EntrepriseHelper.get(target.getDateFin());
 		this.noOfsAutoriteFiscale = target.getNoOfsAutoriteFiscale();
 		this.typeAutoriteFiscale = TypeNoOfs.valueOf(target.getTypeAutoriteFiscale().name());
 	}

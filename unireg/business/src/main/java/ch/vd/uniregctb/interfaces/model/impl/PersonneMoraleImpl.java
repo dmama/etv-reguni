@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdresseEntrepriseImpl;
 import ch.vd.uniregctb.interfaces.model.AssujettissementPM;
@@ -21,6 +20,7 @@ import ch.vd.uniregctb.interfaces.model.PartPM;
 import ch.vd.uniregctb.interfaces.model.PersonneMorale;
 import ch.vd.uniregctb.interfaces.model.RegimeFiscal;
 import ch.vd.uniregctb.interfaces.model.Siege;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 
@@ -64,9 +64,9 @@ public class PersonneMoraleImpl implements PersonneMorale, Serializable {
 	}
 
 	private PersonneMoraleImpl(ch.vd.registre.pm.model.PersonneMorale target) {
-		this.dateDebut = RegDateHelper.get(target.getDateConstitution());
-		this.dateFin = RegDateHelper.get(target.getDateFinActivite());
-		this.dateBouclementFuture = RegDateHelper.get(target.getDateBouclementFuture());
+		this.dateDebut = EntrepriseHelper.get(target.getDateConstitution());
+		this.dateFin = EntrepriseHelper.get(target.getDateFinActivite());
+		this.dateBouclementFuture = EntrepriseHelper.get(target.getDateBouclementFuture());
 		this.designationAbregee = target.getDesignationAbregee();
 		this.telephoneContact = target.getTelephoneContact();
 		this.titulaireCompte = target.getTitulaireCompte();

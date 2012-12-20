@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.EvenementPM;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -21,7 +21,7 @@ public class EvenementPMImpl implements EvenementPM {
 	}
 
 	private EvenementPMImpl(ch.vd.registre.pm.model.EvenementPM target) {
-		this.date = RegDateHelper.get(target.getDateEvenement());
+		this.date = EntrepriseHelper.get(target.getDateEvenement());
 		this.numeroPM = target.getNumeroPM();
 		this.code = target.getCodeEvenement();
 	}

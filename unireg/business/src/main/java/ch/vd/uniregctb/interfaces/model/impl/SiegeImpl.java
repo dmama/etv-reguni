@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.interfaces.model.impl;
 
 import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.interfaces.model.Siege;
 import ch.vd.uniregctb.interfaces.model.TypeNoOfs;
+import ch.vd.uniregctb.interfaces.model.helper.EntrepriseHelper;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -23,8 +23,8 @@ public class SiegeImpl implements Siege {
 	}
 
 	public SiegeImpl(ch.vd.registre.pm.model.Siege target) {
-		this.dateDebut = RegDateHelper.get(target.getDateDebut());
-		this.dateFin = RegDateHelper.get(target.getDateFin());
+		this.dateDebut = EntrepriseHelper.get(target.getDateDebut());
+		this.dateFin = EntrepriseHelper.get(target.getDateFin());
 		this.noOfsSiege = target.getNoOfsSiege();
 		this.type = TypeNoOfs.valueOf(target.getType().name());
 	}

@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.interfaces.model;
 
-import ch.vd.registre.base.date.RegDate;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import ch.vd.registre.base.date.RegDate;
 
 public interface PersonneMorale {
 
