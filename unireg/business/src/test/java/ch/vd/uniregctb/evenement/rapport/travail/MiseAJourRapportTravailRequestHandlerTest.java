@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.xml.common.v1.Date;
 import ch.vd.unireg.xml.event.rt.common.v1.IdentifiantRapportTravail;
+import ch.vd.unireg.xml.event.rt.request.v1.CreationProlongationRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FermetureRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravail;
 import ch.vd.unireg.xml.event.rt.request.v1.FinRapportTravailType;
@@ -45,6 +46,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 		handler = new MiseAJourRapportTravailRequestHandler();
 		handler.setTiersService(tiersService);
+		handler.setHibernateTemplate(hibernateTemplate);
 	}
 
 
@@ -601,7 +603,65 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 	}
 
+	//SIFISC-7541
+	//Teste que l'on ne créé pas un RT en doublon suite à la reception du même message.
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRTDemandeOuvertureEnDoublon() throws Exception {
 
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2011,10,1),date(2012,12,31),false);
+				addRapportPrestationImposable(debiteur,sourcier,date(2013,4,1),null,false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2013, 4, 1);
+		final RegDate dateFinPeriode = date(2013, 6, 30);
+		final RegDate dateDebutVersementSalaire = date(2013, 4, 1);
+		final RegDate dateFinVersementSalaire = date(2013, 6, 30);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinVersementSalaire);
+		request.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		final PersonnePhysique sourcier = (PersonnePhysique)tiersService.getTiers(ids.idSourcier);
+		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
+
+		assertEquals(2, rapportPrestations.size());
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposableFerme = (RapportPrestationImposable) rapportPrestations.get(0);
+		RapportPrestationImposable rapportPrestationImposableOuvert = (RapportPrestationImposable) rapportPrestations.get(1);
+
+		assertEquals(date(2012, 12, 31), rapportPrestationImposableFerme.getDateFin());
+		assertEquals(date(2013, 4, 1), rapportPrestationImposableOuvert.getDateDebut());
+		assertEquals(null, rapportPrestationImposableOuvert.getDateFin());
+
+	}
 	//le rapport de travail existant à une date de fin antérieur à la date de début de la période de déclaration.
 	//le rapport est réouvert pour un écart inférieur ou égal a 1 jour et est fermé à la date de l'évènement en cas de décés
 	@Test

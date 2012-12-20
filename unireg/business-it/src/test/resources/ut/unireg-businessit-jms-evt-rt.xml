@@ -5,11 +5,12 @@
 
 	<bean id="rapportTravailRequestHandler" class="ch.vd.uniregctb.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler">
 		<property name="tiersService" ref="tiersService" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
+
 	</bean>
 
 
 	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestListener" parent="esbMessageListener">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
 	</bean>
 

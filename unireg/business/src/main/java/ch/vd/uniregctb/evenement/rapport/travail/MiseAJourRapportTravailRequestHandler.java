@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -24,6 +25,7 @@ import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportPrestationImposable;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.xml.Context;
 import ch.vd.uniregctb.xml.DataHelper;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -33,12 +35,16 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private static final Logger LOGGER = Logger.getLogger(MiseAJourRapportTravailRequestHandler.class);
 
 	private TiersService tiersService;
+	private final Context context = new Context();
 
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
+	public void setHibernateTemplate(HibernateTemplate template) {
+		context.hibernateTemplate = template;
+	}
 
 	@Override
 	public MiseAJourRapportTravailResponse handle(MiseAjourRapportTravail request) throws ServiceException,ValidationException {
@@ -68,6 +74,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		}
 
+		//Flush explicite afin de sauvegarder tous les changements en base avant de traiter les chevauchements.
+		context.hibernateTemplate.flush();
 		traiterDateDeFinForDebiteur(dpi, request,rapportsAModifier);
 
 		traiterChevauchementRapport(dpi,sourcier, request);
@@ -153,10 +161,10 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 				rapportsConcerne.setAnnule(true);
 			}
 
-			String message = String.format("nouveau rapport de travail créé suite à la détection de cevauchement:" +
+			String message = String.format("nouveau rapport de travail créé suite à la détection de chevauchement:" +
 					"Ce nouveau rapport commence le %s et se termine le %s.  Concerne le debiteur %s et le sourcier %s.",
 					RegDateHelper.dateToDisplayString(nouveauRapport.getDateDebut()),
-					RegDateHelper.dateToDisplayString(nouveauRapport.getDateDebut()),
+					RegDateHelper.dateToDisplayString(nouveauRapport.getDateFin()),
 					FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
 					FormatNumeroHelper.numeroCTBToDisplay(sourcier.getNumero()));
 			LOGGER.info(message);
