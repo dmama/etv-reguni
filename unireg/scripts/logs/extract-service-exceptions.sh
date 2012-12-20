@@ -70,6 +70,8 @@ done | sed -e '/^.\+$/,$ s/^$/-/' | sed -e '/^$/ D' | sed -e 's/^-$//' > "$TMPFI
 
 if [ -s "$TMPFILE" ]; then
 
+	HEADERS=$(grep "^\[" "$TMPFILE" | sed -e 's/^.*\]//' | sort | uniq -c | while read COUNT PAYLOAD; do echo "- $COUNT erreur(s) avec '$PAYLOAD'"; done)
+
 	if [ $# -ge 1 ]; then
 
 		mutt -s "Erreurs dans le service Unireg $SERVICE sur l'environnement $ENVIRONMENT en date du $FORMATTED_DAY" -- "$@" <<-EOF
@@ -77,6 +79,8 @@ if [ -s "$TMPFILE" ]; then
 			Bonjour !
 
 			Ceci est un message automatique. En date du $FORMATTED_DAY, sur l'environnement Unireg $ENVIRONMENT, des erreurs sur le service $SERVICE ont été constatées.
+
+			$(echo "$HEADERS")
 
 			Ci-joints les extraits des logs :
 
@@ -89,6 +93,12 @@ if [ -s "$TMPFILE" ]; then
 
 
 	else
+		echo "------------------------------"
+		echo "| Résumé                     |"
+		echo "------------------------------"
+		echo
+		echo "$HEADERS"
+		echo
 		cat "$TMPFILE"
 	fi
 
