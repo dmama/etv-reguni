@@ -187,10 +187,10 @@ public class IdentificationMessagesEditManagerImpl implements IdentificationMess
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void deVerouillerMessage(Long idIdentification) throws Exception {
+	public void deVerouillerMessage(Long idIdentification, boolean byAdmin) throws Exception {
 		final IdentificationContribuable identificationContribuable = identCtbDAO.get(idIdentification);
 		final String userCourant = AuthenticationHelper.getCurrentPrincipal();
-		if (userCourant.equals(identificationContribuable.getUtilisateurTraitant())) {
+		if (userCourant.equals(identificationContribuable.getUtilisateurTraitant()) || byAdmin) {
 			identificationContribuable.setUtilisateurTraitant(null);
 		}
 	}

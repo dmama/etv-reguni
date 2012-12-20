@@ -27,7 +27,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRechercheMessage" name="theForm" action="${myAction}">
+	    <form:form method="post" id="formRechercheMessage" name="theForm" action="${myAction}" commandName="identificationCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche.messages"/></span></legend>
 				<form:errors cssClass="error"/>
@@ -39,7 +39,7 @@
 			</div>
             <script type="text/javascript">
                 function traiterMessage(id) {
-                    var form = $('<form method="POST" action="' + App.curl('identification/gestion-messages/listEnCours.do?id=' + id) +'"/>');
+                    var form = $('<form method="POST" action="' + App.curl('identification/gestion-messages/demandeEdit.do?id=' + id) +'"/>');
                     form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
                     form.submit();
                 }
@@ -58,7 +58,7 @@
 				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
 					<display:column title="<input type='checkbox'  name='selectAll' onclick='javascript:IdentificationCtb.selectAllIdentifications(this);' />">
 						<c:if test="${!message.annule}">
-							<input type="checkbox" checked  name="tabIdsMessages" id="tabIdsMessages_${message_rowNum}" value="${message.id}" >
+							<input type="checkbox"   name="tabIdsMessages" id="tabIdsMessages_${message_rowNum}" value="${message.id}" >
 						</c:if>
 					</display:column>
 				</authz:authorize>
@@ -103,9 +103,9 @@
 				<display:column sortable ="true" titleKey="label.navs13" sortName="demande.personne.NAVS13">
 						<c:out value="${message.navs13}" />
 				</display:column>
-				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
-					<display:column>
-						<c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
+                <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_CELLULE_BO,ROLE_NCS_IDENT_CTB_CELLULE_BO,ROLE_LISTE_IS_IDENT_CTB_CELLULE_BO">
+                    <display:column>
+                        <c:if test="${(message.etatMessage == 'A_TRAITER_MANUELLEMENT') || (message.etatMessage == 'EXCEPTION') ||
 							 (message.etatMessage == 'A_EXPERTISER') || (message.etatMessage == 'SUSPENDU') ||
 							  (message.etatMessage == 'A_EXPERTISER_SUSPENDU') || (message.etatMessage == 'A_TRAITER_MAN_SUSPENDU')}">
 
@@ -116,7 +116,7 @@
 										</c:if>
 									</c:when>
 									<c:when test="${(message.utilisateurTraitant!=null)}">
-										<img src="<c:url value="/css/x/running.png"/>" title="En cours de Traitement par ${message.utilisateurTraitant}" />
+										<img src="<c:url value="/css/x/unlock_off.png"/>" title="En cours de Traitement par ${message.utilisateurTraitant}" />
 									</c:when>
 								</c:choose>
 						</c:if>
@@ -142,7 +142,12 @@
 						<td width="25%">&nbsp;</td>
 						<td width="50%">
 							<div class="navigation-action">
-									<input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();" />&nbsp;<input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>
+									<input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();" />&nbsp;
+                                    <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+                                    <input type="button" name="debloquer" value="<fmt:message key="label.bouton.debloquer"/>" onClick="javascript:IdentificationCtb.confirmeDeblocageMessage();"/>&nbsp;
+                                <unireg:testMode>
+                                    <input type="button" name="bloquer" value="Bloquer" onClick="javascript:IdentificationCtb.confirmeBlocageMessage();"/>
+                                </unireg:testMode>
 							</div>
 						</td>
 						<td width="25%">&nbsp;</td>

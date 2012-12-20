@@ -39,20 +39,20 @@
 					 (resultat.etatTechnique == 'A_EXPERTISER') ||
 					  (resultat.etatTechnique == 'A_EXPERTISER_SUSPENDU') ||
 					   (resultat.etatTechnique == 'A_TRAITER_MAN_SUSPENDU')}">
-						 <a href="../gestion-messages/listEnCours.do?etat=${resultat.etatTechnique}&typeMessage=${resultat.typeMessage}&periode=${resultat.periode}">
-						${resultat.nombre}</a>
-					</c:when>	
+                        <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listEnCoursFromStats.do"
+                                       params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
+					</c:when>
 					
 					<c:when test="${(resultat.etatTechnique == 'TRAITE_AUTOMATIQUEMENT') || 
 					 (resultat.etatTechnique == 'TRAITE_MANUELLEMENT') ||
 					  (resultat.etatTechnique == 'TRAITE_MAN_EXPERT') ||
 					   (resultat.etatTechnique == 'NON_IDENTIFIE')}">
-						<a href="../gestion-messages/listTraite.do?etat=${resultat.etatTechnique}&typeMessage=${resultat.typeMessage}&periode=${resultat.periode}">
-						${resultat.nombre}</a>
+                        <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listTraiteFromStats.do"
+                                       params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
 					</c:when>
 					<c:when test="${(resultat.etatTechnique == 'EXCEPTION')}">
-						<a href="../gestion-messages/listEnCours.do?etat=${resultat.etatTechnique}&typeMessage=${resultat.typeMessage}&periode=${resultat.periode}">
-						${resultat.nombre}</a>
+                        <unireg:linkTo name="${resultat.nombre}" action="/identification/gestion-messages/listEnCoursFromStats.do"
+                                       params="{etat:'${resultat.etatTechnique}',typeMessage:'${resultat.typeMessage}',periode:${resultat.periode}}" method="GET"/>
 					</c:when>
 				</c:choose>
 				</display:column>

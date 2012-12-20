@@ -103,7 +103,7 @@ public class IdentificationMessagesNonIdentifieController extends AbstractIdenti
 
 
 				identificationMessagesEditManager.impossibleAIdentifier(bean);
-				identificationMessagesEditManager.deVerouillerMessage(idMessage);
+				identificationMessagesEditManager.deVerouillerMessage(idMessage, false);
 
 				mav.setView(new RedirectView("listEnCours.do"));
 

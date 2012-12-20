@@ -7,6 +7,11 @@
 		<property name="tacheMapHelper" ref="tacheMapHelper" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
+
+	<bean id="identificationMessageValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessageValidator">
+		<property name="validatorList" ref="identificationMessagesListValidator" />
+		<property name="validatorStats" ref="identificationMessagesStatsValidator" />
+	</bean>
 	
 	<bean id="identificationMessagesListValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesListValidator" />
 	
@@ -14,34 +19,15 @@
 	
 	<bean id="identificationMessagesListController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListController" parent="abstractIdentificationController">
 		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
+		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria" />
 		<property name="commandName" value="command" />
 		<property name="formView" value="identification/gestion-messages/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="identificationMessagesListValidator" />
 		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
 	</bean>
-	<bean id="identificationMessagesListEnCoursController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListEnCoursController" parent="abstractIdentificationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="identification/gestion-messages/list" />
-		<property name="successView" value="listEnCours.do" />
-		<property name="validator" ref="identificationMessagesListValidator" />
-		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
-		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
-	</bean>
-	
-	<bean id="identificationMessagesListTraiteController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListTraiteController" parent="abstractIdentificationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="identification/gestion-messages/list" />
-		<property name="successView" value="listTraite.do" />
-		<property name="validator" ref="identificationMessagesListValidator" />
-		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
-	</bean>
-	
+
+
 	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
 		<property name="identCtbService" ref="identCtbService" />
 		<property name="identCtbDAO" ref="identCtbDAO" />
@@ -50,6 +36,11 @@
 	<bean id="identificationController" class="ch.vd.uniregctb.identification.contribuable.IdentificationController">
 		<property name="identificationMessagesStatsManager" ref="identificationMessagesStatsManager" />
 		<property name="identificationMapHelper" ref="identificationMapHelper" />
+		<property name="identificationMessagesEditManager" ref="identificationMessagesEditManager" />
+		<property name="securityProvider" ref="securityProviderCache" />
+		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
+		<property name="validator" ref="identificationMessageValidator" />
+
 
 	</bean>
 	

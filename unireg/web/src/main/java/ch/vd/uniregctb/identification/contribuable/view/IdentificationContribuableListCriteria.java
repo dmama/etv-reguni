@@ -2,7 +2,7 @@ package ch.vd.uniregctb.identification.contribuable.view;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 
-public class IdentificationMessagesListView extends IdentificationContribuableCriteria{
+public class IdentificationContribuableListCriteria extends IdentificationContribuableCriteria{
 
 
 	private String userCourant;

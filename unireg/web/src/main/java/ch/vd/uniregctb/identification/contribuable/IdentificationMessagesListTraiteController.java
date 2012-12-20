@@ -16,7 +16,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -80,7 +80,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		}
 
 
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
+		IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
 			if (fromTableauDeBord) {
@@ -108,7 +108,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 		HttpSession session = request.getSession();
 		ModelAndView mav = super.showForm(request, response, errors, model);
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
+		IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 		if (bean != null) {
 			// Récupération de la pagination
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
@@ -141,7 +141,7 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		mav.setView(new RedirectView(getSuccessView()));
 
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) command;
+		IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) command;
 		HttpSession session = request.getSession();
 
 		session.setAttribute(IDENTIFICATION_CRITERIA_NAME, bean);

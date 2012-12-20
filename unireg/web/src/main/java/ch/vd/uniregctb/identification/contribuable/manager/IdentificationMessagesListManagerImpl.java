@@ -21,7 +21,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 
 public class IdentificationMessagesListManagerImpl implements IdentificationMessagesListManager {
@@ -49,32 +49,32 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * @return
 	 */
 	@Override
-	public IdentificationMessagesListView getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat) {
-		IdentificationMessagesListView identificationMessagesListView = new IdentificationMessagesListView();
-		identificationMessagesListView.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
+	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat) {
+		IdentificationContribuableListCriteria identificationContribuableListCriteria = new IdentificationContribuableListCriteria();
+		identificationContribuableListCriteria.setUserCourant(AuthenticationHelper.getCurrentPrincipal());
 
 		if (parametreTypeMessage == null && parametrePeriode == null && parametreEtat == null) {
-			identificationMessagesListView.setTypeMessage(TOUS);
-			identificationMessagesListView.setPeriodeFiscale(-1);
-			identificationMessagesListView.setPrioriteEmetteur(TOUS);
-			identificationMessagesListView.setEtatMessage(TOUS);
+			identificationContribuableListCriteria.setTypeMessage(TOUS);
+			identificationContribuableListCriteria.setPeriodeFiscale(-1);
+			identificationContribuableListCriteria.setPrioriteEmetteur(TOUS);
+			identificationContribuableListCriteria.setEtatMessage(TOUS);
 		}
 		else {
 			if (parametreTypeMessage != null) {
-				identificationMessagesListView.setTypeMessage(parametreTypeMessage);
+				identificationContribuableListCriteria.setTypeMessage(parametreTypeMessage);
 			}
 
 			if (parametrePeriode != null) {
-				identificationMessagesListView.setPeriodeFiscale(Integer.valueOf(parametrePeriode));
+				identificationContribuableListCriteria.setPeriodeFiscale(Integer.valueOf(parametrePeriode));
 			}
 
 			if (parametreEtat != null) {
-				identificationMessagesListView.setEtatMessage(parametreEtat);
+				identificationContribuableListCriteria.setEtatMessage(parametreEtat);
 			}
 		}
 
 
-		return identificationMessagesListView;
+		return identificationContribuableListCriteria;
 	}
 
 
@@ -152,17 +152,17 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Suspendre l'identification des messages
 	 *
-	 * @param identificationMessagesListView
+	 * @param identificationContribuableListCriteria
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void suspendreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
-		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationMessagesListView.getTabIdsMessages()));
-		if (identificationMessagesListView.getTabIdsMessages() != null) {
-			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
+	public void suspendreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria) {
+		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationContribuableListCriteria.getTabIdsMessages()));
+		if (identificationContribuableListCriteria.getTabIdsMessages() != null) {
+			for (int i = 0; i < identificationContribuableListCriteria.getTabIdsMessages().length; i++) {
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationContribuableListCriteria.getTabIdsMessages()[i]);
 				if (Etat.A_TRAITER_MANUELLEMENT == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MAN_SUSPENDU);
 				}
@@ -177,17 +177,18 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 *
-	 * @param identificationMessagesListView
+	 *
+	 * @param identificationContribuableListCriteria
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void ResoumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
-		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationMessagesListView.getTabIdsMessages()));
-		if (identificationMessagesListView.getTabIdsMessages() != null) {
-			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
+	public void reSoumettreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria) {
+		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationContribuableListCriteria.getTabIdsMessages()));
+		if (identificationContribuableListCriteria.getTabIdsMessages() != null) {
+			for (int i = 0; i < identificationContribuableListCriteria.getTabIdsMessages().length; i++) {
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationContribuableListCriteria.getTabIdsMessages()[i]);
 				if (Etat.A_TRAITER_MAN_SUSPENDU == identificationContribuable.getEtat()) {
 					identificationContribuable.setEtat(Etat.A_TRAITER_MANUELLEMENT);
 				}
@@ -201,17 +202,17 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Soumettre l'identification des messages
 	 *
-	 * @param identificationMessagesListView
+	 * @param identificationContribuableListCriteria
 	 * @throws ServiceInfrastructureException
 	 * @throws EditiqueException
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public void soumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView) {
-		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationMessagesListView.getTabIdsMessages()));
-		if (identificationMessagesListView.getTabIdsMessages() != null) {
-			for (int i = 0; i < identificationMessagesListView.getTabIdsMessages().length; i++) {
-				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationMessagesListView.getTabIdsMessages()[i]);
+	public void soumettreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria) {
+		LOGGER.debug("Tab Ids messages:" + Arrays.toString(identificationContribuableListCriteria.getTabIdsMessages()));
+		if (identificationContribuableListCriteria.getTabIdsMessages() != null) {
+			for (int i = 0; i < identificationContribuableListCriteria.getTabIdsMessages().length; i++) {
+				final IdentificationContribuable identificationContribuable = identCtbDAO.get(identificationContribuableListCriteria.getTabIdsMessages()[i]);
 				identCtbService.soumettre(identificationContribuable);
 			}
 		}

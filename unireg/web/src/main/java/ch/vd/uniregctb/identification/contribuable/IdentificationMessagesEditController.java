@@ -112,7 +112,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		String parameter = request.getParameter(UNLOCK_PARAMETER);
 		if (parameter != null) {
 
-			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
 			mav.setView(new RedirectView("listEnCours.do"));
@@ -155,7 +155,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 						throw new AccessDeniedException("Vous ne possédez pas le droit d'identifier un contribuable manuellement");
 					}
 
-					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
 					mav.setView(new RedirectView("listEnCours.do"));
 
@@ -165,7 +165,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 			if (request.getParameter(BOUTON_EXPERTISER) != null) {
 				identificationMessagesEditManager.expertiser(bean.getDemandeIdentificationView().getId());
-				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 				// permettre que la vu soit recharger après modif
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 
@@ -176,7 +176,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 			if (request.getParameter(BOUTON_IMPOSSIBLE_A_IDENTIFIER) != null) {
 				identificationMessagesEditManager.impossibleAIdentifier(null);
-				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId());
+				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
 				mav.setView(new RedirectView("listEnCours.do"));
 

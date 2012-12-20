@@ -20,7 +20,7 @@ var IdentificationCtb = {
         if(confirm('Voulez-vous suspendre le(s) message(s) selectionné(s) ?')) {
             $('#desynchro').show();
             var form = $("#formRechercheMessage");
-            form.attr('action', 'listEnCours.do?suspendre=suspendre');
+            form.attr('action', 'suspendre.do');
             form.submit();
         }
     },
@@ -32,7 +32,25 @@ var IdentificationCtb = {
         if(confirm('Voulez-vous soumettre à nouveau le(s) message(s) selectionné(s) ?')) {
             $('#desynchro').show();
             var form = $("#formRechercheMessage");
-            form.attr('action', 'listEnCours.do?soumettre=soumettre');
+            form.attr('action', 'resoumettre.do');
+            form.submit();
+        }
+    },
+
+    confirmeDeblocageMessage: function() {
+        if(confirm('Voulez-vous débloquer le(s) message(s) selectionné(s) ?')) {
+            $('#desynchro').show();
+            var form = $("#formRechercheMessage");
+            form.attr('action', 'unlock.do');
+            form.submit();
+        }
+    },
+
+    confirmeBlocageMessage: function() {
+        if(confirm('Voulez-vous débloquer le(s) message(s) selectionné(s) ?')) {
+            $('#desynchro').show();
+            var form = $("#formRechercheMessage");
+            form.attr('action', 'lock.do');
             form.submit();
         }
     },

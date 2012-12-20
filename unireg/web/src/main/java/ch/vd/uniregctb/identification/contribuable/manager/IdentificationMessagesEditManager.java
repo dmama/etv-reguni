@@ -52,7 +52,7 @@ public interface IdentificationMessagesEditManager {
 	 * deverouille le message après traitement
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public  void deVerouillerMessage(Long idIdentification) throws Exception;
+	public  void deVerouillerMessage(Long idIdentification, boolean byAdmin) throws Exception;
 
 	/**
 	 * Indique si le message dont l'id est passé en paramètre est en cours de traitement donc vérouillé

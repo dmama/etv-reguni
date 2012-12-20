@@ -4,19 +4,19 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.utils.Assert;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 
 public class IdentificationMessagesListValidator implements Validator {
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean supports(Class clazz) {
-		return IdentificationMessagesListView.class.equals(clazz) ;
+		return IdentificationContribuableListCriteria.class.equals(clazz) ;
 	}
 
 	@Override
 	public void validate(Object obj, Errors errors) {
-		Assert.isTrue(obj instanceof IdentificationMessagesListView);
-		IdentificationMessagesListView identificationMessagesListView = (IdentificationMessagesListView) obj;
+		Assert.isTrue(obj instanceof IdentificationContribuableListCriteria);
+		IdentificationContribuableListCriteria identificationContribuableListCriteria = (IdentificationContribuableListCriteria) obj;
 	}
 }

@@ -9,7 +9,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 
 public interface IdentificationMessagesListManager {
@@ -33,18 +33,18 @@ public interface IdentificationMessagesListManager {
 	 * Suspendre l'identification des messages
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void suspendreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView);
+	public void suspendreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
 
 	/**
 	 * Soumettre l'identification des messages
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void soumettreIdentificationMessages(IdentificationMessagesListView identificationMessagesListView);
+	public void soumettreIdentificationMessages(IdentificationContribuableListCriteria identificationContribuableListCriteria);
 
 	/**
 	 * Alimente la vue
 	 */
-	public IdentificationMessagesListView getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat);
+	public IdentificationContribuableListCriteria getView(String parametreTypeMessage, String parametrePeriode, String parametreEtat);
 
 	/**
 	 * Recherche des identifications correspondant seulement à l'état en cours
@@ -65,6 +65,6 @@ public interface IdentificationMessagesListManager {
 	 * Re soumettre l'identification des messages qui sont remis "dans le circuit" afin d'être identifié manuellement ou expèrtisé
 	 */
 	@Transactional(rollbackFor = Throwable.class)
-	public void ResoumettreIdentificationMessages(IdentificationMessagesListView bean);
+	public void reSoumettreIdentificationMessages(IdentificationContribuableListCriteria bean);
 
 }

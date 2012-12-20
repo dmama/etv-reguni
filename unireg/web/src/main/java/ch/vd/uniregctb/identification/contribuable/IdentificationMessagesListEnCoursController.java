@@ -19,7 +19,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContr
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
-import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesListView;
+import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.Role;
@@ -95,7 +95,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			removeModuleFromSession(request, IDENTIFICATION_CRITERIA_NAME);
 		}
 
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
+		IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 
 		if (bean == null || (buttonEffacer != null && buttonEffacer.equals(EFFACER_PARAMETER_VALUE))) {
 			if (fromTableauDeBord) {
@@ -123,7 +123,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 
 		final HttpSession session = request.getSession();
 		final ModelAndView mav = super.showForm(request, response, errors, model);
-		final IdentificationMessagesListView bean = (IdentificationMessagesListView) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
+		final IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) session.getAttribute(IDENTIFICATION_CRITERIA_NAME);
 		if (bean != null) {
 			// Récupération de la pagination
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
@@ -172,7 +172,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 		ModelAndView mav = super.onSubmit(request, response, command, errors);
 		mav.setView(new RedirectView(getSuccessView()));
 
-		IdentificationMessagesListView bean = (IdentificationMessagesListView) command;
+		IdentificationContribuableListCriteria bean = (IdentificationContribuableListCriteria) command;
 		HttpSession session = request.getSession();
 
 		final String idAsString = request.getParameter(ID_MESSAGE_NAME);
@@ -196,7 +196,7 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			return mav;
 		}
 		if (request.getParameter(BOUTON_SOUMETTRE) != null) {
-			identificationMessagesListManager.ResoumettreIdentificationMessages(bean);
+			identificationMessagesListManager.reSoumettreIdentificationMessages(bean);
 			mav.setView(new RedirectView(getSuccessView()));
 			return mav;
 		}
