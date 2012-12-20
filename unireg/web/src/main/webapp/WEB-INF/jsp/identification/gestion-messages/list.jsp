@@ -136,7 +136,7 @@
 		
 		<!-- On affiche les bouton d'action sur les messages que si on a le rôle administrateur ou gestionnaire back office pour les déblocage-->
             <c:if test="${!messageTraite}">
-                <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO">
+                <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_SUPERGRA">
                     <table border="0">
                         <tr>
                             <td width="25%">&nbsp;</td>
