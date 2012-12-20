@@ -55,6 +55,18 @@ var IdentificationCtb = {
         }
     },
 
+    effacerFormulaire:function (messageEnCours) {
+        var form = $("#formRechercheMessage");
+        if(messageEnCours){
+            form.attr('action', 'effacerEnCours.do');
+        }
+        else{
+            form.attr('action', 'effacerTraite.do');
+        }
+
+        form.submit();
+    },
+
     /*
      * message impossible à identifier
      */

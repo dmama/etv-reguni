@@ -134,27 +134,29 @@
 		
 		<!-- Debut Boutons -->
 		
-		<!-- On affiche les bouton d'action sur les messages que si on a le rôle administrateur-->
-		<c:if test="${!messageTraite}">
-			<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
-				<table border="0">
-					<tr>
-						<td width="25%">&nbsp;</td>
-						<td width="50%">
-							<div class="navigation-action">
-									<input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();" />&nbsp;
-                                    <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+		<!-- On affiche les bouton d'action sur les messages que si on a le rôle administrateur ou gestionnaire back office pour les déblocage-->
+            <c:if test="${!messageTraite}">
+                <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO">
+                    <table border="0">
+                        <tr>
+                            <td width="25%">&nbsp;</td>
+                            <td width="50%">
+                                <div class="navigation-action">
+                                    <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
+                                        <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
+                                        <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+                                    </authz:authorize>
                                     <input type="button" name="debloquer" value="<fmt:message key="label.bouton.debloquer"/>" onClick="javascript:IdentificationCtb.confirmeDeblocageMessage();"/>&nbsp;
-                                <unireg:testMode>
-                                    <input type="button" name="bloquer" value="Bloquer" onClick="javascript:IdentificationCtb.confirmeBlocageMessage();"/>
-                                </unireg:testMode>
-							</div>
-						</td>
-						<td width="25%">&nbsp;</td>
-					</tr>
-				</table>
-			</authz:authorize>
-		</c:if>
+                                    <unireg:testMode>
+                                        <input type="button" name="bloquer" value="Bloquer" onClick="javascript:IdentificationCtb.confirmeBlocageMessage();"/>
+                                    </unireg:testMode>
+                                </div>
+                            </td>
+                            <td width="25%">&nbsp;</td>
+                        </tr>
+                    </table>
+                </authz:authorize>
+            </c:if>
 		<!-- Fin Boutons -->
 			
 		</form:form>

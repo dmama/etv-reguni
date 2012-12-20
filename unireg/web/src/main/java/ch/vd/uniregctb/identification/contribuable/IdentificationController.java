@@ -99,6 +99,20 @@ public class IdentificationController {
 		return "identification/tableau-bord/stats";
 	}
 
+	@RequestMapping(value = "/gestion-messages/effacerEnCours.do")
+	protected ModelAndView effacerFormulaireDeRechercheEnCours(HttpServletRequest request,ModelMap model) throws Exception {
+		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		return buildResponseForMessageEnCours(request, criteria, model);
+	}
+
+	@RequestMapping(value = "/gestion-messages/effacerTraite.do")
+	protected ModelAndView effacerFormulaireDeRechercheTraite(HttpServletRequest request,ModelMap model) throws Exception {
+		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
+		return buildReponseForMessageTraite(request, model, criteria);
+	}
+
+
+
 
 	@RequestMapping(value = {"/tableau-bord/stats.do"}, method = RequestMethod.GET)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_MESSAGE)
@@ -200,11 +214,7 @@ public class IdentificationController {
 	                              BindingResult bindingResult,
 	                              ModelMap model) throws AdressesResolutionException {
 
-		setUpModelForListMessageTraites(model);
-		model.put("identificationCriteria", criteria);
-		// Récupération de la pagination
-		construireModelMessageTraite(request, model, criteria);
-		return new ModelAndView("identification/gestion-messages/list", model);
+		return buildReponseForMessageTraite(request, model, criteria);
 	}
 
 
@@ -225,8 +235,24 @@ public class IdentificationController {
 
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
+
+	/**Construit le model est retourne le modelAndView de réponse des messages traites
+	 *
+	 * @param request
+	 * @param model
+	 * @param criteria
+	 * @return
+	 * @throws AdressesResolutionException
+	 */
+	private ModelAndView buildReponseForMessageTraite(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
+		setUpModelForListMessageTraites(model);
+		model.put("identificationCriteria", criteria);
+		construireModelMessageTraite(request, model, criteria);
+		return new ModelAndView("identification/gestion-messages/list", model);
+	}
+
 	/**
-	 * Construit le model est retourne le modelAndView de réponse
+	 * Construit le model est retourne le modelAndView de réponse des messages en cours
 	 * @param request
 	 * @param criteria
 	 * @param model
