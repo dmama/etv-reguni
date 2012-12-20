@@ -6,8 +6,6 @@
 
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
 
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.MockEvenementCivilSender"/>
-
 	<bean id="evtCivilEchNotificationQueue" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilNotificationQueue"/>
 
 	<bean id="evtCivilEchProcessor" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEvenementProcessor"/>

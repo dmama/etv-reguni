@@ -26,8 +26,7 @@
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Application" value-ref="applicationMonitoringJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Caches" value-ref="uniregCacheManager" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=Jobs" value-ref="batchScheduler" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsRegPP" value-ref="evenementsCivilsRegPPJmxBean" />
-				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivilsEch" value-ref="evenementsCivilsEchJmxBean" />
+				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=EvenementsCivils" value-ref="evenementsCivilsEchJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=RetourImpression" value-ref="retourImpressionJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=ExtractionsAsynchrones" value-ref="extractionServiceJmxBean" />
 				<entry key="ch.vd.uniregctb-web:type=Monitoring,name=AccessLoad" value-ref="webAccessLoadJmxBean" />
@@ -44,9 +43,8 @@
 		<property name="assembler" ref="jmxMessageEndpointManagerAssembler"/>
 		<property name="beans">
 			<map>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsRegPP" value-ref="evtCivilEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchMasse" value-ref="evtCivilEchMasseEndpointManager"/>
-				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsEchIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsMasse" value-ref="evtCivilEchMasseEndpointManager"/>
+				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsPM" value-ref="entrepriseEventEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=RetourImpression" value-ref="evenementEditiqueEndpointManager"/>
 				<entry key="ch.vd.uniregctb-web:type=JmsListeners,name=EvenementsExternes" value-ref="evenementExterneEndpointManager"/>
@@ -90,11 +88,6 @@
 	<bean name="preferencesPropertiesJmxBean" class="ch.vd.registre.jmx.PropertiesJmxBeanImpl">
 		<constructor-arg ref="uniregExternalProperties" />
 		<constructor-arg><bean class="ch.vd.uniregctb.utils.UniregProperties$UniregPropertiesAdapterFactoryBean"/></constructor-arg>
-	</bean>
-
-	<bean name="evenementsCivilsRegPPJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsRegPPJmxBeanImpl">
-		<property name="evenementCivilAsyncProcessor" ref="evenementCivilAsyncProcessor"/>
-		<property name="endpointManager" ref="evtCivilEndpointManager"/>
 	</bean>
 
 	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">

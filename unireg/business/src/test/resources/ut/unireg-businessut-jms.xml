@@ -41,15 +41,6 @@
 
 	<bean id="eFactureMessageSender" class="ch.vd.uniregctb.efacture.MockEFactureMessageSender" />
 
-	<bean id="evenementCivilAsyncProcessor" class="ch.vd.uniregctb.evenement.civil.engine.regpp.EvenementCivilAsyncProcessorImpl">
-		<property name="delaiPriseEnCompte" value="1"/>
-		<property name="fetchAwaitingEventsOnStart" value="false"/>
-		<property name="evenementCivilRegPPDAO" ref="evenementCivilRegPPDAO"/>
-		<property name="transactionManager" ref="transactionManager" />
-		<property name="hibernateTemplate" ref="hibernateTemplate"/>
-		<property name="evenementCivilProcessor" ref="evenementCivilProcessor"/>
-	</bean>
-
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
 	<bean id="evtCivilEchProcessorRetry" class="ch.vd.uniregctb.evenement.civil.engine.ech.MockEvenementCivilEchRetryProcessor"/>

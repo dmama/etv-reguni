@@ -6,7 +6,6 @@
 	<bean id="evenementFiscalSender" class="ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender" />
 	<bean id="editiqueService" class="ch.vd.uniregctb.editique.mock.MockEditiqueService"/>
 	<bean id="editiqueCompositionService" class="ch.vd.uniregctb.editique.mock.MockEditiqueCompositionService"/>
-	<bean id="evtCivilSender" class="ch.vd.uniregctb.evenement.civil.regpp.jms.MockEvenementCivilSender" />
 	<bean id="evenementDeclarationSender" class="ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender"/>
 	<bean id="bamMessageSender" class="ch.vd.uniregctb.jms.MockBamMessageSender"/>
 
