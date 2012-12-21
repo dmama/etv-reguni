@@ -13,7 +13,6 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import ch.vd.uniregctb.annulation.deces.AnnulationDecesListController;
 import ch.vd.uniregctb.annulation.separation.manager.AnnulationSeparationRecapManager;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.indexer.IndexerException;
@@ -25,7 +24,7 @@ import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public class AnnulationSeparationListController extends AbstractTiersListController {
 
-	protected final Logger LOGGER = Logger.getLogger(AnnulationDecesListController.class);
+	protected final Logger LOGGER = Logger.getLogger(AnnulationSeparationListController.class);
 
 	public static final String ACTION_PARAMETER_NAME = "action";
 	public static final String ACTION_PARAMETER_EFFACER = "effacer";

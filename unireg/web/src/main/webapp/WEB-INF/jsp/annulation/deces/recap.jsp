@@ -19,6 +19,7 @@
   	<tiles:put name="body">
 
 	  	<form:form method="post" id="formRecapAnnulationDeces"  name="formRecapAnnulationDeces">
+			<form:hidden path="personne.numero" />
 			<jsp:include page="../../general/pp.jsp">
 				<jsp:param name="page" value="annulationDeces" />
 				<jsp:param name="path" value="personne" />

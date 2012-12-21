@@ -26,25 +26,12 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 
 	private TiersGeneralManager tiersGeneralManager;
 
-
-	public TiersService getTiersService() {
-		return tiersService;
-	}
-
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
 	}
 
-	public MetierService getMetierService() {
-		return metierService;
-	}
-
 	public void setMetierService(MetierService metierService) {
 		this.metierService = metierService;
-	}
-
-	public TiersGeneralManager getTiersGeneralManager() {
-		return tiersGeneralManager;
 	}
 
 	public void setTiersGeneralManager(TiersGeneralManager tiersGeneralManager) {
@@ -54,9 +41,6 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 
 	/**
 	 * Alimente la vue AnnulationDecesRecapView
-	 *
-	 * @param numero
-	 * @return
 	 */
 	@Override
 	@Transactional(readOnly = true)
@@ -64,7 +48,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 		AnnulationDecesRecapView annulationDecesRecapView = new AnnulationDecesRecapView();
 		PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(numero);
 		if (pp == null) {
-			throw new ObjectNotFoundException(this.getMessageSource().getMessage("error.pp.inexistante", null, WebContextUtils.getDefaultLocale()));
+			throw new ObjectNotFoundException(messageSource.getMessage("error.pp.inexistante", null, WebContextUtils.getDefaultLocale()));
 		}
 		TiersGeneralView personneView = tiersGeneralManager.getPersonnePhysique(pp, true);
 		annulationDecesRecapView.setPersonne(personneView);
@@ -92,9 +76,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 	}
 
 	/**
-	 * Persiste le rapport
-	 *
-	 * @param annulationDecesRecapView
+	 * Persiste l'annulation de décès
 	 */
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
@@ -110,10 +92,7 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 			} else {
 				metierService.annuleDeces(pp, annulationDecesRecapView.getDateDeces());
 			}
-
 		}
-
-
 	}
 
 	private boolean isVeuvageMarieSeul(PersonnePhysique pp) {
@@ -133,14 +112,6 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 		final Tiers tiers = tiersService.getTiers(noTiers);
 		return tiers instanceof PersonnePhysique && tiersService.isDecede((PersonnePhysique) tiers);
 	}
-
-	/**
-	 * @return the messageSource
-	 */
-	protected MessageSource getMessageSource() {
-		return messageSource;
-	}
-
 
 	@Override
 	public void setMessageSource(MessageSource messageSource) {

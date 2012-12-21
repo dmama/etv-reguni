@@ -5,7 +5,6 @@
 	<bean id="adressesEditController" class="ch.vd.uniregctb.tiers.AdressesEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/adresse/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="adresseManager" ref="adresseManager" />
@@ -14,7 +13,6 @@
 	<bean id="closeAdressesController" class="ch.vd.uniregctb.tiers.CloseAdressesController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.AdresseView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/adresse/adresse-close" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="adresseManager" ref="adresseManager" />

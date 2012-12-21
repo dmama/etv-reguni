@@ -44,7 +44,7 @@ public abstract class AbstractSimpleFormController extends CommonSimpleFormContr
 	public final static String PARAMETER_URL_RETOUR = "__URL_RETOUR__";
 
 	private boolean modified = false;
-	private ControllerUtils controllerUtils;
+	protected ControllerUtils controllerUtils;
 
 	private String target;
 	private String eventArgument;

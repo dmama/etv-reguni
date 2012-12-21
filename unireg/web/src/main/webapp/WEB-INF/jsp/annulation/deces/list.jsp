@@ -11,7 +11,7 @@
 	</tiles:put>
   	<tiles:put name="body">
 		<unireg:nextRowClass reset="1"/>
-	    <form:form method="post" id="formRecherchePP">
+	    <form:form method="post" id="formRecherchePP" commandName="AnnulationDecesCriteria">
 			<fieldset>
 				<legend><span><fmt:message key="label.criteres.recherche"/></span></legend>
 				<form:errors  cssClass="error"/>

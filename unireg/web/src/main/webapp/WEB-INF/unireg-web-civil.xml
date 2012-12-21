@@ -5,7 +5,6 @@
 	<bean id="civilEditController" class="ch.vd.uniregctb.tiers.CivilEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/civil/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="validator" ref="civilEditValidator" />

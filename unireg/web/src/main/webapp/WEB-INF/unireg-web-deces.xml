@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+
 	<bean id="decesListController" class="ch.vd.uniregctb.deces.DecesListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
@@ -33,25 +34,13 @@
 		<property name="metierService" ref="metierService" />
 	</bean>
 
-	<bean id="annulationDecesListController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesListController" parent="abstractTiersListController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
-		<property name="commandName" value="command" />
-		<property name="annulationDecesRecapManager" ref="annulationDecesRecapManager" />
-		<property name="formView" value="annulation/deces/list" />
-		<property name="successView" value="list.do" />
-		<property name="validator" ref="tiersCriteriaValidator" />
+	<bean id="annulationDecesController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesController">
+		<property name="validator" ref="tiersCriteriaValidator"/>
+		<property name="manager" ref="annulationDecesRecapManager"/>
+		<property name="tiersMapHelper" ref="tiersMapHelper"/>
+		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
 
-	<bean id="annulationDecesRecapController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesRecapController" parent="abstractSimpleFormController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.annulation.deces.view.AnnulationDecesRecapView" />
-		<property name="commandName" value="command" />
-		<property name="annulationDecesRecapManager" ref="annulationDecesRecapManager" />
-		<property name="formView" value="annulation/deces/recap" />
-		<property name="successView" value="/tiers/visu.do" />
-	</bean>
-	
 	<bean id="annulationDecesRecapManager" class="ch.vd.uniregctb.annulation.deces.manager.AnnulationDecesRecapManagerImpl"  >
 		<property name="metierService" ref="metierService" />
 		<property name="tiersService" ref="tiersService" />

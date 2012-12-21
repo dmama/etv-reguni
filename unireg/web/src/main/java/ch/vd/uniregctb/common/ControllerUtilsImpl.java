@@ -2,14 +2,22 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
 import org.springframework.web.util.HtmlUtils;
 
+import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
+import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 import ch.vd.uniregctb.type.Niveau;
 
 public class ControllerUtilsImpl implements ControllerUtils {
@@ -18,8 +26,14 @@ public class ControllerUtilsImpl implements ControllerUtils {
 	
 	private SecurityProviderInterface securityProvider;
 
+	private  TiersService tiersService;
+
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
 	}
 
 	@Override
@@ -118,5 +132,19 @@ public class ControllerUtilsImpl implements ControllerUtils {
 			ret = b.toString();
 		}
 		return StringUtils.trimToNull(ret);
-	}	
+	}
+
+	@Override
+	public  List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
+
+		final List<TiersIndexedData> results = tiersService.search(bean.asCore());
+		Assert.notNull(results);
+
+		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
+		for (TiersIndexedData d : results) {
+			list.add(new TiersIndexedDataView(d));
+		}
+
+		return list;
+	}
 }

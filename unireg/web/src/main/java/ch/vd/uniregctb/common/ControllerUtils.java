@@ -2,7 +2,11 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
 import ch.vd.uniregctb.security.AccessDeniedException;
+import ch.vd.uniregctb.tiers.TiersIndexedDataView;
+import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
 public interface ControllerUtils {
 	/**
@@ -54,4 +58,6 @@ public interface ControllerUtils {
 	String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination);
 
 	String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue, boolean htmlEscape);
+
+	List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean);
 }

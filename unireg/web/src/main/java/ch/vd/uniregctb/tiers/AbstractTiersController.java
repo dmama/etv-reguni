@@ -2,14 +2,11 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -49,7 +46,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		data.put(PERIODICITE_DECOMPTE_MAP_NAME, tiersMapHelper.getMapPeriodiciteDecompte());
 		data.put(CATEGORIE_IMPOT_SOURCE_MAP_NAME, tiersMapHelper.getMapCategorieImpotSource());
 		data.put(TEXTE_CASE_POSTALE_MAP_NAME, tiersMapHelper.getMapTexteCasePostale());
-
 		data.put(ETAT_CIVIL, tiersMapHelper.getMapEtatsCivil());
 		data.put(TYPE_ADRESSE_TIERS, tiersMapHelper.getMapTypeAdresse());
 		data.put(TYPE_ADRESSE_FISCALE_TIERS,tiersMapHelper.getMapTypeAdresseFiscale());
@@ -261,7 +257,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	public final static String BUTTON_SAVE = "__confirmed_save";
 
-	protected TiersService service;
+
 	protected TiersMapHelper tiersMapHelper;
 
 	/**
@@ -269,11 +265,6 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	 */
 	public void setTiersMapHelper(TiersMapHelper tiersMapHelper) {
 		this.tiersMapHelper = tiersMapHelper;
-	}
-
-	@SuppressWarnings({"JavaDoc"})
-	public final void setService(TiersService service) {
-		this.service = service;
 	}
 
 	@SuppressWarnings({"JavaDoc"})
@@ -286,16 +277,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	}
 
 	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
-
-		final List<TiersIndexedData> results = service.search(bean.asCore());
-		Assert.notNull(results);
-
-		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
-		for (TiersIndexedData d : results) {
-			list.add(new TiersIndexedDataView(d));
-		}
-
-		return list;
+		return controllerUtils.searchTiers(bean);
 	}
 }
 

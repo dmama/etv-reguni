@@ -78,9 +78,6 @@
 				<!-- Deces -->
 				<entry key="/deces/list.do" value-ref="decesListController" />
 				<entry key="/deces/recap.do" value-ref="decesRecapController" />
-				<!-- Annulation deces -->
-				<entry key="/annulation/deces/list.do" value-ref="annulationDecesListController" />
-				<entry key="/annulation/deces/recap.do" value-ref="annulationDecesRecapController" />
 			</map>
 		</property>
 	</bean>

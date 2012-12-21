@@ -5,7 +5,6 @@
 	<bean id="fiscalEditController" class="ch.vd.uniregctb.tiers.FiscalEditController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/fiscal/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="forFiscalManager" ref="forFiscalManager" />
@@ -15,7 +14,6 @@
 	<bean id="fiscalEditForDebiteurController" class="ch.vd.uniregctb.tiers.FiscalEditForDebiteurController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/fiscal/edit-for-debiteur" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="forFiscalManager" ref="forFiscalManager" />

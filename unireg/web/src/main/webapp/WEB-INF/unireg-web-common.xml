@@ -179,6 +179,7 @@
 
 	<bean id="controllerUtils" class="ch.vd.uniregctb.common.ControllerUtilsImpl">
 		<property name="securityProvider" ref="securityProviderInterface"/>
+		<property name="tiersService" ref="tiersService"/>
 	</bean>
 
 </beans>

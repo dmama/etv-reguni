@@ -8,7 +8,6 @@
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
 		<property name="commandName" value="command" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="acces/par-dossier/list-pp" />
 		<property name="successView" value="list-pp.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
@@ -75,7 +74,6 @@
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView" />
 		<property name="commandName" value="command" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="acces/par-utilisateur/list-pp" />
 		<property name="successView" value="list-pp-utilisateur.do" />
 		<property name="utilisateurManager" ref="utilisateurManager" />

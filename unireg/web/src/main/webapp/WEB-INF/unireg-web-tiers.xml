@@ -4,7 +4,6 @@
 
 	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersController">
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
-		<property name="service" ref="tiersService" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
@@ -51,7 +50,6 @@
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
 		<property name="tiersListManager" ref="tiersListManager" />
 		<property name="commandName" value="command" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/recherche/list" />
 		<property name="successView" value="list.do" />
 		<property name="validator" ref="tiersCriteriaValidator" />
@@ -90,7 +88,6 @@
 	<bean id="tiersCreateController" class="ch.vd.uniregctb.tiers.TiersCreateController" parent="abstractTiersController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersEditView" />
-		<property name="service" ref="tiersService" />
 		<property name="formView" value="tiers/edition/edit" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 		<property name="validator" ref="tiersEditValidator" />
@@ -187,7 +184,6 @@
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.DebiteurEditView" />
 		<property name="formView" value="tiers/edition/debiteur/edit" />
-		<property name="service" ref="tiersService" />
 		<property name="tiersEditManager" ref="tiersEditManager" />
 	</bean>
 
