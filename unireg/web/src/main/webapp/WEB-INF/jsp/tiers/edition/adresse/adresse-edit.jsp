@@ -26,7 +26,7 @@
 				width: 30em;
 				margin-left: 0.5em;
 				margin-right: 0.5em;
-				text-align: left; /* bug IE6 */
+				text-align: left; /* bug IE8 */
 			}
 			#adresseSuccessoral {
 				background-color: #FAF3A3;
@@ -91,7 +91,7 @@
 			<c:set var="lengthadrnom" value="<%=LengthConstants.ADRESSE_NOM%>" scope="request" />
 			<c:set var="lengthadrnum" value="<%=LengthConstants.ADRESSE_NUM%>" scope="request" />
 
-			<span><%-- span vide pour que IE6 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+			<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 			<fieldset><legend><span><fmt:message key="label.nouvelleAdresse" /></span></legend>
 				<div id="adresse_saisie" >
 					<table border="0">
@@ -280,7 +280,7 @@
 		<div id="tabContent_repriseAdresseTab" class="editTiers">
 			<c:if test="${not empty command.adresseDisponibles}">
 				<c:if test="${command.nature != 'DebiteurPrestationImposable' && command.nature != 'NonHabitant'}">
-					<span><%-- span vide pour que IE6 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
+					<span><%-- span vide pour que IE8 calcul correctement la hauteur du fieldset (voir fieldsets-workaround.jsp) --%></span>
 					<fieldset>
 					<legend><span><fmt:message key="title.edition.adresseActives" /></span></legend>
 					<table>

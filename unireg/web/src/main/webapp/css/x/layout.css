@@ -7,8 +7,7 @@
 	background-image: url(fond_header_1_120.gif);
 	background-repeat: repeat-x;
 	height: 120px;
-	margin-left: 11.5em; /* firefox + IE7 */
-	_margin-left: 11.25em; /* IE6 */
+	margin-left: 11.5em;
 	margin-right: 5px;
 	min-width: 800px;
 }
@@ -233,10 +232,10 @@ table {
 }
 
 /*
- * Workaround du bug IE6 qui calcule mal la largeur d'une table avec width=100% lorsqu'il y a un div 
- * avec float=left : il suffit de définir la table avec width=99% et de l'encapsuler dans un div avec width=99%. 
+ * Workaround du bug IE6 qui calcule mal la largeur d'une table avec width=100% lorsqu'il y a un div
+ * avec float=left : il suffit de définir la table avec width=99% et de l'encapsuler dans un div avec width=99%.
  */
-.workaround_IE6_bug, .display_table {
+.workaround_IE_bug, .display_table {
 	width: 99%;
 }
 
@@ -406,7 +405,6 @@ INPUT.readonly {
 
 .validation_error, .action_error, .warnings {
 	width: auto;
-	_width: 0; /* IE6 equivalent de auto */
 	font-size: x-small;
 	margin: 0.5em auto;
 	margin-left: 2em;
@@ -729,7 +727,6 @@ fieldset.info {
 }
 
 fieldset.info div.output {
-	width: 50em; /* nécessaire pour IE6 */
 	height: 50em;
 	overflow: auto;
 }
@@ -754,18 +751,6 @@ fieldset.info .asciiart {
 	padding: 0.2em;
 	font-family: monospace;
 	font-size: 11px;
-	width: 50em; /* nécessaire pour IE6 */
-	overflow: auto;
-}
-
-fieldset.info .console {
-	padding: 0.2em;
-	font-family: monospace;
-	font-size: 11px;
-	background-color: black; 
-	color: white;
-	width: 50em; /* nécessaire pour IE6 */
-	height: 50em;
 	overflow: auto;
 }
 
@@ -901,13 +886,6 @@ div.progress-bar-text {
 /*
  * Override de 2-3 trucs pour rendre les tabs jQuery plus dans le style Unireg
  */
-
-div.ui-tabs {
-	/**
-	 * On force une marge de 10px parce qu'autrement IE6 sautille lorsque le tab sélectionné change et qu'on utilise les cookies pour mémoriser la dernière sélection.
-	 */
-	margin-top: 10px;
-}
 
 .ui-tabs {
 	border: 0;

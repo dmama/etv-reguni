@@ -14,8 +14,7 @@
 
 #tabs li {
 	display: inline;
-	padding-top: 5px; /* firefox */
-	.padding-top: 0px; /* IE6 + IE7 */
+	padding-top: 5px;
 	margin-left: -3px;
 	padding-left: 4px;
 	border-bottom: 1px solid #765;

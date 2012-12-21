@@ -1686,7 +1686,7 @@ var App = {
 	 * @param cp le context path de déploiement de l'application (e.g. http://localhost:8080/fiscalite/unireg/web)
 	 */
 	init: function(cp) {
-		cp = cp.replace(/;jsessionid.*$/, ''); // supprime le jsession id qui apparaît de temps en temps dans IE6...
+		cp = cp.replace(/;jsessionid.*$/, ''); // supprime le jsession id qui apparaît de temps en temps dans IE...
 		this.contextPath = cp;
 		Ajax.init(); // appel immédiat pour catcher tous les appels ajax à partir de maintenant
 	},

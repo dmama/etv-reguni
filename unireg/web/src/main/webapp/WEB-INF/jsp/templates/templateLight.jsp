@@ -10,7 +10,6 @@
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
 		<%@ include file="cssInclude.jsp" %>
-		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 		<%@ include file="jsInclude.jsp" %>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>
@@ -79,7 +78,7 @@
 					</c:if>
 
 					<h1><tiles:getAsString name='title' ignore='true'/></h1>
-					<div class="workaround_IE6_bug">
+					<div class="workaround_IE_bug">
 						<tiles:getAsString name='body' />
 					</div>
 				</div>

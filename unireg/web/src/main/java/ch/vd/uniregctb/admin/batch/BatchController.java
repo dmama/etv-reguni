@@ -101,7 +101,7 @@ public class BatchController {
 		if (sp != null) {
 			for (Map.Entry<String, Object> param : sp.entrySet()) {
 				final JobParam jobparam = job.getParameterDefinition(param.getKey());
-				if (jobparam != null) { // il arrive que IE6 foire un peu et reposte les paramètres d'un formulaire posté précédemment...
+				if (jobparam != null) { // il arrive que IE foire un peu et reposte les paramètres d'un formulaire posté précédemment...
 					final Object value = param.getValue();
 					final Object typedValue;
 					if (value instanceof String) {

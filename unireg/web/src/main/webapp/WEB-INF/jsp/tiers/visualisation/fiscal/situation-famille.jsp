@@ -19,15 +19,3 @@
 
 	</fieldset>
 </c:if>
-
-<!--[if IE 6]>
-<script>
-	$(function() {
-		$('#isForHisto').click(function() {
-			// [SIFISC-380] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
-			$('#sitFamFieldset').addClass('toresize');
-			$('#sitFamFieldset').removeClass('toresize');
-		});
-	});
-</script>
-<![endif]-->

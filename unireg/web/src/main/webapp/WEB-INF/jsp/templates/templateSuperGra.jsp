@@ -11,7 +11,6 @@
 
 		<%@ include file="cssInclude.jsp" %>
 		<link media="screen" href="<c:url value="/css/x/supergra.css"/>" rel="stylesheet" type="text/css">
-		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 		<%@ include file="jsInclude.jsp" %>
 
 		<title><tiles:getAsString name='title' ignore='false'/></title>
@@ -126,7 +125,7 @@
 							</c:if>
 						</spring:hasBindErrors>
 					</div>
-					<div class="workaround_IE6_bug">
+					<div class="workaround_IE_bug">
 						<tiles:getAsString name='body' />
 					</div>
 				</div>

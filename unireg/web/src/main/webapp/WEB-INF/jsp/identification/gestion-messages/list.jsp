@@ -40,7 +40,7 @@
             <script type="text/javascript">
                 function traiterMessage(id) {
                     var form = $('<form method="POST" action="' + App.curl('identification/gestion-messages/demandeEdit.do?id=' + id) +'"/>');
-                    form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
+                    form.appendTo('body');
                     form.submit();
                 }
 

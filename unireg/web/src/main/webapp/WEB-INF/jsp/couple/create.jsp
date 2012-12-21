@@ -15,7 +15,7 @@
 				margin-left: auto;
 				margin-right: auto;
 				/* _width: 0; */
-				text-align: left; /* bug IE6 */
+				text-align: left; /* bug IE8 */
 			}
 		</style>
 	</tiles:put>

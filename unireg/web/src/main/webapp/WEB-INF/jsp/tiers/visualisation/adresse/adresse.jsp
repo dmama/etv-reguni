@@ -68,24 +68,4 @@
 	</jsp:include>
 </fieldset>
 
-
-<!--[if IE 6]>
-<script>
-	$(function() {
-		$('#isAdrHisto').click(function() {
-			// [SIFISC-787] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
-			$('#adrCivPrincipalFieldset').addClass('toresize');
-			$('#adrCivPrincipalFieldset').removeClass('toresize');
-		});
-
-		$('#isAdrHistoCiviles').click(function() {
-			// [SIFISC-787] on force le recalcul des widgets parce que IE6 ne détecte pas le changement autrement.
-			$('#adrCivConjointFieldset').addClass('toresize');
-			$('#adrCivConjointFieldset').removeClass('toresize');
-		});
-	});
-</script>
-<![endif]-->
-
-
 <!-- Fin Adresse -->

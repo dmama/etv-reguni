@@ -22,13 +22,13 @@
 				<script type="text/javascript">
 					function reinitMouvementDossierMasse(id) {
 						var form = $('<form method="POST" action="' + App.curl('/mouvement/masse/reinit.do?id=' + id +'&pagination=${pagination}') + '"/>');
-						form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
+						form.appendTo('body');
 						form.submit();
 					}
 
 					function annulerMouvementDossierMasse(id) {
 						var form = $('<form method="POST" action="' + App.curl('/mouvement/masse/cancel.do?id=' + id +'&pagination=${pagination}') + '"/>');
-						form.appendTo('body'); // [UNIREG-3151] obligatoire pour que cela fonctionne avec IE6
+						form.appendTo('body');
 						form.submit();
 					}
 

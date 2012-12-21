@@ -41,29 +41,13 @@ legend a.delete {
 .individu tr.even, .entreprise tr.even, .adresse tr.even, .information tr.even,.imposition tr.even,
 .prestations_imposables tr.even, .for_fiscal tr.even, .categorie tr.even, .situation_fiscale tr.even,
  .autres_roles tr.even, .rechercheTiers tr.even, .rechercheEvenement tr.even, .editTiers tr.even,
-.seulPP tr.even, .couplePremierePP tr.even, .coupleSecondePP tr.even {
+.seulPP tr.even {
 	background-color: #ddd;
 }
 
 .individu tr.odd, .entreprise tr.odd, .adresse tr.odd, .information tr.odd, .imposition tr.odd,
 .prestations_imposables tr.odd, .for_fiscal tr.odd, .categorie tr.odd, .situation_fiscale tr.odd,
  .autres_roles tr.odd, .rechercheTiers tr.odd, .rechercheEvenement tr.odd, .editTiers tr.odd {
-}
-
-
-.couplePremierePP, .coupleSecondePP {
-    /* 48% autrement IE6 met les fieldsets l'un dessous l'autre */
-	width: 48%;
-}
-
-.couplePremierePP {
-	margin-right: 5px;
-	display:inline;
-	float: left;
-}
-
-.coupleSecondePP {
-	float: left;
 }
 
 div.coupleMergeArrow {

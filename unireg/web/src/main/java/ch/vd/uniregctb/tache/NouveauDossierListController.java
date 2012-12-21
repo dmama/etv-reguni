@@ -51,22 +51,6 @@ public class NouveauDossierListController extends AbstractTacheController {
 		this.tacheListManager = tacheListManager;
 	}
 
-	public NouveauDossierListController() {
-		super();
-		/*
-		 * [UNIREG-486] Workaround pour un bug de IE6 qui empêche d'ouvrir correctement les fichier attachés PDFs.
-		 *
-		 * Voir aussi:
-		 *  - http://drupal.org/node/93787
-		 *  - http://support.microsoft.com/default.aspx?scid=kb;en-us;316431
-		 *  - http://bugs.php.net/bug.php?id=16173
-		 *  - http://pkp.sfu.ca/support/forum/viewtopic.php?p=359&sid=4516e6d325c613c7875f67e1b9194c57
-		 *  - http://forum.springframework.org/showthread.php?t=24466
-		 */
-		setCacheSeconds(-1);
-	}
-
-
 	/**
 	 * @see org.springframework.web.servlet.mvc.AbstractFormController#formBackingObject(javax.servlet.http.HttpServletRequest)
 	 */

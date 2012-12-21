@@ -10,7 +10,6 @@
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
 		<%@ include file="cssInclude.jsp" %>
-		<%@ include file="/WEB-INF/jsp/include/png-workaround.jsp" %>
 		<%@ include file="/WEB-INF/jsp/include/fieldsets-workaround.jsp" %>
 
 		<script type="text/javascript" language="javascript">
@@ -299,6 +298,8 @@
 						</c:if>
 					</c:if>
 
+					<%@ include file="/WEB-INF/jsp/include/ie6-warning.jsp" %>
+
 					<h1><tiles:getAsString name='title' ignore='true'/></h1>
 					<div id="globalErrors">
 						<c:set var="globalErrorCount" value="0"/>
@@ -336,7 +337,7 @@
 							</table>
 						</c:if>
 					</div>
-					<div class="workaround_IE6_bug">
+					<div class="workaround_IE_bug">
 						<tiles:getAsString name='body' />
 					</div>
 				</div>

@@ -70,7 +70,7 @@
 							'<input type="hidden" name="__TARGET__" value="annulerRapport"/>' +
 							'<input type="hidden" name="__EVENT_ARGUMENT__" value="' + idRapport + '"/>' +
 							'<input type="hidden" name="__URL_RETOUR__" value="' + window.location + '"/></form>');
-						form.appendTo('body'); // [UNIREG-3256] obligatoire pour que cela fonctionne avec IE6
+						form.appendTo('body');
 						form.submit();
 					}
 				}

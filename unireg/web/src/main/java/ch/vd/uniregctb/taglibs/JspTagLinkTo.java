@@ -143,7 +143,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 		}
 		sb.append(">");
 		if (StringUtils.isBlank(name)) {
-			sb.append("&nbsp;"); // compatibilité IE6
+			sb.append("&nbsp;"); // compatibilité IE8
 		}
 		else {
 			sb.append(HtmlUtils.htmlEscape(name));
