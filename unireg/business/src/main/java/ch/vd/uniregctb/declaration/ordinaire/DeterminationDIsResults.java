@@ -10,6 +10,8 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.TacheAnnulationDeclarationImpot;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.TypeContribuable;
+import ch.vd.uniregctb.type.TypeDocument;
 
 /**
  * Contient les données brutes permettant de générer le document de rapport de l'exécution du processeur.
@@ -102,14 +104,20 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 		public final Integer officeImpotID;
 		public final RegDate dateDebut;
 		public final RegDate dateFin;
+		public final Integer codeSegment;
+		public final TypeDocument typeDocument;
+		public final TypeContribuable typeContribuable;
 		public final TraiteType raison;
 
-		public Traite(long noCtb, Integer officeImpotID, RegDate dateDebut, RegDate dateFin, TraiteType raison) {
+		public Traite(long noCtb, Integer officeImpotID, RegDate dateDebut, RegDate dateFin, TraiteType raison, Integer codeSegment, TypeDocument typeDocument, TypeContribuable typeContribuable) {
 			this.noCtb = noCtb;
 			this.officeImpotID = officeImpotID;
 			this.dateDebut = dateDebut;
 			this.dateFin = dateFin;
 			this.raison = raison;
+			this.codeSegment = codeSegment;
+			this.typeDocument = typeDocument;
+			this.typeContribuable = typeContribuable;
 		}
 	}
 
@@ -128,16 +136,16 @@ public class DeterminationDIsResults extends JobResults<Long, DeterminationDIsRe
 	}
 
 	public void addTacheEnvoiCreee(Contribuable ctb, TacheEnvoiDeclarationImpot tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_CREEE));
+		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_CREEE, tache.getCodeSegment(), tache.getTypeDocument(), tache.getTypeContribuable()));
 	}
 
 	public void addTacheEnvoiAnnulee(Contribuable ctb, TacheEnvoiDeclarationImpot tache) {
-		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_ANNULEE));
+		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDateDebut(), tache.getDateFin(), TraiteType.TACHE_ENVOI_ANNULEE, null, null, null));
 	}
 
 	public void addTacheAnnulationCreee(Contribuable ctb, TacheAnnulationDeclarationImpot tache) {
 		traites.add(new Traite(ctb.getNumero(), ctb.getOfficeImpotId(), tache.getDeclarationImpotOrdinaire().getDateDebut(), tache.getDeclarationImpotOrdinaire().getDateFin(),
-				TraiteType.TACHE_ANNULATION_CREE));
+		                       TraiteType.TACHE_ANNULATION_CREE, null, null, null));
 	}
 
 	public void addErrorCtbInvalide(Contribuable ctb) {

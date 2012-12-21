@@ -108,7 +108,10 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 					b.append("Numéro de contribuable").append(COMMA);
 					b.append("Début de la période").append(COMMA);
 					b.append("Fin de la période").append(COMMA);
-					b.append("Raison");
+					b.append("Raison").append(COMMA);
+					b.append("Code segment").append(COMMA);
+					b.append("Type de document").append(COMMA);
+					b.append("Type de contribuable");
 				}
 
 				@Override
@@ -117,7 +120,10 @@ public class PdfDeterminationDIsRapport extends PdfRapport {
 					b.append(info.noCtb).append(COMMA);
 					b.append(info.dateDebut).append(COMMA);
 					b.append(info.dateFin).append(COMMA);
-					b.append(info.raison.description());
+					b.append(CsvHelper.escapeChars(info.raison.description())).append(COMMA);
+					b.append(info.codeSegment != null ? info.codeSegment : EMPTY).append(COMMA);
+					b.append(info.typeDocument != null ? info.typeDocument : EMPTY).append(COMMA);
+					b.append(info.typeContribuable != null ? info.typeContribuable : EMPTY);
 					return true;
 				}
 			});
