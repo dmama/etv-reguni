@@ -130,7 +130,8 @@ public class EfactureManagerImpl implements EfactureManager {
 				final EtatDemandeView etatView = getEtatDemande(jt.previous());
 				etatsDemande.add(etatView);
 			}
-			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getTypeDemande(), etatsDemande);
+			final DemandeAvecHistoView view = new DemandeAvecHistoView(demande.getIdDemande(), demande.getDateDemande(), demande.getNoAvs(),
+			                                                           demande.getEmail(), demande.getTypeDemande(), etatsDemande);
 			demandes.add(view);
 		}
 		res.setDemandes(demandes);

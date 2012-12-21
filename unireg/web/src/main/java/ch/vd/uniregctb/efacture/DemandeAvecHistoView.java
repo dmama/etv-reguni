@@ -8,6 +8,7 @@ import org.apache.commons.lang.StringUtils;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.TypeDemande;
 import ch.vd.unireg.interfaces.efacture.data.TypeEtatDemande;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
 
 /**
  * Les états sont dans l'ordre inverse de leur validité (= l'état courant est en premier)
@@ -16,12 +17,16 @@ public class DemandeAvecHistoView {
 
 	private final String idDemande;
 	private final RegDate dateDemande;
+	private final String avs;
+	private final String email;
 	private final String descriptionTypeDemande;
 	private final List<EtatDemandeView> etats;
 
-	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, TypeDemande typeDemande, List<EtatDemandeView> etats) {
+	public DemandeAvecHistoView(String idDemande, RegDate dateDemande, String avs, String email, TypeDemande typeDemande, List<EtatDemandeView> etats) {
 		this.idDemande = idDemande;
 		this.dateDemande = dateDemande;
+		this.avs = avs != null ? FormatNumeroHelper.formatNumAVS(avs) : StringUtils.EMPTY;
+		this.email = email != null ? email : StringUtils.EMPTY;
 		this.descriptionTypeDemande = typeDemande != null ? typeDemande.getDescription() : StringUtils.EMPTY;
 
 		if (etats == null || etats.isEmpty()) {
@@ -48,6 +53,16 @@ public class DemandeAvecHistoView {
 	@SuppressWarnings("UnusedDeclaration")
 	public String getDescriptionTypeDemande() {
 		return descriptionTypeDemande;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getAvs() {
+		return avs;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public String getEmail() {
+		return email;
 	}
 
 	public EtatDemandeView getEtatCourant() {

@@ -84,7 +84,9 @@
             html += '<th style="width:2em;">&nbsp;</th>';
             html += '<th width="10%"><fmt:message key="label.efacture.date.demande"/></th>';
 	        html += '<th><fmt:message key="label.efacture.type.demande"/></th>';
-            html += '<th><fmt:message key="label.efacture.etat.courant"/></th>';
+	        html += '<th><fmt:message key="label.efacture.avs"/></th>';
+	        html += '<th><fmt:message key="label.efacture.email"/></th>';
+	        html += '<th><fmt:message key="label.efacture.etat.courant"/></th>';
             html += '<th width="10%"><fmt:message key="label.efacture.date.obtention.etat.courant"/></th>';
             html += '<th><fmt:message key="label.efacture.motifTransition"/></th>';
             html += '</tr></thead>\n';
@@ -95,7 +97,9 @@
                 html += '<tr class="' + (d % 2 == 0 ? 'odd' : 'even') + '">';
                 html += '<td style="height:20px;"><img style="vertical-align: top;" id="toggle_ef_' + demande.idDemande + '" src="<c:url value="/images/plus.gif"/>" onclick="eFacture.toggleShowDetailDemande(' + demande.idDemande + ');"/>&nbsp;</td>';
                 html += '<td>' + RegDate.format(demande.dateDemande) + '</td>';
-	            html += '<td>' + StringUtils.escapeHTML(demande.descriptionTypeDemande) + '</td>';
+	            html += '<td title="ID : ' + StringUtils.escapeHTML(demande.idDemande) + '">' + StringUtils.escapeHTML(demande.descriptionTypeDemande) + '</td>';
+	            html += '<td>' + StringUtils.escapeHTML(demande.avs) + '</td>';
+	            html += '<td>' + StringUtils.escapeHTML(demande.email) + '</td>';
 
                 var etatCourant = demande.etatCourant;
                 html += '<td>' + StringUtils.escapeHTML(etatCourant.descriptionEtat) + '</td>';
@@ -105,7 +109,7 @@
 
                 html += '<tr style="display:none;" class="' + (d % 2 == 0 ? 'odd' : 'even') + '" id="detail_ef_' + demande.idDemande + '">';
                 html += '<td>&nbsp;</td>';
-                html += '<td colspan="5">';
+                html += '<td colspan="7">';
                 html += eFacture.buildHistoriqueEtatsDemande(noCtb, demande.idDemande, demande.etats);
                 html += '</td>';
                 html += '</tr>\n';
