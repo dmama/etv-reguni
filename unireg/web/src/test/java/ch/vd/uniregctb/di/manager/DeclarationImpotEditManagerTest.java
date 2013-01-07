@@ -431,7 +431,7 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 
 		// le contribuable est assujetti depuis l'année courante, il ne doit pas être possible d'ajouter une DI dans le futur
 		PersonnePhysique paul = addNonHabitant("Paul", "Duruz", date(1977, 3, 15), Sexe.MASCULIN);
-		addForPrincipal(paul, date(anneeCourante, 1, 11), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		addForPrincipal(paul, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
 		// assujetti sur toute l'année courante
 		assertFullYearRangesSince(anneeCourante, false, manager.calculateRangesProchainesDIs(paul));

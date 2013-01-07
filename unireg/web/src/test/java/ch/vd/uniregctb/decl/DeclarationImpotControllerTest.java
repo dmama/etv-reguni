@@ -194,7 +194,7 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 			public Long execute(TransactionStatus status) throws Exception {
 				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(anneeCourante, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
+				addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Vaulion);
 
 				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneeCourante);
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periodeFiscale);
@@ -235,24 +235,24 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 	@Test
 	public void testQuittancerDIHorsCanton() throws Exception {
 
-		final int anneePrecedente = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(anneePrecedente, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
+				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Geneve);
 
-				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneePrecedente);
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, periodeFiscale);
-				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
-				addEtatDeclarationEmise(declaration, date(anneePrecedente + 1, 1, 15));
+				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.HORS_CANTON, modeleDocument);
+				addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
 				return declaration.getId();
 			}
 		});
 
-		final RegDate dateQuittance = date(anneePrecedente + 1, 3, 15);
+		final RegDate dateQuittance = date(annee + 1, 3, 15);
 
 		request.setMethod("POST");
 		request.addParameter("id", diId.toString());
@@ -287,24 +287,24 @@ public class DeclarationImpotControllerTest extends WebTestSpring3 {
 	@Test
 	public void testQuittancerDIOrdinaireBatch() throws Exception {
 
-		final int anneePrecedente = RegDate.get().year() - 1;
+		final int annee = RegDate.get().year() - 2;
 
 		final Long diId = doInNewTransactionAndSession(new TxCallback<Long>() {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				addCollAdm(ServiceInfrastructureService.noCEDI);
 				final PersonnePhysique pp = addNonHabitant("Alfred", "Dupontel", date(1960, 5, 12), Sexe.MASCULIN);
-				addForPrincipal(pp, date(anneePrecedente, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+				addForPrincipal(pp, date(annee, 6, 12), MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
 
-				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(anneePrecedente);
+				final PeriodeFiscale periodeFiscale = addPeriodeFiscale(annee);
 				final ModeleDocument modeleDocument = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, periodeFiscale);
-				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(anneePrecedente, 1, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
-				addEtatDeclarationEmise(declaration, date(anneePrecedente + 1, 1, 15));
+				final Declaration declaration = addDeclarationImpot(pp, periodeFiscale, date(annee, 1, 1), date(annee, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				addEtatDeclarationEmise(declaration, date(annee + 1, 1, 15));
 				return declaration.getId();
 			}
 		});
 
-		final RegDate dateQuittance = date(anneePrecedente + 1, 3, 15);
+		final RegDate dateQuittance = date(annee + 1, 3, 15);
 
 		request.setMethod("POST");
 		request.addParameter("id", diId.toString());
