@@ -289,8 +289,8 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 		declaration.setModeleDocument(modele);
 
 
-		Audit.info(String.format("Impression (%s/%s) d'un duplicata de DI pour le contribuable %d et la période [%s ; %s]",
-		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), declaration.getTiers().getNumero(),
+		Audit.info(String.format("Impression (%s/%s) d'un duplicata de DI (%s) pour le contribuable %d et la période [%s ; %s]",
+		                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(), modele.getTypeDocument(), declaration.getTiers().getNumero(),
 		                         RegDateHelper.dateToDashString(declaration.getDateDebut()), RegDateHelper.dateToDashString(declaration.getDateFin())));
 
 		return diService.envoiDuplicataDIOnline(declaration, RegDate.get(), typeDocument, annexes);

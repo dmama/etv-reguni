@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -641,10 +642,11 @@ public class ListeRecapEditManagerImpl implements ListeRecapEditManager, Message
 		try {
 			final DeclarationImpotSource lr = lrDAO.get(lrEditView.getId());
 
-			Audit.info(String.format("Impression d'un duplicata de LR pour le débiteur %d et la période [%s ; %s]",
-									lr.getTiers().getNumero(),
-									RegDateHelper.dateToDashString(lr.getDateDebut()),
-									RegDateHelper.dateToDashString(lr.getDateFin())));
+			Audit.info(String.format("Impression (%s/%s) d'un duplicata de LR pour le débiteur %d et la période [%s ; %s]",
+			                         AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOIDSigle(),
+			                         lr.getTiers().getNumero(),
+			                         RegDateHelper.dateToDashString(lr.getDateDebut()),
+			                         RegDateHelper.dateToDashString(lr.getDateFin())));
 			
 			return editiqueCompositionService.imprimeLROnline(lr, RegDate.get(), TypeDocument.LISTE_RECAPITULATIVE);
 		}
