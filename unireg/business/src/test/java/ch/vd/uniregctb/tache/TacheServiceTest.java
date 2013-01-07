@@ -269,13 +269,13 @@ public class TacheServiceTest extends BusinessTest {
 				hab.setNumeroIndividu(333908L);
 				hab = hibernateTemplate.merge(hab);
 
-				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(periodeCourante, 6, 11), 5586,
+				ForFiscalPrincipal forFiscalPrincipalDepart = new ForFiscalPrincipal(RegDate.get(2008, 6, 12), RegDate.get(periodeCourante, 1, 2), 5586,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipalDepart.setMotifOuverture(MotifFor.ARRIVEE_HC);
 				forFiscalPrincipalDepart.setMotifFermeture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipalDepart);
 
-				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 6, 12), null, 5652,
+				ForFiscalPrincipal forFiscalPrincipal = new ForFiscalPrincipal(RegDate.get(periodeCourante, 1, 3), null, 5652,
 						TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
 				forFiscalPrincipal.setMotifOuverture(MotifFor.DEMENAGEMENT_VD);
 				hab.addForFiscal(forFiscalPrincipal);
@@ -3496,7 +3496,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// Un contribuable assujetti depuis le début de l'année avec déjà une déclaration
 		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
-		addForPrincipal(pp, date(anneeCourante, 1, 12), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
+		addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
 
 		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode);
@@ -4167,7 +4167,7 @@ public class TacheServiceTest extends BusinessTest {
 		final long noIndividu = 12345678L;
 		final int anneeCourante = RegDate.get().year();
 		final RegDate dateArrivee = date(anneeCourante - 1, 5, 12);
-		final RegDate dateDepart = date(anneeCourante, 4, 30);
+		final RegDate dateDepart = date(anneeCourante, 1, 4);
 
 		// mise en place civile
 		serviceCivil.setUp(new DefaultMockServiceCivil(true) {
