@@ -2,11 +2,14 @@ package ch.vd.uniregctb.tiers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
+import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.param.manager.ParamApplicationManager;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
@@ -20,6 +23,7 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 
 	public final static String URL_RETOUR_SESSION_NAME = "urlRetour";
 
+	protected TiersService tiersService;
 	private ParamApplicationManager paramApplicationManager;
 	protected SecurityProviderInterface securityProvider;
 
@@ -267,7 +271,10 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 		this.tiersMapHelper = tiersMapHelper;
 	}
 
-	@SuppressWarnings({"JavaDoc"})
+	public void setTiersService(TiersService tiersService) {
+		this.tiersService = tiersService;
+	}
+
 	public void setParamApplicationManager(ParamApplicationManager paramApplicationManager) {
 		this.paramApplicationManager = paramApplicationManager;
 	}
@@ -277,7 +284,15 @@ public abstract class AbstractTiersController extends AbstractSimpleFormControll
 	}
 
 	protected List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean) {
-		return controllerUtils.searchTiers(bean);
+		final List<TiersIndexedData> results = tiersService.search(bean.asCore());
+		Assert.notNull(results);
+
+		final List<TiersIndexedDataView> list = new ArrayList<TiersIndexedDataView>(results.size());
+		for (TiersIndexedData d : results) {
+			list.add(new TiersIndexedDataView(d));
+		}
+
+		return list;
 	}
 }
 

@@ -2,9 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
 
-	<bean 	id="dossierListController"
-			class="ch.vd.uniregctb.acces.parDossier.DossierListController"
-			parent="abstractTiersListController">
+	<bean id="dossierListController" class="ch.vd.uniregctb.acces.parDossier.DossierListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
 		<property name="commandName" value="command" />
@@ -68,9 +66,7 @@
 	<bean id="selectUtilisateurValidator" class="ch.vd.uniregctb.acces.parUtilisateur.validator.SelectUtilisateurValidator" >
 	</bean>
 
-	<bean 	id="utilisateurListPersonneController"
-			class="ch.vd.uniregctb.acces.parUtilisateur.UtilisateurListPersonneController"
-			parent="abstractTiersListController">
+	<bean id="utilisateurListPersonneController" class="ch.vd.uniregctb.acces.parUtilisateur.UtilisateurListPersonneController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.acces.parUtilisateur.view.UtilisateurListPersonneView" />
 		<property name="commandName" value="command" />

@@ -3,13 +3,13 @@
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
 	<bean id="abstractTiersController" parent="abstractSimpleFormController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersController">
+		<property name="tiersService" ref="tiersService" />
 		<property name="tiersMapHelper" ref="tiersMapHelper" />
 		<property name="paramApplicationManager" ref="paramApplicationManager" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
 	<bean id="abstractTiersListController" parent="abstractTiersController" abstract="true" class="ch.vd.uniregctb.tiers.AbstractTiersListController">
-		<property name="tiersService" ref="tiersService" />
 		<property name="infraService" ref="serviceInfrastructureService" />
 	</bean>
 
@@ -43,9 +43,7 @@
 		<property name="validationService" ref="validationService"/>
 	</bean>
 
-	<bean 	id="tiersListController"
-			class="ch.vd.uniregctb.tiers.TiersListController"
-			parent="abstractTiersListController">
+	<bean id="tiersListController" class="ch.vd.uniregctb.tiers.TiersListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
 		<property name="tiersListManager" ref="tiersListManager" />

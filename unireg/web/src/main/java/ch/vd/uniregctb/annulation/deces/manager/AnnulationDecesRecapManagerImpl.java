@@ -12,18 +12,14 @@ import ch.vd.uniregctb.general.view.TiersGeneralView;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.metier.MetierServiceException;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
-import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.utils.WebContextUtils;
 
 public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapManager, MessageSourceAware {
 
 	private TiersService tiersService;
-
 	private MetierService metierService;
-
 	private MessageSource messageSource;
-
 	private TiersGeneralManager tiersGeneralManager;
 
 	public void setTiersService(TiersService tiersService) {
@@ -97,20 +93,6 @@ public class AnnulationDecesRecapManagerImpl implements AnnulationDecesRecapMana
 
 	private boolean isVeuvageMarieSeul(PersonnePhysique pp) {
 		return tiersService.isVeuvageMarieSeul(pp);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public boolean isVeuvageMarieSeul(long noTiers) {
-		final Tiers tiers = tiersService.getTiers(noTiers);
-		return tiers instanceof PersonnePhysique && tiersService.isVeuvageMarieSeul((PersonnePhysique) tiers);
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public boolean isDecede(long noTiers) {
-		final Tiers tiers = tiersService.getTiers(noTiers);
-		return tiers instanceof PersonnePhysique && tiersService.isDecede((PersonnePhysique) tiers);
 	}
 
 	@Override

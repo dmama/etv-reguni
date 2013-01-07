@@ -2,12 +2,11 @@ package ch.vd.uniregctb.common;
 
 import javax.servlet.http.HttpServletRequest;
 
-import java.util.List;
-
 import ch.vd.uniregctb.security.AccessDeniedException;
-import ch.vd.uniregctb.tiers.TiersIndexedDataView;
-import ch.vd.uniregctb.tiers.view.TiersCriteriaView;
 
+/**
+ * Collection de méthodes utilitaires <b>générales</b> en relation avec les contrôleurs Spring MVC 3.
+ */
 public interface ControllerUtils {
 	/**
 	 * Vérifie que l'opérateur courant possède les droits d'accès en lecture et écriture sur le <b>dossier</b> du tiers spécifié.
@@ -58,6 +57,4 @@ public interface ControllerUtils {
 	String getDisplayTagRequestParametersForPagination(String tableName, ParamPagination pagination);
 
 	String getDisplayTagRequestParametersForPagination(String tableName, String pageParamValue, String sortUsingNameParamValue, String sortParamValue, String orderParamValue, boolean htmlEscape);
-
-	List<TiersIndexedDataView> searchTiers(TiersCriteriaView bean);
 }

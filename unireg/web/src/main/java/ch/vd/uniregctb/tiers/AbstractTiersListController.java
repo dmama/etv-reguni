@@ -30,7 +30,6 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 
 	protected final Logger LOGGER = Logger.getLogger(AbstractTiersListController.class);
 
-	protected TiersService tiersService;
 	protected ServiceInfrastructureService infraService;
 
 	/**
@@ -98,11 +97,6 @@ public abstract class AbstractTiersListController extends AbstractTiersControlle
 			removeModuleFromSession(request, criteriaName);
 		}
 		return mav;
-	}
-
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setTiersService(TiersService tiersService) {
-		this.tiersService = tiersService;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})

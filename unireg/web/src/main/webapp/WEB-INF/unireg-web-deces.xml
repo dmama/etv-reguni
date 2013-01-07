@@ -2,7 +2,6 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-
 	<bean id="decesListController" class="ch.vd.uniregctb.deces.DecesListController" parent="abstractTiersListController">
 		<property name="sessionForm" value="true" />
 		<property name="commandClass" value="ch.vd.uniregctb.tiers.view.TiersCriteriaView" />
@@ -37,6 +36,7 @@
 	<bean id="annulationDecesController" class="ch.vd.uniregctb.annulation.deces.AnnulationDecesController">
 		<property name="validator" ref="tiersCriteriaValidator"/>
 		<property name="manager" ref="annulationDecesRecapManager"/>
+		<property name="tiersService" ref="tiersService"/>
 		<property name="tiersMapHelper" ref="tiersMapHelper"/>
 		<property name="controllerUtils" ref="controllerUtils"/>
 	</bean>
