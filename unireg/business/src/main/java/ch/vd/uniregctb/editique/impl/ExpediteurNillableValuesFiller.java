@@ -3,8 +3,7 @@ package ch.vd.uniregctb.editique.impl;
 import noNamespace.InfoEnteteDocumentDocument1;
 
 /**
- * Classe utilitaire pour remplir un objet Expediteur
- * avec soit sa valeur, soit nil .... vive l'API xmlbeans...
+ * Classe utilitaire pour remplir un objet Expediteur avec soit sa valeur, soit nil .... vive l'API xmlbeans...
  */
 public class ExpediteurNillableValuesFiller {
 
@@ -30,36 +29,39 @@ public class ExpediteurNillableValuesFiller {
 	}
 
 	/**
-	 * Remplit l'objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur} cible
-	 * avec les value
+	 * Remplit l'objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur} cible avec les value
+	 *
 	 * @param expediteurCible objet cible
 	 */
 	public void fill(InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur expediteurCible) {
 		if (adrMes != null) {
 			expediteurCible.setAdrMes(adrMes);
-		} else {
+		}
+		else {
 			expediteurCible.setNilAdrMes();
 		}
 		if (numFax != null) {
 			expediteurCible.setNumFax(numFax);
-		} else {
+		}
+		else {
 			expediteurCible.setNilNumFax();
 		}
 		if (numCCP != null) {
 			expediteurCible.setNumCCP(numCCP);
-		} else {
+		}
+		else {
 			expediteurCible.setNilNumCCP();
 		}
 		if (numTelephone != null) {
 			expediteurCible.setNumTelephone(numTelephone);
-		} else {
+		}
+		else {
 			expediteurCible.setNilNumTelephone();
 		}
 	}
 
 	/**
-	 * Initialise les champs du Filler avec les valeurs des champs correpondant
-	 * d'un objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur}
+	 * Initialise les champs du Filler avec les valeurs des champs correpondant d'un objet {@link InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur}
 	 *
 	 * @param expediteurSource l'objet source
 	 */
