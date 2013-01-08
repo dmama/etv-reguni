@@ -4,7 +4,7 @@
 <unireg:setAuth var="autorisations" tiersId="${command.tiers.numero}"/>
 <c:set var="showEditLink" value="${autorisations.donneesFiscales && empty param['message'] && empty param['retour']}" />
 <c:set var="showTimelineLink" value="${false}" />
-<authz:authorize ifAnyGranted="ROLE_VISU_ALL">
+<authz:authorize ifAnyGranted="ROLE_VISU_ALL,ROLE_VISU_FORS">
 	<c:set var="showTimelineLink" value="${not empty command.forsFiscaux}" />
 </authz:authorize>
 
