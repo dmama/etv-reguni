@@ -17,6 +17,8 @@ import org.hibernate.dialect.Dialect;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.infra.data.Commune;
 import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -53,7 +55,7 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 
 		final Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
 		try {
-			Collection tuples = selectTiers(session);
+			final Collection<Object[]> tuples = selectTiers(session);
 			if (!getStatusManager().interrupted()) {
 				updateTiers(session, buildMapConversion(tuples));
 			}
@@ -71,7 +73,8 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 	 * Retrouve l'ensemble des non-habitants dont on doit convertir le no ofs en libelle
 	 *
 	 */
-	private Collection selectTiers(final Session session) {
+	@SuppressWarnings("unchecked")
+	private Collection<Object[]> selectTiers(final Session session) {
 		return session.createSQLQuery(
 			"select NUMERO, NH_NO_OFS_COMMUNE_ORIGINE from TIERS " +
 				" where PP_HABITANT = " + dialect.toBooleanValueString(false) +
@@ -90,33 +93,34 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 	 * ------------------       -----------------------------------------------
 	 * </pre>
 	 */
-	private Map<Integer, MapValue> buildMapConversion(final Collection tuples) {
+	private Map<Integer, MapValue> buildMapConversion(final Collection<Object[]> tuples) {
 		// construction d'un set avec les differents numeroOfs
 		final Set<Integer> numerosOfs = new HashSet<Integer>(2000);
-		for (Object tuple : tuples) {
-			numerosOfs.add(((BigDecimal)((Object[])tuple)[1]).intValue());
+		for (Object[] tuple : tuples) {
+			numerosOfs.add(((BigDecimal) tuple[1]).intValue());
 		}
 
 		//initialisation de la map de conversion no ofs commune -> libelle commune
-		final Map<Integer, MapValue> mapConversion = new HashMap<Integer, MapValue>(2000);
+		final RegDate today = RegDate.get();
+		final Map<Integer, MapValue> mapConversion = new HashMap<Integer, MapValue>(numerosOfs.size());
 		for (Integer ofs : numerosOfs) {
-			final String libelle = serviceInfra.getCommuneByNumeroOfs(ofs, RegDate.get()).getNomOfficiel();
-			if (libelle == null) {
-				LOGGER.warn("Le service infrastructure ne connait pas pas la commune no OFS " + ofs);
+			final Commune commune = serviceInfra.getCommuneByNumeroOfs(ofs, today);
+			if (commune == null) {
+				LOGGER.warn("Le service infrastructure ne connait pas pas la commune no OFS " + ofs + " au " + RegDateHelper.dateToDisplayString(today));
 				continue;
 			}
-			mapConversion.put(ofs, new MapValue(libelle));
+			mapConversion.put(ofs, new MapValue(commune.getNomOfficiel()));
 		}
 
 		// remplissage de la map avec les contribuables "à convertir"
-		for (Object tuple : tuples) {
-		final Long noCtb = ((BigDecimal)((Object[])tuple)[0]).longValue();
-		final Integer noOfs = ((BigDecimal)((Object[])tuple)[1]).intValue();
-		final MapValue value = mapConversion.get(noOfs);
-		if (value != null) {
-			value.contribuables.add(noCtb);
+		for (Object[] tuple : tuples) {
+			final Long noCtb = ((BigDecimal) tuple[0]).longValue();
+			final Integer noOfs = ((BigDecimal) tuple[1]).intValue();
+			final MapValue value = mapConversion.get(noOfs);
+			if (value != null) {
+				value.contribuables.add(noCtb);
+			}
 		}
-	}
 		return mapConversion;
 	}
 
