@@ -7977,8 +7977,6 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesEnvoiDetailleComplete() throws Exception {
 
-		final RegDate dateDeces = date(2008, 5, 23);
-
 		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
 		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1987, 2, 12), null, MockRue.CossonayVille.AvenueDuFuniculaire);
 
@@ -8001,8 +7999,6 @@ public class AdresseServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testAdressesEnvoiDetailleeCompleteAvecCasePostale() throws Exception {
 
-		final RegDate dateDeces = date(2008, 5, 23);
-
 		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
 		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
 		addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1987, 2, 12), null,MockLocalite.CossonayVille.getNoOrdre(),casePostale);
@@ -8023,13 +8019,52 @@ public class AdresseServiceTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testAdressesEnvoiDetailleePaysInconnue() throws Exception {
-
-		final RegDate dateDeces = date(2008, 5, 23);
+	public void testAdressesEnvoiDetailleeCompleteAvecComplement() throws Exception {
 
 		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
-		CasePostale casePostale = new CasePostale(TexteCasePostale.CASE_POSTALE,5123);
-		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(1987, 2, 12), null,null,null,MockPays.PaysInconnu);
+		final AdresseSuisse adr = addAdresseSuisse(pp, TypeAdresseTiers.COURRIER, date(1987, 2, 12), null, MockLocalite.CossonayVille.getNoOrdre(), null);
+		assertNull(adr.getRue());
+		assertNull(adr.getTexteCasePostale());
+		assertNull(adr.getComplement());
+
+		// incomplète
+		{
+			final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+			assertNotNull(adresses);
+
+			final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+			assertNotNull(adresse0);
+			assertTrue(adresse0.isIncomplete());
+			assertEquals(date(1987, 2, 12), adresse0.getDateDebut());
+			assertEquals("Madame", adresse0.getLigne1());
+			assertEquals("Frida Labruyère", adresse0.getLigne2());
+			assertEquals("1304 Cossonay-Ville", adresse0.getLigne3());
+		}
+
+		// complète
+		{
+			adr.setComplement("Chez Maman...");
+
+			final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
+			assertNotNull(adresses);
+
+			final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
+			assertNotNull(adresse0);
+			assertFalse(adresse0.isIncomplete());
+			assertEquals(date(1987, 2, 12), adresse0.getDateDebut());
+			assertEquals("Madame", adresse0.getLigne1());
+			assertEquals("Frida Labruyère", adresse0.getLigne2());
+			assertEquals("Chez Maman...", adresse0.getLigne3());
+			assertEquals("1304 Cossonay-Ville", adresse0.getLigne4());
+		}
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testAdressesEnvoiDetailleePaysInconnue() throws Exception {
+
+		final PersonnePhysique pp = addNonHabitant("Frida", "Labruyère", date(1987, 2, 12), Sexe.FEMININ);
+		addAdresseEtrangere(pp,TypeAdresseTiers.COURRIER,date(1987, 2, 12), null, null, null, MockPays.PaysInconnu);
 
 		final AdressesEnvoiHisto adresses = adresseService.getAdressesEnvoiHisto(pp, true);
 		assertNotNull(adresses);
@@ -8037,8 +8072,6 @@ public class AdresseServiceTest extends BusinessTest {
 		final AdresseEnvoiDetaillee adresse0 = adresses.courrier.get(0);
 		assertNotNull(adresse0);
 		assertTrue(adresse0.isIncomplete());
-
-
 	}
 
 	/**

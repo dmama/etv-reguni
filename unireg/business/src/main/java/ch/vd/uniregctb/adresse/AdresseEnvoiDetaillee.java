@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.registre.base.date.DateRange;
@@ -348,7 +349,7 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 	}
 
 	/**Determine si une adresse d'envoi est incomplète selont les critères suivant:
-	 *Une adresse est incomplete si la rue, la localité, le pays sont absents ou si l'une d'elle a une valeur égal à null ou inconnu
+	 * Une adresse est incomplete si la rue, la localité, le pays sont absents ou si l'une d'elle a une valeur égal à null ou inconnu
 	 *
 	 * @return <b>vrai</b> si l'adresse est incomplete selon les régles ACI,<b>faux</b> autrement.
 	 */
@@ -356,12 +357,11 @@ public class AdresseEnvoiDetaillee extends AdresseEnvoi implements DateRange {
 
 		final boolean rueVideOuInconnue = rueEtNumero == null || RueEtNumero.VIDE.equals(rueEtNumero);
 		final boolean casePostaleInconnue = casePostale == null;
+		final boolean complementVideOuInconnu = StringUtils.isBlank(complement);
 		final boolean localiteVideOuInconnue = npaEtLocalite == null || NpaEtLocalite.VIDE.equals(npaEtLocalite);
-		final boolean paysVideOuInconnue = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
+		final boolean paysVideOuInconnu = pays == null || pays.getNoOFS() == ServiceInfrastructureService.noPaysInconnu;
 
-		return (rueVideOuInconnue && casePostaleInconnue) || localiteVideOuInconnue || paysVideOuInconnue;
-
-
+		return (rueVideOuInconnue && casePostaleInconnue && complementVideOuInconnu) || localiteVideOuInconnue || paysVideOuInconnu;
 	}
 
 	@Override
