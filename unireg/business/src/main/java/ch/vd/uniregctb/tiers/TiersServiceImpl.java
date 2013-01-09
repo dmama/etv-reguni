@@ -1109,8 +1109,6 @@ public class TiersServiceImpl implements TiersService {
     /**
      * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable
      *
-     * @param debiteur
-     * @param contribuable
      * @return le rapport
      */
     @Override
@@ -1122,9 +1120,6 @@ public class TiersServiceImpl implements TiersService {
     /**
      * Ajout d'un rapport de type contact impôt source entre le débiteur et le contribuable avec une date de début
      *
-     * @param debiteur
-     * @param contribuable
-     * @param dateDebut
      * @return le rapport
      */
     @Override
@@ -2248,9 +2243,6 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Réouvre le for et l'assigne au tiers.
-     *
-     * @param ff
-     * @param tiers
      */
     @Override
     public void reopenFor(ForFiscal ff, Tiers tiers) {
@@ -2470,7 +2462,57 @@ public class TiersServiceImpl implements TiersService {
         return forCorrige;
     }
 
-    /**
+	private ForFiscalSecondaire corrigerMotifs(@NotNull ForFiscalSecondaire forFiscal, MotifFor motifOuverture, MotifFor motifFermeture) {
+		if (forFiscal.getMotifOuverture() == motifOuverture && forFiscal.getMotifFermeture() == motifFermeture) {
+			// rien à faire
+			return null;
+		}
+
+		final Tiers tiers = forFiscal.getTiers();
+		Assert.notNull(tiers);
+
+		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
+		ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) forFiscal.duplicate();
+		forFiscal.setAnnule(true);
+		forCorrige.setMotifOuverture(motifOuverture);
+		forCorrige.setMotifFermeture(motifFermeture);
+		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
+
+		// notifie le reste du monde
+		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
+			final MotifFor motifChange = (forFiscal.getMotifOuverture() == motifOuverture ? motifFermeture : motifOuverture);
+			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifChange, forCorrige.getId());
+		}
+
+		return forCorrige;
+	}
+
+	private ForFiscalRevenuFortune corrigerMotifFermeture(@NotNull ForFiscalRevenuFortune forFiscal, MotifFor motifFermeture) {
+		if (forFiscal.getMotifFermeture() == motifFermeture) {
+			// rien à faire
+			return null;
+		}
+
+		final Tiers tiers = forFiscal.getTiers();
+		Assert.notNull(tiers);
+
+		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
+		ForFiscalRevenuFortune forCorrige = (ForFiscalRevenuFortune) forFiscal.duplicate();
+		forFiscal.setAnnule(true);
+		forCorrige.setMotifFermeture(motifFermeture);
+		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
+
+		// notifie le reste du monde
+		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
+			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFermeture, forCorrige.getId());
+		}
+
+		return forCorrige;
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override
@@ -2544,6 +2586,9 @@ public class TiersServiceImpl implements TiersService {
 			// le for a été fermé
 			updated = closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
 		}
+		else if (ffaei.getMotifFermeture() != motifFermeture) {
+			updated = (ForFiscalAutreElementImposable) corrigerMotifFermeture(ffaei, motifFermeture);
+		}
 
 		if (ffaei.getDateFin() != dateFermeture) {
 			// les dates de début ou de fin ont été changées
@@ -2574,6 +2619,9 @@ public class TiersServiceImpl implements TiersService {
 			// les dates de début ou de fin ont été changées
 			updated = (ForFiscalSecondaire) corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 		}
+		else if (ffs.getMotifOuverture() != motifOuverture || ffs.getMotifFermeture() != motifFermeture) {
+			updated = corrigerMotifs(ffs, motifOuverture, motifFermeture);
+		}
 
 		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
 			// l'autorité fiscale a été changée
@@ -2592,6 +2640,9 @@ public class TiersServiceImpl implements TiersService {
 		if (ffp.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
 			updated = closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
+		}
+		else if (ffp.getMotifFermeture() != motifFermeture) {
+			updated = (ForFiscalPrincipal) corrigerMotifFermeture(ffp, motifFermeture);
 		}
 
 		if (ffp.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
@@ -2888,9 +2939,6 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Fusionne un non habitant avec un habitant
-     *
-     * @param habitant
-     * @param nonHabitant
      */
     @Override
     public void fusionne(PersonnePhysique habitant, PersonnePhysique nonHabitant) {
@@ -2954,9 +3002,6 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Copie les informations Complements
-     *
-     * @param tiersCible
-     * @param tiersSource
      */
     private void copieComplements(Tiers tiersSource, Tiers tiersCible) {
         tiersCible.setComplementNom(tiersSource.getComplementNom());
@@ -3000,9 +3045,6 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Copie les attributs de ForFiscal
-     *
-     * @param forFiscalSource
-     * @param forFiscalCible
      */
     private void copieForFiscal(ForFiscal forFiscalSource, ForFiscal forFiscalCible) {
         forFiscalCible.setDateDebut(forFiscalSource.getDateDebut());
@@ -3015,9 +3057,6 @@ public class TiersServiceImpl implements TiersService {
 
     /**
      * Copie les attributs de ForFiscalRevenuFortune
-     *
-     * @param forFiscalRevenuFortuneSource
-     * @param forFiscalRevenuFortuneCible
      */
     private void copieForFiscalRevenuFortune(ForFiscalRevenuFortune forFiscalRevenuFortuneSource,
                                              ForFiscalRevenuFortune forFiscalRevenuFortuneCible) {
@@ -4211,7 +4250,7 @@ public class TiersServiceImpl implements TiersService {
     /**
      * Extrait Le numéro d'individu à partir d'un tiers si c'est possible
      *
-     * @param tiers
+     * @param tiers un tiers
      * @return le numéro d'individu de la personne physique ou de la personne principal du menage. null si le tiers ne possède pas de numéro d'individu
      */
     @Override

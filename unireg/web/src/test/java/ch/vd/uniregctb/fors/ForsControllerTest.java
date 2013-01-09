@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,8 +35,10 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForDebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.ForFiscal;
+import ch.vd.uniregctb.tiers.ForFiscalAutreElementImposable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
+import ch.vd.uniregctb.tiers.ForsParType;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
@@ -435,13 +436,13 @@ public class ForsControllerTest extends WebTestSpring3 {
 		// On vérifie que l'ouverture du for sur le pays invalide a bien été interdit
 		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
 		assertNotNull(bindingResult);
-		Assert.assertEquals(1, bindingResult.getErrorCount());
+		assertEquals(1, bindingResult.getErrorCount());
 
 		final List<?> errors = bindingResult.getAllErrors();
 		final FieldError error = (FieldError) errors.get(0);
 		assertNotNull(error);
-		Assert.assertEquals("noAutoriteFiscale", error.getField());
-		Assert.assertEquals("error.pays.non.valide", error.getCode());
+		assertEquals("noAutoriteFiscale", error.getField());
+		assertEquals("error.pays.non.valide", error.getCode());
 
 		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
 			@Override
@@ -870,12 +871,12 @@ public class ForsControllerTest extends WebTestSpring3 {
 		assertNotNull(tiers);
 
 		final List<ForFiscal> forsFiscaux = new ArrayList<ForFiscal>(tiers.getForsFiscaux());
-		Assert.assertEquals(1, forsFiscaux.size());
+		assertEquals(1, forsFiscaux.size());
 
 		final ForFiscalPrincipal for0 = (ForFiscalPrincipal) forsFiscaux.get(0);
-		Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, for0.getTypeAutoriteFiscale());
-		Assert.assertEquals(MockPays.RDA.getNoOFS(), for0.getNumeroOfsAutoriteFiscale().intValue());
-		Assert.assertEquals(date(1970, 1, 1), for0.getDateFin());
+		assertEquals(TypeAutoriteFiscale.PAYS_HS, for0.getTypeAutoriteFiscale());
+		assertEquals(MockPays.RDA.getNoOFS(), for0.getNumeroOfsAutoriteFiscale().intValue());
+		assertEquals(date(1970, 1, 1), for0.getDateFin());
 	}
 
 	@Test
@@ -1137,6 +1138,180 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertEquals(date(2008, 2, 28), premierForPrincipal.getDateFin());
 				assertEquals(MotifFor.DEPART_HC, premierForPrincipal.getMotifFermeture());
 				assertFalse(premierForPrincipal.isAnnule());
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for principal est bien prise en compte
+	 */
+	@Test
+	public void testUpdateForPrincipalMotifFermeture() throws Exception {
+
+		class Ids {
+			long tiers;
+			long ffp;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.tiers = pp.getNumero();
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
+				ids.ffp = ffp.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for principal
+		request.addParameter("id", String.valueOf(ids.ffp));
+		request.addParameter("dateFin", "31.10.2005");
+		request.addParameter("motifFin", MotifFor.FUSION_COMMUNES.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.GrangesMarnand.getNoOFS()));
+		request.setRequestURI("/fors/principal/edit.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(ids.tiers);
+				assertNotNull(tiers);
+				final ForsParType fors = tiers.getForsParType(false);
+				assertEquals(1, fors.principaux.size());
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				assertNotNull(ffp);
+				assertEquals(date(2005, 10, 31), ffp.getDateFin());
+				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif doit avoir changé
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for principal est bien prise en compte
+	 */
+	@Test
+	public void testUpdateForSecondaireMotifFermeture() throws Exception {
+
+		class Ids {
+			long tiers;
+			long ffs;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.tiers = pp.getNumero();
+				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, date(2005, 10, 31),
+				                                                 MotifFor.MAJORITE, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				ids.ffs = ffs.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for secondaire
+		request.addParameter("id", String.valueOf(ids.ffs));
+		request.addParameter("dateDebut", "01.05.2004");
+		request.addParameter("motifDebut", MotifFor.ACHAT_IMMOBILIER.name());
+		request.addParameter("dateFin", "31.10.2005");
+		request.addParameter("motifFin", MotifFor.VENTE_IMMOBILIER.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.ChateauDoex.getNoOFS()));
+		request.setRequestURI("/fors/secondaire/edit.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(ids.tiers);
+				assertNotNull(tiers);
+				final ForsParType fors = tiers.getForsParType(false);
+				assertEquals(1, fors.secondaires.size());
+				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
+				assertNotNull(ffs);
+				assertEquals(date(2005, 10, 31), ffs.getDateFin());
+				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture()); // le motif doit avoir changé
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for principal est bien prise en compte
+	 */
+	@Test
+	public void testUpdateForAutreElementImposableMotifFermeture() throws Exception {
+
+		class Ids {
+			long tiers;
+			long ffaei;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.tiers = pp.getNumero();
+				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+				final ForFiscalAutreElementImposable ffaei = addForAutreElementImposable(pp, date(2004, 5, 1), date(2005, 10, 31), MockCommune.ChateauDoex, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD,
+				                                                                   MotifRattachement.CREANCIER_HYPOTHECAIRE);
+				ids.ffaei = ffaei.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for secondaire
+		request.addParameter("id", String.valueOf(ids.ffaei));
+		request.addParameter("dateFin", "31.10.2005");
+		request.addParameter("motifFin", MotifFor.FUSION_COMMUNES.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.ChateauDoex.getNoOFS()));
+		request.setRequestURI("/fors/autreelementimposable/edit.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(ids.tiers);
+				assertNotNull(tiers);
+				final ForsParType fors = tiers.getForsParType(false);
+				assertEquals(1, fors.autreElementImpot.size());
+				final ForFiscalAutreElementImposable ffaei = fors.autreElementImpot.get(0);
+				assertNotNull(ffaei);
+				assertEquals(date(2005, 10, 31), ffaei.getDateFin());
+				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffaei.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MotifFor.FUSION_COMMUNES, ffaei.getMotifFermeture()); // le motif doit avoir changé
 			}
 		});
 	}
