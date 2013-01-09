@@ -665,6 +665,66 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		assertEquals(null, rapportPrestationImposableOuvert.getDateFin());
 
 	}
+
+	//SIFISC-7549
+	//Teste des cas 6 et 7
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testCalculEcartPourCreationModificationRT() throws Exception {
+
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2011,10,1),date(2012,12,31),false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2013, 1, 1);
+		final RegDate dateFinPeriode = date(2013, 3, 31);
+		final RegDate dateDebutVersementSalaire = date(2013, 1, 3);
+		final RegDate dateFinVersementSalaire = date(2013, 6, 30);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,dateFinVersementSalaire);
+		request.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		final PersonnePhysique sourcier = (PersonnePhysique)tiersService.getTiers(ids.idSourcier);
+		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
+
+		assertEquals(2, rapportPrestations.size());
+
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposableFerme = (RapportPrestationImposable) rapportPrestations.get(0);
+		RapportPrestationImposable rapportPrestationImposableOuvert = (RapportPrestationImposable) rapportPrestations.get(1);
+
+		assertEquals(date(2012, 12, 31), rapportPrestationImposableFerme.getDateFin());
+		assertEquals(dateDebutVersementSalaire, rapportPrestationImposableOuvert.getDateDebut());
+		assertEquals(null, rapportPrestationImposableOuvert.getDateFin());
+
+	}
 	//le rapport de travail existant à une date de fin antérieur à la date de début de la période de déclaration.
 	//le rapport est réouvert pour un écart inférieur ou égal a 1 jour et est fermé à la date de l'évènement en cas de décés
 	@Test

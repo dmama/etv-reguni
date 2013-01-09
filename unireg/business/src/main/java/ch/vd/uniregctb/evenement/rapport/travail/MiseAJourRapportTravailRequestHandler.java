@@ -306,8 +306,8 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private void handleRapportFermeAvantPeriodeDeclaration(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request,
 	                                                       List<RapportPrestationImposable> nouveauxRapports) {
 		final RegDate dateFin = rapportAModifier.getDateFin();
-		final RegDate dateDebutPeriode = request.getDateDebutPeriodeDeclaration();
-		if (isEcartInferieurEgalAUnJour(dateDebutPeriode, dateFin)) {
+		final RegDate dateDebutVersement = request.getDateDebutVersementSalaire();
+		if (isEcartInferieurEgalAUnJour(dateDebutVersement, dateFin)) {
 
 			reouvrirRapportTravail(rapportAModifier, request);
 			final RegDate nouvelleDateFin = calculerDateFinRapportTravail(request);
