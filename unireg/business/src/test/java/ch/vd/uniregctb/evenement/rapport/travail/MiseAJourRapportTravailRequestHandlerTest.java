@@ -651,8 +651,11 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		final PersonnePhysique sourcier = (PersonnePhysique)tiersService.getTiers(ids.idSourcier);
 		List<RapportPrestationImposable> rapportPrestations = tiersService.getAllRapportPrestationImposable(dpi,sourcier, true, true);
+		List<RapportPrestationImposable> rapportPrestationsWithAnnule = tiersService.getAllRapportPrestationImposable(dpi,sourcier, false, true);
 
 		assertEquals(2, rapportPrestations.size());
+		assertEquals(3, rapportPrestationsWithAnnule.size());
+
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposableFerme = (RapportPrestationImposable) rapportPrestations.get(0);
 		RapportPrestationImposable rapportPrestationImposableOuvert = (RapportPrestationImposable) rapportPrestations.get(1);
