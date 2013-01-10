@@ -463,37 +463,6 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HS_COMPLETE, TypeAdresseRetour.CEDI, false, false, false, false, list.get(2));
 		}
 	}
-	/**
-	 * [UNIREG-1360] Vérifie que la période d'imposition s'arrête bien à la date du décès dans le cas d'un contribuable hors-canton qui possèdait un immeuble dans le canton.
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testDetermineDecesHorsCantonAvecImmeuble() throws Exception {
-
-		final RegDate dateAchat = date(2006, 8, 5);
-		final RegDate dateDeces = date(2007, 10, 26);
-		final Contribuable paul = createDecesHorsCantonAvecImmeuble(dateAchat, dateDeces);
-		assertNotNull(paul);
-
-		// 2006
-		{
-			final List<PeriodeImposition> list = service.determine(paul, 2006);
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2006, 1, 1), date(2006, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
-		}
-
-		// 2007
-		{
-			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
-			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
-			final List<PeriodeImposition> list = service.determine(paul, 2007);
-			assertNotNull(list);
-			assertPeriodeImposition(date(2007, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
-		}
-
-	}
-
 
 	/**
 	 * [UNIREG-1390] Vérifie qu'il est possible de déterminer la période d'imposition d'un hors-Suisse qui vend son immeuble et dont le for
@@ -573,7 +542,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	}
 
 	/**
-	 * [UNIREG-1741]
+	 * [UNIREG-1360] Vérifie que la période d'imposition s'arrête bien à la date du décès dans le cas d'un contribuable hors-canton qui possèdait un immeuble dans le canton.
 	 */
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -602,12 +571,12 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 
 		// 2009 (décès)
 		{
-			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
-			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
+			// [SIFISC-7636] la déclaration d'impôt n'est ni optionnelle ni remplacée par une note pour les contribuables domiciliés dans un autre canton dont le rattachement économique
+			// (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale pour cause de décès
 			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
+			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 		}
 	}
 
@@ -692,12 +661,12 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 
 		// 2009 (décès)
 		{
-			// [UNIREG-1742] pas de déclaration (remplacé par une note à l'administration fiscale de l'autre canton) pour les contribuables domiciliés
-			// dans un autre canton dont le rattachement économique (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale
+			// [SIFISC-7636] la déclaration d'impôt n'est ni optionnelle ni remplacée par une note pour les contribuables domiciliés dans un autre canton dont le rattachement économique
+			// (activité indépendante ou immeuble) s’est terminé au cours de la période fiscale pour cause de décès
 			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
+			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_ACTIND_COMPLETE, TypeAdresseRetour.ACI, false, false, true, false, list.get(0));
 		}
 	}
 

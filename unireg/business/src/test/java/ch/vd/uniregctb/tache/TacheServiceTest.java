@@ -2953,10 +2953,10 @@ public class TacheServiceTest extends BusinessTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineSynchronizeActionsForDIsRemplaceesParNote() throws Exception {
 
-		// Contribuable hors-Canton qui commence une activité indépendante à Renense et décède la même année
+		// Contribuable hors-Canton qui commence une activité indépendante à Renens et l'arrête la même année
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
-		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Geneve);
-		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+		addForPrincipal(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Geneve);
+		addForSecondaire(pp, date(2005, 1, 1), MotifFor.DEBUT_EXPLOITATION, date(2005, 8, 1), MotifFor.FIN_EXPLOITATION, MockCommune.Renens.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
 
 		// (précondition) La déclaration d'impôt est remplacée par une note à l'administration fiscale de l'autre canton
 		final List<PeriodeImposition> periodes = periodeImpositionService.determine(pp, 2005);

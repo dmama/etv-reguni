@@ -283,10 +283,10 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 
 			boolean remplaceeParNote = false;
 
-			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION ||
-					causeFermeture == CauseFermeture.VEUVAGE_DECES) {
+			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION) {
 				// [UNIREG-1742] dans le cas des contribuables domiciliés dans un autre canton dont le rattachement économique (activité indépendante ou immeuble)
 				// s’est terminé au cours de la période fiscale, la déclaration est remplacée par une note à l'administration fiscale de l'autre canton.
+				// [SIFISC-7636] dans les cas des fermetures pour cause décès, la déclaration n'est ni optionnelle ni remplacée par une note
 				remplaceeParNote = true;
 			}
 
