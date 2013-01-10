@@ -110,10 +110,14 @@
 		</form:form>
 
 		<script type="text/javascript">
-			// Initialisation de l'observeur du flag 'modifier'
-			<%--@elvariable id="modifie" type="java.lang.Boolean"--%>
-			Modifier.attachObserver("theForm", ${modifie != null && modifie});
-			Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce tiers ?';	
+			$(function() {
+				Tooltips.activate_ajax_tooltips();
+
+				// Initialisation de l'observeur du flag 'modifier'
+				<%--@elvariable id="modifie" type="java.lang.Boolean"--%>
+				Modifier.attachObserver("theForm", ${modifie != null && modifie});
+				Modifier.messageSaveSubmitConfirmation = 'Voulez-vous vraiment sauver ce tiers ?';
+			});
 		</script>
 	</tiles:put>
 </tiles:insert>
