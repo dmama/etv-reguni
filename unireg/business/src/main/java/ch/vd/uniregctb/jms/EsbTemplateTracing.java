@@ -58,86 +58,189 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 	}
 
 	@Override
-	public void send(EsbMessage esbMessage) throws Exception {
+	public void send(final EsbMessage esbMessage) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			super.send(esbMessage);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "send", new Object() {
+				@Override
+				public String toString() {
+					return String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId());
+				}
+			});
 		}
 	}
 
 	@Override
-	public void sendInternal(EsbMessage esbMessage) throws Exception {
+	public void sendInternal(final EsbMessage esbMessage) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			super.sendInternal(esbMessage);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "sendInternal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("queue=%s, businessId='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId());
+				}
+			});
 		}
 	}
 
 	@Override
-	public void sendError(EsbMessage esbMessage, String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
+	public void sendError(final EsbMessage esbMessage, final String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			super.sendError(esbMessage, errorMessage, exception, errorType, errorCode);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "sendError", new Object() {
+				@Override
+				public String toString() {
+					return String.format("queue=%s, businessId='%s', errorMessage='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId(), errorMessage);
+				}
+			});
 		}
 	}
 
 	@Override
-	public EsbMessage receive(String destinationName) throws Exception {
+	public EsbMessage receive(final String destinationName) throws Exception {
 		final ServiceTracing tracing = get(destinationName);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			return super.receive(destinationName);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "receive", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s", destinationName);
+				}
+			});
 		}
 	}
 
 	@Override
-	public EsbMessage receiveSelected(String destinationName, String messageSelector) throws Exception {
+	public EsbMessage receiveSelected(final String destinationName, final String messageSelector) throws Exception {
 		final ServiceTracing tracing = get(destinationName);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			return super.receiveSelected(destinationName, messageSelector);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "receiveSelected", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s, selector='%s'", destinationName, messageSelector);
+				}
+			});
 		}
 	}
 
 	@Override
-	public EsbMessage receiveInternal(String destinationName) throws Exception {
+	public EsbMessage receiveInternal(final String destinationName) throws Exception {
 		final ServiceTracing tracing = get(destinationName);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			return super.receiveInternal(destinationName);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "receiveInternal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinatioName=%s", destinationName);
+				}
+			});
 		}
 	}
 
 	@Override
-	public EsbMessage receiveSelectedInternal(String destinationName, String messageSelector) throws Exception {
+	public EsbMessage receiveSelectedInternal(final String destinationName, final String messageSelector) throws Exception {
 		final ServiceTracing tracing = get(destinationName);
-		long time = tracing.start();
+		final long time = tracing.start();
 		try {
 			return super.receiveSelectedInternal(destinationName, messageSelector);
 		}
 		finally {
-			tracing.end(time);
+			tracing.end(time, "receiveSelectedInternal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s, selector='%s'", destinationName, messageSelector);
+				}
+			});
+		}
+	}
+
+	@Override
+	public EsbMessage receiveError(final String destinationName) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		final long time = tracing.start();
+		try {
+			return super.receiveError(destinationName);
+		}
+		finally {
+			tracing.end(time, "receiveError", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s", destinationName);
+				}
+			});
+		}
+	}
+
+	@Override
+	public EsbMessage receiveErrorInternal(final String destinationName) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		final long time = tracing.start();
+		try {
+			return super.receiveErrorInternal(destinationName);
+		}
+		finally {
+			tracing.end(time, "receiveErrorInternal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s", destinationName);
+				}
+			});
+		}
+	}
+
+	@Override
+	public EsbMessage receiveSelectedError(final String destinationName, final String selector) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		final long time = tracing.start();
+		try {
+			return super.receiveSelectedError(destinationName, selector);
+		}
+		finally {
+			tracing.end(time, "receiveSelectedError", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s, selector='%s'", destinationName, selector);
+				}
+			});
+		}
+	}
+
+	@Override
+	public EsbMessage receiveSelectedErrorInternal(final String destinationName, final String selector) throws Exception {
+		final ServiceTracing tracing = get(destinationName);
+		final long time = tracing.start();
+		try {
+			return super.receiveSelectedErrorInternal(destinationName, selector);
+		}
+		finally {
+			tracing.end(time, "receiveSelectedErrorInternal", new Object() {
+				@Override
+				public String toString() {
+					return String.format("destinationName=%s, selector='%s'", destinationName, selector);
+				}
+			});
 		}
 	}
 }
