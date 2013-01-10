@@ -24,6 +24,7 @@ public class JspTagCommune extends BodyTagSupport {
 	private String displayProperty;
 	private String titleProperty;
 	private RegDate date;
+	private EscapeMode escapeMode = EscapeMode.HTML;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
 	@Override
@@ -48,7 +49,7 @@ public class JspTagCommune extends BodyTagSupport {
 				if (title != null) {
 					b.append("<span title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
 				}
-				b.append(HtmlUtils.htmlEscape(property.toString()));
+				b.append(escapeMode.escape(property.toString()));
 				if (title != null) {
 					b.append("</span>");
 				}
@@ -88,6 +89,13 @@ public class JspTagCommune extends BodyTagSupport {
 
 	public void setDate(RegDate date) {
 		this.date = date;
+	}
+
+	public void setEscapeMode(String escapeMode) {
+		this.escapeMode = EscapeMode.fromString(escapeMode);
+		if (this.escapeMode == null) {
+			this.escapeMode = EscapeMode.HTML;
+		}
 	}
 
 	public void setService(ServiceInfrastructureService service) {

@@ -145,15 +145,15 @@
 			Fors.updateMotifsFermeture($('#motifFin'), '${command.tiersId}', 'REVENU_FORTUNE', '${command.motifRattachement}', '${command.motifFin}');
 
 			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_OU_FRACTION_VD'}">
-			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel"/>');
+			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" escapeMode="javascript"/>');
 			Fors.autoCompleteCommunesVD('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
 			</c:if>
 			<c:if test="${command.typeAutoriteFiscale == 'COMMUNE_HC'}">
-			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel"/>');
+			$('#autoriteFiscale').val('<unireg:commune ofs="${command.noAutoriteFiscale}" displayProperty="nomOfficiel" escapeMode="javascript"/>');
 			Fors.autoCompleteCommunesHC('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
 			</c:if>
 			<c:if test="${command.typeAutoriteFiscale == 'PAYS_HS'}">
-			$('#autoriteFiscale').val('<unireg:infra entityType="pays" entityId="${command.noAutoriteFiscale}" entityPropertyName="nomCourt"/>');
+			$('#autoriteFiscale').val('<unireg:infra entityType="pays" entityId="${command.noAutoriteFiscale}" entityPropertyName="nomCourt" escapeMode="javascript"/>');
 			Fors.autoCompletePaysHS('#autoriteFiscale', '#noAutoriteFiscale', updateSyncActions);
 			</c:if>
 		</script>

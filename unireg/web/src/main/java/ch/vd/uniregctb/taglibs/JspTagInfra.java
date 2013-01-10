@@ -30,6 +30,7 @@ public class JspTagInfra extends BodyTagSupport {
 	private Integer entityId;
 	private String entityPropertyName;
 	private String entityPropertyTitle;
+	private EscapeMode escapeMode = EscapeMode.HTML;
 	private static ServiceInfrastructureService service; // static -> hack pour obtenir le service infrastructure initialisé par spring dans le context d'appels jsp
 
 	private static interface Invocator {
@@ -94,7 +95,7 @@ public class JspTagInfra extends BodyTagSupport {
 				if (title != null) {
 					b.append("<span title='").append(HtmlUtils.htmlEscape(title.toString())).append("'>");
 				}
-				b.append(HtmlUtils.htmlEscape(property.toString()));
+				b.append(escapeMode.escape(property.toString()));
 				if (title != null) {
 					b.append("</span>");
 				}
@@ -134,6 +135,13 @@ public class JspTagInfra extends BodyTagSupport {
 
 	public void setEntityPropertyTitle(String entityPropertyTitle) {
 		this.entityPropertyTitle = entityPropertyTitle;
+	}
+
+	public void setEscapeMode(String escapeMode) {
+		this.escapeMode = EscapeMode.fromString(escapeMode);
+		if (this.escapeMode == null) {
+			this.escapeMode = EscapeMode.HTML;
+		}
 	}
 
 	public void setService(ServiceInfrastructureService service) {

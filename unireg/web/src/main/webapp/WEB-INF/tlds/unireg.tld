@@ -186,6 +186,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>la propriété de l'entité à afficher dans un tooltip</description>
 		</attribute>
+		<attribute>
+			<name>escapeMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type d'escaping à appliquer ('none', 'html' ou 'javascript'). Par défaut, c'est 'html'.</description>
+		</attribute>
 	</tag>
 
 	<tag>
@@ -216,6 +222,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<description>nom de la propriété à afficher dans un tooltip au survol de l'élément</description>
+		</attribute>
+		<attribute>
+			<name>escapeMode</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>Le type d'escaping à appliquer ('none', 'html' ou 'javascript'). Par défaut, c'est 'html'.</description>
 		</attribute>
 	</tag>
 
