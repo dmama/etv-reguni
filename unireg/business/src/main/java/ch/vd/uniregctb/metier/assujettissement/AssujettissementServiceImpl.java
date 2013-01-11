@@ -3,7 +3,6 @@ package ch.vd.uniregctb.metier.assujettissement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -138,12 +137,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * du jour d'arrivée jusqu'au jour de départ, précisemment.</li> <li><i>for fiscal secondaire</i> : valable du 1er janvier de l'année d'ouverture jusqu'au 31 décembre de l'année de fermeture.</li>
 	 * </ul> Il s'agit donc de règles générales, qui ne tiennent pas compte des fractionnements et des cas particuliers (voir ci-dessous).
 	 * <p/>
-	 * Les méthodes {@link #determineDateDebutAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} et {@link
-	 * #determineDateFinAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour raison de
-	 * domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} et {@link
-	 * #determineDateFinNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour raison de
-	 * domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont nécessaires plus
-	 * tard pour fusionner les assujettissements économiques).
+	 * Les méthodes {@link AssujettissementServiceImpl#determineDateDebutAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext, Fractionnements)}
+	 * et {@link AssujettissementServiceImpl#determineDateFinAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext, Fractionnements)} déterminent
+	 * les durées des assujettissements pour raison de domicile sur sol vaudois. Les méthodes {@link #determineDateDebutNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)}
+	 * et {@link #determineDateFinNonAssujettissement(ch.vd.uniregctb.metier.assujettissement.AssujettissementServiceImpl.ForFiscalPrincipalContext)} déterminent les durées des assujettissements pour
+	 * raison de domicile hors-canton ou hors-Suisse (qui ne correspondent pas à des assujettissements vaudois et sont donc appelés des "non-assujettissements". Ces "non-assujettissements" sont
+	 * nécessaires plus tard pour fusionner les assujettissements économiques).
 	 * <p/>
 	 * <p/>
 	 * <b>Fractionnement de l'assujettissement.</b> De manière générale, un assujettissement s'étend sur une année fiscale complète. Cependant, dans certains cas, l'assujettissement est fractionné : il
@@ -180,7 +179,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			ajouteForsPrincipauxFictifs(fors.principaux);
 
 			// Détermination des données d'assujettissement brutes
-			final List<Fraction> fractionnements = determineFractionnements(fors.principaux);
+			final Fractionnements fractionnements = determineFractionnements(fors.principaux);
 			final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
 
 			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
@@ -205,7 +204,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				if (vr.hasErrors()) {
 					// si le contribuable ne valide pas, on est un peu plus explicite
 					throw new AssujettissementException("Une exception a été levée sur le contribuable n°" + ctb.getNumero() +
-							" lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
+							                                    " lors du calcul des assujettissements, mais en fait le contribuable ne valide pas: " + vr.toString(), e);
 				}
 			}
 
@@ -318,37 +317,16 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	/**
-	 * Contient la date et le motif de fractionnement d'un range de dates.
-	 */
-	private static class Fraction {
-		/**
-		 * La date de fractionnement <b>au matin</b>. Au matin, signifie que le fractionnement doit être appliqué à 00:00 le matin du jour spécifié.
-		 * <p/>
-		 * <b>Exemple:</b> Fractionnement du range 2005.01.01-2005.12.31 à la date 2005.05.12 => deux ranges 2005.01.01-2005.05.11 et 2005.05.12-2005.12.31.
-		 */
-		public final RegDate date;
-		/**
-		 * Le motif (= la raison) du fractionnement. Ce motif peut être nul.
-		 */
-		public final MotifFor motif;
-
-		private Fraction(@NotNull RegDate date, MotifFor motif) {
-			this.date = date;
-			this.motif = motif;
-		}
-	}
-
-	/**
 	 * Analyse les fors fiscaux principaux et retourne les dates (et motifs) de fractionnement.
 	 *
 	 * @param principaux une liste de fors fiscaux principaux
 	 * @return une liste de fractionnements (non-modifiable). Cette liste peut-être vide
 	 */
 	@NotNull
-	private static List<Fraction> determineFractionnements(List<ForFiscalPrincipal> principaux) {
+	private static Fractionnements determineFractionnements(List<ForFiscalPrincipal> principaux) {
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		final Map<RegDate, Fraction> map = new HashMap<RegDate, Fraction>();
+		final Fractionnements fractionnements = new Fractionnements();
 		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
 		while (iter.hasNext()) {
 			final Triplet<ForFiscalPrincipal> triplet = iter.next();
@@ -366,9 +344,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					motifFraction = forPrincipal.next.getMotifOuverture();
 				}
 
-				if (!map.containsKey(fraction)) {
-					map.put(fraction, new Fraction(fraction, motifFraction));
-				}
+				fractionnements.addFractionOuverture(fraction, motifFraction);
 			}
 
 			// on détecte une éventuelle date de fractionnement à la fermeture
@@ -376,22 +352,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				final RegDate fraction = forPrincipal.current.getDateFin().getOneDayAfter();
 				final MotifFor motifFraction = forPrincipal.current.getMotifFermeture();
 
-				if (!map.containsKey(fraction)) {
-					map.put(fraction, new Fraction(fraction, motifFraction));
-				}
+				fractionnements.addFractionFermeture(fraction, motifFraction);
 			}
 		}
 
-		// On trie par ordre croissant
-		final List<Fraction> fractionnements = new ArrayList<Fraction>(map.values());
-		Collections.sort(fractionnements, new Comparator<Fraction>() {
-			@Override
-			public int compare(Fraction o1, Fraction o2) {
-				return o1.date.compareTo(o2.date);
-			}
-		});
-
-		return Collections.unmodifiableList(fractionnements);
+		return fractionnements;
 	}
 
 	private static class CasParticuliers {
@@ -544,7 +509,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, List<Fraction> fractionnements, CasParticuliers casParticuliers,
+	private static DataList determineAssujettissementDomicile(List<ForFiscalPrincipal> principaux, Fractionnements fractionnements, CasParticuliers casParticuliers,
 	                                                          @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final DataList domicile = new DataList();
@@ -558,7 +523,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
 			// on détermine l'assujettissement pour le for principal courant
-			Data a = determine(forPrincipal, noOfsCommunesVaudoises);
+			Data a = determine(forPrincipal, fractionnements, noOfsCommunesVaudoises);
 			if (a == null) {
 				continue;
 			}
@@ -589,7 +554,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param casParticuliers les cas particuliers à traiter
 	 * @return un assujettissement, éventuellement modifié; ou <b>null</b> si l'assujettissement a disparu suite au traitement.
 	 */
-	private static Data traiterCasParticuliers(Data data, List<Fraction> fractions, CasParticuliers casParticuliers) {
+	private static Data traiterCasParticuliers(Data data, Fractionnements fractions, CasParticuliers casParticuliers) {
 
 		if (casParticuliers.isEmpty()) {
 			return data;
@@ -677,7 +642,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @param fractions une liste de fractions
 		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
 		 */
-		public static Limites determine(DateRange range, List<Fraction> fractions) {
+		public static Limites determine(DateRange range, Fractionnements fractions) {
 			return determine(range.getDateDebut(), range.getDateFin(), fractions);
 		}
 
@@ -689,7 +654,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		 * @param fractions une liste de fractions
 		 * @return les fractions gauche et droite déterminées; ou <b>null</b> si aucune limite n'a été trouvée.
 		 */
-		public static Limites determine(RegDate dateDebut, RegDate dateFin, List<Fraction> fractions) {
+		public static Limites determine(RegDate dateDebut, RegDate dateFin, Fractionnements fractions) {
 
 			if (fractions.isEmpty()) {
 				return null;
@@ -726,7 +691,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param fractions la liste des fractions
 	 * @return un assujettissement, fractionné si nécessaire.
 	 */
-	private static Data fractionner(Data a, ForFiscalPrincipal forSource, List<Fraction> fractions) {
+	private static Data fractionner(Data a, ForFiscalPrincipal forSource, Fractionnements fractions) {
 
 		if (fractions.isEmpty()) {
 			return a;
@@ -742,19 +707,19 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		if (left != null && left.date.isAfter(a.debut)) {
 			a.debut = left.date;
 
-			if (a.motifDebut == MotifFor.ARRIVEE_HC && left.motif == MotifFor.DEPART_HS) {
+			if (a.motifDebut == MotifFor.ARRIVEE_HC && left.getMotif() == MotifFor.DEPART_HS) {
 				// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements,
 				// il faut donc garder le motif de début sans changement (voir isCollatable())
 			}
 			else {
-				a.motifDebut = left.motif;
+				a.motifDebut = left.getMotif();
 			}
 		}
 
 
 		if (right != null && right.date.isBeforeOrEqual(a.fin)) {
 			a.fin = right.date.getOneDayBefore();
-			a.motifFin = right.motif;
+			a.motifFin = right.getMotif();
 		}
 
 		return a;
@@ -769,7 +734,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return la liste des assujettissements brutes calculés
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
+	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
 			AssujettissementException {
 		List<Data> economique = new ArrayList<Data>();
 		// Détermine les assujettissements pour le rattachement de type économique
@@ -1209,15 +1174,16 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	/**
 	 * Détermine la date de début d'un assujettissement induit par un for fiscal principal.
 	 *
-	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de début d'assujettissement
+	 * @param forPrincipal    le for fiscal principal dont on veut déterminer la date de début d'assujettissement
+	 * @param fractionnements les fractionnements déterminés par avance
 	 * @return la date de début de l'assujettissement
 	 */
-	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+	private static RegDate determineDateDebutAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
 
 		final RegDate debut;
 		final ForFiscalPrincipal current = forPrincipal.current;
 
-		if (isFractionOuverture(forPrincipal) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || fractionnements.contains(current.getDateDebut())) {
 			debut = current.getDateDebut();
 		}
 		else {
@@ -1231,16 +1197,28 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	/**
 	 * Détermine la date de fin d'un assujettissement induit par un for fiscal principal.
 	 *
-	 * @param forPrincipal le for fiscal principal dont on veut déterminer la date de fin d'assujettissement
+	 * @param forPrincipal    le for fiscal principal dont on veut déterminer la date de fin d'assujettissement
+	 * @param fractionnements les fractionnements déterminés par avance
 	 * @return la date de fin de l'assujettissement
 	 */
-	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext forPrincipal) {
+	private static RegDate determineDateFinAssujettissement(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements) {
 
 		final ForFiscalPrincipal current = forPrincipal.current;
 		final RegDate fin = current.getDateFin();
 
+		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
+
 		final RegDate afin;
-		if (fin == null || isFractionFermeture(forPrincipal) || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+		if (fin == null || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ||
+				// Dans le cas d'un for fiscal qui s'ouvre par un motif 'veuvage', le cas standard est que le contribuable appartienne à un ménage-commun le jour précédent.
+				// Lorsque deux fors principaux se touchent, l'existence de rapports d'appartenance ménage est interdite par les régles de validation. Cependant, si le second
+				// for principal s'ouvre avec un motif 'veuvage', alors on considère que le motif d'ouverture prime sur l'absence de rapport d'appartenance ménage et on suppose
+				// l'existence d'un ménage-commun sur lequel l'assujettissement du contribuable courant existe (selon conversation par email entre Manuel Siggen et
+				// David Radelfinger du 12 décembre 2012).
+				//
+				// La conséquence pratique est que le fractionnement induit par le motif d'ouverture 'veuvage' est ignoré
+				// dans le calcul de la date de fin d'assujettissement du for précédent.
+				fraction != null && (fraction.motifFermeture != null || fraction.motifOuverture != MotifFor.VEUVAGE_DECES)) {
 			afin = fin;
 		}
 		else {
@@ -1580,11 +1558,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * Détermine les données d'assujettissement pour un for fiscal principal.
 	 *
 	 * @param forPrincipal           le for fiscal dont on veut calculer l'assujettissement (plus ceux qui précèdent et suivent immédiatement)
-	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.
-	 * @return les données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
+	 * @param fractionnements        les fractionnements déterminés par avance
+	 * @param noOfsCommunesVaudoises si renseigné, détermine le assujettissements du point de vue des communes spécifiées; si null, détermine les assujettissements du point de vue cantonal.  @return les
+	 *                               données d'assujettissement, ou <b>null</b> si le for principal n'induit aucun assujettissement
 	 * @throws AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
-	private static Data determine(ForFiscalPrincipalContext forPrincipal, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ForFiscalPrincipalContext forPrincipal, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final Data data;
 		final ForFiscalPrincipal current = forPrincipal.current;
@@ -1592,8 +1571,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		switch (current.getTypeAutoriteFiscale()) {
 		case COMMUNE_OU_FRACTION_VD: {
 
-			final RegDate adebut = determineDateDebutAssujettissement(forPrincipal);
-			final RegDate afin = determineDateFinAssujettissement(forPrincipal);
+			final RegDate adebut = determineDateDebutAssujettissement(forPrincipal, fractionnements);
+			final RegDate afin = determineDateFinAssujettissement(forPrincipal, fractionnements);
 
 			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 				final MotifRattachement motifRattachement = current.getMotifRattachement();
@@ -1609,7 +1588,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				else { // cas général
 					if (motifRattachement != MotifRattachement.DOMICILE) {
 						throw new AssujettissementException("Le contribuable n°" + current.getTiers().getNumero() + " possède un for fiscal principal avec un motif de rattachement [" +
-								motifRattachement + "] ce qui est interdit.");
+								                                    motifRattachement + "] ce qui est interdit.");
 					}
 					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), getAType(current.getModeImposition()), TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD);
 				}
@@ -1628,8 +1607,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			if (isSource(current.getModeImposition()) && noOfsCommunesVaudoises == null) {
 
 				final Type type = getAType(current.getModeImposition());
-				final RegDate adebut = determineDateDebutAssujettissement(forPrincipal);
-				final RegDate afin = determineDateFinAssujettissement(forPrincipal);
+				final RegDate adebut = determineDateDebutAssujettissement(forPrincipal, fractionnements);
+				final RegDate afin = determineDateFinAssujettissement(forPrincipal, fractionnements);
 
 				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
 					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), type, current.getTypeAutoriteFiscale());
@@ -1665,7 +1644,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_1 || modeImposition == ModeImposition.MIXTE_137_2;
 	}
 
-	private static Data determine(ForFiscalSecondaire ffs, List<Fraction> fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private static Data determine(ForFiscalSecondaire ffs, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		final RegDate debut = ffs.getDateDebut();
 		final RegDate fin = ffs.getDateFin();

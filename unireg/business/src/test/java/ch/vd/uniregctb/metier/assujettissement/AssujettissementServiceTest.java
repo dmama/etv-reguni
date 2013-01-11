@@ -3067,7 +3067,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		addForPrincipal(ctb, date(1993, 1, 6), MotifFor.INDETERMINE, date(2008, 2, 29), MotifFor.DEPART_HC, MockCommune.Lausanne);
 		addForPrincipal(ctb, date(2008, 3, 1), MotifFor.DEMENAGEMENT_VD, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Neuchatel);
 		addForSecondaire(ctb, date(2009, 8, 31), MotifFor.ACHAT_IMMOBILIER, date(2009, 8, 31), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Renens.getNoOFS(),
-				MotifRattachement.IMMEUBLE_PRIVE);
+		                 MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> list = service.determine(ctb);
 		assertNotNull(list);
@@ -3584,6 +3584,40 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	private static Set<Integer> buildSetFromArray(Integer... ints) {
 		return new HashSet<Integer>(Arrays.asList(ints));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineForPrincipalFermetureMotifMariageEtOuvertureMotifVeuvageLeLendemain() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10603986L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2009, 2, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne);
+		addForPrincipal(ctb, date(2009, 2, 2), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// le motif d'ouverture 'décès' du second for ne provoque pas le fractionnement du premier for car on suppose qu'un ménage-commun existait avant le décès et que
+		// c'est bien le ménage commun qui était assujetti le jour précédent le décès.
+		assertOrdinaire(date(2000, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(0));
+		assertOrdinaire(date(2009, 2, 2), null, MotifFor.VEUVAGE_DECES, null, liste.get(1));
+	}
+
+	/**
+	 * Cas du contribuable n°10035699
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineForPrincipalFermetureDecesEtOuvertureMotifVeuvageLeLendemain() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10035699L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 7, 31), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2005, 8, 1), MotifFor.VEUVAGE_DECES, MockCommune.Lausanne);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// malgré le motif d'ouverture 'décès' du second for, le fractionnement au 1er août 2005 est bien présent car le premier for se ferme pour le même motif le jour d'avant
+		assertSourcierPur(date(2000, 1, 1), date(2005, 7, 31), MotifFor.ARRIVEE_HS, MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(date(2005, 8, 1), null, MotifFor.VEUVAGE_DECES, null, liste.get(1));
 	}
 
 	@Test
