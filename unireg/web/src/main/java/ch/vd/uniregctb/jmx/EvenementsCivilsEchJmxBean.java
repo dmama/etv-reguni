@@ -50,7 +50,7 @@ public interface EvenementsCivilsEchJmxBean {
 	int getNbIndividualsAwaitingInFinalQueue();
 
 	@ManagedOperation(description = "Ask for (re-)treatment of the individual's event queue")
-	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "idPerson", description = "ID of the individuals whose events should be treated")})
+	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "idPerson", description = "ID of the individual whose events should be treated")})
 	void treatPersonsEvents(long idPerson);
 
 	@ManagedOperation(description = "Stops and restarts the processing thread")
