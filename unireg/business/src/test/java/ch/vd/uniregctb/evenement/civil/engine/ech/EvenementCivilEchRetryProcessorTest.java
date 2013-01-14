@@ -111,6 +111,11 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 			}
 
 			@Override
+			public void restartProcessingThread(boolean agressiveKill) {
+				throw new NotImplementedException();
+			}
+
+			@Override
 			public void postBatch(Long noIndividu, boolean immediate) {
 				// traitement immédiat
 				for (Listener listener : listeners.values()) {

@@ -37,4 +37,10 @@ public interface EvenementCivilEchProcessor {
 	 * @param handle handle retourné au moment de l'enregistrement du listener qui ne veut plus être notifié
 	 */
 	void unregisterListener(ListenerHandle handle);
+
+	/**
+	 * Redémarre le thread de processing des événements civils
+	 * @param agressiveKill si <code>true</code>, force l'interruption du thread, sinon un stop en douceur est demandé
+	 */
+	void restartProcessingThread(boolean agressiveKill);
 }

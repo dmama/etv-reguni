@@ -94,6 +94,7 @@
 		<property name="endpointManagerMasse" ref="evtCivilEchMasseEndpointManager"/>
 		<property name="endpointManagerIndividuel" ref="evtCivilEchIndividuelEndpointManager"/>
 		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
+		<property name="processor" ref="evtCivilEchProcessor"/>
 	</bean>
 
 	<bean name="retourImpressionJmxBean" class="ch.vd.uniregctb.jmx.RetourImpressionJmxBeanImpl">

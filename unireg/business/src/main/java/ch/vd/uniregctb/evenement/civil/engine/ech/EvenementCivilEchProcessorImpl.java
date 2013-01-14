@@ -524,8 +524,17 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 
 	@Override
 	public void stop() {
+		stop(false);
+	}
+
+	private void stop(boolean agressiveKill) {
 		if (processor != null) {
-			processor.requestStop();
+			if (agressiveKill) {
+				processor.interrupt();
+			}
+			else {
+				processor.requestStop();
+			}
 			try {
 				processor.join();
 			}
@@ -535,6 +544,15 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			}
 			processor = null;
 		}
+	}
+
+	@Override
+	public void restartProcessingThread(boolean agressiveKill) {
+		// arrêt
+		stop(agressiveKill);
+
+		// démarrage
+		start();
 	}
 
 	@Override

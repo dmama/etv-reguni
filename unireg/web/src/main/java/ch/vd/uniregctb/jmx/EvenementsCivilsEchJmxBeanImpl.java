@@ -1,11 +1,13 @@
 package ch.vd.uniregctb.jmx;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
+import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
 
@@ -14,12 +16,16 @@ import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHand
 @ManagedResource
 public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBean, InitializingBean {
 
+	private static final Logger LOGGER = Logger.getLogger(EvenementsCivilsEchJmxBeanImpl.class);
+
 	private JmxAwareEsbMessageEndpointManager endpointManagerMasse;
 	private JmxAwareEsbMessageEndpointManager endpointManagerIndividuel;
 	private EvenementCivilEchReceptionMonitor monitor;
 
 	private ErrorMonitorableMessageListener masseListener;
 	private ErrorMonitorableMessageListener individuelListener;
+
+	private EvenementCivilEchProcessor processor;
 
 	@SuppressWarnings("UnusedDeclaration")
 	public void setMonitor(EvenementCivilEchReceptionMonitor monitor) {
@@ -34,6 +40,11 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@SuppressWarnings("UnusedDeclaration")
 	public void setEndpointManagerIndividuel(JmxAwareEsbMessageEndpointManager endpointManagerIndividuel) {
 		this.endpointManagerIndividuel = endpointManagerIndividuel;
+	}
+
+	@SuppressWarnings("UnusedDeclaration")
+	public void setProcessor(EvenementCivilEchProcessor processor) {
+		this.processor = processor;
 	}
 
 	@Override
@@ -123,7 +134,15 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@Override
 	@ManagedOperation
 	public void treatPersonsEvents(long noIndividu) {
+		LOGGER.info("Demande de relance des événements civils de l'individu " + noIndividu + " par JMX");
 		monitor.demanderTraitementQueue(noIndividu, true, Mode.MANUAL);
+	}
+
+	@Override
+	@ManagedOperation
+	public void restartProcessingThread(boolean agressiveKill) {
+		LOGGER.info("Demande de redémarrage du thread de traitement des événements civils par JMX");
+		processor.restartProcessingThread(agressiveKill);
 	}
 
 	@Override

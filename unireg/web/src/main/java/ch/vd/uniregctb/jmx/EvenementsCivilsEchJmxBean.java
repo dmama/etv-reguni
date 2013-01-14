@@ -2,6 +2,8 @@ package ch.vd.uniregctb.jmx;
 
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
+import org.springframework.jmx.export.annotation.ManagedOperationParameter;
+import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 
 public interface EvenementsCivilsEchJmxBean {
 
@@ -48,5 +50,10 @@ public interface EvenementsCivilsEchJmxBean {
 	int getNbIndividualsAwaitingInFinalQueue();
 
 	@ManagedOperation(description = "Ask for (re-)treatment of the individual's event queue")
-	void treatPersonsEvents(long noIndividu);
+	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "idPerson", description = "ID of the individuals whose events should be treated")})
+	void treatPersonsEvents(long idPerson);
+
+	@ManagedOperation(description = "Stops and restarts the processing thread")
+	@ManagedOperationParameters(value = {@ManagedOperationParameter(name = "agressiveKill", description = "whether the thread should be interrupted or gently asked to stop")})
+	void restartProcessingThread(boolean agressiveKill);
 }
