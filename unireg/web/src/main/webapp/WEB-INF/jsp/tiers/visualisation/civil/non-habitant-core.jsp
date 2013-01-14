@@ -13,19 +13,19 @@
 	</tr>
 
 	<tr class="<unireg:nextRowClass/>" >
-		<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
+		<td><fmt:message key="label.prenom" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.nom" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.prenom" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
 		</td>
 	</tr>
-	
+
 	<tr class="<unireg:nextRowClass/>" >
-		<td><fmt:message key="label.prenom" />&nbsp;:</td>
+		<td width="50%"><fmt:message key="label.nom" />&nbsp;:</td>
 		<td>
-			<c:set var="bind" value="command.${param.path}.prenom" scope="request"/>
+			<c:set var="bind" value="command.${param.path}.nom" scope="request"/>
 			<spring:bind path="${bind}" >
 				<c:out value="${status.value}"/>
 			</spring:bind>
