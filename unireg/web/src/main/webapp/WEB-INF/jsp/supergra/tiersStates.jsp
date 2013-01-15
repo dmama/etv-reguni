@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
+<%--@elvariable id="coll" type="ch.vd.uniregctb.supergra.view.CollectionView"--%>
 <%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
 
 <div id="states_list">
@@ -56,7 +57,14 @@
 
 			<tr class="state">
 				<td class="footer">
-					<unireg:buttonTo name="Sauvegarder" action="/supergra/actions/commit.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST" confirm="Toutes les modifications seront sauvées dans la base de données.\n\nVoulez-vous continuer ?" disabled="${hasError}" />
+					<c:if test="${entity != null}">
+						<c:set var="key" value="${entity.key}"/>
+					</c:if>
+					<c:if test="${coll != null}">
+						<c:set var="key" value="${coll.key}"/>
+					</c:if>
+					<unireg:buttonTo name="Sauvegarder" action="/supergra/actions/commit.do" params="{id:${key.id},class:'${key.type}'}" method="POST"
+					                 confirm="Toutes les modifications seront sauvées dans la base de données.\n\nVoulez-vous continuer ?" disabled="${hasError}" />
 					ou
 					<unireg:linkTo name="tout annuler" action="/supergra/actions/rollback.do" method="POST" />
 				</td>
