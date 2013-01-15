@@ -12,7 +12,7 @@
 		<td width="25%" id="periode_fiscale_label" style="display:none;"><fmt:message key="label.periode.fiscale" />&nbsp;:</td>
 		<td width="25%" id="periode_fiscale_input" style="display:none;">
 			<form:select path="annee">
-				<form:option value="TOUS" ><fmt:message key="option.TOUTES" /></form:option>
+				<form:option value="" ><fmt:message key="option.TOUTES" /></form:option>
 				<form:options items="${periodesFiscales}" />
 			</form:select>
 		</td>

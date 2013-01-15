@@ -20,7 +20,7 @@ public class TacheCriteriaViewBase implements Serializable {
 	private String etatTache;
 	private Date dateCreationDepuis;
 	private Date dateCreationJusqua;
-	private String annee;
+	private Integer annee;
 	private boolean voirTachesAutomatiques;
 	private String officeImpot;
 	private Long numeroCTB;
@@ -58,11 +58,11 @@ public class TacheCriteriaViewBase implements Serializable {
 		this.dateCreationJusqua = dateCreationJusqua;
 	}
 
-	public String getAnnee() {
+	public Integer getAnnee() {
 		return annee;
 	}
 
-	public void setAnnee(String annee) {
+	public void setAnnee(Integer annee) {
 		this.annee = annee;
 	}
 
@@ -116,18 +116,6 @@ public class TacheCriteriaViewBase implements Serializable {
 	 */
 	public TacheCriteria asCoreCriteria() {
 
-		Integer a = null;
-		if (annee != null && !TOUS.equals(annee)) {
-			try {
-				a = Integer.parseInt(annee);
-			}
-			catch (NumberFormatException ignored) {
-				// impossible d'interpéter l'année -> on l'ignore civilement
-				LOGGER.warn("Le critère sur l'année avec la valeur [" + annee + "] est incorrect et il est ignoré.");
-				a = null;
-			}
-		}
-
 		TypeEtatTache etat = null;
 		if (etatTache != null && !TOUS.equals(etatTache)) {
 			try {
@@ -175,8 +163,8 @@ public class TacheCriteriaViewBase implements Serializable {
 		}
 
 
-		TacheCriteria criteria = new TacheCriteria();
-		criteria.setAnnee(a);
+		final TacheCriteria criteria = new TacheCriteria();
+		criteria.setAnnee(annee);
 		criteria.setDateCreationDepuis(dateCreationDepuis);
 		criteria.setDateCreationJusqua(dateCreationJusqua);
 		criteria.setDateEcheanceJusqua(dateEcheanceJusqua);
@@ -185,7 +173,6 @@ public class TacheCriteriaViewBase implements Serializable {
 		criteria.setOid(oid);
 		criteria.setNumeroCTB(numeroCTB);
 		criteria.setInclureTachesAnnulees(voirTachesAnnulees);
-
 		return criteria;
 	}
 }
