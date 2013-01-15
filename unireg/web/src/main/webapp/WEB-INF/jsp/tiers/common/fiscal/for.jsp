@@ -82,7 +82,7 @@
 			</c:if>
 		</c:if>
 	</display:column>
-	<display:column style="action">
+	<display:column class="action">
 		<c:if test="${page == 'visu' }">
 			<unireg:consulterLog entityNature="ForFiscal" entityId="${forFiscal.id}"/>
 		</c:if>

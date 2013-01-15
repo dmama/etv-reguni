@@ -91,6 +91,7 @@ tr.horscanton {
 
 td.action {
 	text-align: center;
+	min-width: 50px;
 }
 
 td.usage {
