@@ -11,7 +11,7 @@ import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 
 /**
- * Le form-backing object du {@link ch.vd.uniregctb.supergra.SuperGraEntityController}.
+ * Le form-backing object de la méthode {@link ch.vd.uniregctb.supergra.SuperGraController#showEntity(ch.vd.uniregctb.supergra.EntityType, long, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
  */
 public class EntityView implements Cloneable {
 
@@ -95,6 +95,11 @@ public class EntityView implements Cloneable {
 			final AttributeView leftAttribute = attributesMap.get(rightAttribute.getName());
 			Assert.notNull(leftAttribute);
 			Assert.isEqual(leftAttribute.getType(), rightAttribute.getType());
+
+			if (leftAttribute.isReadonly() || leftAttribute.isCollection()) {
+				// les attributs read-only et les collections ne peuvent pas être mises-à-jour depuis l'écran d'édition d'une entité
+				continue;
+			}
 
 			final Object leftValue = leftAttribute.getValue();
 			final Object rightValue = rightAttribute.getValue();

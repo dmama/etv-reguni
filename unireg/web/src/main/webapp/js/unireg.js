@@ -1849,9 +1849,11 @@ var Form = {
 	 */
 	dynamicSubmit:function (method, action, params) {
 		var html = '<form method="' + method + '" action="' + action + '">';
-		$.each(params, function (key, val) {
-			html += '<input type=\"hidden\" name=\"' + key + '\" value=\"' + val + '\"/>';
-		});
+		if (params) {
+			$.each(params, function (key, val) {
+				html += '<input type=\"hidden\" name=\"' + key + '\" value=\"' + val + '\"/>';
+			});
+		}
 		html += '</form>';
 		var form = $(html);
 		form.appendTo('body');

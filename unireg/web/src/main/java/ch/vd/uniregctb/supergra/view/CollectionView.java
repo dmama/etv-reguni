@@ -7,7 +7,7 @@ import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.EntityType;
 
 /**
- * Le form-backing object du {@link ch.vd.uniregctb.supergra.SuperGraCollectionController}.
+ * Le form-backing object de la méthode {@link ch.vd.uniregctb.supergra.SuperGraController#listColl(ch.vd.uniregctb.supergra.EntityType, long, String, org.springframework.ui.Model, javax.servlet.http.HttpServletRequest)}.
  */
 public class CollectionView {
 

@@ -2,24 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
-	<bean id="superGraEntityController" class="ch.vd.uniregctb.supergra.SuperGraEntityController">
-		<property name="sessionForm" value="true"/>
-		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.EntityView"/>
-		<property name="commandName" value="entity"/>
-		<property name="formView" value="supergra/entity"/>
-		<property name="successView" value="entity.do"/>
-		<property name="bindOnNewForm" value="true"/>
-		<property name="manager" ref="superGraManager"/>
-		<property name="securityProvider" ref="securityProviderInterface"/>
-	</bean>
-
-	<bean id="superGraCollectionController" class="ch.vd.uniregctb.supergra.SuperGraCollectionController">
-		<property name="sessionForm" value="true"/>
-		<property name="commandClass" value="ch.vd.uniregctb.supergra.view.CollectionView"/>
-		<property name="commandName" value="coll"/>
-		<property name="formView" value="supergra/coll"/>
-		<property name="successView" value="coll.do"/>
-		<property name="bindOnNewForm" value="true"/>
+	<bean id="superGraController" class="ch.vd.uniregctb.supergra.SuperGraController">
 		<property name="manager" ref="superGraManager"/>
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>

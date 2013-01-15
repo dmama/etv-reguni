@@ -52,10 +52,6 @@
 	<bean id="mainUrlMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
 			<map>
-				<!-- SuperGra -->
-				<entry key="/supergra/entity.do" value-ref="superGraEntityController" />
-				<entry key="/supergra/coll.do" value-ref="superGraCollectionController" />
-
 				<!-- Mapping des beans de remoting -->
 				<entry key="/tiersSearcher.remoting" value-ref="remoteTiersSearch" />
 

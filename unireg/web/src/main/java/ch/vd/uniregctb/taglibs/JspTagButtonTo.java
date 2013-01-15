@@ -128,7 +128,9 @@ public class JspTagButtonTo extends BodyTagSupport {
 		final StringBuilder onclickScript = new StringBuilder();
 
 		if (StringUtils.isNotBlank(confirm)) {
-			final String confirmScript = "if (!confirm('" + StringEscapeUtils.escapeJavaScript(confirm) + "')) return false;";
+			String s = StringEscapeUtils.escapeJavaScript(confirm);
+			s = s.replaceAll("\\\\n", "\\n"); // on un-escape les retours de lignes, parce qu'ils sont bien pratiques
+			final String confirmScript = "if (!confirm('" + s + "')) return false;";
 			onclickScript.append(confirmScript);
 		}
 

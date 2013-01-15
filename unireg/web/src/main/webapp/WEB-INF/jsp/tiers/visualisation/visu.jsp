@@ -50,7 +50,7 @@
 			<authz:authorize ifAnyGranted="ROLE_SUPERGRA">
 				<div style="position:relative;">
 					<div style="position:absolute; top:-1.5em; right:0;" class="noprint">
-						<a href="<c:url value="/supergra/entity.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
+						<a href="<c:url value="/supergra/entity/show.do?id=${command.tiersGeneral.numero}&class=Tiers"/>">Edition de ce tiers en mode SuperGra</a>
 					</div>
 				</div>
 			</authz:authorize>

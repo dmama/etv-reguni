@@ -49,7 +49,7 @@
 
 				<%-- le champ d'accès rapide dans l'entête de l'application --%>
 				<script type="text/javascript">
-					quickSearchTarget='/supergra/entity.do?class=Tiers&id=';
+					quickSearchTarget='/supergra/entity/show.do?class=Tiers&id=';
 				</script>
 				<div class="quicksearch">
 					<fmt:message key="label.acces.rapide"/>&nbsp;

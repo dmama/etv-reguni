@@ -2,21 +2,20 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <tiles:insert template="/WEB-INF/jsp/templates/templateSuperGra.jsp">
-	<tiles:put name="menu" type="String"></tiles:put> 
+	<tiles:put name="menu" type="String"/>
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
+
+	<%--@elvariable id="entity" type="ch.vd.uniregctb.supergra.view.EntityView"--%>
+	<%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
 
 	<tiles:put name="actions" type="String">
 		<ul>
 			<c:if test="${!entity.annule}">
-				<form:form method="post">
-					<li><input type="submit" name="disableEntity" value="Annuler"/></li>
-				</form:form>
+				<li><unireg:buttonTo name="Annuler" action="/supergra/entity/disable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 			</c:if>
 			<c:if test="${entity.annule}">
-				<form:form method="post">
-					<li><input type="submit" name="enableEntity" value="Désannuler"/></li>
-				</form:form>
+				<li><unireg:buttonTo name="Désannuler" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 			</c:if>
 		</ul>
 	</tiles:put>
@@ -52,7 +51,10 @@
 			</c:if>
 
 			<%-- Affichage des attributs de l'entité --%>
-			<form:form commandName="entity" method="post">
+			<form:form commandName="entity" method="post" action="update.do">
+				<input type="hidden" name="id" value="${entity.key.id}">
+				<input type="hidden" name="class" value="${entity.key.type}">
+
 				<input type="submit" name="save" value="Mémoriser les modifications" style="margin: 1em;"/>
 				<display:table name="${entity.attributes}" id="a" class="display_table">
 						<display:column title="Attribute">
@@ -63,7 +65,7 @@
 						</display:column>
 						<display:column title="Valeur">
 							<c:if test="${a.collection}">
-								<a href="coll.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"><c:out value="${a.value}"/></a>
+								<a href="<c:url value="/supergra/coll/list.do?id=${entity.key.id}&class=${entity.key.type}&name=${a.name}"/>"><c:out value="${a.value}"/></a>
 							</c:if>
 							<c:if test="${!a.collection}">
 								<unireg:formInput id="${a.id}" path="attributes[${a_rowNum - 1}].value" type="${a.type}" category="${a.category}" readonly="${a.readonly}"/>

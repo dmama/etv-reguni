@@ -46,7 +46,7 @@ class SuperGraEntityEditor implements Editor {
 			}
 			else {
 				tagWriter.startTag("a");
-				tagWriter.writeAttribute("href", params.getContextPath() + "/supergra/entity.do?id=" + entityId + "&class=" + type);
+				tagWriter.writeAttribute("href", params.getContextPath() + "/supergra/entity/show.do?id=" + entityId + "&class=" + type);
 				tagWriter.appendValue(type.getDisplayName() + " n°" + entityId);
 				tagWriter.endTag();
 			}
@@ -86,7 +86,7 @@ class SuperGraEntityEditor implements Editor {
 				}
 				else {
 					tagWriter.startTag("a");
-					tagWriter.writeAttribute("href", params.getContextPath() + "/supergra/entity.do?id=" + entityId + "&class=" + type);
+					tagWriter.writeAttribute("href", params.getContextPath() + "/supergra/entity/show.do?id=" + entityId + "&class=" + type);
 					tagWriter.appendValue(type.getDisplayName() + " n°" + entityId);
 					tagWriter.endTag();
 				}

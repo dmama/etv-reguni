@@ -429,9 +429,11 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				refreshTiersState(session, context);
 
 				view.setKey(key);
+				view.setName(collName);
 
 				final HibernateEntity entity = context.getEntity(key);
 				if (entity != null) {
+					//noinspection unchecked
 					final Collection<HibernateEntity> coll = (Collection<HibernateEntity>) getCollection(collName, entity);
 
 					if (coll != null) {

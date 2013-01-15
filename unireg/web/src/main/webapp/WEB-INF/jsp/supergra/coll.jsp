@@ -2,11 +2,14 @@
 <%@ include file="/WEB-INF/jsp/include/common.jsp" %>
 
 <tiles:insert template="/WEB-INF/jsp/templates/templateSuperGra.jsp">
-	<tiles:put name="menu" type="String"></tiles:put>
+	<tiles:put name="menu" type="String"/>
 
 	<tiles:put name="title" type="String">*** Mode Supergra ***</tiles:put>
 
-	<tiles:put name="actions" type="String"></tiles:put>
+	<%--@elvariable id="superGraSession" type="ch.vd.uniregctb.supergra.SuperGraSession"--%>
+	<%--@elvariable id="coll" type="ch.vd.uniregctb.supergra.view.CollectionView"--%>
+
+	<tiles:put name="actions" type="String"/>
 
 	<tiles:put name="body" type="String">
 
@@ -17,18 +20,21 @@
 
 			<div id="optionsDiv">
 				<form:form id="optionsForm" method="post">
-					<input id="showDetails" name="showDetails" type="checkbox" onclick="$('#optionsForm').submit()" <c:if test="${superGraSession.options.showDetails}">checked="checked"</c:if>/>
+					<input id="showDetails" type="checkbox" onclick="Form.dynamicSubmit('POST', App.curl('/supergra/option/details.do'), {show:${!superGraSession.options.showDetails}});" <c:if test="${superGraSession.options.showDetails}">checked="checked"</c:if>/>
 					<label for="showDetails">Afficher les détails</label>
-					<input name="_showDetails" type="hidden" value="${!superGraSession.options.showDetails}"/>
 				</form:form>
 			</div>
 
-			<form:form commandName="coll" method="post">
+			<form:form commandName="coll" method="post" action="add.do">
+
+				<input type="hidden" name="id" value="${coll.key.id}"/>
+				<input type="hidden" name="class" value="${coll.key.type}"/>
+				<input type="hidden" name="name" value="${coll.name}"/>
 
 				<table class="display_table" id="a">
 					<thead><tr>
 					<c:forEach items="${coll.attributeNames}" var="name">
-						<th><c:out value="${name}"></c:out></th>
+						<th><c:out value="${name}"/>
 					</c:forEach>
 					</tr></thead>
 
@@ -39,7 +45,7 @@
 							<td>
 							<c:if test="${a != null}">
 								<c:if test="${a.name == coll.primaryKeyAtt}">
-									<a href="<c:url value="/supergra/entity.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
+									<a href="<c:url value="/supergra/entity/show.do?id=${a.value}&class=${coll.primaryKeyType}"/>"><c:out value="${a.value}"/></a>
 								</c:if>
 								<c:if test="${a.name != coll.primaryKeyAtt}">
 									<unireg:out id="attributes_${a_rowNum - 1}_${name}" value="${a.value}" clazz="${a.type}"/>
@@ -47,7 +53,7 @@
 							</c:if>
 							</td>
 						</c:forEach>
-						<c:out value="${name}"></c:out>
+						<c:out value="${name}"/>
 						</tr>
 					</c:forEach>
 				</table>

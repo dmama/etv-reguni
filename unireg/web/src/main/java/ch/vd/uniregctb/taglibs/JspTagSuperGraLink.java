@@ -34,10 +34,10 @@ public class JspTagSuperGraLink extends BodyTagSupport {
 
 		final String body;
 		if (StringUtils.isBlank(collName)) {
-			body = "<a href=\"" + contextPath + "/supergra/entity.do?id=" + id + "&class=" + type + "\"/>" + type.getDisplayName() + " n°" + id + "</a>";
+			body = "<a href=\"" + contextPath + "/supergra/entity/show.do?id=" + id + "&class=" + type + "\"/>" + type.getDisplayName() + " n°" + id + "</a>";
 		}
 		else {
-			body = "<a href=\"" + contextPath + "/supergra/coll.do?id=" + id + "&class=" + type + "&name=" + collName + "\"/>" + type.getDisplayName() + " n°" + id + "</a>";
+			body = "<a href=\"" + contextPath + "/supergra/coll/list.do?id=" + id + "&class=" + type + "&name=" + collName + "\"/>" + type.getDisplayName() + " n°" + id + "</a>";
 		}
 
 		try {
