@@ -14,7 +14,7 @@
 	<!--<mvc:annotation-driven />-->
 
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 3.x (@Controller) dans le DispatcherServlet -->
-	<bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+	<bean class="ch.vd.uniregctb.servlet.UniregAnnotationMethodHandlerAdapter">
 		<!-- [SIFISC-2337] ajouté le JSON message converter (+ explicité les autres) -->
 		<property name="messageConverters">
 			<array>
