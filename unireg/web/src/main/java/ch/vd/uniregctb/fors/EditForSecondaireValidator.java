@@ -34,8 +34,9 @@ public class EditForSecondaireValidator extends EditForRevenuFortuneValidator {
 		super.validate(target, errors);
 
 		// [SIFISC-7381] si aucun changement n'a été saisi, on réaffiche le formulaire
-		if (ffs.getDateDebut() == view.getDateDebut() && ffs.getMotifFermeture() == view.getMotifFin() &&
-				ffs.getDateFin() == view.getDateFin() && ffs.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
+		if (ffs.getDateDebut() == view.getDateDebut() && ffs.getMotifOuverture() == view.getMotifDebut() &&
+				ffs.getDateFin() == view.getDateFin() && ffs.getMotifFermeture() == view.getMotifFin() &&
+				ffs.getNumeroOfsAutoriteFiscale().equals(view.getNoAutoriteFiscale())) {
 			errors.reject("global.error.aucun.changement");
 		}
 	}

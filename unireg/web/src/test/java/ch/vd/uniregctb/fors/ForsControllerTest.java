@@ -1199,7 +1199,7 @@ public class ForsControllerTest extends WebTestSpring3 {
 	}
 
 	/**
-	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for principal est bien prise en compte
+	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for secondaire est bien prise en compte
 	 */
 	@Test
 	public void testUpdateForSecondaireMotifFermeture() throws Exception {
@@ -1254,6 +1254,63 @@ public class ForsControllerTest extends WebTestSpring3 {
 				assertEquals(date(2005, 10, 31), ffs.getDateFin());
 				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
 				assertEquals(MotifFor.VENTE_IMMOBILIER, ffs.getMotifFermeture()); // le motif doit avoir changé
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7707] Ce test s'assure que la modification du motif d'ouverture d'un for secondaire est bien prise en compte
+	 */
+	@Test
+	public void testUpdateForSecondaireMotifOuverture() throws Exception {
+
+		class Ids {
+			long tiers;
+			long ffs;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.tiers = pp.getNumero();
+				addForPrincipal(pp, date(2004, 5, 1), MotifFor.ARRIVEE_HC, MockCommune.GrangesMarnand);
+				final ForFiscalSecondaire ffs = addForSecondaire(pp, date(2004, 5, 1), MotifFor.ACHAT_IMMOBILIER, MockCommune.ChateauDoex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+				ids.ffs = ffs.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour du motif d'ouverture d'un for secondaire
+		request.addParameter("id", String.valueOf(ids.ffs));
+		request.addParameter("dateDebut", "01.05.2004");
+		request.addParameter("motifDebut", MotifFor.FUSION_COMMUNES.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.ChateauDoex.getNoOFS()));
+		request.setRequestURI("/fors/secondaire/edit.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif d'ouverture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(ids.tiers);
+				assertNotNull(tiers);
+				final ForsParType fors = tiers.getForsParType(false);
+				assertEquals(1, fors.secondaires.size());
+				final ForFiscalSecondaire ffs = fors.secondaires.get(0);
+				assertNotNull(ffs);
+				assertEquals(date(2004, 5, 1), ffs.getDateDebut());
+				assertEquals(MockCommune.ChateauDoex.getNoOFS(), ffs.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MotifFor.FUSION_COMMUNES, ffs.getMotifOuverture()); // le motif doit avoir changé
 			}
 		});
 	}
