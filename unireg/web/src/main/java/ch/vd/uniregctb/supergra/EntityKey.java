@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.supergra;
 
+import ch.vd.uniregctb.common.HibernateEntity;
+
 /**
  * La clé d'une entité Hibernate (classe + id).
  */
@@ -11,6 +13,20 @@ public class EntityKey {
 	public EntityKey(EntityType type, Long id) {
 		this.type = type;
 		this.id = id;
+	}
+
+	public EntityKey(Class<? extends HibernateEntity> clazz, Long id) {
+		this.type = findEntityType(clazz);
+		this.id = id;
+	}
+
+	private static EntityType findEntityType(Class<? extends HibernateEntity> clazz) {
+		for (EntityType e : EntityType.values()) {
+			if (e.getHibernateClass().isAssignableFrom(clazz)) {
+				return e;
+			}
+		}
+		throw new IllegalArgumentException("La classe [" + clazz + "] n'est pas une entité hibernate reconnue.");
 	}
 
 	public EntityType getType() {

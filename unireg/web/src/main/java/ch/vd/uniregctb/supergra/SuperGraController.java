@@ -256,13 +256,13 @@ public class SuperGraController {
 		//noinspection unchecked
 		final Class<? extends HibernateEntity> newClass = (Class<? extends HibernateEntity>) Class.forName(newClassAsString);
 		final Long newId = manager.nextId(newClass);
+		final EntityKey newKey = new EntityKey(newClass, newId);
 		final AddSubEntity newEntity = new AddSubEntity(view.getKey(), view.getName(), newClass, newId);
 
 		session.addDelta(newEntity);
 
-		Flash.message("Nouvel élément créé avec l'id n°" + newId);
-
-		return "redirect:/supergra/entity/show.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType();
+		Flash.message("Nouvel élément '" + newClass.getSimpleName() + "' créé avec l'id n°" + newId);
+		return "redirect:/supergra/entity/show.do?id=" + newKey.getId() + "&class=" + newKey.getType();
 	}
 
 	@RequestMapping(value = "/supergra/entity/disable.do", method = RequestMethod.POST)
