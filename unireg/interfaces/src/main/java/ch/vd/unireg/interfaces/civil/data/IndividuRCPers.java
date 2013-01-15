@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -623,11 +624,12 @@ public class IndividuRCPers implements Individu, Serializable {
 			return null;
 		}
 		else {
-			final List<Origine> liste = new ArrayList<Origine>(origins.size());
+			// Contournement du SIREF-2786 qui affiche des doublons d'origines
+			final Set<Origine> set = new LinkedHashSet<Origine>(origins.size());
 			for (PlaceOfOrigin origin : origins) {
-				liste.add(OrigineRCPers.get(origin));
+				set.add(OrigineRCPers.get(origin));
 			}
-			return liste;
+			return set;
 		}
 	}
 
