@@ -152,7 +152,9 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 			sb.append(REGEXP_SEPARATEURS);
 			sb.append(")+");
 		}
-		LOGGER.debug("regexp localité invalide pour " + terme + " = " + sb.toString());
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("regexp localité invalide pour " + terme + " = " + sb.toString());
+		}
 		return sb.toString();
 	}
 
@@ -163,7 +165,9 @@ public class LocaliteInvalideMatcher implements InitializingBean {
 			sb.append(Character.toLowerCase(c)).append(Character.toUpperCase(c));
 			sb.append("]");
 		}
-		LOGGER.debug("regexp faux-positif pour " + terme + " = " + sb.toString());
+		if (LOGGER.isTraceEnabled()) {
+			LOGGER.trace("regexp faux-positif pour " + terme + " = " + sb.toString());
+		}
 		return sb.toString();
 	}
 
