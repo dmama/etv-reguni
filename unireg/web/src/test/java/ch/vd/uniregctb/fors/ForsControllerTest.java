@@ -680,6 +680,60 @@ public class ForsControllerTest extends WebTestSpring3 {
 		});
 	}
 
+	/**
+	 * [SIFISC-7708] Vérifie que la tentative de création d'un for débiteur sans date de début ne provoque pas de NPE
+	 */
+	@Test
+	public void testAddForDebiteurDateDebutVide() throws Exception {
+
+		// mise en place fiscale
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bex);
+
+				final PersonnePhysique pp1 = addNonHabitant("Draco", "Malfoy", date(1980, 10, 25), Sexe.MASCULIN);
+				addRapportPrestationImposable(dpi, pp1, date(2009, 1, 1), null, false);
+
+				return dpi.getNumero();
+			}
+		});
+
+		// ouverture d'un nouveau for sur une autre commune
+		request.setMethod("POST");
+		request.addParameter("tiersId", String.valueOf(dpiId));
+		request.addParameter("typeAutoriteFiscale", TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.Vevey.getNoOFS()));
+		request.setRequestURI("/fors/debiteur/add.do");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie qu'il y a une erreur sur la date de début
+		final BeanPropertyBindingResult result = getBindingResult(mav);
+		assertNotNull(result);
+		assertEquals(1, result.getErrorCount());
+
+		final List<?> errors = result.getAllErrors();
+		final FieldError error = (FieldError) errors.get(0);
+		assertNotNull(error);
+		assertEquals("dateDebut", error.getField());
+		assertEquals("error.date.debut.vide", error.getCode());
+
+		// On vérifie qu'aucun for fiscal n'a été créé
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(dpiId);
+				assertNotNull(tiers);
+				assertEquals(1, tiers.getForsFiscaux().size());
+			}
+		});
+	}
+
 	@Test
 	public void testAddForDebiteurOuvert() throws Exception {
 

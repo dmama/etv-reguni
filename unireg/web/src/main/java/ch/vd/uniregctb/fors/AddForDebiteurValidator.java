@@ -37,22 +37,24 @@ public class AddForDebiteurValidator extends AddForValidator {
 			errors.rejectValue("typeAutoriteFiscale", "error.type.autorite.incorrect");
 		}
 
-		final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, view.getTiersId());
-		if (dpi != null) {
-			// on établi la liste des périodes des fors fiscaux existants
-			final List<DateRange> fors = new ArrayList<DateRange>();
-			for (ForFiscal f : dpi.getForsFiscauxNonAnnules(true)) {
-				if (f.getDateFin() == null && f.getDateDebut().isBefore(view.getDateDebut())) {
-					// simule la fermeture du for courant à la veille du nouveau for
-					fors.add(new DateRangeHelper.Range(f.getDateDebut(), view.getDateDebut().getOneDayBefore()));
+		if (view.getDateDebut() != null) {
+			final DebiteurPrestationImposable dpi = hibernateTemplate.get(DebiteurPrestationImposable.class, view.getTiersId());
+			if (dpi != null) {
+				// on établi la liste des périodes des fors fiscaux existants
+				final List<DateRange> fors = new ArrayList<DateRange>();
+				for (ForFiscal f : dpi.getForsFiscauxNonAnnules(true)) {
+					if (f.getDateFin() == null && (f.getDateDebut() == null || f.getDateDebut().isBefore(view.getDateDebut()))) {
+						// simule la fermeture du for courant à la veille du nouveau for
+						fors.add(new DateRangeHelper.Range(f.getDateDebut(), view.getDateDebut().getOneDayBefore()));
+					}
+					else {
+						fors.add(new DateRangeHelper.Range(f));
+					}
 				}
-				else {
-					fors.add(new DateRangeHelper.Range(f));
+				if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
+					errors.rejectValue("dateDebut", "error.date.chevauchement");
+					errors.rejectValue("dateFin", "error.date.chevauchement");
 				}
-			}
-			if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
-				errors.rejectValue("dateDebut", "error.date.chevauchement");
-				errors.rejectValue("dateFin", "error.date.chevauchement");
 			}
 		}
 	}
