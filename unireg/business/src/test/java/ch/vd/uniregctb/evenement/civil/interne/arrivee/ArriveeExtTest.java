@@ -652,7 +652,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Ok: arrivée en adresse secondaire
 		 */
-		final Adresse ancienne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel, toutDebut, veille);
+		final Adresse ancienne = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel, toutDebut, veille);
 		final Adresse nouvelle = new MockAdresse(TypeAdresseCivil.SECONDAIRE, MockRue.Lausanne.AvenueDeBeaulieu, null, dateArrivee, null);
 
 		final ArriveeSecondaire arrivee = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Lausanne.getNoOFS(), null, MockCommune.Lausanne, ancienne, nouvelle, context);
@@ -672,7 +672,7 @@ public class ArriveeExtTest extends AbstractEvenementCivilInterneTest {
 		/*
 		 * Erreur: arrivée en adresse secondaire hors canton
 		 */
-		final Adresse nouvelleHorsCanton = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
+		final Adresse nouvelleHorsCanton = new MockAdresse(TypeAdresseCivil.SECONDAIRE, null, null, MockLocalite.Neuchatel3Serrieres, dateArrivee, null);
 		final ArriveeSecondaire arriveeHorsCanton = new ArriveeSecondaire(null, null, dateArrivee, MockCommune.Neuchatel.getNoOFS(), null, MockCommune.Neuchatel, ancienne, nouvelleHorsCanton, context);
 		arriveeHorsCanton.validateArriveeAdresseSecondaire(collector);
 		assertFalse(collector.getErreurs().isEmpty());

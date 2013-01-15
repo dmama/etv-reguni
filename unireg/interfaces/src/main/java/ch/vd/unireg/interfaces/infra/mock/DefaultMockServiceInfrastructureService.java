@@ -2,6 +2,12 @@ package ch.vd.unireg.interfaces.infra.mock;
 
 import java.lang.reflect.Field;
 
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.unireg.interfaces.civil.data.Adresse;
+import ch.vd.unireg.interfaces.civil.data.CasePostale;
+import ch.vd.uniregctb.type.TexteCasePostale;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
+
 public class DefaultMockServiceInfrastructureService extends MockServiceInfrastructureService {
 
 	protected static final MockServiceInfrastructureService staticInstance = new MockServiceInfrastructureService() {
@@ -40,7 +46,14 @@ public class DefaultMockServiceInfrastructureService extends MockServiceInfrastr
 		forceLoad(MockRue.class);
 		forceLoad(MockCollectiviteAdministrative.class);
 		forceLoad(MockInstitutionFinanciere.class);
+		//SIFISC-3468
+		//Essayez de faire ce qui a dessous en static pour voir ...
+		//La Vallee avait urgemment besoin d'une adresse avec Localité donc ...
+		final Adresse adresseSentier = new MockAdresse(TypeAdresseCivil.COURRIER, new CasePostale(TexteCasePostale.CASE_POSTALE, 256), null, MockLocalite.LeSentier, RegDate.get(2002, 1, 1), null);
+		MockOfficeImpot.OID_LA_VALLEE.setAdresse(adresseSentier);
 
+		final MockAdresse adresseVevey = new MockAdresse(TypeAdresseCivil.COURRIER, new CasePostale(TexteCasePostale.CASE_POSTALE, 1032), "Rue du Simplon 22", MockLocalite.Vevey, RegDate.get(2002, 1, 1), null);
+		MockOfficeImpot.OID_VEVEY.setAdresse(adresseVevey);
 		copyFrom(staticInstance);
 	}
 

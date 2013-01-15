@@ -225,4 +225,88 @@ public class ImpressionSommationDIHelperTest extends BusinessTest {
 		});
 
 	}
+
+	@Test
+	public void testGetLocaliteExpeditionWithLaValleeException() throws Exception {
+
+// préparation fiscale
+		final DeclarationImpotOrdinaire di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinaire>() {
+			@Override
+			public DeclarationImpotOrdinaire doInTransaction(TransactionStatus status) {
+
+
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEPART_HS, null, null, MockCommune.Fraction.LeSentier);
+
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				di.setNumeroOfsForGestion(MockCommune.LeChenit.getNoOFS());
+				EtatDeclaration etatEmise = new EtatDeclarationEmise();
+				etatEmise.setDateObtention(date(2010, 1, 1));
+				etatEmise.setDeclaration(di);
+				di.setEtats(Collections.singleton(etatEmise));
+				return di;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+			final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+			FichierImpressionDocument fichier;
+			try {
+				fichier = impressionSommationDIHelper.remplitSommationDI(params);
+			}
+			catch (EditiqueException e) {
+				throw new RuntimeException(e);
+			}
+			assertEquals("Le Sentier", fichier.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getLocaliteExpedition());
+				return null;
+			}
+		});
+
+
+	}
+
+	@Test
+	public void testGetLocaliteExpeditionCasStandard() throws Exception {
+
+// préparation fiscale
+		final DeclarationImpotOrdinaire di = doInTransaction(new TransactionCallback<DeclarationImpotOrdinaire>() {
+			@Override
+			public DeclarationImpotOrdinaire doInTransaction(TransactionStatus status) {
+
+
+				final PersonnePhysique pp = addNonHabitant("Julien", "Glayre", date(1975, 1, 1), Sexe.MASCULIN);
+
+				addForPrincipal(pp, date(2009, 1, 1), MotifFor.DEPART_HS, null, null, MockCommune.Vevey);
+
+				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periodeFiscale, date(2009, 1, 1), date(2009, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modeleDocument);
+				di.setNumeroOfsForGestion(MockCommune.Vevey.getNoOFS());
+				EtatDeclaration etatEmise = new EtatDeclarationEmise();
+				etatEmise.setDateObtention(date(2010, 1, 1));
+				etatEmise.setDeclaration(di);
+				di.setEtats(Collections.singleton(etatEmise));
+				return di;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final ImpressionSommationDIHelperParams params = ImpressionSommationDIHelperParams.createBatchParams(di, false, RegDate.get());
+				FichierImpressionDocument fichier;
+				try {
+					fichier = impressionSommationDIHelper.remplitSommationDI(params);
+				}
+				catch (EditiqueException e) {
+					throw new RuntimeException(e);
+				}
+				assertEquals("Vevey", fichier.getFichierImpression().getDocumentArray(0).getInfoEnteteDocument().getExpediteur().getLocaliteExpedition());
+				return null;
+			}
+		});
+
+
+	}
 }

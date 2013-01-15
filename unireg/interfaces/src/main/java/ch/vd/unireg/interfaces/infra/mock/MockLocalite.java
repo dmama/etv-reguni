@@ -15,7 +15,7 @@ public class MockLocalite implements Localite {
 	public static final MockLocalite Bex = new MockLocalite(1124, 1880, null, "Bex", MockCommune.Bex);
 	public static final MockLocalite VillarsSousYens = new MockLocalite(283, 1168, null, "Villars-sous-Yens", MockCommune.VillarsSousYens);
 	public static final MockLocalite Orbe = new MockLocalite(571, 1350, null, "Orbe", MockCommune.Orbe);
-	public static final MockLocalite Vevey = new MockLocalite(1043, 1800, null, "Vevey", MockCommune.Vevey);
+	public static final MockLocalite Vevey = new MockLocalite(1043, 1800, null, "Vevey 1", MockCommune.Vevey);
 	public static final MockLocalite Renens = new MockLocalite(165, 1020, null, "Renens VD", MockCommune.Renens);
 	public static final MockLocalite CheseauzSurLausanne = new MockLocalite(180, 1033, null, "Cheseaux-sur-Lausanne", MockCommune.CheseauxSurLausanne);
 	public static final MockLocalite VufflensLaVille = new MockLocalite(526, 1302, null, "Vufflens-la-Ville", MockCommune.VufflensLaVille);

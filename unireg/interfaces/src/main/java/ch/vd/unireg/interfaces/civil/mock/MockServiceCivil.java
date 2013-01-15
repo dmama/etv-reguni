@@ -306,7 +306,7 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	 * Ajoute une adresse pour l'individu spécifié (à partir d'une localité).
 	 */
 	protected MockAdresse addAdresse(MockIndividu individu, TypeAdresseCivil type, @Nullable CasePostale casePostale, MockLocalite localite, RegDate debutValidite, @Nullable RegDate finValidite) {
-		final MockAdresse adresse = new MockAdresse(type, casePostale, localite, debutValidite, finValidite);
+		final MockAdresse adresse = new MockAdresse(type, casePostale, null, localite, debutValidite, finValidite);
 		add(individu, adresse);
 		return adresse;
 	}

@@ -54,6 +54,7 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper implements ImpressionSommationDIHelper {
 
 	private static final String VERSION_XSD = "1.0";
+	private static final int OID_LA_VALLEE = 8;
 
 	private static final Logger LOGGER = Logger.getLogger(ImpressionSommationDIHelperImpl.class);
 
@@ -199,17 +200,36 @@ public class ImpressionSommationDIHelperImpl extends EditiqueAbstractHelper impl
 							LOGGER.warn("Impossible de retrouver la localité dont l'onrp est " + onrp, e);
 						}
 						if (localite != null) {
-							sLocalite = localite.getNomCompletMinuscule();
+							//SIFISC-3468: Exception pour la localité de La vallée, on prend le nom de la localité et non de la commune
+							if (OID_LA_VALLEE == oid) {
+								sLocalite = localite.getNomCompletMinuscule();
+							}
+							else {
+								if (localite.getCommuneLocalite() != null) {
+									sLocalite = localite.getCommuneLocalite().getNomCourt();
+								}
+								else{
+									// Impossible de retrouver lacommune de la localité, on se débrouille
+									sLocalite = extractLocaliteFromAdresse(adresse);
+								}
+							}
+
 						}
 						else {
 							// Impossible de retrouver la localité, on se débrouille
-							sLocalite = adresse.getLocalite();
-							sLocalite = sLocalite.replaceAll("[0-9]+", "");
-							sLocalite = sLocalite.trim();
+							sLocalite = extractLocaliteFromAdresse(adresse);
 						}
 					}
 				}
 			}
+			return sLocalite;
+		}
+
+		private String extractLocaliteFromAdresse(Adresse adresse) {
+			String sLocalite = null;
+			sLocalite = adresse.getLocalite();
+			sLocalite = sLocalite.replaceAll("[0-9]+", "");
+			sLocalite = sLocalite.trim();
 			return sLocalite;
 		}
 

@@ -42,7 +42,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 	}
 
 	public MockAdresse(TypeAdresseCivil type, MockRue rue, @Nullable CasePostale casePostale, RegDate debutValidite, @Nullable RegDate finValidite) {
-		this(type, casePostale, rue.getLocalite(), debutValidite, finValidite);
+		this(type, casePostale, null, rue.getLocalite(), debutValidite, finValidite);
 		this.rue = rue.getDesignationCourrier();
 		this.numeroRue = rue.getNoRue();
 	}
@@ -63,7 +63,7 @@ public class MockAdresse implements Adresse, MockCloneable {
 		this.dateFinValidite = finValidite;
 	}
 
-	public MockAdresse(TypeAdresseCivil type, CasePostale casePostale, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
+	public MockAdresse(TypeAdresseCivil type, CasePostale casePostale, String rue, MockLocalite localite, RegDate debutValidite, RegDate finValidite) {
 		this.typeAdresse = type;
 
 		// localité
@@ -76,6 +76,9 @@ public class MockAdresse implements Adresse, MockCloneable {
 		final Integer complementNPA = localite.getComplementNPA();
 		this.numeroPostalComplementaire = (complementNPA == null ? null : complementNPA.toString());
 		this.numeroOrdrePostal = localite.getNoOrdre();
+
+		//rue
+		this.rue = rue;
 
 		// validité
 		this.dateDebutValidite = debutValidite;
