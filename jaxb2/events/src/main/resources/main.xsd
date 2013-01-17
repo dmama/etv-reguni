@@ -23,6 +23,11 @@
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd"/>
 
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd"/>
 	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd"/>

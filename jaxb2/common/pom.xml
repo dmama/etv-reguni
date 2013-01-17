@@ -52,6 +52,7 @@
 						<arg>-Xts</arg>
 						<arg>-Xts:style:ch.vd.unireg.UniregToStringStyle.STYLE</arg>
 						<arg>-Xvalue-constructor</arg>
+						<arg>-Xinheritance</arg>
 					</args>
 				</configuration>
 				<executions>
