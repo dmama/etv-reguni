@@ -520,6 +520,43 @@ public class EFactureServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final TypeRefusDemande typeRefus = efactureService.identifieContribuablePourInscription(ppId, noAvs);
+				assertEquals(null, typeRefus);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationPersonnePhysiqueNoAVS13Incorrect() throws Exception {
+
+		final long noInd = 436544748L;
+		final String noAvs = "7568700351431";
+		final RegDate dateNaissance = date(1950, 8, 25);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noInd, dateNaissance, "Chollet", "Alfonso", true);
+				lui.setNouveauNoAVS("7568700351433");
+				addAdresse(lui, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, dateNaissance, null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		// tentative d'identification
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final TypeRefusDemande typeRefus = efactureService.identifieContribuablePourInscription(ppId, noAvs);
 				assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT, typeRefus);
 				return null;
 			}
@@ -562,11 +599,57 @@ public class EFactureServiceTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final TypeRefusDemande typeRefus = efactureService.identifieContribuablePourInscription(mcId, noAvs);
+				assertEquals(null, typeRefus);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationMenageCommunAvecNoAVS13() throws Exception {
+
+		final long noIndLui = 436544748L;
+		final long noIndElle = 4378456427L;
+		final String noAvsLui = "7568700351431";
+		final String noAvsElle = "7568700351432";
+		final RegDate dateMariage = date(2008, 4, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndLui, null, "Chollet", "Alfonso", true);
+				lui.setNouveauNoAVS(noAvsLui);
+				addAdresse(lui, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, dateMariage, null);
+				final MockIndividu elle = addIndividu(noIndElle, null, "Chollet", "Sigourney", false);
+				elle.setNouveauNoAVS(noAvsElle);
+				addAdresse(elle, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, dateMariage, null);
+				marieIndividus(lui, elle, dateMariage);
+			}
+		});
+
+		// mise en place fiscale
+		final long mcId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noIndLui);
+				final PersonnePhysique elle = addHabitant(noIndElle);
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(lui, elle, dateMariage, null);
+				return couple.getMenage().getNumero();
+			}
+		});
+
+		// tentative d'identification
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final TypeRefusDemande typeRefus = efactureService.identifieContribuablePourInscription(mcId, "7568700351438");
 				assertEquals(TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT, typeRefus);
 				return null;
 			}
 		});
 	}
+
 
 	@Test
 	public void testIdentificationContribuablePasDonneeNoAvs() throws Exception {
@@ -600,6 +683,41 @@ public class EFactureServiceTest extends BusinessTest {
 				assertEquals(TypeRefusDemande.NUMERO_AVS_INVALIDE, efactureService.identifieContribuablePourInscription(ppId, ""));
 				assertEquals(TypeRefusDemande.NUMERO_AVS_INVALIDE, efactureService.identifieContribuablePourInscription(ppId, "     "));
 				assertEquals(TypeRefusDemande.NUMERO_AVS_INVALIDE, efactureService.identifieContribuablePourInscription(ppId, "effewe"));
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testIdentificationContribuableAucuneDonneeNoAvs() throws Exception {
+		final long noInd = 436544748L;
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noInd, null, "Chollet", "Alfonso", true);
+				addAdresse(lui, TypeAdresseCivil.COURRIER, MockRue.Prilly.RueDesMetiers, null, date(2007, 1, 1), null);
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique lui = addHabitant(noInd);
+				return lui.getNumero();
+			}
+		});
+
+		// tentative d'identification
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				assertEquals(null, efactureService.identifieContribuablePourInscription(ppId, null));
+				assertEquals(null, efactureService.identifieContribuablePourInscription(ppId, ""));
+				assertEquals(null, efactureService.identifieContribuablePourInscription(ppId, "     "));
+				assertEquals(null, efactureService.identifieContribuablePourInscription(ppId, "effewe"));
 				return null;
 			}
 		});

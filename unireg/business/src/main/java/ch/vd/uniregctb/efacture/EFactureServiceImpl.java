@@ -77,24 +77,65 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 	@Nullable
 	public TypeRefusDemande identifieContribuablePourInscription(long ctbId, String strNoAvs) throws AdresseException {
 		final Tiers tiers = tiersService.getTiers(ctbId);
-		if (tiers == null) {
+		if (isTiersIncoherent(tiers)) {
 			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
 		}
 
-		final long noAvs;
-		try {
-			noAvs = AvsHelper.stringToLong(strNoAvs);
+		if (numeroAvsIsRenseigneForTiers(tiers)) {
+			final long noAvs;
+			try {
+				noAvs = AvsHelper.stringToLong(strNoAvs);
+			}
+			catch (IllegalArgumentException e) {
+				return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+			}
+			final TypeRefusDemande refusDemande= controlerNumeroAVS(noAvs,tiers);
+			if (refusDemande!=null) {
+				return refusDemande;
+			}
 		}
-		catch (IllegalArgumentException e) {
-			return TypeRefusDemande.NUMERO_AVS_INVALIDE;
+
+		if (adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false) == null) {
+			return TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE;
 		}
+		return null;
+	}
+
+	/**
+	 * Permet de tester les conditions suivante issues du JIRA-7326
+	 * Navs renseigné pour le ctb personne physique
+	 * Navs renseigné pour les deux membres d'un ctb ménage commun
+	 * */
+
+
+	private boolean numeroAvsIsRenseigneForTiers(Tiers tiers){
+		if (tiers instanceof MenageCommun) {
+			final MenageCommun menage = (MenageCommun)tiers;
+			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
+				final String avs = tiersService.getNumeroAssureSocial(pp);
+				if (StringUtils.isBlank(avs) ) {
+					return false;
+				}
+			}
+		}
+		else if(tiers instanceof PersonnePhysique){
+			final String avs = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
+			if (StringUtils.isBlank(avs) ) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private TypeRefusDemande controlerNumeroAVS(long noAvs, Tiers tiers) {
+
 
 		if (tiers instanceof MenageCommun) {
 			boolean found = false;
 			final MenageCommun menage = (MenageCommun)tiers;
 			for (PersonnePhysique pp : tiersService.getPersonnesPhysiques(menage)) {
 				final String avs = tiersService.getNumeroAssureSocial(pp);
-				if (StringUtils.isNotBlank(avs) && noAvs == AvsHelper.stringToLong(avs)) {
+				if (noAvs == AvsHelper.stringToLong(avs)) {
 					found = true;
 					break;
 				}
@@ -105,18 +146,17 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		}
 		else if (tiers instanceof PersonnePhysique) {
 			final String avs = tiersService.getNumeroAssureSocial((PersonnePhysique) tiers);
-			if (StringUtils.isBlank(avs) || noAvs != AvsHelper.stringToLong(avs)) {
+			if (noAvs != AvsHelper.stringToLong(avs)) {
 				return TypeRefusDemande.NUMERO_AVS_CTB_INCOHERENT;
 			}
 		}
-		else {
-			return TypeRefusDemande.NUMERO_CTB_INCOHERENT;
-		}
-
-		if (adresseService.getAdresseFiscale(tiers, TypeAdresseFiscale.COURRIER, null, false) == null) {
-			return TypeRefusDemande.ADRESSE_COURRIER_INEXISTANTE;
-		}
 		return null;
+	}
+
+	private boolean isTiersIncoherent(Tiers tiers) {
+		final boolean tiersIsNull = tiers == null;
+		final boolean tiersTypeIncoherent = !(tiers instanceof MenageCommun) && !(tiers instanceof PersonnePhysique);
+		return tiersIsNull || tiersTypeIncoherent;
 	}
 
 	@Override
