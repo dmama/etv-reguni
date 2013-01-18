@@ -68,12 +68,11 @@ public class Demande {
 	private final String noAvs;
 
 	public Demande(RegistrationRequest request) {
-
 		this.idDemande = request.getId();
 		this.ctbId = Long.parseLong(request.getPayerBusinessId());
-		this.email = request.getEmail();
 		this.dateDemande = XmlUtils.xmlcal2regdate(request.getRegistrationDate());
 		this.action = Action.get(request.getRegistrationMode());
+		this.email = (this.action == Action.DESINSCRIPTION ? null : request.getEmail());
 
 		final Map<String, String> map = buildAdditionalData(request);
 		this.noAvs = map.get(AVS13);
