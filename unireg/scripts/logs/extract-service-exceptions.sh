@@ -7,10 +7,11 @@ DAY=$2
 SERVICE=$3
 if [ -z "$ENVIRONMENT" -o -z "$DAY" -o -z "$SERVICE" ]; then
         echo "Syntaxe : $(basename "$0") <env> AAAAMMJJ ServiceName toto@vd.ch [titi@vd.ch ...] avec <env> l'un de PR, PO, VA, PP, FO" >&2
-	echo "Services connus :" >&2
-	echo -e "\t- EvenementExterneListenerImpl" >&2
-	echo -e "\t- PartyRequestListener" >&2
-	echo -e "\t- ..." >&2
+        echo "Services connus :" >&2
+        echo -e "\t- EvenementExterneListenerImpl" >&2
+        echo -e "\t- PartyRequestListener" >&2
+        echo -e "\t- EvenementCivilEchListener" >&2
+        echo -e "\t- ..." >&2
         exit 1
 elif [[ ! "$ENVIRONMENT" =~ ^(PR|PO|VA|PP|FO)$ ]]; then
         echo "Pour l'environnement, seuls PR, PO, VA, PP et FO sont acceptés (trouvé : '$ENVIRONMENT')" >&2
@@ -50,11 +51,13 @@ function cat_file {
 
 TMPFILE=$(mktemp)
 
-cat_file "$LOGFILE" | grep -n "$SERVICE" | grep -B 1 "Exception" | grep -v "^--" | sed -e 's/:/ /' | while read LINE_NB D1 D2 DATE HOUR D3 D4 D4 PAYLOAD; do
+cat_file "$LOGFILE" | grep "^[^[:blank:]].*\b$SERVICE\b.*Exception" | awk '{ print $5; }' | sed -e 's/^.\(.*\).$/\1/' | while read THREAD; do
+	cat_file "$LOGFILE" | grep -n "^[^[:blank:]].*\b$THREAD\b.*\b$SERVICE\b" | grep "Exception" -B 1
+done | grep -v "^--" | sed 's/:/ /' | while read LINE_NB D1 D2 DATE HOUR D3 D4 D5 PAYLOAD; do
 	echo "${LINE_NB} ${DATE} ${HOUR} ${PAYLOAD}"
 done | sed -e '/Exception/! s/^[0-9]\+[[:blank:]]\+//; /Exception/ s/\(^[0-9]\+\)[^0-9].*$/\1/' | while read LINE; do
 	if [[ "$LINE" =~ ^[0-9]+$ ]]; then
-		cat_file "$LOGFILE" | sed -e "$LINE,/^\[/! D" | sed -e '$ D' | sed -e '1 s/^.*| //'
+		cat_file "$LOGFILE" | sed -e "$LINE,/^\[/! D" | sed -e '$ D' | sed -e '1 s/^.*| //' | uniq
 	else
 		read DATE HOUR REST < <(echo "$LINE")
 		echo
@@ -66,7 +69,7 @@ done | sed -e '/Exception/! s/^[0-9]\+[[:blank:]]\+//; /Exception/ s/\(^[0-9]\+\
 		echo "---------------------------------------"
 		echo "$LINE"
 	fi
-done | sed -e '/^.\+$/,$ s/^$/-/' | sed -e '/^$/ D' | sed -e 's/^-$//' > "$TMPFILE"		# tout ça pour enlever les deux lignes vides du début du fichier...
+done | sed -e '1,2 D' | sed -e 's/^-$//' > "$TMPFILE"
 
 if [ -s "$TMPFILE" ]; then
 
