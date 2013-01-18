@@ -11,7 +11,6 @@
     <column>LOG_MUSER</column>
     <column>ADRESSE_BIC_SWIFT</column>
     <column>ADRESSE_EMAIL</column>
-    <column>ADRESSE_EMAIL_EFACTURE</column>
     <column>BLOC_REMB_AUTO</column>
     <column>COMPLEMENT_NOM</column>
     <column>DEBITEUR_INACTIF</column>
@@ -64,7 +63,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -123,7 +121,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value><![CDATA[Café du Commerce]]></value>
       <value>0</value>
       <value>0</value>
@@ -176,7 +173,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2010-12-21 10:11:25.002]]></value>
       <value>[system]</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -234,7 +230,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -288,7 +283,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -346,7 +340,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -400,7 +393,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -458,7 +450,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -512,7 +503,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -570,7 +560,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -624,7 +613,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -682,7 +670,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -736,7 +723,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -794,7 +780,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -848,7 +833,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -906,7 +890,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -960,7 +943,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1018,7 +1000,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1072,7 +1053,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1130,7 +1110,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1184,7 +1163,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1242,7 +1220,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1296,7 +1273,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1354,7 +1330,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1408,7 +1383,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1466,7 +1440,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1520,7 +1493,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1578,7 +1550,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1632,7 +1603,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1690,7 +1660,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1744,7 +1713,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1802,7 +1770,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1856,7 +1823,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -1914,7 +1880,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -1968,7 +1933,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2026,7 +1990,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2080,7 +2043,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2138,7 +2100,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2192,7 +2153,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2250,7 +2210,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2304,7 +2263,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2362,7 +2320,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2416,7 +2373,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2474,7 +2430,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2528,7 +2483,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2586,7 +2540,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2640,7 +2593,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2698,7 +2650,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2752,7 +2703,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2810,7 +2760,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2864,7 +2813,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -2922,7 +2870,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -2976,7 +2923,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3034,7 +2980,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3088,7 +3033,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3146,7 +3090,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3200,7 +3143,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3258,7 +3200,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3312,7 +3253,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3370,7 +3310,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3424,7 +3363,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3482,7 +3420,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3536,7 +3473,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3594,7 +3530,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3648,7 +3583,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3706,7 +3640,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3760,7 +3693,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3818,7 +3750,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3872,7 +3803,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -3930,7 +3860,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -3984,7 +3913,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4042,7 +3970,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4096,7 +4023,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4154,7 +4080,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4208,7 +4133,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4266,7 +4190,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4320,7 +4243,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4378,7 +4300,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4432,7 +4353,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4490,7 +4410,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4544,7 +4463,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4602,7 +4520,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4656,7 +4573,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4714,7 +4630,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4768,7 +4683,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4826,7 +4740,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4880,7 +4793,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -4938,7 +4850,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -4992,7 +4903,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5050,7 +4960,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5104,7 +5013,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5162,7 +5070,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5216,7 +5123,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5274,7 +5180,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5328,7 +5233,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5386,7 +5290,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5440,7 +5343,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5498,7 +5400,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5552,7 +5453,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5610,7 +5510,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5666,7 +5565,6 @@
       <value>[Blocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5720,7 +5618,6 @@
       <value>[HostMigrationMain]</value>
       <value><![CDATA[2010-09-24 15:15:02.0]]></value>
       <value>[Blocage-remboursement-auto]</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -5780,7 +5677,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -5832,7 +5728,6 @@
       <value>W#ASIZP1</value>
       <value><![CDATA[2011-08-08 10:52:18.045]]></value>
       <value>zaiata</value>
-      <null/>
       <null/>
       <null/>
       <value>0</value>
@@ -5890,7 +5785,6 @@
       <value>IL08667Z</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -5944,7 +5838,6 @@
       <value>IL08667Z</value>
       <value><![CDATA[2009-07-24 18:39:06.011]]></value>
       <value>IL08667Z</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -6004,7 +5897,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -6056,7 +5948,6 @@
       <value>W#ASIZP1</value>
       <value><![CDATA[2011-08-09 11:19:27.011]]></value>
       <value>zaircx</value>
-      <null/>
       <null/>
       <null/>
       <value>0</value>
@@ -6114,7 +6005,6 @@
       <value>[Déblocage-remboursement-auto]</value>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <value>0</value>
@@ -6170,7 +6060,6 @@
       <value>EvtCivil-4329465</value>
       <null/>
       <null/>
-      <null/>
       <value>1</value>
       <null/>
       <value>0</value>
@@ -6224,7 +6113,6 @@
       <value>EvtCivil-5968653</value>
       <value><![CDATA[2011-01-24 16:43:46.083]]></value>
       <value>OuvertureForsContribuableMajeurJob</value>
-      <null/>
       <null/>
       <null/>
       <value>1</value>
@@ -6284,7 +6172,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -6336,7 +6223,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -6396,7 +6282,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -6450,7 +6335,6 @@
       <value>tiers-basic</value>
       <value>CCBPFRPPBDX</value>
       <value>dupont@etat-vaud.ch</value>
-      <null/>
       <value>0</value>
       <value>Chopard</value>
       <value>0</value>
@@ -6506,7 +6390,6 @@
       <value>tiers-basic</value>
       <value>CCBPFRPPBDX</value>
       <value>dupont@etat-vaud.ch</value>
-      <null/>
       <value>0</value>
       <value>Chopard</value>
       <value>0</value>
@@ -6560,7 +6443,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <value>0</value>
@@ -6620,7 +6502,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -6674,7 +6555,6 @@
       <value>tiers-basic</value>
       <value>CCBPFRPPBDX</value>
       <value>dupont@etat-vaud.ch</value>
-      <null/>
       <value>0</value>
       <value>Chopard</value>
       <value>1</value>
@@ -6728,7 +6608,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <value>0</value>
@@ -6786,7 +6665,6 @@
       <value>tiers-basic</value>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <null/>
       <value>0</value>
@@ -6842,7 +6720,6 @@
       <value>tiers-basic</value>
       <null/>
       <value>pascaline@descloux.ch</value>
-      <null/>
       <value>0</value>
       <null/>
       <value>0</value>
@@ -6896,7 +6773,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -6956,7 +6832,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>0</value>
       <value>0</value>
       <null/>
@@ -7008,7 +6883,6 @@
       <value>tiers-basic</value>
       <value><![CDATA[2008-01-01 00:00:00.0]]></value>
       <value>tiers-basic</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -7066,7 +6940,6 @@
       <value>tiers-basic</value>
       <value>CCBPFRPPBDX</value>
       <value>dupont@etat-vaud.ch</value>
-      <null/>
       <value>0</value>
       <null/>
       <value>0</value>
