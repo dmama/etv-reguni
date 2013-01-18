@@ -63,14 +63,6 @@ public interface EFactureService {
 	TypeRefusDemande identifieContribuablePourInscription(long ctbId, String noAvs) throws AdresseException;
 
 	/**
-	 * Met à jour l'adresse e-mail du contribuable
-	 *
-	 * @param ctbId l'id du contribuable
-	 * @param email l'adresse e-mail
-	 */
-	void updateEmailContribuable(long ctbId, String email);
-
-	/**
 	 * Valide l'état du contribuable lors de la procédure d'inscription à la e-Facture
 	 *
 	 * @param ctbId l'id du contribuale a valider

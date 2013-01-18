@@ -106,11 +106,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 	 */
 	private Integer officeImpotId;
 
-	/**
-	 * Adresse de courrier éléctronique exclusive à l'e-facture
-	 */
-	private String adresseCourrierElectroniqueEFacture;
-
 	private Set<RapportEntreTiers> rapportsObjet;
 	private Set<RapportEntreTiers> rapportsSujet;
 	private Set<AdresseTiers> adressesTiers;
@@ -235,15 +230,6 @@ public abstract class Tiers extends HibernateEntity implements BusinessComparabl
 
 	public void setTitulaireCompteBancaire(String theTitulaireCompteBancaire) {
 		titulaireCompteBancaire = theTitulaireCompteBancaire;
-	}
-
-	@Column(name = "ADRESSE_EMAIL_EFACTURE", length = LengthConstants.TIERS_EMAIL)
-	public String getAdresseCourrierElectroniqueEFacture() {
-		return adresseCourrierElectroniqueEFacture;
-	}
-
-	public void setAdresseCourrierElectroniqueEFacture(String adresseCourrierElectroniqueEFacture) {
-		this.adresseCourrierElectroniqueEFacture = adresseCourrierElectroniqueEFacture;
 	}
 
 	@Transient

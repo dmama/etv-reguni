@@ -49,9 +49,6 @@ public class EFactureEventHandlerImpl implements EFactureEventHandler {
 				return;
 			}
 
-			//Stocke l’adresse de courrier électronique de la demande
-			eFactureService.updateEmailContribuable(demande.getCtbId(), demande.getEmail());
-
 			// valide l'etat du contribuable et envoye le courrier adéquat
 			final TypeAttenteDemande etatFinal;
 			final TypeDocument typeDocument;

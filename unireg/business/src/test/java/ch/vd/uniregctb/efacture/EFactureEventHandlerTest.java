@@ -88,12 +88,6 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 			}
 
 			@Override
-			public void updateEmailContribuable(long ctbId, String email) {
-				assertEquals(CTB_ID, ctbId);
-				assertEquals(EMAIL, email);
-			}
-
-			@Override
 			public String refuserDemande(String idDemande, boolean retourAttendu, String description) throws EvenementEfactureException {
 				fail("La demande ne doit pas être refusée");
 				return null;
@@ -145,12 +139,6 @@ public class EFactureEventHandlerTest extends WithoutSpringTest {
 				assertEquals(false, retourAttendu);
 				demandeOK.setValue(true);
 				return null;
-			}
-
-			@Override
-			public void updateEmailContribuable(long ctbId, String email) {
-				assertEquals(CTB_ID, ctbId);
-				assertEquals(EMAIL, email);
 			}
 
 			@Override

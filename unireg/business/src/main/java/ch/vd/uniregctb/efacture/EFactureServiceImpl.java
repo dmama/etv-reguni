@@ -159,15 +159,6 @@ public class EFactureServiceImpl implements EFactureService, InitializingBean {
 		return tiersIsNull || tiersTypeIncoherent;
 	}
 
-	@Override
-	public void updateEmailContribuable(long ctbId, String email) {
-		final Tiers tiers = tiersService.getTiers(ctbId);
-		if (tiers == null) {
-			throw new AssertionError("Impossible d'atterrir ici, l'appel à getTiers(" + ctbId + ") à déja été fait et n'est pas non-null");
-		}
-		tiers.setAdresseCourrierElectroniqueEFacture(email);
-	}
-
 	private static final EnumSet<ModeImposition> MODE_IMPOSITIONS_AUTORISES = EnumSet.of(
 			ModeImposition.ORDINAIRE,
 			ModeImposition.MIXTE_137_1,

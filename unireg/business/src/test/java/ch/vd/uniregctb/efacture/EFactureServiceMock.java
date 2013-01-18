@@ -34,10 +34,6 @@ public class EFactureServiceMock implements EFactureService {
 	}
 
 	@Override
-	public void updateEmailContribuable(long ctbId, String email) {
-	}
-
-	@Override
 	public boolean valideEtatFiscalContribuablePourInscription(long ctbId) {
 		return false;
 	}
