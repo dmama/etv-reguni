@@ -341,6 +341,7 @@ input.numero-complement-npa,input.canton {
 	padding-left: 5px;
 	color: red;
 	font-weight: bold;
+	font-size: larger;
 	cursor: default;
 }
 

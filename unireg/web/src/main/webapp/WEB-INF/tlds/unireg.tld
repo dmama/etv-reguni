@@ -1118,6 +1118,12 @@
 			<rtexprvalue>true</rtexprvalue>
 			<description>l'url de retour à l'application appelante (défaut=null)</description>
 		</attribute>
+		<attribute>
+			<name>forceAvatar</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<description>force le type d'avatar à la valeur spécifiée (voir enum TypeAvatar).</description>
+		</attribute>
 	</tag>
 
 	<tag>

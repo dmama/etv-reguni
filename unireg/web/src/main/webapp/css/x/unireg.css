@@ -56,6 +56,48 @@ div.coupleMergeArrow {
 	background-image: url('merge.png');
 }
 
+.supergra table.transform td.middle {
+	text-align: center;
+	padding: 1em;
+}
+
+.supergra table.transform div.transformArrow {
+	display: inline-block;
+	width: 134px;
+	height: 75px;
+	background: url('transform.png') center no-repeat;
+}
+
+.supergra table.params {
+	width: auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.supergra table.params td {
+	padding-right: 0.5em;
+}
+
+.supergra input[type=submit] {
+	margin: 1em;
+	padding: 0.5em;
+	border-color: #FA8072;
+	background-color: #FFA07A;
+}
+
+.supergra input[type="button"] {
+	margin: 1em;
+	padding: 0.5em;
+}
+
+.supergra div.legend {
+	display: inline-block;
+	background-color: #fafad2;
+	width: auto;
+	padding: 0.5em;
+	text-align: left;
+}
+
 div.coupleMergeArrow div {
 	padding-top: 20px;
 }

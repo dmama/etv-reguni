@@ -17,6 +17,12 @@
 			<c:if test="${entity.annule}">
 				<li><unireg:buttonTo name="Désannuler" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 			</c:if>
+			<c:if test="${entity.personnePhysique}">
+				<li><unireg:buttonTo name="Transformer en MC" action="/supergra/entity/pp2mc.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
+			</c:if>
+			<c:if test="${entity.menageCommun}">
+				<li><unireg:buttonTo name="Transformer en PP" action="/supergra/entity/mc2pp.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
+			</c:if>
 		</ul>
 	</tiles:put>
 

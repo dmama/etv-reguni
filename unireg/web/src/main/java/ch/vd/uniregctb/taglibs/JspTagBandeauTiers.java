@@ -89,6 +89,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	private boolean showLinks = true;
 	private boolean showAvatar = true;
 	private boolean showComplements = false;
+	private String forceAvatar;
 	private int rowcount;
 	private String urlRetour;
 
@@ -147,6 +148,10 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setUrlRetour(String urlRetour) {
 		this.urlRetour = urlRetour;
+	}
+
+	public void setForceAvatar(String forceAvatar) {
+		this.forceAvatar = forceAvatar;
 	}
 
 	@Override
@@ -539,7 +544,7 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 
 	private String buildImageTiers(Tiers tiers) {
 
-		final TypeAvatar type = getTypeAvatar(tiers);
+		final TypeAvatar type = forceAvatar == null ? getTypeAvatar(tiers) : TypeAvatar.valueOf(forceAvatar);
 		final String image = getImageUrl(type, false);
 
 		final StringBuilder s = new StringBuilder();

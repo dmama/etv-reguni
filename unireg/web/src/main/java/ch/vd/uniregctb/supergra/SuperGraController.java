@@ -21,6 +21,7 @@ import org.springframework.beans.propertyeditors.URLEditor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -46,8 +47,11 @@ import ch.vd.uniregctb.supergra.delta.EnableEntity;
 import ch.vd.uniregctb.supergra.view.AttributeView;
 import ch.vd.uniregctb.supergra.view.CollectionView;
 import ch.vd.uniregctb.supergra.view.EntityView;
+import ch.vd.uniregctb.supergra.view.Mc2PpView;
+import ch.vd.uniregctb.supergra.view.Pp2McView;
 import ch.vd.uniregctb.utils.EnumEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.TiersNumberEditor;
 
 @Controller
 public class SuperGraController {
@@ -56,6 +60,8 @@ public class SuperGraController {
 
 	private SuperGraManager manager;
 	private SecurityProviderInterface securityProvider;
+	private Validator pp2McValidator;
+	private Validator mc2PpValidator;
 
 	public void setManager(SuperGraManager manager) {
 		this.manager = manager;
@@ -63,6 +69,14 @@ public class SuperGraController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	public void setPp2McValidator(Validator pp2McValidator) {
+		this.pp2McValidator = pp2McValidator;
+	}
+
+	public void setMc2PpValidator(Validator mc2PpValidator) {
+		this.mc2PpValidator = mc2PpValidator;
 	}
 
 	@InitBinder(value = "entity")
@@ -315,6 +329,107 @@ public class SuperGraController {
 		}
 
 		return "redirect:show.do?id=" + view.getKey().getId() + "&class=" + view.getKey().getType();
+	}
+
+	@RequestMapping(value = "/supergra/entity/pp2mc.do", method = RequestMethod.GET)
+	public String pp2mc(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, Model model, HttpServletRequest request) throws
+			Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
+		// On récupère l'entité spécifiée
+		final SuperGraSession session = getSession(request);
+		final EntityKey key = new EntityKey(type, id);
+		final EntityView entity = new EntityView();
+		manager.fillView(key, entity, session);
+
+		if (!entity.isPersonnePhysique()) {
+			Flash.error("L'entité spécifiée n'est pas une personne physique.");
+			return "redirect:/supergra/entity/show.do?id=" + key.getId() + "&class=" + key.getType();
+		}
+
+		// On crée la vue qui va bien
+		final Pp2McView view = new Pp2McView();
+		view.setId(id);
+		model.addAttribute("pp2mc", view);
+
+		return "supergra/pp2mc";
+	}
+
+	@InitBinder(value = "pp2mc")
+	protected void initBinderPp2Mc(WebDataBinder binder) throws ClassNotFoundException {
+		binder.setValidator(pp2McValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+		binder.registerCustomEditor(Long.class, new TiersNumberEditor(true));
+	}
+
+	@RequestMapping(value = "/supergra/entity/pp2mc.do", method = RequestMethod.POST)
+	public String pp2mc(@Valid @ModelAttribute("pp2mc") final Pp2McView view, BindingResult result, Model model, HttpServletRequest request) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
+		if (result.hasErrors()) {
+			return "supergra/pp2mc";
+		}
+
+		manager.transformPp2Mc(view.getId(), view.getDateDebut(), view.getDateFin(), view.getIdPrincipal(), view.getIdSecondaire());
+
+		Flash.message("Le tiers n°" + view.getId() + " a été transformé en ménage commun.");
+		return "redirect:/supergra/entity/show.do?id=" + view.getId() + "&class=Tiers";
+	}
+
+	@RequestMapping(value = "/supergra/entity/mc2pp.do", method = RequestMethod.GET)
+	public String mc2pp(@RequestParam(value = "class", required = true) EntityType type, @RequestParam(value = "id", required = true) long id, Model model, HttpServletRequest request) throws
+			Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
+		// On récupère l'entité spécifiée
+		final SuperGraSession session = getSession(request);
+		final EntityKey key = new EntityKey(type, id);
+		final EntityView entity = new EntityView();
+		manager.fillView(key, entity, session);
+
+		if (!entity.isMenageCommun()) {
+			Flash.error("L'entité spécifiée n'est pas un ménage commun.");
+			return "redirect:/supergra/entity/show.do?id=" + key.getId() + "&class=" + key.getType();
+		}
+
+		// On crée la vue qui va bien
+		final Mc2PpView view = new Mc2PpView();
+		view.setId(id);
+		model.addAttribute("mc2pp", view);
+
+		return "supergra/mc2pp";
+	}
+
+	@InitBinder(value = "mc2pp")
+	protected void initBindermc2pp(WebDataBinder binder) throws ClassNotFoundException {
+		binder.setValidator(mc2PpValidator);
+		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+	}
+
+	@RequestMapping(value = "/supergra/entity/mc2pp.do", method = RequestMethod.POST)
+	public String mc2pp(@Valid @ModelAttribute("mc2pp") final Mc2PpView view, BindingResult result, Model model, HttpServletRequest request) throws Exception {
+
+		if (!SecurityHelper.isGranted(securityProvider, Role.SUPERGRA)) {
+			throw new AccessDeniedException(ACCESS_DENIED);
+		}
+
+		if (result.hasErrors()) {
+			return "supergra/mc2pp";
+		}
+
+		manager.transformMc2Pp(view.getId(), view.getIndNo());
+
+		Flash.message("Le tiers n°" + view.getId() + " a été transformé en personne physique.");
+		return "redirect:/supergra/entity/show.do?id=" + view.getId() + "&class=Tiers";
 	}
 
 	@RequestMapping(value = "/supergra/actions/delete.do", method = RequestMethod.POST)

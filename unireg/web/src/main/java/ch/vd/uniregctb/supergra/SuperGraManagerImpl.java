@@ -15,8 +15,12 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
 import org.hibernate.Session;
+import org.hibernate.dialect.Dialect;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.HibernateTemplate;
@@ -25,6 +29,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
 import ch.vd.registre.base.validation.Validateable;
@@ -39,6 +44,7 @@ import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaException;
 import ch.vd.uniregctb.hibernate.meta.Property;
 import ch.vd.uniregctb.hibernate.meta.Sequence;
+import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.json.InfraCategory;
 import ch.vd.uniregctb.supergra.delta.AttributeUpdate;
 import ch.vd.uniregctb.supergra.delta.Delta;
@@ -76,6 +82,10 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	private TiersService tiersService;
 	private ValidationService validationService;
 	private ValidationInterceptor validationInterceptor;
+	private GlobalTiersIndexer globalTiersIndexer;
+	private Dialect dialect;
+
+
 	private List<String> annotatedClass;
 	private final Map<EntityType, List<Class<? extends HibernateEntity>>> concreteClassByType = new EnumMap<EntityType, List<Class<? extends HibernateEntity>>>(EntityType.class);
 
@@ -189,6 +199,14 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setValidationInterceptor(ValidationInterceptor validationInterceptor) {
 		this.validationInterceptor = validationInterceptor;
+	}
+
+	public void setGlobalTiersIndexer(GlobalTiersIndexer globalTiersIndexer) {
+		this.globalTiersIndexer = globalTiersIndexer;
+	}
+
+	public void setDialect(Dialect dialect) {
+		this.dialect = dialect;
 	}
 
 	@Override
@@ -601,6 +619,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 
 		view.setKey(new EntityKey(type, id));
 		view.setAttributes(buildAttributes(entity, context));
+		view.setPersonnePhysique(entity instanceof PersonnePhysique);
+		view.setMenageCommun(entity instanceof MenageCommun);
 
 		if (entity instanceof Validateable) {
 			final Validateable val = (Validateable) entity;
@@ -642,6 +662,106 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				return null; // la transaction est committé automatiquement par le template
 			}
 		});
+	}
+
+	@Override
+	public void transformPp2Mc(final long ppId, final RegDate dateDebut, @Nullable final RegDate dateFin, final long idPrincipal, @Nullable final Long idSecondaire) {
+
+		final String user = AuthenticationHelper.getCurrentPrincipal() + "-SuperGra";
+
+		execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				// Transformation de la personne physique en ménage commun
+				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=NULL, " +
+						                                              "NUMERO_INDIVIDU=NULL, INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='PersonnePhysique'");
+				query0.setParameter("id", ppId);
+				query0.setParameter("muser", user);
+				query0.executeUpdate();
+
+				final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id OR TIERS_PRINCIPAL_ID=:id");
+				query1.setParameter("id", ppId);
+				query1.executeUpdate();
+
+				final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_SUJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+				query2.setParameter("id", ppId);
+				query2.executeUpdate();
+
+				final SQLQuery query3 = session.createSQLQuery("DELETE FROM IDENTIFICATION_PERSONNE WHERE NON_HABITANT_ID=:id");
+				query3.setParameter("id", ppId);
+				query3.executeUpdate();
+
+				final SQLQuery query4 = session.createSQLQuery("DELETE FROM DROIT_ACCES WHERE TIERS_ID=:id");
+				query4.setParameter("id", ppId);
+				query4.executeUpdate();
+
+				// Création des rapports entre tiers de type 'appartenance ménage'
+				addRapportAppartenanceMenage(ppId, idPrincipal, dateDebut, dateFin, session);
+				if (idSecondaire != null) {
+					addRapportAppartenanceMenage(ppId, idSecondaire, dateDebut, dateFin, session);
+				}
+
+				return null;
+			}
+
+			private void addRapportAppartenanceMenage(long menageId, Long ppId, RegDate dateDebut, RegDate dateFin, Session session) {
+				final String sql =
+						"INSERT INTO RAPPORT_ENTRE_TIERS (RAPPORT_ENTRE_TIERS_TYPE, ID, LOG_CDATE, LOG_CUSER, LOG_MDATE, LOG_MUSER, DATE_DEBUT, DATE_FIN, TIERS_SUJET_ID, TIERS_OBJET_ID)" +
+								"VALUES ('AppartenanceMenage', " + dialect.getSelectSequenceNextValString("hibernate_sequence") + ", CURRENT_DATE, :muser, CURRENT_DATE, :muser, :dateDebut, :dateFin, :idPrincipal, :id)";
+				final SQLQuery query5 = session.createSQLQuery(sql);
+				query5.setParameter("muser", user);
+				query5.setParameter("id", menageId);
+				query5.setParameter("idPrincipal", ppId);
+				query5.setParameter("dateDebut", dateDebut.index());
+				query5.setParameter("dateFin", (dateFin == null ? null : dateFin.index()), Hibernate.INTEGER);
+				query5.executeUpdate();
+			}
+		});
+
+		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
+		globalTiersIndexer.schedule(ppId);
+	}
+
+	@Override
+	public void transformMc2Pp(final long mcId, final long indNo) {
+
+		final String user = AuthenticationHelper.getCurrentPrincipal() + "-SuperGra";
+
+		execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+
+				// Transformation du ménage commun en personne physique
+				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='PersonnePhysique', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, INDEX_DIRTY=" +
+						                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='MenageCommun'");
+				query0.setParameter("id", mcId);
+				query0.setParameter("muser", user);
+				query0.executeUpdate();
+
+				final SQLQuery query1 = session.createSQLQuery("DELETE FROM SITUATION_FAMILLE WHERE CTB_ID=:id");
+				query1.setParameter("id", mcId);
+				query1.executeUpdate();
+
+				final SQLQuery query2 = session.createSQLQuery("DELETE FROM RAPPORT_ENTRE_TIERS WHERE TIERS_OBJET_ID=:id AND RAPPORT_ENTRE_TIERS_TYPE='AppartenanceMenage'");
+				query2.setParameter("id", mcId);
+				query2.executeUpdate();
+
+				// Association de la personne physique avec l'individu
+				final SQLQuery query3 = session.createSQLQuery("UPDATE TIERS SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=" +
+						                                               dialect.toBooleanValueString(true) + ", NUMERO_INDIVIDU=:indNo, INDEX_DIRTY=" +
+						                                               dialect.toBooleanValueString(true) + " WHERE NUMERO=:id");
+				query3.setParameter("muser", user);
+				query3.setParameter("id", mcId);
+				query3.setParameter("indNo", indNo);
+				query3.executeUpdate();
+
+				return null;
+			}
+		});
+
+		// on demande une réindexation du tiers modifié (+ réindexation implicite des tiers liés)
+		globalTiersIndexer.schedule(mcId);
 	}
 
 	/**

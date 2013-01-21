@@ -19,6 +19,8 @@ public class EntityView implements Cloneable {
 	private ValidationResults validationResults;
 	private List<AttributeView> attributes;
 	private Map<String, AttributeView> attributesMap;
+	private boolean isMenageCommun;
+	private boolean isPersonnePhysique;
 
 	public EntityView() {
 	}
@@ -73,6 +75,22 @@ public class EntityView implements Cloneable {
 		for (AttributeView a : attributes) {
 			attributesMap.put(a.getName(), a);
 		}
+	}
+
+	public boolean isMenageCommun() {
+		return isMenageCommun;
+	}
+
+	public void setMenageCommun(boolean menageCommun) {
+		isMenageCommun = menageCommun;
+	}
+
+	public boolean isPersonnePhysique() {
+		return isPersonnePhysique;
+	}
+
+	public void setPersonnePhysique(boolean personnePhysique) {
+		isPersonnePhysique = personnePhysique;
 	}
 
 	@SuppressWarnings({"CloneDoesntCallSuperClone"})
