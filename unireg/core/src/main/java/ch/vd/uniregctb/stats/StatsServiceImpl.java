@@ -2,6 +2,7 @@ package ch.vd.uniregctb.stats;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -22,8 +24,10 @@ import ch.vd.registre.asciiart.table.Header;
 import ch.vd.registre.asciiart.table.Options;
 import ch.vd.registre.asciiart.table.Row;
 import ch.vd.registre.asciiart.table.Table;
+import ch.vd.registre.base.date.DateHelper;
 import ch.vd.uniregctb.cache.CacheStats;
 import ch.vd.uniregctb.cache.UniregCacheInterface;
+import ch.vd.uniregctb.common.TimeHelper;
 
 public class StatsServiceImpl implements InitializingBean, DisposableBean, StatsService {
 
@@ -36,6 +40,7 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	private final Map<String, ServiceTracingInterface> rawServices = new HashMap<String, ServiceTracingInterface>();
 	private final Map<String, UniregCacheInterface> cachedServices = new HashMap<String, UniregCacheInterface>();
 	private final Map<String, LoadMonitor> loadMonitors = new HashMap<String, LoadMonitor>();
+	private final Map<String, JobMonitor> jobMonitors = new HashMap<String, JobMonitor>();
 	private long lastLoggedCallTime = 0;
 
 	private final class TickingTask extends TimerTask {
@@ -90,6 +95,13 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	}
 
 	@Override
+	public void registerJobMonitor(String jobName, JobMonitor job) {
+		synchronized (jobMonitors) {
+			jobMonitors.put(jobName, job);
+		}
+	}
+
+	@Override
 	public void unregisterService(String serviceName) {
 		synchronized (rawServices) {
 			rawServices.remove(serviceName);
@@ -107,6 +119,13 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 	public void unregisterLoadMonitor(String serviceName) {
 		synchronized (loadMonitors) {
 			loadMonitors.remove(serviceName);
+		}
+	}
+
+	@Override
+	public void unregisterJobMonitor(String jobName) {
+		synchronized (jobMonitors) {
+			jobMonitors.remove(jobName);
 		}
 	}
 
@@ -210,6 +229,8 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		b.append(buildServiceStats());
 		b.append('\n');
 		b.append(buildLoadMonitorStats());
+		b.append('\n');
+		b.append(buildJobMonitorStats());
 
 		return b.toString();
 	}
@@ -375,6 +396,56 @@ public class StatsServiceImpl implements InitializingBean, DisposableBean, Stats
 		row.addCell(new Cell(chargeMoyenne, AlignMode.RIGHT));
 
 		return row;
+	}
+
+	private String buildJobMonitorStats() {
+
+		class JobData {
+			final Integer progress;
+			final Date start;
+			final String status;
+
+			JobData(Date start, Integer progress, String status) {
+				this.progress = progress;
+				this.status = status;
+				this.start = start;
+			}
+		}
+
+		final Map<String, JobData> data = new TreeMap<String, JobData>();
+		synchronized (jobMonitors) {
+			for (Map.Entry<String, JobMonitor> entry : jobMonitors.entrySet()) {
+				final JobMonitor monitor = entry.getValue();
+				final Date start = monitor.getStartDate();
+				if (start != null) {
+					final String status = monitor.getRunningMessage();
+					final Integer progress = monitor.getPercentProgression();
+					data.put(entry.getKey(), new JobData(start, progress, status));
+				}
+			}
+		}
+
+		if (data.isEmpty()) {
+			return StringUtils.EMPTY;
+		}
+
+		final long nowts = DateHelper.getCurrentDate().getTime();
+		final List<Header> headers = new ArrayList<Header>();
+		headers.add(new Header(new Column("Running jobs", AlignMode.LEFT), new Column("Start", AlignMode.LEFT), new Column("Duration"), new Column("Progress"), new Column("Status", AlignMode.LEFT)));
+		final Table table = new Table(new Options(false), headers);
+		for (Map.Entry<String, JobData> entry : data.entrySet()) {
+			final Row row = new Row();
+			row.addCell(new Cell(entry.getKey()));
+
+			final JobData jobData = entry.getValue();
+			row.addCell(new Cell(DateHelper.dateTimeToDisplayString(jobData.start)));
+			row.addCell(new Cell(TimeHelper.formatDureeShort(nowts - jobData.start.getTime()), AlignMode.RIGHT));
+			row.addCell(new Cell(jobData.progress != null ? String.format("%d %%", jobData.progress) : StringUtils.EMPTY, AlignMode.RIGHT));
+			row.addCell(new Cell(jobData.status));
+			table.addRow(row);
+		}
+
+		return table.toString() + "\n";
 	}
 
 	@Override

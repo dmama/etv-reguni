@@ -17,6 +17,10 @@ public class MockStatsService implements StatsService {
 	}
 
 	@Override
+	public void registerJobMonitor(String jobName, JobMonitor job) {
+	}
+
+	@Override
 	public void unregisterService(String serviceName) {
 	}
 
@@ -26,6 +30,10 @@ public class MockStatsService implements StatsService {
 
 	@Override
 	public void unregisterLoadMonitor(String serviceName) {
+	}
+
+	@Override
+	public void unregisterJobMonitor(String jobName) {
 	}
 
 	@Override

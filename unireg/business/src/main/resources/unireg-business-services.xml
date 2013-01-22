@@ -42,6 +42,7 @@
 	<bean id="batchScheduler" class="ch.vd.uniregctb.scheduler.BatchSchedulerImpl">
 		<property name="scheduler" ref="scheduler" />
 		<property name="timeoutOnStopAll" value="5" />		<!-- minutes d'attente max dans l'appel à stopAllRunningJobs() -->
+		<property name="statsService" ref="statsService" />
 	</bean>
 
 	<bean id="tacheService" class="ch.vd.uniregctb.tache.TacheServiceImpl">

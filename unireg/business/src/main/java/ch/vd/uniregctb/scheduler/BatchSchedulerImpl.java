@@ -32,25 +32,32 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.UnableToInterruptJobException;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.core.Authentication;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.stats.JobMonitor;
+import ch.vd.uniregctb.stats.StatsService;
 
 /**
  * Classe utilitaire pour gérer les batchs.
  */
-public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, DynamicMBean {
+public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, DisposableBean, DynamicMBean {
 
 	private static final Logger LOGGER = Logger.getLogger(BatchSchedulerImpl.class);
 
 	public static final String IMMEDIATE_TRIGGER = "ImmediateTrigger";
 
-	private final AtomicInteger triggerCount = new AtomicInteger(0);
+	private StatsService statsService;
+
 	private Scheduler scheduler = null;
+
 	private int timeoutOnStopAll = 5;       // en minutes, le temps d'attente maximal lors d'un appel à stopAllRunningJobs()
+
+	private final AtomicInteger triggerCount = new AtomicInteger(0);
 	private final Map<String, JobDefinition> jobs = new HashMap<String, JobDefinition>();
 
 	@Override
@@ -65,24 +72,57 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		}
 	}
 
+	public void setStatsService(StatsService statsService) {
+		this.statsService = statsService;
+	}
+
+	/**
+	 * Implémentation locale du job monitor
+	 */
+	private static class JobMonitorImpl implements JobMonitor {
+
+		private final JobDefinition job;
+
+		private JobMonitorImpl(JobDefinition job) {
+			this.job = job;
+		}
+
+		@Override
+		public Date getStartDate() {
+			return job.isRunning() ? job.getLastStart() : null;
+		}
+
+		@Override
+		public Integer getPercentProgression() {
+			return job.getPercentProgression();
+		}
+
+		@Override
+		public String getRunningMessage() {
+			return job.getRunningMessage();
+		}
+	}
+
 	@Override
 	public void register(JobDefinition job) throws SchedulerException {
 
+		final String jobName = job.getName();
 		if (job.getSortOrder() < 1) {
-			throw new SchedulerException("Wrong sort order for job " + job.getName() + ": " + job.getSortOrder());
+			throw new SchedulerException("Wrong sort order for job " + jobName + ": " + job.getSortOrder());
 		}
 
 		// Check that there is no job with the same sort order
 		for (Map.Entry<String, JobDefinition> stringJobDefinitionEntry : jobs.entrySet()) {
-			JobDefinition value = stringJobDefinitionEntry.getValue();
+			final JobDefinition value = stringJobDefinitionEntry.getValue();
 			if (value.getSortOrder() == job.getSortOrder()) {
-				throw new SchedulerException("Duplicate sort order for job " + job.getName() + ": " + job.getSortOrder());
+				throw new SchedulerException("Duplicate sort order for job " + jobName + ": " + job.getSortOrder());
 			}
 		}
 
-		jobs.put(job.getName(), job);
+		jobs.put(jobName, job);
 		scheduler.addJobListener(new UniregJobListener(job));
-		LOGGER.info("Job <" + job.getName()+"> added.");
+		statsService.registerJobMonitor(jobName, new JobMonitorImpl(job));
+		LOGGER.info("Job <" + jobName +"> added.");
 	}
 
 	/**
@@ -118,6 +158,15 @@ public class BatchSchedulerImpl implements BatchScheduler, InitializingBean, Dyn
 		finally {
 			AuthenticationHelper.popPrincipal();
 		}
+	}
+
+	@Override
+	public void destroy() throws Exception {
+		for (String jobName : jobs.keySet()) {
+			scheduler.removeJobListener(jobName);
+			statsService.unregisterJobMonitor(jobName);
+		}
+		jobs.clear();
 	}
 
 	/**

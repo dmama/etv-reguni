@@ -15,11 +15,15 @@ public interface StatsService {
 
 	void registerLoadMonitor(String serviceName, LoadMonitor monitor);
 
+	void registerJobMonitor(String jobName, JobMonitor job);
+
 	void unregisterService(String serviceName);
 
 	void unregisterCache(String serviceName);
 
 	void unregisterLoadMonitor(String serviceName);
+
+	void unregisterJobMonitor(String jobName);
 
 	ServiceStats getServiceStats(String serviceName);
 

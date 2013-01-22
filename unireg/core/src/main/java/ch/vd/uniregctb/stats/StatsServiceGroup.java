@@ -51,6 +51,11 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 	}
 
 	@Override
+	public void registerJobMonitor(String jobName, JobMonitor job) {
+		throw new NotImplementedException();
+	}
+
+	@Override
 	public void unregisterService(String serviceName) {
 		synchronized (subServices) {
 			subServices.remove(serviceName);
@@ -64,6 +69,11 @@ public class StatsServiceGroup implements StatsService, ServiceTracingInterface,
 
 	@Override
 	public void unregisterLoadMonitor(String serviceName) {
+		throw new NotImplementedException();
+	}
+
+	@Override
+	public void unregisterJobMonitor(String jobName) {
 		throw new NotImplementedException();
 	}
 
