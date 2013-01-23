@@ -32,7 +32,6 @@ import org.springframework.transaction.support.TransactionTemplate;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.ObjectGetterHelper;
-import ch.vd.registre.base.validation.Validateable;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.adresse.AdresseAutreTiers;
 import ch.vd.uniregctb.adresse.AdresseSuisse;
@@ -622,10 +621,8 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 		view.setPersonnePhysique(entity instanceof PersonnePhysique);
 		view.setMenageCommun(entity instanceof MenageCommun);
 
-		if (entity instanceof Validateable) {
-			final Validateable val = (Validateable) entity;
-			view.setValidationResults(val.validate());
-		}
+		final ValidationResults res = validationService.validate(entity);
+		view.setValidationResults(res);
 	}
 
 	@Override
