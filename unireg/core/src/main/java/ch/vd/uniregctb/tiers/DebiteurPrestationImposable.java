@@ -22,6 +22,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.LengthConstants;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -190,6 +191,19 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	public void setPeriodicites(Set<Periodicite> periodicites) {
 		this.periodicites = periodicites;
+	}
+
+	@Transient
+	public boolean isSansLREmises(){
+		if (getDeclarationsSorted() == null) {
+			return true;
+		}
+		for (Declaration declaration : getDeclarationsSorted()) {
+			if (!declaration.isAnnule()){
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

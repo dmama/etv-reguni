@@ -9,7 +9,14 @@
 			 								onchange="selectLogiciel(this.options[this.selectedIndex].value);"/></td>
 			<td width="25%"><fmt:message key="label.categorie.impot.source"/>&nbsp;:</td>
 			<td width="25%">
-				<form:select path="categorieImpotSource" items="${categoriesImpotSource}" />
+            <c:choose>
+                <c:when test="${command.sansLREmises}">
+                 <form:select path="categorieImpotSource" items="${categoriesImpotSource}"/>
+                </c:when>
+             <c:otherwise>
+                 <form:select path="categorieImpotSource" items="${categoriesImpotSource}" disabled="true"/>
+             </c:otherwise>
+            </c:choose>
 			</td>
 		</tr>
 		<tr class="<unireg:nextRowClass/>" >

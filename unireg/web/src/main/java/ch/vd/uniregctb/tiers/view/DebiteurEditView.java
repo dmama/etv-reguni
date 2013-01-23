@@ -20,6 +20,7 @@ public class DebiteurEditView {
 	private PeriodeDecompte periodeDecompte;
 	private final ComplementView complement;
 	private Long logicielId;
+	private boolean sansLREmises;
 
 	public DebiteurEditView() {
 		this.complement = new ComplementView();
@@ -33,6 +34,7 @@ public class DebiteurEditView {
 		this.sansSommation = dpi.getSansRappel();
 		this.sansListeRecapitulative = dpi.getSansListeRecapitulative();
 		this.logicielId = dpi.getLogicielId();
+		this.sansLREmises = dpi.isSansLREmises();
 		final Periodicite periodicite = dpi.getDernierePeriodicite();
 		if (periodicite != null) {
 			this.periodiciteCourante = periodicite.getPeriodiciteDecompte();
@@ -116,5 +118,13 @@ public class DebiteurEditView {
 
 	public void setLogicielId(Long logicielId) {
 		this.logicielId = logicielId;
+	}
+
+	public boolean isSansLREmises() {
+		return sansLREmises;
+	}
+
+	public void setSansLREmises(boolean sansLREmises) {
+		this.sansLREmises = sansLREmises;
 	}
 }

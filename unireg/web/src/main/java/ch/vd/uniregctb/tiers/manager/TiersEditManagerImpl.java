@@ -421,7 +421,9 @@ public class TiersEditManagerImpl extends TiersManager implements TiersEditManag
 	@Override
 	public void save(DebiteurEditView view) {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(view.getId());
-		dpi.setCategorieImpotSource(view.getCategorieImpotSource());
+		if (dpi.isSansLREmises()) {
+			dpi.setCategorieImpotSource(view.getCategorieImpotSource());
+		}
 		dpi.setModeCommunication(view.getModeCommunication());
 		dpi.setSansListeRecapitulative(view.getSansListeRecapitulative());
 		dpi.setSansRappel(view.getSansSommation());
