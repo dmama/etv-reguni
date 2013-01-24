@@ -35,8 +35,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandler.Mode;
-
 /**
  * Listener des événements civils au format e-CH envoyés par RCPers au travers de l'ESB
  */
@@ -55,7 +53,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	private int rethrowDelayMinutes = 0;
 	private RethrowerThread rethrowerThread;
 	private Set<TypeEvenementCivilEch> ignoredEventTypes;
-	private Mode processingMode;
+	private EvenementCivilEchProcessingMode processingMode;
 	private boolean running;
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -79,7 +77,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setProcessingMode(Mode processingMode) {
+	public void setProcessingMode(EvenementCivilEchProcessingMode processingMode) {
 		this.processingMode = processingMode;
 	}
 
@@ -145,7 +143,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 
 			// à partir d'ici, l'événement est sauvegardé en base... Il n'est donc plus question
 			// de rejetter en erreur (ou exception) le message entrant...
-
 			try {
 				receptionHandler.handleEvent(event, processingMode);
 			}

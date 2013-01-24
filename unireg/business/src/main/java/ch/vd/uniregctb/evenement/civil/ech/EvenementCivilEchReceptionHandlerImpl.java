@@ -81,6 +81,11 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
+	public int getNombreIndividusEnAttenteDansLaQueueImmediate() {
+		return notificationQueue.getInImmediateQueueCount();
+	}
+
+	@Override
 	public int getNombreIndividusEnTransitionVersLaQueueFinale() {
 		return notificationQueue.getInHatchesCount();
 	}
@@ -91,17 +96,8 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public void demanderTraitementQueue(long noIndividu, boolean immediate, Mode mode) {
-		switch (mode){
-		case BATCH:
-			notificationQueue.postBatch(noIndividu, immediate);
-			break;
-		case MANUAL:
-			notificationQueue.postManual(noIndividu, immediate);
-			break;
-		default:
-			throw new RuntimeException("unknown mode: " + mode);
-		}
+	public void demanderTraitementQueue(long noIndividu, EvenementCivilEchProcessingMode mode) {
+		notificationQueue.post(noIndividu, mode);
 	}
 
 	@Override
@@ -132,7 +128,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	}
 
 	@Override
-	public EvenementCivilEch handleEvent(EvenementCivilEch event, Mode mode) throws EvenementCivilException {
+	public EvenementCivilEch handleEvent(EvenementCivilEch event, EvenementCivilEchProcessingMode mode) throws EvenementCivilException {
 		// récupération de l'individu
 		final long noIndividu = evtCivilService.getNumeroIndividuPourEvent(event);
 
@@ -140,7 +136,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
         event = evtCivilService.assigneNumeroIndividu(event, noIndividu);
 
 		// notification du moteur de traitement
-		demanderTraitementQueue(noIndividu, false, mode);
+		demanderTraitementQueue(noIndividu, mode);
 		return event;
 	}
 

@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchErreur;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilNotificationQueue;
@@ -125,12 +126,14 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
             final EvenementCivilEchProcessorListener processorListener = new EvenementCivilEchProcessorListener(evt.getNumeroIndividu(), TIMEOUT_RECYCLAGE);
             final EvenementCivilEchProcessor.ListenerHandle listnerHandle =  evenementProcessor.registerListener(processorListener);
             try {
-                evenementNotificationQueue.postManual(evt.getNumeroIndividu(), true);
+                evenementNotificationQueue.post(evt.getNumeroIndividu(), EvenementCivilEchProcessingMode.IMMEDIATE);
                 individuRecycle = processorListener.donneUneChanceAuTraitementDeSeTerminer();
-            } finally {
+            }
+            finally {
                 evenementProcessor.unregisterListener(listnerHandle);
             }
-        } else {
+        }
+        else {
             LOGGER.warn(String.format("Tentative incohérente de recyclage de l'événement (%d), ne devrait pas se produire lors de l'utilisation normale de l'application", evt.getId()));
         }
         return individuRecycle;
@@ -155,7 +158,8 @@ public class EvenementCivilEchManagerImpl extends EvenementCivilManagerImpl impl
 				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);
 				evtsElementListeRechercheView.add(evtElementListeRechercheView);
 			}
-		} else {
+		}
+		else {
 			final List<EvenementCivilEch> evts = evenementService.find(bean, pagination);
 			for (EvenementCivilEch evt : evts) {
 				final EvenementCivilEchElementListeRechercheView evtElementListeRechercheView = buildView(evt);

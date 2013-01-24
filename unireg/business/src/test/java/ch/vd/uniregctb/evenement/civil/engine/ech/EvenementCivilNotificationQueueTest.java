@@ -16,6 +16,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -25,25 +26,28 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 
 	private QueueTemplate queueTemplate;
 
-	static class QueueTemplate {
+	private static class QueueTemplate {
+
 		private final EvenementCivilEchService serviceCivil;
-		QueueTemplate(EvenementCivilEchService evtCivilEchService) {
+
+		private QueueTemplate(EvenementCivilEchService evtCivilEchService) {
 			this.serviceCivil = evtCivilEchService;
 		}
 
-		void doWithNewQueueDelayedBy(int delayedBy, Callback cb) throws Exception {
+		public void doWithNewQueueDelayedBy(int delayedBy, Callback cb) throws Exception {
 			final EvenementCivilNotificationQueueImpl queue = new EvenementCivilNotificationQueueImpl(delayedBy);
 			queue.setEvtCivilService(serviceCivil);
 			queue.afterPropertiesSet();
 			try {
 				cb.execute(queue);
-			} finally {
+			}
+			finally {
 				queue.destroy();
 			}
 		}
 
-		static abstract class Callback {
-			abstract void execute(EvenementCivilNotificationQueue queue) throws InterruptedException;
+		public static interface Callback {
+			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException;
 		}
 	}
 
@@ -70,7 +74,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 	public void testRecupVide() throws Exception {
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
 				Assert.assertNull(queue.poll(1, TimeUnit.MILLISECONDS));
 				Assert.assertNull(queue.poll(20, TimeUnit.MILLISECONDS));
@@ -100,20 +104,20 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			}
 		});
 
-		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
+		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
-				queue.postBatch(noIndividuSans, false);
+				queue.post(noIndividuSans, EvenementCivilEchProcessingMode.BATCH);
 				Assert.assertEquals(1, queue.getTotalCount());
-				queue.postBatch(noIndividu, false);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 				Assert.assertEquals(2, queue.getTotalCount());
-				queue.postBatch(noIndividu, false);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);      // c'est un doublon -> il ne devrait apparaître qu'une fois en sortie
 				Assert.assertEquals(2, queue.getTotalCount());
 
-				// première récupération : individu sans événement -> collection vide
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
+				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
+				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1500, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(infoSans);
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
@@ -196,16 +200,16 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			}
 		});
 
-		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
+		// envois dans la queue (avec une seconde de délai afin d'être certain de pouvoir compter les éléments insérés avant qu'ils passent dans la queue finale)
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
 				queue.postAll(Arrays.asList(noIndividuSans, noIndividu, noIndividu));
 				Assert.assertEquals(2, queue.getTotalCount());
 
-				// première récupération : individu sans événement -> collection vide
-				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1, TimeUnit.MILLISECONDS);
+				// première récupération : individu sans événement -> collection vide (timeout > 1s pour laisser le délai s'écouler, voir plus haut)
+				final EvenementCivilNotificationQueue.Batch infoSans = queue.poll(1500, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(infoSans);
 				Assert.assertEquals(noIndividuSans, infoSans.noIndividu);
 				Assert.assertNotNull(infoSans.contenu);
@@ -284,9 +288,9 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
-				queue.postBatch(noIndividu, false);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
@@ -300,7 +304,35 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 			}
 		});
+	}
 
+	@Test(timeout = 10000L)
+	public void testNoDelay() throws Exception {
+
+		final long noIndividu = 243523L;
+
+		// préparation des événements dans la base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				return null;
+			}
+		});
+
+		// envois dans la queue
+		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback(){
+			@Override
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+				Assert.assertEquals(0, queue.getTotalCount());
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+
+				// Pas de délai -> on doit donc tout de suite récupérer notre individu
+				final EvenementCivilNotificationQueue.Batch info = queue.poll(10, TimeUnit.MILLISECONDS);
+				Assert.assertNotNull(info);
+				Assert.assertEquals(noIndividu, info.noIndividu);
+			}
+		});
 	}
 
 	@Test(timeout = 1000L)
@@ -320,12 +352,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		queueTemplate.doWithNewQueueDelayedBy(2, new QueueTemplate.Callback() { // si on attend le délai, on fait exploser le timeout du test
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
-				queue.postBatch(noIndividu, true);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);
 
 				// le poll doit recevoir l'événement immédiatement
-				final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
+				final EvenementCivilNotificationQueue.Batch info = queue.poll(10, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(info);
 				Assert.assertEquals(noIndividu, info.noIndividu);
 			}
@@ -355,13 +387,13 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		// envois dans la queue
 		queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
 				long l = 1;
 				for (; l < nbEvtsBatch; l++) {
-					queue.postBatch(noIndividuBase + l, false);
+					queue.post(noIndividuBase + l, EvenementCivilEchProcessingMode.BATCH);
 				}
-				queue.postManual(noIndividuTemoin, false);
+				queue.post(noIndividuTemoin, EvenementCivilEchProcessingMode.MANUAL);
 
 				for (l = 1; l < nbEvtsBatch; l++) {
 					final EvenementCivilNotificationQueue.Batch info = queue.poll(1, TimeUnit.MILLISECONDS);
@@ -391,12 +423,12 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 
 		// envois dans la queue
-		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback(){
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
 			@Override
-			void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 				Assert.assertEquals(0, queue.getTotalCount());
-				queue.postBatch(noIndividu, false);
-				queue.postBatch(noIndividu, true);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue -> ne devrait pas avoir d'effet sur le délai de traitement
 
 				// après 800ms, on ne devrait toujours rien voir
 				Thread.sleep(800);
@@ -410,7 +442,6 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
 			}
 		});
-
 	}
 
 	@Test(timeout = 20000L)
@@ -433,94 +464,98 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 			}
 		};
 		queue.afterPropertiesSet();
+		try {
 
-		final int nbIndividus = 10000;
-		final List<Long> nos = new ArrayList<Long>(nbIndividus);
-		for (long i = 0L ; i < nbIndividus ; ++ i) {
-			nos.add(i);
-		}
-
-		final class FeedingThread extends Thread {
-
-			private final int index;
-
-			FeedingThread(int index) {
-				this.index = index;
+			final int nbIndividus = 10000;
+			final List<Long> nos = new ArrayList<Long>(nbIndividus);
+			for (long i = 0L ; i < nbIndividus ; ++ i) {
+				nos.add(i);
 			}
 
-			@Override
-			public void run() {
-				LOGGER.info(String.format("Thread %d started", index));
+			final class FeedingThread extends Thread {
 
-				final List<Long> random = new ArrayList<Long>(nos);
-				Collections.shuffle(random);
-				final long start = System.nanoTime();
-				for (Long no : random) {
-					queue.postBatch(no, false);
+				private final int index;
+
+				FeedingThread(int index) {
+					this.index = index;
 				}
 
-				final long end = System.nanoTime();
-				LOGGER.info(String.format("Thread %d finished after %dms", index, TimeUnit.NANOSECONDS.toMillis(end - start)));
-			}
-		}
+				@Override
+				public void run() {
+					LOGGER.info(String.format("Thread %d started", index));
 
-		final class PollingThread extends Thread {
-
-			boolean stop = false;
-
-			@Override
-			public void run() {
-				while (!stop) {
-					try {
-						queue.poll(1, TimeUnit.SECONDS);
+					final List<Long> random = new ArrayList<Long>(nos);
+					Collections.shuffle(random);
+					final long start = System.nanoTime();
+					for (Long no : random) {
+						queue.post(no, EvenementCivilEchProcessingMode.BATCH);
 					}
-					catch (InterruptedException e) {
-						throw new RuntimeException(e);
-					}
+
+					final long end = System.nanoTime();
+					LOGGER.info(String.format("Thread %d finished after %dms", index, TimeUnit.NANOSECONDS.toMillis(end - start)));
 				}
 			}
 
-			public void stopIt() {
-				stop = true;
+			final class PollingThread extends Thread {
+
+				boolean stop = false;
+
+				@Override
+				public void run() {
+					while (!stop) {
+						try {
+							queue.poll(1, TimeUnit.SECONDS);
+						}
+						catch (InterruptedException e) {
+							throw new RuntimeException(e);
+						}
+					}
+				}
+
+				public void stopIt() {
+					stop = true;
+				}
 			}
+
+			final int nbFeedingThreads = 20;
+			final List<Thread> feedingThreads = new ArrayList<Thread>(nbFeedingThreads);
+			for (int i = 0 ; i < nbFeedingThreads ; ++ i) {
+				feedingThreads.add(new FeedingThread(i));
+			}
+
+			final PollingThread pollingThread = new PollingThread();
+			pollingThread.start();
+
+			final long start = System.nanoTime();
+			LOGGER.info("Starting...");
+
+			// start all threads
+			for (Thread t : feedingThreads) {
+				t.start();
+			}
+
+			// wait for all threads to finish
+			for (Thread t : feedingThreads) {
+				t.join();
+			}
+
+			final long endFeeding = System.nanoTime();
+			LOGGER.info(String.format("Feeding ended after %dms", TimeUnit.NANOSECONDS.toMillis(endFeeding - start)));
+
+			// wait for the queue to be empty
+			while (queue.getTotalCount() != 0) {
+				Thread.sleep(100);
+			}
+
+			pollingThread.stopIt();
+			pollingThread.join();
+
+			final long endPolling = System.nanoTime();
+			LOGGER.info(String.format("Polling ended after %dms", TimeUnit.NANOSECONDS.toMillis(endPolling - start)));
 		}
-
-		final int nbFeedingThreads = 20;
-		final List<Thread> feedingThreads = new ArrayList<Thread>(nbFeedingThreads);
-		for (int i = 0 ; i < nbFeedingThreads ; ++ i) {
-			feedingThreads.add(new FeedingThread(i));
+		finally {
+			queue.destroy();
 		}
-
-		final PollingThread pollingThread = new PollingThread();
-		pollingThread.start();
-
-		final long start = System.nanoTime();
-		LOGGER.info("Starting...");
-
-		// start all threads
-		for (Thread t : feedingThreads) {
-			t.start();
-		}
-
-		// wait for all threads to finish
-		for (Thread t : feedingThreads) {
-			t.join();
-		}
-
-		final long endFeeding = System.nanoTime();
-		LOGGER.info(String.format("Feeding ended after %dms", TimeUnit.NANOSECONDS.toMillis(endFeeding - start)));
-
-		// wait for the queue to be empty
-		while (queue.getTotalCount() != 0) {
-			Thread.sleep(100);
-		}
-
-		pollingThread.stopIt();
-		pollingThread.join();
-
-		final long endPolling = System.nanoTime();
-		LOGGER.info(String.format("Polling ended after %dms", TimeUnit.NANOSECONDS.toMillis(endPolling - start)));
-		queue.destroy();
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -532,7 +567,7 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 				try {
 					queueTemplate.doWithNewQueueDelayedBy(0, new QueueTemplate.Callback() {
 						@Override
-						void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+						public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
 							Thread.sleep(3000); // fait échouer le test en timeout si va au bout du sleep
 						}
 					});
@@ -546,19 +581,95 @@ public class EvenementCivilNotificationQueueTest extends BusinessTest {
 		});
 		queueThread.start();
 		Thread.sleep(500); // Temporisation pour être sure que les threads de ServingHatch soient démarré
-		Thread manualHatchThread = null;
-		Thread batchHatchThread = null;
+		final List<Thread> threads = new ArrayList<Thread>();
 		for (Thread t : Thread.getAllStackTraces().keySet()) {
-			if (t.getName().equals("manualHatch")) manualHatchThread = t;
-			if (t.getName().equals("batchHatch")) batchHatchThread = t;
+			if (t.getName().startsWith("EvtCivilEchMixer-")) {
+				threads.add(t);
+			}
 		}
-		manualHatchThread.interrupt();
-		batchHatchThread.interrupt();
-		manualHatchThread.join();
-		batchHatchThread.join();
+		for (Thread t : threads) {
+			t.interrupt();
+		}
+		for (Thread t : threads) {
+			t.join();
+		}
 		queueThread.interrupt();
 		queueThread.join();
 	}
 
+	@Test(timeout = 2000L)
+	public void testPostImmediatEtPresenceSurAutreQueueInput() throws Exception {
 
+		final long noIndividu = 243523L;
+
+		// préparation des événements dans la base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				return null;
+			}
+		});
+
+		// envois dans la queue
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
+			@Override
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+				Assert.assertEquals(0, queue.getTotalCount());
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);           // post en immédiat alors que l'individu est déjà dans la queue (mais de l'autre côté) -> ne devrait pas avoir d'effet sur le délai de traitement
+
+				// après 800ms, on ne devrait toujours rien voir
+				Thread.sleep(800);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				Assert.assertNull(infoVide);
+
+				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+				Thread.sleep(300);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				Assert.assertNotNull(infoNonVide);
+				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
+			}
+		});
+	}
+
+	@Test(timeout = 2000L)
+	public void testDoublonSurQueuesSeparees() throws Exception {
+
+		final long noIndividu = 243523L;
+
+		// préparation des événements dans la base
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				addEvenementCivil(1L, noIndividu, date(1999, 1, 1), TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON, EtatEvenementCivil.A_TRAITER);
+				return null;
+			}
+		});
+
+		// envois dans la queue
+		queueTemplate.doWithNewQueueDelayedBy(1, new QueueTemplate.Callback() {
+			@Override
+			public void execute(EvenementCivilNotificationQueue queue) throws InterruptedException {
+				Assert.assertEquals(0, queue.getTotalCount());
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
+				queue.post(noIndividu, EvenementCivilEchProcessingMode.MANUAL);
+
+				// après 800ms, on ne devrait toujours rien voir
+				Thread.sleep(800);
+				final EvenementCivilNotificationQueue.Batch infoVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				Assert.assertNull(infoVide);
+
+				// mais 300ms après, alors là oui (puisque le délai est d'une seconde)
+				Thread.sleep(300);
+				final EvenementCivilNotificationQueue.Batch infoNonVide = queue.poll(1, TimeUnit.MILLISECONDS);
+				Assert.assertNotNull(infoNonVide);
+				Assert.assertEquals(noIndividu, infoNonVide.noIndividu);
+
+				// mais pas une seconde fois (= doublon bien détecté)
+				final EvenementCivilNotificationQueue.Batch infoVide2 = queue.poll(1, TimeUnit.MILLISECONDS);
+				Assert.assertNull(infoVide2);
+			}
+		});
+	}
 }

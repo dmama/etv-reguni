@@ -43,6 +43,9 @@ public interface EvenementsCivilsEchJmxBean {
 	@ManagedAttribute(description = "Total number of individuals currently waiting in the manual queue")
 	int getNbIndividualsAwaitingInManualQueue();
 
+	@ManagedAttribute(description = "Total number of individuals currently waiting in the immediate queue")
+	int getNbIndividualsAwaitingInImmediateQueue();
+
 	@ManagedAttribute(description = "Total number of individuals currently moving to the final queue")
 	int getNbIndividualsMovingToFinalQueue();
 

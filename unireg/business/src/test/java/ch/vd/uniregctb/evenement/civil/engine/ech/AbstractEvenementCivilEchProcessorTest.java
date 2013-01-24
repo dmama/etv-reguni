@@ -6,6 +6,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.metier.MetierService;
@@ -119,7 +120,7 @@ public abstract class AbstractEvenementCivilEchProcessorTest extends BusinessTes
 
 		try {
 			// notification d'arrivée d'événement sur l'individu
-			queue.postBatch(noIndividu, false);
+			queue.post(noIndividu, EvenementCivilEchProcessingMode.BATCH);
 
 			//noinspection SynchronizationOnLocalVariableOrMethodParameter
 			synchronized (jobDone) {

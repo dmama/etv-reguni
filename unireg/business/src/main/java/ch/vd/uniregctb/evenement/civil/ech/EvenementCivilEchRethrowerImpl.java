@@ -9,8 +9,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandler.Mode;
-
 public class EvenementCivilEchRethrowerImpl implements EvenementCivilEchRethrower {
 
 	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchRethrowerImpl.class);
@@ -53,7 +51,7 @@ public class EvenementCivilEchRethrowerImpl implements EvenementCivilEchRethrowe
 		if (relanceables != null && relanceables.size() > 0) {
 			for (EvenementCivilEch evt : relanceables) {
 				try {
-					receptionHandler.handleEvent(evt, Mode.BATCH);
+					receptionHandler.handleEvent(evt, EvenementCivilEchProcessingMode.BATCH);
 				}
 				catch (Exception e) {
 					LOGGER.error(String.format("Erreur lors de la relance de l'événement civil %d", evt.getId()), e);

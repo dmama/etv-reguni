@@ -3,15 +3,12 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
+
 public class MockEvenementCivilNotificationQueue implements EvenementCivilNotificationQueue {
 
 	@Override
-	public void postBatch(Long noIndividu, boolean immediate) {
-		// nothing
-	}
-
-	@Override
-	public void postManual(Long noIndividu, boolean immediate) {
+	public void post(Long noIndividu, EvenementCivilEchProcessingMode mode) {
 		// nothing
 	}
 
@@ -37,6 +34,11 @@ public class MockEvenementCivilNotificationQueue implements EvenementCivilNotifi
 
 	@Override
 	public int getInManualQueueCount() {
+		return 0;
+	}
+
+	@Override
+	public int getInImmediateQueueCount() {
 		return 0;
 	}
 

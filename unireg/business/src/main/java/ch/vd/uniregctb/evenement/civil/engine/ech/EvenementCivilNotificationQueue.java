@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
@@ -46,24 +47,12 @@ public interface EvenementCivilNotificationQueue {
 	}
 
 	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue des traitments batchs.
-	 * A utiliser pour les traitements de masse.
-	 *
+	 * Méthode utilisée pour ajouter des éléments à la queue de traitment.
 	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
-	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
+	 * @param mode mode de traitement
 	 * @throws NullPointerException en cas de paramètre <code>null</code>
 	 */
-	void postBatch(Long noIndividu, boolean immediate);
-
-	/**
-	 * Méthode utilisée pour ajouter des éléments à la queue des traitments manuels.
-	 * A utiliser pour les traitements initiés par une utilisateur humain.
-	 *
-	 * @param noIndividu numéro de l'individu qui vient de recevoir un événement
-	 * @param immediate détermine si oui ou non le décalage temporel doit être appliqué
-	 * @throws NullPointerException en cas de paramètre <code>null</code>
-	 */
-	void postManual(Long noIndividu, boolean immediate);
+	void post(Long noIndividu, EvenementCivilEchProcessingMode mode);
 
 	/**
 	 * Méthode utilisée pour ajouter des éléments à la queue des traitements batch en bloc (le décalage sera forcément appliqué)
@@ -94,6 +83,11 @@ public interface EvenementCivilNotificationQueue {
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "manual"
 	 */
 	int getInManualQueueCount();
+
+	/**
+	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "immediate"
+	 */
+	int getInImmediateQueueCount();
 
 	/**
 	 * @return le nombre d'éléments actuellement en attente de traitement dans la queue interne "final"

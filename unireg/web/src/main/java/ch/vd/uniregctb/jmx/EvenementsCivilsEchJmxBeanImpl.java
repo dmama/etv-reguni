@@ -6,12 +6,11 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionMonitor;
 import ch.vd.uniregctb.evenement.civil.engine.ech.EvenementCivilEchProcessor;
 import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
 import ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager;
-
-import static ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchReceptionHandler.Mode;
 
 @ManagedResource
 public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBean, InitializingBean {
@@ -69,6 +68,12 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@ManagedAttribute
 	public int getNbIndividualsAwaitingInManualQueue() {
 		return monitor.getNombreIndividusEnAttenteDansLaQueueManuelle();
+	}
+
+	@Override
+	@ManagedAttribute
+	public int getNbIndividualsAwaitingInImmediateQueue() {
+		return monitor.getNombreIndividusEnAttenteDansLaQueueImmediate();
 	}
 
 	@Override
@@ -135,7 +140,7 @@ public class EvenementsCivilsEchJmxBeanImpl implements EvenementsCivilsEchJmxBea
 	@ManagedOperation
 	public void treatPersonsEvents(long noIndividu) {
 		LOGGER.info("Demande de relance des événements civils de l'individu " + noIndividu + " par JMX");
-		monitor.demanderTraitementQueue(noIndividu, true, Mode.MANUAL);
+		monitor.demanderTraitementQueue(noIndividu, EvenementCivilEchProcessingMode.IMMEDIATE);
 	}
 
 	@Override

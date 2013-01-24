@@ -20,6 +20,7 @@ import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchProcessingMode;
 import ch.vd.uniregctb.evenement.civil.ech.MockEvenementCivilEchRethrower;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
@@ -115,29 +116,23 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 				throw new NotImplementedException();
 			}
 
-			@Override
-			public void postBatch(Long noIndividu, boolean immediate) {
-				// traitement immédiat
+			private void notifyTraitement(Long noIndividu) {
 				for (Listener listener : listeners.values()) {
 					listener.onIndividuTraite(noIndividu);
 				}
 			}
 
 			@Override
-			public void postManual(Long noIndividu, boolean immediate) {
+			public void post(Long noIndividu, EvenementCivilEchProcessingMode mode) {
 				// traitement immédiat
-				for (Listener listener : listeners.values()) {
-					listener.onIndividuTraite(noIndividu);
-				}
+				notifyTraitement(noIndividu);
 			}
 
 			@Override
 			public void postAll(Collection<Long> nosIndividus) {
 				// traitement immédiat
 				for (Long noIndividu : nosIndividus) {
-					for (Listener listener : listeners.values()) {
-						listener.onIndividuTraite(noIndividu);
-					}
+					notifyTraitement(noIndividu);
 				}
 			}
 
@@ -158,6 +153,11 @@ public class EvenementCivilEchRetryProcessorTest extends BusinessTest {
 
 			@Override
 			public int getInManualQueueCount() {
+				throw new NotImplementedException();
+			}
+
+			@Override
+			public int getInImmediateQueueCount() {
 				throw new NotImplementedException();
 			}
 

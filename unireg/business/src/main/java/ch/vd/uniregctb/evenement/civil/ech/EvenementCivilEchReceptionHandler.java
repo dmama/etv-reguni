@@ -7,11 +7,6 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
  */
 public interface EvenementCivilEchReceptionHandler {
 
-	public enum Mode {
-		MANUAL,
-		BATCH
-	}
-
 	/**
 	 * Appelé une fois le contenu XML décodé afin de persister le nouvel événement en base de données
 	 * @param event événement à persister
@@ -26,6 +21,6 @@ public interface EvenementCivilEchReceptionHandler {
 	 * @return événement potentiellement modifié après prise en compte (avec numéro d'individu, par exemple...)
 	 * @throws EvenementCivilException en cas de problème
 	 */
-	EvenementCivilEch handleEvent(EvenementCivilEch event, Mode mode) throws EvenementCivilException;
+	EvenementCivilEch handleEvent(EvenementCivilEch event, EvenementCivilEchProcessingMode mode) throws EvenementCivilException;
 
 }
