@@ -195,10 +195,11 @@ public class DebiteurPrestationImposable extends Tiers {
 
 	@Transient
 	public boolean isSansLREmises(){
-		if (getDeclarationsSorted() == null) {
+		final Set<Declaration> declarations = getDeclarations();
+		if (declarations == null) {
 			return true;
 		}
-		for (Declaration declaration : getDeclarationsSorted()) {
+		for (Declaration declaration : declarations) {
 			if (!declaration.isAnnule()){
 				return false;
 			}
