@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" jxb:version="2.0">
+
+	<xs:include schemaLocation="../../../../party/src/main/resources/main.xsd"/>
+
+	<!-- Ce fichier a la seule fonction d'inclure les schémas locaux qui doivent être compilés.
+		Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/person/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-person-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/corporation/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-corporation-1.xsd" />
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/party/adminauth/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/party/unireg-party-administrativeauthority-1.xsd" />
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/input/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-input-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/di/output/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/di/evenementDeclarationImpot-output-1.xsd"/>
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/address-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/address-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/address-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/numbers-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/numbers-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/numbers-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/party-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/party-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/create-nonresident-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/creation-nonhabitant-reponse-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/rt/rapport-travail/response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/rt/rapport-travail-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/taxliab-common/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/taxliab-common-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/aperiodic-taxliab-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/aperiodic-taxliab-response-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-request/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-request-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/unireg/event/party/periodic-taxliab-response/1" schemaLocation="http://ressources.etat-de-vaud.ch/fiscalite/registre/event/party/periodic-taxliab-response-1.xsd"/>
+
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/is/evt-liste/1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtliste-1.xsd"/>
+	<xs:import namespace="http://www.vd.ch/fiscalite/taxation/evtQuittanceListe-v1" schemaLocation="http://www.vd.ch/fiscalite/taxation/is/evtquittanceListe-v1.xsd"/>
+
+</xs:schema>

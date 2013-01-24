@@ -1,0 +1,8 @@
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="public">
+
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0025/1/eVD-0025-1-0.xsd" uri="eVD-0025-1-0.xsd" />
+	<system systemId="http://evd.vd.ch/xmlns/eVD-0026/1/eVD-0026-1-0.xsd" uri="eVD-0026-1-0.xsd" />
+
+	<delegateSystem systemIdStartString="http://www.ech.ch/xmlns/" catalog="../../../../ech/src/main/resources/catalog.xml" />
+
+</catalog>

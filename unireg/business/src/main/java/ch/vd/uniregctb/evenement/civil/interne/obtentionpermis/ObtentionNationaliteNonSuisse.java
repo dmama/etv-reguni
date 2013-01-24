@@ -1,0 +1,60 @@
+package ch.vd.uniregctb.evenement.civil.interne.obtentionpermis;
+
+import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.unireg.interfaces.civil.data.Individu;
+import ch.vd.unireg.interfaces.civil.data.Nationalite;
+import ch.vd.uniregctb.audit.Audit;
+import ch.vd.uniregctb.common.FormatNumeroHelper;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
+import ch.vd.uniregctb.evenement.civil.EvenementCivilWarningCollector;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
+import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
+import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
+import ch.vd.uniregctb.tiers.PersonnePhysique;
+
+public class ObtentionNationaliteNonSuisse extends ObtentionNationalite {
+
+	protected ObtentionNationaliteNonSuisse(EvenementCivilRegPP evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+	}
+
+	protected ObtentionNationaliteNonSuisse(EvenementCivilEch evenement, EvenementCivilContext context, EvenementCivilOptions options) throws EvenementCivilException {
+		super(evenement, context, options);
+	}
+
+	/**
+	 * Pour les tests uniquement
+	 */
+	@SuppressWarnings({"JavaDoc"})
+	protected ObtentionNationaliteNonSuisse(Individu individu, Individu conjoint, RegDate date, Integer numeroOfsCommuneAnnonce, Integer numeroOfsCommunePrincipale, EvenementCivilContext context) {
+		super(individu, conjoint, date, numeroOfsCommuneAnnonce, numeroOfsCommunePrincipale, false, context);
+	}
+
+	@Override
+	public void validateSpecific(EvenementCivilErreurCollector erreurs, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+		// on  ne valide rien...
+	}
+
+	@Override
+	protected boolean doHandle(PersonnePhysique pp, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
+
+		// quelle que soit la nationalité, si l'individu correspond à un non-habitant (= ancien habitant)
+		// il faut mettre à jour la nationalité chez nous
+		if (pp != null && !pp.isHabitantVD()) {
+			final Nationalite nationalite = context.getServiceCivil().getNationaliteAt(getNoIndividu(), getDate());
+			if (nationalite == null) {
+				throw new EvenementCivilException("L'individu n°" + getNoIndividu() + " ne possède pas de nationalité à la date = " + RegDateHelper.dateToDisplayString(getDate()));
+			}
+			pp.setNumeroOfsNationalite(nationalite.getPays().getNoOFS());
+			Audit.info(getNumeroEvenement(),
+					String.format("L'individu %d (tiers non-habitant %s) a maintenant la nationalité du pays '%s'", getNoIndividu(), FormatNumeroHelper.numeroCTBToDisplay(pp.getNumero()),
+							nationalite.getPays().getNomCourt()));
+		}
+
+		Audit.info(getNumeroEvenement(), "Nationalité non suisse : ignorée fiscalement");
+		return false;
+	}
+}
