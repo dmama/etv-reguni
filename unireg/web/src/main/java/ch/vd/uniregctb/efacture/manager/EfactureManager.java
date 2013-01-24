@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.efacture.manager;
 
+import org.jetbrains.annotations.Nullable;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.efacture.data.ResultatQuittancement;
 import ch.vd.uniregctb.editique.EditiqueException;
@@ -31,17 +33,19 @@ public interface EfactureManager {
 	/**Demande la suspension d'un contribuable
 	 *
 	 * @param ctbId le numéro de contribuable
+	 * @param comment commentaire libre si saisi par l'utilisateur
 	 * @return l'identifant du message demandant la suspension
 	 */
-	String suspendreContribuable(long ctbId) throws EvenementEfactureException;
+	String suspendreContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException;
 
 
 	/**Demande l'activation d'un contribuable
 	 *
 	 * @param ctbId le numéro de contribuable
+	 * @param comment commentaire libre si saisi par l'utilisateur
 	 * @return l'identifant du message demandant l'activation
 	 */
-	String activerContribuable(long ctbId) throws EvenementEfactureException;
+	String activerContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException;
 
 	/**Retourne indique si on a reçu une réponse concernant le message dont le business id est passé en parametre
 	 *

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.context.MessageSource;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,9 +49,19 @@ public class EfactureManagerImpl implements EfactureManager {
 		return eFactureService.notifieMiseEnAttenteInscription(idDemande, typeAttenteEFacture, description, idArchivage, true);
 	}
 
-	private String getMessageAvecVisaUser() {
+	private static String getMessageAvecVisaUser() {
 		final String user = AuthenticationHelper.getCurrentPrincipal();
 		return String.format("Traitement manuel par %s.", user);
+	}
+
+	private static String getMessageAvecVisaUser(@Nullable String comment) {
+		if (StringUtils.isBlank(comment)) {
+			return getMessageAvecVisaUser();
+		}
+		else {
+			final String user = AuthenticationHelper.getCurrentPrincipal();
+			return String.format("[%s] %s", user, StringUtils.abbreviate(comment, 252 - user.length()));
+		}
 	}
 
 	@Override
@@ -62,15 +73,15 @@ public class EfactureManagerImpl implements EfactureManager {
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String suspendreContribuable(long ctbId) throws EvenementEfactureException {
-		final String description = getMessageAvecVisaUser();
+	public String suspendreContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException {
+		final String description = getMessageAvecVisaUser(comment);
 		return eFactureService.suspendreContribuable(ctbId, true, description);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Throwable.class)
-	public String activerContribuable(long ctbId) throws EvenementEfactureException {
-		final String description = getMessageAvecVisaUser();
+	public String activerContribuable(long ctbId, @Nullable String comment) throws EvenementEfactureException {
+		final String description = getMessageAvecVisaUser(comment);
 		return eFactureService.activerContribuable(ctbId, true, description);
 	}
 

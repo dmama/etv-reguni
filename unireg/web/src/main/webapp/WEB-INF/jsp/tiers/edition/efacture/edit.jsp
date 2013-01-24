@@ -31,13 +31,13 @@
                 <tr>
                     <td align="center">
                         <c:if test="${histo.suspendable}">
-                            <input id="suspend" type="button" value="<fmt:message key='label.efacture.bouton.suspendre'/>" onclick="EditEFacture.suspend(${histo.ctbId});"/>
+                            <input id="suspend" type="button" value="<fmt:message key='label.efacture.bouton.suspendre'/>" onclick="EditEFacture.addComment(${histo.ctbId}, 'SUSPEND');"/>
                             <c:if test="${histo.activable}">
                                 &nbsp;
                             </c:if>
                         </c:if>
                         <c:if test="${histo.activable}">
-                            <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.activer'/>" onclick="EditEFacture.activate(${histo.ctbId});"/>
+                            <input id="activate" type="button" value="<fmt:message key='label.efacture.bouton.activer'/>" onclick="EditEFacture.addComment(${histo.ctbId}, 'ACTIVATE');"/>
                         </c:if>
                     </td>
                 </tr>
@@ -100,21 +100,38 @@
 
             var EditEFacture = {
 
-                suspend: function(ctbId) {
-                    if (confirm('Êtes-vous sûr de vouloir suspendre l\'utilisation des e-Factures pour ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + App.curl("/efacture/suspend.do?ctb=" + ctbId) + '"/>');
-                        form.appendTo('body');
-                        form.submit();
-                    }
-                },
+	            addComment: function(ctbid, action) {
+		            var dialog = Dialog.create_dialog_div('add-comment-dialog');
 
-                activate: function(ctbId) {
-                    if (confirm('Êtes-vous sûr de vouloir activer l\'utilisation des e-Factures pour ce contribuable ?')) {
-                        var form = $('<form method="POST" action="' + App.curl("/efacture/activate.do?ctb=" + ctbId) + '"/>');
-                        form.appendTo('body');
-                        form.submit();
-                    }
-                },
+		            // charge le contenu de la boîte de dialogue
+		            dialog.load(App.curl('/efacture/add-comment.do') + '?ctb=' + ctbid + '&action=' + action + '&' + new Date().getTime());
+
+		            dialog.dialog({
+			                          title: "Activation / suspension d'un contribuable e-Facture",
+			                          height: 220,
+			                          width: 400,
+			                          modal: true,
+			                          buttons: {
+				                          "Valider": function() {
+					                          if (confirm("Êtes-vous sûr ?")) {
+						                          // les boutons ne font pas partie de la boîte de dialogue (au niveau du DOM), on peut donc utiliser le sélecteur jQuery normal
+						                          var buttons = $('.ui-button');
+						                          buttons.each(function() {
+							                          if ($(this).text() == 'Valider') {
+								                          $(this).addClass('ui-state-disabled');
+								                          $(this).attr('disabled', true);
+							                          }
+						                          });
+						                          var form = dialog.find('#commentForm');
+						                          form.submit();
+				                              }
+				                          },
+				                          "Annuler": function() {
+					                          dialog.dialog("close");
+				                          }
+			                          }
+		                          });
+	            },
 
                 validate: function(ctbId, idDemande) {
                     if (confirm('Êtes-vous sûr de vouloir valider la demande d\'inscription de ce contribuable ?')) {

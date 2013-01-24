@@ -128,32 +128,32 @@ public class EFactureManagerTest extends WithoutSpringTest {
 
 	@Test
 	public void testSuspendreContribuable() throws Exception {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		final EFactureService eFactureService = new EFactureServiceMock() {
 			@Override
 			public String suspendreContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
-				assertEquals(NO_CTB,ctbId);
-				assertEquals(true,retourAttendu);
+				assertEquals(NO_CTB, ctbId);
+				assertEquals(true, retourAttendu);
 				assertContains("USER_ID", description);
 				return "BUSINESS_ID";
 			}
 		};
 		eFactureManager.seteFactureService(eFactureService);
-		assertEquals("BUSINESS_ID", eFactureManager.suspendreContribuable(NO_CTB));
+		assertEquals("BUSINESS_ID", eFactureManager.suspendreContribuable(NO_CTB, null));
 	}
 
 	@Test
 	public void testActiverContribuable() throws Exception {
-		EFactureService eFactureService = new EFactureServiceMock() {
+		final EFactureService eFactureService = new EFactureServiceMock() {
 			@Override
 			public String activerContribuable(long ctbId, boolean retourAttendu, String description) throws EvenementEfactureException {
-				assertEquals(NO_CTB,ctbId);
-				assertEquals(true,retourAttendu);
+				assertEquals(NO_CTB, ctbId);
+				assertEquals(true, retourAttendu);
 				assertContains("USER_ID", description);
 				return "BUSINESS_ID";
 			}
 		};
 		eFactureManager.seteFactureService(eFactureService);
-		assertEquals("BUSINESS_ID", eFactureManager.activerContribuable(NO_CTB));
+		assertEquals("BUSINESS_ID", eFactureManager.activerContribuable(NO_CTB, null));
 	}
 
 	@Test

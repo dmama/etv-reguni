@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.efacture;
 
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.springframework.context.MessageSource;
+import org.springframework.context.MessageSourceAware;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -21,16 +24,23 @@ import ch.vd.uniregctb.security.SecurityHelper;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.type.TypeDocument;
 import ch.vd.uniregctb.utils.RegDateEditor;
+import ch.vd.uniregctb.utils.WebContextUtils;
 
 @Controller
 @RequestMapping(value = "/efacture")
-public class EFactureController {
+public class EFactureController implements MessageSourceAware {
 
 	private static final String CTB = "ctb";
 	private static final String ID_DEMANDE = "idDemande";
 	private static final String DATE_DEMANDE = "dateDemande";
+	private static final String ACTION = "action";
+	private static final String COMMENT = "comment";
+	private static final String ACTION_URL = "actionUrl";
+	private static final String LIBELLE_ACTION = "libelleAction";
+	private static final String COMMAND = "command";
 	private EfactureManager efactureManager;
 	private SecurityProviderInterface securityProvider;
+	private MessageSource messageSource;
 
 	private static void checkDroitVisuEfacture(SecurityProviderInterface securityProvider) {
 		if (!SecurityHelper.isAnyGranted(securityProvider, Role.VISU_ALL, Role.GEST_EFACTURE)) {
@@ -76,9 +86,9 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/suspend.do", method = RequestMethod.POST)
-	public String suspend(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
+	public String suspend(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = COMMENT, required = false) String comment) throws Exception {
 		checkDroitGestionaireEfacture(securityProvider);
-		final String businessId = efactureManager.suspendreContribuable(ctbId);
+		final String businessId = efactureManager.suspendreContribuable(ctbId, StringUtils.trimToNull(comment));
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande de suspension a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
@@ -86,9 +96,9 @@ public class EFactureController {
 	}
 
 	@RequestMapping(value = "/activate.do", method = RequestMethod.POST)
-	public String activate(@RequestParam(value = CTB, required = true) long ctbId) throws Exception {
+	public String activate(@RequestParam(value = CTB, required = true) long ctbId, @RequestParam(value = COMMENT, required = false) String comment) throws Exception {
 		checkDroitGestionaireEfacture(securityProvider);
-		final String businessId = efactureManager.activerContribuable(ctbId);
+		final String businessId = efactureManager.activerContribuable(ctbId, comment);
 		if (!efactureManager.isReponseRecueDeEfacture(businessId)) {
 			Flash.warning("Votre demande d'activation a bien été prise en compte, Elle sera traitée dès que possible par le système E-facture.");
 		}
@@ -168,5 +178,32 @@ public class EFactureController {
 
 	public void setSecurityProvider(SecurityProviderInterface securityProvider) {
 		this.securityProvider = securityProvider;
+	}
+
+	@Override
+	public void setMessageSource(MessageSource messageSource) {
+		this.messageSource = messageSource;
+	}
+
+	public static enum AddCommentActionType {
+		SUSPEND("/efacture/suspend.do", "label.efacture.bouton.suspendre"),
+		ACTIVATE("/efacture/activate.do", "label.efacture.bouton.activer");
+
+		private final String url;
+		private final String labelKey;
+
+		private AddCommentActionType(String url, String labelKey) {
+			this.url = url;
+			this.labelKey = labelKey;
+		}
+	}
+
+	@RequestMapping(value = "add-comment.do", method = RequestMethod.GET)
+	public String showAddCommentForm(Model model, @RequestParam(value = CTB, required = true) long noCtb, @RequestParam(value = ACTION, required = true) AddCommentActionType action) {
+		model.addAttribute(CTB, noCtb);
+		model.addAttribute(ACTION_URL, String.format("%s?%s=%d", action.url, CTB, noCtb));
+		model.addAttribute(LIBELLE_ACTION, messageSource.getMessage(action.labelKey, null, WebContextUtils.getDefaultLocale()));
+		model.addAttribute(COMMAND, new FreeCommentView());
+		return "tiers/edition/efacture/add-comment";
 	}
 }
