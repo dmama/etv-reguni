@@ -3661,6 +3661,21 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDepartHorsCantonDepense() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10035700L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2005, 7, 31), MotifFor.DEPART_HC, MockCommune.Lausanne, ModeImposition.DEPENSE);
+		addForPrincipal(ctb, date(2005, 8, 1), MotifFor.DEPART_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// [SIFISC-7281] les contribuables à la dépense qui partent hors-canton sont considérés hors-canton toute l'année de leur départ
+		assertDepense(date(2000, 1, 1), date(2004, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, liste.get(0));
+		assertSourcierPur(date(2005, 1, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
 		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));

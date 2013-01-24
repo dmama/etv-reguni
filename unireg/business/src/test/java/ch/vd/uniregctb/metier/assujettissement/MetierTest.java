@@ -867,6 +867,16 @@ public abstract class MetierTest extends BusinessTest {
 		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
 	}
 
+	protected void assertDepense(RegDate debut, @Nullable RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
+			Assujettissement assujettissement) {
+		assertNotNull(assujettissement);
+		assertInstanceOf(VaudoisDepense.class, assujettissement);
+		assertEquals(debut, assujettissement.getDateDebut());
+		assertEquals(fin, assujettissement.getDateFin());
+		assertEquals(motifFractDebut, assujettissement.getMotifFractDebut());
+		assertEquals(motifFractFin, assujettissement.getMotifFractFin());
+	}
+
 	protected void assertDiplomateSuisse(RegDate debut, RegDate fin, @Nullable MotifFor motifFractDebut, @Nullable MotifFor motifFractFin,
 			Assujettissement assujettissement) {
 		assertNotNull(assujettissement);

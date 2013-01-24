@@ -1067,7 +1067,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return <b>true</b> si un départ hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les faux
 	 *         départs hors-canton.
 	 */
-	private static boolean isDepartHorsCanton(@NotNull ForFiscalPrincipal current, @Nullable ForFiscalPrincipal next) {
+	private static boolean isDepartDansHorsCanton(@NotNull ForFiscalPrincipal current, @Nullable ForFiscalPrincipal next) {
 
 		if (next == null) {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifFermeture() == MotifFor.DEPART_HC;
@@ -1075,7 +1075,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		else {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 		}
-
 	}
 
 	/**
@@ -1084,13 +1083,29 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @return <b>true</b> si une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
 	 *         fausses arrivées hors-canton.
 	 */
-	private static boolean isArriveeHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
+	private static boolean isArriveeDeHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
 
 		if (previous == null) {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifOuverture() == MotifFor.ARRIVEE_HC;
 		}
 		else {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && previous.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
+		}
+	}
+
+	/**
+	 * @param previous le for fiscal précédent (peut être nul)
+	 * @param current  le for fiscal courant
+	 * @return <b>true</b> si une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
+	 *         fausses arrivées hors-canton.
+	 */
+	private static boolean isArriveeDansHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
+
+		if (previous == null) {
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && current.getMotifOuverture() == MotifFor.DEPART_HC;
+		}
+		else {
+			return previous.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 		}
 	}
 
@@ -1116,10 +1131,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isArriveeHorsCanton(previous, current) && modeImposition == ModeImposition.SOURCE) {
+		else if (isArriveeDeHorsCanton(previous, current) && modeImposition == ModeImposition.SOURCE) {
 			// [UNIREG-1742] L'arrivée hors-Canton d'un sourcier pur doit provoquer un fractionnement.
 			// [SIFISC-7281] Par contre, l'arrivée d'un mixte 137 al. 2 ne doit plus provoquer de fractionnement
 			fraction = true;
+		}
+		else if (previous != null && isArriveeDansHorsCanton(previous, current) && previous.getModeImposition() == ModeImposition.DEPENSE) {
+			// [SIFISC-7281] les départ hors-canton des dépenses ne doit *pas* fractionner l'assujettissement : ils sont considérés sourciers toute l'année de leur départ
+			fraction = false;
 		}
 		else if (previous != null && ((roleSourcierPur(previous) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(previous) && roleSourcierPur(current)))) {
 			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
@@ -1162,10 +1181,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isDepartHorsCanton(current, next) &&
+		else if (isDepartDansHorsCanton(current, next) &&
 				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2)) {
 			// [UNIREG-1742] Le départ hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement (parce que le type d'autorité fiscale change)
 			fraction = true;
+		}
+		else if (isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.DEPENSE) {
+			// [SIFISC-7281] les départs hors-canton des dépenses ne doit *pas* fractionner l'assujettissement : ils sont considérés sourciers toute l'année de leur départ
+			fraction = false;
 		}
 		else if (next != null && ((roleSourcierPur(next) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(next) && roleSourcierPur(current)))) {
 			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
