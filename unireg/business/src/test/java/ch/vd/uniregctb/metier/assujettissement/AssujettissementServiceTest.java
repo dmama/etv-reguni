@@ -837,17 +837,16 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2008
 		{
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
-			assertEquals(2, list.size());
-			// [SIFISC-62] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois), comme le mixte 2
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertEquals(1, list.size());
+			// [SIFISC-7281] le contribuable n'est plus considéré comme assujetti au rôle mais seulement à la source sur toute l'année
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2009
@@ -863,8 +862,8 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 	}
 
@@ -1070,12 +1069,55 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=11000029&print=true&title=${methodName}&description=${docDescription}")
+	@WebScreenshotDoc(description = "[SIFISC-7281] un contribuable mixte 137 Al1 qui arrive de hors-canton doit être considéré assujetti sur toute l'année.")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsCantonSourcierMixte137Al1SansImmeuble() throws Exception {
+
+		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1(11000029L, date(2008, 9, 25));
+
+		// 2007
+		{
+			final List<Assujettissement> list = service.determine(paul, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<Assujettissement> list = service.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// [SIFISC-7281] un contribuable mixte 137 Al1 qui arrive de hors-canton doit être considéré assujetti sur toute l'année.
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = service.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertSourcierMixteArt137Al1(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierPur(date(2002, 7, 1), date(2007, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+		}
+	}
+
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000029&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(description = "[UNIREG-1742] pas de fractionnement en 2008 dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble " +
 			"ou activité indépendante).")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDetermineArriveeHorsCantonSourcierMixte137Al1() throws Exception {
+	public void testDetermineArriveeHorsCantonSourcierMixte137Al1AvecImmeuble() throws Exception {
 
 		final Contribuable paul = createArriveeHorsCantonSourcierMixte137Al1_Invalide(10000029L, date(2008, 9, 25));
 
@@ -1115,7 +1157,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000030&print=true&title=${methodName}&description=${docDescription}")
-	@WebScreenshotDoc(description = "[UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)")
+	@WebScreenshotDoc(description = "[SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHorsCantonSourcierMixte137Al2() throws Exception {
@@ -1127,17 +1169,16 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2008
 		{
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
-			assertEquals(2, list.size());
-			// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
-			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierMixteArt137Al2(date(2008, 9, 25), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertEquals(1, list.size());
+			// [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.
+			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2009
@@ -1153,8 +1194,8 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 9, 24), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierMixteArt137Al2(date(2008, 9, 25), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
 
@@ -2890,16 +2931,15 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierMixteArt137Al1(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 		}
 
 		// 2004 (arrivée hors-canton)
 		{
 			final List<Assujettissement> list = service.determine(paul, 2004);
 			assertNotNull(list);
-			assertEquals(2, list.size());
-			assertSourcierMixteArt137Al1(date(2004, 1, 1), date(2004, 7, 26), null, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-			assertSourcierMixteArt137Al2(date(2004, 7, 27), date(2004, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertEquals(1, list.size());
+			assertSourcierMixteArt137Al2(date(2004, 1, 1), date(2004, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2005
@@ -3448,9 +3488,8 @@ public class AssujettissementServiceTest extends MetierTest {
 		addForSecondaire(ctb, date(2004, 1, 29), MotifFor.ACHAT_IMMOBILIER, MockCommune.Nyon.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
 		final List<Assujettissement> liste = service.determine(ctb);
-		assertEquals(2, liste.size());
-		assertHorsCanton(date(2004, 1, 1), date(2004, 1, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, liste.get(0));
-		assertSourcierMixteArt137Al2(date(2004, 2, 1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+		assertEquals(1, liste.size()); // [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2.
+		assertSourcierMixteArt137Al2(date(2004, 1, 1), MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=36502102&print=true&title=${methodName}&description=${docDescription}")

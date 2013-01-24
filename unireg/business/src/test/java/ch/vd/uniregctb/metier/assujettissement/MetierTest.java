@@ -600,6 +600,19 @@ public abstract class MetierTest extends BusinessTest {
 		return paul;
 	}
 
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(RegDate dateArrivee) throws Exception {
+		return createArriveeHorsCantonSourcierMixte137Al1(null, dateArrivee);
+	}
+
+	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1(@Nullable final Long noTiers, final RegDate dateArrivee) throws Exception {
+		Contribuable paul = createContribuableSansFor(noTiers);
+		ForFiscalPrincipal ffp = addForPrincipal(paul, date(2002, 7, 1), MotifFor.ARRIVEE_HS, dateArrivee.getOneDayBefore(), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel);
+		ffp.setModeImposition(ModeImposition.SOURCE);
+		ffp = addForPrincipal(paul, dateArrivee, MotifFor.ARRIVEE_HC, MockCommune.Lausanne);
+		ffp.setModeImposition(ModeImposition.MIXTE_137_1);
+		return paul;
+	}
+
 	protected Contribuable createArriveeHorsCantonSourcierMixte137Al1_Invalide(RegDate dateArrivee) throws Exception {
 		return createArriveeHorsCantonSourcierMixte137Al1_Invalide(null, dateArrivee);
 	}

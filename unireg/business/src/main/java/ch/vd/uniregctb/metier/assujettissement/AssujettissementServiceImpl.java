@@ -1062,23 +1062,36 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	/**
-	 * @param left  le for fiscal de gauche (peut être nul)
-	 * @param right le for fiscal de droite (peut être null)
-	 * @return <b>true</b> si un départ ou une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à
-	 *         détecter les faux départs/arrivées hors-canton.
+	 * @param current le for fiscal courant
+	 * @param next    le for fiscal immédiatement suivant (peut être nul)
+	 * @return <b>true</b> si un départ hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les faux
+	 *         départs hors-canton.
 	 */
-	private static boolean isDepartOuArriveeHorsCanton(ForFiscalPrincipal left, ForFiscalPrincipal right) {
-		if (left == null && right == null) {
-			throw new IllegalArgumentException();
+	private static boolean isDepartHorsCanton(@NotNull ForFiscalPrincipal current, @Nullable ForFiscalPrincipal next) {
+
+		if (next == null) {
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifFermeture() == MotifFor.DEPART_HC;
+		}
+		else {
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 		}
 
-		boolean motifDetecte = (left != null && (left.getMotifFermeture() == MotifFor.ARRIVEE_HC || left.getMotifFermeture() == MotifFor.DEPART_HC));
-		motifDetecte = motifDetecte || (right != null && (right.getMotifOuverture() == MotifFor.ARRIVEE_HC || right.getMotifOuverture() == MotifFor.DEPART_HC));
+	}
 
-		boolean typeAutoriteOk = (left == null || left.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC);
-		typeAutoriteOk = typeAutoriteOk || (right == null || right.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC);
+	/**
+	 * @param previous le for fiscal immédiatement précédent (peut être nul)
+	 * @param current  le for fiscal courant
+	 * @return <b>true</b> si une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
+	 *         fausses arrivées hors-canton.
+	 */
+	private static boolean isArriveeHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
 
-		return motifDetecte && typeAutoriteOk;
+		if (previous == null) {
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifOuverture() == MotifFor.ARRIVEE_HC;
+		}
+		else {
+			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && previous.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
+		}
 	}
 
 	private static boolean isFractionOuverture(ForFiscalPrincipalContext forPrincipal) {
@@ -1089,8 +1102,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
 		final ModeImposition modeImposition = current.getModeImposition();
-
-		final ModeImposition previousModeImposition = (previous == null ? null : previous.getModeImposition());
 
 		boolean fraction = false;
 
@@ -1105,10 +1116,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsCanton(previous, current) &&
-				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 ||
-						previousModeImposition == ModeImposition.SOURCE || previousModeImposition == ModeImposition.MIXTE_137_2)) {
-			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
+		else if (isArriveeHorsCanton(previous, current) && modeImposition == ModeImposition.SOURCE) {
+			// [UNIREG-1742] L'arrivée hors-Canton d'un sourcier pur doit provoquer un fractionnement.
+			// [SIFISC-7281] Par contre, l'arrivée d'un mixte 137 al. 2 ne doit plus provoquer de fractionnement
 			fraction = true;
 		}
 		else if (previous != null && ((roleSourcierPur(previous) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(previous) && roleSourcierPur(current)))) {
@@ -1152,10 +1162,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isDepartOuArriveeHorsCanton(current, next) &&
-				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2 ||
-						nextModeImposition == ModeImposition.SOURCE || nextModeImposition == ModeImposition.MIXTE_137_2)) {
-			// [UNIREG-1742] Le départ ou l'arrivée hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement
+		else if (isDepartHorsCanton(current, next) &&
+				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2)) {
+			// [UNIREG-1742] Le départ hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement (parce que le type d'autorité fiscale change)
 			fraction = true;
 		}
 		else if (next != null && ((roleSourcierPur(next) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(next) && roleSourcierPur(current)))) {
@@ -1977,12 +1986,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		@Override
-		public boolean removeAll(Collection<?> c) {
+		public boolean removeAll(@NotNull Collection<?> c) {
 			throw new NotImplementedException();
 		}
 
 		@Override
-		public boolean retainAll(Collection<?> c) {
+		public boolean retainAll(@NotNull Collection<?> c) {
 			throw new NotImplementedException();
 		}
 

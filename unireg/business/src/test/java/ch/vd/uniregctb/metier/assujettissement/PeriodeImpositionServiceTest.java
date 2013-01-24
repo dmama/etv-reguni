@@ -775,10 +775,10 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			// rattachement économique -> bien qu’ils soient assujettis de manière illimitée jusqu'au dernier jour du mois de leur départ,
 			// leur déclaration d’impôt est remplacée (= elle est optionnelle, en fait, voir exemples à la fin de la spécification) par une
 			// note à l’administration fiscale cantonale de leur domicile.
-			final List<PeriodeImposition> list = service.determine(ctb, 2008);
-			assertNotNull(list);
-			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2008, 1, 1), dateDepart, CategorieEnvoiDI.VAUDOIS_COMPLETE, TypeAdresseRetour.CEDI, true, true, false, false, list.get(0));
+
+			// [SIFISC-7281] les sourcier mixte 1 sans immeuble qui partent hors-canton ne sont plus du tout assujetti au rôle dès l'année de départ
+			// sourcier pur
+			assertEmpty(service.determine(ctb, 2008));
 		}
 
 		// 2009
@@ -892,10 +892,12 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			// --> par analogie, déclaration optionnelle à l'arrivée
 			// [UNIREG-2328] l'analogie est fausse, en cas d'arrivée de hors-canton, l'administration fiscale responsable est justement l'administration
 			// vaudoise : la déclaration n'est donc ni optionnelle ni remplacée par une note.
+
+			// [SIFISC-7281] pas de fractionnement de l'assujettissement lors de l'arrivée hors-canton de sourcier mixte 137 al 2 => assujetti sur toute l'année
 			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(dateArrivee, date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 		}
 
 		// 2009
