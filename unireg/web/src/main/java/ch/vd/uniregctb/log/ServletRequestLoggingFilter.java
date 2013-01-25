@@ -9,7 +9,12 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.http.HttpInputMessage;
+import org.springframework.http.MediaType;
+import org.springframework.http.server.ServletServerHttpRequest;
 
 import ch.vd.registre.base.date.DateHelper;
 
@@ -65,14 +70,29 @@ public class ServletRequestLoggingFilter implements Filter {
 		final String now = new SimpleDateFormat().format(DateHelper.getCurrentDate());
 		final String method = request.getMethod();
 		final String session = request.getSession().getId();
+		final String accept = getAccept(request);
 
 		StringBuilder b = new StringBuilder();
 		b.append("\nProcessing ").append(url).append(" (for ").append(serverName).append(" at ").append(now).append(") [").append(method)
 				.append("]\n");
+		b.append("  Accept: ").append(accept).append('\n');
 		b.append("  Session ID: ").append(session).append('\n');
 		b.append("  Parameters: ").append(toString(map)).append('\n');
 
 		System.out.println(b.toString());
+	}
+
+	private static String getAccept(HttpServletRequest request) {
+		final HttpInputMessage inputMessage = new ServletServerHttpRequest(request);
+		final List<MediaType> acceptedMediaTypes = inputMessage.getHeaders().getAccept();
+		if (acceptedMediaTypes == null || acceptedMediaTypes.isEmpty()) {
+			return "";
+		}
+		final StringBuilder s = new StringBuilder();
+		for (MediaType type : acceptedMediaTypes) {
+			s.append(type).append(' ');
+		}
+		return s.toString();
 	}
 
 	private String toString(final Object o) {
