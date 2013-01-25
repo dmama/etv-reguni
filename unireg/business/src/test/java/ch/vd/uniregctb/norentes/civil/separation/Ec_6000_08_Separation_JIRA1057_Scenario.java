@@ -87,9 +87,10 @@ public class Ec_6000_08_Separation_JIRA1057_Scenario extends EvenementCivilScena
 		noHabBea = bea.getNumero();
 
 		// nécessaire pour le calcul des tâches d'envoi de DI
-		for (int i = 2003 ; i < RegDate.get().year() ; ++i ) {
+		for (int i = 2003 ; i <= RegDate.get().year() ; ++i ) {
 			final PeriodeFiscale periode = new PeriodeFiscale();
 			periode.setAnnee(i);
+			periode.setAllPeriodeFiscaleParametres(date(i + 1, 1, 31), date(i + 1, 3, 31), date(i + 1, 6, 30));
 			periodeFiscaleDAO.save(periode);
 		}
 

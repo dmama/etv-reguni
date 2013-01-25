@@ -176,6 +176,10 @@ public class ActivationServiceTest extends BusinessTest {
 				addForSecondaire(pp, date(2002, 1, 16), MotifFor.ACHAT_IMMOBILIER, MockCommune.Bex.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				addForSecondaire(pp, date(2004, 8, 12), MotifFor.ACHAT_IMMOBILIER, date(2006, 12, 31), MotifFor.VENTE_IMMOBILIER, MockCommune.Aubonne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 
+				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
+					addPeriodeFiscale(pf);
+				}
+
 				final CollectiviteAdministrative colAdm = addCollAdm(MockCollectiviteAdministrative.ACI);
 				addTacheControleDossier(TypeEtatTache.TRAITE, date(2002, 4, 1), pp, colAdm);
 				addTacheControleDossier(TypeEtatTache.EN_INSTANCE, date(2010, 1, 5), pp, colAdm);

@@ -161,7 +161,7 @@ public class TacheServiceTest extends BusinessTest {
 				for (MockCollectiviteAdministrative ca : MockCollectiviteAdministrative.getAll()) {
 					addCollAdm(ca);
 				}
-				for (int pf = 2003 ; pf < RegDate.get().year() ; ++ pf) {
+				for (int pf = 2003 ; pf <= RegDate.get().year() ; ++ pf) {
 					addPeriodeFiscale(pf);
 				}
 				return null;
@@ -3192,7 +3192,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Paul", "Ogne", date(1954, 11, 23), Sexe.MASCULIN);
 		addForPrincipal(pp, date(anneePrecedente, 3, 1), MotifFor.ARRIVEE_HS, MockCommune.Lausanne);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, periode);
 		// une déclaration incorrecte (mauvaise date de début) qui ne peut pas être corrigée car elle va jusqu'à la fin de l'année
 		final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, periode, date(anneeCourante, 5, 12), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_DEPENSE, modele);
@@ -3537,7 +3537,7 @@ public class TacheServiceTest extends BusinessTest {
 		final PersonnePhysique pp = addNonHabitant("Michelle", "Mabelle", date(1972, 1, 3), Sexe.FEMININ);
 		addForPrincipal(pp, date(anneeCourante, 1, 2), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
 
-		final PeriodeFiscale periode = addPeriodeFiscale(anneeCourante);
+		final PeriodeFiscale periode = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 		final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_LOCAL, periode);
 		addDeclarationImpot(pp, periode, date(anneeCourante, 1, 1), date(anneeCourante, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -4516,7 +4516,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
 				pp.setDateDeces(aujourdhui);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -4698,7 +4698,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, aujourdhui, MotifFor.DEPART_HS, MockPays.EtatsUnis);
 
 				// le contribuable avait déclaré son départ, mais la date n'était pas la date du véritable départ
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), date(anneeCourante, 1, 2), TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				di.addEtat(new EtatDeclarationEmise(aujourdhui));
@@ -4938,7 +4938,7 @@ public class TacheServiceTest extends BusinessTest {
 				addForPrincipal(pp, date(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, aujourdhui, MotifFor.VEUVAGE_DECES, MockCommune.Aubonne);
 				pp.setDateDeces(aujourdhui);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 
@@ -5285,7 +5285,7 @@ public class TacheServiceTest extends BusinessTest {
 				final PersonnePhysique pp = addNonHabitant("Viktor", "Krum", date(1980, 10, 25), Sexe.MASCULIN);
 				addForPrincipal(pp, RegDate.get(anneeCourante, 1, 1), MotifFor.ARRIVEE_HS, MockCommune.Renens);
 
-				final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 				final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 				final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 				di.setLibre(true);
@@ -5350,7 +5350,7 @@ public class TacheServiceTest extends BusinessTest {
 
 				// et aussi celle de cette année (DI libre)
 				{
-					final PeriodeFiscale pf = addPeriodeFiscale(anneeCourante);
+					final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(anneeCourante);
 					final ModeleDocument modele = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
 					final DeclarationImpotOrdinaire di = addDeclarationImpot(pp, pf, date(anneeCourante, 1, 1), aujourdhui, TypeContribuable.VAUDOIS_ORDINAIRE, modele);
 					di.setLibre(true);

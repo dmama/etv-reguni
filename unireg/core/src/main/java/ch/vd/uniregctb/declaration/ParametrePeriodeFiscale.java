@@ -52,6 +52,14 @@ public class ParametrePeriodeFiscale extends HibernateEntity implements Duplicab
 		this.periodefiscale = right.periodefiscale;
 	}
 
+	public ParametrePeriodeFiscale(TypeContribuable typeContribuable, RegDate dateFinEnvoiMasseDI, RegDate termeGeneralSommationReglementaire, RegDate termeGeneralSommationEffectif, PeriodeFiscale periodefiscale) {
+		this.typeContribuable = typeContribuable;
+		this.dateFinEnvoiMasseDI = dateFinEnvoiMasseDI;
+		this.termeGeneralSommationReglementaire = termeGeneralSommationReglementaire;
+		this.termeGeneralSommationEffectif = termeGeneralSommationEffectif;
+		this.periodefiscale = periodefiscale;
+	}
+
 	@Transient
 	@Override
 	public Object getKey() {
