@@ -38,16 +38,21 @@ public class EditForDebiteurValidator extends EditForValidator {
 
 		super.validate(target, errors);
 
-		// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
-		final List<DateRange> fors = new ArrayList<DateRange>();
-		for (ForFiscal f : fdpi.getTiers().getForsFiscauxNonAnnules(true)) {
-			if (view.getId() != f.getId()) {
-				fors.add(new DateRangeHelper.Range(f));
-			}
+		if (fdpi.getDateFin() == view.getDateFin()) {
+			errors.reject("global.error.aucun.changement");
 		}
-		if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
-			errors.rejectValue("dateDebut", "error.date.chevauchement");
-			errors.rejectValue("dateFin", "error.date.chevauchement");
+		else {
+			// on établi la liste des périodes des fors fiscaux existants (sans prendre en compte le for en cours de modification)
+			final List<DateRange> fors = new ArrayList<DateRange>();
+			for (ForFiscal f : fdpi.getTiers().getForsFiscauxNonAnnules(true)) {
+				if (view.getId() != f.getId()) {
+					fors.add(new DateRangeHelper.Range(f));
+				}
+			}
+			if (DateRangeHelper.intersect(new DateRangeHelper.Range(view.getDateDebut(), view.getDateFin()), fors)) {
+				errors.rejectValue("dateDebut", "error.date.chevauchement");
+				errors.rejectValue("dateFin", "error.date.chevauchement");
+			}
 		}
 	}
 }
