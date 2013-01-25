@@ -9,6 +9,12 @@
     </context-param>
 
 	<context-param>
+		<!-- Disable EL double evaluation vulnerability (http://support.springsource.com/security/cve-2011-2730) -->
+		<param-name>springJspExpressionSupport</param-name>
+		<param-value>false</param-value>
+	</context-param>
+
+	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
 			classpath*:/unireg-core-dao.xml,
