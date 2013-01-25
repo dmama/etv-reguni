@@ -5,9 +5,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
@@ -86,7 +86,7 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 		inputList.add(autobahn);
 		inputList.add(landstrasse);
 
-		final BlockingQueue<Integer> output = new ArrayBlockingQueue<Integer>(20);
+		final BlockingQueue<Integer> output = new SynchronousQueue<Integer>(true);
 
 		final BlockingQueueMixer<Integer> mixer = new BlockingQueueMixer<Integer>(inputList, output);
 		mixer.start("Mixer");

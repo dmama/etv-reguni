@@ -71,7 +71,7 @@ import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchService;
 	private final BlockingQueue<DelayedIndividu> batchQueue = new DelayQueue<DelayedIndividu>();
 	private final BlockingQueue<DelayedIndividu> manualQueue = new DelayQueue<DelayedIndividu>();
 	private final BlockingQueue<DelayedIndividu> immediateQueue = new LinkedBlockingQueue<DelayedIndividu>();
-	private final BlockingQueue<DelayedIndividu> finalQueue = new SynchronousQueue<DelayedIndividu>();
+	private final BlockingQueue<DelayedIndividu> finalQueue = new SynchronousQueue<DelayedIndividu>(true);
 	private final BlockingQueueMixer<DelayedIndividu> mixer;
 	private final ReentrantLock lock = new ReentrantLock();
 
