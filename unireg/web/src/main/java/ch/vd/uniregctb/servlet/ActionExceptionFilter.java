@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
@@ -23,6 +24,8 @@ import ch.vd.uniregctb.common.URLHelper;
  */
 public class ActionExceptionFilter extends GenericFilterBean {
 
+	private static final Logger LOGGER = Logger.getLogger(ActionExceptionFilter.class);
+
 	public static final String LAST_GET_URL = "last-get-url";
 
 	@Override
@@ -33,6 +36,9 @@ public class ActionExceptionFilter extends GenericFilterBean {
 			if (isGetForHtml(httpRequest)) {
 				// si la requête utilise la méthode GET et demande de l'Html (= pas de l'ajax ni le résultat de la soumission d'un formulaire), on mémorise l'url
 				final String url = URLHelper.getTargetUrl(httpRequest);
+				if (LOGGER.isTraceEnabled()) {
+					LOGGER.trace("Last get url = " + url);
+				}
 				httpRequest.getSession().setAttribute(LAST_GET_URL, url);
 			}
 		}
@@ -51,8 +57,15 @@ public class ActionExceptionFilter extends GenericFilterBean {
 		if (httpRequest.getMethod().equals(HttpMethod.GET.name())) {
 			final HttpInputMessage inputMessage = new ServletServerHttpRequest(httpRequest);
 			final List<MediaType> acceptedMediaTypes = inputMessage.getHeaders().getAccept();
-			if (acceptedMediaTypes != null && acceptedMediaTypes.contains(MediaType.TEXT_HTML)) {
-				return true;
+			if (acceptedMediaTypes != null) {
+				if (acceptedMediaTypes.contains(MediaType.TEXT_HTML)) {
+					return true;
+				}
+				else if (acceptedMediaTypes.contains(MediaType.ALL)) {
+					// [SIFISC-7832] IE8 demande les pages .do avec un "Accept: */*" sans demander le type html spécifiquement.
+					// Comme workaround, on considère */* comme du html, pour autant qu'on ne demande pas explicitement du json.
+					return !acceptedMediaTypes.contains(MediaType.APPLICATION_JSON);
+				}
 			}
 		}
 		return false;
