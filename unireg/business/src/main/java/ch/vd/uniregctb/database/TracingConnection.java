@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 import ch.vd.uniregctb.stats.ServiceTracing;
 
@@ -278,5 +279,30 @@ public class TracingConnection implements Connection {
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return target.isWrapperFor(iface);
+	}
+
+	@Override
+	public void setSchema(String schema) throws SQLException {
+		target.setSchema(schema);
+	}
+
+	@Override
+	public String getSchema() throws SQLException {
+		return target.getSchema();
+	}
+
+	@Override
+	public void abort(Executor executor) throws SQLException {
+		target.abort(executor);
+	}
+
+	@Override
+	public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+		target.setNetworkTimeout(executor, milliseconds);
+	}
+
+	@Override
+	public int getNetworkTimeout() throws SQLException {
+		return target.getNetworkTimeout();
 	}
 }

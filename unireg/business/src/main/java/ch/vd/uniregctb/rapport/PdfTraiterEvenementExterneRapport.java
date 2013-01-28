@@ -74,7 +74,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 		// erreurs
 		{
 			final String filename = "erreurs.csv";
-			final String contenu = asCsvFile(results.erreurs, filename, status);
+			final String contenu = asCsvErrorFile(results.erreurs, filename, status);
 			final String titre = "Liste des erreurs";
 			final String listVide = "(aucune)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -114,7 +114,7 @@ public class PdfTraiterEvenementExterneRapport extends PdfRapport {
 	/**
 	 * Traduit la liste d'infos en un fichier CSV
 	 */
-	protected static <T extends TraiterEvenementExterneResult.Erreur> String asCsvFile(List<T> list, String filename, StatusManager status) {
+	protected static <T extends TraiterEvenementExterneResult.Erreur> String asCsvErrorFile(List<T> list, String filename, StatusManager status) {
 		String contenu = null;
 		int size = list.size();
 		if (size > 0) {

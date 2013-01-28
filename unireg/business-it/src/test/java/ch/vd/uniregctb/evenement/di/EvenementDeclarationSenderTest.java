@@ -112,7 +112,7 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 			fail();
 		}
 		catch (EvenementDeclarationException e) {
-			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException: " +
+			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException; " +
 					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'partyNumberType'.", e.getMessage());
 		}
 	}
@@ -124,7 +124,7 @@ public class EvenementDeclarationSenderTest extends EvenementTest {
 			fail();
 		}
 		catch (EvenementDeclarationException e) {
-			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException: " +
+			assertEquals("ch.vd.technical.esb.util.exception.ESBValidationException: org.xml.sax.SAXParseException; " +
 					"cvc-maxInclusive-valid: Value '1000000000' is not facet-valid with respect to maxInclusive '99999999' for type 'partyNumberType'.", e.getMessage());
 		}
 	}

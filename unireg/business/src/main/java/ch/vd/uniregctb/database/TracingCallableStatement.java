@@ -585,4 +585,14 @@ public class TracingCallableStatement extends TracingPreparedStatement implement
 	public void setNClob(String parameterName, Reader reader) throws SQLException {
 		target.setNClob(parameterName, reader);
 	}
+
+	@Override
+	public <T> T getObject(int parameterIndex, Class<T> type) throws SQLException {
+		return target.getObject(parameterIndex, type);
+	}
+
+	@Override
+	public <T> T getObject(String parameterName, Class<T> type) throws SQLException {
+		return target.getObject(parameterName, type);
+	}
 }

@@ -4,6 +4,8 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -139,5 +141,10 @@ public class TracingDataSource implements DataSource, InitializingBean, Disposab
 	@Override
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return target.isWrapperFor(iface);
+	}
+
+	@Override
+	public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+		return target.getParentLogger();
 	}
 }

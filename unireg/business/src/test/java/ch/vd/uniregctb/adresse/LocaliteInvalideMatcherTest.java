@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.adresse;
 
-import org.junit.After;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.WithoutSpringTest;
@@ -10,13 +9,11 @@ import static org.junit.Assert.assertTrue;
 
 public class LocaliteInvalideMatcherTest extends WithoutSpringTest {
 
-
-	@After
-	public void tearDown() {
+	public void onTearDown() throws Exception {
 		// Remise à zéro des champs static de la classe LocaliteInvalideMatcher
 		LocaliteInvalideMatcher.reset();
+		super.onTearDown();
 	}
-
 
 	@Test
 	public void testMatchBlank() throws Exception {

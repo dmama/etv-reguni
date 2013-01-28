@@ -125,7 +125,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// toutes les erreurs
 			{
 				final String filename = "erreurs_evts_civils_regpp.csv";
-				final String contenu = asCsvFile(civilsRegPP.getToutesErreurs(), filename, status);
+				final String contenu = asCsvStatFile(civilsRegPP.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils RegPP";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -134,7 +134,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// manipulations manuelles
 			{
 				final String filename = "manipulations_evts_civils_regpp.csv";
-				final String contenu = asCsvFile(civilsRegPP.getManipulationsManuelles(), filename, status);
+				final String contenu = asCsvStatFile(civilsRegPP.getManipulationsManuelles(), filename, status);
 				final String titre = String.format("Manipulations manuelles des événements civils RegPP depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -191,7 +191,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// toutes les erreurs
 			{
 				final String filename = "erreurs_evts_civils_ech.csv";
-				final String contenu = asCsvFile(civilsEch.getToutesErreurs(), filename, status);
+				final String contenu = asCsvStatFile(civilsEch.getToutesErreurs(), filename, status);
 				final String titre = "Erreurs des événements civils e-CH";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -200,7 +200,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// manipulations manuelles
 			{
 				final String filename = "manipulations_evts_civils_ech.csv";
-				final String contenu = asCsvFile(civilsEch.getManipulationsManuelles(), filename, status);
+				final String contenu = asCsvStatFile(civilsEch.getManipulationsManuelles(), filename, status);
 				final String titre = String.format("Manipulations manuelles des événements civils e-CH depuis le %s", RegDateHelper.dateToDisplayString(dateReference));
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -209,7 +209,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// taille des queues d'attente
 			{
 				final String filename = "queues_attente_ech.csv";
-				final String contenu = asCsvFile(civilsEch.getQueuesAttente(), filename, status);
+				final String contenu = asCsvStatFile(civilsEch.getQueuesAttente(), filename, status);
 				final String titre = "Queues d'événements e-CH en attente";
 				final String listeVide = "(aucune)";
 				addListeDetaillee(writer, titre, listeVide, filename, contenu);
@@ -244,7 +244,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements externes : erreurs
 			{
 				final String filename = "erreurs_evts_externes.csv";
-				final String contenu = asCsvFile(externes.getErreurs(), filename, status);
+				final String contenu = asCsvStatFile(externes.getErreurs(), filename, status);
 				final String titre = "Erreurs des événements externes";
 				final String listVide = "(aucune)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -284,7 +284,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 			// événements d'identification de contribuable : restant à traiter
 			{
 				final String filename = "identification_ctb_a_traiter.csv";
-				final String contenu = asCsvFile(identCtb.getATraiter(), filename, status);
+				final String contenu = asCsvStatFile(identCtb.getATraiter(), filename, status);
 				final String titre = "Evénements d'identification à traiter";
 				final String listVide = "(aucun)";
 				addListeDetaillee(writer, titre, listVide, filename, contenu);
@@ -318,7 +318,7 @@ public class PdfStatistiquesEvenementsRapport extends PdfRapport {
 		return b.toString();
 	}
 
-	private static <T extends StatistiqueEvenementInfo> String asCsvFile(List<T> elements, String fileName, StatusManager statusManager) {
+	private static <T extends StatistiqueEvenementInfo> String asCsvStatFile(List<T> elements, String fileName, StatusManager statusManager) {
 		String contenu = null;
 		if (elements != null && !elements.isEmpty()) {
 			final T first = elements.get(0);

@@ -350,4 +350,14 @@ public class TracingStatement implements Statement {
 	public boolean isWrapperFor(Class<?> iface) throws SQLException {
 		return target.isWrapperFor(iface);
 	}
+
+	@Override
+	public void closeOnCompletion() throws SQLException {
+		target.closeOnCompletion();
+	}
+
+	@Override
+	public boolean isCloseOnCompletion() throws SQLException {
+		return target.isCloseOnCompletion();
+	}
 }
