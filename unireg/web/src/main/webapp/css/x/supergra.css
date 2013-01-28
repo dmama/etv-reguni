@@ -9,6 +9,20 @@
 
 
 /**
+ * Boutons d'action
+ */
+
+#sommaire li {
+	background: none;
+	padding: 0.5em;
+}
+
+#sommaire input[type="button"] {
+	white-space: normal; /** active le mode multi-line sur les boutons */
+	width: 100%;
+}
+
+/**
  * Table des états des tiers
  */
 
