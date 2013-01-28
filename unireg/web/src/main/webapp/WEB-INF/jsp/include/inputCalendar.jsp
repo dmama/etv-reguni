@@ -40,4 +40,4 @@
 	});
 </script>
 
-<form:errors path="${path}" cssClass="error"/>
+<form:errors path="${path}" cssClass="error" delimiter=". "/>
