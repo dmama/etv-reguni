@@ -6,6 +6,8 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=8" /> <!-- désactive le mode de compatibilité IE7 pour les pages SuperGra. A étendre à toute l'application dès que possible -->
+
 		<tiles:getAsString name='refresh' ignore='true'/>
 		<link rel="SHORTCUT ICON" href="<c:url value="/images/favicon.ico"/>">
 
