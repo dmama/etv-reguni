@@ -4,6 +4,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
+import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.supergra.view.Mc2PpView;
@@ -48,8 +50,16 @@ public class Mc2PpValidator implements Validator {
 		if (indNo == null) {
 			errors.rejectValue("indNo", "error.numero.obligatoire");
 		}
-		else if (serviceCivil.getIndividu(view.getIndNo(), null) == null) {
-			errors.rejectValue("indNo", "error.individu.inexistant", new Object[]{Long.toString(indNo)}, null);
+		else {
+			try {
+				final Individu individu = serviceCivil.getIndividu(view.getIndNo(), null);
+				if (individu == null) {
+					errors.rejectValue("indNo", "error.individu.inexistant", new Object[]{Long.toString(indNo)}, null);
+				}
+			}
+			catch (ServiceCivilException e) {
+				errors.rejectValue("indNo", "error.individu.exception", new Object[]{Long.toString(indNo), e.getMessage()}, null);
+			}
 		}
 	}
 }
