@@ -114,7 +114,7 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 				++ index;
 			}
 			Assert.assertNotNull(indexFound);
-			Assert.assertTrue(indexFound < 30);
+			Assert.assertTrue(Integer.toString(indexFound), indexFound < 30);
 		}
 		finally {
 			mixer.stop();
