@@ -12,10 +12,10 @@
 	<tiles:put name="actions" type="String">
 		<ul>
 		<c:if test="${!entity.annule}">
-			<li><unireg:buttonTo name="Annuler l'entité" action="/supergra/entity/disable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+			<li><unireg:buttonTo name="Annuler ${entity.key.type.displayArticleName}" action="/supergra/entity/disable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 		</c:if>
 		<c:if test="${entity.annule}">
-			<li><unireg:buttonTo name="Désannuler l'entité" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
+			<li><unireg:buttonTo name="Désannuler ${entity.key.type.displayArticleName}" action="/supergra/entity/enable.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="POST"/></li>
 		</c:if>
 		<c:if test="${entity.personnePhysique}">
 			<li><unireg:buttonTo name="Transformer en ménage-commun" action="/supergra/entity/pp2mc.do" params="{id:${entity.key.id},class:'${entity.key.type}'}" method="GET"/></li>
@@ -38,7 +38,7 @@
 				<c:set var="urlRetourNormal" value="/tiers/list.do" />
 			</c:if>
 
-			<h3>Edition du ${entity.key.type.displayName} n°${entity.key.id} &nbsp;<a href="<c:url value="${urlRetourNormal}"/>">(retour au mode normal)</a></h3>
+			<h3>Edition ${entity.key.type.displayPrepositionName} n°${entity.key.id} &nbsp;<a href="<c:url value="${urlRetourNormal}"/>">(retour au mode normal)</a></h3>
 			<br/>
 
 			<%-- Affichage des erreurs de validation, si nécessaire --%>
