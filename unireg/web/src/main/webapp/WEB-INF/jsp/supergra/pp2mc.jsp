@@ -48,7 +48,6 @@
 											<jsp:param name="path" value="dateFin" />
 											<jsp:param name="id" value="dateFin" />
 										</jsp:include>
-										<form:errors path="dateFin" cssClass="error"/>
 									</td>
 								</tr>
 								<tr>
@@ -56,7 +55,7 @@
 									<td>
 										<form:input path="idPrincipal" id="idPrincipal"/>
 										<button id="searchPrincipal">...</button>
-										<form:errors path="idPrincipal" cssClass="error"/>
+										<form:errors path="idPrincipal" cssClass="error" delimiter=". "/>
 										<span class="mandatory">*</span>
 									</td>
 								</tr>
@@ -65,7 +64,7 @@
 									<td>
 										<form:input path="idSecondaire" id="idSecondaire"/>
 										<button id="searchSecondaire">...</button>
-										<form:errors path="idSecondaire" cssClass="error"/>
+										<form:errors path="idSecondaire" cssClass="error" delimiter=". "/>
 									</td>
 								</tr>
 								<tr>
