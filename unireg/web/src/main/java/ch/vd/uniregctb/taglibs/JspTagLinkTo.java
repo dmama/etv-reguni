@@ -163,7 +163,31 @@ public class JspTagLinkTo extends BodyTagSupport {
 	 * @return le code javascript qui va bien.
 	 */
 	public static String buildSubmitFormScript(String contextPath, String action, String method, String params) {
-		return "Form.dynamicSubmit('" + method + "', '" + contextPath + action + "', " + params + "); return false;";
+		return "Form.dynamicSubmit('" + method + "','" + contextPath + action + "'," + normalizeParam(params) + "); return false;";
+	}
+
+	/**
+	 * [SIFISC-7865] Décode et réencode les paramètres reçus de telle manière que le format respecte la norme JSON stricte (= toutes les clés sont entourées de guillemets). Autrement, IE8 pleure parce
+	 * qu'il ne comprend la syntaxe des paramètres.
+	 *
+	 * @param params les paramètres sous forme JSON permissif
+	 * @return les paramètres sous forme JSON stricte
+	 */
+	private static String normalizeParam(String params) {
+		final StringBuilder s = new StringBuilder();
+		s.append('{');
+		if (StringUtils.isNotBlank(params)) {
+			Map<String, String> paramsMap = parseParams(params);
+			for (Map.Entry<String, String> entry : paramsMap.entrySet()) {
+				if (s.length() > 1) {
+					s.append(",");
+				}
+				s.append('\'').append(entry.getKey()).append('\'').append(":");
+				s.append('\'').append(entry.getValue()).append('\'');
+			}
+		}
+		s.append('}');
+		return s.toString();
 	}
 
 	/**
