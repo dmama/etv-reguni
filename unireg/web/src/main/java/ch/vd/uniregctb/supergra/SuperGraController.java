@@ -50,6 +50,7 @@ import ch.vd.uniregctb.supergra.view.EntityView;
 import ch.vd.uniregctb.supergra.view.Mc2PpView;
 import ch.vd.uniregctb.supergra.view.Pp2McView;
 import ch.vd.uniregctb.utils.EnumEditor;
+import ch.vd.uniregctb.utils.IndividuNumberEditor;
 import ch.vd.uniregctb.utils.RegDateEditor;
 import ch.vd.uniregctb.utils.TiersNumberEditor;
 
@@ -413,6 +414,7 @@ public class SuperGraController {
 	protected void initBindermc2pp(WebDataBinder binder) throws ClassNotFoundException {
 		binder.setValidator(mc2PpValidator);
 		binder.registerCustomEditor(RegDate.class, new RegDateEditor(true, false, false));
+		binder.registerCustomEditor(Long.class, "indNo", new IndividuNumberEditor(true));
 	}
 
 	@RequestMapping(value = "/supergra/entity/mc2pp.do", method = RequestMethod.POST)
