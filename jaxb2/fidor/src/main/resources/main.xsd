@@ -7,6 +7,6 @@
 			Cette manière de faire indirecte permet de réutiliser les fichiers bindings.xml entre les différents projets -->
 
 	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0007/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0007/1/eVD-0007-1-0.xsd" />
-	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0012/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0012/1/eVD-0012-1-0.xsd" />
+	<xs:import namespace="http://evd.vd.ch/xmlns/eVD-0012/1" schemaLocation="http://evd.vd.ch/xmlns/eVD-0012/1/eVD-0012-1-1.xsd" />
 
 </xs:schema>
