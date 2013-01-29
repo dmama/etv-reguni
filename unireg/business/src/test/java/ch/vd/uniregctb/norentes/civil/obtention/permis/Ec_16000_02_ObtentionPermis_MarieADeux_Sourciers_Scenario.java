@@ -130,7 +130,7 @@ public class Ec_16000_02_ObtentionPermis_MarieADeux_Sourciers_Scenario extends E
 		traiteEvenements(id);
 	}
 
-	@Check(id=1, descr="Vérification que le couple est passé au mode ordinaire")
+	@Check(id=2, descr="Vérification que le couple est passé au mode ordinaire")
 	public void check2() {
 		final EvenementCivilRegPP evt = getEvenementCivilRegoupeForHabitant(noHabMomo);
 		assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat(), "L'événement aurait dû être traité");

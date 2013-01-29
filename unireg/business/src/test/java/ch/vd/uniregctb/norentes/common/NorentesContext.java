@@ -308,8 +308,10 @@ public class NorentesContext {
 			if (e != null) {
 				int id = e.id();
 				if (id == step) {
+					if (method != null) {
+						throw new RuntimeException("L'étape " + step + " est définie plusieurs fois");
+					}
 					method = m;
-					break;
 				}
 			}
 		}
@@ -326,8 +328,10 @@ public class NorentesContext {
 			if (e != null) {
 				int id = e.id();
 				if (id == step) {
+					if (method != null) {
+						throw new RuntimeException("Le @Check sur l'étape " + step + " est défini plusieurs fois");
+					}
 					method = m;
-					break;
 				}
 			}
 		}
