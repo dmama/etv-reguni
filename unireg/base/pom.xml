@@ -570,7 +570,7 @@
 		<unireg-nexus.log4j.location>file:${ch.vd.appDir}/${unireg-nexus.appname}/config/unireg-log4j.xml</unireg-nexus.log4j.location>
 
 		<!-- Application settings -->
-		<copyright.year>2011</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<dao.framework>hibernate</dao.framework>
 		<web.framework>spring</web.framework>
 		<amp.genericCore>true</amp.genericCore>
@@ -594,10 +594,10 @@
 		<wsparty3.version>3.7-SNAPSHOT</wsparty3.version>
 
 		<!-- Testing dependency versions -->
-		<junit.version>4.8.1</junit.version>
+		<junit.version>4.10</junit.version>
 		<javamail.version>1.4</javamail.version>
-		<log4j.version>1.2.14</log4j.version>
-		<slf4j.version>1.6.1</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<slf4j.version>1.7.2</slf4j.version>
 		<oro.version>2.0.8</oro.version>
 		<cobertura.version>2.5.1</cobertura.version>
 
