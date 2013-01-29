@@ -105,13 +105,17 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 
 			Integer indexFound = null;
 			int index = 0;
-			while (indexFound == null) {
+			while (true) {
 				final Integer found = output.poll(1000, TimeUnit.MILLISECONDS);
 				Assert.assertNotNull(found);
 				if (found == quickone) {
 					indexFound = index;
+					break;
 				}
 				++ index;
+
+				// simulation d'un léger temps de traitement
+				Thread.sleep(10);
 			}
 			Assert.assertNotNull(indexFound);
 			Assert.assertTrue(Integer.toString(indexFound), indexFound < 30);
