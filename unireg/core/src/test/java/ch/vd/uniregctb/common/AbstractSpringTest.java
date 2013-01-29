@@ -235,10 +235,7 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 
 		/* crée un objet Authentication */
 		GrantedAuthority auth = new GrantedAuthorityImpl(username);
-		GrantedAuthority[] authorities = new GrantedAuthority[] {
-			auth
-		};
-		User user = new User(username, "noPwd", true, true, true, true, authorities);
+		User user = new User(username, "noPwd", true, true, true, true, Arrays.asList(auth));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd");
 
 		/* Enregistre le context de sécurité */
@@ -253,9 +250,8 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 		for (String r : roles) {
 			authorities.add(new GrantedAuthorityImpl(r));
 		}
-		GrantedAuthority[] array = authorities.toArray(new GrantedAuthority[authorities.size()]);
-		User user = new User(username, "noPwd", true, true, true, true, array);
-		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", array);
+		User user = new User(username, "noPwd", true, true, true, true, authorities);
+		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, "noPwd", authorities);
 
 		/* Enregistre le context de sécurité */
 		SecurityContextHolder.getContext().setAuthentication(authentication);
