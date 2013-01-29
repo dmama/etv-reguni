@@ -606,6 +606,7 @@ public class IndividuRCPersTest extends WithoutSpringTest {
 		info.setStreet(rue.getDesignationCourrier());
 		info.setSwissZipCodeId(rue.getLocalite().getNPA());
 		info.setTown(rue.getLocalite().getNomCompletMinuscule());
+		info.setCountry("CH"); // on ne connaît pas les rues des autres pays
 		return info;
 	}
 
