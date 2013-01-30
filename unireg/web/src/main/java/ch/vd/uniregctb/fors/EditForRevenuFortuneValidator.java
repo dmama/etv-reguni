@@ -33,7 +33,7 @@ public abstract class EditForRevenuFortuneValidator extends EditForValidator {
 			if (view.getMotifDebut() == null) {
 				errors.rejectValue("motifDebut", "error.motif.ouverture.vide");
 			}
-			else {
+			else if (ffrf.getMotifOuverture() != view.getMotifDebut()) { // [SIFISC-7909] on ne valide le motif d'ouverture que s'il a changé
 				final NatureTiers natureTiers = ffrf.getTiers().getNatureTiers();
 				final MotifsForHelper.TypeFor typeFor = new MotifsForHelper.TypeFor(natureTiers, GenreImpot.REVENU_FORTUNE, ffrf.getMotifRattachement());
 
