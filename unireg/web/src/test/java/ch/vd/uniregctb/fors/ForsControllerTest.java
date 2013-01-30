@@ -1253,6 +1253,63 @@ public class ForsControllerTest extends WebTestSpring3 {
 	}
 
 	/**
+	 * [SIFISC-7909] Ce test s'assure que la modification du motif de fermeture d'un for principal est bien prise en compte, même si le motif d'ouverture (qui ne peut pas être édité) est invalide.
+	 */
+	@Test
+	public void testUpdateForPrincipalMotifFermetureAvecMotifOuvertureInvalide() throws Exception {
+
+		class Ids {
+			long tiers;
+			long ffp;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransactionAndSession(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Georges", "Ruz", date(1970, 1, 1), Sexe.MASCULIN);
+				ids.tiers = pp.getNumero();
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(2004, 5, 1), MotifFor.INDETERMINE, date(2005, 10, 31), MotifFor.DEPART_HS, MockCommune.GrangesMarnand);
+				ids.ffp = ffp.getId();
+				return null;
+			}
+		});
+
+		// mise-à-jour du motif de fermeture d'un for principal
+		request.addParameter("id", String.valueOf(ids.ffp));
+		request.addParameter("dateFin", "31.10.2005");
+		request.addParameter("motifFin", MotifFor.FUSION_COMMUNES.name());
+		request.addParameter("noAutoriteFiscale", String.valueOf(MockCommune.GrangesMarnand.getNoOFS()));
+		request.setRequestURI("/fors/principal/edit.do");
+		request.setMethod("POST");
+
+		// Appel au contrôleur
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+
+		// On vérifie que le motif de fermeture a bien été mis-à-jour
+		final BeanPropertyBindingResult bindingResult = getBindingResult(mav);
+		assertNotNull(bindingResult);
+		assertEquals(0, bindingResult.getErrorCount());
+
+		doInNewTransactionAndSession(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final Tiers tiers = tiersDAO.get(ids.tiers);
+				assertNotNull(tiers);
+				final ForsParType fors = tiers.getForsParType(false);
+				assertEquals(1, fors.principaux.size());
+				final ForFiscalPrincipal ffp = fors.principaux.get(0);
+				assertNotNull(ffp);
+				assertEquals(date(2005, 10, 31), ffp.getDateFin());
+				assertEquals(MockCommune.GrangesMarnand.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale().intValue());
+				assertEquals(MotifFor.INDETERMINE, ffp.getMotifOuverture()); // le motif d'ouverture est toujours le même
+				assertEquals(MotifFor.FUSION_COMMUNES, ffp.getMotifFermeture()); // le motif de fermeture doit avoir changé
+			}
+		});
+	}
+
+	/**
 	 * [SIFISC-7649] Ce test s'assure que la modification du motif de fermeture d'un for secondaire est bien prise en compte
 	 */
 	@Test
