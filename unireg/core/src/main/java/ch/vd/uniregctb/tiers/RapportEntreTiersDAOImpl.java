@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.tiers;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.hibernate.FlushMode;
@@ -12,6 +13,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
 
 public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, Long> implements RapportEntreTiersDAO {
@@ -43,13 +45,11 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	@SuppressWarnings("unchecked")
 	public List<RapportPrestationImposable> getRapportsPrestationImposable(final Long numeroDebiteur, ParamPagination paramPagination, boolean activesOnly) {
 
-		final StringBuilder b = new StringBuilder();
-		b.append("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = :debiteur");
+		final QueryFragment fragment = new QueryFragment("SELECT rapport FROM RapportPrestationImposable rapport WHERE rapport.objetId = ?", Arrays.<Object>asList(numeroDebiteur));
 		if (activesOnly) {
-			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");
+			fragment.add(" and rapport.dateFin is null and rapport.annulationDate is null");
 		}
-		b.append(paramPagination.buildOrderClause("rapport", "logCreationDate", true, null));
-		final String query = b.toString();
+		fragment.add(paramPagination.buildOrderClause("rapport", "logCreationDate", true, null));
 
 		final int firstResult = paramPagination.getSqlFirstResult();
 		final int maxResult = paramPagination.getSqlMaxResults();
@@ -58,8 +58,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 			@Override
 			public List<RapportPrestationImposable> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final Query queryObject = session.createQuery(query);
-				queryObject.setParameter("debiteur", numeroDebiteur);
+				final Query queryObject = fragment.createQuery(session);
 
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
@@ -113,29 +112,29 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 			@Override
 			public List<RapportEntreTiers> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				String query = "from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))";
+				final QueryFragment fragment = new QueryFragment("from RapportEntreTiers r where ((r.sujetId = " + tiersId + ") or (r.objetId = " + tiersId + "))");
 
 				if (excludeRapportPrestationImposable && !excludeContactImpotSource) {
-					query += " and r.class != RapportPrestationImposable ";
+					fragment.add(" and r.class != RapportPrestationImposable ");
 				}
 				else if (excludeContactImpotSource && !excludeRapportPrestationImposable) {
-					query += " and r.class != ContactImpotSource ";
+					fragment.add(" and r.class != ContactImpotSource ");
 				}
 				else if (excludeContactImpotSource && excludeRapportPrestationImposable) {
-					query += " and r.class != ContactImpotSource  and r.class != RapportPrestationImposable ";
+					fragment.add(" and r.class != ContactImpotSource  and r.class != RapportPrestationImposable ");
 				}
 				if (appartenanceMenageOnly) {
-					query += " and r.class = AppartenanceMenage";
+					fragment.add(" and r.class = AppartenanceMenage");
 				}
 				if (!showHisto) {
-					query += " and r.dateFin is null and r.annulationDate is null";
+					fragment.add(" and r.dateFin is null and r.annulationDate is null");
 				}
 				if (type != null) {
-					query += " and r.class = " + type.getRapportClass().getSimpleName();
+					fragment.add(" and r.class = " + type.getRapportClass().getSimpleName());
 				}
-				query += buildOrderClause(pagination);
-				final Query queryObject = session.createQuery(query);
+				fragment.add(buildOrderClause(pagination));
 
+				final Query queryObject = fragment.createQuery(session);
 				final int firstResult = pagination.getSqlFirstResult();
 				final int maxResult = pagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);
@@ -147,7 +146,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		});
 	}
 
-	private static String buildOrderClause(ParamPagination pagination) {
+	private static QueryFragment buildOrderClause(ParamPagination pagination) {
 		return pagination.buildOrderClause("r", null, true, new ParamPagination.CustomOrderByGenerator() {
 			@Override
 			public boolean supports(String fieldName) {
@@ -155,13 +154,13 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 			}
 
 			@Override
-			public String generate(String fieldName, ParamPagination pagination) {
+			public QueryFragment generate(String fieldName, ParamPagination pagination) {
 				// pour le champs tiersId, on s'arrange pour trier selon l'ordre sujet-objet
 				if (pagination.isSensAscending()) {
-					return "r.sujetId asc, r.objetId";
+					return new QueryFragment("r.sujetId asc, r.objetId");
 				}
 				else {
-					return "r.sujetId desc, r.objetId";
+					return new QueryFragment("r.sujetId desc, r.objetId");
 				}
 			}
 		});

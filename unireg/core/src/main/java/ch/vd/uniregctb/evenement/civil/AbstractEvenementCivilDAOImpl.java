@@ -17,6 +17,7 @@ import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TYP_EVT>> extends GenericDAOImpl<EVT, Long> {
@@ -81,32 +82,27 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 
 		Assert.notNull(criterion, "Les critères de recherche peuvent pas être nuls");
 
-		final List<Object> criteria = new ArrayList<Object>();
-		final String queryWhere = buildCriterion(criteria, criterion);
+		final List<Object> paramsWhere = new ArrayList<Object>();
+		final String queryWhere = buildCriterion(paramsWhere, criterion);
 		if (queryWhere == null) {
 			return Collections.emptyList();
 		}
 
-		// tri par défaut
-		final String queryOrder = paramPagination == null ? "": paramPagination.buildOrderClause("evenement", "dateEvenement", true, null);
+		final String fromComplement = criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp" : "";
+		final String select = String.format("select evenement from %s evenement %s where 1=1 %s", getEvenementCivilClass().getSimpleName(), fromComplement, queryWhere);
+		final QueryFragment fragment = new QueryFragment(select, paramsWhere);
 
-		final String query = String.format(
-				"select evenement from %s evenement %s where 1=1 %s%s",
-				getEvenementCivilClass().getSimpleName(),
-				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
-				queryWhere, queryOrder);
+		// tri par défaut
+		if (paramPagination != null) {
+			fragment.add(paramPagination.buildOrderClause("evenement", "dateEvenement", true, null));
+		}
 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EVT>>() {
 			@Override
 			public List<EVT> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final Query queryObject = session.createQuery(query);
-				final Object[] values = criteria.toArray();
-				if (values != null) {
-					for (int i = 0; i < values.length; i++) {
-						queryObject.setParameter(i, values[i]);
-					}
-				}
+				final Query queryObject = fragment.createQuery(session);
+
 				if (paramPagination != null) {
 					final int firstResult = paramPagination.getSqlFirstResult();
 					final int maxResult = paramPagination.getSqlMaxResults();

@@ -19,6 +19,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
@@ -80,18 +81,13 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			@Override
 			public List<Tache> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				List<Object> params = new ArrayList<Object>();
-				String query = "select tache " + buildFromWhereClause(criterion, params);
+				final List<Object> paramsWhere = new ArrayList<Object>();
+				final String whereClause = buildFromWhereClause(criterion, paramsWhere);
+				final QueryFragment fragment = new QueryFragment("select tache " + whereClause, paramsWhere);
+				fragment.add(paramPagination.buildOrderClause("tache", null, true, null));
 
-				query = query + paramPagination.buildOrderClause("tache", null, true, null);
+				final Query queryObject = fragment.createQuery(session);
 
-				Query queryObject = session.createQuery(query);
-				Object[] values = params.toArray();
-				if (values != null) {
-					for (int i = 0; i < values.length; i++) {
-						queryObject.setParameter(i, values[i]);
-					}
-				}
 				int firstResult = paramPagination.getSqlFirstResult();
 				int maxResult = paramPagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);

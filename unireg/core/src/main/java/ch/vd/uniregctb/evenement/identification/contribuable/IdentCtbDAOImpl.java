@@ -22,6 +22,7 @@ import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 
@@ -72,11 +73,11 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	}
 
 	@SuppressWarnings("unchecked")
-	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande... typeDemande) {
-		final String selectBase = "select identificationContribuable from IdentificationContribuable identificationContribuable where";
-		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
-		final String queryOrder = paramPagination.buildOrderClause("identificationContribuable", null, true, null);
-		final String query = selectBase + whereTypeDemande + queryWhere + queryOrder;
+	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteriaWhere, String queryWhere, TypeDemande... typeDemande) {
+		final QueryFragment fragment = new QueryFragment("select identificationContribuable from IdentificationContribuable identificationContribuable where");
+		fragment.add(buildWhereAvecTypeDemande("identificationContribuable", typeDemande));
+		fragment.add(queryWhere, criteriaWhere);
+		fragment.add(paramPagination.buildOrderClause("identificationContribuable", null, true, null));
 
 		final int firstResult = paramPagination.getSqlFirstResult();
 		final int maxResult = paramPagination.getSqlMaxResults();
@@ -84,22 +85,14 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
 			@Override
 			public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query queryObject = session.createQuery(query);
-				final Object[] values = criteria.toArray();
-				if (values != null) {
-					for (int i = 0; i < values.length; i++) {
-						if (values[i] instanceof Date) {
-							queryObject.setTimestamp(i, (Date) values[i]);
-						}
-						else {
-							queryObject.setParameter(i, values[i]);
-						}
-					}
-				}
+
+				final Query queryObject = fragment.createQuery(session);
+
 				queryObject.setFirstResult(firstResult);
 				queryObject.setMaxResults(maxResult);
 				return queryObject.list();
 			}
+
 		});
 	}
 

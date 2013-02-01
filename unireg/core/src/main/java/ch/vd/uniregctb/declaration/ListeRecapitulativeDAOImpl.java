@@ -18,6 +18,7 @@ import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
@@ -45,23 +46,18 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			@Override
 			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final List<Object> parameters = new ArrayList<Object>();
+				final List<Object> paramsWhereClause = new ArrayList<Object>();
+				final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
 
-				String query = "SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + buildWhereClauseFromCriteria(criterion, parameters);
+				final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
 				if (paramPagination != null) {
-					query += paramPagination.buildOrderClause("lr", null, true, null);
+					fragment.add(paramPagination.buildOrderClause("lr", null, true, null));
 				}
 				else {
-					query += " ORDER BY lr.id ASC";
+					fragment.add(" ORDER BY lr.id ASC");
 				}
 
-				final Query queryObject = session.createQuery(query);
-				final Object[] values = parameters.toArray();
-				if (values != null) {
-					for (int i = 0; i < values.length; i++) {
-						queryObject.setParameter(i, values[i]);
-					}
-				}
+				final Query queryObject = fragment.createQuery(session);
 
 				if (paramPagination != null) {
 					final int firstResult = paramPagination.getSqlFirstResult();

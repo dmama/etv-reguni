@@ -26,6 +26,7 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
+import ch.vd.uniregctb.dbutils.QueryFragment;
 
 public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO {
 
@@ -44,10 +45,10 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 			@Override
 			public List<AuditLine> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				String query = buildSql(criterion);
-				query = query + paramPagination.buildOrderClause("a", null, false, null);
-				final Query queryObject = session.createQuery(query);
+				final QueryFragment fragment = new QueryFragment(buildSql(criterion));
+				fragment.add(paramPagination.buildOrderClause("a", null, false, null));
 
+				final Query queryObject = fragment.createQuery(session);
 				final int firstResult = paramPagination.getSqlFirstResult();
 				final int maxResult = paramPagination.getSqlMaxResults();
 				queryObject.setFirstResult(firstResult);
