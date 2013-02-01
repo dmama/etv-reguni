@@ -48,15 +48,7 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 		if (activesOnly) {
 			b.append(" and rapport.dateFin is null and rapport.annulationDate is null");
 		}
-		if (paramPagination.getChamp() == null) {
-			b.append(" ORDER BY rapport.logCreationDate");
-		}
-		else {
-			b.append(" ORDER BY rapport.").append(paramPagination.getChamp());
-		}
-		if (!paramPagination.isSensAscending()) {
-			b.append(" DESC");
-		}
+		b.append(paramPagination.buildOrderClause("rapport", "logCreationDate", true, null));
 		final String query = b.toString();
 
 		final int firstResult = paramPagination.getSqlFirstResult();
@@ -156,37 +148,23 @@ public class RapportEntreTiersDAOImpl extends GenericDAOImpl<RapportEntreTiers, 
 	}
 
 	private static String buildOrderClause(ParamPagination pagination) {
-		String clauseOrder;
-		final String champ = pagination.getChamp();
-		if (champ != null) {
-			if (champ.equals("type")) {
-				clauseOrder = " order by r.class";
+		return pagination.buildOrderClause("r", null, true, new ParamPagination.CustomOrderByGenerator() {
+			@Override
+			public boolean supports(String fieldName) {
+				return "tiersId".equals(fieldName);
 			}
-			else if (champ.equals("tiersId")) {
+
+			@Override
+			public String generate(String fieldName, ParamPagination pagination) {
 				// pour le champs tiersId, on s'arrange pour trier selon l'ordre sujet-objet
 				if (pagination.isSensAscending()) {
-					clauseOrder = " order by r.sujetId asc, r.objetId";
+					return "r.sujetId asc, r.objetId";
 				}
 				else {
-					clauseOrder = " order by r.sujetId desc, r.objetId";
+					return "r.sujetId desc, r.objetId";
 				}
 			}
-			else {
-				clauseOrder = " order by r." + champ;
-			}
-
-			if (pagination.isSensAscending()) {
-				clauseOrder = clauseOrder + " asc";
-			}
-			else {
-				clauseOrder = clauseOrder + " desc";
-			}
-		}
-		else {
-			clauseOrder = " order by r.id asc";
-
-		}
-		return clauseOrder;
+		});
 	}
 
 	@Override

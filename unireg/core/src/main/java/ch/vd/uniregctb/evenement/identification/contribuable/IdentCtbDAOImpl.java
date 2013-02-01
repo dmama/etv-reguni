@@ -75,7 +75,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	private List<IdentificationContribuable> executeSearch(final ParamPagination paramPagination, final List<Object> criteria, String queryWhere, TypeDemande... typeDemande) {
 		final String selectBase = "select identificationContribuable from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
-		final String queryOrder = buildOrderClause(paramPagination);
+		final String queryOrder = paramPagination.buildOrderClause("identificationContribuable", null, true, null);
 		final String query = selectBase + whereTypeDemande + queryWhere + queryOrder;
 
 		final int firstResult = paramPagination.getSqlFirstResult();
@@ -101,26 +101,6 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 				return queryObject.list();
 			}
 		});
-	}
-
-	private String buildOrderClause(ParamPagination paramPagination) {
-		String queryOrder;
-		if (paramPagination.getChamp() != null) {
-			queryOrder = " order by identificationContribuable." + paramPagination.getChamp();
-		}
-		else {
-			queryOrder = " order by identificationContribuable.demande.date";
-		}
-		if (paramPagination.isSensAscending()) {
-			queryOrder = queryOrder + " asc";
-		}
-		else {
-			queryOrder = queryOrder + " desc";
-		}
-
-		//[SIFISC-4227]
-		queryOrder = queryOrder +",identificationContribuable.id";
-		return queryOrder;
 	}
 
 	/**

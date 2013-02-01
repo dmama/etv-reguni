@@ -46,7 +46,14 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				final List<Object> parameters = new ArrayList<Object>();
-				final String query = String.format("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 %s%s", buildWhereClauseFromCriteria(criterion, parameters), buildOrderClause(paramPagination));
+
+				String query = "SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + buildWhereClauseFromCriteria(criterion, parameters);
+				if (paramPagination != null) {
+					query += paramPagination.buildOrderClause("lr", null, true, null);
+				}
+				else {
+					query += " ORDER BY lr.id ASC";
+				}
 
 				final Query queryObject = session.createQuery(query);
 				final Object[] values = parameters.toArray();
@@ -67,36 +74,6 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 				return queryObject.list();
 			}
 		});
-	}
-
-	/**
-	 * Construit la clause order pour pouvoir assurer la pagination
-	 *
-	 * @param paramPagination
-	 * @return
-	 */
-	private String buildOrderClause(ParamPagination paramPagination) {
-
-		final String clauseOrder;
-
-		if (paramPagination != null && paramPagination.getChamp() != null) {
-
-			final StringBuilder builder = new StringBuilder(" ORDER BY lr.");
-			if (paramPagination.getChamp().equals("type")) {
-				builder.append("class");
-			}
-			else {
-				builder.append(paramPagination.getChamp());
-			}
-			builder.append(paramPagination.isSensAscending() ? " ASC" : " DESC");
-			clauseOrder = builder.toString();
-		}
-		else {
-			clauseOrder = " ORDER BY lr.id ASC";
-
-		}
-
-		return clauseOrder;
 	}
 
 

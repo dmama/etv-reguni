@@ -88,21 +88,8 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 		}
 
 		// tri par défaut
-		String queryOrder = " order by evenement.dateEvenement ";
-		if (paramPagination != null) {
-			if (paramPagination.getChamp() != null) {
-				queryOrder = String.format(" order by evenement.%s ", paramPagination.getChamp());
-			}
+		final String queryOrder = paramPagination == null ? "": paramPagination.buildOrderClause("evenement", "dateEvenement", true, null);
 
-			queryOrder += paramPagination.isSensAscending() ? "asc" : "desc";
-
-			// si on ne tri pas sur un index unique, on a des problemes potentiels avec la pagination
-			// donc on ajoute la colonne id dans l'order by si le tri n'est pas déjà sur cette colonne
-			if (!"id".equals(paramPagination.getChamp())) {
-				queryOrder += ", evenement.id asc";
-			}
-		}
-		
 		final String query = String.format(
 				"select evenement from %s evenement %s where 1=1 %s%s",
 				getEvenementCivilClass().getSimpleName(),

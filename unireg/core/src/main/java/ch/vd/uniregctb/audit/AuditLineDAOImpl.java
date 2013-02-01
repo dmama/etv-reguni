@@ -45,7 +45,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 			public List<AuditLine> doInHibernate(Session session) throws HibernateException, SQLException {
 
 				String query = buildSql(criterion);
-				query = query + buildOrderClause(paramPagination);
+				query = query + paramPagination.buildOrderClause("a", null, false, null);
 				final Query queryObject = session.createQuery(query);
 
 				final int firstResult = paramPagination.getSqlFirstResult();
@@ -77,30 +77,6 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 			query += " AND a.evenementId is null";
 		}
 		return query;
-	}
-
-	private static String buildOrderClause(ParamPagination paramPagination) {
-		String clauseOrder = "";
-		if (paramPagination.getChamp() != null) {
-			if (paramPagination.getChamp().equals("type")) {
-				clauseOrder = " order by a.class";
-			}
-			else {
-				clauseOrder = " order by a." + paramPagination.getChamp();
-			}
-
-			if (paramPagination.isSensAscending()) {
-				clauseOrder = clauseOrder + " asc";
-			}
-			else {
-				clauseOrder = clauseOrder + " desc";
-			}
-		}
-		else {
-			clauseOrder = " order by a.id desc";
-
-		}
-		return clauseOrder;
 	}
 
 	@Override

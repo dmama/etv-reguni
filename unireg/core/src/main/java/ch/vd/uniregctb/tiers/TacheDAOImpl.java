@@ -83,7 +83,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 				List<Object> params = new ArrayList<Object>();
 				String query = "select tache " + buildFromWhereClause(criterion, params);
 
-				query = query + buildOrderClause(paramPagination);
+				query = query + paramPagination.buildOrderClause("tache", null, true, null);
 
 				Query queryObject = session.createQuery(query);
 				Object[] values = params.toArray();
@@ -100,36 +100,6 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 				return queryObject.list();
 			}
 		});
-	}
-
-	/**
-	 * Construit la clause order
-	 *
-	 * @param paramPagination
-	 * @return
-	 */
-	private String buildOrderClause(ParamPagination paramPagination) {
-		String clauseOrder = "";
-		if (paramPagination.getChamp() != null) {
-			if (paramPagination.getChamp().equals("type")) {
-				clauseOrder = " order by tache.class";
-			}
-			else {
-				clauseOrder = " order by tache." + paramPagination.getChamp();
-			}
-
-			if (paramPagination.isSensAscending()) {
-				clauseOrder = clauseOrder + " asc";
-			}
-			else {
-				clauseOrder = clauseOrder + " desc";
-			}
-		}
-		else {
-			clauseOrder = " order by tache.id asc";
-
-		}
-		return clauseOrder;
 	}
 
 	/**
