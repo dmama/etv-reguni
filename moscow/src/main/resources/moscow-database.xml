@@ -10,7 +10,7 @@
 		<property name="password" ref="dataSourcePassword" />
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 		<property name="dataSource" ref="dataSource" />
 	</bean>
@@ -23,7 +23,7 @@
 	</bean>
 
 	<bean id="dao" class="ch.vd.moscow.database.DAOImpl">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 </beans>

@@ -1,14 +1,15 @@
 package ch.vd.moscow.database;
 
+import java.io.FileWriter;
+import java.net.URL;
+
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.PostgreSQL81Dialect;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.util.ResourceUtils;
-
-import java.io.FileWriter;
-import java.net.URL;
 
 public class DDLGenerator {
 
@@ -30,9 +31,9 @@ public class DDLGenerator {
 
 		final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(contextFiles);
 
-		AnnotationSessionFactoryBean factory = (AnnotationSessionFactoryBean) applicationContext.getBean("&sessionFactory");
+		LocalSessionFactoryBean factory = (LocalSessionFactoryBean) applicationContext.getBean("&sessionFactory");
 
-		final Dialect dialect = new PostgreSQL83Dialect();
+		final Dialect dialect = new PostgreSQL81Dialect();
 		String[] drops = factory.getConfiguration().generateDropSchemaScript(dialect);
 		FileWriter dropFile = new FileWriter(outFileDrop);
 		for (String d : drops) {

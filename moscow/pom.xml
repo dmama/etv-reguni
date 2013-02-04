@@ -106,17 +106,17 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>3.3.2.GA</version>
+			<version>4.1.6.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-annotations</artifactId>
-			<version>3.4.0.GA</version>
+			<version>3.5.5-Final</version>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
+			<groupId>org.hibernate.common</groupId>
 			<artifactId>hibernate-commons-annotations</artifactId>
-			<version>3.3.0.ga</version>
+			<version>4.0.1.Final</version>
 			<exclusions>
 				<exclusion>
 					<!--Pour ne pas tirer la version 1.5.3 de asm -->
@@ -244,6 +244,7 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
+							<!--suppress MavenModelInspection -->
 							<Implementation-Build>${buildNumber}</Implementation-Build>
 						</manifestEntries>
 					</archive>
@@ -320,7 +321,7 @@
 
 		<embedded-tomcat.version>3.0.0</embedded-tomcat.version>
 		<postgresql.version>9.1-901.jdbc3</postgresql.version>
-		<hibernate.dialect>ch.vd.moscow.database.PostgreSQL83Dialect</hibernate.dialect>
+		<hibernate.dialect>org.hibernate.dialect.PostgreSQL81Dialect</hibernate.dialect>
 		<hibernate.query.substitutions />
 		<jdbc.driverClassName>org.postgresql.Driver</jdbc.driverClassName>
 		<hibernate.hbm2ddl.mode>update</hibernate.hbm2ddl.mode>

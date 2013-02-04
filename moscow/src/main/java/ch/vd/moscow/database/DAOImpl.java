@@ -1,6 +1,5 @@
 package ch.vd.moscow.database;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -10,13 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
-import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.moscow.controller.graph.CallDimension;
 import ch.vd.moscow.controller.graph.Filter;
@@ -38,144 +34,109 @@ public class DAOImpl implements DAO {
 
 //	private static final Logger LOGGER = Logger.getLogger(DAOImpl.class);
 
-	private HibernateTemplate hibernateTemplate;
+	private SessionFactory sessionFactory;
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-		this.hibernateTemplate = hibernateTemplate;
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 	}
 
 	@Override
 	public void clearEnvironments() {
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.createSQLQuery("delete from environments").executeUpdate();
-				return null;
-			}
-		});
+		sessionFactory.getCurrentSession().createSQLQuery("DELETE FROM environments").executeUpdate();
 	}
 
 	@Override
 	public Long addEnvironment(Environment env) {
-		return (Long) hibernateTemplate.save(env);
+		return (Long) sessionFactory.getCurrentSession().save(env);
 	}
 
 	@Override
 	public Environment saveEnvironment(Environment env) {
-		return hibernateTemplate.merge(env);
+		return (Environment) sessionFactory.getCurrentSession().merge(env);
 	}
 
 	@Override
 	public Environment getEnvironment(final String name) {
-		return hibernateTemplate.execute(new HibernateCallback<Environment>() {
-			@Override
-			public Environment doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("from Environment e where e.name = :name");
-				query.setParameter("name", name);
-				return (Environment) query.uniqueResult();
-			}
-		});
+		final Query query = sessionFactory.getCurrentSession().createQuery("from Environment e where e.name = :name");
+		query.setParameter("name", name);
+		return (Environment) query.uniqueResult();
 	}
 
 	@Override
 	public Environment getEnvironment(Long id) {
-		return hibernateTemplate.get(Environment.class, id);
+		return (Environment) sessionFactory.getCurrentSession().get(Environment.class, id);
 	}
 
 	@Override
 	public List<Environment> getEnvironments() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from Environment");
+		return sessionFactory.getCurrentSession().createQuery("from Environment").list();
 	}
 
 	@Override
 	public Caller saveCaller(Caller caller) {
-		return hibernateTemplate.merge(caller);
+		return (Caller) sessionFactory.getCurrentSession().merge(caller);
 	}
 
 	@Override
 	public List<Caller> getCallers() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from Caller");
+		return sessionFactory.getCurrentSession().createQuery("from Caller").list();
 	}
 
 	@Override
 	public Service saveService(Service service) {
-		return hibernateTemplate.merge(service);
+		return (Service) sessionFactory.getCurrentSession().merge(service);
 	}
 
 	@Override
 	public List<Service> getServices() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from Service");
+		return sessionFactory.getCurrentSession().createQuery("from Service").list();
 	}
 
 	@Override
 	public Method saveMethod(Method method) {
-		return hibernateTemplate.merge(method);
+		return (Method) sessionFactory.getCurrentSession().merge(method);
 	}
 
 	@Override
 	public List<Method> getMethods() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from Method");
+		return sessionFactory.getCurrentSession().createQuery("from Method").list();
 	}
 
 	@Override
 	public void delEnvironment(Environment env) {
-		hibernateTemplate.delete(env);
+		sessionFactory.getCurrentSession().delete(env);
 	}
 
 	@Override
 	public void clearCalls() {
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.createSQLQuery("delete from calls").executeUpdate();
-				return null;
-			}
-		});
+		sessionFactory.getCurrentSession().createSQLQuery("delete from calls").executeUpdate();
 	}
 
 	@Override
 	public void clearImportedFiles() {
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.createSQLQuery("delete from log_files").executeUpdate();
-				return null;
-			}
-		});
+		sessionFactory.getCurrentSession().createSQLQuery("delete from log_files").executeUpdate();
 	}
 
 	@Override
 	public void clearUpToStatus() {
-		hibernateTemplate.execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				session.createSQLQuery("delete from completion_statuses").executeUpdate();
-				return null;
-			}
-		});
+		sessionFactory.getCurrentSession().createSQLQuery("delete from completion_statuses").executeUpdate();
 	}
 
 	@Override
 	public Long addCall(final Call call) {
-		return (Long) hibernateTemplate.save(call);
+		return (Long) sessionFactory.getCurrentSession().save(call);
 	}
 
 	@SuppressWarnings({"unchecked"})
 	@Override
 	public List<Call> getCalls(final Environment environment) {
-		return hibernateTemplate.executeFind(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				Query query = session.createQuery("from Call c where c.environment = :env");
-				query.setParameter("env", environment);
-				return query.list();
-			}
-		});
+		Query query = sessionFactory.getCurrentSession().createQuery("from Call c where c.environment = :env");
+		query.setParameter("env", environment);
+		return query.list();
 	}
 
 	private static class DimensionsValues {
@@ -204,84 +165,81 @@ public class DAOImpl implements DAO {
 	@SuppressWarnings({"unchecked"})
 	@Override
 	public Collection<CallStats> getLoadStatsFor(final Filter[] filters, final Date from, final Date to, final CallDimension[] criteria, final TimeResolution resolution) {
-		return hibernateTemplate.execute(new HibernateCallback<Collection<CallStats>>() {
-			@Override
-			public Collection<CallStats> doInHibernate(Session session) throws HibernateException, SQLException {
 
-				final String s = buildLoadStatsForQueryString(filters, criteria, resolution, from, to);
+		final String s = buildLoadStatsForQueryString(filters, criteria, resolution, from, to);
 
-				final Query query = session.createSQLQuery(s);
-				if (filters != null) {
-					for (int i = 0, filtersLength = filters.length; i < filtersLength; i++) {
-						final Filter filter = filters[i];
-						query.setParameter("filterValue" + i, dimValueToDb(filter.getDimension(), filter.getValue()));
-					}
-				}
-				if (from != null ){
-					query.setParameter("from", from);
-				}
-				if (to != null) {
-					query.setParameter("to", to);
-				}
+		final Query query = sessionFactory.getCurrentSession().createSQLQuery(s);
+		if (filters != null) {
+			for (int i = 0, filtersLength = filters.length; i < filtersLength; i++) {
+				final Filter filter = filters[i];
+				query.setParameter("filterValue" + i, dimValueToDb(filter.getDimension(), filter.getValue()));
+			}
+		}
+		if (from != null ){
+			query.setParameter("from", from);
+		}
+		if (to != null) {
+			query.setParameter("to", to);
+		}
 
-				// run the query
-				final List<?> list = query.list();
+		// run the query
+		final List<?> list = query.list();
 
-				// load some satellite data (dimensions only at the moment)
-				final DimensionsValues dimValues = new DimensionsValues(session.createQuery("from Environment").list(), session.createQuery("from Service").list(),
-						session.createQuery("from Caller").list(), session.createQuery("from Method").list());
+		// load some satellite data (dimensions only at the moment)
+		final DimensionsValues dimValues = new DimensionsValues(sessionFactory.getCurrentSession().createQuery("from Environment").list(),
+		                                                        sessionFactory.getCurrentSession().createQuery("from Service").list(),
+		                                                        sessionFactory.getCurrentSession().createQuery("from Caller").list(),
+		                                                        sessionFactory.getCurrentSession().createQuery("from Method").list());
 
-				// parse the results
-				final List<CallStats> results = new ArrayList<CallStats>(list.size());
-				for (Object a : list) {
-					final Object[] array = (Object[]) a;
-					final Number calls = (Number) array[0];
-					final Number latency = (Number) array[1];
-					final Number maxPing = (Number) array[2];
-					final List<Object> coord = new ArrayList<Object>(criteria.length);
-					for (int i = 0, criteriaLength = criteria.length; i < criteriaLength; i++) {
-						coord.add(getDimensionValueName(criteria[i], (Number) array[i + 3], dimValues));
-					}
-					final Date date = (Date) array[criteria.length + 3];
-					results.add(new CallStats(calls, latency, maxPing, coord, date));
-				}
+		// parse the results
+		final List<CallStats> results = new ArrayList<CallStats>(list.size());
+		for (Object a : list) {
+			final Object[] array = (Object[]) a;
+			final Number calls = (Number) array[0];
+			final Number latency = (Number) array[1];
+			final Number maxPing = (Number) array[2];
+			final List<Object> coord = new ArrayList<Object>(criteria.length);
+			for (int i = 0, criteriaLength = criteria.length; i < criteriaLength; i++) {
+				coord.add(getDimensionValueName(criteria[i], (Number) array[i + 3], dimValues));
+			}
+			final Date date = (Date) array[criteria.length + 3];
+			results.add(new CallStats(calls, latency, maxPing, coord, date));
+		}
 
-				if (resolution == TimeResolution.FIVE_MINUTES || resolution == TimeResolution.FIFTEEN_MINUTES) {
-					// we need to round manually the results here
-					final Map<CallStatsKey, CallStats> map = new HashMap<CallStatsKey, CallStats>();
-					for (CallStats c : results) {
-						// round the date
-						final Date date = round(c.getDate(), resolution);
-						c.setDate(date);
+		if (resolution == TimeResolution.FIVE_MINUTES || resolution == TimeResolution.FIFTEEN_MINUTES) {
+			// we need to round manually the results here
+			final Map<CallStatsKey, CallStats> map = new HashMap<CallStatsKey, CallStats>();
+			for (CallStats c : results) {
+				// round the date
+				final Date date = round(c.getDate(), resolution);
+				c.setDate(date);
 
-						// merge the call if needed
-						CallStats old = map.put(new CallStatsKey(c.getCoord(), date), c);
-						if (old != null) {
-							c.merge(old);
-						}
-					}
-					return map.values();
-				}
-				else {
-					return results;
+				// merge the call if needed
+				CallStats old = map.put(new CallStatsKey(c.getCoord(), date), c);
+				if (old != null) {
+					c.merge(old);
 				}
 			}
+			return map.values();
+		}
+		else {
+			return results;
+		}
+	}
 
-			private String getDimensionValueName(CallDimension dimension, Number id, DimensionsValues dimValues) {
-				switch (dimension) {
-				case ENVIRONMENT:
-					return dimValues.environnements.get(id.longValue()).getName();
-				case SERVICE:
-					return dimValues.services.get(id.longValue()).getName();
-				case CALLER:
-					return dimValues.callers.get(id.longValue()).getName();
-				case METHOD:
-					return dimValues.methods.get(id.longValue()).getName();
-				default:
-					throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
-				}
-			}
-		});
+	private String getDimensionValueName(CallDimension dimension, Number id, DimensionsValues dimValues) {
+		switch (dimension) {
+		case ENVIRONMENT:
+			return dimValues.environnements.get(id.longValue()).getName();
+		case SERVICE:
+			return dimValues.services.get(id.longValue()).getName();
+		case CALLER:
+			return dimValues.callers.get(id.longValue()).getName();
+		case METHOD:
+			return dimValues.methods.get(id.longValue()).getName();
+		default:
+			throw new IllegalArgumentException("Unknown dimension = [" + dimension + "]");
+		}
 	}
 
 	protected static String buildLoadStatsForQueryString(@Nullable Filter[] filters, @Nullable CallDimension[] criteria, @Nullable TimeResolution resolution, @Nullable Date from,
@@ -416,61 +374,45 @@ public class DAOImpl implements DAO {
 
 	@Override
 	public List<Object> getDimensionValues(final CallDimension dimension) {
-		return hibernateTemplate.execute(new HibernateCallback<List<Object>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<Object> doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery query;
-				switch(dimension) {
-				case ENVIRONMENT:
-					query = session.createSQLQuery("select id from environments order by id");
-					break;
-				case CALLER:
-					query = session.createSQLQuery("select id from callers order by id");
-					break;
-				case METHOD:
-					query = session.createSQLQuery("select id from methods order by id");
-					break;
-				case SERVICE:
-					query = session.createSQLQuery("select id from services order by id");
-					break;
-				default:
-					throw new IllegalArgumentException("Unkown dimension = [" + dimension + "]");
-				}
-				return query.list();
-			}
-		});
+		final SQLQuery query;
+		switch(dimension) {
+		case ENVIRONMENT:
+			query = sessionFactory.getCurrentSession().createSQLQuery("select id from environments order by id");
+			break;
+		case CALLER:
+			query = sessionFactory.getCurrentSession().createSQLQuery("select id from callers order by id");
+			break;
+		case METHOD:
+			query = sessionFactory.getCurrentSession().createSQLQuery("select id from methods order by id");
+			break;
+		case SERVICE:
+			query = sessionFactory.getCurrentSession().createSQLQuery("select id from services order by id");
+			break;
+		default:
+			throw new IllegalArgumentException("Unkown dimension = [" + dimension + "]");
+		}
+		//noinspection unchecked
+		return query.list();
 	}
 
 	@Override
 	public Long addImportedFile(final LogFile file) {
-		return (Long) hibernateTemplate.save(file);
+		return (Long) sessionFactory.getCurrentSession().save(file);
 	}
 
 	@Override
 	public boolean isFileAlreadyImported(final Environment environment, final String filepath) {
-		final Number count = hibernateTemplate.execute(new HibernateCallback<Number>() {
-			@Override
-			public Number doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("select count(*) from LogFile lf where lf.environment = :env and lf.filepath = :path");
-				query.setParameter("env", environment);
-				query.setParameter("path", filepath);
-				return (Number) query.uniqueResult();
-			}
-		});
-		return count.intValue() > 0;
+		final Query query = sessionFactory.getCurrentSession().createQuery("select count(*) from LogFile lf where lf.environment = :env and lf.filepath = :path");
+		query.setParameter("env", environment);
+		query.setParameter("path", filepath);
+		return ((Number) query.uniqueResult()).intValue() > 0;
 	}
 
 	@Override
 	public CompletionStatus getCompletionStatus(final Environment environment) {
-		return hibernateTemplate.execute(new HibernateCallback<CompletionStatus>() {
-			@Override
-			public CompletionStatus doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery("from CompletionStatus cs where cs.environment = :env");
-				query.setParameter("env", environment);
-				return (CompletionStatus) query.uniqueResult();
-			}
-		});
+		final Query query = sessionFactory.getCurrentSession().createQuery("from CompletionStatus cs where cs.environment = :env");
+		query.setParameter("env", environment);
+		return (CompletionStatus) query.uniqueResult();
 	}
 
 	@Override
@@ -482,58 +424,58 @@ public class DAOImpl implements DAO {
 		else {
 			status.setUpTo(newUpTo);
 		}
-		hibernateTemplate.merge(status);
+		sessionFactory.getCurrentSession().merge(status);
 	}
 
 	@Override
 	public List<LogDirectory> getLogDirectories() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from LogDirectory");
+		return sessionFactory.getCurrentSession().createQuery("from LogDirectory").list();
 	}
 
 	@Override
 	public LogDirectory addLogDirectory(LogDirectory logDirectory) {
-		return hibernateTemplate.merge(logDirectory);
+		return (LogDirectory) sessionFactory.getCurrentSession().merge(logDirectory);
 	}
 
 	@Override
 	public LogDirectory getLogDirectory(Long id) {
-		return hibernateTemplate.get(LogDirectory.class, id);
+		return (LogDirectory) sessionFactory.getCurrentSession().get(LogDirectory.class, id);
 	}
 
 	@Override
 	public void delLogDirectory(LogDirectory dir) {
-		hibernateTemplate.delete(dir);
+		sessionFactory.getCurrentSession().delete(dir);
 	}
 
 	@Override
 	public void flush() {
-		hibernateTemplate.flush();
+		sessionFactory.getCurrentSession().flush();
 	}
 
 	@Override
 	public void clear() {
-		hibernateTemplate.clear();
+		sessionFactory.getCurrentSession().clear();
 	}
 
 	@Override
 	public List<JobDefinition> getJobs() {
 		//noinspection unchecked
-		return hibernateTemplate.find("from JobDefinition");
+		return sessionFactory.getCurrentSession().createQuery("from JobDefinition").list();
 	}
 
 	@Override
 	public JobDefinition addJob(JobDefinition job) {
-		return hibernateTemplate.merge(job);
+		return (JobDefinition) sessionFactory.getCurrentSession().merge(job);
 	}
 
 	@Override
 	public JobDefinition getJob(Long id) {
-		return hibernateTemplate.get(JobDefinition.class, id);
+		return (JobDefinition) sessionFactory.getCurrentSession().get(JobDefinition.class, id);
 	}
 
 	@Override
 	public void delJob(JobDefinition job) {
-		hibernateTemplate.delete(job);
+		sessionFactory.getCurrentSession().delete(job);
 	}
 }

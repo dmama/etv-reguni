@@ -3,8 +3,6 @@ package ch.vd.moscow.controller.environment;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.vd.moscow.controller.directory.DirectoryView;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import ch.vd.moscow.data.Environment;
-import ch.vd.moscow.data.LogDirectory;
 import ch.vd.moscow.database.DAO;
 
 @SuppressWarnings({"UnusedDeclaration"})

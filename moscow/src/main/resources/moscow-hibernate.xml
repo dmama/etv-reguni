@@ -19,7 +19,6 @@
 	<util:map id="hibernateProperties">
 		<entry key="hibernate.connection.autocommit" value="false" />
 		<entry key="hibernate.connection.isolation" value="2" /><!-- 2 = java.sql.Connection.TRANSACTION_READ_COMMITTED -->
-		<entry key="hibernate.query.factory_class" value="org.hibernate.hql.classic.ClassicQueryTranslatorFactory" />
 		<entry key="hibernate.show_sql" value="false" />
 		<entry key="hibernate.jdbc.batch_size" value="20" />
 		<entry key="hibernate.jdbc.use_streams_for_binary" value="true" />
@@ -28,22 +27,10 @@
 		<entry key="hibernate.hbm2ddl.auto" value="${hibernate.hbm2ddl.mode}" />
 	</util:map>
 
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="annotatedClasses" ref="hibernateAnnotatedClasses" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties" ref="hibernateProperties" />
-	</bean>
-
-	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
-		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="cacheQueries" value="true" />
-		<property name="allowCreate" value="false" />
-		<property name="checkWriteOperations" value="false" /> <!-- parce qu'autrement il n'est pas possible de simuler des opérations de write dans une transaction read-only -->
-	</bean>
-
-	<bean id="hibernateDaoSupport" class="org.springframework.orm.hibernate3.support.HibernateDaoSupport" abstract="true">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 </beans>
