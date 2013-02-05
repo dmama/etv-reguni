@@ -52,6 +52,7 @@ import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
 import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
@@ -68,6 +69,7 @@ import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
@@ -1017,6 +1019,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
 					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public ListeDroitsAccesRapport generateRapport(final ListeDroitsAccesResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "RapportListeDroitsAcces";
+		final String description = "Rapport d'exécution du job de listings des dossiers protégés.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(ListeDroitsAccesRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<ListeDroitsAccesRapport>() {
+				@Override
+				public void writeDoc(ListeDroitsAccesRapport doc, OutputStream os) throws Exception {
+					final PdfListeDroitsAccesRapport document = new PdfListeDroitsAccesRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});

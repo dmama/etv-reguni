@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.rapport;
 
-import java.awt.Color;
+import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -29,6 +29,7 @@ import ch.vd.uniregctb.common.ApplicationInfo;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.CsvHelper;
 import ch.vd.uniregctb.common.JobResults;
+import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.common.TimeHelper;
 
@@ -303,6 +304,18 @@ public abstract class PdfRapport extends Document {
 		return CsvHelper.asCsvField(lignes);
 	}
 
+	protected static String asCsvField(List<NomPrenom> nomsPrenoms) {
+		final StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (NomPrenom np : nomsPrenoms) {
+			if (!first) {
+				sb.append("\n");
+			}
+			sb.append(np.getPrenom()).append(" ").append(np.getNom());
+			first = false;
+		}
+		return CsvHelper.asCsvField(sb.toString());
+	}
 
 	protected static String formatTimestamp(final Date dateGeneration) {
 		return TIMESTAMP_FORMAT.format(dateGeneration);

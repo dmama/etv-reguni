@@ -364,6 +364,17 @@
 		<property name="transactionManager" ref="transactionManager"/>
 	</bean>
 
+	<bean id="listeDroitsAccessJob" parent="schedulerJob" class="ch.vd.uniregctb.droits.ListeDroitsAccesJob">
+		<constructor-arg value="612"/>
+		<constructor-arg value="Produire la liste des droits d'accès sur les dossiers protégés"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+		<property name="adresseService" ref="adresseService"/>
+		<property name="tiersService" ref="tiersService"/>
+		<property name="securiteService" ref="serviceSecuriteService"/>
+		<property name="rapportService" ref="rapportService"/>
+	</bean>
+
     <bean id="dumpDatabaseJob" parent="schedulerJob" class="ch.vd.uniregctb.database.DumpDatabaseJob">
         <constructor-arg value="700"/>
         <constructor-arg value="Exporter toutes les données de la base dans un fichier sur le serveur"/>

@@ -43,6 +43,7 @@ import ch.vd.uniregctb.document.ImportImmeublesRapport;
 import ch.vd.uniregctb.document.ListeAssujettisRapport;
 import ch.vd.uniregctb.document.ListeContribuablesResidentsSansForVaudoisRapport;
 import ch.vd.uniregctb.document.ListeDIsNonEmisesRapport;
+import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
 import ch.vd.uniregctb.document.ListeNoteRapport;
 import ch.vd.uniregctb.document.ListeTachesEnIsntanceParOIDRapport;
 import ch.vd.uniregctb.document.ListesNominativesRapport;
@@ -59,6 +60,7 @@ import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
 import ch.vd.uniregctb.identification.contribuable.IdentifierContribuableResults;
 import ch.vd.uniregctb.listes.afc.ExtractionDonneesRptResults;
@@ -423,4 +425,13 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ImportImmeublesRapport generateRapport(ImportImmeublesResults results, StatusManager status);
+
+	/**
+	 * Génère le rapport d'exécution du batch de listing des dossiers protégés
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	ListeDroitsAccesRapport generateRapport(ListeDroitsAccesResults results, StatusManager status);
 }
