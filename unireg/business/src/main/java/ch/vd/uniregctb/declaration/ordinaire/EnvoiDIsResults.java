@@ -87,7 +87,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 
 	// Données de processing
 	public int nbCtbsTotal;
-	public final List<Long> ctbsTraites = new ArrayList<Long>();
+	public final List<Long> ctbsAvecDiGeneree = new ArrayList<Long>();
 	public final List<Long> ctbsIndigents = new ArrayList<Long>();
 	public final List<Ignore> ctbsIgnores = new ArrayList<Ignore>();
 	public final List<Erreur> ctbsEnErrors = new ArrayList<Erreur>();
@@ -106,8 +106,8 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 		this.nbThreads = nbThreads;
 	}
 
-	public void addCtbTraites(Long noCtb) {
-		ctbsTraites.add(noCtb);
+	public void addDeclarationTraitee(Long noCtb) {
+		ctbsAvecDiGeneree.add(noCtb);
 	}
 
 	public void addCtbIndigent(Long noCtb) {
@@ -149,7 +149,7 @@ public class EnvoiDIsResults<R extends EnvoiDIsResults> extends JobResults<Long,
 	public void addAll(R rapport) {
 		if (rapport != null) {
 			this.nbCtbsTotal += rapport.nbCtbsTotal;
-			this.ctbsTraites.addAll(rapport.ctbsTraites);
+			this.ctbsAvecDiGeneree.addAll(rapport.ctbsAvecDiGeneree);
 			this.ctbsIndigents.addAll(rapport.ctbsIndigents);
 			this.ctbsEnErrors.addAll(rapport.ctbsEnErrors);
 			this.ctbsIgnores.addAll(rapport.ctbsIgnores);

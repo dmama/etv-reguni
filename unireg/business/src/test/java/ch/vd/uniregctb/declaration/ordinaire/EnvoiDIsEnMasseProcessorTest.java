@@ -621,7 +621,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(TypeEtatTache.EN_INSTANCE, premiereTache.getEtat());
 
 		// la seconde tâche est traitée
-		final List<Long> traites = results.ctbsTraites;
+		final List<Long> traites = results.ctbsAvecDiGeneree;
 		assertEquals(1, traites.size());
 		assertEquals(ids.marcId, traites.get(0));
 
@@ -738,7 +738,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals(TypeEtatTache.EN_INSTANCE, premiereTache.getEtat());
 
 		// la seconde tâche est traitée
-		final List<Long> traites = results.ctbsTraites;
+		final List<Long> traites = results.ctbsAvecDiGeneree;
 		assertEquals(1, traites.size());
 		assertEquals(ids.marcId, traites.get(0));
 
@@ -1619,14 +1619,14 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		final EnvoiDIsResults<EnvoiDIsResults> results = processor.run(annee, CategorieEnvoiDI.VAUDOIS_VAUDTAX, null, null, 0, RegDate.get(), false, nbThreads, null);
 		assertNotNull(results);
-		assertEquals(nbCtbs, results.ctbsTraites.size());
+		assertEquals(nbCtbs, results.ctbsAvecDiGeneree.size());
 		assertEquals(0, results.ctbsEnErrors.size());
 		assertEquals(0, results.ctbsIgnores.size());
 
 		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				for (Long ctbId : results.ctbsTraites) {
+				for (Long ctbId : results.ctbsAvecDiGeneree) {
 					final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ctbId);
 					final String prenom = pp.getPrenom();
 					assertTrue(prenom.startsWith("Jean-"));

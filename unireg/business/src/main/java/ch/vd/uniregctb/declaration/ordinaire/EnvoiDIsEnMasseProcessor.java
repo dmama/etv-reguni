@@ -171,12 +171,12 @@ public class EnvoiDIsEnMasseProcessor {
 
 		if (status.interrupted()) {
 			status.setMessage("L'envoi en masse des déclarations d'impôt a été interrompue."
-					+ " Nombre de déclarations envoyées au moment de l'interruption = " + rapportFinal.ctbsTraites.size());
+					+ " Nombre de déclarations envoyées au moment de l'interruption = " + rapportFinal.ctbsAvecDiGeneree.size());
 			rapportFinal.interrompu = true;
 		}
 		else {
 			status.setMessage("L'envoi en masse des déclarations d'impôt est terminée. Nombre de déclarations envoyées = "
-					+ rapportFinal.ctbsTraites.size() + ". Nombre d'erreurs = " + rapportFinal.ctbsEnErrors.size());
+					+ rapportFinal.ctbsAvecDiGeneree.size() + ". Nombre d'erreurs = " + rapportFinal.ctbsEnErrors.size());
 		}
 
 		rapportFinal.end();
@@ -599,7 +599,7 @@ public class EnvoiDIsEnMasseProcessor {
 			imprimerDI(di, dateTraitement);
 		}
 
-		rapport.addCtbTraites(ctb.getNumero());
+		rapport.addDeclarationTraitee(ctb.getNumero());
 		return true;
 	}
 

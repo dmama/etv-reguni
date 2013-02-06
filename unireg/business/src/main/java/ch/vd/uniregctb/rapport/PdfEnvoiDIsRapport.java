@@ -66,7 +66,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
                 @Override
                 public void fillTable(PdfTableSimple table) throws DocumentException {
                     table.addLigne("Nombre total de contribuables:", String.valueOf(results.nbCtbsTotal));
-                    table.addLigne("Nombre de contribuables traités:", String.valueOf(results.ctbsTraites.size()));
+                    table.addLigne("Nombre de périodes d'imposition traitées:", String.valueOf(results.ctbsAvecDiGeneree.size()));
                     table.addLigne("Nombre d'indigents traités:", String.valueOf(results.ctbsIndigents.size()));
                     table.addLigne("Nombre de contribuables ignorés:", String.valueOf(results.ctbsIgnores.size()));
                     table.addLigne("Nombre de contribuables en erreur:", String.valueOf(results.ctbsEnErrors.size()));
@@ -79,7 +79,7 @@ public class PdfEnvoiDIsRapport extends PdfRapport {
         // CTBs traités
         {
             String filename = "contribuables_traites.csv";
-            String contenu = ctbIdsAsCsvFile(results.ctbsTraites, filename, status);
+            String contenu = ctbIdsAsCsvFile(results.ctbsAvecDiGeneree, filename, status);
             String titre = "Liste des contribuables traités";
             String listVide = "(aucun contribuable traité)";
             addListeDetaillee(writer, titre, listVide, filename, contenu);

@@ -1613,11 +1613,11 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 	}
 
 	private static void assertResults(int ctbsTraites, EnvoiDIsResults results) {
-		assertEquals(ctbsTraites, results.ctbsTraites.size());
+		assertEquals(ctbsTraites, results.ctbsAvecDiGeneree.size());
 	}
 
 	private static void assertResults(int ctbsTraites, int ctbsIndigents, int ctbsIgnores, int ctbsEnErrors, EnvoiDIsResults results) {
-		assertEquals(ctbsTraites, results.ctbsTraites.size());
+		assertEquals(ctbsTraites, results.ctbsAvecDiGeneree.size());
 		assertEquals(ctbsIndigents, results.ctbsIndigents.size());
 		assertEquals(ctbsIgnores, results.ctbsIgnores.size());
 		assertEquals(ctbsEnErrors, results.ctbsEnErrors.size());
