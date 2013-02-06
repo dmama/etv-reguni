@@ -9,10 +9,12 @@ import static org.junit.Assert.assertTrue;
 
 public class LocaliteInvalideMatcherTest extends WithoutSpringTest {
 
-	public void onTearDown() throws Exception {
+	@Override
+	public void onSetUp() throws Exception {
+		super.onSetUp();
+
 		// Remise à zéro des champs static de la classe LocaliteInvalideMatcher
 		LocaliteInvalideMatcher.reset();
-		super.onTearDown();
 	}
 
 	@Test
