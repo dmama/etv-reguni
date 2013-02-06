@@ -55,10 +55,10 @@
 				<display:setProperty name="paging.banner.all_items_found"><span class="pagebanner">{0} <fmt:message key="banner.messages.trouves" /></span></display:setProperty>
 				
 				<c:if test="${!messageTraite}">
-				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
+				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_GEST_BO,ROLE_SUPERGRA">
 					<display:column title="<input type='checkbox'  name='selectAll' onclick='javascript:IdentificationCtb.selectAllIdentifications(this);' />">
 						<c:if test="${!message.annule}">
-							<input type="checkbox"   name="tabIdsMessages" id="tabIdsMessages_${message_rowNum}" value="${message.id}" >
+							<input type="checkbox" name="tabIdsMessages" id="tabIdsMessages_${message_rowNum}" value="${message.id}" >
 						</c:if>
 					</display:column>
 				</authz:authorize>
@@ -141,7 +141,7 @@
                         <tr>
                             <td width="25%">&nbsp;</td>
                             <td width="50%">
-                                <div class="navigation-action">
+                                <div class="navigation-action" id="actions-masse-messages">
                                     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
                                         <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
                                         <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
