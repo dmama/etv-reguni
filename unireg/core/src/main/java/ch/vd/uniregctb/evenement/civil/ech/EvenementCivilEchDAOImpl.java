@@ -57,7 +57,7 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 
 	@Override
 	public List<EvenementCivilEch> getEvenementsCivilsARelancer() {
-		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and (ec.etat = :etat or ec.numeroIndividu is null)";
+		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.etat = :etat";
 		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilEch>>() {
 			@SuppressWarnings({"unchecked"})
 			@Override
