@@ -52,7 +52,7 @@
 	<input class="noprint" id="showSiegesHisto" type="checkbox" onclick="refreshSiegesTable(this);" />
 	<label class="noprint" for="showSiegesHisto"><fmt:message key="label.historique" /></label>
 
-	<display:table name="${command.entreprise.sieges}" id="sieges" class="display">
+	<display:table name="${command.entreprise.sieges}" id="sieges" requestURI="visu.do" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
 			<unireg:regdate regdate="${sieges.dateDebut}"/>
 		</display:column>
@@ -79,7 +79,7 @@
 	<input class="noprint" id="showFormesJuridiquesHisto" type="checkbox" onclick="refreshFormesJuridiquesTable(this);" />
 	<label class="noprint" for="showFormesJuridiquesHisto"><fmt:message key="label.historique" /></label>
 
-	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" class="display">
+	<display:table name="${command.entreprise.formesJuridiques}" id="formesJuridiques" requestURI="visu.do" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
 			<unireg:regdate regdate="${formesJuridiques.dateDebut}"/>
 		</display:column>
@@ -97,7 +97,7 @@
 	<label class="noprint" for="showCapitauxHisto"><fmt:message key="label.historique" /></label>
 
 	<fmt:setLocale value="ch" scope="page"/>
-	<display:table name="${command.entreprise.capitaux}" id="capitaux" class="display">
+	<display:table name="${command.entreprise.capitaux}" id="capitaux" requestURI="visu.do" class="display">
 		<display:column sortable="true" titleKey="label.date.debut">
 			<unireg:regdate regdate="${capitaux.dateDebut}"/>
 		</display:column>

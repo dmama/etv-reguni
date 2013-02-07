@@ -14,7 +14,7 @@
 		<input class="noprint" id="showEtatsPMHisto" type="checkbox" onclick="refreshEtatsPM(this);" />
 		<label class="noprint" for="showEtatsPMHisto"><fmt:message key="label.historique" /></label>
 
-		<display:table name="${command.entreprise.etats}" id="etatsPM" class="display">
+		<display:table name="${command.entreprise.etats}" id="etatsPM" requestURI="visu.do" class="display">
 			<display:column sortable="true" titleKey="label.date.debut">
 				<unireg:regdate regdate="${etatsPM.dateDebut}"/>
 			</display:column>

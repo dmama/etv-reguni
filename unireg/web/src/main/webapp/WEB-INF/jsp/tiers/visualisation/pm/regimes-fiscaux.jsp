@@ -14,7 +14,7 @@
 		<input class="noprint" id="showRegimesVDHisto" type="checkbox" onclick="refreshRegimesVDTable(this);" />
 		<label class="noprint" for="showRegimesVDHisto"><fmt:message key="label.historique" /></label>
 	
-		<display:table name="${command.entreprise.regimesFiscauxVD}" id="regimesVD" class="display">
+		<display:table name="${command.entreprise.regimesFiscauxVD}" id="regimesVD" requestURI="visu.do" class="display">
 			<display:column sortable="true" titleKey="label.date.debut">
 				<unireg:regdate regdate="${regimesVD.dateDebut}"/>
 			</display:column>
@@ -42,7 +42,7 @@
 		<input class="noprint" id="showRegimesCHHisto" type="checkbox" onclick="refreshRegimesCHTable(this);" />
 		<label class="noprint" for="showRegimesCHHisto"><fmt:message key="label.historique" /></label>
 	
-		<display:table name="${command.entreprise.regimesFiscauxCH}" id="regimesCH" class="display">
+		<display:table name="${command.entreprise.regimesFiscauxCH}" id="regimesCH" requestURI="visu.do" class="display">
 			<display:column sortable="true" titleKey="label.date.debut">
 				<unireg:regdate regdate="${regimesCH.dateDebut}"/>
 			</display:column>
