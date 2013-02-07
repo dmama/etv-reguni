@@ -8,7 +8,7 @@
 
 	<groupId>ch.vd.watchdog</groupId>
 	<artifactId>watchdog</artifactId>
-	<version>0.3</version>
+	<version>0.4</version>
 	
 	<packaging>jar</packaging>
 
@@ -27,8 +27,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -38,12 +38,12 @@
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.17</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.5</version>
+			<version>4.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -109,21 +109,21 @@
 		<dependency>
 		    <groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-ra</artifactId>
-			<version>5.5.1-fuse-01-20</version>
+			<version>5.6.0.fuse-71-047</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
+			<version>1.7.2</version>
 		</dependency>
 	</dependencies>
 
 	<properties>
-		<spring.version>3.0.6.RELEASE</spring.version>
-		<activemq.version>5.5.0-fuse-00-53</activemq.version>
+		<spring.version>3.1.4.RELEASE</spring.version>
+		<activemq.version>5.7.0.fuse-71-047</activemq.version>
 
 		<!-- Application settings -->
-		<copyright.year>2011</copyright.year>
+		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
 

@@ -73,8 +73,8 @@
 				<version>2.0.2</version>
 				<configuration>
 					<encoding>UTF-8</encoding>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -137,10 +137,10 @@
 		<copyright.year>2013</copyright.year>
 		<amp.genericCore>true</amp.genericCore>
 		<amp.fullSource>false</amp.fullSource>
-		<spring.version>3.0.6.RELEASE</spring.version>
-		<cxf.version>2.4.3-fuse-00-20</cxf.version>
-		<log4j.version>1.2.14</log4j.version>
-		<junit.version>4.4</junit.version>
+		<spring.version>3.1.4.RELEASE</spring.version>
+		<cxf.version>2.6.0.fuse-71-047</cxf.version>
+		<log4j.version>1.2.17</log4j.version>
+		<junit.version>4.10</junit.version>
 		<unireg.log4j.location>classpath:log4j.xml</unireg.log4j.location>
 	</properties>
 
