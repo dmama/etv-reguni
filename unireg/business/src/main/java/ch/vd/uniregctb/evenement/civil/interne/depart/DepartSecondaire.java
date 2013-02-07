@@ -108,7 +108,7 @@ public class DepartSecondaire extends Depart {
 	/**
 	 * Traite un depart d'une residence secondaire
 	 */
-	private void handleDepartResidenceSecondaire(PersonnePhysique pp, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) {
+	private void handleDepartResidenceSecondaire(PersonnePhysique pp, Contribuable contribuable, RegDate dateFermeture, MotifFor motifFermeture) throws EvenementCivilException {
 
 		final ForFiscalPrincipal forPrincipal = contribuable.getForFiscalPrincipalAt(dateFermeture);
 		// For principal est sur la commune de départ d'une résidence secondaire
@@ -136,12 +136,12 @@ public class DepartSecondaire extends Depart {
 						//Ces cas sont detectées en amont et mis en erreur
 					}
 					else {
-						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
+						final ModeImposition modeImpostion = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
 						openForFiscalPrincipalHC(contribuable, dateFermeture.getOneDayAfter(), commune.getNoOFS(), modeImpostion, MotifFor.DEPART_HC);
 					}
 				}
 				else if (ffp != null) {
-					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp);
+					final ModeImposition modeImposition = determineModeImpositionDepartHCHS(contribuable, dateFermeture, ffp, context.getTiersService());
 					final Integer nullableNoOfs = getNouvelleLocalisation() == null ? null : getNouvelleLocalisation().getNoOfs();
 					final int numeroOfsLocalisation = nullableNoOfs == null ? getPaysInconnu().getNoOFS() : nullableNoOfs;
 					openForFiscalPrincipalHS(contribuable, dateFermeture.getOneDayAfter(), numeroOfsLocalisation, modeImposition, MotifFor.DEPART_HS);

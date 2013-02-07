@@ -36,12 +36,14 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
+import ch.vd.uniregctb.type.TypePermis;
 
 public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTest {
 
@@ -1501,6 +1503,147 @@ public class DepartEchProcessorTest extends AbstractEvenementCivilEchProcessorTe
 				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
 				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
 				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testDepartContribuableDepenseNiSuisseNiPermisC() throws Exception {
+
+		final long noIndividu = 45263L;
+		final RegDate dateNaissance = date(1956, 12, 5);
+		final RegDate dateDepart = date(2012, 5, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Collins", "Felipe", Sexe.MASCULIN);
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+				final MockAdresse adr = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateNaissance, dateDepart);
+				adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bussigny, ModeImposition.DEPENSE);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ HS
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(12323L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification : le contribuable doit maintenant avoir un for source à l'étranger (F)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+				return null;
+			}
+		});
+	}
+
+	@Test(timeout = 10000L)
+	public void testDepartContribuableDepensePermisC() throws Exception {
+
+		final long noIndividu = 45263L;
+		final RegDate dateNaissance = date(1956, 12, 5);
+		final RegDate dateDepart = date(2012, 5, 12);
+
+		// mise en place civile
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Collins", "Felipe", Sexe.MASCULIN);
+				addNationalite(ind, MockPays.France, dateNaissance, null);
+				addPermis(ind, TypePermis.ETABLISSEMENT, dateNaissance, null, false);
+				final MockAdresse adr = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.LeSentier.GrandRue, null, dateNaissance, dateDepart);
+				adr.setLocalisationSuivante(new Localisation(LocalisationType.HORS_SUISSE, MockPays.France.getNoOFS(), null));
+			}
+		});
+
+		// mise en place fiscale
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addHabitant(noIndividu);
+				addForPrincipal(pp, dateNaissance.addYears(18), MotifFor.MAJORITE, MockCommune.Bussigny, ModeImposition.DEPENSE);
+				return pp.getNumero();
+			}
+		});
+
+		// création de l'événement civil de départ HS
+		final long evtId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(12323L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateDepart);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.DEPART);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement
+		traiterEvenements(noIndividu);
+
+		// vérification : le contribuable doit maintenant avoir un for source à l'étranger (F)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch ech = evtCivilDAO.get(evtId);
+				Assert.assertNotNull(ech);
+				Assert.assertEquals(EtatEvenementCivil.TRAITE, ech.getEtat());
+
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				Assert.assertNotNull(pp);
+				Assert.assertFalse(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				Assert.assertNotNull(ffp);
+				Assert.assertEquals(MotifFor.DEPART_HS, ffp.getMotifOuverture());
+				Assert.assertEquals(dateDepart.getOneDayAfter(), ffp.getDateDebut());
+				Assert.assertEquals(TypeAutoriteFiscale.PAYS_HS, ffp.getTypeAutoriteFiscale());
+				Assert.assertEquals((Integer) MockPays.France.getNoOFS(), ffp.getNumeroOfsAutoriteFiscale());
+				Assert.assertEquals(ModeImposition.ORDINAIRE, ffp.getModeImposition());
 				return null;
 			}
 		});

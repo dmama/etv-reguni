@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -34,6 +35,8 @@ import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -352,7 +355,7 @@ public abstract class Depart extends Mouvement {
 				.openForFiscalPrincipal(contribuable, dateOuverture, MotifRattachement.DOMICILE, numeroOfsAutoriteFiscale, TypeAutoriteFiscale.PAYS_HS, modeImposition, motifOuverture);
 	}
 
-	protected static ModeImposition determineModeImpositionDepartHCHS(Contribuable contribuable, RegDate dateFermeture, ForFiscalPrincipal ffp) {
+	protected static ModeImposition determineModeImpositionDepartHCHS(Contribuable contribuable, RegDate dateFermeture, ForFiscalPrincipal ffp, TiersService tiersService) throws EvenementCivilException {
 
 		Assert.notNull(ffp);
 
@@ -379,8 +382,11 @@ public abstract class Depart extends Mouvement {
 				modeImposition = ModeImposition.SOURCE;
 			}
 		}
+		else if (modeImpositionAncien == ModeImposition.DEPENSE && isEtrangerSansPermisC(contribuable, dateFermeture.getOneDayAfter(), tiersService)) {
+			modeImposition = ModeImposition.SOURCE;
+		}
 		else {
-			// tous les autres cas passent à l'ordinaire (ordinaire, dépense, indigent...)
+			// tous les autres cas passent à l'ordinaire (ordinaire, dépense avec permis C, indigent...)
 			modeImposition = ModeImposition.ORDINAIRE;
 		}
 		return modeImposition;
@@ -388,6 +394,41 @@ public abstract class Depart extends Mouvement {
 
 	private static boolean isSourcierPur(ModeImposition modeImposition) {
 		return ModeImposition.SOURCE == modeImposition;
+	}
+
+	private static boolean isEtrangerSansPermisC(Contribuable ctb, RegDate dateReference, TiersService tiersService) throws EvenementCivilException {
+		try {
+			if (ctb instanceof PersonnePhysique) {
+				return tiersService.isEtrangerSansPermisC((PersonnePhysique) ctb, dateReference);
+			}
+			else if (ctb instanceof MenageCommun) {
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple((MenageCommun) ctb, dateReference);
+				final PersonnePhysique prn = couple.getPrincipal();
+				final PersonnePhysique sec = couple.getConjoint();
+				if (prn != null && sec != null) {
+					return tiersService.isEtrangerSansPermisC(prn, dateReference) && tiersService.isEtrangerSansPermisC(sec, dateReference);
+				}
+				else if (prn != null) {
+					return tiersService.isEtrangerSansPermisC(prn, dateReference);
+				}
+				else if (sec != null) {
+					// est-ce seulement possible ?
+					return tiersService.isEtrangerSansPermisC(sec, dateReference);
+				}
+				else {
+					// ménage sans individu -> que faire ?
+					throw new EvenementCivilException(String.format("Ménage commun %d sans lien vers des personnes physique au %s : impossible de déterminer le mode d'imposition du for après le départ",
+					                                                ctb.getNumero(), RegDateHelper.dateToDisplayString(dateReference)));
+				}
+			}
+			else {
+				// ni une personne physique ni un ménage commun -> que faire ?
+				throw new EvenementCivilException(String.format("Contribuable %d n'est ni une personne physique ni un ménage commun", ctb.getNumero()));
+			}
+		}
+		catch (TiersException e) {
+			throw new EvenementCivilException(e);
+		}
 	}
 
 	private static boolean isSourcierMixte(ModeImposition modeImposition) {
