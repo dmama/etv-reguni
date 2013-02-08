@@ -131,6 +131,11 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 				LOGGER.error("Erreur dans le message XML reçu", e);
 				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
 			}
+			catch (RuntimeException e) {
+				// Départ en DLQ, mais on log avant...
+				LOGGER.error(e, e);
+				throw e;
+			}
 		}
 	}
 
