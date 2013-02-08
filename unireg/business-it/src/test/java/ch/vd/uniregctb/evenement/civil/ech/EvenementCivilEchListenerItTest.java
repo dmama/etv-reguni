@@ -42,6 +42,7 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
+		esbTemplate.setSessionTransacted(true);
 		if (esbTemplate instanceof InitializingBean) {
 			((InitializingBean) esbTemplate).afterPropertiesSet();
 		}

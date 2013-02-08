@@ -50,6 +50,7 @@ public class EvenementDeclarationListenerTest extends EvenementTest {
 		esbTemplate.setReceiveTimeout(200);
 		esbTemplate.setApplication("unireg");
 		esbTemplate.setDomain("fiscalite");
+		esbTemplate.setSessionTransacted(true);
 
 		clearQueue(INPUT_QUEUE);
 
