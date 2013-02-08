@@ -1,6 +1,9 @@
 package ch.vd.uniregctb.tiers;
 
+import java.util.List;
+
 import org.junit.Test;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.civil.data.Localisation;
@@ -13,11 +16,15 @@ import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.DataHolder;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 public class TiersServiceTest2 extends BusinessTest {
@@ -137,5 +144,38 @@ public class TiersServiceTest2 extends BusinessTest {
 			assertEquals(TiersService.UpdateHabitantFlagResultat.PAS_DE_CHANGEMENT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));
 			assertFalse(pp.isHabitantVD());
 		}
+	}
+
+	/**
+	 * [SIFISC-7954] Vérifie que la mise-à-jour simultanée du motif de fermeture et de l'autorité fiscale d'un for fiscal principale est bien prise en compte.
+	 */
+	@Test
+	public void testUpdateForPrincipalMotifEtAutoriteFiscaleEnMemeTemps() throws Exception {
+
+		final Long ppId = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Jean", "Dufoot", date(1956, 3, 2), Sexe.MASCULIN);
+				final ForFiscalPrincipal ffp = addForPrincipal(pp, date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.FUSION_COMMUNES, MockCommune.Vevey);
+
+				// on met-à-jour à la fois le motif de fermeture et l'autorité fiscale
+				tiersService.updateForPrincipal(ffp, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne.getNoOFS());
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<ForFiscalPrincipal> fors = pp.getForsFiscauxPrincipauxActifsSorted();
+				assertNotNull(fors);
+				assertEquals(1, fors.size());
+
+				final ForFiscalPrincipal f0 = fors.get(0);
+				assertForPrincipal(date(1976, 3, 2), MotifFor.MAJORITE, date(2003, 5, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, f0);
+				return null;
+			}
+		});
 	}
 }

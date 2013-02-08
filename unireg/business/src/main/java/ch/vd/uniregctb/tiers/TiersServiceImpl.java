@@ -2431,39 +2431,8 @@ public class TiersServiceImpl implements TiersService {
         return nouveauForFiscal;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public ForFiscal corrigerAutoriteFiscale(ForFiscal forFiscal, int noOfsAutoriteFiscale) {
-        Assert.notNull(forFiscal);
-
-        if (forFiscal.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
-            // rien à faire
-            return null;
-        }
-
-        final Tiers tiers = forFiscal.getTiers();
-        Assert.notNull(tiers);
-
-        // [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-        ForFiscal forCorrige = forFiscal.duplicate();
-        forFiscal.setAnnule(true);
-        forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
-        forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
-
-        // notifie le reste du monde
-        if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-            evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
-            final MotifFor motifFor = (forFiscal instanceof ForFiscalRevenuFortune ? ((ForFiscalRevenuFortune) forFiscal).getMotifOuverture() : null);
-            evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFor, forCorrige.getId());
-        }
-
-        return forCorrige;
-    }
-
-	private ForFiscalSecondaire corrigerMotifs(@NotNull ForFiscalSecondaire forFiscal, MotifFor motifOuverture, MotifFor motifFermeture) {
-		if (forFiscal.getMotifOuverture() == motifOuverture && forFiscal.getMotifFermeture() == motifFermeture) {
+	private ForFiscalPrincipal corrigerForFiscalPrincipal(@NotNull ForFiscalPrincipal forFiscal, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+		if (forFiscal.getMotifFermeture() == motifFermeture && forFiscal.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
 			// rien à faire
 			return null;
 		}
@@ -2472,60 +2441,63 @@ public class TiersServiceImpl implements TiersService {
 		Assert.notNull(tiers);
 
 		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-		ForFiscalSecondaire forCorrige = (ForFiscalSecondaire) forFiscal.duplicate();
-		forFiscal.setAnnule(true);
-		forCorrige.setMotifOuverture(motifOuverture);
-		forCorrige.setMotifFermeture(motifFermeture);
-		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
-
-		// notifie le reste du monde
-		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
-			final MotifFor motifChange = (forFiscal.getMotifOuverture() == motifOuverture ? motifFermeture : motifOuverture);
-			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifChange, forCorrige.getId());
-		}
-
-		return forCorrige;
-	}
-
-	private ForFiscalRevenuFortune corrigerMotifFermeture(@NotNull ForFiscalRevenuFortune forFiscal, MotifFor motifFermeture) {
-		if (forFiscal.getMotifFermeture() == motifFermeture) {
-			// rien à faire
-			return null;
-		}
-
-		final Tiers tiers = forFiscal.getTiers();
-		Assert.notNull(tiers);
-
-		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
-		ForFiscalRevenuFortune forCorrige = (ForFiscalRevenuFortune) forFiscal.duplicate();
+		ForFiscalPrincipal forCorrige = (ForFiscalPrincipal) forFiscal.duplicate();
 		forFiscal.setAnnule(true);
 		forCorrige.setMotifFermeture(motifFermeture);
+		forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
 		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
 		// notifie le reste du monde
 		if (forFiscal.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
 			evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
 			evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFermeture, forCorrige.getId());
+			if (forCorrige.getDateFin() != null) {
+				evenementFiscalService.publierEvenementFiscalFermetureFor(tiers, RegDate.get(), null, forCorrige.getId());
+			}
 		}
 
 		return forCorrige;
 	}
 
-	/**
-     * {@inheritDoc}
-     */
-    @Override
-    public ForFiscalRevenuFortune corrigerPeriodeValidite(ForFiscalRevenuFortune forFiscal, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture) {
+	private ForFiscalAutreElementImposable corrigerForAutreElementImposable(@NotNull ForFiscalAutreElementImposable forFiscal, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
+		if (forFiscal.getDateFin() == dateFermeture && forFiscal.getMotifFermeture() == motifFermeture && forFiscal.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
+			// rien à faire
+			return null;
+		}
+
+		final Tiers tiers = forFiscal.getTiers();
+		Assert.notNull(tiers);
+
+		// [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
+		ForFiscalAutreElementImposable forCorrige = (ForFiscalAutreElementImposable) forFiscal.duplicate();
+		forFiscal.setAnnule(true);
+		forCorrige.setDateFin(dateFermeture);
+		forCorrige.setMotifFermeture(motifFermeture);
+		forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
+		forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
+
+		// notifie le reste du monde
+		evenementFiscalService.publierEvenementFiscalAnnulationFor(forFiscal, RegDate.get());
+		evenementFiscalService.publierEvenementFiscalOuvertureFor(tiers, RegDate.get(), motifFermeture, forCorrige.getId());
+		if (dateFermeture != null) {
+			evenementFiscalService.publierEvenementFiscalFermetureFor(tiers, RegDate.get(), null, forCorrige.getId());
+		}
+
+		return forCorrige;
+	}
+
+    public ForFiscalRevenuFortune corrigerForFiscalSecondaire(ForFiscalRevenuFortune forFiscal, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
+                                                              int noOfsAutoriteFiscale) {
         Assert.notNull(forFiscal);
 
-        if (forFiscal.getDateDebut() == dateOuverture && forFiscal.getDateFin() == dateFermeture
-                && forFiscal.getMotifOuverture() == motifOuverture && forFiscal.getMotifFermeture() == motifFermeture) {
-            // rien à faire
-            return null;
-        }
+	    if (forFiscal.getDateDebut() == dateOuverture && forFiscal.getDateFin() == dateFermeture
+			    && forFiscal.getMotifOuverture() == motifOuverture && forFiscal.getMotifFermeture() == motifFermeture
+			    && forFiscal.getNumeroOfsAutoriteFiscale() == noOfsAutoriteFiscale) {
+		    // rien à faire
+		    return null;
+	    }
 
-        final Tiers tiers = forFiscal.getTiers();
+	    final Tiers tiers = forFiscal.getTiers();
         Assert.notNull(tiers);
 
         // [UNIREG-2322] toutes les corrections doivent s'effectuer par une annulation du for suivi de la création d'un nouveau for avec la valeur corrigée.
@@ -2535,6 +2507,7 @@ public class TiersServiceImpl implements TiersService {
         forCorrige.setMotifOuverture(motifOuverture);
         forCorrige.setDateFin(dateFermeture);
         forCorrige.setMotifFermeture(motifFermeture);
+	    forCorrige.setNumeroOfsAutoriteFiscale(noOfsAutoriteFiscale);
         forCorrige = tiersDAO.addAndSave(tiers, forCorrige);
 
         // notifie le reste du monde
@@ -2580,27 +2553,19 @@ public class TiersServiceImpl implements TiersService {
 	@Override
 	public ForFiscalAutreElementImposable updateForAutreElementImposable(ForFiscalAutreElementImposable ffaei, RegDate dateFermeture, MotifFor motifFermeture, Integer noOfsAutoriteFiscale) {
 
-		ForFiscalAutreElementImposable updated = null;
+		ForFiscalAutreElementImposable updated = ffaei;
 
 		if (ffaei.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
 			updated = closeForFiscalAutreElementImposable((Contribuable) ffaei.getTiers(), ffaei, dateFermeture, motifFermeture);
 		}
-		else if (ffaei.getMotifFermeture() != motifFermeture) {
-			updated = (ForFiscalAutreElementImposable) corrigerMotifFermeture(ffaei, motifFermeture);
+
+		if (updated.getDateFin() != dateFermeture || updated.getMotifFermeture() != motifFermeture || !updated.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// quelque chose d'autre a changé
+			updated = corrigerForAutreElementImposable(updated, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 		}
 
-		if (ffaei.getDateFin() != dateFermeture) {
-			// les dates de début ou de fin ont été changées
-			updated = (ForFiscalAutreElementImposable) corrigerPeriodeValidite(ffaei, ffaei.getDateDebut(), ffaei.getMotifOuverture(), dateFermeture, motifFermeture);
-		}
-
-		if (!ffaei.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
-			// l'autorité fiscale a été changée
-			updated = (ForFiscalAutreElementImposable) corrigerAutoriteFiscale((updated == null ? ffaei : updated), noOfsAutoriteFiscale);
-		}
-
-		return updated;
+		return updated == ffaei ? null : updated;
 	}
 
 	@Nullable
@@ -2608,49 +2573,40 @@ public class TiersServiceImpl implements TiersService {
 	public ForFiscalSecondaire updateForSecondaire(ForFiscalSecondaire ffs, RegDate dateOuverture, MotifFor motifOuverture, RegDate dateFermeture, MotifFor motifFermeture,
 	                                               int noOfsAutoriteFiscale) {
 
-		ForFiscalSecondaire updated = null;
+		ForFiscalSecondaire updated = ffs;
 
 		if (ffs.getDateDebut() == dateOuverture && ffs.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
 			updated = closeForFiscalSecondaire((Contribuable) ffs.getTiers(), ffs, dateFermeture, motifFermeture);
 		}
 
-		if (dateOuverture != ffs.getDateDebut() || dateFermeture != ffs.getDateFin()) {
-			// les dates de début ou de fin ont été changées
-			updated = (ForFiscalSecondaire) corrigerPeriodeValidite(ffs, dateOuverture, motifOuverture, dateFermeture, motifFermeture);
-		}
-		else if (ffs.getMotifOuverture() != motifOuverture || ffs.getMotifFermeture() != motifFermeture) {
-			updated = corrigerMotifs(ffs, motifOuverture, motifFermeture);
-		}
-
-		if (!ffs.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
-			// l'autorité fiscale a été changée
-			updated = (ForFiscalSecondaire) corrigerAutoriteFiscale((updated == null ? ffs : updated), noOfsAutoriteFiscale);
+		if (updated.getDateDebut() != dateOuverture || updated.getDateFin() != dateFermeture ||
+				updated.getMotifOuverture() != motifOuverture || updated.getMotifFermeture() != motifFermeture ||
+				!updated.getNumeroOfsAutoriteFiscale().equals(noOfsAutoriteFiscale)) {
+			// quelque chose d'autre a changé
+			updated = (ForFiscalSecondaire) corrigerForFiscalSecondaire(updated, dateOuverture, motifOuverture, dateFermeture, motifFermeture, noOfsAutoriteFiscale);
 		}
 
-		return updated;
+		return updated == ffs ? null : updated;
 	}
 
 	@Nullable
 	@Override
 	public ForFiscalPrincipal updateForPrincipal(ForFiscalPrincipal ffp, RegDate dateFermeture, MotifFor motifFermeture, int noOfsAutoriteFiscale) {
 
-		ForFiscalPrincipal updated = null;
+		ForFiscalPrincipal updated = ffp;
 
 		if (ffp.getDateFin() == null && dateFermeture != null) {
 			// le for a été fermé
 			updated = closeForFiscalPrincipal(ffp, dateFermeture, motifFermeture);
 		}
-		else if (ffp.getMotifFermeture() != motifFermeture) {
-			updated = (ForFiscalPrincipal) corrigerMotifFermeture(ffp, motifFermeture);
+
+		if (updated.getMotifFermeture() != motifFermeture || updated.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
+			// quelque chose d'autre a changé
+			updated = corrigerForFiscalPrincipal(updated, motifFermeture, noOfsAutoriteFiscale);
 		}
 
-		if (ffp.getNumeroOfsAutoriteFiscale() != noOfsAutoriteFiscale) {
-			// l'autorité fiscale a été changée
-			updated = (ForFiscalPrincipal) corrigerAutoriteFiscale(ffp, noOfsAutoriteFiscale);
-		}
-
-		return updated;
+		return updated == ffp ? null : updated;
 	}
 
 	@Nullable
