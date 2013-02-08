@@ -71,7 +71,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDebiteurAvecLrSommeeMaisUneLrNonEmise() throws Exception {
+	public void testDebiteurRegulierAvecLrSommeeMaisUneLrNonEmise() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
@@ -81,7 +81,7 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);
 				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
-				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4), date(2009, 12, 4)));
 				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
 				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
 				return null;
@@ -102,12 +102,79 @@ public class DeterminerLRsEchuesProcessorTest extends BusinessTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDebiteurAvecLrSommeeToutesEmises() throws Exception {
+	public void testDebiteurNonRegulierAvecLrSommeeMaisUneLrNonEmise() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
+				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
+				return null;
+			}
+		});
+
+		final DeterminerLRsEchuesResults results = processor.run(2009, RegDate.get(), null);
+		Assert.assertNotNull(results);
+		Assert.assertNotNull(results.ignores);
+		Assert.assertEquals(0, results.ignores.size());
+		Assert.assertNotNull(results.erreurs);
+		Assert.assertEquals(0, results.erreurs.size());
+		Assert.assertNotNull(results.lrEchues);
+		Assert.assertEquals(1, results.lrEchues.size());
+
+		final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(0);
+		Assert.assertEquals(date(2009, 1, 1), lr.debutPeriode);
+		Assert.assertEquals(date(2009, 3, 31), lr.finPeriode);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDebiteurRegulierAvecLrSommeeToutesEmises() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.REGULIERS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
+				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
+
+				final PeriodeFiscale pf = addPeriodeFiscale(2009);
+				final DeclarationImpotSource lr = addLR(dpi, date(2009, 1, 1), date(2009, 3, 31), pf);
+				lr.addEtat(new EtatDeclarationSommee(date(2009, 12, 4),date(2009, 12, 4)));
+				addLR(dpi, date(2009, 4, 1), date(2009, 6, 30), pf);
+				addLR(dpi, date(2009, 7, 1), date(2009, 9, 30), pf);
+				addLR(dpi, date(2009, 10, 1), date(2009, 12, 31), pf);
+				return null;
+			}
+		});
+
+		final DeterminerLRsEchuesResults results = processor.run(2009, RegDate.get(), null);
+		Assert.assertNotNull(results);
+		Assert.assertNotNull(results.ignores);
+		Assert.assertEquals(0, results.ignores.size());
+		Assert.assertNotNull(results.erreurs);
+		Assert.assertEquals(0, results.erreurs.size());
+		Assert.assertNotNull(results.lrEchues);
+		Assert.assertEquals(1, results.lrEchues.size());
+
+		final DeterminerLRsEchuesResults.ResultLrEchue lr = results.lrEchues.get(0);
+		Assert.assertEquals(date(2009, 1, 1), lr.debutPeriode);
+		Assert.assertEquals(date(2009, 3, 31), lr.finPeriode);
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDebiteurNonRegulierAvecLrSommeeToutesEmises() throws Exception {
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur(CategorieImpotSource.ADMINISTRATEURS, PeriodiciteDecompte.TRIMESTRIEL, date(2009, 1, 1));
 				addForDebiteur(dpi, date(2009, 1, 1), null, MockCommune.Bussigny);
 
 				final PeriodeFiscale pf = addPeriodeFiscale(2009);

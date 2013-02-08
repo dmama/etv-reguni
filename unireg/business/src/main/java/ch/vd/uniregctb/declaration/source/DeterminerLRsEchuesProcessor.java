@@ -34,6 +34,7 @@ import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.CategorieImpotSource;
 
 /**
  * Processeur chargé de la détermination des LR échues
@@ -135,9 +136,9 @@ public class DeterminerLRsEchuesProcessor {
 		final List<DateRange> nonEmises = lrService.findLRsManquantes(dpi, periodeFiscale.getDateFin(), emises);
 
 		// on se concentre uniquement sur la période fiscale donnée : si toutes les LR ont été émises
-		// alors on peut échoir les LR
+		// alors on peut échoir les LR de cette période (SIFISC-7709 : valable seulement pour les réguliers)
 		final List<DateRange> intersection = DateRangeHelper.intersections(periodeFiscale, nonEmises);
-		if (intersection != null && !intersection.isEmpty()) {
+		if (intersection != null && !intersection.isEmpty() && dpi.getCategorieImpotSource() == CategorieImpotSource.REGULIERS) {
 			rapport.addDebiteurIgnoreResteLrAEmettre(dpi, intersection);
 		}
 		else {
