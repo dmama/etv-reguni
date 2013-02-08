@@ -11,6 +11,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.numbers.v1.NumbersRequest" value-ref="numberRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.party.v1.PartyRequest" value-ref="partyRequestHandler" />
 				<entry key="ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest" value-ref="createNonresidentRequestHandler" />
+				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandler" />
 			</util:map>
 		</property>
 	</bean>
@@ -63,6 +64,12 @@
 
 	<bean id="createNonresidentRequestHandler" class="ch.vd.uniregctb.evenement.party.CreateNonresidentRequestHandler">
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
+		<property name="securityProvider" ref="securityProviderInterface"/>
+	</bean>
+
+	<bean id="aperiodicTaxLiabilityRequestHandler" class="ch.vd.uniregctb.evenement.party.AperiodicTaxLiabilityRequestHandler">
+		<property name="tiersDAO" ref="tiersDAO" />
+		<property name="tiersService" ref="tiersService" />
 		<property name="securityProvider" ref="securityProviderInterface"/>
 	</bean>
 
