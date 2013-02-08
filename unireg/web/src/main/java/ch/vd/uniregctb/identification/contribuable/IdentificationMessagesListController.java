@@ -101,10 +101,10 @@ public class IdentificationMessagesListController extends AbstractIdentification
 			// Récupération de la pagination
 			WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 
-			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true, TypeDemande.MELDEWESEN);
+			List<IdentificationMessagesResultView> listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false,false, TypeDemande.MELDEWESEN);
 
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, false, true, TypeDemande.MELDEWESEN));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, false,false, TypeDemande.MELDEWESEN));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
@@ -161,7 +161,7 @@ public class IdentificationMessagesListController extends AbstractIdentification
 	 */
 	@Override
 	protected Map<Etat, String> initMapEtatMessage() {
-		return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
+		return identificationMapHelper.initMapEtatMessageSuspendu();
 	}
 
 	/**
@@ -176,11 +176,11 @@ public class IdentificationMessagesListController extends AbstractIdentification
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage(false, TypeDemande.MELDEWESEN);
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, TypeDemande.MELDEWESEN);
 	}
 
 	@Override
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
-		return identificationMapHelper.initMapPrioriteEmetteur(false);
+		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 }

@@ -17,13 +17,13 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, TypeDemande... typeDemande);
+	                                             boolean suspenduOnly, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 */
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
-	                 TypeDemande... typeDemande);
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
+	                 boolean suspenduOnly, TypeDemande... typeDemande);
 
 
 	/**

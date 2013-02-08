@@ -72,7 +72,7 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		identificationContribuableCriteria.setTypeMessage("ssk-3001-000101");
 
 		final ParamPagination paramPagination = new ParamPagination(1, 100, null, true);
-		final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false);
+		final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false, false);
 		assertNotNull(list);
 		assertEquals(1, list.size());
 	}
@@ -117,13 +117,13 @@ public class IdentCtbDAOTest extends CoreDAOTest {
 		// tous les types...
 		{
 			@SuppressWarnings("RedundantArrayCreation")
-			final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false, new TypeDemande[] {});
+			final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false, false, new TypeDemande[] {});
 			assertNotNull(list);
 			assertEquals(3, list.size());
 		}
 		// aucun type
 		{
-			final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false,false, new TypeDemande[] { null });
+			final List<IdentificationContribuable> list = dao.find(identificationContribuableCriteria, paramPagination, false, false, false, new TypeDemande[] { null });
 			assertNotNull(list);
 			assertEquals(0, list.size());
 		}

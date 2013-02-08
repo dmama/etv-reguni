@@ -33,7 +33,6 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
-import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
@@ -164,16 +163,22 @@ public class IdentificationController {
 
 	@RequestMapping(value = {"/gestion-messages/demandeEdit.do"}, method = RequestMethod.POST)
 	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_ADMIN, Role.MW_IDENT_CTB_GEST_BO}, accessDeniedMessage = ACCESS_DENIED_UNLOCK_MESSAGE)
-	protected ModelAndView demanderEditionMessage(HttpServletRequest request, @RequestParam(value = "id", required = true) Long idMessage, ModelMap model) throws Exception {
+	protected ModelAndView demanderEditionMessage(HttpServletRequest request, @RequestParam(value = "id", required = true) Long idMessage,  @RequestParam(value = "source", required = true) String source,ModelMap model) throws Exception {
 
 		if (!identificationMessagesEditManager.isMessageVerouille(idMessage)) {
-			return new ModelAndView("redirect:edit.do?id=" + idMessage);
+			return new ModelAndView("redirect:edit.do?id=" + idMessage+"&source="+source);
 		}
 		else {
 			Flash.warning("le message sélectionné est en cours de traitement par un autre utilisateur");
 		}
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(null,null,null);
-		return buildResponseForMessageEnCours(request, criteria, model);
+		if ("enCours".equals(source)) {
+			return buildResponseForMessageEnCours(request, criteria, model);
+		}
+		else{
+			return buildResponseForMessageSuspendu(request,criteria,model);
+		}
+
 	}
 
 	@RequestMapping(value = {"/gestion-messages/listEnCours.do"}, method = {RequestMethod.POST, RequestMethod.GET})
@@ -185,6 +190,16 @@ public class IdentificationController {
 	                              ModelMap model) throws AdressesResolutionException {
 
 		return buildResponseForMessageEnCours(request, criteria, model);
+	}
+
+	@RequestMapping(value = {"/gestion-messages/listSuspendu.do"}, method = {RequestMethod.POST, RequestMethod.GET})
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+	protected ModelAndView listerSuspendu(HttpServletRequest request,
+	                                     @ModelAttribute("identificationCriteria") IdentificationContribuableListCriteria criteria,
+	                                     BindingResult bindingResult,
+	                                     ModelMap model) throws AdressesResolutionException {
+
+		return buildResponseForMessageSuspendu(request, criteria, model);
 	}
 
 
@@ -202,6 +217,23 @@ public class IdentificationController {
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
 		construireModelMessageEnCours(request, model, criteria);
+
+		return new ModelAndView("identification/gestion-messages/list", model);
+	}
+
+	@RequestMapping(value = {"/gestion-messages/listSuspenduFromStats.do"}, method = {RequestMethod.POST, RequestMethod.GET})
+	@SecurityCheck(rolesToCheck = {Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN}, accessDeniedMessage = ACCESS_DENIED_VISU_MESSAGE)
+	protected ModelAndView listerSuspenduFromStats(HttpServletRequest request,
+	                                              @RequestParam(value = "etat", required = true) String etat,
+	                                              @RequestParam(value = "periode", required = true) String periode,
+	                                              @RequestParam(value = "typeMessage", required = true) String typeMessage,
+	                                              ModelMap model) throws AdressesResolutionException {
+
+		setUpModelForListMessageSuspendu(model);
+
+		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
+		model.put("identificationCriteria", criteria);
+		construireModelMessageSuspendu(request, model, criteria);
 
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
@@ -267,17 +299,30 @@ public class IdentificationController {
 		return new ModelAndView("identification/gestion-messages/list", model);
 	}
 
+
+	/**
+	 * Construit le model est retourne le modelAndView de réponse des messagesSuspendu
+	 * @param request
+	 * @param criteria
+	 * @param model
+	 * @return
+	 * @throws AdressesResolutionException
+	 */
+	private ModelAndView buildResponseForMessageSuspendu(HttpServletRequest request, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
+		setUpModelForListMessageSuspendu(model);
+		model.put("identificationCriteria", criteria);
+		// Récupération de la pagination
+		construireModelMessageSuspendu(request, model, criteria);
+		return new ModelAndView("identification/gestion-messages/list", model);
+	}
+
 	private void construireModelMessageEnCours(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
 		// Récupération de la pagination
 		final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
 
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
-			listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, false, true);
-			nombreElements = identificationMessagesListManager.count(criteria, false, false, true);
-		}
-		else if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN,Role.MW_IDENT_CTB_GEST_BO)) {
 			listIdentifications = identificationMessagesListManager.find(criteria, pagination, true, false, false);
 			nombreElements = identificationMessagesListManager.count(criteria, true, false, false);
 		}
@@ -291,6 +336,24 @@ public class IdentificationController {
 		model.put("identificationsSize", nombreElements);
 		model.put("messageEnCours", true);
 		model.put("messageTraite", false);
+		model.put("messageSuspendu", false);
+	}
+
+	private void construireModelMessageSuspendu(HttpServletRequest request, ModelMap model, IdentificationContribuableListCriteria criteria) throws AdressesResolutionException {
+		// Récupération de la pagination
+		final WebParamPagination pagination = new WebParamPagination(request, "message", 25);
+		final List<IdentificationMessagesResultView> listIdentifications;
+		final int nombreElements;
+
+		listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, false, true);
+		nombreElements = identificationMessagesListManager.count(criteria, false, false, true);
+
+
+		model.put("identifications", listIdentifications);
+		model.put("identificationsSize", nombreElements);
+		model.put("messageEnCours", false);
+		model.put("messageTraite", false);
+		model.put("messageSuspendu", true);
 	}
 
 
@@ -302,35 +365,44 @@ public class IdentificationController {
 
 
 		final TypeDemande types[] = getAllowedTypes();
-		listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, true, false, types);
-		nombreElements = identificationMessagesListManager.count(criteria, false, true, false, types);
+		listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, true,false, types);
+		nombreElements = identificationMessagesListManager.count(criteria, false, true,false, types);
 
 
 		model.put("identifications", listIdentifications);
 		model.put("identificationsSize", nombreElements);
 		model.put("messageEnCours", false);
 		model.put("messageTraite", true);
+		model.put("messageSuspendu", false);
 	}
 
 	private void setUpModelForStats(ModelMap model) throws Exception {
-		model.put("typesMessage", identificationMapHelper.initMapTypeMessage());
-		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale());
+		model.put("typesMessage", identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.TOUS));
+		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.TOUS));
 	}
 
 	private void setUpModelForListMessageEnCours(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageEncours());
-		model.put("emetteurs", initMapEmetteurIdMessageEncours());
-		model.put("priorites", initMapPrioriteEmetteurMessageEncours());
-		model.put("periodesFiscales", initMapPeriodeFiscaleMessageEncours());
-		model.put("etatsMessage", initMapEtatMessageEnCours());
+		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
+		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
+		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
+		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCours());
+	}
+
+	private void setUpModelForListMessageSuspendu(ModelMap model) {
+		model.put("typesMessage",initMapTypeMessageSuspendu());
+		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS));
+		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
+		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS));
+		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageSuspendu());
 	}
 
 	private void setUpModelForListMessageTraites(ModelMap model) {
 		model.put("typesMessage", initMapTypeMessageTraite());
-		model.put("periodesFiscales", initMapPeriodeFiscaleTraite());
-		model.put("emetteurs", initMapEmetteurIdTraite());
-		model.put("priorites", initMapPrioriteEmetteurTraite());
-		model.put("etatsMessage", initMapEtatMessageTraite());
+		model.put("periodesFiscales", identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
+		model.put("emetteurs",identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES));
+		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
+		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageArchive());
 		model.put("traitementUsers", identificationMapHelper.initMapUser());
 	}
 
@@ -366,55 +438,48 @@ public class IdentificationController {
 		return (parametreEtat != null) || (parametrePeriode != null) || (parametreTypeMessage != null);
 	}
 
-	public Map<IdentificationContribuable.Etat, String> initMapEtatMessageEnCours() {
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
-			return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
-		}
 
-		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
-			return identificationMapHelper.initMapEtatEnCoursMessage();
-		}
-		return null;
-	}
 
 	protected Map<String, String> initMapEmetteurIdMessageEncours() {
-		return identificationMapHelper.initMapEmetteurId(false);
+		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 	}
 
 	protected Map<String, String> initMapTypeMessageEncours() {
 		final TypeDemande[] types = getAllowedTypes();
-		return identificationMapHelper.initMapTypeMessage(false, types);
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, types);
+	}
+
+	protected Map<String, String> initMapTypeMessageSuspendu() {
+		final TypeDemande[] types = getAllowedTypes();
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS, types);
 	}
 
 	protected Map<Integer, String> initMapPeriodeFiscaleMessageEncours() {
-		return identificationMapHelper.initMapPeriodeFiscale(false);
+		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 	}
 
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteurMessageEncours() {
-		return identificationMapHelper.initMapPrioriteEmetteur(false);
+		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 
 
-	public Map<IdentificationContribuable.Etat, String> initMapEtatMessageTraite() {
-		return identificationMapHelper.initMapEtatArchiveMessage();
-	}
 
 	protected Map<String, String> initMapEmetteurIdTraite() {
-		return identificationMapHelper.initMapEmetteurId(true);
+		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 	}
 
 	protected Map<String, String> initMapTypeMessageTraite() {
 		final TypeDemande[] types = getAllowedTypes();
-		return identificationMapHelper.initMapTypeMessage(true, types);
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
 	}
 
 	protected Map<Integer, String> initMapPeriodeFiscaleTraite() {
-		return identificationMapHelper.initMapPeriodeFiscale(true);
+		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 
 	}
 
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteurTraite() {
-		return identificationMapHelper.initMapPrioriteEmetteur(true);
+		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 
 

@@ -667,6 +667,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 *
+	 *
 	 * @param identificationContribuableCriteria
 	 *
 	 * @param paramPagination
@@ -675,12 +676,14 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
-	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande... typeDemande) {
-		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
+	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly,
+	                                             TypeDemande... typeDemande) {
+		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
 	}
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
+	 *
 	 *
 	 * @param identificationContribuableCriteria
 	 *
@@ -689,8 +692,8 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 */
 	@Override
 	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                 boolean nonTraiterAndSuspendu, TypeDemande... typeDemande) {
-		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
+	                 boolean suspenduOnly, TypeDemande... typeDemande) {
+		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
 	}
 
 	/**

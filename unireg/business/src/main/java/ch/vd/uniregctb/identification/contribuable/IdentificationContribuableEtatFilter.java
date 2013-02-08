@@ -19,6 +19,12 @@ public enum IdentificationContribuableEtatFilter {
 			return ETATS_NON_TRAITES.contains(etat);
 		}
 	},
+	SEULEMENT_SUSPENDUS {
+		@Override
+		public boolean isIncluded(IdentificationContribuable.Etat etat) {
+			return ETATS_SUSPENDUS.contains(etat);
+		}
+	},
 	TOUS {
 		@Override
 		public boolean isIncluded(IdentificationContribuable.Etat etat) {
@@ -32,10 +38,11 @@ public enum IdentificationContribuableEtatFilter {
 	                                                                                     IdentificationContribuable.Etat.NON_IDENTIFIE);
 
 	private static final Set<IdentificationContribuable.Etat> ETATS_NON_TRAITES = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER,
-	                                                                                         IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
 	                                                                                         IdentificationContribuable.Etat.A_TRAITER_MANUELLEMENT,
-	                                                                                         IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU,
 	                                                                                         IdentificationContribuable.Etat.EXCEPTION);
+
+	private static final Set<IdentificationContribuable.Etat> ETATS_SUSPENDUS = EnumSet.of(IdentificationContribuable.Etat.A_EXPERTISER_SUSPENDU,
+			IdentificationContribuable.Etat.A_TRAITER_MAN_SUSPENDU);
 
 	public abstract boolean isIncluded(IdentificationContribuable.Etat etat);
 }

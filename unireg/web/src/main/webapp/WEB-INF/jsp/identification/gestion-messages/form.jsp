@@ -109,72 +109,73 @@
 	</tr>
 	
 		<c:choose>
-			<c:when test="${messageEnCours}">
-				<authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_VISU">
-		
-
-				<tr class="<unireg:nextRowClass/>" >
-					<td width="25%">
-						<fmt:message key="label.etat.message" />&nbsp;:
-					</td>
-					<td width="25%">
-						<form:select path="etatMessage">
-							<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
-							<form:options items="${etatsMessage}" />
-						</form:select>
-					</td>
-					<td width="25%">&nbsp;</td>
-					<td width="25%">&nbsp;</td>
-				</tr>	
-		
-				</authz:authorize>
+			<c:when test="${messageTraite}">
+                <tr class="<unireg:nextRowClass/>" >
+                    <td width="25%">
+                        <fmt:message key="label.etat.message" />&nbsp;:
+                    </td>
+                    <td width="25%">
+                        <form:select path="etatMessage">
+                            <form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+                            <form:options items="${etatsMessage}" />
+                        </form:select>
+                    </td>
+                    <td width="25%">&nbsp;</td>
+                    <td width="25%">&nbsp;</td>
+                </tr>
+                <tr class="<unireg:nextRowClass/>" >
+                    <td width="25%">
+                        <fmt:message key="label.identification.traitement.user" />&nbsp;:
+                    </td>
+                    <td width="25%">
+                        <form:select path="traitementUser">
+                            <form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+                            <form:options items="${traitementUsers}" />
+                        </form:select>
+                    </td>
+                    <td width="25%">&nbsp;</td>
+                    <td width="25%">&nbsp;</td>
+                </tr>
+                <tr class="<unireg:nextRowClass/>" >
+                    <td width="25%">
+                        <fmt:message key="label.date.traitement.debut" />&nbsp;:
+                    </td>
+                    <td width="25%">
+                        <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+                            <jsp:param name="path" value="dateTraitementDebut" />
+                            <jsp:param name="id" value="dateTraitementDebut" />
+                        </jsp:include>&nbsp;
+                        <fmt:message key="label.date.traitement.fin" />&nbsp;
+                        <jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
+                            <jsp:param name="path" value="dateTraitementFin" />
+                            <jsp:param name="id" value="dateTraitementFin" />
+                        </jsp:include>
+                    </td>
+                    <td width="25%">&nbsp;</td>
+                    <td width="25%">&nbsp;</td>
+                </tr>
 			</c:when>		
 		
 			<c:otherwise>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%">
-							<fmt:message key="label.etat.message" />&nbsp;:
-						</td>
-						<td width="25%">
-							<form:select path="etatMessage">
-								<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
-								<form:options items="${etatsMessage}" />
-							</form:select>
-						</td>
-						<td width="25%">&nbsp;</td>
-						<td width="25%">&nbsp;</td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%">
-							<fmt:message key="label.identification.traitement.user" />&nbsp;:
-						</td>
-						<td width="25%">
-							<form:select path="traitementUser">
-								<form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
-								<form:options items="${traitementUsers}" />
-							</form:select>
-						</td>
-						<td width="25%">&nbsp;</td>
-						<td width="25%">&nbsp;</td>
-					</tr>
-					<tr class="<unireg:nextRowClass/>" >
-						<td width="25%">
-							<fmt:message key="label.date.traitement.debut" />&nbsp;:
-						</td>
-						<td width="25%">
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateTraitementDebut" />
-								<jsp:param name="id" value="dateTraitementDebut" />
-							</jsp:include>&nbsp;
-							<fmt:message key="label.date.traitement.fin" />&nbsp;
-							<jsp:include page="/WEB-INF/jsp/include/inputCalendar.jsp">
-								<jsp:param name="path" value="dateTraitementFin" />
-								<jsp:param name="id" value="dateTraitementFin" />
-							</jsp:include>
-						</td>
-						<td width="25%">&nbsp;</td>
-						<td width="25%">&nbsp;</td>
-					</tr>
+                <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_GEST_BO,ROLE_MW_IDENT_CTB_ADMIN,ROLE_MW_IDENT_CTB_VISU">
+
+
+                    <tr class="<unireg:nextRowClass/>" >
+                        <td width="25%">
+                            <fmt:message key="label.etat.message" />&nbsp;:
+                        </td>
+                        <td width="25%">
+                            <form:select path="etatMessage">
+                                <form:option value="TOUS" ><fmt:message key="option.TOUS" /></form:option>
+                                <form:options items="${etatsMessage}" />
+                            </form:select>
+                        </td>
+                        <td width="25%">&nbsp;</td>
+                        <td width="25%">&nbsp;</td>
+                    </tr>
+
+                </authz:authorize>
+
 			</c:otherwise>
 		</c:choose>
 	

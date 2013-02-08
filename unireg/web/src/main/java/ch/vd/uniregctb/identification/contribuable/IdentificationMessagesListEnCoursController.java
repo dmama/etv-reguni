@@ -225,33 +225,33 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
 		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
-			return identificationMapHelper.initMapEtatEnCoursSuspenduMessage();
+			return identificationMapHelper.initMapEtatMessageSuspendu();
 		}
 
 		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
-			return identificationMapHelper.initMapEtatEnCoursMessage();
+			return identificationMapHelper.initMapEtatMessageEnCours();
 		}
 		return null;
 	}
 
 	@Override
 	protected Map<String, String> initMapEmetteurId() {
-		return identificationMapHelper.initMapEmetteurId(false);
+		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 	}
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
 		final TypeDemande[] types = getAllowedTypes();
-		return identificationMapHelper.initMapTypeMessage(false, types);
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, types);
 	}
 
 	@Override
 	protected Map<Integer, String> initMapPeriodeFiscale() {
-		return identificationMapHelper.initMapPeriodeFiscale(false);
+		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 	}
 
 	@Override
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
-		return identificationMapHelper.initMapPrioriteEmetteur(false);
+		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 }

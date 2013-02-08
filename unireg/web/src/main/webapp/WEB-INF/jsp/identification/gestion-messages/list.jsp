@@ -9,13 +9,24 @@
 		<c:when test="${messageTraite}">
 			<c:set var="myAction" value="listTraite.do" />
 		</c:when>
+    <c:when test="${messageSuspendu}">
+        <c:set var="myAction" value="listSuspendu.do" />
+    </c:when>
 </c:choose>
+
+<c:set var="mySource" value="enCours" />
 
 <c:set var="titrePage" value="title.messages.en.cours" />
 
 <c:if test="${messageTraite}">
 	<c:set var="titrePage" value="title.messages.archive" />
 </c:if>
+
+<c:if test="${messageSuspendu}">
+    <c:set var="titrePage" value="title.messages.suspendu" />
+    <c:set var="mySource" value="suspendu"/>
+</c:if>
+
 
 
 
@@ -38,8 +49,8 @@
 				<FONT COLOR="#FF0000">Attention la recherche est désynchronisée après la suspension ou la soumission de messages</FONT>
 			</div>
             <script type="text/javascript">
-                function traiterMessage(id) {
-                    var form = $('<form method="POST" action="' + App.curl('identification/gestion-messages/demandeEdit.do?id=' + id) +'"/>');
+                function traiterMessage(id,source) {
+                    var form = $('<form method="POST" action="' + App.curl('identification/gestion-messages/demandeEdit.do?id=' + id+'&source='+source) +'"/>');
                     form.appendTo('body');
                     form.submit();
                 }
@@ -112,7 +123,7 @@
 								<c:choose>
 									<c:when test="${(message.utilisateurTraitant==null) || (message.utilisateurTraitant==command.userCourant)}">
 										<c:if test="${!messageTraite}">
-											<unireg:raccourciModifier onClick="traiterMessage(${message.id});" tooltip="Traiter le message" />
+											<unireg:raccourciModifier onClick="traiterMessage(${message.id},'${mySource}');" tooltip="Traiter le message" />
 										</c:if>
 									</c:when>
 									<c:when test="${(message.utilisateurTraitant!=null)}">
@@ -143,8 +154,12 @@
                             <td width="50%">
                                 <div class="navigation-action" id="actions-masse-messages">
                                     <authz:authorize ifAnyGranted="ROLE_MW_IDENT_CTB_ADMIN">
-                                        <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
-                                        <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+                                        <c:if test="${messageEnCours}">
+                                            <input type="button" name="suspendre" value="<fmt:message key="label.bouton.suspendre" />" onClick="javascript:IdentificationCtb.confirmeSuspensionMessage();"/>&nbsp;
+                                        </c:if>
+                                        <c:if test="${messageSuspendu}">
+                                            <input type="button" name="soumettre" value="<fmt:message key="label.bouton.soumettre"/>" onClick="javascript:IdentificationCtb.confirmeSoumissionMessage();"/>&nbsp;
+                                        </c:if>
                                     </authz:authorize>
                                     <input type="button" name="debloquer" value="<fmt:message key="label.bouton.debloquer"/>" onClick="javascript:IdentificationCtb.confirmeDeblocageMessage();"/>&nbsp;
                                     <unireg:testMode>

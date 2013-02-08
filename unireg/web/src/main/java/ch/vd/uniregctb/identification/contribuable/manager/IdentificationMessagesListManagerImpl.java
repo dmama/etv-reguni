@@ -81,6 +81,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Recherche des identifications correspondant aux critères
 	 *
+	 *
 	 * @param bean
 	 * @param pagination
 	 * @param typeDemande
@@ -91,9 +92,9 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Override
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                   boolean nonTraiterAndSuspendu, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
+	                                                   boolean suspenduOnly, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
-		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
+		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
 		for (IdentificationContribuable identification : identifications) {
 			IdentificationMessagesResultView identificationView = buildView(identification);
 			identificationsView.add(identificationView);
@@ -124,14 +125,15 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
 	 *
+	 *
 	 * @param criterion
 	 * @param typeDemande
 	 * @return
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande... typeDemande) {
-		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, nonTraiterAndSuspendu, typeDemande);
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly, TypeDemande... typeDemande) {
+		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
 	}
 
 	/**

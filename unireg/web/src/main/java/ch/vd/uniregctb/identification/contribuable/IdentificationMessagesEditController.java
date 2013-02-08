@@ -115,9 +115,22 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 			identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 			removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-			mav.setView(new RedirectView("listEnCours.do"));
+			calculerView(request, mav);
+
 		}
 		return mav;
+	}
+
+	private void calculerView(HttpServletRequest request, ModelAndView mav) {
+		final String source = (String) request.getSession().getAttribute(SOURCE_PARAMETER);
+		if ("enCours".equals(source)) {
+			mav.setView(new RedirectView("listEnCours.do"));
+		}
+
+
+		if ("suspendu".equals(source)) {
+			mav.setView(new RedirectView("listSuspendu.do"));
+		}
 	}
 
 	/**
@@ -157,7 +170,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 
 					identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-					mav.setView(new RedirectView("listEnCours.do"));
+					calculerView(request, mav);
 
 					return mav;
 				}
@@ -169,7 +182,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				// permettre que la vu soit recharger après modif
 				removeModuleFromSession(request, PP_CRITERIA_NAME);
 
-				mav.setView(new RedirectView("listEnCours.do"));
+				calculerView(request, mav);
 
 				return mav;
 			}
@@ -178,7 +191,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 				identificationMessagesEditManager.impossibleAIdentifier(null);
 				identificationMessagesEditManager.deVerouillerMessage(bean.getDemandeIdentificationView().getId(), false);
 
-				mav.setView(new RedirectView("listEnCours.do"));
+				calculerView(request, mav);
 
 				return mav;
 			}
@@ -195,7 +208,7 @@ public class IdentificationMessagesEditController extends AbstractTiersListContr
 		else {
 			//Le message est déjà traité, l'utilisateur s'amuse avec le bouton back
 			Flash.warning(String.format("Ce message a déjà été traité, vous avez été redirigé vers la liste de messages en cours"));
-			mav.setView(new RedirectView("listEnCours.do"));
+			calculerView(request, mav);
 		}
 
 		return mav;

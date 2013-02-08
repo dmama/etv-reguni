@@ -113,8 +113,8 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 			// Récupération de la pagination
 			final WebParamPagination pagination = new WebParamPagination(request, TABLE_IDENTIFICATION_ID, PAGE_SIZE);
 			final TypeDemande[] types = getAllowedTypes();
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, identificationMessagesListManager.find(bean, pagination, false, true, false, types));
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true, false, types));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, identificationMessagesListManager.find(bean, pagination, false, true,false, types));
+			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, identificationMessagesListManager.count(bean, false, true,false, types));
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());
@@ -167,28 +167,28 @@ public class IdentificationMessagesListTraiteController extends AbstractIdentifi
 
 	@Override
 	public Map<Etat, String> initMapEtatMessage() {
-		return identificationMapHelper.initMapEtatArchiveMessage();
+		return identificationMapHelper.initMapEtatMessageArchive();
 	}
 
 	@Override
 	protected Map<String, String> initMapEmetteurId() {
-		return identificationMapHelper.initMapEmetteurId(true);
+		return identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 	}
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
 		final TypeDemande[] types = getAllowedTypes();
-		return identificationMapHelper.initMapTypeMessage(true, types);
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
 	}
 
 	@Override
 	protected Map<Integer, String> initMapPeriodeFiscale() {
-		return identificationMapHelper.initMapPeriodeFiscale(true);
+		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 
 	}
 
 	@Override
 	protected Map<Demande.PrioriteEmetteur, String> initMapPrioriteEmetteur() {
-		return identificationMapHelper.initMapPrioriteEmetteur(true);
+		return identificationMapHelper.initMapPrioriteEmetteur();
 	}
 }

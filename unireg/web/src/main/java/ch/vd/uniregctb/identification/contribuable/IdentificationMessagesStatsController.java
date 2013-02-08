@@ -134,13 +134,13 @@ public class IdentificationMessagesStatsController extends AbstractIdentificatio
 
 	@Override
 	protected Map<String, String> initMapTypeMessage() {
-		return identificationMapHelper.initMapTypeMessage();
+		return identificationMapHelper.initMapTypeMessage(IdentificationContribuableEtatFilter.TOUS);
 
 	}
 
 	@Override
 	protected Map<Integer, String> initMapPeriodeFiscale() {
-		return identificationMapHelper.initMapPeriodeFiscale();
+		return identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.TOUS);
 	}
 
 }

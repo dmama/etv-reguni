@@ -37,12 +37,12 @@ public interface IdentificationContribuableService {
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 */
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiterAndSuspendu, TypeDemande... typeDemande);
+	                                             boolean suspenduOnly, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 */
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu,
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly,
 	                 TypeDemande... typeDemande);
 
 	/**

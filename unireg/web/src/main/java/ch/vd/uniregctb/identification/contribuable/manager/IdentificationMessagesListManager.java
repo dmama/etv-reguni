@@ -19,14 +19,14 @@ public interface IdentificationMessagesListManager {
 	 */
 	@Transactional(readOnly = true)
 	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                   boolean nonTraiterAndSuspendu, TypeDemande... typeDemande)
+	                                                   boolean suspenduOnly, TypeDemande... typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
 	 */
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiterAndSuspendu, TypeDemande... typeDemande);
+	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly, TypeDemande... typeDemande);
 
 
 	/**

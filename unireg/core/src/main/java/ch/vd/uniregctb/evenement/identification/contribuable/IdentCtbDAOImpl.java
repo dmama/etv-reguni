@@ -38,13 +38,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean nonTraiteAndSuspendu, TypeDemande... typeDemande) {
+	                                             boolean suspenduOnly, TypeDemande... typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:find");
 		}
 
 		final List<Object> criteria = new ArrayList<Object>();
-		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
+		final String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 		return executeSearch(paramPagination, criteria, queryWhere, typeDemande);
 	}
 
@@ -98,18 +98,17 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 	/**
 	 * @param nonTraiteOnly
-	 * @param nonTraiteAndSuspendu
 	 * @param typeDemande
 	 */
 	@Override
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean nonTraiteAndSuspendu,
-	                 TypeDemande... typeDemande) {
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
+	                 boolean suspenduOnly, TypeDemande... typeDemande) {
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of IdentificationContribuableDAO:count");
 		}
 		Assert.notNull(identificationContribuableCriteria, "Les critères de recherche peuvent pas être nuls");
 		final List<Object> criteria = new ArrayList<Object>();
-		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, nonTraiteAndSuspendu);
+		String queryWhere = buildCriterion(criteria, identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly);
 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
@@ -246,7 +245,7 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * Construit la clause Where
 	 */
 	private String buildCriterion(List<Object> criteria, IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                              boolean nonTraiteOrSuspendu) {
+	                              boolean suspenduOnly) {
 		String queryWhere = "";
 
 		String typeMessage = identificationContribuableCriteria.getTypeMessage();
@@ -338,8 +337,8 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		else if (archiveOnly) {
 			queryWhere = buildCriterionEtatArchive(criteria, queryWhere, identificationContribuableCriteria);
 		}
-		else if (nonTraiteOrSuspendu) {
-			queryWhere = buildCriterionEtatNonTraiteOrSuspendu(criteria, queryWhere, identificationContribuableCriteria);
+		else if (suspenduOnly) {
+			queryWhere = buildCriterionEtatSuspendu(criteria, queryWhere, identificationContribuableCriteria);
 		}
 		else {
 			queryWhere = buildCriterionEtat(criteria, queryWhere, identificationContribuableCriteria);
@@ -536,6 +535,51 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 
 		return queryWhere;
 	}
+
+	/**
+	 * Construit le critere avec les états en cours, a expertiser
+	 *
+	 * @param criteria
+	 * @param identificationContribuableCriteria
+	 *
+	 * @param queryWhere
+	 * @return
+	 */
+	private String buildCriterionEtatSuspendu(List<Object> criteria, String queryWhere, IdentificationContribuableCriteria identificationContribuableCriteria) {
+
+
+		// Si la valeur n'existe pas (TOUS par exemple), etat = null
+		Etat etat;
+		try {
+			etat = Etat.valueOf(identificationContribuableCriteria.getEtatMessage());
+		}
+		catch (Exception e) {
+			etat = null; // Etat inconnu => TOUS
+		}
+		if (etat == null) {
+			// la valeur de l'etat est a expertiser ou en cours
+			Etat aExpertiserSuspendu = Etat.A_EXPERTISER_SUSPENDU;
+			Etat aTraiterManSuspendu = Etat.A_TRAITER_MAN_SUSPENDU;
+
+			queryWhere += " and identificationContribuable.etat in(?,?) ";
+			if (LOGGER.isTraceEnabled()) {
+
+				LOGGER.trace("Etat identification CTB: " + aExpertiserSuspendu + " - " + aTraiterManSuspendu);
+			}
+			criteria.add(aExpertiserSuspendu.name());
+			criteria.add(aTraiterManSuspendu.name());
+		}
+		else {
+			queryWhere += " and identificationContribuable.etat = ? ";
+			if (LOGGER.isTraceEnabled()) {
+				LOGGER.trace("Etat identification CTB: " + etat);
+			}
+			criteria.add(etat.name());
+		}
+
+		return queryWhere;
+	}
+
 
 	/**
 	 * Construit le critere avec l'état passé en paramètre

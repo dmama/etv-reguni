@@ -76,7 +76,7 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur(final boolean isTraite) {
+	public Map<PrioriteEmetteur, String> initMapPrioriteEmetteur() {
 
 		final Map<PrioriteEmetteur, String> allPrioriteEmetteur = new TreeMap<PrioriteEmetteur, String>();
 
@@ -106,10 +106,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<Etat, String> initMapEtatEnCoursMessage() {
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(false);
-		etatsMessages.remove(Etat.A_EXPERTISER_SUSPENDU);
-		etatsMessages.remove(Etat.A_TRAITER_MAN_SUSPENDU);
+	public Map<Etat, String> initMapEtatMessageEnCours() {
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 		return etatsMessages;
 	}
 
@@ -118,9 +116,9 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<Etat, String> initMapEtatEnCoursSuspenduMessage() {
+	public Map<Etat, String> initMapEtatMessageSuspendu() {
 
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(false);
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 
 		return etatsMessages;
 	}
@@ -130,10 +128,14 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<Etat, String> initMapEtatMessage(final boolean isTraite) {
+	public Map<Etat, String> initMapEtatMessage(final IdentificationContribuableEtatFilter filter) {
 		final Map<Etat, String> mapEtat = new EnumMap<Etat, String>(Etat.class);
-		final Collection<Etat> typesMessage = identCtbService.getEtats(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+		final Collection<Etat> etats = identCtbService.getEtats(filter);
 
+		return getEtatAndLibelle(mapEtat, etats);
+	}
+
+	private Map<Etat, String> getEtatAndLibelle(Map<Etat, String> mapEtat, Collection<Etat> typesMessage) {
 		for (Etat etat : typesMessage) {
 			String libelleEtat = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyEtatMessage + etat);
 			mapEtat.put(etat, libelleEtat);
@@ -141,15 +143,21 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		return mapEtat;
 	}
 
+
+
 	/**
 	 * Initialise la map des types du message
 	 *
 	 * @return une map
 	 */
 
-	public Map<String, String> initMapTypeMessage() {
+	public Map<String, String> initMapTypeMessage(IdentificationContribuableEtatFilter filter) {
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final Collection<String> typesMessage = identCtbService.getTypesMessages(IdentificationContribuableEtatFilter.TOUS);
+		final Collection<String> typesMessage = identCtbService.getTypesMessages(filter);
+		return getTypeMessageAndLibelle(mapMessage, typesMessage);
+	}
+
+	private Map<String, String> getTypeMessageAndLibelle(Map<String, String> mapMessage, Collection<String> typesMessage) {
 		for (String typeMessage : typesMessage) {
 			final String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
 			mapMessage.put(typeMessage, typeMessageValeur);
@@ -161,14 +169,10 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	/**
 	 * Initialise la map des types de message
 	 */
-	public Map<String, String> initMapTypeMessage(final boolean isTraite, TypeDemande... typesDemande) {
+	public Map<String, String> initMapTypeMessage(final IdentificationContribuableEtatFilter filter, TypeDemande... typesDemande) {
 		final Map<String, String> mapMessage = new HashMap<String, String>();
-		final Collection<String> typesMessage = identCtbService.getTypeMessages(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES, typesDemande);
-		for (String typeMessage : typesMessage) {
-			final String typeMessageValeur = this.getMessageSourceAccessor().getMessage(ApplicationConfig.masterKeyTypeMessage + typeMessage);
-			mapMessage.put(typeMessage, typeMessageValeur);
-		}
-		return sortMapAccordingToValues(mapMessage);
+		final Collection<String> typesMessage = identCtbService.getTypeMessages(filter, typesDemande);
+		return getTypeMessageAndLibelle(mapMessage, typesMessage);
 	}
 
 	/**
@@ -200,14 +204,21 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 * Initialise la map des types du message
 	 *
 	 * @return une map
+	 * @param filter
 	 */
 
-	public Map<String, String> initMapEmetteurId(final boolean isTraite) {
+	public Map<String, String> initMapEmetteurId(IdentificationContribuableEtatFilter filter) {
+		final Collection<String> emetteurs = identCtbService.getEmetteursId(filter);
+		return getEmetteursIdAndLibelle(emetteurs);
+
+	}
+
+	private Map<String, String> getEmetteursIdAndLibelle(Collection<String> emetteurs) {
 		// [SIFISC-5847] Le tri des identifiants d'émetteurs doit être <i>case-insensitive</i>
 		// [SIFISC-5847] Il ne faut pas tenir compte des espaces initiaux dans le tri et l'affichage des libellés
 		final StringComparator comparator = new StringComparator(false, false, false, null);
 		final Map<String, String> allEmetteurs = new TreeMap<String, String>(comparator);
-		final Collection<String> emetteurs = identCtbService.getEmetteursId(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+
 
 		for (String emetteur : emetteurs) {
 			final String libelle = StringUtils.trimToEmpty(emetteur);
@@ -224,8 +235,8 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	}
 
 
-	public Map<Etat, String> initMapEtatArchiveMessage() {
-		final Map<Etat, String> etatsMessages = initMapEtatMessage(true);
+	public Map<Etat, String> initMapEtatMessageArchive() {
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_TRAITES);
 
 		return etatsMessages;
 	}
@@ -235,10 +246,19 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 *
 	 * @return une map
 	 */
-	public Map<Integer, String> initMapPeriodeFiscale(final boolean isTraite) {
-		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
-		final Collection<Integer> periodes = identCtbService.getPeriodesFiscales(isTraite ? IdentificationContribuableEtatFilter.SEULEMENT_TRAITES : IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+	public Map<Integer, String> initMapPeriodeFiscale(IdentificationContribuableEtatFilter filter) {
+		final Collection<Integer> periodes = identCtbService.getPeriodesFiscales(filter);
+		return getPeriodesValues(periodes);
+	}
 
+
+
+
+
+
+
+	private Map<Integer, String> getPeriodesValues(Collection<Integer> periodes) {
+		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
 		for (Integer periode : periodes) {
 			allPeriodeFiscale.put(periode, Integer.toString(periode));
 		}
@@ -246,37 +266,20 @@ public class IdentificationMapHelper extends CommonMapHelper {
 		return allPeriodeFiscale;
 	}
 
-
-	/**
-	 * Initialise la map des periodes fiscales
-	 *
-	 * @return une map
-	 */
-	public Map<Integer, String> initMapPeriodeFiscale() {
-		final Map<Integer, String> allPeriodeFiscale = new TreeMap<Integer, String>();
-		final Collection<Integer> periodes = identCtbService.getPeriodesFiscales(IdentificationContribuableEtatFilter.TOUS);
-
-		for (Integer periode : periodes) {
-			allPeriodeFiscale.put(periode, Integer.toString(periode));
-		}
-
-		return allPeriodeFiscale;
-	}
-
-	public Map<String, Object> getMaps(final boolean isTraite) {
+	public Map<String, Object> getMaps(IdentificationContribuableEtatFilter filter) {
 		final Map<String, Object> data = new HashMap<String, Object>(7);
-		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale(isTraite));
-		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(isTraite));
+		data.put(PERIODE_FISCALE_MAP_NAME, initMapPeriodeFiscale(filter));
+		data.put(EMETTEUR_MAP_NAME, initMapEmetteurId(filter));
 		data.put(ETAT_MESSAGE_MAP_NAME, initMapEtatMessage());
-		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage());
-		data.put(PRIORITE_EMETTEUR_MAP_NAME, initMapPrioriteEmetteur(isTraite));
+		data.put(TYPE_MESSAGE_MAP_NAME, initMapTypeMessage(IdentificationContribuableEtatFilter.TOUS));
+		data.put(PRIORITE_EMETTEUR_MAP_NAME, initMapPrioriteEmetteur());
 		data.put(ERREUR_MESSAGE_MAP_NAME, initErreurMessage());
 		data.put(TRAITEMENT_USER_MAP_NAME, initMapUser());
 		return data;
 	}
 
-	public void putMapsIntoModel(Model model, boolean isTraite) {
-		final Map<String, Object> maps = getMaps(isTraite);
+	public void putMapsIntoModel(Model model,IdentificationContribuableEtatFilter filter) {
+		final Map<String, Object> maps = getMaps(filter);
 		for (Map.Entry<String, Object> entry : maps.entrySet()) {
 			model.addAttribute(entry.getKey(), entry.getValue());
 		}
