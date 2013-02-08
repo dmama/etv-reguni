@@ -63,6 +63,7 @@ public class UniregProperties implements InitializingBean {
 		properties.setListDelimiter((char) 0); // Disabled
 		// Fais le chargement a la fin quand on a disabled le delimiter
 		properties.setFileName(filename);
+		properties.load();
 
 		// Dump des properties
 		String str = dumpProps(true);

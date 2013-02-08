@@ -25,7 +25,7 @@ public class RcPersServiceTest {
 	public RcPersServiceTest() {
 		try {
 			uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("file:../base/unireg-ut.properties");
+			uniregProperties.setFilename("../base/unireg-ut.properties");
 			uniregProperties.afterPropertiesSet();
 		}
 		catch (Exception e) {

@@ -34,8 +34,8 @@ public abstract class EvenementHelper {
 
 	public static UniregProperties initProps() {
 		try {
-			UniregProperties uniregProperties = new UniregProperties();
-			uniregProperties.setFilename("file:../base/unireg-ut.properties");
+			final UniregProperties uniregProperties = new UniregProperties();
+			uniregProperties.setFilename("../base/unireg-ut.properties");
 			uniregProperties.afterPropertiesSet();
 			return uniregProperties;
 		}
