@@ -8,6 +8,7 @@
 		<property name="receiveTimeout" value="1000" />
 		<property name="application" value="unireg" />
 		<property name="domain" value="fiscalite"/>
+		<property name="sessionTransacted" value="true"/>
 	</bean>
 
 	<bean id="esbMessageListener" abstract="true" class="ch.vd.technical.esb.jms.EsbMessageEndpointListener">
