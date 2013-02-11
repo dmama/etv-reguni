@@ -161,8 +161,8 @@ public class ListeRecapServiceImpl implements ListeRecapService {
 		lr.setTiers(dpi);
 		lr = listeRecapDAO.save(lr);
 
-		// [UNIREG-2164] cet appel provoque la réindexation du débiteur pour rien : dpi.addDeclaration(lr);
-		// DebiteurPrestationImposable dpiSaved = (DebiteurPrestationImposable) tiersDAO.save(dpi);
+		// [SIFISC-7979] force la re-validation du débiteur
+		dpi.addDeclaration(lr);
 		return lr;
 	}
 
