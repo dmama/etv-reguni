@@ -30,38 +30,6 @@ public class EnvoiLRsEnMasseProcessorTest extends BusinessTest {
 		processor = new EnvoiLRsEnMasseProcessor(transactionManager, hibernateTemplate, lrService, tiersService, adresseService);
 	}
 
-	/**
-	 * [UNIREG-3115] teste que l'envoi de LR ne plante pas lorsque la LR généré a une date de début antérieur à la date de début de // la périodicité
-	 */
-	@Test
-	public void testEnvoiLRAnterieurPeriodicite() throws Exception {
-
-		final int anneeReference = 2010;
-		final long dpiId = doInNewTransaction(new TxCallback<Long>() {
-			@Override
-			public Long execute(TransactionStatus status) throws Exception {
-				DebiteurPrestationImposable dpi = addDebiteur();
-				dpi.setSansListeRecapitulative(false);
-
-				tiersService.addPeriodicite(dpi, PeriodiciteDecompte.ANNUEL, null, date(anneeReference, 9, 1), null);
-				addForDebiteur(dpi, date(anneeReference, 9, 1), null, MockCommune.Bex);
-
-				addPeriodeFiscale(anneeReference);
-				return dpi.getNumero();
-			}
-		});
-
-		final EnvoiLRsResults envoiLRsResults = doInNewTransaction(new TxCallback<EnvoiLRsResults>() {
-			@Override
-			public EnvoiLRsResults execute(TransactionStatus status) throws Exception {
-				return processor.run(date(2010, 12, 31), null);
-			}
-		});
-
-		assertEquals(1, envoiLRsResults.LRTraitees.size());
-		assertEquals(dpiId, envoiLRsResults.LRTraitees.get(0).noCtb);
-	}
-
 	@Test
 	public void testEnvoiLRPeriodiciteUnique() throws Exception {
 

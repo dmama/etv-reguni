@@ -39,8 +39,6 @@ import ch.vd.uniregctb.type.PeriodiciteDecompte;
 @DiscriminatorValue("DebiteurPrestationImposable")
 public class DebiteurPrestationImposable extends Tiers {
 
-	private static final long serialVersionUID = -9115124361562905652L;
-
 	public static final int FIRST_MIGRATION_ID = 1000000;
 	public static final int LAST_MIGRATION_ID = 1499999;
 	public static final int FIRST_ID = 1500000;
@@ -52,8 +50,8 @@ public class DebiteurPrestationImposable extends Tiers {
 	private PeriodiciteDecompte periodiciteDecompteAvantMigration;
 	private PeriodeDecompte periodeDecompteAvantMigration;
 	private ModeCommunication modeCommunication;
-	private Boolean sansRappel;
-	private Boolean sansListeRecapitulative;
+	private Boolean sansRappel = Boolean.FALSE;
+	private Boolean sansListeRecapitulative = Boolean.FALSE;
 	private Set<Periodicite> periodicites;
 	private Long logicielId;
 

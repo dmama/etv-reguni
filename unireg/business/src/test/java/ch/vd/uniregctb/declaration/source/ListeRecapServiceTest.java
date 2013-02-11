@@ -3,6 +3,7 @@ package ch.vd.uniregctb.declaration.source;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import junit.framework.Assert;
 import org.junit.Test;
@@ -13,8 +14,11 @@ import org.springframework.transaction.support.TransactionCallback;
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.validation.ValidationException;
+import ch.vd.registre.base.validation.ValidationMessage;
 import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.BusinessTest;
+import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.Periodicite;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
@@ -296,6 +300,60 @@ public class ListeRecapServiceTest extends BusinessTest {
 				}
 
 				checkSameCollections(lrAttendues, lrTrouvees);
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testValidationDebiteurApresEmissionLR() throws Exception {
+
+		final RegDate dateDebutFor = date(2012, 12, 1);     // pas sur un trimestre
+		final RegDate dateFinPeriode = date(2012, 12, 31);  // on ne s'intéresse pour le moment qu'à la fin 2012
+
+		final long dpiId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = addDebiteur();
+				dpi.setCategorieImpotSource(CategorieImpotSource.REGULIERS);
+				dpi.addPeriodicite(new Periodicite(PeriodiciteDecompte.TRIMESTRIEL, null, dateDebutFor, null));
+				addForDebiteur(dpi, dateDebutFor, null, MockCommune.Lausanne);
+				addPeriodeFiscale(dateDebutFor.year());
+				return dpi.getNumero();
+			}
+		});
+
+		try {
+			doInNewTransactionAndSession(new TxCallback<Object>() {
+				@Override
+				public Object execute(TransactionStatus status) throws Exception {
+					lrService.imprimerAllLR(dateFinPeriode, null);
+					return null;
+				}
+			});
+
+			// on doit exploser car Unireg ne peut pas générer la LR du quatrième trimestre 2012
+			// si le for existant ne couvre pas toute la période
+			Assert.fail("La validation du tiers aurait dû sauter");
+		}
+		catch (ValidationException e) {
+			final List<ValidationMessage> errors = e.getErrors();
+			Assert.assertEquals(1, errors.size());
+			final ValidationMessage error = errors.get(0);
+			Assert.assertNotNull(error);
+
+			final String msg = "La période qui débute le (01.10.2012) et se termine le (30.11.2012) contient des LRs alors qu'elle n'est couverte par aucun for valide";
+			Assert.assertEquals(msg, error.getMessage());
+		}
+
+		// on vérifie bien qu'aucune LR n'a été générée...
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
+				Assert.assertNotNull(dpi);
+				final Set<Declaration> lrs = dpi.getDeclarations();
+				Assert.assertEquals(0, lrs.size());
 				return null;
 			}
 		});
