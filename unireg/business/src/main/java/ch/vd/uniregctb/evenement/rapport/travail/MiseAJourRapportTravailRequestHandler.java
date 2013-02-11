@@ -97,7 +97,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	List<RapportPrestationImposable> getRapportPrestation(DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
 		final List<RapportPrestationImposable> rapports = new ArrayList<RapportPrestationImposable>();
 		for (RapportEntreTiers rapportEntreTiers : dpi.getRapportsObjet()) {
-			if (rapportEntreTiers instanceof RapportPrestationImposable && rapportEntreTiers.getSujetId().equals(sourcier.getId())) {
+			if (rapportEntreTiers instanceof RapportPrestationImposable && rapportEntreTiers.getSujetId().equals(sourcier.getId()) && !rapportEntreTiers.isAnnule()) {
 				rapports.add((RapportPrestationImposable) rapportEntreTiers);
 			}
 		}
