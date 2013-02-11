@@ -183,7 +183,6 @@ public class PersonnePhysique extends Contribuable {
 	 */
 	@Column(name = "NUMERO_INDIVIDU")
 	@Index(name = "IDX_NUMERO_INDIVIDU")
-
 	public Long getNumeroIndividu() {
 		return numeroIndividu;
 	}

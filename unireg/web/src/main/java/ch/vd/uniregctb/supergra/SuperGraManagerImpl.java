@@ -671,8 +671,23 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 			public Object doInHibernate(Session session) throws HibernateException, SQLException {
 
 				// Transformation de la personne physique en ménage commun
-				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, PP_HABITANT=NULL, " +
-						                                              "NUMERO_INDIVIDU=NULL, INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='PersonnePhysique'");
+				final SQLQuery query0 = session.createSQLQuery("UPDATE TIERS SET TIERS_TYPE='MenageCommun', LOG_MDATE=CURRENT_DATE, LOG_MUSER=:muser, " +
+						                                               "PP_HABITANT=NULL, " +
+						                                               "NUMERO_INDIVIDU=NULL, " +
+						                                               "ANCIEN_NUMERO_SOURCIER = null," +
+						                                               "NH_NUMERO_ASSURE_SOCIAL = null," +
+						                                               "NH_NOM = null," +
+						                                               "NH_PRENOM = null," +
+						                                               "NH_DATE_NAISSANCE = null," +
+						                                               "NH_SEXE = null," +
+						                                               "NH_NO_OFS_NATIONALITE = null," +
+						                                               "NH_NO_OFS_COMMUNE_ORIGINE = null," +
+						                                               "NH_LIBELLE_COMMUNE_ORIGINE = null," +
+						                                               "NH_CAT_ETRANGER = null," +
+						                                               "NH_DATE_DEBUT_VALID_AUTORIS = null," +
+						                                               "DATE_DECES = null," +
+						                                               "MAJORITE_TRAITEE = null, " +
+						                                               "INDEX_DIRTY=" + dialect.toBooleanValueString(true) + " WHERE NUMERO=:id AND TIERS_TYPE='PersonnePhysique'");
 				query0.setParameter("id", ppId);
 				query0.setParameter("muser", user);
 				query0.executeUpdate();

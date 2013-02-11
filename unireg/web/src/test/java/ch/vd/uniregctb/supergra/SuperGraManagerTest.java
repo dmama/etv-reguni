@@ -1,11 +1,18 @@
 package ch.vd.uniregctb.supergra;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.Set;
 
+import org.hibernate.HibernateException;
+import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.junit.Test;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 
+import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.uniregctb.common.WebTestSpring3;
@@ -14,12 +21,14 @@ import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TarifImpotSource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 @SuppressWarnings({"JavaDoc"})
 public class SuperGraManagerTest extends WebTestSpring3 {
@@ -50,7 +59,16 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 			@Override
 			public Long execute(TransactionStatus status) throws Exception {
 				final PersonnePhysique pp = addNonHabitant("Paul", "Trohion", date(1965, 3, 12), Sexe.MASCULIN);
-				addSituation(pp, date(1976,1,12), null, 0);
+				pp.setAncienNumeroSourcier(4444L);
+				pp.setNumeroAssureSocial("WWWW");
+				pp.setNumeroOfsNationalite(333);
+				pp.setNumeroOfsCommuneOrigine(5555);
+				pp.setLibelleCommuneOrigine("eeee");
+				pp.setCategorieEtranger(CategorieEtranger._12_FONCT_INTER_SANS_IMMUNITE);
+				pp.setDateDebutValiditeAutorisation(RegDate.get(2000, 1, 1));
+				pp.setDateDeces(RegDate.get());
+				pp.setMajoriteTraitee(true);
+				addSituation(pp, date(1976, 1, 12), null, 0);
 				addIdentificationPersonne(pp, CategorieIdentifiant.CH_ZAR_RCE, "WERT");
 				return pp.getNumero();
 			}
@@ -85,6 +103,26 @@ public class SuperGraManagerTest extends WebTestSpring3 {
 				final PersonnePhysique principal = hibernateTemplate.get(PersonnePhysique.class, appart0.getSujetId());
 				assertNotNull(principal);
 				assertEquals(idPrincipal, principal.getNumero());
+
+				// [SIFISC-7972] on vérifie que les données spécifiques aux PP ont bien été annulées dans la base
+				hibernateTemplate.execute(new HibernateCallback<Object>() {
+					@Override
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						final SQLQuery query = session.createSQLQuery("select NUMERO_INDIVIDU, ANCIEN_NUMERO_SOURCIER, NH_NUMERO_ASSURE_SOCIAL, NH_NOM, NH_PRENOM, NH_DATE_NAISSANCE, NH_SEXE, " +
+								                                              "NH_NO_OFS_NATIONALITE, NH_NO_OFS_COMMUNE_ORIGINE, NH_LIBELLE_COMMUNE_ORIGINE, NH_CAT_ETRANGER, " +
+								                                              "NH_DATE_DEBUT_VALID_AUTORIS, DATE_DECES, MAJORITE_TRAITEE from TIERS where NUMERO = ?");
+						query.setParameter(0, id);
+						final List list = query.list();
+						assertNotNull(list);
+						assertEquals(1, list.size());
+
+						final Object line[] = (Object[]) list.get(0);
+						for (Object o : line) {
+							assertNull(o);
+						}
+						return null;
+					}
+				});
 			}
 		});
 	}
