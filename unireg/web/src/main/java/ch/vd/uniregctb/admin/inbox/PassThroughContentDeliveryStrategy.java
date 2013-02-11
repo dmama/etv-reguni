@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import ch.vd.uniregctb.common.StreamUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Stratégie de téléchargement de contenu par défaut, sans aucune encapsulation
@@ -23,6 +23,6 @@ public final class PassThroughContentDeliveryStrategy implements ContentDelivery
 
 	@Override
 	public void copyToOutputStream(InputStream in, OutputStream out) throws IOException {
-		StreamUtils.copy(in, out);
+		IOUtils.copy(in, out);
 	}
 }

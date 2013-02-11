@@ -9,9 +9,9 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.apache.commons.codec.binary.Base64InputStream;
+import org.apache.commons.io.IOUtils;
 
 import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.common.StreamUtils;
 
 public class PrintPCLManagerImpl implements PrintPCLManager {
 
@@ -80,11 +80,11 @@ public class PrintPCLManagerImpl implements PrintPCLManager {
 		if (isLocalApp()) {
 			out.write(DEBUT_LOCALAPP);
 			final InputStream base64Encoder = new Base64InputStream(in, true);
-			StreamUtils.copy(base64Encoder, out);
+			IOUtils.copy(base64Encoder, out);
 			out.write(FIN_LOCALAPP);
 		}
 		else {
-			StreamUtils.copy(in, out);
+			IOUtils.copy(in, out);
 		}
 	}
 }

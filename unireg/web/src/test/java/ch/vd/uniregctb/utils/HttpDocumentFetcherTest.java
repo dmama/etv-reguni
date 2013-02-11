@@ -6,10 +6,10 @@ import java.io.InputStream;
 import java.net.ConnectException;
 import java.net.URL;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.vd.uniregctb.common.StreamUtils;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 
 public class HttpDocumentFetcherTest extends WithoutSpringTest {
@@ -51,12 +51,8 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 
 				final File file = File.createTempFile("test-recup-doc", null);
 				file.deleteOnExit();
-				final FileOutputStream out = new FileOutputStream(file);
-				try {
-					StreamUtils.copy(in, out);
-				}
-				finally {
-					out.close();
+				try (FileOutputStream out = new FileOutputStream(file)) {
+					IOUtils.copy(in, out);
 				}
 
 				Assert.assertEquals((long) contentLength, file.length());

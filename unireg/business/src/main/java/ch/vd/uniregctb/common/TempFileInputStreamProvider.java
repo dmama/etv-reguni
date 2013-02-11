@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.commons.io.IOUtils;
+
 /**
  * Permet de fournir des flux de lecture sur le contenu d'un fichier temporaire (ce fichier sera détruit
  * au moment du {@link #close()})
@@ -34,12 +36,8 @@ public final class TempFileInputStreamProvider {
 	}
 
 	private static void copyStreamToFile(InputStream in, File dest) throws IOException {
-		final FileOutputStream fos = new FileOutputStream(dest);
-		try {
-			StreamUtils.copy(in, fos);
-		}
-		finally {
-			fos.close();
+		try (FileOutputStream fos = new FileOutputStream(dest)) {
+			IOUtils.copy(in, fos);
 		}
 	}
 

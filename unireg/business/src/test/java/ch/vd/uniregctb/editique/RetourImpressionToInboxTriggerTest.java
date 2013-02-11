@@ -4,11 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import ch.vd.uniregctb.common.MimeTypeHelper;
-import ch.vd.uniregctb.common.StreamUtils;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.editique.impl.EditiqueResultatDocumentImpl;
 import ch.vd.uniregctb.inbox.InboxAttachment;
@@ -62,13 +62,11 @@ public class RetourImpressionToInboxTriggerTest extends WithoutSpringTest {
 		Assert.assertEquals("print", attachment.getFilenameRadical());
 
 		final ByteArrayOutputStream out = new ByteArrayOutputStream(100);
-		final InputStream attachmentContent = attachment.getContent();
-		try {
-			StreamUtils.copy(attachmentContent, out);
+		try (InputStream attachmentContent = attachment.getContent()) {
+			IOUtils.copy(attachmentContent, out);
 		}
 		finally {
 			out.close();
-			attachmentContent.close();
 		}
 
 		final String contenuTrouve = out.toString();
