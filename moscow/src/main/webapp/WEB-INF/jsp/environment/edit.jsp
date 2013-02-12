@@ -8,6 +8,7 @@
 	<tiles:put name="body">
 
 		<form:form commandName="environment" action="edit.do" method="POST" cssClass="form-horizontal">
+			<fieldset>
 			<legend>Edition du répertoire n°<c:out value="${environment.id}"/></legend>
 
 			<form:hidden path="id"/>
@@ -22,6 +23,7 @@
 			<div class="form-actions">
 			<input type="submit" value="Sauver" class="btn btn-primary"/> ou <a href="<c:url value="/environment/list.do"/>">annuler</a>
 			</div>
+			</fieldset>
 		</form:form>
 
 	</tiles:put>

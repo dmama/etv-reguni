@@ -8,6 +8,7 @@
 	<tiles:put name="body">
 
 		<form:form commandName="job" action="add.do" method="POST" cssClass="form-horizontal">
+			<fieldset>
 			<legend>Ajout d'un nouveau job</legend>
 
 			<div class="control-group">
@@ -35,6 +36,7 @@
 			<div class="form-actions">
 				<input type="submit" value="Ajouter" class="btn btn-primary"/> ou <a href="<c:url value="/job/list.do"/>">annuler</a>
 			</div>
+			</fieldset>
 		</form:form>
 
 		<hr/>

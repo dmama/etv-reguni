@@ -10,6 +10,7 @@
 		<h1>Edition du répertoire n°<c:out value="${directory.id}"/></h1>
 
 		<form:form commandName="directory" action="edit.do" method="POST" cssClass="form-horizontal">
+			<fieldset>
 			<legend>Edition du répertoire n°<c:out value="${directory.id}"/></legend>
 
 			<form:hidden path="id"/>
@@ -37,6 +38,7 @@
 			<div class="form-actions">
 				<input type="submit" value="Sauver" class="btn btn-primary"/> ou <a href="<c:url value="/directory/list.do"/>">annuler</a>
 			</div>
+			</fieldset>
 		</form:form>
 
 	</tiles:put>

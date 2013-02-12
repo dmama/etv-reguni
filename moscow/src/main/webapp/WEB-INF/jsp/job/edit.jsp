@@ -10,6 +10,7 @@
 		<h1>Edition du job n°<c:out value="${job.id}"/></h1>
 
 		<form:form commandName="job" action="edit.do" method="POST" cssClass="form-horizontal">
+			<fieldset>
 			<legend>Edition du job n°<c:out value="${job.id}"/></legend>
 
 			<form:hidden path="id"/>
@@ -38,6 +39,7 @@
 			<div class="form-actions">
 				<input type="submit" value="Sauver" class="btn btn-primary"/> ou <a href="<c:url value="/job/list.do"/>">annuler</a>
 			</div>
+			</fieldset>
 		</form:form>
 
 		<hr/>

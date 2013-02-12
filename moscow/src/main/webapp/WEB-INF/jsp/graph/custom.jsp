@@ -13,6 +13,7 @@
 <tiles:put name="body">
 
 	<form class="form-horizontal">
+		<fieldset>
 		<legend>Sélection des données</legend>
 
 		<div class="control-group">
@@ -94,6 +95,7 @@
 			<button id="show" class="btn btn-primary">Afficher</button>
 		</div>
 
+		</fieldset>
 	</form>
 
 	<span id="message"></span>
