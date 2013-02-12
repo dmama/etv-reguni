@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
@@ -3003,6 +3004,129 @@ public class MetiersServiceTest extends BusinessTest {
 					assertEquals("Il n'est pas possible de créer un rapport d'appartenance ménage après la date de décès d'une personne physique", e.getMessage());
 				}
 				status.setRollbackOnly();
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7881] Vérifie qu'il est possible de marier deux personnes dont l'une des deux ne possède ni permis ni nationalité, du moment que l'autre possède un permis C ou la nationalité suisse.
+	 */
+	@Test
+	public void testMariageMonsieurAvecPermisCMadameSansPermisNiNationalite() throws Exception {
+
+		final Long noInd = 12334L;
+
+		class Ids {
+			long principal;
+			long conjoint;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1963, 4, 22), "Roberelle", "René", Sexe.MASCULIN);
+				addPermis(ind, TypePermis.SEJOUR, date(1998, 5, 12), null, false);
+			}
+		});
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique principal = addHabitant(noInd);
+				addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+				ids.principal = principal.getId();
+				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+				ids.conjoint = conjoint.getId();
+			}
+		});
+
+		final RegDate dateMariage = date(2007, 2, 12);
+
+		// appel du service métier
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
+				metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
+				return null;
+			}
+		});
+
+		// Vérifie que le couple a été créé dans la base
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+				assertNotNull(principal);
+
+				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
+				assertNotNull(etc);
+
+				final MenageCommun menage = etc.getMenage();
+				assertNotNull(menage);
+
+				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(null);
+				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * [SIFISC-7881] Vérifie qu'il n'est *pas* possible de marier deux personnes lorsqu'aucune ne possède ni permis ni nationalité.
+	 */
+	@Test
+	public void testMariageMonsieurEtMadameSansPermisNiNationalite() throws Exception {
+
+		class Ids {
+			long principal;
+			long conjoint;
+		}
+		final Ids ids = new Ids();
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique principal = addNonHabitant("René", "Roberelle", date(1963, 4, 22), Sexe.MASCULIN);
+				ids.principal = principal.getId();
+				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+				ids.conjoint = conjoint.getId();
+			}
+		});
+
+		final RegDate dateMariage = date(2007, 2, 12);
+
+		// appel du service métier
+		doInNewTransactionAndSession(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+				final PersonnePhysique conjoint = (PersonnePhysique) tiersDAO.get(ids.conjoint);
+				try {
+					metierService.marie(dateMariage, principal, conjoint, null, EtatCivil.MARIE, null);
+				}
+				catch (MetierServiceException e) {
+					assertEquals("Impossible de déterminer le mode d'imposition requis (que ce soit sur le principal ou le conjoint)", e.getMessage());
+					status.setRollbackOnly();
+				}
+				return null;
+			}
+		});
+
+		// Vérifie que le couple n'a pas été créé dans la base
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique principal = (PersonnePhysique) tiersDAO.get(ids.principal);
+				assertNotNull(principal);
+
+				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(principal, null);
+				assertNull(etc);
 				return null;
 			}
 		});

@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
 import org.apache.commons.lang.mutable.MutableBoolean;
+import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -71,22 +72,39 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 		return null;
 	}
 
-	private ModeImposition getModeImposition(PersonnePhysique pp, RegDate date, MutableBoolean sansFor) throws TiersException {
+	/**
+	 * Détermine le mode d'imposition courant (à partir de son for fiscal principal) ou théorique (à partir de sa nationalité et de ses permis).
+	 * <p/>
+	 * <b>Note:</b> si la personne ne possède ni permis C ni nationalité, on retourne une valeur nulle et c'est à l'appelant de gérer le cas correctement (SIFISC-7881)
+	 *
+	 * @param pp      une personne physique
+	 * @param date    la date de valeur
+	 * @param sansFor paramètre de sortie mis à vrai si la personne ne possède pas de for fiscal principal
+	 * @return le mode d'imposition déterminé, ou <b>null</b> s'il n'a pas pu l'être.
+	 */
+	@Nullable
+	private ModeImposition getModeImposition(PersonnePhysique pp, RegDate date, MutableBoolean sansFor) {
+
 		final ForFiscalPrincipal ffp = pp.getForFiscalPrincipalAt(null);
+		sansFor.setValue(ffp == null);
+
 		final ModeImposition modeImposition;
 		if (ffp != null) {
 			modeImposition = ffp.getModeImposition();
-			sansFor.setValue(false);
 		}
 		else {
-			if (getTiersService().isSuisseOuPermisC(pp, date)) {
-				// suisse ou titulaire d'un permis C => ordinaire
-				modeImposition = ModeImposition.ORDINAIRE;
+			try {
+				if (getTiersService().isSuisseOuPermisC(pp, date)) {
+					// suisse ou titulaire d'un permis C => ordinaire
+					modeImposition = ModeImposition.ORDINAIRE;
+				}
+				else {
+					modeImposition = ModeImposition.SOURCE;
+				}
 			}
-			else {
-				modeImposition = ModeImposition.SOURCE;
+			catch (TiersException e) {
+				return null;
 			}
-			sansFor.setValue(true);
 		}
 		return modeImposition;
 	}
@@ -95,20 +113,27 @@ public class MariageModeImpositionResolver extends CreationCoupleModeImpositionR
 		final MutableBoolean principalSansFor = new MutableBoolean(false);
 		final MutableBoolean conjointSansFor = new MutableBoolean(false);
 
-		try {
-			final ModeImposition impositionPrincipal = getModeImposition(principal, date, principalSansFor);
-			final ModeImposition impositionConjoint = getModeImposition(conjoint, date, conjointSansFor);
+		final ModeImposition impositionPrincipal = getModeImposition(principal, date, principalSansFor);
+		final ModeImposition impositionConjoint = getModeImposition(conjoint, date, conjointSansFor);
 
-			if (principalSansFor.booleanValue() && conjointSansFor.booleanValue()) {
-				Audit.info(numeroEvenement, "les 2 maries ne sont pas assujetti : aucune action sur les fors");
-				return null;
-			}
+		// [SIFISC-7881] Si l'un des deux conjoints est suisse ou permis C, on peut autoriser la création du couple
+		// (qui de toute façon sera en ordinaire) sans se préoccuper de la nationalité ou du permis du second.
+		if (impositionPrincipal == null && impositionConjoint == null) {
+			throw new ModeImpositionResolverException("Impossible de déterminer le mode d'imposition requis (que ce soit sur le principal ou le conjoint)");
+		}
+		else if (impositionConjoint == null && impositionPrincipal == ModeImposition.SOURCE) {
+			throw new ModeImpositionResolverException("Impossible de déterminer le mode d'imposition requis sur le conjoint");
+		}
+		else if (impositionPrincipal == null && impositionConjoint == ModeImposition.SOURCE) {
+			throw new ModeImpositionResolverException("Impossible de déterminer le mode d'imposition requis sur le principal");
+		}
 
-			return internalResolveCouple(date, impositionPrincipal, impositionConjoint);
+		if (principalSansFor.booleanValue() && conjointSansFor.booleanValue()) {
+			Audit.info(numeroEvenement, "les 2 maries ne sont pas assujetti : aucune action sur les fors");
+			return null;
 		}
-		catch (TiersException e) {
-			throw new ModeImpositionResolverException("Impossible de déterminer le mode d'imposition requis", e);
-		}
+
+		return internalResolveCouple(date, impositionPrincipal, impositionConjoint);
 	}
 	
 	protected Imposition internalResolveCouple(RegDate date, ModeImposition impositionContribuable, ModeImposition impositionConjoint) throws ModeImpositionResolverException {

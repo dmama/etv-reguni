@@ -13,10 +13,21 @@ import org.springframework.web.servlet.ModelAndView;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
+import ch.vd.registre.base.tx.TxCallbackWithoutResult;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
+import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.uniregctb.common.WebTestSpring3;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
+import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.type.ModeImposition;
+import ch.vd.uniregctb.type.MotifFor;
+import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -188,4 +199,72 @@ public class CoupleControllerTest extends WebTestSpring3 {
 		});
 	}
 
+	/**
+	 * [SIFISC-7881] Vérifie qu'il est possible de marier deux personnes dont l'une des deux ne possède ni permis ni nationalité, du moment que l'autre possède un permis C ou la nationalité suisse.
+	 */
+	@Test
+	public void onSubmitMonsieurAvecPermisCMadameSansPermisNiNationalite() throws Exception {
+
+		final Long noInd = 12334L;
+
+		class Ids {
+			long principal;
+			long conjoint;
+		}
+		final Ids ids = new Ids();
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1963, 4, 22), "Roberelle", "René", Sexe.MASCULIN);
+				addPermis(ind, TypePermis.SEJOUR, date(1998, 5, 12), null, false);
+			}
+		});
+
+		doInNewTransaction(new TxCallbackWithoutResult() {
+			@Override
+			public void execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique principal = addHabitant(noInd);
+				addForPrincipal(principal, date(1998, 5, 12), MotifFor.ARRIVEE_HS, MockCommune.Echallens);
+				ids.principal = principal.getId();
+				final PersonnePhysique conjoint = addNonHabitant("Agathe", "Di", date(1973, 3, 2), Sexe.FEMININ);
+				ids.conjoint = conjoint.getId();
+			}
+		});
+
+		final Date dateMariage = DateHelper.getDate(2007, 2, 12);
+
+		// Simule l'envoi de la requête au serveur
+		request.setMethod("POST");
+		request.addParameter("pp1Id", String.valueOf(ids.principal));
+		request.addParameter("pp2Id", String.valueOf(ids.conjoint));
+		request.addParameter("dateDebut", DateHelper.dateToDisplayString(dateMariage));
+		request.addParameter("nouveauMC", "true");
+		request.setRequestURI("/couple/create.do");
+
+		final ModelAndView mav = handle(request, response);
+		assertNotNull(mav);
+		final Map<?, ?> model = mav.getModel();
+		assertNotNull(model);
+
+		// Vérifie que le couple a été créé dans la base
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+
+				final PersonnePhysique nhab1 = (PersonnePhysique) tiersDAO.get(ids.principal);
+				assertNotNull(nhab1);
+
+				final EnsembleTiersCouple etc = tiersService.getEnsembleTiersCouple(nhab1, null);
+				assertNotNull(etc);
+
+				final MenageCommun menage = etc.getMenage();
+				assertNotNull(menage);
+
+				final ForFiscalPrincipal ffp = menage.getForFiscalPrincipalAt(null);
+				assertForPrincipal(date(2007, 2, 12), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Echallens, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE, ffp);
+				return null;
+			}
+		});
+	}
 }
