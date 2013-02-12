@@ -51,12 +51,18 @@ public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener im
 		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
 		LOGGER.info(String.format("Arrivée d'un retour d'impression pour le document '%s'", idDocument));
 
-		final EditiqueResultatRecu document = createResultfromMessage(message);
-		if (document != null) {
-			storageService.onArriveeRetourImpression(document);
+		try {
+			final EditiqueResultatRecu document = createResultfromMessage(message);
+			if (document != null) {
+				storageService.onArriveeRetourImpression(document);
+			}
+			else {
+				LOGGER.warn("Impossible de reconnaître le document retourné");
+			}
 		}
-		else {
-			LOGGER.warn("Impossible de reconnaître le document retourné");
+		catch (Exception e) {
+			LOGGER.error(e, e);
+			throw e;
 		}
 	}
 

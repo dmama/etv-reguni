@@ -21,12 +21,18 @@ public class EFactureResponseListener extends EsbMessageEndpointListener impleme
 	}
 
 	@Override
-	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
+	public void onEsbMessage(EsbMessage esbMessage) {
 
 		nbMessagesRecus.incrementAndGet();
 
 		LOGGER.info(String.format("Arrivée de la réponse e-facture au message '%s'", esbMessage.getBusinessCorrelationId()));
-		onResponse(esbMessage.getBusinessCorrelationId());
+		try {
+			onResponse(esbMessage.getBusinessCorrelationId());
+		}
+		catch (RuntimeException e) {
+			LOGGER.error(e, e);
+			throw e;
+		}
 	}
 
 	private void onResponse(String businessId) {
