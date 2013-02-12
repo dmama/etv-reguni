@@ -773,7 +773,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		List<RapportPrestationImposable> rapportPrestationsWithAnnule = tiersService.getAllRapportPrestationImposable(dpi,sourcier, false, true);
 
 		assertEquals(2, rapportPrestations.size());
-		assertEquals(3, rapportPrestationsWithAnnule.size());
+		assertEquals(2, rapportPrestationsWithAnnule.size());
 
 		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposableFerme = (RapportPrestationImposable) rapportPrestations.get(0);

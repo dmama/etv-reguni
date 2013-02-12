@@ -567,17 +567,34 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	private void creerRapportTravail(DebiteurPrestationImposable dpi, PersonnePhysique sourcier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 		RegDate dateDebut = request.getDateDebutVersementSalaire();
 		RegDate dateFin = calculerDateFinRapportTravail(request);
+		//Afin d'éviter les doublons annulés inutiles, on teste la presence eventuelle du rapport que l'on se prépare a créér.
+		//SIFISC-7541
+		if (isRapportPresent(dateDebut, dateFin, dpi, sourcier)) {
+			aucunTraitement("Rapport à créer déjà existant ",dateDebut,dateFin,request);
 
-		final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(dateDebut, dateFin, sourcier, dpi);
-		nouveauxRapports.add(rapportPrestationImposable);
-		//tiersService.addRapportPrestationImposable(sourcier, dpi, dateDebut, dateFin);
+		}
+		else{
+			final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(dateDebut, dateFin, sourcier, dpi);
+			nouveauxRapports.add(rapportPrestationImposable);
 
-		final String message = String.format("Création d'un nouveau rapport de travail entre le débiteur %s et le sourcier %s." +
-				"  Date début du rapport: %s, date de fin: %s", FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
-				FormatNumeroHelper.numeroCTBToDisplay(sourcier.getNumero()),
-				RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin));
-		LOGGER.info(message);
+			final String message = String.format("Création d'un nouveau rapport de travail entre le débiteur %s et le sourcier %s." +
+					"  Date début du rapport: %s, date de fin: %s", FormatNumeroHelper.numeroCTBToDisplay(dpi.getNumero()),
+					FormatNumeroHelper.numeroCTBToDisplay(sourcier.getNumero()),
+					RegDateHelper.dateToDisplayString(dateDebut), RegDateHelper.dateToDisplayString(dateFin));
+			LOGGER.info(message);
+		}
 
+
+	}
+
+	private boolean isRapportPresent(RegDate dateDebut, RegDate dateFin, DebiteurPrestationImposable dpi, PersonnePhysique sourcier) {
+		final List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi,sourcier,true,true);
+		for (RapportPrestationImposable rapport : rapports) {
+			if (rapport.getDateDebut() == dateDebut && rapport.getDateFin() == dateFin) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -611,16 +628,19 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	}
 
 	private void aucunTraitement(String cause, RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+		aucunTraitement(cause, rapportAModifier.getDateDebut(),rapportAModifier.getDateFin(), request);
+
+	}
+	private void aucunTraitement(String cause,RegDate dateDebut, RegDate dateFin, MiseAjourRapportTravail request) {
 		String message = String.format("Aucun traitement necessaire pour le message %s concernant le rapport de travail commencant" +
 				" le %s, se terminant le %s pour le debiteur %s et le sourcier %s ",
 				request.getBusinessId(),
-				RegDateHelper.dateToDisplayString(rapportAModifier.getDateDebut()),
-				RegDateHelper.dateToDisplayString(rapportAModifier.getDateFin()),
-				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getObjetId()),
-				FormatNumeroHelper.numeroCTBToDisplay(rapportAModifier.getSujetId()));
+				RegDateHelper.dateToDisplayString(dateDebut),
+				RegDateHelper.dateToDisplayString(dateFin),
+				FormatNumeroHelper.numeroCTBToDisplay(request.getIdDebiteur()),
+				FormatNumeroHelper.numeroCTBToDisplay(request.getIdSourcier()));
 		LOGGER.info(message + ": " + cause);
 	}
-
 
 	private boolean isRapportFermeAvantPeriodeDeclaration(RapportPrestationImposable rapport, MiseAjourRapportTravail request) {
 		final RegDate dateFin = rapport.getDateFin();
