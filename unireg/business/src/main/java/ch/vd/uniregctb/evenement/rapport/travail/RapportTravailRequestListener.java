@@ -65,9 +65,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 
 	private Schema schemaCache;
 
-
-
-
 	public void setRapportTravailRequestHandler(RapportTravailRequestHandler rapportTravailRequestHandler) {
 		this.rapportTravailRequestHandler = rapportTravailRequestHandler;
 	}
@@ -102,7 +99,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			// on traite la requête
 			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request, message.getBusinessId());
 
-
 			final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
 			template.setReadOnly(false);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
@@ -115,7 +111,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 				});
 			}
 			catch (TxCallbackException txe) {
-				ServiceException e =(ServiceException) txe.getCause();
+				ServiceException e = (ServiceException) txe.getCause();
 				LOGGER.error(e.getMessage(), e);
 				result = new MiseAJourRapportTravailResponse();
 				result.setExceptionInfo(e.getInfo());
@@ -132,16 +128,14 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 
 			result.setIdentifiantRapportTravail(request.getIdentifiantRapportTravail());
 		}
-
 		catch (UnmarshalException e) {
-			String msg = String.format("UnmarshalException raised in Unireg. XML message {businessId: %s} is not valid", message.getBusinessId());
+			final String msg = String.format("XML message {businessId: %s} is not valid (%s)", message.getBusinessId(), e.getMessage());
 			LOGGER.error(msg, e);
 			result = new MiseAJourRapportTravailResponse();
 			final TechnicalExceptionInfo exceptionInfo = new TechnicalExceptionInfo();
 			exceptionInfo.setMessage(msg);
 			result.setExceptionInfo(exceptionInfo);
 		}
-
 
 		// on répond
 		try {
@@ -154,16 +148,13 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 	}
 
 	private void answerValidationException(ESBValidationException exception, EsbMessage message) throws ESBValidationException {
-
 		final MiseAJourRapportTravailResponse result = new MiseAJourRapportTravailResponse();
 		result.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.INVALID_RESPONSE.name(), null));
-
 		answer(result, message);
 	}
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-
 
 		final List<Resource> resources = new ArrayList<Resource>(1);
 		final List<ClassPathResource> resource = rapportTravailRequestHandler.getResponseXSD();
@@ -182,7 +173,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		return nbMessagesRecus.intValue();
 	}
 
-
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {
 		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
@@ -190,7 +180,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		final JAXBElement element = (JAXBElement) u.unmarshal(message);
 		return element == null ? null : (MiseAJourRapportTravailRequest) element.getValue();
 	}
-
 
 	private Schema getRequestSchema() throws SAXException, IOException {
 		if (schemaCache == null) {
@@ -245,6 +234,5 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
 	}
 }
