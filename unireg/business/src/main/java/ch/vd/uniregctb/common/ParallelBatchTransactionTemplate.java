@@ -41,7 +41,7 @@ public class ParallelBatchTransactionTemplate<E, R extends BatchResults> {
 	 */
 	public ParallelBatchTransactionTemplate(List<E> elements, int batchSize, int nbThreads, BatchTransactionTemplate.Behavior behavior, PlatformTransactionManager transactionManager,
 	                                        StatusManager statusManager, HibernateTemplate hibernateTemplate) {
-		this.elements = ListUtils.split(elements, batchSize);
+		this.elements = CollectionsUtils.split(elements, batchSize);
 		this.nbThreads = nbThreads;
 		this.transactionManager = transactionManager;
 		this.behavior = behavior;
