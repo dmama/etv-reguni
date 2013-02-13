@@ -171,6 +171,57 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 
 
 	/*
+	 Si le rapport de travail n’est pas présent,
+	 un nouveau RT est ouvert avec une date de début égale à la date de début de versement de salaire (VS-DD).
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRTInexistant_SIFISC_7994() throws Exception {
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2010, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2010,1,1),null,true);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2013, 1, 1);
+		final RegDate dateFinPeriode = date(2013, 12, 31);
+		final RegDate dateDebutVersementSalaire = date(2013, 2, 15);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier, periodeDeclaration, dateDebutVersementSalaire, null);
+		MiseAJourRapportTravailResponse response = doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		final PersonnePhysique sourcier = (PersonnePhysique) tiersService.getTiers(ids.idSourcier);
+		List<RapportPrestationImposable> rapports = tiersService.getAllRapportPrestationImposable(dpi, sourcier, true, true);
+		assertEquals(1,rapports.size());
+		RapportPrestationImposable rapport = rapports.get(0);
+		assertEquals(dateDebutVersementSalaire,rapport.getDateDebut());
+
+	}
+
+
+
+	/*
 		 Si le rapport de travail n’est pas présent,et en cas d'évènement de fermeture, le message est ignorée
 		 un nouveau RT est ouvert avec une date de début égale à la date de début de versement de salaire (VS-DD).
 		 */
