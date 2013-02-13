@@ -544,7 +544,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(null,rapportPrestationImposable.getDateFin());
 
 	}
@@ -598,6 +599,7 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
 		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
 		assertEquals(dateDebutVersementSalaire,rapportPrestationImposable.getDateDebut());
 
@@ -649,11 +651,77 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(null,rapportPrestationImposable.getDateFin());
 
 	}
+	//le rapport de travail existant à une date de fin antérieur à la date de début de la période de déclaration.
+	//le rapport est réouvert en annulant l'existant est en créant un nouveau rapport qui porte les modifications.
+	//Doit permettre de conserver un historique.
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testRTFermeAvantPeriodeEcartUnJour_SIFISC_7998() throws Exception {
 
+
+		class Ids {
+			Long idDebiteur;
+			Long idSourcier;
+		}
+		final Ids ids = new Ids();
+		final RegDate dateFinRapport = date(2013, 1, 14);
+
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				DebiteurPrestationImposable debiteur = addDebiteur();
+				addForDebiteur(debiteur, date(2011, 1, 1), null, MockCommune.Echallens);
+				ids.idDebiteur= debiteur.getNumero();
+				PersonnePhysique sourcier = addHabitant(12365478L);
+				ids.idSourcier= sourcier.getNumero();
+
+
+				addRapportPrestationImposable(debiteur,sourcier,date(2010,3,23), dateFinRapport,false);
+				addRapportPrestationImposable(debiteur,sourcier,date(2012,7,9),null,false);
+
+				return null;
+			}
+		});
+
+		final RegDate dateDebutPeriode = date(2013, 1, 1);
+		final RegDate dateFinPeriode = date(2013, 12, 31);
+		final RegDate dateDebutVersementSalaire = date(2013, 1, 15);
+		final DateRange periodeDeclaration = new DateRangeHelper.Range(dateDebutPeriode,dateFinPeriode);
+
+
+		final MiseAJourRapportTravailRequest request = createMiseAJourRapportTravailRequest(ids.idDebiteur, ids.idSourcier,periodeDeclaration, dateDebutVersementSalaire,null);
+
+		MiseAJourRapportTravailResponse response =  doInNewTransaction(new TxCallback<MiseAJourRapportTravailResponse>() {
+			@Override
+			public MiseAJourRapportTravailResponse execute(TransactionStatus status) throws Exception {
+				return handler.handle(MiseAjourRapportTravail.get(request, null));
+			}
+		});
+		assertEquals(DataHelper.coreToXML(RegDate.get()),response.getDatePriseEnCompte());
+		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
+		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
+		rapportPrestations.addAll(dpi.getRapportsObjet());
+		assertEquals(3,rapportPrestations.size());
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+
+		RapportPrestationImposable rapportAnnule = (RapportPrestationImposable) rapportPrestations.get(0);
+		assertTrue(rapportAnnule.isAnnule());
+		assertEquals(dateFinRapport, rapportAnnule.getDateFin());
+
+		RapportPrestationImposable rapportOuvert = (RapportPrestationImposable) rapportPrestations.get(1);
+		assertEquals(null, rapportOuvert.getDateFin());
+
+		RapportPrestationImposable dernierRappport = (RapportPrestationImposable) rapportPrestations.get(2);
+		assertTrue(dernierRappport.isAnnule());
+		assertEquals(null, dernierRappport.getDateFin());
+
+
+	}
 	//SIFISC-7541
 	//Teste que l'on ne créé pas un RT en doublon suite à la reception du même message.
 	@Test
@@ -830,7 +898,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateDeces,rapportPrestationImposable.getDateFin());
 
 	}
@@ -1066,7 +1135,8 @@ public class MiseAJourRapportTravailRequestHandlerTest extends BusinessTest {
 		final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersService.getTiers(ids.idDebiteur);
 		List<RapportEntreTiers> rapportPrestations = new ArrayList<RapportEntreTiers>();
 		rapportPrestations.addAll(dpi.getRapportsObjet());
-		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(0);
+		Collections.sort(rapportPrestations, new DateRangeComparator<RapportEntreTiers>());
+		RapportPrestationImposable rapportPrestationImposable = (RapportPrestationImposable) rapportPrestations.get(1);
 		assertEquals(dateFermetureFor,rapportPrestationImposable.getDateFin());
 
 	}

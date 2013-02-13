@@ -292,10 +292,10 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	                                                      List<RapportPrestationImposable> nouveauxRapports) {
 
 		if (isRapportSurPeriode(rapportAModifier, request)) {
-			handleRapportSurPeriode(rapportAModifier, request);
+			handleRapportSurPeriode(rapportAModifier, request, nouveauxRapports);
 		}
 		else if (isRapportOuvertApresPeriode(rapportAModifier, request)) {
-			handleRapportOuvertApresPeriode(rapportAModifier, request);
+			handleRapportOuvertApresPeriode(rapportAModifier, request, nouveauxRapports);
 		}
 		else if (isRapportFermeAvantPeriodeDeclaration(rapportAModifier, request)) {
 			handleRapportFermeAvantPeriodeDeclaration(dpi, sourcier, rapportAModifier, request, nouveauxRapports);
@@ -307,13 +307,21 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	                                                       List<RapportPrestationImposable> nouveauxRapports) {
 		final RegDate dateFin = rapportAModifier.getDateFin();
 		final RegDate dateDebutVersement = request.getDateDebutVersementSalaire();
-		if (isEcartInferieurEgalAUnJour(dateDebutVersement, dateFin)) {
 
-			reouvrirRapportTravail(rapportAModifier, request);
+		if (isEcartInferieurEgalAUnJour(dateDebutVersement, dateFin)) {
+			//On réouvre le rapport
+			loggerModification("Reouverture ", rapportAModifier);
+			final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(rapportAModifier);
+			rapportPrestationImposable.setDateFin(null);
+			rapportAModifier.setAnnule(true);
+
+
 			final RegDate nouvelleDateFin = calculerDateFinRapportTravail(request);
 			if (nouvelleDateFin != null) {
-				fermerRapportTravail(rapportAModifier, nouvelleDateFin);
+				loggerModification("Fermeture ", rapportAModifier);
+				rapportPrestationImposable.setDateFin(nouvelleDateFin);
 			}
+			nouveauxRapports.add(rapportPrestationImposable);
 		}
 		else {
 			creerRapportTravail(dpi, sourcier, request, nouveauxRapports);
@@ -330,7 +338,7 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 		return false;
 	}
 
-	private void handleRapportOuvertApresPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void handleRapportOuvertApresPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 
 		final RegDate dateDebutVersementSalaire = request.getDateDebutVersementSalaire();
 
@@ -338,7 +346,10 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 		loggerModification(modification, rapportAModifier);
 
-		rapportAModifier.setDateDebut(dateDebutVersementSalaire);
+		final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(rapportAModifier);
+		rapportPrestationImposable.setDateDebut(dateDebutVersementSalaire);
+		rapportAModifier.setAnnule(true);
+		nouveauxRapports.add(rapportPrestationImposable);
 
 
 	}
@@ -357,8 +368,9 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 	 *
 	 * @param rapportAModifier
 	 * @param request
+	 * @param nouveauxRapports
 	 */
-	private void handleRapportSurPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void handleRapportSurPeriode(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 		//CAS 2, 3
 
 		final RegDate dateFin = rapportAModifier.getDateFin();
@@ -389,18 +401,21 @@ public class MiseAJourRapportTravailRequestHandler implements RapportTravailRequ
 
 				}
 				else {
-					reouvrirRapportTravail(rapportAModifier, request);
+					reouvrirRapportTravail(rapportAModifier, request, nouveauxRapports);
 				}
 			}
 		}
 
 	}
 
-	private void reouvrirRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request) {
+	private void reouvrirRapportTravail(RapportPrestationImposable rapportAModifier, MiseAjourRapportTravail request, List<RapportPrestationImposable> nouveauxRapports) {
 
 
 		loggerModification("Reouverture ", rapportAModifier);
-		rapportAModifier.setDateFin(null);
+		final RapportPrestationImposable rapportPrestationImposable = new RapportPrestationImposable(rapportAModifier);
+		rapportPrestationImposable.setDateFin(null);
+		rapportAModifier.setAnnule(true);
+		nouveauxRapports.add(rapportPrestationImposable);
 
 
 	}
