@@ -11,6 +11,8 @@ import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.common.Switchable;
+import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.AbstractLinkedInterceptor;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.TacheDAO;
@@ -21,7 +23,7 @@ import ch.vd.uniregctb.tiers.TiersService;
 /**
  * Cet intercepteur se charge de tenir à-jour l'id de l'office d'impôt caché au niveau de chaque tiers.
  */
-public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
+public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor implements Switchable {
 
 	//private static final Logger LOGGER = Logger.getLogger(OfficeImpotHibernateInterceptor.class);
 
@@ -29,16 +31,7 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 	private TacheDAO tacheDAO;
 	private TiersDAO tiersDAO;
 
-	private static class Behavior {
-		public boolean enabled = true;
-	}
-
-	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
-		@Override
-		protected Behavior initialValue() {
-			return new Behavior();
-		}
-	};
+	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
 	private final ThreadLocal<HashMap<Long, Tiers>> dirtyEntities = new ThreadLocal<HashMap<Long, Tiers>>() {
 		@Override
@@ -259,15 +252,13 @@ public class OfficeImpotHibernateInterceptor extends AbstractLinkedInterceptor {
 		this.tiersDAO = tiersDAO;
 	}
 
-	private Behavior getByThreadBehavior() {
-		return byThreadBehavior.get();
-	}
-
+	@Override
 	public void setEnabled(boolean value) {
-		getByThreadBehavior().enabled = value;
+		this.enabled.setEnabled(value);
 	}
 
+	@Override
 	public boolean isEnabled() {
-		return getByThreadBehavior().enabled;
+		return this.enabled.isEnabled();
 	}
 }

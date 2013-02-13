@@ -31,6 +31,7 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ProgrammingException;
 import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.GlobalIndexTracing;
 import ch.vd.uniregctb.indexer.IndexableData;
@@ -79,16 +80,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 
 	private OnTheFlyTiersIndexer onTheFlyTiersIndexer;
 
-	private static class Behavior {
-        public boolean onTheFlyIndexation = true;
-    }
-
-    private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
-	    @Override
-	    protected Behavior initialValue() {
-		    return new Behavior();
-	    }
-    };
+	private final ThreadSwitch onTheFlyIndexation = new ThreadSwitch(true);
 
     /**
      * Le service qui fournit les adresses et autres
@@ -663,18 +655,14 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		onTheFlyTiersIndexer.destroy();
 	}
 
-    private Behavior getByThreadBehavior() {
-        return byThreadBehavior.get();
-    }
-
     @Override
     public boolean isOnTheFlyIndexation() {
-        return getByThreadBehavior().onTheFlyIndexation;
+        return this.onTheFlyIndexation.isEnabled();
     }
 
     @Override
     public void setOnTheFlyIndexation(boolean onTheFlyIndexation) {
-        getByThreadBehavior().onTheFlyIndexation = onTheFlyIndexation;
+        this.onTheFlyIndexation.setEnabled(onTheFlyIndexation);
     }
 
 	@SuppressWarnings({"UnusedDeclaration"})

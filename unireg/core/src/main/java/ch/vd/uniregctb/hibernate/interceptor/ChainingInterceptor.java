@@ -11,9 +11,24 @@ import org.hibernate.Interceptor;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
-public class ChainingInterceptor implements Interceptor {
+import ch.vd.uniregctb.common.Switchable;
+import ch.vd.uniregctb.common.ThreadSwitch;
+
+public class ChainingInterceptor implements Interceptor, Switchable {
+
+	private final ThreadSwitch mySwitch = new ThreadSwitch(true);
 
 	private final List<LinkedInterceptor> chain = new ArrayList<LinkedInterceptor>();
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		mySwitch.setEnabled(enabled);
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return mySwitch.isEnabled();
+	}
 
 	public List<LinkedInterceptor> getChain() {
 		return chain;
@@ -25,31 +40,39 @@ public class ChainingInterceptor implements Interceptor {
 
 	@Override
 	public void afterTransactionBegin(Transaction tx) {
-		for (LinkedInterceptor i : chain) {
-			i.afterTransactionBegin(tx);
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				i.afterTransactionBegin(tx);
+			}
 		}
 	}
 
 	@Override
 	public void afterTransactionCompletion(Transaction tx) {
-		for (LinkedInterceptor i : chain) {
-			i.afterTransactionCompletion(tx);
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				i.afterTransactionCompletion(tx);
+			}
 		}
 	}
 
 	@Override
 	public void beforeTransactionCompletion(Transaction tx) {
-		for (LinkedInterceptor i : chain) {
-			i.beforeTransactionCompletion(tx);
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				i.beforeTransactionCompletion(tx);
+			}
 		}
 	}
 
 	@Override
 	public boolean onFlushDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) throws CallbackException {
 		boolean ret = false;
-		for (LinkedInterceptor i : chain) {
-			// Si un renvoie true, on renvoie true
-			ret = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || ret;
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				// Si un renvoie true, on renvoie true
+				ret = i.onFlushDirty(entity, id, currentState, previousState, propertyNames, types) || ret;
+			}
 		}
 		return ret;
 	}
@@ -57,18 +80,22 @@ public class ChainingInterceptor implements Interceptor {
 	@Override
 	public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
 		boolean ret = false;
-		for (LinkedInterceptor i : chain) {
-			// Si un renvoie true, on renvoie true
-			ret = i.onLoad(entity, id, state, propertyNames, types) || ret;
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				// Si un renvoie true, on renvoie true
+				ret = i.onLoad(entity, id, state, propertyNames, types) || ret;
+			}
 		}
 		return ret;
 	}
 	@Override
 	public boolean onSave(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
 		boolean ret = false;
-		for (LinkedInterceptor i : chain) {
-			// Si un renvoie true, on renvoie true
-			ret = i.onSave(entity, id, state, propertyNames, types) || ret;
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				// Si un renvoie true, on renvoie true
+				ret = i.onSave(entity, id, state, propertyNames, types) || ret;
+			}
 		}
 		return ret;
 	}
@@ -76,22 +103,26 @@ public class ChainingInterceptor implements Interceptor {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void postFlush(Iterator entities) throws CallbackException {
-		for (LinkedInterceptor i : chain) {
-			i.postFlush(entities);
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				i.postFlush(entities);
+			}
 		}
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public void preFlush(Iterator entities) throws CallbackException {
-		for (LinkedInterceptor i : chain) {
-			i.preFlush(entities);
+		if (isEnabled()) {
+			for (LinkedInterceptor i : chain) {
+				i.preFlush(entities);
+			}
 		}
 	}
 
 	@Override
 	public String toString() {
-		final StringBuffer sb = new StringBuffer();
+		final StringBuilder sb = new StringBuilder();
 		sb.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode()));
 		sb.append("{chain=").append(chain);
 		sb.append('}');

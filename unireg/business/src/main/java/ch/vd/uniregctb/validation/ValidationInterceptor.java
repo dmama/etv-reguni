@@ -14,22 +14,15 @@ import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationResults;
 import ch.vd.uniregctb.common.EntityKey;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.Switchable;
+import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.LinkedEntity;
 
-public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean {
+public class ValidationInterceptor implements ModificationSubInterceptor, InitializingBean, Switchable {
 
-	private static class Behavior {
-		public boolean enabled = true;
-	}
-
-	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
-		@Override
-		protected Behavior initialValue() {
-			return new Behavior();
-		}
-	};
+	private final ThreadSwitch enabled = new ThreadSwitch(true);
 
 	private ModificationInterceptor parent;
 	private HibernateTemplate hibernateTemplate;
@@ -113,16 +106,14 @@ public class ValidationInterceptor implements ModificationSubInterceptor, Initia
 		}
 	}
 
-	private Behavior getByThreadBehavior() {
-		return byThreadBehavior.get();
-	}
-
+	@Override
 	public void setEnabled(boolean value) {
-		getByThreadBehavior().enabled = value;
+		this.enabled.setEnabled(value);
 	}
 
+	@Override
 	public boolean isEnabled() {
-		return getByThreadBehavior().enabled;
+		return enabled.isEnabled();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
