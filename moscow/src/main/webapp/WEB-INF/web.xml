@@ -41,7 +41,8 @@
         <init-param>
             <param-name>contextConfigLocation</param-name>
             <param-value>
-                <!-- Cette propriété doit exister mais être vide! -->
+				<!-- Cette propriété doit exister mais être vide ! Parce qu'autrement, le DispatcherServlet veut créer
+				son propre context Spring à partir du fichier <servlet-name>-context.xml, et c'est pas ce que l'on veut. -->
             </param-value>
         </init-param>
         <load-on-startup>3</load-on-startup>
