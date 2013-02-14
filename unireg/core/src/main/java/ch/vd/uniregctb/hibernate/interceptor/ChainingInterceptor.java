@@ -6,15 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.hibernate.CallbackException;
-import org.hibernate.EntityMode;
-import org.hibernate.Interceptor;
+import org.hibernate.EmptyInterceptor;
 import org.hibernate.Transaction;
 import org.hibernate.type.Type;
 
 import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.common.ThreadSwitch;
 
-public class ChainingInterceptor implements Interceptor, Switchable {
+public class ChainingInterceptor extends EmptyInterceptor implements Switchable {
 
 	private final ThreadSwitch mySwitch = new ThreadSwitch(true);
 
@@ -128,53 +127,4 @@ public class ChainingInterceptor implements Interceptor, Switchable {
 		sb.append('}');
 		return sb.toString();
 	}
-
-// Unused
-
-	@Override
-	public int[] findDirty(Object entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types) {
-		return null;
-	}
-
-	@Override
-	public Object getEntity(String entityName, Serializable id) throws CallbackException {
-		return null;
-	}
-
-	@Override
-	public String getEntityName(Object object) throws CallbackException {
-		return null;
-	}
-
-	@Override
-	public Object instantiate(String entityName, EntityMode entityMode, Serializable id) throws CallbackException {
-		return null;
-	}
-
-	@Override
-	public Boolean isTransient(Object entity) {
-		return null;
-	}
-
-	@Override
-	public void onCollectionRecreate(Object collection, Serializable key) throws CallbackException {
-	}
-
-	@Override
-	public void onCollectionRemove(Object collection, Serializable key) throws CallbackException {
-	}
-
-	@Override
-	public void onCollectionUpdate(Object collection, Serializable key) throws CallbackException {
-	}
-
-	@Override
-	public void onDelete(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types) throws CallbackException {
-	}
-
-	@Override
-	public String onPrepareStatement(String sql) {
-		return sql;
-	}
-
 }
