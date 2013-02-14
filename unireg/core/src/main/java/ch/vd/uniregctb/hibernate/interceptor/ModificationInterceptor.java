@@ -18,6 +18,7 @@ import org.hibernate.type.Type;
 import org.springframework.util.Assert;
 
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ThreadSwitch;
 
 /**
  * Intercepteur hibernate qui détecte lorsqu'une entité hibernate (HibernateEntity) est ajoutée ou modifiée dans la base de données, et
@@ -29,6 +30,8 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 
 	private static final Logger LOGGER = Logger.getLogger(ModificationInterceptor.class);
 
+	private final ThreadSwitch activationSwitch = new ThreadSwitch(true);
+
 	private TransactionManager transactionManager;
 	private final ThreadLocal<HashSet<Transaction>> registeredTransactions = new ThreadLocal<HashSet<Transaction>>() {
 		@Override
@@ -36,7 +39,6 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 			return new HashSet<Transaction>();
 		}
 	};
-	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
 	private final List<ModificationSubInterceptor> subInterceptors = new ArrayList<ModificationSubInterceptor>();
 
 	public void setTransactionManager(TransactionManager transactionManager) {
@@ -57,7 +59,11 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	 * @param value l'intercepteur doit être actif ou non
 	 */
 	public void setEnabledForThread(boolean value) {
-		disabled.set(!value);
+		activationSwitch.setEnabled(value);
+	}
+
+	public boolean isEnabledForThread() {
+		return activationSwitch.isEnabled();
 	}
 
 	/**
@@ -202,7 +208,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 	 * Enregistre un callback sur la transaction de manière à être notifier du commit ou du rollback
 	 */
 	private void registerTxInterceptor() {
-		if (disabled.get() != null && disabled.get()) {
+		if (!isEnabledForThread()) {
 			return;
 		}
 		try {

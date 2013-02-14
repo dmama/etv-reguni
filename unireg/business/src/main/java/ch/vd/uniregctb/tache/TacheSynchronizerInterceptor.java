@@ -11,6 +11,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
+import ch.vd.uniregctb.common.ThreadSwitch;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.Contribuable;
@@ -35,7 +36,8 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			return new HashSet<Long>();
 		}
 	};
-	private final ThreadLocal<Boolean> disabled = new ThreadLocal<Boolean>();
+
+	private ThreadSwitch activationSwitch = new ThreadSwitch(true);
 
 	@Override
 	public boolean onChange(HibernateEntity entity, Serializable id, Object[] currentState, Object[] previousState, String[] propertyNames, Type[] types, boolean isAnnulation) throws CallbackException {
@@ -90,7 +92,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 		try {
 
 			parent.setEnabledForThread(false); // on désactive l'intercepteur pour éviter de s'intercepter soi-même
-			disabled.set(true);
+			activationSwitch.setEnabled(false);
 			try {
 				tacheService.synchronizeTachesDIs(set);
                 tacheService.annuleTachesObsoletes(set);
@@ -101,7 +103,7 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 			}
 			finally {
 				parent.setEnabledForThread(true);
-				disabled.set(false);
+				activationSwitch.setEnabled(true);
 				set.clear();
 			}
 		}
@@ -117,11 +119,11 @@ public class TacheSynchronizerInterceptor implements ModificationSubInterceptor,
 	}
 
 	public void setOnTheFlySynchronization(boolean value) {
-		disabled.set(!value);
+		activationSwitch.setEnabled(value);
 	}
 
 	private boolean isDisabled() {
-		return disabled.get() != null && disabled.get();
+		return !activationSwitch.isEnabled();
 	}
 
 	/**
