@@ -177,7 +177,6 @@
 				<entry key="/activation/annulation/recap.do" value-ref="tiersAnnulationRecapController" />
 				<entry key="/activation/reactivation/recap.do" value-ref="tiersReactivationRecapController" />
 				<!-- Identification CTB -->
-				<entry key="/identification/gestion-messages/list.do" value-ref="identificationMessagesListController" />
 				<entry key="/identification/gestion-messages/edit.do" value-ref="identificationMessagesEditController" />
 				<entry key="/identification/gestion-messages/nonIdentifie.do" value-ref="identificationMessagesNonIdentifieController" />
 

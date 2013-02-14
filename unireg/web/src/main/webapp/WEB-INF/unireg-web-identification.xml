@@ -17,15 +17,6 @@
 	
 	<bean id="identificationMessagesStatsValidator" class="ch.vd.uniregctb.identification.contribuable.validator.IdentificationMessagesStatsValidator" />
 	
-	<bean id="identificationMessagesListController" class="ch.vd.uniregctb.identification.contribuable.IdentificationMessagesListController" parent="abstractIdentificationController">
-		<property name="sessionForm" value="true" />
-		<property name="commandClass" value="ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria" />
-		<property name="commandName" value="command" />
-		<property name="formView" value="identification/gestion-messages/list" />
-		<property name="successView" value="list.do" />
-		<property name="validator" ref="identificationMessagesListValidator" />
-		<property name="identificationMessagesListManager" ref="identificationMessagesListManager" />
-	</bean>
 
 
 	<bean id="identificationMessagesListManager" class="ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManagerImpl">
