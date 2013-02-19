@@ -70,9 +70,15 @@ public abstract class EvenementTest {
 	}
 
 	protected void sendTextMessage(String queueName, String texte, @Nullable Map<String, String> customAttributes) throws Exception {
+		sendTextMessage(queueName, texte, null, customAttributes);
+	}
+
+
+	protected void sendTextMessage(String queueName, String texte, String businessId, @Nullable Map<String, String> customAttributes) throws Exception {
 		final EsbMessage m = esbMessageFactory.createMessage();
+		final String myBusinessId = businessId==null ? String.valueOf(m.hashCode()):businessId;
 		m.setBusinessUser("EvenementTest");
-		m.setBusinessId(String.valueOf(m.hashCode()));
+		m.setBusinessId(myBusinessId);
 		m.setContext("test");
 		m.setServiceDestination(queueName);
 		m.setBody(texte);
@@ -81,9 +87,12 @@ public abstract class EvenementTest {
 		}
 		esbTemplate.send(m);
 	}
-
 	protected void sendTextMessage(String queueName, String texte) throws Exception {
-		sendTextMessage(queueName, texte, null);
+		sendTextMessage(queueName, texte, (Map<String, String>) null);
+	}
+
+	protected void sendTextMessage(String queueName, String texte,String businessId) throws Exception {
+		sendTextMessage(queueName,texte,businessId, null);
 	}
 
 	/**

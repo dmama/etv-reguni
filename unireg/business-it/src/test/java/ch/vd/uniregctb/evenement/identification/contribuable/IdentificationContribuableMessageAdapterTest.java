@@ -443,6 +443,38 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testDemandeIdentificationErreurMontantNCS() throws Exception {
+
+		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
+
+		handler.setDemandeHandler(new DemandeHandler() {
+			@Override
+			public void handleDemande(IdentificationContribuable message) {
+				messages.add(message);
+			}
+		});
+
+		// Lit le message sous format texte
+		final File file = ResourceUtils.getFile("classpath:ch/vd/uniregctb/evenement/identification/contribuable/demande_identification_NCS_erreur_montant.xml");
+		final String texte = FileUtils.readFileToString(file);
+
+		// Envoie le message
+		sendTextMessage(INPUT_QUEUE, texte,"12543717");
+
+		// On attend le message
+		while (esbTemplateWithErrorCollector.collectedErrors.isEmpty()) {
+			Thread.sleep(100);
+		}
+		assertEquals(0, messages.size());
+		assertEquals(1, esbTemplateWithErrorCollector.collectedErrors.size());
+
+		final EsbTemplateWithErrorCollector.ErrorDescription errorDescription= esbTemplateWithErrorCollector.collectedErrors.get(0);
+		assertNotNull(errorDescription);
+		String cause = "La demande de type NCS ayant le business id 12543717 a un montant d'une valeur de 44444445448 qui n'est pas acceptée. Elle sera mise en queue d'erreur.";
+		assertEquals(ErrorType.BUSINESS,errorDescription.errorType);
+	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testDemandeIdentificationNCS() throws Exception {
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 

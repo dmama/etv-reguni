@@ -107,6 +107,7 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 			// Traitement du message
 			try {
 				final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
+				verifierMontantNCS(message,msg.getBusinessId());
 				final EsbHeader header = new EsbHeader();
 				header.setBusinessUser(msg.getBusinessUser());
 				header.setBusinessId(msg.getBusinessId());
@@ -131,11 +132,28 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 				LOGGER.error("Erreur dans le message XML reçu", e);
 				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
 			}
+			catch (IdentificationNCSException e){
+			//Problème de cohérence dans un message de type NCS
+				LOGGER.error("Erreur dans le message NCS reçu", e);
+				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
+			}
 			catch (RuntimeException e) {
 				// Départ en DLQ, mais on log avant...
 				LOGGER.error(e, e);
 				throw e;
 			}
+		}
+	}
+
+	private void verifierMontantNCS(IdentificationContribuable message,String businessId) throws IdentificationNCSException {
+		if (message.getDemande().getTypeDemande()==TypeDemande.NCS) {
+			final Long montant = message.getDemande().getMontant();
+			if ( Math.abs(montant) > 9999999999L) {
+				final String cause= String.format("La demande de type NCS ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
+						" Elle sera mise en queue d'erreur.",businessId, montant);
+				throw new IdentificationNCSException(cause);
+			}
+
 		}
 	}
 
