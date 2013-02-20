@@ -153,11 +153,12 @@ public class DeclarationImpotEditManagerImpl implements DeclarationImpotEditMana
 
 		// [UNIREG-1742][UNIREG-2051] dans certain cas, les déclarations sont remplacées par une note à l'administration fiscale de l'autre canton
 		// [UNIREG-1742] les diplomates suisses ne reçoivent pas de déclaration
+		// [SIFISC-8094] si la déclaration a été jugée optionnelle, il faut pouvoir l'émettre manuellement
 		CollectionUtils.filter(ranges, new Predicate() {
 			@Override
 			public boolean evaluate(Object object) {
 				final PeriodeImposition periode = (PeriodeImposition) object;
-				return !periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble();
+				return (!periode.isRemplaceeParNote() && !periode.isDiplomateSuisseSansImmeuble()) || periode.isOptionnelle();
 			}
 		});
 
