@@ -168,9 +168,12 @@ public interface ServiceInfrastructureService {
 	OfficeImpot getOfficeImpot(int noColAdm) throws ServiceInfrastructureException;
 
 	/**
+	 * FIXME (msi) supprimer cette méthode (qui est implémentée par host-interface) et la remplacer par la méthode getCommuneByNumeroOfs (qui est implémentée par Fidor)
+	 *
 	 * @param noCommune le numéro Ofs d'un commune
 	 * @return l'office d'impôt responsable de la commune spécifiée par son numéro OFS.
 	 * @throws ServiceInfrastructureException en cas de problème d'accès à l'infrastructure
+	 * @deprecated remplacée par {@link #getCommuneByNumeroOfs(int, ch.vd.registre.base.date.RegDate)}
 	 */
 	OfficeImpot getOfficeImpotDeCommune(int noCommune) throws ServiceInfrastructureException;
 

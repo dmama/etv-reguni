@@ -66,6 +66,7 @@ import ch.vd.uniregctb.document.RolesOIDsRapport;
 import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.evenement.externe.TraiterEvenementExterneResult;
@@ -80,6 +81,7 @@ import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
+import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -1017,6 +1019,28 @@ public class RapportServiceImpl implements RapportService {
 				@Override
 				public void writeDoc(ImportImmeublesRapport doc, OutputStream os) throws Exception {
 					final PdfImportImmeublesRapport document = new PdfImportImmeublesRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public SuppressionOIDRapport generateRapport(final SuppressionOIDResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "SuppressionOID";
+		final String description = "Rapport d'exécution du job de suppression d'un office d'impôt.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(SuppressionOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<SuppressionOIDRapport>() {
+				@Override
+				public void writeDoc(SuppressionOIDRapport doc, OutputStream os) throws Exception {
+					final PdfSuppressionOIDRapport document = new PdfSuppressionOIDRapport();
 					document.write(results, nom, description, dateGeneration, os, status);
 				}
 			});
