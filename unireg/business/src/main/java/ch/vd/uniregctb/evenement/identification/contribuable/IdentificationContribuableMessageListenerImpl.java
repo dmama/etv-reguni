@@ -107,7 +107,7 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 			// Traitement du message
 			try {
 				final IdentificationContribuable message = XmlEntityAdapter.xml2entity(doc.getIdentificationCTB());
-				verifierMontantNCS(message,msg.getBusinessId());
+				verifierMontantMessage(message, msg.getBusinessId());
 				final EsbHeader header = new EsbHeader();
 				header.setBusinessUser(msg.getBusinessUser());
 				header.setBusinessId(msg.getBusinessId());
@@ -145,16 +145,14 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 		}
 	}
 
-	private void verifierMontantNCS(IdentificationContribuable message,String businessId) throws IdentificationNCSException {
-		if (message.getDemande().getTypeDemande()==TypeDemande.NCS) {
+	private void verifierMontantMessage(IdentificationContribuable message, String businessId) throws IdentificationNCSException {
 			final Long montant = message.getDemande().getMontant();
-			if ( Math.abs(montant) > 9999999999L) {
+			if (montant!=null && Math.abs(montant) > 9999999999L) {
 				final String cause= String.format("La demande de type NCS ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
 						" Elle sera mise en queue d'erreur.",businessId, montant);
 				throw new IdentificationNCSException(cause);
 			}
 
-		}
 	}
 
 	/**

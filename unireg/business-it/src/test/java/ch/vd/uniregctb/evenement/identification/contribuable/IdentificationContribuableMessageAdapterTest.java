@@ -443,7 +443,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 	}
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
-	public void testDemandeIdentificationErreurMontantNCS() throws Exception {
+	public void testDemandeIdentificationErreurMontant() throws Exception {
 
 		final List<IdentificationContribuable> messages = new ArrayList<IdentificationContribuable>();
 
