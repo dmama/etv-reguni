@@ -34,6 +34,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TacheDAO;
+import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Sexe;
@@ -55,6 +56,7 @@ import static org.junit.Assert.fail;
  * Le(s) bug(s) suivant(s) sont spécifiquement testés:
  * <ul>
  * <li>[UNIREG-832] Impossible de créer une DI on line pour un contribuable HS</li>
+ * <li>[SIFISC-8094] Impossible d'émettre une DI pour un CTB mixte 2 qui part HC (DI optionnelle)</li>
  * </ul>
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -713,6 +715,43 @@ public class DeclarationImpotEditManagerTest extends WebTest {
 				assertNotNull(decls);
 				assertEquals(1, decls.size());
 				assertDI(date(2009, 1, 1), date(2009, 12, 31), TypeEtatDeclaration.EMISE, TypeContribuable.HORS_CANTON, TypeDocument.DECLARATION_IMPOT_HC_IMMEUBLE, ids.oidCedi, null, decls.get(0));
+				return null;
+			}
+		});
+	}
+
+	/**
+	 * SIFISC-8094
+	 */
+	@Test
+	public void testCalculateRangeDIMixte2DepartHC() throws Exception {
+
+		final int pf = RegDate.get().year() - 1;
+		final RegDate dateArrivee = date(pf, 1, 1);
+		final RegDate dateDepart = date(pf, 10, 31);
+
+		final long ppId = doInNewTransaction(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Pierre", "Ponce", null, Sexe.MASCULIN);
+				addForPrincipal(pp, dateArrivee, MotifFor.ARRIVEE_HS, dateDepart, MotifFor.DEPART_HC, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
+				addForPrincipal(pp, dateDepart.getOneDayAfter(), MotifFor.DEPART_HC, MockCommune.Bale, ModeImposition.SOURCE);
+				return pp.getNumero();
+			}
+		});
+
+		doInNewTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersDAO.get(ppId);
+				final List<PeriodeImposition> pis = manager.calculateRangesProchainesDIs(pp);
+				assertNotNull(pis);
+				assertEquals(1, pis.size());
+
+				final PeriodeImposition pi = pis.get(0);
+				assertNotNull(pi);
+				assertTrue(pi.isRemplaceeParNote());
+				assertTrue(pi.isOptionnelle());
 				return null;
 			}
 		});
