@@ -470,7 +470,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 		final EsbTemplateWithErrorCollector.ErrorDescription errorDescription= esbTemplateWithErrorCollector.collectedErrors.get(0);
 		assertNotNull(errorDescription);
-		String cause = "La demande de type NCS ayant le business id 12543717 a un montant d'une valeur de 44444445448 qui n'est pas acceptée. Elle sera mise en queue d'erreur.";
+		String cause = "La demande d'identification ayant le business id 12543717 a un montant d'une valeur de 44444445448 qui n'est pas acceptée. Elle sera mise en queue d'erreur.";
 		assertEquals(ErrorType.BUSINESS,errorDescription.errorType);
 	}
 

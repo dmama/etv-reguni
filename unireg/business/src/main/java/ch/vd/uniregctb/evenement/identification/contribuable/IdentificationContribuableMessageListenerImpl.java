@@ -148,7 +148,7 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 	private void verifierMontantMessage(IdentificationContribuable message, String businessId) throws IdentificationNCSException {
 			final Long montant = message.getDemande().getMontant();
 			if (montant!=null && Math.abs(montant) > 9999999999L) {
-				final String cause= String.format("La demande de type NCS ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
+				final String cause= String.format("La demande d'identification ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
 						" Elle sera mise en queue d'erreur.",businessId, montant);
 				throw new IdentificationNCSException(cause);
 			}
