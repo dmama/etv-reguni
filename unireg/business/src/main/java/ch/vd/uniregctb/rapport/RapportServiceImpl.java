@@ -67,6 +67,7 @@ import ch.vd.uniregctb.document.RolesOIDsRapport;
 import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
@@ -82,6 +83,7 @@ import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
+import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -223,7 +225,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportMajorite" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job d'ouverture des fors des contribuables majeurs.. Date de traitement = %s", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String description = String.format("Rapport d'exécution du job d'ouverture des fors des contribuables majeurs.. Date de traitement = %s",
+		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -522,7 +525,8 @@ public class RapportServiceImpl implements RapportService {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
 
 		final String nom = "RapportEchoirDIs" + results.dateTraitement.index();
-		final String description = String.format("Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = %s.", RegDateHelper.dateToDisplayString(results.dateTraitement));
+		final String description = String.format("Rapport d'exécution du job de passage des DIs sommées à l'état échu. Date de traitement = %s.",
+		                                         RegDateHelper.dateToDisplayString(results.dateTraitement));
 		final Date dateGeneration = DateHelper.getCurrentDate();
 
 		try {
@@ -1050,6 +1054,28 @@ public class RapportServiceImpl implements RapportService {
 		}
 	}
 
+	@Override
+	public SuppressionOIDRapport generateRapport(final SuppressionOIDResults results, StatusManager s) {
+		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);
+
+		final String nom = "SuppressionOID";
+		final String description = "Rapport d'exécution du job de suppression d'un office d'impôt.";
+		final Date dateGeneration = DateHelper.getCurrentDate();
+
+		try {
+			return docService.newDoc(SuppressionOIDRapport.class, nom, description, "pdf", new DocumentService.WriteDocCallback<SuppressionOIDRapport>() {
+				@Override
+				public void writeDoc(SuppressionOIDRapport doc, OutputStream os) throws Exception {
+					final PdfSuppressionOIDRapport document = new PdfSuppressionOIDRapport();
+					document.write(results, nom, description, dateGeneration, os, status);
+				}
+			});
+		}
+		catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
 	@Override
 	public PassageNouveauxRentiersSourciersEnMixteRapport generateRapport(final PassageNouveauxRentiersSourciersEnMixteResults results, StatusManager s) {
 		final StatusManager status = (s == null ? new LoggingStatusManager(LOGGER) : s);

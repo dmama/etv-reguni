@@ -58,6 +58,7 @@ import ch.vd.uniregctb.document.RolesOIDsRapport;
 import ch.vd.uniregctb.document.StatistiquesCtbsRapport;
 import ch.vd.uniregctb.document.StatistiquesDIsRapport;
 import ch.vd.uniregctb.document.StatistiquesEvenementsRapport;
+import ch.vd.uniregctb.document.SuppressionOIDRapport;
 import ch.vd.uniregctb.document.TraiterEvenementExterneRapport;
 import ch.vd.uniregctb.document.ValidationJobRapport;
 import ch.vd.uniregctb.droits.ListeDroitsAccesResults;
@@ -72,6 +73,7 @@ import ch.vd.uniregctb.metier.FusionDeCommunesResults;
 import ch.vd.uniregctb.metier.OuvertureForsResults;
 import ch.vd.uniregctb.metier.PassageNouveauxRentiersSourciersEnMixteResults;
 import ch.vd.uniregctb.mouvement.DeterminerMouvementsDossiersEnMasseResults;
+import ch.vd.uniregctb.oid.SuppressionOIDResults;
 import ch.vd.uniregctb.registrefoncier.ImportImmeublesResults;
 import ch.vd.uniregctb.registrefoncier.RapprocherCtbResults;
 import ch.vd.uniregctb.role.ProduireRolesCommunesResults;
@@ -418,7 +420,7 @@ public interface RapportService {
 	ImportCodesSegmentRapport generateRapport(ImportCodesSegmentResults results, int nbLignesLuesFichierEntree, StatusManager status);
 
 	/**
-	 * Génère le rapport dexécution du batch d'import des immeubles du registre foncier.
+	 * Génère le rapport d'exécution du batch d'import des immeubles du registre foncier.
 	 *
 	 * @param results le résultat du batch
 	 * @param status  le status manager
@@ -434,4 +436,14 @@ public interface RapportService {
 	 * @return le rapport
 	 */
 	ListeDroitsAccesRapport generateRapport(ListeDroitsAccesResults results, StatusManager status);
+
+
+	/**
+	 * Génère le rapport d'exécution du batch de suppression d'un OID.
+	 *
+	 * @param results le résultat du batch
+	 * @param status  le status manager
+	 * @return le rapport
+	 */
+	SuppressionOIDRapport generateRapport(SuppressionOIDResults results, StatusManager status);
 }
