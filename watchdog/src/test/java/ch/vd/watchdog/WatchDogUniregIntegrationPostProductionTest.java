@@ -12,9 +12,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * Teste que les l'environnement intégration de post-production de l'application Unireg est bien accessible.
  */
-public class WatchDogUniregIntegarationPostProductionTest extends WatchDogTest {
+public class WatchDogUniregIntegrationPostProductionTest extends WatchDogTest {
 
-	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregIntegarationPostProductionTest.class);
+	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregIntegrationPostProductionTest.class);
 
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegrationPostProduction() throws Exception {

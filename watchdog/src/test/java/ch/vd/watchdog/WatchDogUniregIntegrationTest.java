@@ -12,9 +12,9 @@ import static org.junit.Assert.assertTrue;
 /**
  * Teste que les différents déploiements de l'application Unireg dans les différents environnements (intégration, validation, formation, préproduction) sont bien accessibles.
  */
-public class WatchDogUniregIntegarationTest extends WatchDogTest {
+public class WatchDogUniregIntegrationTest extends WatchDogTest {
 
-	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregIntegarationTest.class);
+	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregIntegrationTest.class);
 
 	@Test(timeout = WatchDogTest.TIMEOUT)
 	public void testIntegration() throws Exception {
