@@ -359,7 +359,7 @@ public class BatchRunnerApp {
 				maxEnum = Math.max(maxEnum, line.enumValues.length());
 			}
 
-			final String format = "%" + (maxName + 8) + "s | %" + (maxType + 2) + "s | %" + maxMandatory + "s | %" + maxEnum + 's';
+			final String format = "%#" + (maxName + 8) + "s | %#" + (maxType + 2) + "s | %#" + maxMandatory + "s | %#" + maxEnum + 's';
 
 			for (int i = 0; i < lines.size(); ++i) {
 				final ParamLine line = lines.get(i);
