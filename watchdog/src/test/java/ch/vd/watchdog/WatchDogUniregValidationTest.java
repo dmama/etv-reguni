@@ -4,6 +4,7 @@ import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,11 @@ import static org.junit.Assert.assertTrue;
 public class WatchDogUniregValidationTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregValidationTest.class);
+
+	@Test
+	public void testDummy() {
+		// JUnit demande au minimum l'existence d'une méthode de test...
+	}
 
 	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé parce que y en a marre de se faire spammer par la validation qui est down tous les lundis matins
 	public void testValidation() throws Exception {

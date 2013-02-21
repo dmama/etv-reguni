@@ -4,6 +4,7 @@ import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.apache.log4j.Logger;
+import org.junit.Test;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -14,6 +15,11 @@ import static org.junit.Assert.assertTrue;
 public class WatchDogUniregPreproductionTest extends WatchDogTest {
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogUniregPreproductionTest.class);
+
+	@Test
+	public void testDummy() {
+		// JUnit demande au minimum l'existence d'une méthode de test...
+	}
 
 	// @Test(timeout = WatchDogTest.TIMEOUT) Désactivé temporairement pendant la mise-en-préproduction
 	public void testPreproduction() throws Exception {
