@@ -15,14 +15,19 @@ import com.gargoylesoftware.htmlunit.html.HtmlTableCell;
 import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import junit.framework.TestCase;
 import org.apache.log4j.Logger;
+import org.junit.Before;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 /**
- * Teste que les différents déploiements de l'application Unireg dans les différents environnements (intégration, validation, formation,
- * préproduction) sont bien accessibles.
+ * Teste que les différents déploiements de l'application Unireg dans les différents environnements (intégration, validation, formation, préproduction) sont bien accessibles.
  */
-public abstract class WatchDogTest extends TestCase {
+public abstract class WatchDogTest {
+
+	public static final long TIMEOUT = 30000;
 
 	private static final Logger LOGGER = Logger.getLogger(WatchDogTest.class);
 
@@ -31,11 +36,10 @@ public abstract class WatchDogTest extends TestCase {
 
 	protected WebClient webClient;
 
-	@Override
-	protected void setUp() throws Exception {
+	@Before
+	public void setUp() throws Exception {
 		webClient = new WebClient();
 		webClient.setUseInsecureSSL(true);
-		super.setUp();
 
 		webClient.setJavaScriptEnabled(true);
 		loginIAM();
