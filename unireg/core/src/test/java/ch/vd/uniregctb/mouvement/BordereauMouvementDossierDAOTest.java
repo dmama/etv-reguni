@@ -26,7 +26,7 @@ public class BordereauMouvementDossierDAOTest extends AbstractMouvementDossierDA
 	}
 
 	private BordereauMouvementDossier addBordereau(List<? extends ElementDeBordereau> mvts, EtatMouvementDossier nouvelEtat) {
-		final BordereauMouvementDossier bordereau = (BordereauMouvementDossier) getHibernateTemplate().merge(new BordereauMouvementDossier());
+		final BordereauMouvementDossier bordereau = hibernateTemplate.merge(new BordereauMouvementDossier());
 		final Set<MouvementDossier> contenu = new HashSet<MouvementDossier>(mvts.size());
 		for (ElementDeBordereau elt : mvts) {
 			elt.setBordereau(bordereau);

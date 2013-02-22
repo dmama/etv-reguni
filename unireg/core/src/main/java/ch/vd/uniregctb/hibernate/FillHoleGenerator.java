@@ -13,9 +13,11 @@ import java.util.Properties;
 
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
+import org.hibernate.cfg.DefaultComponentSafeNamingStrategy;
+import org.hibernate.cfg.NamingStrategy;
+import org.hibernate.cfg.ObjectNameNormalizer;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.SessionImplementor;
-import org.hibernate.exception.JDBCExceptionHelper;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.IdentifierGenerator;
 import org.hibernate.id.PersistentIdentifierGenerator;
@@ -50,10 +52,22 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 	@Override
 	public void configure(Type type, Properties params, Dialect dialect) throws MappingException {
-		Properties properties = new Properties();
+		final ObjectNameNormalizer norm = new ObjectNameNormalizer() {
+			@Override
+			protected boolean isUseQuotedIdentifiersGlobally() {
+				return false;
+			}
+
+			@Override
+			protected NamingStrategy getNamingStrategy() {
+				return new DefaultComponentSafeNamingStrategy();
+			}
+		};
+		final Properties properties = new Properties();
 		properties.putAll(params);
-		properties.put("sequence_name", seqName);
-		properties.put("initial_value", String.valueOf(minId));
+		properties.put(SequenceStyleGenerator.SEQUENCE_PARAM, seqName);
+		properties.put(SequenceStyleGenerator.INITIAL_PARAM, String.valueOf(minId));
+		properties.put(SequenceStyleGenerator.IDENTIFIER_NORMALIZER, norm);
 
 		generator = new SequenceStyleGenerator();
 		generator.configure(type, properties, dialect);
@@ -163,23 +177,13 @@ public class FillHoleGenerator implements IdentifierGenerator, PersistentIdentif
 
 	private void executeSql(SessionImplementor session, String sql) {
 		try {
-
-			PreparedStatement st = session.getBatcher().prepareSelectStatement(sql);
-			try {
+			try (PreparedStatement st = session.connection().prepareStatement(sql)) {
 				// Rien a faire en cas d'erreur, true => return ResultSet, false => update ou delete
 				st.execute();
 			}
-			finally {
-				session.getBatcher().closeStatement(st);
-			}
 		}
 		catch (SQLException sqle) {
-			throw JDBCExceptionHelper.convert(
-					session.getFactory().getSQLExceptionConverter(),
-					sqle,
-					"could not get next sequence value",
-					sql
-				);
+			throw session.getFactory().getSQLExceptionConverter().convert(sqle, "could not get next sequence value", sql);
 		}
 	}
 

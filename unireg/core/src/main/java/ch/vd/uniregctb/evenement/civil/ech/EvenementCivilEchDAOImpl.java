@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -8,11 +7,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.evenement.civil.AbstractEvenementCivilDAOImpl;
@@ -40,47 +37,35 @@ public class EvenementCivilEchDAOImpl extends AbstractEvenementCivilDAOImpl<Even
 		super(EvenementCivilEch.class);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementCivilEch> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
 		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.numeroIndividu in (:nosIndividus) and ec.etat in (:etats)";
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilEch>>() {
-			@SuppressWarnings({"unchecked"})
-			@Override
-			public List<EvenementCivilEch> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				query.setParameterList("nosIndividus", nosIndividus);
-				query.setParameterList("etats", ETATS_NON_TRAITES);
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		query.setParameterList("nosIndividus", nosIndividus);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		return query.list();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementCivilEch> getEvenementsCivilsARelancer() {
 		final String hql = "from EvenementCivilEch as ec where ec.annulationDate is null and ec.etat = :etat";
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilEch>>() {
-			@SuppressWarnings({"unchecked"})
-			@Override
-			public List<EvenementCivilEch> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				query.setParameter("etat", EtatEvenementCivil.A_TRAITER.name());
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		query.setParameter("etat", EtatEvenementCivil.A_TRAITER.name());
+		return query.list();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public Set<Long> getIndividusConcernesParEvenementsPourRetry() {
 		final String hql = "select distinct ec.numeroIndividu from EvenementCivilEch ec where ec.annulationDate is null and ec.numeroIndividu is not null and ec.etat in (:etats)";
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				query.setParameterList("etats", ETATS_NON_TRAITES);
-				return new HashSet<Long>(query.list());
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		return new HashSet<Long>(query.list());
 	}
 
 	@Override

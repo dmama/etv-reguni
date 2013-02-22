@@ -12,7 +12,6 @@ import javax.persistence.Transient;
 import java.util.Date;
 import java.util.Set;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -152,10 +151,9 @@ public class EvenementCivilEch extends HibernateEntity {
 		this.commentaireTraitement = commentaireTraitement;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false)
 	@ForeignKey(name = "FK_EV_ERR_EV_ECH_ID")
-	@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	public Set<EvenementCivilEchErreur> getErreurs() {
 		return erreurs;
 	}

@@ -1,17 +1,14 @@
 package ch.vd.uniregctb.evenement.civil;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -97,23 +94,17 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 			fragment.add(paramPagination.buildOrderClause("evenement", "dateEvenement", true, null));
 		}
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EVT>>() {
-			@Override
-			public List<EVT> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
+		final Query queryObject = fragment.createQuery(session);
+		if (paramPagination != null) {
+			final int firstResult = paramPagination.getSqlFirstResult();
+			final int maxResult = paramPagination.getSqlMaxResults();
 
-				final Query queryObject = fragment.createQuery(session);
+			queryObject.setFirstResult(firstResult);
+			queryObject.setMaxResults(maxResult);
+		}
 
-				if (paramPagination != null) {
-					final int firstResult = paramPagination.getSqlFirstResult();
-					final int maxResult = paramPagination.getSqlMaxResults();
-
-					queryObject.setFirstResult(firstResult);
-					queryObject.setMaxResults(maxResult);
-				}
-
-				return queryObject.list();
-			}
-		});
+		return queryObject.list();
 	}
 
 	protected int genericCount(EvenementCivilCriteria<TYP_EVT> criterion){
@@ -125,7 +116,7 @@ public abstract class AbstractEvenementCivilDAOImpl<EVT, TYP_EVT extends Enum<TY
 				getEvenementCivilClass().getSimpleName(),
 				criterion.isJoinOnPersonnePhysique() ? ", PersonnePhysique pp": "",
 				queryWhere);
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
+		return DataAccessUtils.intResult(find(query, criteria.toArray(), null));
 	}
 
 	protected abstract Class getEvenementCivilClass();

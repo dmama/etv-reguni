@@ -53,7 +53,7 @@ public class MigrationNoOfsVersLibelleJob extends JobDefinition {
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
-		final Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
+		final Session session = sessionFactory.withOptions().interceptor(new HibernateFakeInterceptor()).openSession();
 		try {
 			final Collection<Object[]> tuples = selectTiers(session);
 			if (!getStatusManager().interrupted()) {

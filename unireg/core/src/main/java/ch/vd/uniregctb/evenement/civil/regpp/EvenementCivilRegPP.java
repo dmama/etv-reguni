@@ -15,7 +15,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;
@@ -206,10 +205,9 @@ public class EvenementCivilRegPP extends HibernateEntity {
 	 * @return the erreurs
 	 * @generated "sourceid:platform:/resource/UniregCTB/04Unireg%20-%20data%20model%20tiers.emx#_R6KEAcK-EdydR6r71NY4Vg?GETTER"
 	 */
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	@JoinColumn(name = "EVT_CIVIL_ID", nullable = false)
 	@ForeignKey(name = "FK_EV_ERR_EV_RGR_ID")
-	@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	public Set<EvenementCivilRegPPErreur> getErreurs() {
 		// begin-user-code
 		return erreurs;

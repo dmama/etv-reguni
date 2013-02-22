@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.mouvement;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -13,11 +12,9 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateRange;
@@ -320,23 +317,18 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildFindHql(criteria, false, paramPagination != null ? paramPagination.getSorting() : null, params);
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<MouvementDossier>>() {
-			@Override
-			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
-
-				final Query query = session.createQuery(hql);
-				for (int i = 0 ; i < params.size() ; ++ i) {
-					query.setParameter(i, params.get(i));
-				}
-				if (paramPagination != null) {
-					final int firstResult = paramPagination.getSqlFirstResult();
-					final int maxResult = paramPagination.getSqlMaxResults();
-					query.setFirstResult(firstResult);
-					query.setMaxResults(maxResult);
-				}
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		for (int i = 0 ; i < params.size() ; ++ i) {
+			query.setParameter(i, params.get(i));
+		}
+		if (paramPagination != null) {
+			final int firstResult = paramPagination.getSqlFirstResult();
+			final int maxResult = paramPagination.getSqlMaxResults();
+			query.setFirstResult(firstResult);
+			query.setMaxResults(maxResult);
+		}
+		return query.list();
 	}
 
 	@Override
@@ -344,32 +336,24 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	public List<Long> findIds(MouvementDossierCriteria criteria, @Nullable ParamSorting sorting) {
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildFindHql(criteria, true, sorting, params);
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				for (int i = 0 ; i < params.size() ; ++ i) {
-					query.setParameter(i, params.get(i));
-				}
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		for (int i = 0 ; i < params.size() ; ++ i) {
+			query.setParameter(i, params.get(i));
+		}
+		return query.list();
 	}
 
 	@Override
 	public int count(MouvementDossierCriteria criteria) {
 		final List<Object> params = new ArrayList<Object>();
 		final String hql = buildCountHql(criteria, params);
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Integer>() {
-			@Override
-			public Integer doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				for (int i = 0 ; i < params.size() ; ++ i) {
-					query.setParameter(i, params.get(i));
-				}
-				return ((Number) query.uniqueResult()).intValue();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		for (int i = 0 ; i < params.size() ; ++ i) {
+			query.setParameter(i, params.get(i));
+		}
+		return ((Number) query.uniqueResult()).intValue();
 	}
 
 	@Override
@@ -392,18 +376,14 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 		}
 
 		final String hql = builder.toString();
-		final List<MouvementDossier> found = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<MouvementDossier>>() {
-			@Override
-			public List<MouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				if (ids != null) {
-					for (int i = 0 ; i < ids.length ; ++ i) {
-						query.setParameter(i, ids[i]);
-					}
-				}
-				return query.list();
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		if (ids != null) {
+			for (int i = 0 ; i < ids.length ; ++ i) {
+				query.setParameter(i, ids[i]);
 			}
-		});
+		}
+		final List<MouvementDossier> found = query.list();
 
 		// [UNIREG-2872] tri dans l'ordre des ids donnés en entrée
 		final List<MouvementDossier> listeFinale;
@@ -453,43 +433,40 @@ public class MouvementDossierDAOImpl extends GenericDAOImpl<MouvementDossier, Lo
 	@SuppressWarnings({"unchecked"})
 	public List<ProtoBordereauMouvementDossier> getAllProtoBordereaux(final Integer noCollAdmInitiatricePourFiltrage) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<ProtoBordereauMouvementDossier>>() {
-			@Override
-			public List<ProtoBordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
-				final List<Object[]> rows = (List<Object[]>) query.list();
-				if (rows != null && !rows.isEmpty()) {
-					final List<ProtoBordereauMouvementDossier> liste = new ArrayList<ProtoBordereauMouvementDossier>(rows.size());
-					for (Object[] row : rows) {
-						final String typeStr = (String) row[0];
-						final long idCollAdminInitiatrice = ((Number) row[1]).longValue();
-						final int noCollAdminInitiatrice = ((Number) row[2]).intValue();
-						final int countMvt = ((Number) row[5]).intValue();
+		final Session session = getCurrentSession();
+		final Query query = session.createSQLQuery(PROTO_BORDEREAUX_SQL);
+		final List<Object[]> rows = (List<Object[]>) query.list();
+		if (rows != null && !rows.isEmpty()) {
+			final List<ProtoBordereauMouvementDossier> liste = new ArrayList<ProtoBordereauMouvementDossier>(rows.size());
+			for (Object[] row : rows) {
+				final String typeStr = (String) row[0];
+				final long idCollAdminInitiatrice = ((Number) row[1]).longValue();
+				final int noCollAdminInitiatrice = ((Number) row[2]).intValue();
+				final int countMvt = ((Number) row[5]).intValue();
 
-						// filtrage pour n'afficher que les proto-bordereaux émis par la collectivité administrative logguée
-						if (noCollAdmInitiatricePourFiltrage == null || noCollAdminInitiatrice == noCollAdmInitiatricePourFiltrage) {
-							final ProtoBordereauMouvementDossier proto;
-							if ("EnvoiVersCollAdm".equals(typeStr)) {
-								final long idCollAdminDest = ((Number) row[3]).longValue();
-								final int noCollAdminDest = ((Number) row[4]).intValue();
-								proto = ProtoBordereauMouvementDossier.createEnvoi(idCollAdminInitiatrice, noCollAdminInitiatrice, idCollAdminDest, noCollAdminDest, countMvt);
-							}
-							else if ("ReceptionArchives".equals(typeStr)) {
-								proto = ProtoBordereauMouvementDossier.createArchivage(idCollAdminInitiatrice, noCollAdminInitiatrice, countMvt);
-							}
-							else {
-								throw new RuntimeException("Type de mouvement non supporté : " + typeStr);
-							}
-
-							liste.add(proto);
-						}
+				// filtrage pour n'afficher que les proto-bordereaux émis par la collectivité administrative logguée
+				if (noCollAdmInitiatricePourFiltrage == null || noCollAdminInitiatrice == noCollAdmInitiatricePourFiltrage) {
+					final ProtoBordereauMouvementDossier proto;
+					switch (typeStr) {
+						case "EnvoiVersCollAdm":
+							final long idCollAdminDest = ((Number) row[3]).longValue();
+							final int noCollAdminDest = ((Number) row[4]).intValue();
+							proto = ProtoBordereauMouvementDossier.createEnvoi(idCollAdminInitiatrice, noCollAdminInitiatrice, idCollAdminDest, noCollAdminDest, countMvt);
+							break;
+						case "ReceptionArchives":
+							proto = ProtoBordereauMouvementDossier.createArchivage(idCollAdminInitiatrice, noCollAdminInitiatrice, countMvt);
+							break;
+						default:
+							throw new RuntimeException("Type de mouvement non supporté : " + typeStr);
 					}
-					return !liste.isEmpty() ? liste : null;
-				}
-				else {
-					return null;
+
+					liste.add(proto);
 				}
 			}
-		});
+			return !liste.isEmpty() ? liste : null;
+		}
+		else {
+			return null;
+		}
 	}
 }

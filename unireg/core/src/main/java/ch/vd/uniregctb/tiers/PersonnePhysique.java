@@ -11,7 +11,6 @@ import javax.persistence.Transient;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Parameter;
@@ -359,10 +358,9 @@ public class PersonnePhysique extends Contribuable {
 		return dateDeces != null;
 	}
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	@JoinColumn(name = "NON_HABITANT_ID", nullable = false)
 	@ForeignKey(name = "FK_ID_PERS_TRS_ID")
-	@Cascade(value = org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	public Set<IdentificationPersonne> getIdentificationsPersonnes() {
 		return identificationsPersonnes;
 	}

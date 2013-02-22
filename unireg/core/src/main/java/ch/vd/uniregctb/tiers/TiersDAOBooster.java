@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseTiers;
@@ -95,11 +94,6 @@ public class TiersDAOBooster implements TiersDAO, InitializingBean {
 	@Override
 	public void removeAll() {
 		target.removeAll();
-	}
-
-	@Override
-	public HibernateTemplate getHibernateTemplate() {
-		return target.getHibernateTemplate();
 	}
 
 	@Override

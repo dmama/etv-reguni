@@ -9,6 +9,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 
@@ -209,28 +210,43 @@ public class AuditLineDAOTest extends CoreDAOTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testLogEventWhenThrowException() throws Exception {
 
-		AuditLineDAOTestService service = getBean(AuditLineDAOTestService.class, "auditLineDAOTestService");
+		final AuditLineDAOTestService service = getBean(AuditLineDAOTestService.class, "auditLineDAOTestService");
 
-		{
-			List<AuditLine> list = auditLineDAO.getAll();
-			assertEquals(0, list.size());
-		}
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setReadOnly(true);
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<AuditLine> list = auditLineDAO.getAll();
+				assertEquals(0, list.size());
+				return null;
+			}
+		});
 
-		try {
-			service.logAuditAndThrowException();
-			fail();
-		}
-		catch (Exception e) {
-			// ok
-		}
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				try {
+					service.logAuditAndThrowException();
+					fail();
+				}
+				catch (Exception e) {
+					status.setRollbackOnly();
+				}
+				return null;
+			}
+		});
 
-		{
-			List<AuditLine> list = auditLineDAO.getAll();
-			assertEquals(1, list.size());
-		}
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final List<AuditLine> list = auditLineDAO.getAll();
+				assertEquals(1, list.size());
+				return null;
+			}
+		});
 	}
 
 }

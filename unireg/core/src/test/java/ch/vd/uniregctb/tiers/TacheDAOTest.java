@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,8 +36,7 @@ public class TacheDAOTest extends CoreDAOTest {
 
 	private static final String DAO_NAME = "tacheDAO";
 
-	private TacheDAO dao;
-	private HibernateTemplate hibernateTemplate;
+	private TacheDAO tacheDAO;
 	private ModificationLogInterceptor modificationLogInterceptor;
 
 	private static class Ids {
@@ -56,8 +54,7 @@ public class TacheDAOTest extends CoreDAOTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		dao = getBean(TacheDAO.class, DAO_NAME);
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		tacheDAO = getBean(TacheDAO.class, DAO_NAME);
 		modificationLogInterceptor = getBean(ModificationLogInterceptor.class, "modificationLogInterceptor");
 	}
 
@@ -71,7 +68,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setEtatTache(TypeEtatTache.EN_INSTANCE);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tedi1, list.get(1).getId());
@@ -81,7 +78,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setEtatTache(TypeEtatTache.TRAITE);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tadi0, list.get(0).getId());
 			assertEquals(ids.tcd0, list.get(1).getId());
@@ -91,7 +88,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setEtatTache(TypeEtatTache.EN_COURS);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.ttd0, list.get(0).getId());
 		}
@@ -107,7 +104,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tedi1, list.get(1).getId());
@@ -117,7 +114,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.tadi0, list.get(0).getId());
 		}
@@ -126,7 +123,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheControleDossier);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.tcd0, list.get(0).getId());
 		}
@@ -135,7 +132,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheTransmissionDossier);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.ttd0, list.get(0).getId());
 		}
@@ -152,7 +149,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setInvertTypeTache(true);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(3, list.size());
 			assertEquals(ids.tadi0, list.get(0).getId());
 			assertEquals(ids.tcd0, list.get(1).getId());
@@ -164,7 +161,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheAnnulationDeclarationImpot);
 			criterion.setInvertTypeTache(true);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(4, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tcd0, list.get(1).getId());
@@ -177,7 +174,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheControleDossier);
 			criterion.setInvertTypeTache(true);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(4, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -190,7 +187,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheTransmissionDossier);
 			criterion.setInvertTypeTache(true);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(4, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -209,14 +206,14 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setDateCreationDepuis(DateHelper.getDate(2007, 1, 1));
 			criterion.setDateCreationJusqua(DateHelper.getDate(2007, 1, 31));
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEmpty(list);
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setDateCreationDepuis(DateHelper.getDate(2008, 1, 1));
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 1, 31));
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 		}
@@ -224,7 +221,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setDateCreationDepuis(DateHelper.getDate(2008, 1, 1));
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 2, 29));
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(2, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -233,7 +230,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setDateCreationDepuis(DateHelper.getDate(2008, 1, 1));
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 3, 31));
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(3, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -243,7 +240,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setDateCreationDepuis(DateHelper.getDate(2008, 1, 1));
 			criterion.setDateCreationJusqua(DateHelper.getDate(2008, 4, 30));
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(4, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -262,14 +259,14 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2007);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEmpty(list);
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2008);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 		}
@@ -277,7 +274,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
 			criterion.setAnnee(2009);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(1, list.size());
 			assertEquals(ids.tedi1, list.get(0).getId());
 		}
@@ -289,24 +286,24 @@ public class TacheDAOTest extends CoreDAOTest {
 
 		loadDatabase();
 
-		final Contribuable gomez = (Contribuable) dao.getHibernateTemplate().get(Contribuable.class, 12600003L);
+		final Contribuable gomez = (Contribuable) tiersDAO.get(12600003L);
 		assertNotNull(gomez);
 
-		final Contribuable pelcrus = (Contribuable) dao.getHibernateTemplate().get(Contribuable.class, 12600456L);
+		final Contribuable pelcrus = (Contribuable) tiersDAO.get(12600456L);
 		assertNotNull(pelcrus);
 
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setContribuable(pelcrus);
 			criterion.setAnnee(2008);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEmpty(list);
 		}
 		{
 			TacheCriteria criterion = new TacheCriteria();
 			criterion.setContribuable(gomez);
 			criterion.setAnnee(2008);
-			final List<Tache> list = dao.find(criterion);
+			final List<Tache> list = tacheDAO.find(criterion);
 			assertEquals(5, list.size());
 			assertEquals(ids.tedi0, list.get(0).getId());
 			assertEquals(ids.tadi0, list.get(1).getId());
@@ -324,12 +321,12 @@ public class TacheDAOTest extends CoreDAOTest {
 		ParamPagination paramPagination = new ParamPagination(1, 1, null, false);
 		TacheCriteria tacheCriteria = new TacheCriteria();
 		tacheCriteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
-		List<Tache> taches = dao.find(tacheCriteria, paramPagination);
+		List<Tache> taches = tacheDAO.find(tacheCriteria, paramPagination);
 		assertEquals(1, taches.size());
 
 		paramPagination = new ParamPagination(2, 1, null, false);
 		tacheCriteria = new TacheCriteria();
-		taches = dao.find(tacheCriteria, paramPagination);
+		taches = tacheDAO.find(tacheCriteria, paramPagination);
 		assertEquals(1, taches.size());
 	}
 
@@ -421,9 +418,9 @@ public class TacheDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative ca1 = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca1);
+				final CollectiviteAdministrative ca1 = (CollectiviteAdministrative) tiersDAO.get(ids.ca1);
 				assertNotNull(ca1);
-				final CollectiviteAdministrative ca2 = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca2);
+				final CollectiviteAdministrative ca2 = (CollectiviteAdministrative) tiersDAO.get(ids.ca2);
 				assertNotNull(ca2);
 
 				assertCollAdm(ca1, ids.envoiEnInstance);
@@ -447,7 +444,7 @@ public class TacheDAOTest extends CoreDAOTest {
 				// Changement de collectivité administative assignée
 				final HashMap<Long, Integer> tiersOidsMapping = new HashMap<Long, Integer>();
 				tiersOidsMapping.put(ids.ctb, ca2.getNumeroCollectiviteAdministrative());
-				dao.updateCollAdmAssignee(tiersOidsMapping);
+				tacheDAO.updateCollAdmAssignee(tiersOidsMapping);
 				return null;
 			}
 		});
@@ -457,9 +454,9 @@ public class TacheDAOTest extends CoreDAOTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 
-				final CollectiviteAdministrative ca1 = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca1);
+				final CollectiviteAdministrative ca1 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca1);
 				assertNotNull(ca1);
-				final CollectiviteAdministrative ca2 = (CollectiviteAdministrative) hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca2);
+				final CollectiviteAdministrative ca2 = hibernateTemplate.get(CollectiviteAdministrative.class, ids.ca2);
 				assertNotNull(ca2);
 				
 				assertCollAdm(ca2, ids.envoiEnInstance);
@@ -488,7 +485,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		ModeleDocument modele = new ModeleDocument();
 		modele.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		modele.setPeriodeFiscale(periode);
-		modele = (ModeleDocument) hibernateTemplate.merge(modele);
+		modele = hibernateTemplate.merge(modele);
 		return modele;
 	}
 
@@ -496,12 +493,12 @@ public class TacheDAOTest extends CoreDAOTest {
 		DeclarationImpotOrdinaire di = addDeclarationImpot((Contribuable)tiers, periode, debut, fin, null, typeCtb, modele);
 		di.setQualification(qualif);
 		tiers.addDeclaration(di);
-		di = (DeclarationImpotOrdinaire) hibernateTemplate.merge(di);
+		di = hibernateTemplate.merge(di);
 		return di;
 	}
 
 	private void assertCollAdm(CollectiviteAdministrative ca, long tacheId) {
-		final Tache tache = (Tache) hibernateTemplate.get(Tache.class, tacheId);
+		final Tache tache = hibernateTemplate.get(Tache.class, tacheId);
 		assertNotNull(tache);
 		assertEquals(ca, tache.getCollectiviteAdministrativeAssignee());
 	}
@@ -527,7 +524,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pf0.setLogModifDate(new Timestamp(1199142000000L));
 		pf0.setParametrePeriodeFiscale(new HashSet());
 		pf0.setModelesDocument(new HashSet());
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf0 = new ParametrePeriodeFiscale();
 		ppf0.setId(1L);
@@ -537,7 +534,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		ppf0.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 		pf0.addParametrePeriodeFiscale(ppf0);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf1 = new ParametrePeriodeFiscale();
 		ppf1.setId(2L);
@@ -547,7 +544,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		ppf1.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf1.setTypeContribuable(TypeContribuable.VAUDOIS_DEPENSE);
 		pf0.addParametrePeriodeFiscale(ppf1);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf2 = new ParametrePeriodeFiscale();
 		ppf2.setId(3L);
@@ -557,7 +554,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		ppf2.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf2.setTypeContribuable(TypeContribuable.HORS_CANTON);
 		pf0.addParametrePeriodeFiscale(ppf2);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ParametrePeriodeFiscale ppf3 = new ParametrePeriodeFiscale();
 		ppf3.setId(4L);
@@ -567,7 +564,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		ppf3.setTermeGeneralSommationReglementaire(RegDate.get(2009, 1, 31));
 		ppf3.setTypeContribuable(TypeContribuable.HORS_SUISSE);
 		pf0.addParametrePeriodeFiscale(ppf3);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		ModeleDocument md0 = new ModeleDocument();
 		md0.setId(1L);
@@ -575,7 +572,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		md0.setModelesFeuilleDocument(new HashSet());
 		md0.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
 		pf0.addModeleDocument(md0);
-		pf0 = (PeriodeFiscale) hibernateTemplate.merge(pf0);
+		pf0 = hibernateTemplate.merge(pf0);
 
 		PersonnePhysique pp0 = new PersonnePhysique();
 		pp0.setNumero(12600003L);
@@ -597,7 +594,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp0.setForsFiscaux(new HashSet());
 		pp0.setRapportsObjet(new HashSet());
 		pp0.setRapportsSujet(new HashSet());
-		pp0 = (PersonnePhysique) hibernateTemplate.merge(pp0);
+		pp0 = hibernateTemplate.merge(pp0);
 
 		PersonnePhysique pp1 = new PersonnePhysique();
 		pp1.setNumero(12600456L);
@@ -619,7 +616,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		pp1.setForsFiscaux(new HashSet());
 		pp1.setRapportsObjet(new HashSet());
 		pp1.setRapportsSujet(new HashSet());
-		pp1 = (PersonnePhysique) hibernateTemplate.merge(pp1);
+		pp1 = hibernateTemplate.merge(pp1);
 
 		DeclarationImpotOrdinaire dio0 = new DeclarationImpotOrdinaire();
 		dio0.setId(1L);
@@ -633,7 +630,7 @@ public class TacheDAOTest extends CoreDAOTest {
 		dio0.setPeriode(pf0);
 		dio0.setNumero(1);
 		dio0.setTiers(pp0);
-		dio0 = (DeclarationImpotOrdinaire) hibernateTemplate.merge(dio0);
+		dio0 = hibernateTemplate.merge(dio0);
 
 		try {
 			modificationLogInterceptor.setCompleteOnly(true); // par garder les valeur de log creation date (voir test testFindParDateCreation)
@@ -648,7 +645,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			tedi0.setLogModifDate(new Timestamp(1199142000000L));
 			tedi0.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 			tedi0.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-			tedi0 = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tedi0);
+			tedi0 = hibernateTemplate.merge(tedi0);
 			ids.tedi0 = tedi0.getId();
 
 			TacheAnnulationDeclarationImpot tadi0 = new TacheAnnulationDeclarationImpot();
@@ -658,7 +655,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			tadi0.setEtat(TypeEtatTache.TRAITE);
 			tadi0.setLogCreationDate(new Timestamp(1201820400000L));
 			tadi0.setLogModifDate(new Timestamp(1201820400000L));
-			tadi0 = (TacheAnnulationDeclarationImpot) hibernateTemplate.merge(tadi0);
+			tadi0 = hibernateTemplate.merge(tadi0);
 			ids.tadi0 = tadi0.getId();
 
 			TacheControleDossier tcd0 = new TacheControleDossier();
@@ -667,7 +664,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			tcd0.setEtat(TypeEtatTache.TRAITE);
 			tcd0.setLogCreationDate(new Timestamp(1204326000000L));
 			tcd0.setLogModifDate(new Timestamp(1204326000000L));
-			tcd0 = (TacheControleDossier) hibernateTemplate.merge(tcd0);
+			tcd0 = hibernateTemplate.merge(tcd0);
 			ids.tcd0 = tcd0.getId();
 
 			CollectiviteAdministrative aci = addCollAdm(21);
@@ -679,7 +676,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			ttd0.setLogCreationDate(new Timestamp(1207000800000L));
 			ttd0.setLogModifDate(new Timestamp(1207000800000L));
 			ttd0.setCollectiviteAdministrativeAssignee(aci);
-			ttd0 = (TacheTransmissionDossier) hibernateTemplate.merge(ttd0);
+			ttd0 = hibernateTemplate.merge(ttd0);
 			ids.ttd0 = ttd0.getId();
 
 			TacheEnvoiDeclarationImpot tedi1 = new TacheEnvoiDeclarationImpot();
@@ -692,7 +689,7 @@ public class TacheDAOTest extends CoreDAOTest {
 			tedi1.setLogModifDate(new Timestamp(1230764400000L));
 			tedi1.setTypeContribuable(TypeContribuable.VAUDOIS_ORDINAIRE);
 			tedi1.setTypeDocument(TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH);
-			tedi1 = (TacheEnvoiDeclarationImpot) hibernateTemplate.merge(tedi1);
+			tedi1 = hibernateTemplate.merge(tedi1);
 			ids.tedi1 = tedi1.getId();
 		}
 		finally {

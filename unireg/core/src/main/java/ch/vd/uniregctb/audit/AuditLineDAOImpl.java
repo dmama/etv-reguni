@@ -1,24 +1,20 @@
 package ch.vd.uniregctb.audit;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Timestamp;
-import java.sql.Types;
+import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
-import org.springframework.dao.DataAccessException;
+import org.hibernate.type.StandardBasicTypes;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.jdbc.core.ConnectionCallback;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateHelper;
@@ -28,10 +24,10 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.ParamPagination;
 import ch.vd.uniregctb.dbutils.QueryFragment;
 
-public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO {
+public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements AuditLineDAO, InitializingBean {
 
 	private Dialect dialect;
-	private DataSource dataSource;
+	private PlatformTransactionManager transactionManager;
 	private String nextValSql;
 
 	public AuditLineDAOImpl() {
@@ -40,24 +36,18 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 
 	@Override
 	public List<AuditLine> find(final AuditLineCriteria criterion, final ParamPagination paramPagination) {
+		final Session session = getCurrentSession();
+		final QueryFragment fragment = new QueryFragment(buildSql(criterion));
+		fragment.add(paramPagination.buildOrderClause("a", null, false, null));
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AuditLine>>() {
-			@Override
-			public List<AuditLine> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Query queryObject = fragment.createQuery(session);
+		final int firstResult = paramPagination.getSqlFirstResult();
+		final int maxResult = paramPagination.getSqlMaxResults();
+		queryObject.setFirstResult(firstResult);
+		queryObject.setMaxResults(maxResult);
 
-				final QueryFragment fragment = new QueryFragment(buildSql(criterion));
-				fragment.add(paramPagination.buildOrderClause("a", null, false, null));
-
-				final Query queryObject = fragment.createQuery(session);
-				final int firstResult = paramPagination.getSqlFirstResult();
-				final int maxResult = paramPagination.getSqlMaxResults();
-				queryObject.setFirstResult(firstResult);
-				queryObject.setMaxResults(maxResult);
-
-				//noinspection unchecked
-				return queryObject.list();
-			}
-		});
+		//noinspection unchecked
+		return queryObject.list();
 	}
 
 	private static String buildSql(AuditLineCriteria criterion) {
@@ -83,44 +73,31 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	@Override
 	public int count(AuditLineCriteria criteria) {
 		final String query = "select count(*) " + buildSql(criteria);
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
+		return DataAccessUtils.intResult(find(query, null, null));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<AuditLine> findLastCountFromID(final long id, final int count) {
-
+		if (count == 0) {
+			return Collections.emptyList();
+		}
 		final String query = "FROM AuditLine line WHERE line.id >= :start ORDER BY line.id DESC";
-
-		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
-			@Override
-			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
-				final Query queryObject = session.createQuery(query);
-				queryObject.setParameter("start", id);
-				queryObject.setMaxResults(count);
-				return queryObject.list();
-			}
-		});
-
-		return list;
+		final Session session = getCurrentSession();
+		final Query queryObject = session.createQuery(query);
+		queryObject.setParameter("start", id);
+		queryObject.setMaxResults(count);
+		return queryObject.list();
 	}
 
 	@Override
 	@SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
 	public List<AuditLine> find(final long evenementCivilId) {
-
 		final String query = "FROM AuditLine line WHERE line.evenementId = :id ORDER BY line.id ASC";
-
-		final List<AuditLine> list = getHibernateTemplate().execute(new HibernateCallback<List<AuditLine>>() {
-			@Override
-			public List<AuditLine> doInHibernate(Session session) throws HibernateException {
-				final Query queryObject = session.createQuery(query);
-				queryObject.setParameter("id", evenementCivilId);
-				return queryObject.list();
-			}
-		});
-
-		return list;
+		final Session session = getCurrentSession();
+		final Query queryObject = session.createQuery(query);
+		queryObject.setParameter("id", evenementCivilId);
+		return queryObject.list();
 	}
 
 	/**
@@ -129,54 +106,36 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	 */
 	@Override
 	public void insertLineInNewTx(final AuditLine line) {
-
-		final JdbcTemplate template = new JdbcTemplate(dataSource);
-		template.execute(new ConnectionCallback<Object>() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		template.execute(new TransactionCallback<Object>() {
 			@Override
-			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
-				final long id = getNextId(con);
+			public Object doInTransaction(TransactionStatus status) {
 				final Timestamp now = new Timestamp(DateHelper.getCurrentDate().getTime());
-
-				final PreparedStatement stat = con.prepareStatement("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
-				try {
-					stat.setLong(1, id);
-					stat.setString(2, line.getLevel().toString());
-					stat.setObject(3, line.getDocumentId(), Types.BIGINT);
-					stat.setObject(4, line.getEvenementId(), Types.BIGINT);
-					stat.setObject(5, line.getThreadId(), Types.BIGINT);
-					stat.setObject(6, line.getMessage(), Types.VARCHAR);
-					stat.setTimestamp(7, now);
-					stat.setObject(8, AuthenticationHelper.getCurrentPrincipal(), Types.VARCHAR);
-					stat.executeUpdate();
-				}
-				finally {
-					stat.close();
-				}
+				final long id = getNextId();
+				final Query query = getCurrentSession().createSQLQuery("insert into AUDIT_LOG (id, LOG_LEVEL, DOC_ID, EVT_ID, THREAD_ID, MESSAGE, LOG_DATE, LOG_USER) values (?, ?, ?, ?, ?, ?, ?, ?)");
+				query.setLong(0, id);
+				query.setParameter(1, line.getLevel().toString());
+				query.setParameter(2, line.getDocumentId(), StandardBasicTypes.LONG);
+				query.setParameter(3, line.getEvenementId(), StandardBasicTypes.LONG);
+				query.setParameter(4, line.getThreadId(), StandardBasicTypes.LONG);
+				query.setParameter(5, line.getMessage());
+				query.setTimestamp(6, now);
+				query.setParameter(7, AuthenticationHelper.getCurrentPrincipal());
+				query.executeUpdate();
 				return null;
 			}
 		});
 	}
 
-	private long getNextId(Connection con) throws SQLException {
-		final Statement stat = con.createStatement();
-		try {
-			final ResultSet rs = stat.executeQuery(nextValSql);
-			try {
-				Assert.isTrue(rs.next());
-				return rs.getLong(1);
-			}
-			finally {
-				rs.close();
-			}
-		}
-		finally {
-			stat.close();
-		}
+	private long getNextId() {
+		final Query query = getCurrentSession().createSQLQuery(nextValSql);
+		return ((Number) query.uniqueResult()).longValue();
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setDataSource(DataSource dataSource) {
-		this.dataSource = dataSource;
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
@@ -185,8 +144,7 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	}
 
 	@Override
-	protected void initDao() throws Exception {
-		super.initDao();
+	public void afterPropertiesSet() throws Exception {
 		nextValSql = dialect.getSequenceNextValString("hibernate_sequence");
 	}
 
@@ -194,19 +152,14 @@ public class AuditLineDAOImpl extends GenericDAOImpl<AuditLine, Long> implements
 	public int purge(final RegDate seuilPurge) {
 		Assert.notNull(seuilPurge);
 
-		final JdbcTemplate template = new JdbcTemplate(dataSource);
-		return template.execute(new ConnectionCallback<Integer>() {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		return template.execute(new TransactionCallback<Integer>() {
 			@Override
-			public Integer doInConnection(Connection con) throws SQLException, DataAccessException {
+			public Integer doInTransaction(TransactionStatus status) {
 				final Timestamp seuilTimestamp = new Timestamp(seuilPurge.asJavaDate().getTime());
-				final PreparedStatement stat = con.prepareStatement("delete from AUDIT_LOG WHERE LOG_DATE < ?");
-				try {
-					stat.setTimestamp(1, seuilTimestamp);
-					return stat.executeUpdate();
-				}
-				finally {
-					stat.close();
-				}
+				final Query query = getCurrentSession().createSQLQuery("delete from AUDIT_LOG WHERE LOG_DATE < ?");
+				query.setTimestamp(0, seuilTimestamp);
+				return query.executeUpdate();
 			}
 		});
 	}

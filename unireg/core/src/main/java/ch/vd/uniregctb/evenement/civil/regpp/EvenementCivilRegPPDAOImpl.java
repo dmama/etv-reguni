@@ -1,16 +1,13 @@
 package ch.vd.uniregctb.evenement.civil.regpp;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.ParamPagination;
@@ -56,17 +53,13 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 		b.append(" and ec.etat in (:etats) ");
 		final String sql = b.toString();
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<EvenementCivilRegPP>>() {
-			@Override
-			public List<EvenementCivilRegPP> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(sql);
-				query.setParameter("date", dateEvenement.index());
-				query.setParameter("type", typeEvenement.name());
-				query.setParameter("noIndividu", noIndividu);
-				query.setParameterList("etats", ETATS_NON_TRAITES);
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(sql);
+		query.setParameter("date", dateEvenement.index());
+		query.setParameter("type", typeEvenement.name());
+		query.setParameter("noIndividu", noIndividu);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		return query.list();
 	}
 
 	@Override
@@ -89,51 +82,43 @@ public class EvenementCivilRegPPDAOImpl extends AbstractEvenementCivilDAOImpl<Ev
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getEvenementCivilsNonTraites() {
-		return getHibernateTemplate().findByNamedParam("select evt.id from EvenementCivilRegPP evt where evt.etat in (:etats) order by evt.dateTraitement desc", "etats", ETATS_NON_TRAITES);
+		final String s = "select evt.id from EvenementCivilRegPP evt where evt.etat in (:etats) order by evt.dateTraitement desc";
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(s);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		return query.list();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<EvenementCivilRegPP> getEvenementsCivilsNonTraites(final Collection<Long> nosIndividus) {
 		final String s = "SELECT e FROM EvenementCivilRegPP e WHERE e.etat IN (:etats) AND (e.numeroIndividuPrincipal IN (:col) OR e.numeroIndividuConjoint IN (:col))";
-		return getHibernateTemplate().execute(new HibernateCallback<List<EvenementCivilRegPP>>() {
-			@Override
-			public List<EvenementCivilRegPP> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(s);
-				query.setParameterList("etats", ETATS_NON_TRAITES);
-				query.setParameterList("col", nosIndividus);
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(s);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		query.setParameterList("col", nosIndividus);
+		return query.list();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getIdsEvenementCivilsErreurIndividu(final Long numIndividu){
 		final String s ="select evt.id from EvenementCivilRegPP evt where evt.etat in (:etats) and evt.numeroIndividuPrincipal = :ind order by evt.id asc";
-		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(s);
-				query.setParameterList("etats", ETATS_NON_TRAITES);
-				query.setParameter("ind", numIndividu);
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(s);
+		query.setParameterList("etats", ETATS_NON_TRAITES);
+		query.setParameter("ind", numIndividu);
+		return query.list();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<EvenementCivilRegPP> findEvenementByIndividu(final Long numIndividu) {
 		final String s = "select distinct e from EvenementCivilRegPP e where e.numeroIndividuPrincipal = :numIndividu or e.numeroIndividuConjoint = :numIndividu";
-		return getHibernateTemplate().execute(new HibernateCallback<List<EvenementCivilRegPP>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public List<EvenementCivilRegPP> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(s);
-				query.setParameter("numIndividu", numIndividu);
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(s);
+		query.setParameter("numIndividu", numIndividu);
+		return query.list();
 	}
 
 	@Override

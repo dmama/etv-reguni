@@ -9,7 +9,7 @@ import java.util.Properties;
 import org.hibernate.HibernateException;
 import org.hibernate.MappingException;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.SessionImplementor;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.id.Configurable;
 import org.hibernate.id.PersistentIdentifierGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;
@@ -74,8 +74,7 @@ public class TiersMultiSequenceGenerator implements Configurable, PersistentIden
 	 * Génère un ID pour l'objet passé en paramètre. Se base sur la classe de
 	 * l'objet pour récupérér le SequenceGenerator adéquat.
 	 *
-	 * @see org.hibernate.id.SequenceHiLoGenerator#generate(org.hibernate.engine.SessionImplementor,
-	 *      java.lang.Object)
+	 * @see org.hibernate.id.SequenceHiLoGenerator#generate(org.hibernate.engine.spi.SessionImplementor, java.lang.Object)
 	 */
 	@Override
 	public synchronized Serializable generate(SessionImplementor session, Object object) throws HibernateException {

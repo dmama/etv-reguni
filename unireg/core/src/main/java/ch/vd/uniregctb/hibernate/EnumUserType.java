@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -48,12 +49,8 @@ public class EnumUserType<E extends Enum<E>> extends GenericUserType implements 
         return clazz;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.hibernate.usertype.UserType#nullSafeGet(java.sql.ResultSet, java.lang.String[], java.lang.Object)
-     */
-    @Override
-    public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
+	@Override
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
         String name = resultSet.getString(names[0]);
         E result = null;
         if (!resultSet.wasNull()) {
@@ -62,13 +59,9 @@ public class EnumUserType<E extends Enum<E>> extends GenericUserType implements 
         return result;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.hibernate.usertype.UserType#nullSafeSet(java.sql.PreparedStatement, java.lang.Object, int)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException, SQLException {
+	@Override
+	@SuppressWarnings("unchecked")
+	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
         if (null == value) {
             preparedStatement.setNull(index, Types.VARCHAR);
         } else {

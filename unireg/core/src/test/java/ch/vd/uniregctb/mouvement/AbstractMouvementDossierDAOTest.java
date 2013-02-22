@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.mouvement;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
@@ -12,18 +10,12 @@ import ch.vd.uniregctb.type.Sexe;
 
 public abstract class AbstractMouvementDossierDAOTest extends CoreDAOTest {
 
-	private HibernateTemplate hibernateTemplate;
 	private TiersDAO tiersDAO;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-	}
-
-	protected HibernateTemplate getHibernateTemplate() {
-		return hibernateTemplate;
 	}
 
 	protected TiersDAO getTiersDAO() {

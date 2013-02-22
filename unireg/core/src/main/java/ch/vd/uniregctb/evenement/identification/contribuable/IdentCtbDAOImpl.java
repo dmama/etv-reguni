@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.evenement.identification.contribuable;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -12,11 +11,9 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -82,18 +79,12 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final int firstResult = paramPagination.getSqlFirstResult();
 		final int maxResult = paramPagination.getSqlMaxResults();
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<IdentificationContribuable>>() {
-			@Override
-			public List<IdentificationContribuable> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
+		final Query queryObject = fragment.createQuery(session);
 
-				final Query queryObject = fragment.createQuery(session);
-
-				queryObject.setFirstResult(firstResult);
-				queryObject.setMaxResults(maxResult);
-				return queryObject.list();
-			}
-
-		});
+		queryObject.setFirstResult(firstResult);
+		queryObject.setMaxResults(maxResult);
+		return queryObject.list();
 	}
 
 	/**
@@ -113,38 +104,35 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		final String selectBase = "select count(*) from IdentificationContribuable identificationContribuable where";
 		final String whereTypeDemande = buildWhereAvecTypeDemande("identificationContribuable", typeDemande);
 		final String query = selectBase + whereTypeDemande + queryWhere;
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query, criteria.toArray()));
+		return DataAccessUtils.intResult(find(query, criteria.toArray(), null));
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<TypeDemande, Map<Etat, List<String>>> getTypesMessages() {
 		final String hql = "select distinct i.demande.typeMessage, i.demande.typeDemande, i.etat from IdentificationContribuable i";
-		return getHibernateTemplate().executeWithNewSession(new HibernateCallback<Map<TypeDemande, Map<Etat, List<String>>>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Map<TypeDemande, Map<Etat, List<String>>> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				final Map<TypeDemande, Map<Etat, List<String>>> globalMap = new EnumMap<TypeDemande, Map<Etat, List<String>>>(TypeDemande.class);
-				final Iterator<Object[]> iter = query.iterate();
-				while (iter.hasNext()) {
-					final Object[] row = iter.next();
-					final String typeMessage = (String) row[0];
-					final TypeDemande typeDemande = (TypeDemande) row[1];
-					final Etat etat = (Etat) row[2];
-					Map<Etat, List<String>> mapPourTypeDonne = globalMap.get(typeDemande);
-					if (mapPourTypeDonne == null) {
-						mapPourTypeDonne = new EnumMap<Etat, List<String>>(Etat.class);
-						globalMap.put(typeDemande, mapPourTypeDonne);
-					}
-					List<String> typesMessages = mapPourTypeDonne.get(etat);
-					if (typesMessages == null) {
-						typesMessages = new LinkedList<String>();
-						mapPourTypeDonne.put(etat, typesMessages);
-					}
-					typesMessages.add(typeMessage);
-				}
-				return globalMap;
+		final Session session = getCurrentSession();
+
+		final Query query = session.createQuery(hql);
+		final Map<TypeDemande, Map<Etat, List<String>>> globalMap = new EnumMap<TypeDemande, Map<Etat, List<String>>>(TypeDemande.class);
+		final Iterator<Object[]> iter = query.iterate();
+		while (iter.hasNext()) {
+			final Object[] row = iter.next();
+			final String typeMessage = (String) row[0];
+			final TypeDemande typeDemande = (TypeDemande) row[1];
+			final Etat etat = (Etat) row[2];
+			Map<Etat, List<String>> mapPourTypeDonne = globalMap.get(typeDemande);
+			if (mapPourTypeDonne == null) {
+				mapPourTypeDonne = new EnumMap<Etat, List<String>>(Etat.class);
+				globalMap.put(typeDemande, mapPourTypeDonne);
 			}
-		});
+			List<String> typesMessages = mapPourTypeDonne.get(etat);
+			if (typesMessages == null) {
+				typesMessages = new LinkedList<String>();
+				mapPourTypeDonne.put(etat, typesMessages);
+			}
+			typesMessages.add(typeMessage);
+		}
+		return globalMap;
 	}
 
 	private static interface Unmarshaller<T> {
@@ -186,29 +174,25 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 	 * @param <T> le type du champ spécifique
 	 * @return la map de répartition trouvée
 	 */
+	@SuppressWarnings("unchecked")
 	private <T> Map<Etat, List<T>> getDonneesParEtat(String champHql, final Unmarshaller<T> unmarshaller) {
 		final String hql = "select distinct " + champHql + ", i.etat from IdentificationContribuable i";
-		return getHibernateTemplate().executeWithNewSession(new HibernateCallback<Map<Etat, List<T>>>() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public Map<Etat, List<T>> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				final Map<Etat, List<T>> map = new EnumMap<Etat, List<T>>(Etat.class);
-				final Iterator<Object[]> iterator = query.iterate();
-				while (iterator.hasNext()) {
-					final Object[] row = iterator.next();
-					final T value = unmarshaller.buildValue(row[0]);
-					final Etat etat = (Etat) row[1];
-					List<T> ids = map.get(etat);
-					if (ids == null) {
-						ids = new LinkedList<T>();
-						map.put(etat, ids);
-					}
-					ids.add(value);
-				}
-				return map;
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		final Map<Etat, List<T>> map = new EnumMap<Etat, List<T>>(Etat.class);
+		final Iterator<Object[]> iterator = query.iterate();
+		while (iterator.hasNext()) {
+			final Object[] row = iterator.next();
+			final T value = unmarshaller.buildValue(row[0]);
+			final Etat etat = (Etat) row[1];
+			List<T> ids = map.get(etat);
+			if (ids == null) {
+				ids = new LinkedList<T>();
+				map.put(etat, ids);
 			}
-		});
+			ids.add(value);
+		}
+		return map;
 	}
 
 	@Override
@@ -223,12 +207,13 @@ public class IdentCtbDAOImpl extends GenericDAOImpl<IdentificationContribuable, 
 		return getDonneesParEtat("i.demande.periodeFiscale", INTEGER_UNMARSHALLER);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<String> getTraitementUser() {
 		String query = " select distinct identificationContribuable.traitementUser " +
 				"from IdentificationContribuable identificationContribuable where identificationContribuable.traitementUser is not null " +
 				"and identificationContribuable.traitementUser not like '%JMS-EvtIdentCtb%' ";
-		return getHibernateTemplate().find(query);
+		return (List<String>) find(query, null, null);
 	}
 
 	@Override

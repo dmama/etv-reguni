@@ -179,12 +179,8 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 	}
 
 	private void warmIndividuCache(Session session, List<Long> batch) {
-
 		if (serviceCivilCacheWarmer != null && serviceCivilCacheWarmer.isServiceWarmable()) {
-
-			final TiersDAOImpl.GetNumerosIndividusCallback callback = new TiersDAOImpl.GetNumerosIndividusCallback(batch, true);
-			final Set<Long> numerosIndividus = callback.doInHibernate(session);
-
+			final Set<Long> numerosIndividus = TiersDAOImpl.getNumerosIndividu(batch, true, session);
 			final AttributeIndividu parties[] = AttributeIndividu.values(); // toutes les parties (pour charger le cache persistent)
 			serviceCivilCacheWarmer.warmIndividus(numerosIndividus, null, parties);
 		}

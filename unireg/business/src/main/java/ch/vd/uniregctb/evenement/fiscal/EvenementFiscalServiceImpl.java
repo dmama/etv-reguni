@@ -60,7 +60,7 @@ public class EvenementFiscalServiceImpl implements EvenementFiscalService {
 	 */
 	@Override
 	public Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) {
-		return evenementFiscalDAO.getEvenementFiscals(tiers);
+		return evenementFiscalDAO.getEvenementsFiscaux(tiers);
 	}
 
 	/**

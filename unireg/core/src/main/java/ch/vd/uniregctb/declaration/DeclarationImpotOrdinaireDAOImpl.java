@@ -11,10 +11,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -113,11 +111,8 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : findByNumero");
 		}
 
-		String query = " select di from DeclarationImpotOrdinaire di where di.tiers.numero = ? ";
-		List<Object> criteria = new ArrayList<Object>();
-		criteria.add(numero);
-		List<DeclarationImpotOrdinaire> list = getHibernateTemplate().find(query, criteria.toArray());
-		return list;
+		final String query = " select di from DeclarationImpotOrdinaire di where di.tiers.numero = ? ";
+		return (List<DeclarationImpotOrdinaire>) find(query, new Object[]{numero}, null);
 	}
 
 	/**
@@ -132,18 +127,15 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Start of DeclarationImpotOrdinaireDAO : findDerniereDiEnvoyee");
 		}
-		EtatDeclaration etat = null;
 
-		String query = " select etatDeclarationEmise from EtatDeclarationEmise etatDeclarationEmise where etatDeclarationEmise.declaration.annulationDate is null and etatDeclarationEmise.declaration.tiers.numero = ? order by etatDeclarationEmise.dateObtention desc";
-		List<Object> criteria = new ArrayList<Object>();
-		criteria.add(numeroCtb);
-		List<EtatDeclaration> list = getHibernateTemplate().find(query, criteria.toArray());
+		final String query = " select etatDeclarationEmise from EtatDeclarationEmise etatDeclarationEmise where etatDeclarationEmise.declaration.annulationDate is null and etatDeclarationEmise.declaration.tiers.numero = ? order by etatDeclarationEmise.dateObtention desc";
+		final List<EtatDeclaration> list = (List<EtatDeclaration>) find(query, new Object[]{numeroCtb}, null);
 		if (list.isEmpty()) {
 			return null;
 		}
 
 		// détermine la déclaration la plus récente
-		etat = list.get(0);
+		EtatDeclaration etat = list.get(0);
 		for (EtatDeclaration e : list) {
 			final RegDate date = etat.getDeclaration().getDateDebut();
 			final RegDate autre = e.getDeclaration().getDateDebut();
@@ -159,27 +151,20 @@ public class DeclarationImpotOrdinaireDAOImpl extends GenericDAOImpl< Declaratio
 	@SuppressWarnings("unchecked")
 	public Set<DeclarationImpotOrdinaire> getDIsForSommation(final Collection<Long> idsDI) {
 
-		final List<DeclarationImpotOrdinaire> list = getHibernateTemplate().executeWithNativeSession(
-				new HibernateCallback<List<DeclarationImpotOrdinaire>>() {
-					@Override
-					public List<DeclarationImpotOrdinaire> doInHibernate(Session session) throws HibernateException {
-						final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
-						crit.add(Restrictions.in("id", idsDI));
-						crit.setFetchMode("etats", FetchMode.JOIN);
-						crit.setFetchMode("delais", FetchMode.JOIN);
-						crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Session session = getCurrentSession();
+		final Criteria crit = session.createCriteria(DeclarationImpotOrdinaire.class);
+		crit.add(Restrictions.in("id", idsDI));
+		crit.setFetchMode("etats", FetchMode.JOIN);
+		crit.setFetchMode("delais", FetchMode.JOIN);
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
 
-						final FlushMode mode = session.getFlushMode();
-						try {
-							session.setFlushMode(FlushMode.MANUAL);
-							return crit.list();
-						}
-						finally {
-							session.setFlushMode(mode);
-						}
-					}
-				});
-
-		return new HashSet<DeclarationImpotOrdinaire>(list);
+		final FlushMode mode = session.getFlushMode();
+		try {
+			session.setFlushMode(FlushMode.MANUAL);
+			return new HashSet<DeclarationImpotOrdinaire>(crit.list());
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 	}
 }

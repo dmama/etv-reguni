@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,10 +13,8 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
 import org.hibernate.FetchMode;
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
@@ -26,10 +23,9 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.Subqueries;
 import org.hibernate.dialect.Dialect;
-import org.hibernate.engine.EntityKey;
-import org.hibernate.impl.SessionImpl;
+import org.hibernate.engine.spi.EntityKey;
+import org.hibernate.internal.SessionImpl;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -84,21 +80,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public Map<Class, List<Tiers>> getFirstGroupedByClass(final int count) {
-		return getHibernateTemplate().execute(new HibernateCallback<Map<Class, List<Tiers>>>() {
-			@Override
-			public Map<Class, List<Tiers>> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
-				for (Class clazz : TIERS_CLASSES) {
-					final Query query = session.createQuery("from Tiers t where t.class = " + clazz.getSimpleName());
-					query.setMaxResults(count);
-					List<Tiers> tiers = query.list();
-					if (tiers != null && !tiers.isEmpty()) {
-						map.put(clazz, tiers);
-					}
-				}
-				return map;
+		final Session session = getCurrentSession();
+		final Map<Class, List<Tiers>> map = new HashMap<Class, List<Tiers>>();
+		for (Class clazz : TIERS_CLASSES) {
+			final Query query = session.createQuery("from Tiers t where t.class = " + clazz.getSimpleName());
+			query.setMaxResults(count);
+			final List<Tiers> tiers = query.list();
+			if (tiers != null && !tiers.isEmpty()) {
+				map.put(clazz, tiers);
 			}
-		});
+		}
+		return map;
 	}
 
 	@Override
@@ -136,20 +128,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			return Collections.emptySet();
 		}
 
-		final List<Object[]> list = getHibernateTemplate().executeFind(new HibernateCallback<List>() {
-			@Override
-			public List doInHibernate(Session session) throws HibernateException, SQLException {
-				final FlushMode mode = session.getFlushMode();
-				session.setFlushMode(FlushMode.MANUAL);
-				try {
-					final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
-					return queryObjectsByIds(hql, input, session);
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
-			}
-		});
+		final Session session = getCurrentSession();
+		final List<Object[]> list;
+		final FlushMode mode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			final String hql = "select r.objetId, r.sujetId from RapportEntreTiers r where r.class != RapportPrestationImposable and (r.objetId in (:ids) OR r.sujetId in (:ids))";
+			list = queryObjectsByIds(hql, input, session);
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 
 		final Set<Long> output = new HashSet<Long>();
 		for (Object[] objects : list) {
@@ -203,6 +192,26 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		associateSetsWith(m, tiers, setter);
 	}
 
+	private static String buildHqlForSujets(boolean excludeContactsImpotSource) {
+		final StringBuilder hqlSujets = new StringBuilder();
+		hqlSujets.append("select r.sujetId from RapportEntreTiers r where r.annulationDate is null");
+		if (excludeContactsImpotSource) {
+			hqlSujets.append(" and r.class != ContactImpotSource");
+		}
+		hqlSujets.append(" and r.objetId in (:ids)");
+		return hqlSujets.toString();
+	}
+
+	private static String buildHqlForObjets(boolean excludeContactsImpotSource) {
+		final StringBuilder hqlSujets = new StringBuilder();
+		hqlSujets.append("select r.objetId from RapportEntreTiers r where r.annulationDate is null");
+		if (excludeContactsImpotSource) {
+			hqlSujets.append(" and r.class != ContactImpotSource");
+		}
+		hqlSujets.append(" and r.sujetId in (:ids)");
+		return hqlSujets.toString();
+	}
+
 	@Override
 	public Set<Long> getIdsTiersLies(final Collection<Long> ids, final boolean excludeContactsImpotSource) {
 
@@ -210,75 +219,51 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			return Collections.emptySet();
 		}
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Set<Long>>() {
-			@SuppressWarnings({"unchecked"})
-			@Override
-			public Set<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				// on complète la liste d'ids avec les tiers liés par rapports
-				final Set<Long> idsDemandes = new HashSet<Long>(ids);
-				final Set<Long> idsLies = new HashSet<Long>();
+		// on complète la liste d'ids avec les tiers liés par rapports
+		final Set<Long> idsDemandes = new HashSet<Long>(ids);
+		final Set<Long> idsLies = new HashSet<Long>();
 
-				// les tiers liés en tant que sujets
-				final String hqlSujets = buildHqlForSujets(excludeContactsImpotSource);
-				final List<Long> idsSujets = queryObjectsByIds(hqlSujets, idsDemandes, session);
-				idsLies.addAll(idsSujets);
+		// les tiers liés en tant que sujets
+		final String hqlSujets = buildHqlForSujets(excludeContactsImpotSource);
+		final List<Long> idsSujets = queryObjectsByIds(hqlSujets, idsDemandes, session);
+		idsLies.addAll(idsSujets);
 
-				// les tiers liés en tant qu'objets
-				final String hqlObjets = buildHqlForObjets(excludeContactsImpotSource);
-				final List<Long> idsObjets = queryObjectsByIds(hqlObjets, idsDemandes, session);
-				idsLies.addAll(idsObjets);
+		// les tiers liés en tant qu'objets
+		final String hqlObjets = buildHqlForObjets(excludeContactsImpotSource);
+		final List<Long> idsObjets = queryObjectsByIds(hqlObjets, idsDemandes, session);
+		idsLies.addAll(idsObjets);
 
-				final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
-				idsFull.addAll(idsLies);
-				
-				return idsFull;
-			}
+		final Set<Long> idsFull = new HashSet<Long>(idsDemandes);
+		idsFull.addAll(idsLies);
 
-			private String buildHqlForSujets(boolean excludeContactsImpotSource) {
-				final StringBuilder hqlSujets = new StringBuilder();
-				hqlSujets.append("select r.sujetId from RapportEntreTiers r where r.annulationDate is null");
-				if (excludeContactsImpotSource) {
-					hqlSujets.append(" and r.class != ContactImpotSource");
-				}
-				hqlSujets.append(" and r.objetId in (:ids)");
-				return hqlSujets.toString();
-			}
-
-			private String buildHqlForObjets(boolean excludeContactsImpotSource) {
-				final StringBuilder hqlSujets = new StringBuilder();
-				hqlSujets.append("select r.objetId from RapportEntreTiers r where r.annulationDate is null");
-				if (excludeContactsImpotSource) {
-					hqlSujets.append(" and r.class != ContactImpotSource");
-				}
-				hqlSujets.append(" and r.sujetId in (:ids)");
-				return hqlSujets.toString();
-			}
-		});
+		return idsFull;
 	}
-
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Tiers> getBatch(final Collection<Long> ids, final Set<Parts> parts) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
-			@Override
-			public List<Tiers> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				if (ids == null || ids.isEmpty()) {
-					return Collections.emptyList();
-				}
+		if (ids == null || ids.isEmpty()) {
+			return Collections.emptyList();
+		}
 
-				final FlushMode mode = session.getFlushMode();
-				if (mode != FlushMode.MANUAL) {
-					LOGGER.warn("Le 'flushMode' de la session hibernate est forcé en MANUAL.");
-					session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
-				}
-
-				return getBatch(new HashSet<Long>(ids), parts, session);
+		final FlushMode mode = session.getFlushMode();
+		if (mode != FlushMode.MANUAL) {
+			LOGGER.warn("Le 'flushMode' de la session hibernate est forcé en MANUAL.");
+			session.setFlushMode(FlushMode.MANUAL); // pour éviter qu'Hibernate essaie de mettre-à-jour les collections des associations one-to-many avec des cascades delete-orphan.
+		}
+		try {
+			return getBatch(new HashSet<Long>(ids), parts, session);
+		}
+		finally {
+			if (mode != FlushMode.MANUAL) {
+				session.setFlushMode(mode);
 			}
-		});
+		}
 	}
 
 	@SuppressWarnings({"unchecked"})
@@ -559,17 +544,17 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		List<Long> list;
 		if (ctbStart > 0 && ctbEnd > 0) {
-			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", ctbStart, ctbEnd);
+			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ? AND tiers.numero <= ?", new Object[]{ctbStart, ctbEnd}, null);
 		}
 		else if (ctbStart > 0) {
-			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", ctbStart);
+			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero >= ?", new Object[] {ctbStart}, null);
 		}
 		else if (ctbEnd > 0) {
-			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= ?", ctbEnd);
+			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers WHERE tiers.numero <= ?", new Object[] {ctbEnd}, null);
 		}
 		else {
 			Assert.isTrue(ctbStart < 0 && ctbEnd < 0);
-			list = getHibernateTemplate().find("SELECT tiers.numero FROM Tiers AS tiers");
+			list = (List<Long>) find("SELECT tiers.numero FROM Tiers AS tiers", null, null);
 		}
 		return list;
 	}
@@ -577,7 +562,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllIds() {
-		return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers");
+		return (List<Long>) find("select tiers.numero from Tiers as tiers", null, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -605,7 +590,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			whereClause.append(")");
 		}
 
-		return getHibernateTemplate().find("select tiers.numero from Tiers as tiers " + whereClause);
+		return (List<Long>) find("select tiers.numero from Tiers as tiers " + whereClause, null, null);
 	}
 
 	private static String typeToSimpleClassname(TypeTiers type) {
@@ -636,7 +621,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		//      1) en cas de deux demandes réindexations dans le futur, celle plus éloignée gagne : on compense donc 
 		//         cette limitation en réindexant automatiquement les tiers flaggés comme tels
 		//      2) ça ne mange pas de pain
-		return (List<Long>) getHibernateTemplate().find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true or tiers.reindexOn is not null");
+		return (List<Long>) find("select tiers.numero from Tiers as tiers where tiers.indexDirty = true or tiers.reindexOn is not null", null, null);
 	}
 
 	/**
@@ -645,7 +630,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Long> getAllNumeroIndividu() {
-		return (List<Long>) getHibernateTemplate().find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true");
+		return (List<Long>) find("select habitant.numeroIndividu from PersonnePhysique as habitant where habitant.habitant = true", null, null);
 	}
 
 	private static final String QUERY_GET_NOS_IND =
@@ -663,35 +648,22 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 	@Override
 	public Set<Long> getNumerosIndividu(final Collection<Long> tiersIds, final boolean includesComposantsMenage) {
-		return getHibernateTemplate().executeWithNativeSession(new GetNumerosIndividusCallback(tiersIds, includesComposantsMenage));
+		return getNumerosIndividu(tiersIds, includesComposantsMenage, getCurrentSession());
 	}
 
-	@SuppressWarnings("unchecked")
-	public static class GetNumerosIndividusCallback implements HibernateCallback<Set<Long>> {
-		private final Collection<Long> tiersIds;
-		private final boolean includesComposantsMenage;
+	public static Set<Long> getNumerosIndividu(Collection<Long> tiersIds, boolean includesComposantsMenage, Session session) {
+		final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
 
-		public GetNumerosIndividusCallback(Collection<Long> tiersIds, boolean includesComposantsMenage) {
-			this.tiersIds = tiersIds;
-			this.includesComposantsMenage = includesComposantsMenage;
-		}
-
-		@Override
-		public Set<Long> doInHibernate(Session session) throws HibernateException {
-
-			final Set<Long> numeros = new HashSet<Long>(tiersIds.size());
-
-			final Set<Long> tiersIdSet = new HashSet<Long>(tiersIds);
-			if (includesComposantsMenage) {
-				// on récupère les numéros d'individu des composants des ménages
-				final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND_COMPOSANTS, tiersIdSet, session);
-				numeros.addAll(nos);
-			}
-
-			final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND, tiersIdSet, session);
+		final Set<Long> tiersIdSet = new HashSet<Long>(tiersIds);
+		if (includesComposantsMenage) {
+			// on récupère les numéros d'individu des composants des ménages
+			final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND_COMPOSANTS, tiersIdSet, session);
 			numeros.addAll(nos);
-			return numeros;
 		}
+
+		final List<Long> nos = queryObjectsByIds(QUERY_GET_NOS_IND, tiersIdSet, session);
+		numeros.addAll(nos);
+		return numeros;
 	}
 
 	@Nullable
@@ -716,20 +688,16 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@SuppressWarnings("unchecked")
 	public List<Long> getHabitantsForMajorite(RegDate dateReference) {
 		// FIXME (???) la date de référence n'est pas utilisée !
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				Criteria criteria = session.createCriteria(PersonnePhysique.class);
-				criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
-				criteria.setProjection(Projections.property("numero"));
-				DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
-				subCriteria.setProjection(Projections.id());
-				subCriteria.add(Restrictions.isNull("dateFin"));
-				subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
-				criteria.add(Subqueries.notExists(subCriteria));
-				return criteria.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Criteria criteria = session.createCriteria(PersonnePhysique.class);
+		criteria.add(Restrictions.eq("habitant", Boolean.TRUE));
+		criteria.setProjection(Projections.property("numero"));
+		final DetachedCriteria subCriteria = DetachedCriteria.forClass(ForFiscal.class);
+		subCriteria.setProjection(Projections.id());
+		subCriteria.add(Restrictions.isNull("dateFin"));
+		subCriteria.add(Restrictions.eqProperty("tiers.numero", Criteria.ROOT_ALIAS + ".numero"));
+		criteria.add(Subqueries.notExists(subCriteria));
+		return criteria.list();
 	}
 
 
@@ -738,37 +706,35 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 
 		final String name = this.getPersistentClass().getCanonicalName();
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
-			@Override
-			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				// recherche dans le cache de 1er niveau dans la session si le tiers existe.
-				// Hack fix, on peut resoudre le problème en utilisant la fonction session.contains(), mais pour cela
-				// la fonction equals et hashcode doit être définit dans la classe tiers.
-				SessionImpl s = (SessionImpl) session;
-				// car il faut en prendre un. La classe EntityKey génére un hashCode sur la rootclass et non sur la classe de
-				// l'instance
-				// Doit être vérifier à chaque nouvelle release d'hibernate.
-				Tiers tiers = new PersonnePhysique(true);
-				tiers.setNumero(id);
-				if (s.getPersistenceContext().containsEntity(new EntityKey(id, s.getEntityPersister(name, tiers), EntityMode.POJO)))
-					return true;
-				Criteria criteria = s.createCriteria(getPersistentClass());
-				criteria.setProjection(Projections.rowCount());
-				criteria.add(Restrictions.eq("numero", id));
-				Integer count = (Integer) criteria.uniqueResult();
-				return count > 0;
-			}
-		});
+		// recherche dans le cache de 1er niveau dans la session si le tiers existe.
+		// Hack fix, on peut resoudre le problème en utilisant la fonction session.contains(), mais pour cela
+		// la fonction equals et hashcode doit être définit dans la classe tiers.
+		final SessionImpl s = (SessionImpl) session;
+		// car il faut en prendre un. La classe EntityKey génére un hashCode sur la rootclass et non sur la classe de
+		// l'instance
+		// Doit être vérifier à chaque nouvelle release d'hibernate.
+		final Tiers tiers = new PersonnePhysique(true);
+		tiers.setNumero(id);
+		final EntityKey key = ((SessionImpl) session).generateEntityKey(id, s.getEntityPersister(name, tiers));
+		if (s.getPersistenceContext().containsEntity(key)) {
+			return true;
+		}
+		final Criteria criteria = s.createCriteria(getPersistentClass());
+		criteria.setProjection(Projections.rowCount());
+		criteria.add(Restrictions.eq("numero", id));
+		final int count = ((Number) criteria.uniqueResult()).intValue();
+		return count > 0;
 	}
 
 
 	@Override
 	public RapportEntreTiers save(RapportEntreTiers object) {
-		TracePoint tp = TracingManager.begin();
-		Object obj = super.getHibernateTemplate().merge(object);
+		final TracePoint tp = TracingManager.begin();
+		final RapportEntreTiers obj = (RapportEntreTiers) saveObjectWithMerge(object);
 		TracingManager.end(tp);
-		return (RapportEntreTiers) obj;
+		return obj;
 	}
 
 	/**
@@ -826,52 +792,51 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		b.append(" ORDER BY PP.NUMERO ASC");
 		final String sql = b.toString();
 
-		final List<Long> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				FlushMode flushMode = null;
-				if (doNotAutoFlush) {
-					flushMode = session.getFlushMode();
-					session.setFlushMode(FlushMode.MANUAL);
-				}
-				else {
-					// la requête ci-dessus n'est pas une requête HQL, donc hibernate ne fera pas les
-					// flush potentiellement nécessaires... Idéalement, bien-sûr, il faudrait écrire la requête en HQL, mais
-					// je n'y arrive pas...
-					session.flush();
-				}
-				try {
-					final SQLQuery query = session.createSQLQuery(sql);
-					query.setParameter("noIndividu", numeroIndividu);
+		FlushMode flushMode = null;
+		if (doNotAutoFlush) {
+			flushMode = session.getFlushMode();
+			session.setFlushMode(FlushMode.MANUAL);
+		}
+		else {
+			// la requête ci-dessus n'est pas une requête HQL, donc hibernate ne fera pas les
+			// flush potentiellement nécessaires... Idéalement, bien-sûr, il faudrait écrire la requête en HQL, mais
+			// je n'y arrive pas...
+			session.flush();
+		}
 
-					// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
-					final List<Object[]> rows = query.list();
-					if (rows != null && !rows.isEmpty()) {
-						final List<Long> res = new ArrayList<Long>(rows.size());
-						for (Object[] row : rows) {
-							final Number ppId = (Number) row[0];
-							final Number indexDesactivation = (Number) row[1];
-							final Number indexReactivation = (Number) row[2];
-							if (indexDesactivation == null) {
-								res.add(ppId.longValue());
-							}
-							else if (indexReactivation != null && indexReactivation.intValue() > indexDesactivation.intValue()) {
-								res.add(ppId.longValue());
-							}
-						}
-						return res;
+		final List<Long> list;
+		try {
+			final SQLQuery query = session.createSQLQuery(sql);
+			query.setParameter("noIndividu", numeroIndividu);
+
+			// tous les candidats sortent : il faut ensuite filtrer par rapport aux dates d'annulation et de réactivation...
+			final List<Object[]> rows = query.list();
+			if (rows != null && !rows.isEmpty()) {
+				final List<Long> res = new ArrayList<Long>(rows.size());
+				for (Object[] row : rows) {
+					final Number ppId = (Number) row[0];
+					final Number indexDesactivation = (Number) row[1];
+					final Number indexReactivation = (Number) row[2];
+					if (indexDesactivation == null) {
+						res.add(ppId.longValue());
+					}
+					else if (indexReactivation != null && indexReactivation.intValue() > indexDesactivation.intValue()) {
+						res.add(ppId.longValue());
 					}
 				}
-				finally {
-					if (doNotAutoFlush) {
-						session.setFlushMode(flushMode);
-					}
-				}
-
-				return null;
+				list = res;
 			}
-		});
+			else {
+				list = null;
+			}
+		}
+		finally {
+			if (doNotAutoFlush) {
+				session.setFlushMode(flushMode);
+			}
+		}
 
 		if (list == null || list.isEmpty()) {
 			return null;
@@ -911,36 +876,29 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		}
 
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
+		final Session session = getCurrentSession();
 
-					// met-à-jour les tiers concernés
-					final Query update = session.createSQLQuery("update TIERS set OID = :oid where NUMERO = :id");
-					final Query updateForNullValue = session.createSQLQuery("update TIERS set OID = null where NUMERO = :id");
-					for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
-						if (e.getValue() != null) {
-							update.setParameter("id", e.getKey());
-							update.setParameter("oid", e.getValue());
-							update.executeUpdate();
-						}
-						else {
-							updateForNullValue.setParameter("id", e.getKey());
-							updateForNullValue.executeUpdate();
-						}
-
-					}
-
-					return null;
+		final FlushMode mode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			// met-à-jour les tiers concernés
+			final Query update = session.createSQLQuery("update TIERS set OID = :oid where NUMERO = :id");
+			final Query updateForNullValue = session.createSQLQuery("update TIERS set OID = null where NUMERO = :id");
+			for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
+				if (e.getValue() != null) {
+					update.setParameter("id", e.getKey());
+					update.setParameter("oid", e.getValue());
+					update.executeUpdate();
 				}
-				finally {
-					session.setFlushMode(mode);
+				else {
+					updateForNullValue.setParameter("id", e.getKey());
+					updateForNullValue.executeUpdate();
 				}
 			}
-		});
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 	}
 
 	/**
@@ -1007,7 +965,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Recherche du contribuable dont le numéro est:" + numeroContribuable);
 		}
-		return getHibernateTemplate().get(Contribuable.class, numeroContribuable);
+		return (Contribuable) getCurrentSession().get(Contribuable.class, numeroContribuable);
 	}
 
 	/**
@@ -1018,7 +976,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Recherche du Debiteur Prestation Imposable dont le numéro est:" + numeroDPI);
 		}
-		return getHibernateTemplate().get(DebiteurPrestationImposable.class, numeroDPI);
+		return (DebiteurPrestationImposable) getCurrentSession().get(DebiteurPrestationImposable.class, numeroDPI);
 	}
 
 	@Override
@@ -1034,7 +992,7 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 		}
 		Object[] criteria = {noSourcier};
 		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier = ?";
-		return (List<PersonnePhysique>) getHibernateTemplate().find(query, criteria);
+		return (List<PersonnePhysique>) find(query, criteria, null);
 	}
 
 	@Override
@@ -1044,35 +1002,33 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 			LOGGER.trace("Recherche de tous les sourciers migrés");
 		}
 		String query = "from PersonnePhysique pp where pp.ancienNumeroSourcier > 0";
-		return (List<PersonnePhysique>) getHibernateTemplate().find(query);
+		return (List<PersonnePhysique>) find(query, null, null);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Tiers getTiersForIndexation(final long id) {
 
-		final List<Tiers> list = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tiers>>() {
-			@Override
-			public List<Tiers> doInHibernate(Session session) throws HibernateException {
-				Criteria crit = session.createCriteria(Tiers.class);
-				crit.add(Restrictions.eq("numero", id));
-				crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
-				crit.setFetchMode("forFiscaux", FetchMode.JOIN);
-				// msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
-				// msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
-				// crit.setFetchMode("adressesTiers", FetchMode.JOIN);
-				crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		final Session session = getCurrentSession();
 
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
-					return crit.list();
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
-			}
-		});
+		final Criteria crit = session.createCriteria(Tiers.class);
+		crit.add(Restrictions.eq("numero", id));
+		crit.setFetchMode("rapportsSujet", FetchMode.JOIN);
+		crit.setFetchMode("forFiscaux", FetchMode.JOIN);
+		// msi : hibernate ne supporte pas plus de deux JOIN dans une même requête...
+		// msi : on préfère les for fiscaux aux adresses tiers qui - à cause de l'AdresseAutreTiers - impose un deuxième left outer join sur Tiers
+		// crit.setFetchMode("adressesTiers", FetchMode.JOIN);
+		crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+
+		final List<Tiers> list;
+		final FlushMode mode = session.getFlushMode();
+		try {
+			session.setFlushMode(FlushMode.MANUAL);
+			list = crit.list();
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 
 		if (list.isEmpty()) {
 			return null;
@@ -1086,14 +1042,10 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<MenageCommun> getMenagesCommuns(final List<Long> ids, Set<Parts> parts) {
-		final List<Long> idsMC = getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException {
-				final String hql = "select mc.numero from MenageCommun mc where mc.numero in (:ids)";
-				final Set<Long> set = new HashSet<Long>(ids);
-				return queryObjectsByIds(hql, set, session);
-			}
-		});
+		final Session session = getCurrentSession();
+		final String hql = "select mc.numero from MenageCommun mc where mc.numero in (:ids)";
+		final Set<Long> set = new HashSet<Long>(ids);
+		final List<Long> idsMC = queryObjectsByIds(hql, set, session);
 
 		final List<Tiers> tiers = getBatch(idsMC, parts);
 		final List<MenageCommun> menages = new ArrayList<MenageCommun>(tiers.size());
@@ -1106,33 +1058,26 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public Contribuable getContribuable(final DebiteurPrestationImposable debiteur) {
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Contribuable>() {
-			@Override
-			public Contribuable doInHibernate(Session session) throws HibernateException {
-				Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
-				query.setParameter("dpiId", debiteur.getId());
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
-					return (Contribuable) query.uniqueResult();
-				}
-				finally {
-					session.setFlushMode(mode);
-				}
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery("select t from ContactImpotSource r, Tiers t where r.objetId = :dpiId and r.sujetId = t.id and r.annulationDate is null");
+		query.setParameter("dpiId", debiteur.getId());
+
+		final FlushMode mode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			return (Contribuable) query.uniqueResult();
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 	}
 
 	@Override
 	@SuppressWarnings({"unchecked"})
 	public List<Long> getListeDebiteursSansPeriodicites() {
-		return getHibernateTemplate().execute(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
-				return q.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query q = session.createQuery("select d.numero from DebiteurPrestationImposable d where size(d.periodicites) = 0");
+		return q.list();
 	}
 
 	/**
@@ -1345,23 +1290,16 @@ public class TiersDAOImpl extends GenericDAOImpl<Tiers, Long> implements TiersDA
 						"AND ED.TYPE IN ('EMISE', 'ECHUE')                                        " +
 						"ORDER BY CTB_ID                                                          ";
 
-		final List<Long> listeCtbModifies = getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
-			@Override
-			public List<Long> doInHibernate(Session session) throws HibernateException, SQLException {
-				final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
+		final Session session = getCurrentSession();
+		final SQLQuery queryObject = session.createSQLQuery(RequeteContribuablesModifies);
+		queryObject.setTimestamp("debut", dateDebutRech);
+		queryObject.setTimestamp("fin", dateFinRech);
 
-				queryObject.setTimestamp("debut", dateDebutRech);
-				queryObject.setTimestamp("fin", dateFinRech);
-
-				final List<Object> listeResultat = queryObject.list();
-				final List<Long> resultat = new ArrayList<Long>(listeResultat.size());
-				for (Object o : listeResultat) {
-					resultat.add(((Number) o).longValue());
-				}
-
-				return resultat;
-			}
-		});
+		final List<Object> listeResultat = queryObject.list();
+		final List<Long> listeCtbModifies = new ArrayList<Long>(listeResultat.size());
+		for (Object o : listeResultat) {
+			listeCtbModifies.add(((Number) o).longValue());
+		}
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Date de debut: %s ; Date de fin: %s ; Nombre de ctb modifiés: %d", dateDebutRech, dateFinRech, listeCtbModifies.size()));

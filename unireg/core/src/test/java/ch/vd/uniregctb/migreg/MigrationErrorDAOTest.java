@@ -5,7 +5,6 @@ import java.util.List;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -138,16 +137,12 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 	}
 
 	private void saveError(final long id) throws Exception {
-		doExecuteInTransaction(Propagation.REQUIRES_NEW, new TransactionCallback<Object>() {
-
+		doInNewTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-
-				{
-					MigrationError error = new MigrationError();
-					error.setNoContribuable(id);
-					dao.save(error);
-				}
+				MigrationError error = new MigrationError();
+				error.setNoContribuable(id);
+				dao.save(error);
 				return null;
 			}
 		});

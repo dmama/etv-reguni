@@ -269,15 +269,21 @@ public abstract class AbstractSpringTest implements ApplicationContextAware {
 	}
 
 	protected <T> T doInNewTransaction(TransactionCallback<T> action) throws Exception {
-		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action);
-	}
-	protected <T> T doInTransaction(TransactionCallback<T> action) throws Exception {
-		return doExecuteInTransaction(Propagation.REQUIRED, action);
+		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, false);
 	}
 
-	protected <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action) throws Exception {
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
+	protected <T> T doInNewReadOnlyTransaction(TransactionCallback<T> action) throws Exception {
+		return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, true);
+	}
+
+	protected <T> T doInTransaction(TransactionCallback<T> action) throws Exception {
+		return doExecuteInTransaction(Propagation.REQUIRED, action, false);
+	}
+
+	protected <T> T doExecuteInTransaction(Propagation propagation, TransactionCallback<T> action, boolean readOnly) throws Exception {
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setPropagationBehavior(propagation.value());
+		template.setReadOnly(readOnly);
 		try {
 			return template.execute(action);
 		}

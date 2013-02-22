@@ -1,13 +1,10 @@
 package ch.vd.uniregctb.mouvement;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 
@@ -36,15 +33,11 @@ public class BordereauMouvementDossierDAOImpl extends GenericDAOImpl<BordereauMo
 		b.append(')');
 		final String hql = b.toString();
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<BordereauMouvementDossier>>() {
-			@Override
-			public List<BordereauMouvementDossier> doInHibernate(Session session) throws HibernateException, SQLException {
-				final Query query = session.createQuery(hql);
-				for (int i = 0 ; i < params.size() ; ++ i) {
-					query.setParameter(i, params.get(i));
-				}
-				return query.list();
-			}
-		});
+		final Session session = getCurrentSession();
+		final Query query = session.createQuery(hql);
+		for (int i = 0 ; i < params.size() ; ++ i) {
+			query.setParameter(i, params.get(i));
+		}
+		return query.list();
 	}
 }

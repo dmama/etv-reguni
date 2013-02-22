@@ -1,84 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:tx="http://www.springframework.org/schema/tx" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+							http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd">
 
 	<bean id="applicationContext" class="ch.vd.uniregctb.common.ApplicationContextInjector"/>
 	
-	<!-- Will be auto-wired -->
-	<bean id="hibernateDaoSupport" class="org.springframework.orm.hibernate3.support.HibernateDaoSupport" abstract="true">
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
+	<bean id="hibernateDao" class="ch.vd.registre.base.dao.GenericDAOImpl" abstract="true">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
-	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+	<bean id="hibernateTemplate" class="ch.vd.uniregctb.hibernate.HibernateTemplateImpl">
 		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="cacheQueries" value="true" />
-		<property name="allowCreate" value="false" />
-		<property name="checkWriteOperations" value="false" /> <!-- parce qu'autrement il n'est pas possible de simuler des opérations de write dans une transaction read-only -->
 	</bean>
 
 	<!-- Definition des DAOs -->
-	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDaoSupport">
+	<bean id="tiersDAO" class="ch.vd.uniregctb.tiers.TiersDAOImpl" parent="hibernateDao">
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
 
-	<bean id="forFiscalDAO" class="ch.vd.uniregctb.tiers.ForFiscalDAOImpl" parent="hibernateDaoSupport">
+	<bean id="forFiscalDAO" class="ch.vd.uniregctb.tiers.ForFiscalDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="adresseTiersDAO" class="ch.vd.uniregctb.adresse.AdresseTiersDAOImpl" parent="hibernateDaoSupport">
+	<bean id="adresseTiersDAO" class="ch.vd.uniregctb.adresse.AdresseTiersDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="rapportEntreTiersDAO" class="ch.vd.uniregctb.tiers.RapportEntreTiersDAOImpl" parent="hibernateDaoSupport">
+	<bean id="rapportEntreTiersDAO" class="ch.vd.uniregctb.tiers.RapportEntreTiersDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="situationFamilleDAO" class="ch.vd.uniregctb.tiers.SituationFamilleDAOImpl" parent="hibernateDaoSupport">
+	<bean id="situationFamilleDAO" class="ch.vd.uniregctb.tiers.SituationFamilleDAOImpl" parent="hibernateDao">
 	</bean>
 
-	<bean id="evenementCivilRegPPDAO" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAOImpl" parent="hibernateDaoSupport"/>
+	<bean id="evenementCivilRegPPDAO" class="ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAOImpl" parent="hibernateDao"/>
 
-	<bean id="evenementCivilEchDAO" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDaoSupport">
+	<bean id="evenementCivilEchDAO" class="ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="lrDAO" class="ch.vd.uniregctb.declaration.ListeRecapitulativeDAOImpl" parent="hibernateDaoSupport">
+	<bean id="lrDAO" class="ch.vd.uniregctb.declaration.ListeRecapitulativeDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="diDAO" class="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAOImpl" parent="hibernateDaoSupport">
+	<bean id="diDAO" class="ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="mouvementDossierDAO" class="ch.vd.uniregctb.mouvement.MouvementDossierDAOImpl" parent="hibernateDaoSupport">
+	<bean id="mouvementDossierDAO" class="ch.vd.uniregctb.mouvement.MouvementDossierDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="bordereauMouvementDossierDAO" class="ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAOImpl" parent="hibernateDaoSupport">
+	<bean id="bordereauMouvementDossierDAO" class="ch.vd.uniregctb.mouvement.BordereauMouvementDossierDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="tacheDAO" class="ch.vd.uniregctb.tiers.TacheDAOImpl" parent="hibernateDaoSupport">
+	<bean id="tacheDAO" class="ch.vd.uniregctb.tiers.TacheDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="periodeFiscaleDAO" class="ch.vd.uniregctb.declaration.PeriodeFiscaleDAOImpl" parent="hibernateDaoSupport">
+	<bean id="periodeFiscaleDAO" class="ch.vd.uniregctb.declaration.PeriodeFiscaleDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="migrationErrorDAO" class="ch.vd.uniregctb.migreg.MigrationErrorDAOImpl" parent="hibernateDaoSupport">
+	<bean id="migrationErrorDAO" class="ch.vd.uniregctb.migreg.MigrationErrorDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.EvenementFiscalDAOImpl" parent="hibernateDaoSupport">
+	<bean id="evenementFiscalDAO" class="ch.vd.uniregctb.evenement.EvenementFiscalDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="evenementExterneDAO" class="ch.vd.uniregctb.evenement.externe.EvenementExterneDAOImpl" parent="hibernateDaoSupport">
+	<bean id="evenementExterneDAO" class="ch.vd.uniregctb.evenement.externe.EvenementExterneDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="modeleDocumentDAO" class="ch.vd.uniregctb.declaration.ModeleDocumentDAOImpl" parent="hibernateDaoSupport">
+	<bean id="modeleDocumentDAO" class="ch.vd.uniregctb.declaration.ModeleDocumentDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="modeleFeuilleDocumentDAO" class="ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAOImpl" parent="hibernateDaoSupport">
+	<bean id="modeleFeuilleDocumentDAO" class="ch.vd.uniregctb.declaration.ModeleFeuilleDocumentDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="parametrePeriodeFiscaleDAO" class="ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAOImpl" parent="hibernateDaoSupport">
+	<bean id="parametrePeriodeFiscaleDAO" class="ch.vd.uniregctb.declaration.ParametrePeriodeFiscaleDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="parametreAppDAO" class="ch.vd.uniregctb.parametrage.ParametreAppDAOImpl" parent="hibernateDaoSupport">
+	<bean id="parametreAppDAO" class="ch.vd.uniregctb.parametrage.ParametreAppDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="droitAccesDAO" class="ch.vd.uniregctb.security.DroitAccesDAOImpl" parent="hibernateDaoSupport">
+	<bean id="droitAccesDAO" class="ch.vd.uniregctb.security.DroitAccesDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="delaiDeclarationDAO" class="ch.vd.uniregctb.declaration.DelaiDeclarationDAOImpl" parent="hibernateDaoSupport">
+	<bean id="delaiDeclarationDAO" class="ch.vd.uniregctb.declaration.DelaiDeclarationDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="identCtbDAO" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAOImpl" parent="hibernateDaoSupport">
+	<bean id="identCtbDAO" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAOImpl" parent="hibernateDao">
 	</bean>
-	<bean id="remarqueDAO" class="ch.vd.uniregctb.tiers.dao.RemarqueDAOImpl" parent="hibernateDaoSupport"/>
+	<bean id="remarqueDAO" class="ch.vd.uniregctb.tiers.dao.RemarqueDAOImpl" parent="hibernateDao"/>
 
-	<bean id="periodiciteDAO" class="ch.vd.uniregctb.declaration.PeriodiciteDAOImpl" parent="hibernateDaoSupport"/>
+	<bean id="periodiciteDAO" class="ch.vd.uniregctb.declaration.PeriodiciteDAOImpl" parent="hibernateDao"/>
 
-	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDaoSupport"/>
+	<bean id="etatDeclarationDAO" class="ch.vd.uniregctb.declaration.EtatDeclarationDAOImpl" parent="hibernateDao"/>
 
-	<bean id="immeubleDAO" class="ch.vd.uniregctb.rf.ImmeubleDAOImpl" parent="hibernateDaoSupport"/>
+	<bean id="immeubleDAO" class="ch.vd.uniregctb.rf.ImmeubleDAOImpl" parent="hibernateDao"/>
 
 	<!-- Audit -->
-	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDaoSupport">
-		<property name="dataSource" ref="dataSource" />
+	<bean id="auditLineDAO" class="ch.vd.uniregctb.audit.AuditLineDAOImpl" parent="hibernateDao">
+		<property name="transactionManager" ref="transactionManager" />
 		<property name="dialect" ref="hibernateDialect" />
 	</bean>
 

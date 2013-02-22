@@ -6,13 +6,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.List;
 
-import org.hibernate.Hibernate;
 import org.hibernate.SQLQuery;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.annotations.Type;
-import org.hibernate.classic.Session;
+import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -21,7 +21,6 @@ import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.CoreDAOTest;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.fail;
 
 @ContextConfiguration(locations = {
@@ -161,7 +160,7 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 
 		Session session = sessionFactory.openSession();
 		session.createSQLQuery("delete from TEST_DATA").executeUpdate();
-		assertNull(session.createQuery("select count(1) from TEST_DATA").uniqueResult());
+		assertEquals(0L, ((Number) session.createQuery("select count(*) from TEST_DATA").uniqueResult()).longValue());
 
 		Transaction trans = session.beginTransaction();
 
@@ -189,9 +188,9 @@ public class RegDateUserTypeTest extends CoreDAOTest {
 		 */
 		{
 			final SQLQuery query = session.createSQLQuery("select ID, FULLDATE, PARTIALDATE from TEST_DATA order by ID asc");
-			query.addScalar("ID", Hibernate.LONG);
-			query.addScalar("FULLDATE", Hibernate.INTEGER);
-			query.addScalar("PARTIALDATE", Hibernate.INTEGER);
+			query.addScalar("ID", StandardBasicTypes.LONG);
+			query.addScalar("FULLDATE", StandardBasicTypes.INTEGER);
+			query.addScalar("PARTIALDATE", StandardBasicTypes.INTEGER);
 
 			final List<?> list = query.list();
 			assertEquals(3, list.size());

@@ -30,18 +30,20 @@ import org.dbunit.dataset.xml.XmlDataSetWriter;
 import org.dbunit.dataset.xml.XmlProducer;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.mapping.ForeignKey;
 import org.hibernate.mapping.Table;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Assert;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
+import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.jdbc.SimpleJdbcTestUtils;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.util.Log4jConfigurer;
 import org.springframework.util.ResourceUtils;
@@ -60,6 +62,7 @@ import ch.vd.uniregctb.declaration.EtatDeclarationSommee;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.ModeleFeuilleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rf.GenrePropriete;
 import ch.vd.uniregctb.rf.Immeuble;
 import ch.vd.uniregctb.rf.PartPropriete;
@@ -143,11 +146,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	private static final String DEFAULT_LOG4J_CONFIGURATION_FILENAME = "classpath:ut/log4j.xml";
 
 	protected DataSource dataSource;
-	protected SimpleJdbcTemplate simpleJdbcTemplate;
+	protected JdbcTemplate jdbcTemplate;
+	protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 	protected LocalSessionFactoryBean localSessionFactoryBean;
 	protected HibernateTemplate hibernateTemplate;
 	protected Dialect dialect;
 	protected TiersDAO tiersDAO;
+	protected SessionFactory sessionFactory;
 
 	public static enum ProducerType {
 		Flat,
@@ -164,16 +169,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 		localSessionFactoryBean = getBean(LocalSessionFactoryBean.class, "&sessionFactory");
 		setDataSource(getBean(DataSource.class, "dataSource"));
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		dialect = getBean(Dialect.class, "hibernateDialect");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
+		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
 		truncateDatabase();
 	}
 
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
-		this.simpleJdbcTemplate = new SimpleJdbcTemplate(dataSource);
+		this.jdbcTemplate = new JdbcTemplate(dataSource);
+		this.namedParameterJdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
 	}
 
 	/**
@@ -192,6 +198,17 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	/**
+	 * @return the current Hibernate session
+	 */
+	protected final Session getCurrentSession() {
+		return localSessionFactoryBean.getObject().getCurrentSession();
+	}
+
+	protected final <T extends HibernateEntity> T merge(T entity) {
+		return hibernateTemplate.merge(entity);
+	}
+
+	/**
 	 * virtual method to truncate the database
 	 */
 	protected void truncateDatabase() throws Exception {
@@ -199,7 +216,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				deleteFromTables(getTableNames(false));
-				hibernateTemplate.clear();
 				return null;
 			}
 		});
@@ -308,8 +324,6 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 				finally {
 					DataSourceUtils.releaseConnection(sql, dataSource);
 				}
-
-				hibernateTemplate.clear();
 				return null;
 			}
 		});
@@ -367,7 +381,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @return the total number of rows deleted from all specified tables
 	 */
 	protected int deleteFromTables(String... names) {
-		return SimpleJdbcTestUtils.deleteFromTables(this.simpleJdbcTemplate, names);
+		return JdbcTestUtils.deleteFromTables(jdbcTemplate, names);
 	}
 
 	/**
@@ -646,10 +660,10 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * Ajoute une période fiscale dans la base de données (avec les délais usuels)
 	 */
 	protected PeriodeFiscale addPeriodeFiscale(int annee) {
-		PeriodeFiscale periode = new PeriodeFiscale();
+		final PeriodeFiscale periode = new PeriodeFiscale();
 		periode.setAnnee(annee);
 		periode.setAllPeriodeFiscaleParametres(date(annee + 1, 1, 31), date(annee + 1, 3, 31), date(annee + 1, 6, 30));
-		return hibernateTemplate.merge(periode);
+		return merge(periode);
 	}
 
 	/**
@@ -661,7 +675,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		ModeleDocument doc = new ModeleDocument();
 		doc.setTypeDocument(type);
 		doc.setModelesFeuilleDocument(new HashSet<ModeleFeuilleDocument>());
-		doc = hibernateTemplate.merge(doc);
+		doc = merge(doc);
 		periode.addModeleDocument(doc);
 		return doc;
 	}
@@ -676,7 +690,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		feuille.setNumeroFormulaire(numero);
 		feuille.setIntituleFeuille(intitule);
 		feuille.setModeleDocument(modeleDoc);
-		feuille = hibernateTemplate.merge(feuille);
+		feuille = merge(feuille);
 		return feuille;
 	}
 
@@ -692,7 +706,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		lr.setDateFin(fin);
 		lr.setModeleDocument(modele);
 		lr.setTiers(dpi);
-		lr = hibernateTemplate.merge(lr);
+		lr = merge(lr);
 		dpi.addDeclaration(lr);
 		return lr;
 	}
@@ -731,7 +745,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		di.setNumero(numero + 1);
 
 		di.setTiers(ctb);
-		di = hibernateTemplate.merge(di);
+		di = merge(di);
 
 		ctb.addDeclaration(di);
 		return di;
@@ -743,7 +757,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected TacheEnvoiDeclarationImpot addTacheEnvoiDI(TypeEtatTache etat, RegDate dateEcheance, RegDate dateDebut, RegDate dateFin, TypeContribuable typeContribuable, TypeDocument typeDocument,
 	                                                     Contribuable contribuable, @Nullable Qualification qualification, @Nullable Integer codeSegment, @Nullable CollectiviteAdministrative colAdm) {
 		TacheEnvoiDeclarationImpot tache = new TacheEnvoiDeclarationImpot(etat, dateEcheance, contribuable, dateDebut, dateFin, typeContribuable, typeDocument, qualification, codeSegment, TypeAdresseRetour.CEDI, colAdm);
-		tache = hibernateTemplate.merge(tache);
+		tache = merge(tache);
 		return tache;
 	}
 
@@ -753,7 +767,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected TacheAnnulationDeclarationImpot addTacheAnnulDI(TypeEtatTache etat, RegDate dateEcheance, DeclarationImpotOrdinaire declaration, Contribuable contribuable,
 	                                                          CollectiviteAdministrative colAdm) {
 		TacheAnnulationDeclarationImpot tache = new TacheAnnulationDeclarationImpot(etat, dateEcheance, contribuable, declaration, colAdm);
-		tache = hibernateTemplate.merge(tache);
+		tache = merge(tache);
 		return tache;
 	}
 
@@ -762,39 +776,39 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 */
 	protected TacheControleDossier addTacheControleDossier(TypeEtatTache etat, RegDate dateEcheance, Contribuable contribuable, CollectiviteAdministrative colAdm) {
 		TacheControleDossier tache = new TacheControleDossier(etat, dateEcheance, contribuable, colAdm);
-		tache = hibernateTemplate.merge(tache);
+		tache = merge(tache);
 		return tache;
 	}
 
 	protected TacheTransmissionDossier addTacheTransmission(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheTransmissionDossier transmission = new TacheTransmissionDossier(etat, date(2010, 1, 1), ctb, ca);
-		transmission = hibernateTemplate.merge(transmission);
+		transmission = merge(transmission);
 		return transmission;
 	}
 
 	protected TacheNouveauDossier addTacheNouveau(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheNouveauDossier nouveau = new TacheNouveauDossier(etat, date(2010, 1, 1), ctb, ca);
-		nouveau = hibernateTemplate.merge(nouveau);
+		nouveau = merge(nouveau);
 		return nouveau;
 	}
 
 	protected TacheControleDossier addTacheControle(PersonnePhysique ctb, TypeEtatTache etat, CollectiviteAdministrative ca) {
 		TacheControleDossier controle = new TacheControleDossier(etat, date(2010, 1, 1), ctb, ca);
-		controle = hibernateTemplate.merge(controle);
+		controle = merge(controle);
 		return controle;
 	}
 
 	protected PersonnePhysique addHabitant(long noIndividu) {
-		PersonnePhysique hab = new PersonnePhysique(true);
+		final PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumeroIndividu(noIndividu);
-		return hibernateTemplate.merge(hab);
+		return merge(hab);
 	}
 
 	protected PersonnePhysique addHabitant(long noTiers, long noIndividu) {
-		PersonnePhysique hab = new PersonnePhysique(true);
+		final PersonnePhysique hab = new PersonnePhysique(true);
 		hab.setNumero(noTiers);
 		hab.setNumeroIndividu(noIndividu);
-		return hibernateTemplate.merge(hab);
+		return merge(hab);
 	}
 
 	/**
@@ -805,13 +819,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	}
 
 	protected PersonnePhysique addNonHabitant(@Nullable Long noTiers, String prenom, String nom, RegDate dateNaissance, Sexe sexe) {
-		PersonnePhysique nh = new PersonnePhysique(false);
+		final PersonnePhysique nh = new PersonnePhysique(false);
 		nh.setNumero(noTiers);
 		nh.setPrenom(prenom);
 		nh.setNom(nom);
 		nh.setDateNaissance(dateNaissance);
 		nh.setSexe(sexe);
-		return hibernateTemplate.merge(nh);
+		return merge(nh);
 	}
 
 	/**
@@ -824,7 +838,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport.setObjet(menage);
 		rapport.setSujet(pp);
 		rapport.setAnnule(annule);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 
 		menage.addRapportObjet(rapport);
 		pp.addRapportSujet(rapport);
@@ -845,9 +859,9 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected EnsembleTiersCouple addEnsembleTiersCouple(@Nullable Long noTiers, PersonnePhysique principal, @Nullable PersonnePhysique conjoint, RegDate dateMariage, @Nullable RegDate dateFin) {
 
 		final MenageCommun menage = addMenageCommun(noTiers);
-		principal = hibernateTemplate.merge(principal);
+		principal = merge(principal);
 		if (conjoint != null) {
-			conjoint = hibernateTemplate.merge(conjoint);
+			conjoint = merge(conjoint);
 		}
 
 		addAppartenanceMenage(menage, principal, dateMariage, dateFin, false);
@@ -866,13 +880,13 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected MenageCommun addMenageCommun(@Nullable Long noTiers) {
 		MenageCommun menage = new MenageCommun();
 		menage.setNumero(noTiers);
-		menage = hibernateTemplate.merge(menage);
+		menage = merge(menage);
 		return menage;
 	}
 
 	protected Tutelle addTutelle(PersonnePhysique pupille, Tiers tuteur, @Nullable CollectiviteAdministrative autoriteTutelaire, RegDate dateDebut, @Nullable RegDate dateFin) {
 		Tutelle rapport = new Tutelle(dateDebut, dateFin, pupille, tuteur, autoriteTutelaire);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 		tuteur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -880,7 +894,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected Curatelle addCuratelle(PersonnePhysique pupille, Tiers curateur, @Nullable RegDate dateDebut, @Nullable RegDate dateFin) {
 		Curatelle rapport = new Curatelle(dateDebut, dateFin, pupille, curateur, null);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 		curateur.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -892,7 +906,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport.setObjet(representant);
 		rapport.setSujet(represente);
 		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 		representant.addRapportObjet(rapport);
 		represente.addRapportSujet(rapport);
 		return rapport;
@@ -905,7 +919,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		rapport.setObjet(representant);
 		rapport.setSujet(represente);
 		rapport.setExtensionExecutionForcee(extensionExecutionForcee);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 		representant.addRapportObjet(rapport);
 		represente.addRapportSujet(rapport);
 		return rapport;
@@ -913,7 +927,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 
 	protected ConseilLegal addConseilLegal(PersonnePhysique pupille, Tiers conseiller, RegDate dateDebut, @Nullable RegDate dateFin) {
 		ConseilLegal rapport = new ConseilLegal(dateDebut, dateFin, pupille, conseiller, null);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 		conseiller.addRapportObjet(rapport);
 		pupille.addRapportSujet(rapport);
 		return rapport;
@@ -922,36 +936,36 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected AutreCommunaute addAutreCommunaute(String nom) {
 		final AutreCommunaute communaute = new AutreCommunaute();
 		communaute.setNom(nom);
-		return hibernateTemplate.merge(communaute);
+		return merge(communaute);
 	}
 
 	protected DebiteurPrestationImposable addDebiteur() {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-		dpi = hibernateTemplate.merge(dpi);
+		dpi = merge(dpi);
 		return dpi;
 	}
 
 	protected DebiteurPrestationImposable addDebiteur(Long numero) {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setNumero(numero);
-		dpi = hibernateTemplate.merge(dpi);
+		dpi = merge(dpi);
 		return dpi;
 	}
 
 	protected Etablissement addEtablissement(@Nullable Long numero) {
 		Etablissement eta = new Etablissement();
 		eta.setNumero(numero);
-		eta = hibernateTemplate.merge(eta);
+		eta = merge(eta);
 		return eta;
 	}
 
 	protected DebiteurPrestationImposable addDebiteur(String complementNom, Contribuable ctbLie, RegDate dateDebutContact) {
 		DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
 		dpi.setComplementNom(complementNom);
-		dpi = hibernateTemplate.merge(dpi);
+		dpi = merge(dpi);
 
 		ContactImpotSource rapport = new ContactImpotSource(dateDebutContact, null, ctbLie, dpi);
-		rapport = hibernateTemplate.merge(rapport);
+		rapport = merge(rapport);
 
 		dpi.addRapportObjet(rapport);
 		ctbLie.addRapportSujet(rapport);
@@ -962,14 +976,14 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected Entreprise addEntreprise(@NotNull Long numeroEntreprise) {
 		Entreprise ent = new Entreprise();
 		ent.setNumero(numeroEntreprise);
-		ent = hibernateTemplate.merge(ent);
+		ent = merge(ent);
 		return ent;
 	}
 
 	protected CollectiviteAdministrative addCollAdm(int numero) {
 		CollectiviteAdministrative ca = new CollectiviteAdministrative();
 		ca.setNumeroCollectiviteAdministrative(numero);
-		ca = hibernateTemplate.merge(ca);
+		ca = merge(ca);
 		return ca;
 	}
 
@@ -977,43 +991,41 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected void addEtatDeclarationEmise(Declaration declaration, RegDate dateObtention) {
 		EtatDeclarationEmise etat = new EtatDeclarationEmise(dateObtention);
 		declaration.addEtat(etat);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 
 	protected void addEtatDeclarationEchue(Declaration declaration, RegDate dateObtention) {
 		EtatDeclarationEchue etat = new EtatDeclarationEchue(dateObtention);
 		declaration.addEtat(etat);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 
 	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention) {
 		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
 		declaration.addEtat(etat);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 
 	protected void addEtatDeclarationRetournee(Declaration declaration, RegDate dateObtention, @Nullable String source) {
 		EtatDeclarationRetournee etat = new EtatDeclarationRetournee(dateObtention, "TEST");
 		etat.setSource(source);
 		declaration.addEtat(etat);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 
 	protected void addEtatDeclarationSommee(Declaration declaration, RegDate dateObtention, RegDate dateEnvoi) {
 		EtatDeclarationSommee etat = new EtatDeclarationSommee(dateObtention, dateEnvoi);
 		declaration.addEtat(etat);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 	
-
-
 	protected void addDelaiDeclaration(Declaration declaration, RegDate dateTraitement, RegDate delaiAccordeAu) {
 		DelaiDeclaration delai = new DelaiDeclaration();
 		delai.setDateTraitement(dateTraitement);
 		delai.setDateDemande(dateTraitement);
 		delai.setDelaiAccordeAu(delaiAccordeAu);
 		declaration.addDelai(delai);
-		hibernateTemplate.merge(declaration);
+		merge(declaration);
 	}
 
 	/**
@@ -1030,7 +1042,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		da.setNiveau(niveau);
 		da.setTiers(pp);
 
-		da = hibernateTemplate.merge(da);
+		da = merge(da);
 		return da;
 	}
 

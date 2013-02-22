@@ -1,6 +1,5 @@
 package ch.vd.uniregctb.tiers;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -8,13 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.hibernate.FlushMode;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.engine.EntityKey;
-import org.hibernate.impl.SessionImpl;
+import org.hibernate.engine.spi.EntityKey;
+import org.hibernate.internal.SessionImpl;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.RegDate;
@@ -62,7 +59,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(long noContribuable) {
 		final String query = "select t from Tache t where t.contribuable.id=" + noContribuable + " order by t.id asc";
-		return getHibernateTemplate().find(query);
+		return (List<Tache>) find(query, null, null);
 	}
 
 	/**
@@ -77,25 +74,20 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public List<Tache> find(final TacheCriteria criterion, final ParamPagination paramPagination) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Tache>>() {
-			@Override
-			public List<Tache> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
+		final List<Object> paramsWhere = new ArrayList<Object>();
+		final String whereClause = buildFromWhereClause(criterion, paramsWhere);
+		final QueryFragment fragment = new QueryFragment("select tache " + whereClause, paramsWhere);
+		fragment.add(paramPagination.buildOrderClause("tache", null, true, null));
 
-				final List<Object> paramsWhere = new ArrayList<Object>();
-				final String whereClause = buildFromWhereClause(criterion, paramsWhere);
-				final QueryFragment fragment = new QueryFragment("select tache " + whereClause, paramsWhere);
-				fragment.add(paramPagination.buildOrderClause("tache", null, true, null));
+		final Query queryObject = fragment.createQuery(session);
 
-				final Query queryObject = fragment.createQuery(session);
+		int firstResult = paramPagination.getSqlFirstResult();
+		int maxResult = paramPagination.getSqlMaxResults();
+		queryObject.setFirstResult(firstResult);
+		queryObject.setMaxResults(maxResult);
 
-				int firstResult = paramPagination.getSqlFirstResult();
-				int maxResult = paramPagination.getSqlMaxResults();
-				queryObject.setFirstResult(firstResult);
-				queryObject.setMaxResults(maxResult);
-
-				return queryObject.list();
-			}
-		});
+		return queryObject.list();
 	}
 
 	/**
@@ -112,7 +104,7 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@Override
 	public int count(long noContribuable) {
 		final String query = "select count(*) from Tache t where t.contribuable.id=" + noContribuable;
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query));
+		return DataAccessUtils.intResult(find(query, null, null));
 	}
 
 	/**
@@ -244,35 +236,27 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnInstanceOuEnCours(final long noCtb, final TypeTache type) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
-			@Override
-			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				// Recherche dans le cache de la session
-
-				SessionImpl s = (SessionImpl) session;
-				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
-				for (Object entity : entities.values()) {
-					if (entity instanceof Tache) {
-						final Tache t = (Tache) entity;
-						if (t.getContribuable().getNumero().equals(noCtb) && type == t.getTypeTache() && (isTacheOuverte(t))) {
-							return true;
-						}
-					}
+		// Recherche dans le cache de la session
+		final SessionImpl s = (SessionImpl) session;
+		final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+		for (Object entity : entities.values()) {
+			if (entity instanceof Tache) {
+				final Tache t = (Tache) entity;
+				if (t.getContribuable().getNumero().equals(noCtb) && type == t.getTypeTache() && (isTacheOuverte(t))) {
+					return true;
 				}
-
-				// Recherche dans la base de données
-
-				Object[] params = {
-						noCtb
-				};
-				final String query = "from "
-						+ type.name()
-						+ " tache where tache.contribuable = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
-				return !list.isEmpty();
 			}
-		});
+		}
+
+		// Recherche dans la base de données
+		final Object[] params = {noCtb};
+		final String query = "from "
+				+ type.name()
+				+ " tache where tache.contribuable = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+		return !list.isEmpty();
 	}
 
 
@@ -280,72 +264,63 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheEnvoiEnInstanceOuEnCours(final long noCtb, final RegDate dateDebut, final RegDate dateFin) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
-			@Override
-			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
 
-				// Recherche dans le cache de la session
-				SessionImpl s = (SessionImpl) session;
-				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
-				for (Object entity : entities.values()) {
-					if (entity instanceof Tache) {
-						final Tache t = (Tache) entity;
-						if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheEnvoiDeclarationImpot && (isTacheOuverte(t))) {
-							final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) t;
-							if (dateDebut.equals(envoi.getDateDebut()) && dateFin.equals(envoi.getDateFin())) {
-								return true;
-							}
-						}
+		// Recherche dans le cache de la session
+		SessionImpl s = (SessionImpl) session;
+		final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+		for (Object entity : entities.values()) {
+			if (entity instanceof Tache) {
+				final Tache t = (Tache) entity;
+				if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheEnvoiDeclarationImpot && (isTacheOuverte(t))) {
+					final TacheEnvoiDeclarationImpot envoi = (TacheEnvoiDeclarationImpot) t;
+					if (dateDebut.equals(envoi.getDateDebut()) && dateFin.equals(envoi.getDateFin())) {
+						return true;
 					}
 				}
-
-				// Recherche dans la base de données
-				Object[] params = {
-						noCtb, dateDebut.index(), dateFin.index()
-				};
-				final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable = ? and tache.dateDebut = ?  and tache.dateFin = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
-				return !list.isEmpty();
 			}
-		});
+		}
+
+		// Recherche dans la base de données
+		Object[] params = {
+				noCtb, dateDebut.index(), dateFin.index()
+		};
+		final String query = "from TacheEnvoiDeclarationImpot tache where tache.contribuable = ? and tache.dateDebut = ?  and tache.dateFin = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+		return !list.isEmpty();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public boolean existsTacheAnnulationEnInstanceOuEnCours(final long noCtb, final long noDi) {
 
+		final Session session = getCurrentSession();
+
 		// Recherche dans le cache de la session
-
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Boolean>() {
-			@Override
-			public Boolean doInHibernate(Session session) throws HibernateException, SQLException {
-
-				SessionImpl s = (SessionImpl) session;
-				final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
-				for (Object entity : entities.values()) {
-					if (entity instanceof Tache) {
-						final Tache t = (Tache) entity;
-						if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheAnnulationDeclarationImpot
-								&& (isTacheOuverte(t))) {
-							final TacheAnnulationDeclarationImpot annul = (TacheAnnulationDeclarationImpot) t;
-							if (Long.valueOf(noDi).equals(annul.getDeclarationImpotOrdinaire().getId())) {
-								return true;
-							}
-						}
+		final SessionImpl s = (SessionImpl) session;
+		final Map<EntityKey, Object> entities = s.getPersistenceContext().getEntitiesByKey();
+		for (Object entity : entities.values()) {
+			if (entity instanceof Tache) {
+				final Tache t = (Tache) entity;
+				if (t.getContribuable().getNumero().equals(noCtb) && t instanceof TacheAnnulationDeclarationImpot
+						&& (isTacheOuverte(t))) {
+					final TacheAnnulationDeclarationImpot annul = (TacheAnnulationDeclarationImpot) t;
+					if (Long.valueOf(noDi).equals(annul.getDeclarationImpotOrdinaire().getId())) {
+						return true;
 					}
 				}
-
-				// Recherche dans la base de données
-
-				Object[] params = {
-						noCtb, noDi
-				};
-				final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable = ? and "
-						+ "tache.declarationImpotOrdinaire.id = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
-				final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
-				return !list.isEmpty();
 			}
-		});
+		}
+
+		// Recherche dans la base de données
+
+		final Object[] params = {
+				noCtb, noDi
+		};
+		final String query = "from TacheAnnulationDeclarationImpot tache where tache.contribuable = ? and "
+				+ "tache.declarationImpotOrdinaire.id = ? and tache.annulationDate is null and (tache.etat = 'EN_INSTANCE' or tache.etat = 'EN_COURS')";
+		final List<Tache> list = (List<Tache>) find(query, params, FlushMode.MANUAL);
+		return !list.isEmpty();
 	}
 
 	private static boolean isTacheOuverte(final Tache t) {
@@ -378,34 +353,25 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 			return;
 		}
 
-
 		// [UNIREG-1024] On met-à-jour les tâches encore ouvertes, à l'exception des tâches de contrôle de dossier
-		getHibernateTemplate().executeWithNativeSession(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
-				final FlushMode mode = session.getFlushMode();
-				try {
-					session.setFlushMode(FlushMode.MANUAL);
-
-					// met-à-jour les tâches concernées
-					final Query update = session.createSQLQuery(updateCollAdm);
-					for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
-						//UNIREG-1585 l'oid est mis à jour sur les tâches que s'iln'est pas null
-						if (e.getValue() != null) {
-							update.setParameter("ctbId", e.getKey());
-							update.setParameter("oid", e.getValue());
-							update.executeUpdate();
-						}
-
-					}
-
-					return null;
-				}
-				finally {
-					session.setFlushMode(mode);
+		final Session session = getCurrentSession();
+		final FlushMode mode = session.getFlushMode();
+		session.setFlushMode(FlushMode.MANUAL);
+		try {
+			// met-à-jour les tâches concernées
+			final Query update = session.createSQLQuery(updateCollAdm);
+			for (Map.Entry<Long, Integer> e : tiersOidsMapping.entrySet()) {
+				//UNIREG-1585 l'oid est mis à jour sur les tâches que s'iln'est pas null
+				if (e.getValue() != null) {
+					update.setParameter("ctbId", e.getKey());
+					update.setParameter("oid", e.getValue());
+					update.executeUpdate();
 				}
 			}
-		});
+		}
+		finally {
+			session.setFlushMode(mode);
+		}
 	}
 
 	final static String queryTaches =
@@ -426,58 +392,49 @@ public class TacheDAOImpl extends GenericDAOImpl<Tache, Long> implements TacheDA
 	public Map<Integer, TacheStats> getTacheStats() {
 		
 		final Map<Integer, TacheStats> stats = new HashMap<Integer, TacheStats>();
+		final Session session = getCurrentSession();
 
 		// récupère les stats des tâches en instance
-		getHibernateTemplate().execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		{
+			final Query query = session.createQuery(queryTaches);
+			query.setParameter("dateEcheance", RegDate.get().index());
 
-				final Query query = session.createQuery(queryTaches);
-				query.setParameter("dateEcheance", RegDate.get().index());
+			final List list = query.list();
+			for (Object o : list) {
+				Object tuple[] = (Object[]) o;
+				final Integer oid = (Integer) tuple[0];
+				final Long count = (Long) tuple[1];
 
-				final List list = query.list();
-				for (Object o : list) {
-					Object tuple[] = (Object[]) o;
-					final Integer oid = (Integer) tuple[0];
-					final Long count = (Long) tuple[1];
-
-					TacheStats s = stats.get(oid);
-					if (s == null) {
-						s = new TacheStats();
-						stats.put(oid, s);
-					}
-
-					s.tachesEnInstance = count.intValue();
+				TacheStats s = stats.get(oid);
+				if (s == null) {
+					s = new TacheStats();
+					stats.put(oid, s);
 				}
-				return null;
+
+				s.tachesEnInstance = count.intValue();
 			}
-		});
+		}
 
 		// récupère les stats des dossiers en instance
-		getHibernateTemplate().execute(new HibernateCallback<Object>() {
-			@Override
-			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+		{
+			final Query query = session.createQuery(queryDossiers);
+			query.setParameter("dateEcheance", RegDate.get().index());
 
-				final Query query = session.createQuery(queryDossiers);
-				query.setParameter("dateEcheance", RegDate.get().index());
+			final List list = query.list();
+			for (Object o : list) {
+				Object tuple[] = (Object[]) o;
+				final Integer oid = (Integer) tuple[0];
+				final Long count = (Long) tuple[1];
 
-				final List list = query.list();
-				for (Object o : list) {
-					Object tuple[] = (Object[]) o;
-					final Integer oid = (Integer) tuple[0];
-					final Long count = (Long) tuple[1];
-
-					TacheStats s = stats.get(oid);
-					if (s == null) {
-						s = new TacheStats();
-						stats.put(oid, s);
-					}
-
-					s.dossiersEnInstance = count.intValue();
+				TacheStats s = stats.get(oid);
+				if (s == null) {
+					s = new TacheStats();
+					stats.put(oid, s);
 				}
-				return null;
+
+				s.dossiersEnInstance = count.intValue();
 			}
-		});
+		}
 
 		// pas de besoin de synchronisation parce que l'assignement est atomique en java
 		return stats;

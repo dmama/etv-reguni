@@ -55,10 +55,10 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 					Entreprise ent = (Entreprise) dao.getAll().get(0);
 
 					DebiteurPrestationImposable dpi = new DebiteurPrestationImposable();
-					dpi = (DebiteurPrestationImposable)dao.save(dpi);
+					dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
-					dao.getHibernateTemplate().merge(contact);
+					dao.save(contact);
 				}
 				return null;
 			}
@@ -102,7 +102,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 					dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
-					dao.getHibernateTemplate().merge(contact);
+					dao.save(contact);
 				}
 				return null;
 			}
@@ -147,7 +147,7 @@ public class DebiteurPrestationImposableTest extends CoreDAOTest {
 					dpi = (DebiteurPrestationImposable) dao.save(dpi);
 
 					ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
-					dao.getHibernateTemplate().merge(contact);
+					dao.save(contact);
 				}
 				return null;
 			}

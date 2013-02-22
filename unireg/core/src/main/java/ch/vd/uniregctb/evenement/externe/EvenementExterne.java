@@ -83,7 +83,7 @@ public abstract class EvenementExterne extends HibernateEntity {
 	 * @return the message
 	 */
 	@Column(name = "MESSAGE")
-	@Type(type = "org.springframework.orm.hibernate3.support.ClobStringType")
+	@Type(type = "org.hibernate.type.MaterializedClobType")
 	public String getMessage() {
 		return message;
 	}

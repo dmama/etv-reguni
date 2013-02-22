@@ -5,10 +5,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.Properties;
 
-import org.hibernate.Hibernate;
-import org.hibernate.impl.AbstractSessionImpl;
+import org.hibernate.SessionFactory;
+import org.hibernate.internal.SessionImpl;
+import org.hibernate.type.StandardBasicTypes;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -23,7 +23,7 @@ import static junit.framework.Assert.assertEquals;
 public class FillHoleGeneratorTest extends CoreDAOTest {
 
 	private static final long firstId = Contribuable.CTB_GEN_FIRST_ID;
-	private HibernateTemplate hibernateTemplate;
+	private SessionFactory sessionFactory;
 	private FillHoleGenerator generator;
 
 	private DataSource rawDataSource;
@@ -31,11 +31,11 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
+		sessionFactory = getBean(SessionFactory.class, "sessionFactory");
 		rawDataSource = getBean(DataSource.class, "rawDataSource");
 
 		generator = new FillHoleGenerator("TIERS", "S_CTB", Contribuable.CTB_GEN_FIRST_ID, Contribuable.CTB_GEN_LAST_ID);
-		generator.configure(Hibernate.LONG, new Properties(), dialect);
+		generator.configure(StandardBasicTypes.LONG, new Properties(), dialect);
 
 		resetSequence();
 	}
@@ -166,7 +166,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 					final PersonnePhysique pp = new PersonnePhysique(false);
 					pp.setNumero(id);
 					pp.setNom(buildNomTiers(id));
-					hibernateTemplate.save(pp);
+					hibernateTemplate.merge(pp);
 				}
 				return null;
 			}
@@ -193,7 +193,7 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 					MigrationError e = new MigrationError();
 					e.setNoContribuable(id);
 					e.setMessage("PP-" + id);
-					hibernateTemplate.save(e);
+					hibernateTemplate.merge(e);
 				}
 				return null;
 			}
@@ -201,8 +201,12 @@ public class FillHoleGeneratorTest extends CoreDAOTest {
 	}
 
 	private Long nextId() {
-		AbstractSessionImpl session = (AbstractSessionImpl) hibernateTemplate.getSessionFactory().getCurrentSession();
-		Long id = (Long) generator.generate(session, new PersonnePhysique());
-		return id;
+		final SessionImpl session = (SessionImpl) sessionFactory.openSession();
+		try {
+			return (Long) generator.generate(session, new PersonnePhysique());
+		}
+		finally {
+			session.close();
+		}
 	}
 }

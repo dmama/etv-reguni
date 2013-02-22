@@ -2,11 +2,9 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xmlns:util="http://www.springframework.org/schema/util"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
-
-
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
 							http://www.springframework.org/schema/util
-							http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+							http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 
 	<util:list id="hibernateAnnotatedClasses">
 		<value>ch.vd.uniregctb.migreg.MigrationError</value>
@@ -145,15 +143,15 @@
 	</util:list>
 
 	<!-- La session factory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="annotatedClasses" ref="hibernateAnnotatedClasses" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="hibernateProperties" ref="hibernateProperties" />
 		<property name="entityInterceptor" ref="chainingInterceptor" />
-		<property name="lobHandler" ref="oracleLobHandler" />
+		<property name="jtaTransactionManager">
+			<bean factory-bean="jtaTransactionManager" factory-method="getTransactionManager"/>
+		</property>
 	</bean>
-
-	<bean id="oracleLobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
 
 	<bean id="chainingInterceptor" class="ch.vd.uniregctb.hibernate.interceptor.ChainingInterceptor" />
 

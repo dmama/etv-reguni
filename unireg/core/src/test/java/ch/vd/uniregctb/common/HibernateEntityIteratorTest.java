@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
@@ -35,7 +35,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateFind() {
 
-		final List<?> list = hibernateTemplate.find("from Tiers");
+		final List<?> list = hibernateTemplate.find("from Tiers", null, null);
 		assertNotNull(list);
 		assertEquals(4, list.size());
 
@@ -55,7 +55,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateTemplateIterate() {
 
-		Iterator<?> iter = hibernateTemplate.iterate("from Tiers");
+		Iterator<?> iter = hibernateTemplate.iterate("from Tiers", null, null);
 		assertNotNull(iter);
 
 		while (iter.hasNext()) {
@@ -88,7 +88,7 @@ public class HibernateEntityIteratorTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testHibernateEntityIterator() {
 
-		Iterator<Tiers> iter = new HibernateEntityIterator<Tiers>(hibernateTemplate.iterate("from Tiers"));
+		final Iterator<Tiers> iter = new HibernateEntityIterator<Tiers>(hibernateTemplate.<Tiers>iterate("from Tiers", null, null));
 		assertNotNull(iter);
 
 		while (iter.hasNext()) {

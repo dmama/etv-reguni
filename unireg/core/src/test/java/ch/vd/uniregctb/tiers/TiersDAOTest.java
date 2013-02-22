@@ -14,10 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.collection.PersistentSet;
+import org.hibernate.collection.internal.PersistentSet;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.test.annotation.ExpectedException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -1222,7 +1221,7 @@ public class TiersDAOTest extends CoreDAOTest {
 		final Set<Parts> parts = EnumSet.of(Parts.ADRESSES, Parts.DECLARATIONS, Parts.FORS_FISCAUX, Parts.RAPPORTS_ENTRE_TIERS, Parts.SITUATIONS_FAMILLE);
 
 		// charge les tiers en passant par la méthode batch (dans une transaction séparée pour éviter de partager la session hibernate)
-		final List<Tiers> listBatch = doInNewTransaction(new TxCallback<List<Tiers>>() {
+		final List<Tiers> listBatch = doInNewReadOnlyTransaction(new TxCallback<List<Tiers>>() {
 			@Override
 			public List<Tiers> execute(TransactionStatus status) throws Exception {
 				return dao.getBatch(ids, parts);
@@ -1280,8 +1279,6 @@ public class TiersDAOTest extends CoreDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testGetBatchAvecRapportEntreTiersEtForsFiscaux() throws Exception {
 
-		final HibernateTemplate hibernateTemplate = dao.getHibernateTemplate();
-
 		// Crée un couple normal, assujetti vaudois ordinaire
 		final Long id = doInNewTransaction(new TxCallback<Long>() {
 			@Override
@@ -1305,7 +1302,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					paul.addForFiscal(f);
 				}
-				paul = hibernateTemplate.merge(paul);
+				paul = merge(paul);
 
 				PersonnePhysique janine = new PersonnePhysique(false);
 				janine.setNom("Janine");
@@ -1322,15 +1319,15 @@ public class TiersDAOTest extends CoreDAOTest {
 					f.setModeImposition(ModeImposition.ORDINAIRE);
 					janine.addForFiscal(f);
 				}
-				janine = hibernateTemplate.merge(janine);
+				janine = merge(janine);
 
-				MenageCommun menage = hibernateTemplate.merge(new MenageCommun());
+				MenageCommun menage = merge(new MenageCommun());
 				{
 					RapportEntreTiers rapport = new AppartenanceMenage();
 					rapport.setDateDebut(dateMariage);
 					rapport.setObjet(menage);
 					rapport.setSujet(paul);
-					rapport = hibernateTemplate.merge(rapport);
+					rapport = merge(rapport);
 
 					menage.addRapportObjet(rapport);
 					paul.addRapportSujet(rapport);
@@ -1339,7 +1336,7 @@ public class TiersDAOTest extends CoreDAOTest {
 					rapport.setDateDebut(dateMariage);
 					rapport.setObjet(menage);
 					rapport.setSujet(janine);
-					rapport = hibernateTemplate.merge(rapport);
+					rapport = merge(rapport);
 
 					menage.addRapportObjet(rapport);
 					janine.addRapportSujet(rapport);
@@ -1834,7 +1831,7 @@ public class TiersDAOTest extends CoreDAOTest {
 				final List<Long> ids = new ArrayList<Long>(SIZE);
 				for (int i = 0; i < SIZE; ++i) {
 					PersonnePhysique pp = new PersonnePhysique(i);
-					pp = hibernateTemplate.merge(pp);
+					pp = merge(pp);
 					ids.add(pp.getId());
 				}
 				return ids;

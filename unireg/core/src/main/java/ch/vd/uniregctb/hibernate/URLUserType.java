@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 /**
@@ -35,7 +36,7 @@ public class URLUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public Object nullSafeGet(ResultSet resultSet, String[] names, Object owner) throws HibernateException, SQLException {
+	public Object nullSafeGet(ResultSet resultSet, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
 		String spec = resultSet.getString(names[0]);
 		URL result = null;
 		if (!resultSet.wasNull()) {
@@ -50,7 +51,7 @@ public class URLUserType extends GenericUserType implements UserType {
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement preparedStatement, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
 		if (null == value) {
 			preparedStatement.setNull(index, Types.VARCHAR);
 		}

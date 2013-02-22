@@ -33,6 +33,7 @@ import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.unireg.xml.party.v1.PartyType;
 import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
@@ -304,7 +305,7 @@ public abstract class DataHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, TiersDAO tiersDAO) {
+	public static List<ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, HibernateTemplate hibernateTemplate) {
 
 		// Récupère les appartenances ménages du tiers
 		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
@@ -326,7 +327,7 @@ public abstract class DataHelper {
 		for (AppartenanceMenage a : rapportsMenage) {
 			final Long menageId = a.getObjetId();
 			final List<ForFiscalPrincipal> forsMenage =
-					tiersDAO.getHibernateTemplate().find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", menageId);
+					hibernateTemplate.find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", new Object[]{menageId}, null);
 
 			final List<ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ForFiscalPrincipal>() {

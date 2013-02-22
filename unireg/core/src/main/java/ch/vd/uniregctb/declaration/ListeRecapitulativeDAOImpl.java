@@ -1,16 +1,13 @@
 package ch.vd.uniregctb.declaration;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
 
 import ch.vd.registre.base.dao.GenericDAOImpl;
 import ch.vd.registre.base.date.DateRange;
@@ -42,36 +39,30 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 	@Override
 	public List<DeclarationImpotSource> find(final ListeRecapCriteria criterion, @Nullable final ParamPagination paramPagination) {
 
-		return getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<DeclarationImpotSource>>() {
-			@Override
-			public List<DeclarationImpotSource> doInHibernate(Session session) throws HibernateException, SQLException {
+		final Session session = getCurrentSession();
+		final List<Object> paramsWhereClause = new ArrayList<Object>();
+		final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
 
-				final List<Object> paramsWhereClause = new ArrayList<Object>();
-				final String whereClause = buildWhereClauseFromCriteria(criterion, paramsWhereClause);
+		final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
+		if (paramPagination != null) {
+			fragment.add(paramPagination.buildOrderClause("lr", null, true, null));
+		}
+		else {
+			fragment.add(" ORDER BY lr.id ASC");
+		}
 
-				final QueryFragment fragment = new QueryFragment("SELECT lr FROM DeclarationImpotSource lr WHERE 1=1 " + whereClause, paramsWhereClause);
-				if (paramPagination != null) {
-					fragment.add(paramPagination.buildOrderClause("lr", null, true, null));
-				}
-				else {
-					fragment.add(" ORDER BY lr.id ASC");
-				}
+		final Query queryObject = fragment.createQuery(session);
 
-				final Query queryObject = fragment.createQuery(session);
+		if (paramPagination != null) {
+			final int firstResult = paramPagination.getSqlFirstResult();
+			final int maxResult = paramPagination.getSqlMaxResults();
+			queryObject.setFirstResult(firstResult);
+			queryObject.setMaxResults(maxResult);
+		}
 
-				if (paramPagination != null) {
-					final int firstResult = paramPagination.getSqlFirstResult();
-					final int maxResult = paramPagination.getSqlMaxResults();
-					queryObject.setFirstResult(firstResult);
-					queryObject.setMaxResults(maxResult);
-				}
-
-				//noinspection unchecked
-				return queryObject.list();
-			}
-		});
+		//noinspection unchecked
+		return queryObject.list();
 	}
-
 
 	/**
 	 * @see ch.vd.uniregctb.declaration.ListeRecapitulativeDAO#count(ch.vd.uniregctb.declaration.ListeRecapCriteria)
@@ -86,7 +77,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		final String query = String.format("SELECT COUNT(lr) FROM DeclarationImpotSource lr WHERE 1=1 %s",
 											buildWhereClauseFromCriteria(criterion, parameters));
 
-		return DataAccessUtils.intResult(getHibernateTemplate().find(query, parameters.toArray()));
+		return DataAccessUtils.intResult(find(query, parameters.toArray(), null));
 	}
 
 
@@ -181,18 +172,15 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 			LOGGER.trace("Start of ListeRecapitulativeDAO : find");
 		}
 
-		String query = " select lr from DeclarationImpotSource lr where lr.tiers.numero = ? ";
-		List<Object> criteria = new ArrayList<Object>();
-		criteria.add(numero);
-		List<DeclarationImpotSource> list = getHibernateTemplate().find(query, criteria.toArray());
-		return list;
+		final String query = " select lr from DeclarationImpotSource lr where lr.tiers.numero = ? ";
+		return (List<DeclarationImpotSource>) find(query, new Object[] {numero}, null);
 
 	}
 
 	/**
 	 * Retourne le dernier EtatPeriodeDeclaration envoyé et non annulé
 	 *
-	 * @param lrId
+	 * @param numeroDpi
 	 * @return
 	 */
 	@Override
@@ -203,9 +191,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 		}
 
 		final String query = "select etatPeriode from EtatDeclarationEmise etatPeriode where etatPeriode.declaration.tiers.numero = ?  and etatPeriode.declaration.annulationDate is null order by etatPeriode.dateObtention desc";
-		final List<Object> criteria = new ArrayList<Object>();
-		criteria.add(numeroDpi);
-		final List<EtatDeclaration> list = getHibernateTemplate().find(query, criteria.toArray());
+		final List<EtatDeclaration> list = (List<EtatDeclaration>) find(query, new Object[]{numeroDpi}, null);
 		EtatDeclaration etat = null;
 		for (EtatDeclaration etatCourant : list) {
 			if(etat == null || etat.getDeclaration().getDateDebut().isBefore(etatCourant.getDeclaration().getDateDebut())) {
@@ -234,7 +220,7 @@ public class ListeRecapitulativeDAOImpl extends GenericDAOImpl< DeclarationImpot
 
 		final String query = "SELECT lr.dateDebut, lr.dateFin FROM DeclarationImpotSource lr WHERE lr.tiers.numero = ? AND lr.dateDebut <= ? AND lr.dateFin >= ? AND lr.annulationDate IS NULL ORDER BY lr.dateDebut ASC";
 		final Object[] criteres = {numeroDpi, range.getDateFin().index(), range.getDateDebut().index() };
-		final List<Object[]> queryResult = getHibernateTemplate().find(query, criteres);
+		final List<Object[]> queryResult = (List<Object[]>) find(query, criteres, null);
 		final List<DateRange> resultat = new ArrayList<DateRange>(queryResult.size());
 		for (Object[] intersection : queryResult) {
 			resultat.add(new DateRangeHelper.Range((RegDate) intersection[0], (RegDate) intersection[1]));

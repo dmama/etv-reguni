@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.evenement;
 
+import java.util.Collection;
+
 import ch.vd.registre.base.dao.GenericDAO;
 import ch.vd.uniregctb.tiers.Tiers;
-
-import java.util.Collection;
 
 /**
  * DAO des événements fiscaux.
@@ -18,6 +18,6 @@ public interface EvenementFiscalDAO extends GenericDAO<EvenementFiscal, Long> {
 	 * @param tiers Tiers.
 	 * @return  Retourne la liste des événements fiscaux pour un tiers.
 	 */
-	Collection<EvenementFiscal> getEvenementFiscals( Tiers tiers) ;
+	Collection<EvenementFiscal> getEvenementsFiscaux(Tiers tiers) ;
 }
 

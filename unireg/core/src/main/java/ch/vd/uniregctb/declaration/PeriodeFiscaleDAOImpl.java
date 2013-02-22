@@ -31,11 +31,8 @@ public class PeriodeFiscaleDAOImpl extends GenericDAOImpl< PeriodeFiscale, Long>
 			LOGGER.trace("Start of PeriodeFiscaleDAO : getAllDesc");
 		}
 
-		String query = " select periode from PeriodeFiscale periode order by periode.annee desc";
-
-		List<PeriodeFiscale> list = getHibernateTemplate().find(query);
-
-		return list;
+		final String query = " select periode from PeriodeFiscale periode order by periode.annee desc";
+		return (List<PeriodeFiscale>) find(query, null, null);
 	}
 
 

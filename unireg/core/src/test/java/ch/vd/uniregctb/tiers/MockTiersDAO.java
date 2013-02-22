@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.hibernate.FlushMode;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.NotImplementedException;
@@ -275,11 +274,6 @@ public class MockTiersDAO implements TiersDAO {
 
 	@Override
 	public void removeAll() {
-		throw new NotImplementedException();
-	}
-
-	@Override
-	public HibernateTemplate getHibernateTemplate() {
 		throw new NotImplementedException();
 	}
 

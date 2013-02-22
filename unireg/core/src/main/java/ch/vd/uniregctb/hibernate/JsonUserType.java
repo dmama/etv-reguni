@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
 
 public abstract class JsonUserType<T> extends GenericUserType implements UserType {
@@ -33,7 +34,7 @@ public abstract class JsonUserType<T> extends GenericUserType implements UserTyp
 	}
 
 	@Override
-	public T nullSafeGet(ResultSet rs, String[] names, Object owner) throws HibernateException, SQLException {
+	public T nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
 		final String str = rs.getString(names[0]);
 		if (StringUtils.isNotBlank(str) && !rs.wasNull()) {
 			try {
@@ -47,7 +48,7 @@ public abstract class JsonUserType<T> extends GenericUserType implements UserTyp
 	}
 
 	@Override
-	public void nullSafeSet(PreparedStatement st, Object value, int index) throws HibernateException, SQLException {
+	public void nullSafeSet(PreparedStatement st, Object value, int index, SessionImplementor session) throws HibernateException, SQLException {
 		if (value == null) {
 			st.setNull(index, Types.VARCHAR);
 		}

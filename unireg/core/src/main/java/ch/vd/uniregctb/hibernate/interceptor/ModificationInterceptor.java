@@ -13,7 +13,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.CallbackException;
-import org.hibernate.collection.AbstractPersistentCollection;
+import org.hibernate.collection.internal.AbstractPersistentCollection;
 import org.hibernate.type.Type;
 import org.springframework.util.Assert;
 
@@ -86,7 +86,7 @@ public class ModificationInterceptor extends AbstractLinkedInterceptor {
 					changed = true;
 					break;
 				}
-				else if (c != null && p != null) {
+				else if (c != null) {
 					if (c instanceof AbstractPersistentCollection) {
 						AbstractPersistentCollection cc = (AbstractPersistentCollection) c;
 						changed = cc.isDirty();

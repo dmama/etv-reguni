@@ -8,11 +8,11 @@ import junit.framework.Assert;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
@@ -32,7 +32,7 @@ public class MouvementDossierDAOTest extends AbstractMouvementDossierDAOTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testSave() {
 
-		final Long mvtId = getHibernateTemplate().executeWithNewSession(new HibernateCallback<Long>() {
+		final Long mvtId = hibernateTemplate.execute(new HibernateCallback<Long>() {
 			@Override
 			public Long doInHibernate(Session session) throws HibernateException, SQLException {
 				final CollectiviteAdministrative oid = addCollectiviteAdministrative(7);

@@ -103,6 +103,7 @@ public interface TiersDAO extends GenericDAO<Tiers, Long> {
 	List<Long> getAllIds();
 
 	/**
+	 *
 	 * @param includeCancelled <b>vrai</b> s'il faut inclure les tiers annulés; <b>faux</b> autrement.
 	 * @param types            les types demandés
 	 * @return les IDs de tous les tiers des types spécifiés qui existent dans la base
