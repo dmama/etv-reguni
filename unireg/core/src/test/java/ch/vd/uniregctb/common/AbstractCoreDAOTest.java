@@ -41,7 +41,6 @@ import org.junit.Assert;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.TransactionStatus;
@@ -50,6 +49,7 @@ import org.springframework.util.ResourceUtils;
 import org.xml.sax.InputSource;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotSource;
@@ -148,7 +148,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	protected DataSource dataSource;
 	protected JdbcTemplate jdbcTemplate;
 	protected NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-	protected LocalSessionFactoryBean localSessionFactoryBean;
+	protected DescriptiveSessionFactoryBean sessionFactoryBean;
 	protected HibernateTemplate hibernateTemplate;
 	protected Dialect dialect;
 	protected TiersDAO tiersDAO;
@@ -167,7 +167,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	public void onSetUp() throws Exception {
 		super.onSetUp();
 
-		localSessionFactoryBean = getBean(LocalSessionFactoryBean.class, "&sessionFactory");
+		sessionFactoryBean = getBean(DescriptiveSessionFactoryBean.class, "&sessionFactory");
 		setDataSource(getBean(DataSource.class, "dataSource"));
 		dialect = getBean(Dialect.class, "hibernateDialect");
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
@@ -201,7 +201,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	 * @return the current Hibernate session
 	 */
 	protected final Session getCurrentSession() {
-		return localSessionFactoryBean.getObject().getCurrentSession();
+		return sessionFactoryBean.getObject().getCurrentSession();
 	}
 
 	protected final <T extends HibernateEntity> T merge(T entity) {
@@ -224,7 +224,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 	@SuppressWarnings("unchecked")
 	public String[] getTableNames(boolean reverse) {
 		ArrayList<String> t = new ArrayList<String>();
-		Iterator<Table> tables = localSessionFactoryBean.getConfiguration().getTableMappings();
+		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (tables.hasNext()) {
 			Table table = tables.next();
 			if (table.isPhysicalTable()) {
@@ -394,7 +394,7 @@ public abstract class AbstractCoreDAOTest extends AbstractSpringTest {
 		if (tables.contains(table.getName())) {
 			return;
 		}
-		Iterator<Table> ts = localSessionFactoryBean.getConfiguration().getTableMappings();
+		Iterator<Table> ts = sessionFactoryBean.getConfiguration().getTableMappings();
 		while ( ts.hasNext()) {
 			Table t = ts.next();
 			if ( t.equals(table)){

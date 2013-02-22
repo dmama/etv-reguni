@@ -16,9 +16,11 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
 
@@ -133,46 +135,46 @@ public class HibernateCollectionsTest extends CoreDAOTest {
 	@Test
 	public void testSaveReload() {
 
-		Session session = sessionFactory.openSession();
-		Transaction trans = session.beginTransaction();
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final long personneId = template.execute(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				// CTB 1
+				Personne personne = new Personne();
+				personne.nom = "Tommy";
 
-		Long personneId;
-		{
-			// CTB 1
-			Personne personne = new Personne();
-			personne.nom = "Tommy";
+				// CTB 2
+				Menage menage = new Menage();
 
-			// CTB 2
-			Menage menage = new Menage();
+				final Session session = sessionFactory.getCurrentSession();
+				personne = (Personne) session.merge(personne);
+				menage = (Menage) session.merge(menage);
 
-			personne = (Personne) session.merge(personne);
-			menage = (Menage) session.merge(menage);
+				Rapport rapport = new Rapport();
+				rapport.objet = menage;
+				rapport.sujet = personne;
+				session.merge(rapport);
 
-			Rapport rapport = new Rapport();
-			rapport.objet = menage;
-			rapport.sujet = personne;
+				return personne.id;
+			}
+		});
 
-			session.save(rapport);
+		template.execute(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final Session session = sessionFactory.getCurrentSession();
+				final Personne personne = (Personne) session.get(Personne.class, personneId);
+				assertNotNull(personne);
 
-			personneId = personne.id;
-		}
+				List<Rapport> rapports = personne.rapportSujets;
+				Rapport rapport = rapports.iterator().next();
+				assertNotNull(rapport);
 
-		trans.commit();
-		session.close();
-
-		session = sessionFactory.openSession();
-		{
-			final Personne personne = (Personne) session.get(Personne.class, personneId);
-			assertNotNull(personne);
-
-			List<Rapport> rapports = personne.rapportSujets;
-			Rapport rapport = rapports.iterator().next();
-			assertNotNull(rapport);
-
-			/* Cet assert saute avec le fetch mode = LAZY sur les collections ! */
-			assertTrue(rapport.objet instanceof Menage);
-		}
-		session.close();
+				/* Cet assert saute avec le fetch mode = LAZY sur les collections ! */
+				assertTrue(rapport.objet instanceof Menage);
+				return null;
+			}
+		});
 	}
 
 }

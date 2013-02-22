@@ -113,6 +113,7 @@ public class MigrationErrorDAOTest extends CoreDAOTest {
 		doInTransaction(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
+				status.setRollbackOnly();
 				Assert.assertEquals(3, dao.getAll().size());
 				return null;
 			}

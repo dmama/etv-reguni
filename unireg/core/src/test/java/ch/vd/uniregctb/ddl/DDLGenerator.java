@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.hibernate.dialect.Oracle10gDialect;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.orm.hibernate4.LocalSessionFactoryBean;
 import org.springframework.util.ResourceUtils;
 
+import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.common.ClientConstants;
 import ch.vd.uniregctb.hibernate.dialect.Oracle10gDialectWithNVarChar;
 
@@ -36,7 +36,7 @@ public class DDLGenerator {
 		String outFileCreate = outFileBase + "_create.sql";
 
 		final ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext(contextFiles);
-		final LocalSessionFactoryBean factory = (LocalSessionFactoryBean) applicationContext.getBean("&sessionFactory");
+		final DescriptiveSessionFactoryBean factory = (DescriptiveSessionFactoryBean) applicationContext.getBean("&sessionFactory");
 
 		final Oracle10gDialect dialect = new Oracle10gDialectWithNVarChar();
 		String[] drops = factory.getConfiguration().generateDropSchemaScript(dialect);
