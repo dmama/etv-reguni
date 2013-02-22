@@ -13,11 +13,9 @@ import java.util.Set;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -25,6 +23,7 @@ import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.SuppressionOIDRapport;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
@@ -33,6 +32,7 @@ import ch.vd.uniregctb.tiers.CollectiviteAdministrative;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SuppressionOIDJob extends JobDefinition {
 
@@ -173,22 +173,25 @@ public class SuppressionOIDJob extends JobDefinition {
 			@Override
 			public Set<Long> doInTransaction(TransactionStatus status) {
 
+				final Object[] oidParam = new Object[] { oid };
+				final Object[] officeImpotIdParam = new Object[] { officeImpotId };
+
 				final Set<Long> ids = new HashSet<Long>();
 
 				// sur le tiers lui-même
-				ids.addAll((List<Long>) hibernateTemplate.find("select tiers.id from Tiers tiers where tiers.officeImpotId = ?", oid));
+				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId = ?", oidParam, null));
 
 				// sur ces déclarations
-				ids.addAll((List<Long>) hibernateTemplate.find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId = ?", officeImpotId));
+				ids.addAll(hibernateTemplate.<Long>find("select di.tiers.id from DeclarationImpotOrdinaire di where di.retourCollectiviteAdministrativeId = ?", officeImpotIdParam, null));
 
 				// sur les mouvements de dossier
-				ids.addAll((List<Long>) hibernateTemplate.find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice = ?", officeImpotId));
-				ids.addAll((List<Long>) hibernateTemplate
-						.find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire= ?", officeImpotId));
-				ids.addAll((List<Long>) hibernateTemplate.find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice= ?", officeImpotId));
+				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossier ed where ed.collectiviteAdministrativeEmettrice = ?", officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select ed.contribuable.id from EnvoiDossierVersCollectiviteAdministrative ed where ed.collectiviteAdministrativeDestinataire= ?",
+				                                        officeImpotIdParam, null));
+				ids.addAll(hibernateTemplate.<Long>find("select rd.contribuable.id from ReceptionDossier rd where rd.collectiviteAdministrativeReceptrice= ?", officeImpotIdParam, null));
 
 				// sur les tâches
-				ids.addAll((List<Long>) hibernateTemplate.find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee = ?", officeImpotId));
+				ids.addAll(hibernateTemplate.<Long>find("select t.contribuable.id from Tache t where t.collectiviteAdministrativeAssignee = ?", officeImpotIdParam, null));
 
 				return ids;
 			}

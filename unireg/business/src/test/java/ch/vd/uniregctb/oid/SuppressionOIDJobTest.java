@@ -591,9 +591,9 @@ public class SuppressionOIDJobTest extends BusinessTest {
 	}
 
 	protected <T> T doInNewTransactionWithoutOidInterceptor(TransactionCallback<T> action) throws Exception {
+		oidInterceptor.setEnabled(false);
 		try {
-			oidInterceptor.setEnabled(false);
-			return doExecuteInTransaction(Propagation.REQUIRES_NEW, action);
+			return doExecuteInTransaction(Propagation.REQUIRES_NEW, action, false);
 		}
 		finally {
 			oidInterceptor.setEnabled(true);
