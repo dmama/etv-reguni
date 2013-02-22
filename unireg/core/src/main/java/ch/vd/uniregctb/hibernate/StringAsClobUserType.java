@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 
+import org.apache.commons.io.IOUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.usertype.UserType;
@@ -41,14 +42,7 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 			}
 
 			final StringWriter writer = new StringWriter();
-			final char[] buffer = new char[1024];
-			while (true) {
-				final int readLength = reader.read(buffer);
-				if (readLength <= 0) {
-					break;
-				}
-				writer.write(buffer, 0, readLength);
-			}
+			IOUtils.copy(reader, writer);
 			return writer.toString();
 		}
 		catch (IOException e) {
