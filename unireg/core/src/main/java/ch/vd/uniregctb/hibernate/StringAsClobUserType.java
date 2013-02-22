@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.sql.Clob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,13 +35,12 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 
 	@Override
 	public Object nullSafeGet(ResultSet rs, String[] names, SessionImplementor session, Object owner) throws HibernateException, SQLException {
-		final Clob clob = rs.getClob(names[0]);
-		if (rs.wasNull()) {
-			return null;
-		}
+		try (Reader reader = rs.getCharacterStream(names[0])) {
+			if (rs.wasNull()) {
+				return null;
+			}
 
-		final StringWriter writer = new StringWriter();
-		try (final Reader reader = clob.getCharacterStream()) {
+			final StringWriter writer = new StringWriter();
 			final char[] buffer = new char[1024];
 			while (true) {
 				final int readLength = reader.read(buffer);
@@ -51,11 +49,11 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 				}
 				writer.write(buffer);
 			}
+			return writer.toString();
 		}
 		catch (IOException e) {
 			throw new HibernateException(e);
 		}
-		return writer.toString();
 	}
 
 	@Override
