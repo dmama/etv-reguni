@@ -3,6 +3,8 @@ package ch.vd.uniregctb.servlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.transaction.UnexpectedRollbackException;
@@ -10,11 +12,27 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
+import ch.vd.uniregctb.common.IdentityWrapper;
+
 /**
  * Dispatcher servlet dans lequel les exceptions "UnexpectedRollbackException" sont trappées et remontées sous la forme de leur rootCause
  * (ceci pour attrapper les erreurs de validation qui sautent très tard dans le processus transactionnel)
  */
 public class UniregDispatcherServlet extends DispatcherServlet {
+
+	private final Map<IdentityWrapper<HandlerAdapter>, HandlerAdapter> wrapping = new HashMap<>();
+
+	private HandlerAdapter getWrapping(HandlerAdapter ha) {
+		final IdentityWrapper<HandlerAdapter> key = new IdentityWrapper<>(ha);
+		synchronized (wrapping) {
+			HandlerAdapter wrapper = wrapping.get(key);
+			if (wrapper == null) {
+				wrapper = new UnexpectedRollbackAwareHandlerAdapter(ha);
+				wrapping.put(key, wrapper);
+			}
+			return wrapper;
+		}
+	}
 
 	/**
 	 * Wrapper de {@link HandlerAdapter} qui va trapper les exceptions {@link UnexpectedRollbackException} lancée
@@ -58,6 +76,6 @@ public class UniregDispatcherServlet extends DispatcherServlet {
 	@Override
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
 		final HandlerAdapter ha = super.getHandlerAdapter(handler);
-		return new UnexpectedRollbackAwareHandlerAdapter(ha);
+		return getWrapping(ha);
 	}
 }
