@@ -106,8 +106,12 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+				final EvenementExterne evt = evts.get(0);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementExterne.TRAITE, evt.getEtat());
+				final String xml = evt.getMessage();
+				assertTrue(xml, xml.startsWith("<?xml version=\"1.0\""));
+				assertTrue(xml, xml.endsWith("evtQuittanceListe>"));
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final Set<Declaration> lrs = dpi.getDeclarations();
@@ -621,8 +625,13 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			public Object execute(TransactionStatus status) throws Exception {
 				final List<EvenementExterne> evts = evenementExterneDAO.getAll();
 				assertEquals(1, evts.size());
-				assertNotNull(evts.get(0));
-				assertEquals(EtatEvenementExterne.TRAITE, evts.get(0).getEtat());
+				final EvenementExterne evt = evts.get(0);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementExterne.TRAITE, evt.getEtat());
+				final String xml = evt.getMessage();
+				assertTrue(xml, xml.startsWith("<?xml version=\"1.0\""));
+				assertTrue(xml, xml.endsWith("evtListe>"));
+
 
 				final DebiteurPrestationImposable dpi = (DebiteurPrestationImposable) tiersDAO.get(dpiId);
 				final Set<Declaration> lrs = dpi.getDeclarations();

@@ -47,7 +47,7 @@ public class StringAsClobUserType extends GenericUserType implements UserType {
 				if (readLength <= 0) {
 					break;
 				}
-				writer.write(buffer);
+				writer.write(buffer, 0, readLength);
 			}
 			return writer.toString();
 		}
