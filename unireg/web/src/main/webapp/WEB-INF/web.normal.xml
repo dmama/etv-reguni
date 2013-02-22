@@ -54,7 +54,7 @@
 	<!--  Les servlets de notre application -->
 	<servlet>
 		<servlet-name>uniregServlet</servlet-name>
-		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<servlet-class>ch.vd.uniregctb.servlet.UniregDispatcherServlet</servlet-class>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
 			<param-value>

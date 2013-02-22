@@ -3,10 +3,12 @@ package ch.vd.uniregctb.common;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.UnexpectedRollbackException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -126,21 +128,32 @@ public abstract class WebTestSpring3 extends AbstractBusinessTest {
 	}
 
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final HandlerExecutionChain handler = handlerMapping.getHandler(request);
-        assertNotNull("No handler found for request, check you request mapping", handler);
+		try {
+	        final HandlerExecutionChain handler = handlerMapping.getHandler(request);
+	        assertNotNull("No handler found for request, check you request mapping", handler);
 
-        final Object controller = handler.getHandler();
-        // if you want to override any injected attributes do it here
+	        final Object controller = handler.getHandler();
+	        // if you want to override any injected attributes do it here
 
-        final HandlerInterceptor[] interceptors = handlerMapping.getHandler(request).getInterceptors();
-        for (HandlerInterceptor interceptor : interceptors) {
-            final boolean carryOn = interceptor.preHandle(request, response, controller);
-            if (!carryOn) {
-                return null;
-            }
-        }
+	        final HandlerInterceptor[] interceptors = handlerMapping.getHandler(request).getInterceptors();
+	        for (HandlerInterceptor interceptor : interceptors) {
+	            final boolean carryOn = interceptor.preHandle(request, response, controller);
+	            if (!carryOn) {
+	                return null;
+	            }
+	        }
 
-		return handlerAdapter.handle(request, response, controller);
+			return handlerAdapter.handle(request, response, controller);
+		}
+		catch (UnexpectedRollbackException e) {
+			@SuppressWarnings("ThrowableResultOfMethodCallIgnored") final Throwable rootCause = ExceptionUtils.getRootCause(e);
+			if (rootCause instanceof Exception) {
+				throw (Exception) rootCause;
+			}
+			else {
+				throw e;
+			}
+		}
     }
 
 	/**

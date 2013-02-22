@@ -188,8 +188,6 @@ public class JspTagBandeauTiers extends BodyTagSupport implements MessageSourceA
 		return template.execute(new TransactionCallback<String>() {
 			@Override
 			public String doInTransaction(TransactionStatus status) {
-				status.setRollbackOnly();
-
 				final Tiers tiers = tiersDAO.get(numero);
 				if (tiers == null) {
 					return "";

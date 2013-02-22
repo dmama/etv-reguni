@@ -106,4 +106,9 @@ public class TransactionManager extends GeronimoPlatformTransactionManager {
 			end(start, "resume", Level.DEBUG, WARNING_THRESHOLD, Level.WARN);
 		}
 	}
+
+	@Override
+	public void setRollbackOnly() throws IllegalStateException {
+		// don't do anything at this stage... otherwise the rollback cause will be lost in the transaction itself
+	}
 }
