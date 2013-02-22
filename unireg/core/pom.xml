@@ -45,16 +45,6 @@
 			<!-- nécessaire à la classe UniregXAMCF -->
 		</dependency>
 		<dependency>
-			<groupId>org.tranql</groupId>
-			<artifactId>tranql-connector</artifactId>
-			<version>1.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tranql</groupId>
-			<artifactId>tranql-connector-oracle-common</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
 			<groupId>org.jencks</groupId>
 			<artifactId>jencks</artifactId>
 			<version>${jencks.version}</version>
