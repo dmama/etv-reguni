@@ -42,10 +42,8 @@
 	<!-- HandlerAdapter qui enregistre les contrôleurs spring 2.x dans le DispatcherServlet -->
 	<bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter" />
 
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="singleSession" value="false" />
-		<!-- [UNIREG-1521] -->
 	</bean>
 
 	<!-- Url mapper principal de l'application Unireg. A utiliser pour tous les nouveaux contrôleurs ! -->
@@ -246,7 +244,7 @@
 				<entry key="ch.vd.uniregctb.common.DonneesCivilesException" value="errors/donneesCiviles" />
 				<entry key="ch.vd.uniregctb.webservice.sipf.BVRPlusClientException" value="errors/bvrplus" />
 				<entry key="ch.vd.uniregctb.editique.print.PrintPCLException" value="errors/errorPrintPCL" />
-				<entry key="org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
+				<entry key="org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException" value="errors/optimisticLockingFailure" />
 			</map>
 		</property>
 	</bean>

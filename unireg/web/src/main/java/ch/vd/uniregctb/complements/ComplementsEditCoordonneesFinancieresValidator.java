@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.complements;
 
 import org.apache.commons.lang.StringUtils;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.iban.IbanValidationException;
 import ch.vd.uniregctb.iban.IbanValidator;
 import ch.vd.uniregctb.tiers.Tiers;

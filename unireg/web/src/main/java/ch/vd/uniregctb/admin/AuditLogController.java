@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -17,6 +16,7 @@ import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
@@ -30,10 +30,10 @@ public class AuditLogController extends AbstractSimpleFormController {
 	private static final int PAGE_SIZE = 50;
 
 	private AuditLineDAO auditLineDAO;
+	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 
 	private List<AuditView> coreToWeb(List<AuditLine> list) {
-		final HibernateTemplate hibernateTemplate = auditLineDAO.getHibernateTemplate();
 		List<AuditView> result = new ArrayList<AuditView>(list.size());
 		for (AuditLine line : list) {
 			result.add(new AuditView(line, hibernateTemplate));
@@ -92,5 +92,9 @@ public class AuditLogController extends AbstractSimpleFormController {
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 }

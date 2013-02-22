@@ -3,12 +3,11 @@ package ch.vd.uniregctb.admin;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
-
 import ch.vd.uniregctb.audit.AuditLevel;
 import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineCriteria;
 import ch.vd.uniregctb.document.Document;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**
  * Contient une liste des lignes d'audits.

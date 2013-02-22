@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
@@ -29,6 +28,8 @@ import ch.vd.uniregctb.common.StandardBatchIterator;
 import ch.vd.uniregctb.common.TiersNotFoundException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.di.view.DeclarationListView;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.InterfaceDataException;
 import ch.vd.uniregctb.mouvement.MouvementDossier;
 import ch.vd.uniregctb.mouvement.view.MouvementDetailView;
@@ -59,9 +60,16 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 	private MouvementVisuManager mouvementVisuManager;
 
+	private HibernateTemplate hibernateTemplate;
+
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setMouvementVisuManager(MouvementVisuManager mouvementVisuManager) {
 		this.mouvementVisuManager = mouvementVisuManager;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	/**
@@ -249,9 +257,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final Set<Long> pasDeNouveauNosAvs = new HashSet<Long>();
 
-		final List infoNonHabitants = tiersDAO.getHibernateTemplate()
-				.find("select pp.numero, pp.prenom, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi " +
-						"where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
+		final List infoNonHabitants = hibernateTemplate.find("select pp.numero, pp.prenom, pp.nom, pp.numeroAssureSocial from PersonnePhysique pp, RapportPrestationImposable rpi "
+				                                                     + "where pp.habitant = false and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
 		for (Object o : infoNonHabitants) {
 			final Object line[] = (Object[]) o;
 			final Long numero = (Long) line[0];
@@ -279,7 +286,7 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 			while (it.hasNext()) {
 				final List<Long> ids = it.next();
 
-				final List<Object[]> ancienNosAvs = tiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<Object[]>>() {
+				final List<Object[]> ancienNosAvs = hibernateTemplate.execute(new HibernateCallback<List<Object[]>>() {
 					@Override
 					public List<Object[]> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery(
@@ -313,8 +320,8 @@ public class TiersVisuManagerImpl extends TiersManager implements TiersVisuManag
 
 		final Map<Long, List<RapportsPrestationView.Rapport>> rapportsByNumeroIndividu = new HashMap<Long, List<RapportsPrestationView.Rapport>>();
 
-		final List infoHabitants = tiersDAO.getHibernateTemplate().find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi " +
-				"where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur);
+		final List infoHabitants = hibernateTemplate.find("select pp.numero, pp.numeroIndividu from PersonnePhysique pp, RapportPrestationImposable rpi "
+				                                                  + "where pp.habitant = true and pp.numero = rpi.sujetId and rpi.objetId =  " + noDebiteur, null, null);
 		for (Object o : infoHabitants) {
 			final Object line[] = (Object[]) o;
 			final Long numero = (Long) line[0];

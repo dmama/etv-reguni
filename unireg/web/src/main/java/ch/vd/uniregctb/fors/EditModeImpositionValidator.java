@@ -1,12 +1,12 @@
 package ch.vd.uniregctb.fors;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.TiersNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.manager.AutorisationManager;
 

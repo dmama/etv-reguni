@@ -2,7 +2,6 @@ package ch.vd.uniregctb.copieConforme;
 
 import java.io.InputStream;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.utils.Assert;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.declaration.source.ListeRecapService;
 import ch.vd.uniregctb.editique.EditiqueException;
 import ch.vd.uniregctb.editique.EditiqueService;
 import ch.vd.uniregctb.editique.TypeDocumentEditique;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 public class CopieConformeManagerImpl implements CopieConformeManager {

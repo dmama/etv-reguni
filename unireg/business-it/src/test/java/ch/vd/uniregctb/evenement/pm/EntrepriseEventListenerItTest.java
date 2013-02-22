@@ -10,7 +10,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -20,6 +19,8 @@ import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.data.MockDataEventService;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.indexer.tiers.MockTiersIndexer;
 import ch.vd.uniregctb.pm.EntrepriseEventListener;
 
@@ -58,14 +59,9 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 		indexer = new MockTiersIndexer();
 
 		// on crée un mock de l'hibernate template qui ne fait rien
-		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+		final HibernateTemplate hibernateTemplate = new HibernateTemplateImpl() {
 			@Override
 			public <T> T get(Class<T> entityClass, Serializable id) throws DataAccessException {
-				return null;
-			}
-
-			@Override
-			public Serializable save(Object entity) throws DataAccessException {
 				return null;
 			}
 

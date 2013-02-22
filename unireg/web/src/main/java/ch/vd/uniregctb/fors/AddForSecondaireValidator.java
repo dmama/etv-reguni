@@ -1,8 +1,8 @@
 package ch.vd.uniregctb.fors;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.validation.Errors;
 
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 

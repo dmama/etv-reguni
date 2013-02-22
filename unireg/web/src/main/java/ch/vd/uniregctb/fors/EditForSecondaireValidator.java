@@ -1,9 +1,9 @@
 package ch.vd.uniregctb.fors;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.validation.Errors;
 
 import ch.vd.uniregctb.common.ObjectNotFoundException;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 
 public class EditForSecondaireValidator extends EditForRevenuFortuneValidator {

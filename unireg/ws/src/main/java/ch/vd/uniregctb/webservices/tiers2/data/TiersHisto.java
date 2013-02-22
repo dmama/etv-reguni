@@ -442,7 +442,7 @@ public abstract class TiersHisto {
 
 		// [UNIREG-1291] ajout des fors fiscaux virtuels
 		if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
-			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers, context.tiersDAO);
+			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers, context.hibernateTemplate);
 			for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 				this.forsFiscauxPrincipaux.add(new ForFiscal(forFiscal, true, context));
 			}

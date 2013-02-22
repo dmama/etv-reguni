@@ -59,7 +59,6 @@ public class PartyWebServiceBatchTest extends WebserviceTest {
 
 		crashingTiersDAO = new CrashingTiersDAO();
 		crashingTiersDAO.setDialect(getBean(Dialect.class, "hibernateDialect"));
-		crashingTiersDAO.setHibernateTemplate(hibernateTemplate);
 		crashingTiersDAO.setSessionFactory(getBean(SessionFactory.class, "sessionFactory"));
 
 		final PartyWebServiceImpl webService = new PartyWebServiceImpl();

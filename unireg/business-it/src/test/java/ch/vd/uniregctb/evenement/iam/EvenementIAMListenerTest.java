@@ -13,7 +13,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.technical.esb.EsbMessageFactory;
@@ -22,6 +21,8 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.type.ModeCommunication;
 
 import static org.junit.Assert.assertEquals;
@@ -57,7 +58,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 		clearQueue(INPUT_QUEUE);
 
 		// flush est vraiment la seule méthode appelée...
-		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+		final HibernateTemplate hibernateTemplate = new HibernateTemplateImpl() {
 			@Override
 			public void flush() throws DataAccessException {
 			}

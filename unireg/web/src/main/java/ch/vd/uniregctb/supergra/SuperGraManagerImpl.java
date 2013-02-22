@@ -15,15 +15,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
 import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.dialect.Dialect;
+import org.hibernate.type.StandardBasicTypes;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -38,6 +36,8 @@ import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.ReflexionUtils;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.meta.MetaEntity;
 import ch.vd.uniregctb.hibernate.meta.MetaException;
 import ch.vd.uniregctb.hibernate.meta.Property;
@@ -637,7 +637,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 					final Sequence sequence = m.getSequence();
 					Assert.notNull(sequence);
 
-					final Number id = (Number) sequence.nextValue(hibernateTemplate, clazz.newInstance());
+					final Number id = (Number) sequence.nextValue(dialect, hibernateTemplate, clazz.newInstance());
 					return id.longValue();
 				}
 				catch (Exception e) {
@@ -726,7 +726,7 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 				query5.setParameter("id", menageId);
 				query5.setParameter("idPrincipal", ppId);
 				query5.setParameter("dateDebut", dateDebut.index());
-				query5.setParameter("dateFin", (dateFin == null ? null : dateFin.index()), Hibernate.INTEGER);
+				query5.setParameter("dateFin", (dateFin == null ? null : dateFin.index()), StandardBasicTypes.INTEGER);
 				query5.executeUpdate();
 			}
 		});

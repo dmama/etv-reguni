@@ -26,6 +26,7 @@ import ch.vd.uniregctb.adresse.AdresseException;
 import ch.vd.uniregctb.adresse.AdresseGenerique;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.adresse.TypeAdresseFiscale;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
 import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
 import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
@@ -37,7 +38,6 @@ import ch.vd.uniregctb.tiers.AppartenanceMenage;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.TiersCriteria;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.webservices.tiers2.data.Adresse;
@@ -395,7 +395,7 @@ public class DataHelper {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, TiersDAO tiersDAO) {
+	public static List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> getForsFiscauxVirtuels(ch.vd.uniregctb.tiers.Tiers tiers, HibernateTemplate hibernateTemplate) {
 
 		// Récupère les appartenances ménages du tiers
 		final Set<ch.vd.uniregctb.tiers.RapportEntreTiers> rapports = tiers.getRapportsSujet();
@@ -417,7 +417,7 @@ public class DataHelper {
 		for (AppartenanceMenage a : rapportsMenage) {
 			final Long menageId = a.getObjetId();
 			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsMenage =
-					tiersDAO.getHibernateTemplate().find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", menageId);
+					hibernateTemplate.find("from ForFiscalPrincipal f where f.annulationDate is null and f.tiers.id = ? order by f.dateDebut asc", new Object[]{menageId}, null);
 
 			final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> extraction = DateRangeHelper.extract(forsMenage, a.getDateDebut(), a.getDateFin(),
 					new DateRangeHelper.AdapterCallback<ch.vd.uniregctb.tiers.ForFiscalPrincipal>() {

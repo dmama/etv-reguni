@@ -382,7 +382,7 @@ public abstract class Tiers {
 			}
 
 			if (parts.contains(TiersPart.FORS_FISCAUX_VIRTUELS)) {
-				final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers, context.tiersDAO);
+				final List<ch.vd.uniregctb.tiers.ForFiscalPrincipal> forsVirtuels = DataHelper.getForsFiscauxVirtuels(tiers, context.hibernateTemplate);
 				for (ch.vd.uniregctb.tiers.ForFiscalPrincipal forFiscal : forsVirtuels) {
 					if (forFiscal.isValidAt(date)) {
 						Assert.isNull(this.forFiscalPrincipal, "Détecté 2 fors fiscaux principaux valides à la même date");

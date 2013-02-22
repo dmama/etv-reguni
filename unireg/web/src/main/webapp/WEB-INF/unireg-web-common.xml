@@ -22,10 +22,8 @@
 	</bean>
 
 
-	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate4.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory" ref="sessionFactory" />
-		<property name="singleSession" value="false" />
-		<!-- [UNIREG-1521] -->
 	</bean>
 
 	<bean id="notFoundController" class="org.springframework.web.servlet.mvc.ParameterizableViewController">

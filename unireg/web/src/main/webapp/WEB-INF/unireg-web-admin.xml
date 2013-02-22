@@ -80,6 +80,7 @@
 		<property name="successView" value="admin/audit" />
 		<property name="auditLineDAO" ref="auditLineDAO" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<!-- Dump de la base de donnee -->

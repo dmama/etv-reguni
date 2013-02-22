@@ -119,6 +119,7 @@
 
 	<bean id="tiersVisuManager" class="ch.vd.uniregctb.tiers.manager.TiersVisuManagerImpl" parent="tiersManager">
 		<property name="mouvementVisuManager" ref="mouvementVisuManager"/>
+		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
 	
 	<bean id="tiersListManager" class="ch.vd.uniregctb.tiers.manager.TiersListManagerImpl">

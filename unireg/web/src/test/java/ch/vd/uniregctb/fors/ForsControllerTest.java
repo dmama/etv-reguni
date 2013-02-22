@@ -1032,11 +1032,6 @@ public class ForsControllerTest extends WebTestSpring3 {
 				ForFiscalSecondaire forSecondaire = addForSecondaire(eric, date(2000, 1, 1), MotifFor.ACHAT_IMMOBILIER,
 				                                                     MockCommune.Lausanne.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
 				forSecondaire.setTiers(eric);
-
-				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
-				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
-				hibernateTemplate.flush();
-				hibernateTemplate.clear();
 				return null;
 			}
 		});
@@ -1093,11 +1088,6 @@ public class ForsControllerTest extends WebTestSpring3 {
 				                                                        MockCommune.Cossonay);
 				ids.secondForPrincipalId = secondForPrincipal.getId();
 				secondForPrincipal.setTiers(eric);
-
-				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
-				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
-				hibernateTemplate.flush();
-				hibernateTemplate.clear();
 				return null;
 			}
 		});
@@ -1159,11 +1149,6 @@ public class ForsControllerTest extends WebTestSpring3 {
 				ForFiscalPrincipal secondForPrincipal = addForPrincipal(eric, date(2008, 11, 1), MotifFor.ARRIVEE_HC, MockCommune.Cossonay);
 				ids.secondForPrincipalId = secondForPrincipal.getId();
 				secondForPrincipal.setTiers(eric);
-
-				// la session hibernate reste ouverte à cause du OpenSessionInTestExecutionListener, on la flush()
-				// et on la clear() à la main ici pour qu'elle soit bien vide avant l'appel à handleRequest()
-				hibernateTemplate.flush();
-				hibernateTemplate.clear();
 				return null;
 			}
 		});

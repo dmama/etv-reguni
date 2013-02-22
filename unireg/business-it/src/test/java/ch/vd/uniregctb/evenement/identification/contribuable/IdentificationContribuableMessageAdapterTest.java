@@ -14,7 +14,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jms.connection.JmsTransactionManager;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.RegDate;
@@ -28,6 +27,8 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -103,7 +104,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		esbMessageFactory.setValidator(esbValidator);
 
 		// flush est vraiment la seule méthode appelée...
-		final HibernateTemplate hibernateTemplate = new HibernateTemplate() {
+		final HibernateTemplate hibernateTemplate = new HibernateTemplateImpl() {
 			@Override
 			public void flush() throws DataAccessException {
 			}
