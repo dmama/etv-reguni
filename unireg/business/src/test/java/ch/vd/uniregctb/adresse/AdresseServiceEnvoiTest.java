@@ -705,7 +705,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}
@@ -807,7 +807,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}
@@ -933,7 +933,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				tribunalCantonal = (CollectiviteAdministrative) tiersDAO.save(tribunalCantonal);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, tribunalCantonal, tribunal);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}
@@ -1018,7 +1018,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}
@@ -1158,7 +1158,7 @@ public class AdresseServiceEnvoiTest extends BusinessTest {
 				nestleSuisse = (Entreprise) tiersDAO.save(nestleSuisse);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nestleSuisse, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}

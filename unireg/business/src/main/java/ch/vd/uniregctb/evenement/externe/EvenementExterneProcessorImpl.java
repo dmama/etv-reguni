@@ -10,12 +10,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -23,13 +20,16 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class EvenementExterneProcessorImpl implements EvenementExterneProcessor {
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(EvenementExterneProcessorImpl.class);
-	private final int batchSize = BATCH_SIZE;
+	private static final Logger LOGGER = Logger.getLogger(EvenementExterneProcessorImpl.class);
+
 	private HibernateTemplate hibernateTemplate;
 	private EvenementExterneService evenementExterneService;
 	private PlatformTransactionManager transactionManager;
@@ -46,7 +46,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>
-				template = new ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<Long, TraiterEvenementExterneResult>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 				                                                                                     transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, TraiterEvenementExterneResult>() {
 
@@ -88,7 +88,7 @@ public class EvenementExterneProcessorImpl implements EvenementExterneProcessor 
 	private void traiterBatch(final List<Long> batch) throws EvenementExterneException {
 
 		//Chargement des evenement externes
-		final List<EvenementExterne> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<EvenementExterne>>() {
+		final List<EvenementExterne> list = hibernateTemplate.execute(new HibernateCallback<List<EvenementExterne>>() {
 			@Override
 			public List<EvenementExterne> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(EvenementExterne.class);

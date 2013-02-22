@@ -5,22 +5,22 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.scheduler.JobParamString;
 import ch.vd.uniregctb.tiers.Contribuable;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * @author Manuel Siggen <manuel.siggen@vd.ch>
@@ -148,7 +148,7 @@ public class DumpAssujettissementsJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				status.setRollbackOnly();
-				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc");
+				final List<Long> ids = hibernateTemplate.find("select cont.numero from Contribuable as cont order by cont.numero asc", null, null);
 				statusManager.setMessage(String.format("%d contribuables trouvés", ids.size()));
 				return ids;
 			}

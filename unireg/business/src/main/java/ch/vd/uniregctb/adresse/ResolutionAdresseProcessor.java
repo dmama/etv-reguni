@@ -9,11 +9,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
@@ -23,29 +21,32 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ResolutionAdresseProcessor {
 
 	private static final int BATCH_SIZE = 100;
 
-	final Logger LOGGER = Logger.getLogger(ResolutionAdresseProcessor.class);
+	private static final Logger LOGGER = Logger.getLogger(ResolutionAdresseProcessor.class);
+
 	private final AdresseService adresseService;
-	private final AdresseTiersDAO adressetiersDAO;
 	private final ServiceInfrastructureService infraService;
 	private final PlatformTransactionManager transactionManager;
 	private final TiersService tiersService;
-	private final int batchSize = BATCH_SIZE;
+	private final HibernateTemplate hibernateTemplate;
 	private final ThreadLocal<ResolutionAdresseResults> rapport = new ThreadLocal<ResolutionAdresseResults>();
 
-	public ResolutionAdresseProcessor(AdresseService adresseService, AdresseTiersDAO adressetiersDAO, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager,
-	                                  TiersService tiersService) {
+	public ResolutionAdresseProcessor(AdresseService adresseService, ServiceInfrastructureService infraService, PlatformTransactionManager transactionManager,
+	                                  TiersService tiersService, HibernateTemplate hibernateTemplate) {
 		this.adresseService = adresseService;
-		this.adressetiersDAO = adressetiersDAO;
 		this.infraService = infraService;
 		this.transactionManager = transactionManager;
 		this.tiersService = tiersService;
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public ResolutionAdresseResults run(final RegDate dateTraitement, int nbThreads, final StatusManager s) {
@@ -57,8 +58,8 @@ public class ResolutionAdresseProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>
-				template = new ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
-				transactionManager, status, adressetiersDAO.getHibernateTemplate());
+				template = new ParallelBatchTransactionTemplate<Long, ResolutionAdresseResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ResolutionAdresseResults>() {
 
 			@Override
@@ -101,7 +102,7 @@ public class ResolutionAdresseProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 		//Chargement des messages d'identification
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-		final List<AdresseSuisse> list = adressetiersDAO.getHibernateTemplate().executeWithNativeSession(new HibernateCallback<List<AdresseSuisse>>() {
+		final List<AdresseSuisse> list = hibernateTemplate.execute(new HibernateCallback<List<AdresseSuisse>>() {
 			@Override
 			public List<AdresseSuisse> doInHibernate(Session session) throws HibernateException {
 				final Criteria crit = session.createCriteria(AdresseSuisse.class);
@@ -171,8 +172,7 @@ public class ResolutionAdresseProcessor {
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
-
-				final List<Long> idsAdresse = adressetiersDAO.getHibernateTemplate().executeWithNewSession(new HibernateCallback<List<Long>>() {
+				final List<Long> idsAdresse = hibernateTemplate.execute(new HibernateCallback<List<Long>>() {
 					@Override
 					public List<Long> doInHibernate(Session session) throws HibernateException {
 						final Query queryObject = session.createQuery(queryMessage);

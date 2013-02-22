@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.unireg.xml.common.v1.UserLogin;
@@ -12,6 +11,7 @@ import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentRequest;
 import ch.vd.unireg.xml.event.party.nonresident.v1.CreateNonresidentResponse;
 import ch.vd.unireg.xml.exception.v1.AccessDeniedExceptionInfo;
 import ch.vd.uniregctb.common.XmlUtils;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.security.SecurityProviderInterface;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
@@ -59,7 +59,7 @@ public class CreateNonresidentRequestHandler implements RequestHandler<CreateNon
 			nh.addIdentificationPersonne(ip);
 		}
 		nh.setCategorieEtranger(EnumHelper.xmlToCore(request.getCategory()));
-		final int idNouveauNonHabitant = ((Long) hibernateTemplate.save(nh)).intValue();
+		final int idNouveauNonHabitant = hibernateTemplate.merge(nh).getId().intValue();
 
 		// On force le flush la session car sinon problème:
 		// l'authentification n'est plus valide au moment ou hibernate veut sauver l'eventuelle IdentificationPersonne

@@ -36,6 +36,23 @@ public interface HibernateTemplate {
 	<T> T execute(HibernateCallback<T> callback) throws HibernateException;
 
 	/**
+	 * Calls the callback in the context of the current hibernate session
+	 *
+	 * @param flushMode flushmode to apply to the execution (will be restored to previous value upon callback termination)
+	 * @param callback callback to call
+	 * @return value returned by the callback
+	 */
+	<T> T execute(FlushMode flushMode, HibernateCallback<T> callback) throws HibernateException;
+
+	/**
+	 * Calls the callback in the context of a new session created for the occasion
+	 * @param callback callback to call
+	 * @param <T> return type
+	 * @return value returned by the callback
+	 */
+	<T> T executeWithNewSession(HibernateCallback<T> callback) throws HibernateException;
+
+	/**
 	 * Flush the current session
 	 */
 	void flush();
@@ -58,5 +75,5 @@ public interface HibernateTemplate {
 	 * @param <T> entities' type
 	 * @return list of found entities
 	 */
-	<T> Iterator    <T> iterate(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode);
+	<T> Iterator<T> iterate(String hql, @Nullable Object[] params, @Nullable FlushMode flushMode);
 }

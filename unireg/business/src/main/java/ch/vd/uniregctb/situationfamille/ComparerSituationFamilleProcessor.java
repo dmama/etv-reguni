@@ -9,12 +9,9 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
@@ -24,10 +21,13 @@ import ch.vd.uniregctb.common.EtatCivilHelper;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.SituationFamilleMenageCommun;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class ComparerSituationFamilleProcessor {
 
@@ -39,7 +39,6 @@ public class ComparerSituationFamilleProcessor {
 	private final HibernateTemplate hibernateTemplate;
 	private final AdresseService adresseService;
 	private final TiersService tiersService;
-	private final int batchSize = BATCH_SIZE;
 	private final ThreadLocal<ComparerSituationFamilleResults> rapport = new ThreadLocal<ComparerSituationFamilleResults>();
 
 	public ComparerSituationFamilleProcessor(ServiceCivilService serviceCivil, HibernateTemplate hibernateTemplate, TiersService tiersService, PlatformTransactionManager transactionManager,
@@ -62,7 +61,7 @@ public class ComparerSituationFamilleProcessor {
 
 		// Reussi les messages par lots
 		final ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>
-				template = new ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>(ids, batchSize, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
+				template = new ParallelBatchTransactionTemplate<Long, ComparerSituationFamilleResults>(ids, BATCH_SIZE, nbThreads, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 																									   transactionManager, status, hibernateTemplate);
 		template.execute(rapportFinal, new BatchTransactionTemplate.BatchCallback<Long, ComparerSituationFamilleResults>() {
 
@@ -103,7 +102,7 @@ public class ComparerSituationFamilleProcessor {
 	private void traiterBatch(final List<Long> batch) throws Exception {
 
 		// On charge tous les contribuables en vrac (avec préchargement des situations)
-        final List<SituationFamilleMenageCommun> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
+        final List<SituationFamilleMenageCommun> list = hibernateTemplate.execute(new HibernateCallback<List<SituationFamilleMenageCommun>>() {
 	        @Override
 	        public List<SituationFamilleMenageCommun> doInHibernate(Session session) throws HibernateException {
 		        final Criteria crit = session.createCriteria(SituationFamilleMenageCommun.class);

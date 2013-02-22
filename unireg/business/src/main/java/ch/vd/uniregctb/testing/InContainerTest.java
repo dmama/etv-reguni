@@ -1,23 +1,23 @@
 package ch.vd.uniregctb.testing;
 
+import javax.sql.DataSource;
 import java.io.InputStream;
 import java.sql.Connection;
-
-import javax.sql.DataSource;
 
 import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.dataset.xml.XmlDataSet;
 import org.dbunit.ext.oracle.OracleDataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
+import org.hibernate.SessionFactory;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public abstract class InContainerTest {
 
@@ -27,9 +27,9 @@ public abstract class InContainerTest {
 	private DataSource dataSource;
 	private GlobalTiersIndexer globalTiersIndexer;
 	private PlatformTransactionManager transactionManager;
+	private SessionFactory sessionFactory;
 
 	public void onSetUp() throws Exception {
-
 		SqlFileExecutor.execute(transactionManager, dataSource, CORE_TRUNCATE_SQL);
 	}
 
@@ -73,15 +73,20 @@ public abstract class InContainerTest {
 		this.tiersDAO = tiersDAO;
 	}
 
-	/**
-	 * @param platformTransactionManager
-	 *            the platformTransactionManager to set
-	 */
 	protected PlatformTransactionManager getTransactionManager() {
 		return transactionManager;
 	}
+
 	public void setTransactionManager(PlatformTransactionManager platformTransactionManager) {
 		this.transactionManager = platformTransactionManager;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	protected SessionFactory getSessionFactory() {
+		return sessionFactory;
 	}
 
 	public <T> T executeInTransaction(TransactionCallback<T> action) {
@@ -89,5 +94,4 @@ public abstract class InContainerTest {
         template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
 		return template.execute(action);
 	}
-
 }

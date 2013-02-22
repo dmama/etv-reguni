@@ -12,15 +12,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.xml.party.v1.PartyPart;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.Context;
 
 /**
@@ -61,10 +61,10 @@ public class MappingThread implements Runnable {
 			template.execute(new TransactionCallback<Object>() {
 				@Override
 				public Object doInTransaction(TransactionStatus status) {
-					return context.hibernateTemplate.execute(new HibernateCallback<Object>() {
+					// on ne veut vraiment pas modifier la base
+					return context.hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Object>() {
 						@Override
 						public Object doInHibernate(Session session) throws HibernateException, SQLException {
-							session.setFlushMode(FlushMode.MANUAL); // on ne veut vraiment pas modifier la base
 							mapParties();
 							return null;
 						}

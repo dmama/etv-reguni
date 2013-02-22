@@ -10,7 +10,6 @@ import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlException;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
@@ -18,6 +17,7 @@ import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 public class EvenementIAMListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {

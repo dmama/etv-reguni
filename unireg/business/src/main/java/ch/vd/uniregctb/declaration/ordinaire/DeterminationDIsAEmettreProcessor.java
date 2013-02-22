@@ -14,12 +14,9 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeHelper;
@@ -38,6 +35,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeterminationDIsAEmettreProcessor.ExistenceResults.TacheStatus;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -52,6 +51,7 @@ import ch.vd.uniregctb.tiers.TacheCriteria;
 import ch.vd.uniregctb.tiers.TacheDAO;
 import ch.vd.uniregctb.tiers.TacheEnvoiDeclarationImpot;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 import ch.vd.uniregctb.validation.ValidationService;
@@ -200,15 +200,15 @@ public class DeterminationDIsAEmettreProcessor {
 		}
 
 		// On charge tous les contribuables en vrac (avec préchargement des déclarations)
-        final List<Contribuable> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<Contribuable>>() {
-            @Override
-            public List<Contribuable> doInHibernate(Session session) throws HibernateException {
-                final Criteria crit = session.createCriteria(Contribuable.class);
-                crit.add(Restrictions.in("numero", batch));
-                crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
-                crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-                return crit.list();
-            }
+        final List<Contribuable> list = hibernateTemplate.execute(new HibernateCallback<List<Contribuable>>() {
+	        @Override
+	        public List<Contribuable> doInHibernate(Session session) throws HibernateException {
+		        final Criteria crit = session.createCriteria(Contribuable.class);
+		        crit.add(Restrictions.in("numero", batch));
+		        crit.setFetchMode("declarations", FetchMode.JOIN); // force le préchargement
+		        crit.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
+		        return crit.list();
+	        }
         });
 
 		// Traite tous les contribuables

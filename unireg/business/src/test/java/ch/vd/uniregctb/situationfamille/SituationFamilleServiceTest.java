@@ -3,7 +3,6 @@ package ch.vd.uniregctb.situationfamille;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -43,7 +42,7 @@ public class SituationFamilleServiceTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 
 		service = new SituationFamilleServiceImpl();
-		service.setHibernateTemplate(getBean(HibernateTemplate.class, "hibernateTemplate"));
+		service.setHibernateTemplate(hibernateTemplate);
 		service.setServiceCivil(serviceCivil);
 		service.setTiersService(getBean(TiersService.class, "tiersService"));
 		service.setSituationFamilleDAO(getBean(SituationFamilleDAO.class, "situationFamilleDAO"));

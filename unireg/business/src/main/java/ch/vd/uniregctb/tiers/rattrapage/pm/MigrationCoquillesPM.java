@@ -12,12 +12,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -28,11 +25,14 @@ import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.MigrationCoquillesPMRapport;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job de migration des coquilles vides des PMs ([UNIREG-2612]).
@@ -162,7 +162,7 @@ public class MigrationCoquillesPM extends JobDefinition {
 				status.setMessage("Traitement du lot " + batch.get(0) + " -> " + batch.get(batch.size() - 1) + " ...", percent);
 				for (Long id : batch) {
 					++ rapport.total;
-					hibernateTemplate.save(new Entreprise(id));
+					hibernateTemplate.merge(new Entreprise(id));
 					rapport.addPMTraitee(id);
 				}
 				return true;

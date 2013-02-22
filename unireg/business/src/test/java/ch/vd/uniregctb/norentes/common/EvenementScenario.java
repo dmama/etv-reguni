@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.orm.hibernate3.SessionFactoryUtils;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
@@ -91,7 +90,7 @@ public abstract class EvenementScenario extends NorentesScenario {
 	@BeforeCheck
 	public void beforeEtape() throws Exception {
 		startNewTransaction();
-		Session session = SessionFactoryUtils.getSession(sessionFactory, false);
+		final Session session = sessionFactory.getCurrentSession();
 		if (session != null) {
 			session.clear();
 		}

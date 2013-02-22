@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.junit.Assert.assertEquals;
@@ -21,16 +19,6 @@ import static org.junit.Assert.fail;
  */
 public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
-	private PlatformTransactionManager transactionManager;
-	private HibernateTemplate hibernateTemplate;
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-
-		transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
-	}
 
 	@Test
 	public void testEmptyList() {

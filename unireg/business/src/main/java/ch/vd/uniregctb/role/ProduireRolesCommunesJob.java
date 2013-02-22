@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -12,6 +11,7 @@ import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.RolesCommunesRapport;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamCommune;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui produit les rôles pour les communes

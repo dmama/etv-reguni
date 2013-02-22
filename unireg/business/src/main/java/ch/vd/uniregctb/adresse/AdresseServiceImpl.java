@@ -35,6 +35,7 @@ import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.NpaEtLocalite;
 import ch.vd.uniregctb.common.RueEtNumero;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.model.AdresseEntreprise;
 import ch.vd.uniregctb.interfaces.model.AdressesCivilesHistoriques;
 import ch.vd.uniregctb.interfaces.model.TypeAffranchissement;
@@ -84,8 +85,8 @@ public class AdresseServiceImpl implements AdresseService {
 	private ServiceInfrastructureService serviceInfra;
 	private ServicePersonneMoraleService servicePM;
 	private ServiceCivilService serviceCivilService;
-	private AdresseTiersDAO adresseTiersDAO;
 	private PlatformTransactionManager transactionManager;
+	private HibernateTemplate hibernateTemplate;
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
@@ -108,13 +109,12 @@ public class AdresseServiceImpl implements AdresseService {
 		this.serviceCivilService = serviceCivilService;
 	}
 
-	@SuppressWarnings({"UnusedDeclaration"})
-	public void setAdresseTiersDAO(AdresseTiersDAO adresseTiersDAO) {
-		this.adresseTiersDAO = adresseTiersDAO;
-	}
-
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {
 		this.transactionManager = transactionManager;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 
 	public AdresseServiceImpl() {
@@ -2071,7 +2071,7 @@ public class AdresseServiceImpl implements AdresseService {
 
 	@Override
 	public ResolutionAdresseResults resoudreAdresse(RegDate dateTraitement, int nbThreads, StatusManager status) {
-		ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, adresseTiersDAO, serviceInfra, transactionManager, tiersService);
+		final ResolutionAdresseProcessor processor = new ResolutionAdresseProcessor(this, serviceInfra, transactionManager, tiersService, hibernateTemplate);
 		return processor.run(dateTraitement, nbThreads, status);
 	}
 }

@@ -29,7 +29,7 @@ public class EvenementExterneDAOImpl extends GenericDAOImpl<EvenementExterne, Lo
 		final Criteria criteria = session.createCriteria(EvenementExterne.class);
 		criteria.setProjection(Projections.rowCount());
 		criteria.add(Restrictions.eq("businessId", businessId));
-		final Integer count = (Integer) criteria.uniqueResult();
+		final int count = ((Number) criteria.uniqueResult()).intValue();
 		return count > 0;
 	}
 

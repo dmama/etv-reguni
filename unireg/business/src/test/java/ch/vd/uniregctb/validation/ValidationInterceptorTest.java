@@ -231,7 +231,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 				@Override
 				public Object execute(TransactionStatus status) throws Exception {
 					PersonnePhysique nh = new PersonnePhysique(false);
-					hibernateTemplate.save(nh);
+					hibernateTemplate.merge(nh);
 					fail();
 					return null;
 				}
@@ -245,7 +245,7 @@ public class ValidationInterceptorTest extends BusinessTest {
 		{
 			PersonnePhysique nh = new PersonnePhysique(false);
 			nh.setNom("toto");
-			hibernateTemplate.save(nh);
+			hibernateTemplate.merge(nh);
 		}
 	}
 }

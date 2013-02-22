@@ -8,11 +8,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -26,6 +23,8 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.NomPrenom;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ListeDroitsAccesRapport;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceSecuriteService;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -34,6 +33,7 @@ import ch.vd.uniregctb.scheduler.JobParamRegDate;
 import ch.vd.uniregctb.tiers.DroitAcces;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * [SIFISC-7956] Job qui produit la liste des droits d'accès sur les dossiers protégés
@@ -77,7 +77,7 @@ public class ListeDroitsAccesJob extends JobDefinition {
 			@Override
 			public List<Number> execute(TransactionStatus status) throws Exception {
 				//noinspection unchecked
-				return hibernateTemplate.find("select distinct da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc");
+				return hibernateTemplate.find("select distinct da.id from DroitAcces da where da.annulationDate is null order by da.tiers.id asc", null, null);
 			}
 		});
 
@@ -95,12 +95,12 @@ public class ListeDroitsAccesJob extends JobDefinition {
 
 			@Override
 			public boolean doInTransaction(final List<Number> batch, ListeDroitsAccesResults rapport) throws Exception {
-				//noinspection unchecked
-				final List<DroitAcces> list = hibernateTemplate.executeFind(new HibernateCallback<Object>() {
+				final List<DroitAcces> list = hibernateTemplate.execute(new HibernateCallback<List<DroitAcces>>() {
 					@Override
-					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+					public List<DroitAcces> doInHibernate(Session session) throws HibernateException, SQLException {
 						final Query query = session.createQuery("from DroitAcces da where da.id in (:ids) order by da.tiers.id asc");
 						query.setParameterList("ids", batch);
+						//noinspection unchecked
 						return query.list();
 					}
 				});

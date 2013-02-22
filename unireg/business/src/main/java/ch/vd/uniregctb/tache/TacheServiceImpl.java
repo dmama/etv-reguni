@@ -15,14 +15,11 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.DateRangeComparator;
@@ -43,6 +40,8 @@ import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaireDAO;
 import ch.vd.uniregctb.declaration.PeriodeFiscaleDAO;
 import ch.vd.uniregctb.declaration.ordinaire.DeclarationImpotService;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
@@ -74,6 +73,7 @@ import ch.vd.uniregctb.tiers.TacheNouveauDossier;
 import ch.vd.uniregctb.tiers.TacheTransmissionDossier;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -557,7 +557,6 @@ public class TacheServiceImpl implements TacheService {
 		final BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults> batchTemplate =
 				new BatchTransactionTemplate<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>(entityActions.entrySet(), 100, BatchTransactionTemplate.Behavior.REPRISE_AUTOMATIQUE,
 						transactionManager, null, hibernateTemplate);
-		batchTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		batchTemplate.execute(new BatchTransactionTemplate.BatchCallback<Map.Entry<Long, List<SynchronizeAction>>, BatchResults>() {
 			@Override
 			public boolean doInTransaction(List<Map.Entry<Long, List<SynchronizeAction>>> batch, BatchResults rapport) throws Exception {

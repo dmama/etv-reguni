@@ -10,13 +10,13 @@ import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.document.ValidationJobRapport;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
 import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.rapport.RapportService;
@@ -26,6 +26,7 @@ import ch.vd.uniregctb.scheduler.JobParamBoolean;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui permet de tester la cohérence des données d'un point de vue Unireg.
@@ -48,6 +49,7 @@ public class ValidationJob extends JobDefinition {
 	private static final int QUEUE_BY_THREAD_SIZE = 50;
 
 	private TiersDAO tiersDAO;
+	private HibernateTemplate hibernateTemplate;
 	private PlatformTransactionManager transactionManager;
 	private RapportService rapportService;
 	private AdresseService adresseService;
@@ -127,6 +129,10 @@ public class ValidationJob extends JobDefinition {
 		this.tiersService = tiersService;
 	}
 
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
+	}
+
 	@Override
 	protected void doExecute(Map<String, Object> params) throws Exception {
 
@@ -164,7 +170,7 @@ public class ValidationJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return tiersDAO.getHibernateTemplate().find("select t.numero from Tiers t order by t.numero asc");
+				return hibernateTemplate.find("select t.numero from Tiers t order by t.numero asc", null, null);
 			}
 		});
 

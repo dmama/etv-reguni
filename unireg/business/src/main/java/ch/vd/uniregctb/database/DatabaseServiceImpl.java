@@ -41,25 +41,25 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceUtils;
-import org.springframework.orm.hibernate3.LocalSessionFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.shared.hibernate.config.DescriptiveSessionFactoryBean;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.dbutils.SqlFileExecutor;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.Entreprise;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class DatabaseServiceImpl implements DatabaseService {
 
 	private static final Logger LOGGER = Logger.getLogger(DatabaseServiceImpl.class);
 	private static final String CORE_TRUNCATE_SQL = "/sql/core_truncate_tables.sql";
 
-	private LocalSessionFactoryBean localSessionFactoryBean;
+	private DescriptiveSessionFactoryBean sessionFactoryBean;
 	private PlatformTransactionManager transactionManager;
 	private DataSource dataSource;
 	private DataEventService dataEventService;
@@ -105,7 +105,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	private void updateSequence(String sequenceName, long maxId) {
 		// Incrémente artificiellement la séquence jusqu'à ce que maxId soit atteint
 
-		Dialect dialect = Dialect.getDialect(localSessionFactoryBean.getConfiguration().getProperties());
+		Dialect dialect = Dialect.getDialect(sessionFactoryBean.getConfiguration().getProperties());
 		String sql = dialect.getSequenceNextValString(sequenceName);
 
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
@@ -153,7 +153,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		final JdbcTemplate template = new JdbcTemplate(dataSource);
 		template.setIgnoreWarnings(false);
 
-		final Iterator<Table> tables = localSessionFactoryBean.getConfiguration().getTableMappings();
+		final Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (tables.hasNext()) {
 
 			final Table table = tables.next();
@@ -229,7 +229,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	@Override
 	public String[] getTableNamesFromDatabase() {
 
-		Dialect dialect = Dialect.getDialect(localSessionFactoryBean.getConfiguration().getProperties());
+		Dialect dialect = Dialect.getDialect(sessionFactoryBean.getConfiguration().getProperties());
 
 		if (dialect instanceof Oracle8iDialect) {
 			final String sql = "SELECT table_name FROM user_tables";
@@ -263,7 +263,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 	@SuppressWarnings("unchecked")
 	public String[] getTableNamesFromHibernate(boolean reverse) {
 		ArrayList<String> t = new ArrayList<String>();
-		Iterator<Table> tables = localSessionFactoryBean.getConfiguration().getTableMappings();
+		Iterator<Table> tables = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (tables.hasNext()) {
 			Table table = tables.next();
 			if (table.isPhysicalTable()) {
@@ -281,7 +281,7 @@ public class DatabaseServiceImpl implements DatabaseService {
 		if (tables.contains(table.getName())) {
 			return;
 		}
-		Iterator<Table> ts = localSessionFactoryBean.getConfiguration().getTableMappings();
+		Iterator<Table> ts = sessionFactoryBean.getConfiguration().getTableMappings();
 		while (ts.hasNext()) {
 			Table t = ts.next();
 			if (t.equals(table)) {
@@ -685,8 +685,8 @@ public class DatabaseServiceImpl implements DatabaseService {
 	}
 
 	@SuppressWarnings({"UnusedDeclaration"})
-	public void setLocalSessionFactoryBean(LocalSessionFactoryBean localSessionFactoryBean) {
-		this.localSessionFactoryBean = localSessionFactoryBean;
+	public void setSessionFactoryBean(DescriptiveSessionFactoryBean sessionFactoryBean) {
+		this.sessionFactoryBean = sessionFactoryBean;
 	}
 
 	public void setTransactionManager(PlatformTransactionManager transactionManager) {

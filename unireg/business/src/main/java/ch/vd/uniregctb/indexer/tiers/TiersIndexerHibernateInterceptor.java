@@ -18,18 +18,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.adresse.AdresseTiers;
 import ch.vd.uniregctb.common.BatchIterator;
 import ch.vd.uniregctb.common.HibernateEntity;
 import ch.vd.uniregctb.common.StandardBatchIterator;
-import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationInterceptor;
 import ch.vd.uniregctb.hibernate.interceptor.ModificationSubInterceptor;
 import ch.vd.uniregctb.tiers.ForFiscal;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.Tiers;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class TiersIndexerHibernateInterceptor implements ModificationSubInterceptor, InitializingBean {
 
@@ -171,23 +171,31 @@ public class TiersIndexerHibernateInterceptor implements ModificationSubIntercep
 		template.execute(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
-				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
+				final Switchable interceptor = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
+				final boolean enabled = interceptor.isEnabled();
+				interceptor.setEnabled(false);
 				try {
-					final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
+					final Session session = sessionFactory.openSession();
+					try {
+						final SQLQuery query = session.createSQLQuery("update TIERS set INDEX_DIRTY = " + dialect.toBooleanValueString(true) + " where NUMERO in (:ids)");
 
-					final BatchIterator<Long> batchIterator = new StandardBatchIterator<Long>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
-					while (batchIterator.hasNext()) {
-						final Collection<Long> subSet = batchIterator.next();
-						if (subSet != null && !subSet.isEmpty()) {
-							query.setParameterList("ids", subSet);
-							query.executeUpdate();
+						final BatchIterator<Long> batchIterator = new StandardBatchIterator<Long>(ids, 500);    // n'oublions pas qu'Oracle ne supporte pas plus de 1000 objets dans un IN
+						while (batchIterator.hasNext()) {
+							final Collection<Long> subSet = batchIterator.next();
+							if (subSet != null && !subSet.isEmpty()) {
+								query.setParameterList("ids", subSet);
+								query.executeUpdate();
+							}
 						}
-					}
 
-					session.flush();
+						session.flush();
+					}
+					finally {
+						session.close();
+					}
 				}
 				finally {
-					session.close();
+					interceptor.setEnabled(enabled);
 				}
 				return null;
 			}

@@ -2,26 +2,23 @@ package ch.vd.uniregctb.hibernate;
 
 import java.util.List;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Test;
+import org.springframework.orm.hibernate4.HibernateOptimisticLockingFailureException;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.CoreDAOTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.fail;
 
 public class OptimisticLockingTest extends CoreDAOTest {
 
@@ -41,8 +38,8 @@ public class OptimisticLockingTest extends CoreDAOTest {
 		template = new TransactionTemplate(transactionManager);
 	}
 
-	@Test(timeout = 10000L)
-	public void testLocking() throws Exception {
+	@Test
+	public void testLocking() {
 
 		// Créée un Habitant dans le base
 		template.execute(new TransactionCallback<Object>() {
@@ -118,121 +115,48 @@ public class OptimisticLockingTest extends CoreDAOTest {
 			}
 		});
 
-		final MutableBoolean waitingForFirstPick = new MutableBoolean(true);
-		final MutableBoolean waitingForModification = new MutableBoolean(true);
+		// Modification après coup => Exception
+		try {
+			template.execute(new TransactionCallback<Object>() {
+				@Override
+				public Object doInTransaction(TransactionStatus status) {
+					Session session = sessionFactory.getCurrentSession();
+					Query q1 = session.createQuery("from PersonnePhysique");
+					List<?> list1 = q1.list();
+					PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
+					assertEquals(new Long(12346L), hab1.getNumeroIndividu());
 
-		// modificateur heureux
-		final DataHolder<Exception> heureuxInterrompu = new DataHolder<>();
-		final Thread heureux = new Thread(new Runnable() {
-			@Override
-			public void run() {
-
-				// on attend que le thread chanceux ait fini de prendre les données dans la base
-				synchronized (waitingForFirstPick) {
-					while (waitingForFirstPick.booleanValue()) {
-						try {
-							waitingForFirstPick.wait();
-						}
-						catch (InterruptedException e) {
-							heureuxInterrompu.set(e);
-							return;
-						}
-					}
-				}
-
-				setAuthentication("Heureux");
-				try {
-					final TransactionTemplate template = new TransactionTemplate(transactionManager);
-					template.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
-					template.execute(new TransactionCallback<Object>() {
+					try {
+					TransactionTemplate templateNew = new TransactionTemplate(transactionManager);
+					templateNew.setPropagationBehavior(TransactionTemplate.PROPAGATION_REQUIRES_NEW);
+					templateNew.execute(new TransactionCallback<Object>() {
 						@Override
 						public Object doInTransaction(TransactionStatus status) {
-							final Session session = sessionFactory.getCurrentSession();
-							final Query q1 = session.createQuery("from PersonnePhysique");
-							final List<?> list1 = q1.list();
-							final PersonnePhysique hab2 = (PersonnePhysique) list1.get(0);
+
+							Session session = sessionFactory.getCurrentSession();
+							Query q1 = session.createQuery("from PersonnePhysique");
+							List<?> list1 = q1.list();
+							PersonnePhysique hab2 = (PersonnePhysique) list1.get(0);
 							assertEquals(new Long(12346L), hab2.getNumeroIndividu());
 							hab2.setNumeroIndividu(12347L);
 							return null;
 						}
 					});
-
-					synchronized (waitingForModification) {
-						waitingForModification.setValue(false);
-						waitingForModification.notify();
 					}
+					catch (Exception e) {
+						fail();
+					}
+					hab1.setNumeroIndividu(12341L);
+					return null;
 				}
-				catch (Exception e) {
-					heureuxInterrompu.set(e);
-				}
-				finally {
-					resetAuthentication();
-				}
-			}
-		}, "Heureux");
-
-		// modificateur malheureux
-		final DataHolder<Exception> malheureuxInterrompu = new DataHolder<>();
-		final Thread malheureux = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				setAuthentication("Malheureux");
-				try {
-					final TransactionTemplate template = new TransactionTemplate(transactionManager);
-					template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
-					template.execute(new TransactionCallback<Object>() {
-						@Override
-						public Object doInTransaction(TransactionStatus status) {
-							final Session session = sessionFactory.getCurrentSession();
-							final Query q1 = session.createQuery("from PersonnePhysique");
-							final List<?> list1 = q1.list();
-							final PersonnePhysique hab1 = (PersonnePhysique) list1.get(0);
-							assertEquals(new Long(12346L), hab1.getNumeroIndividu());
-
-							synchronized (waitingForFirstPick) {
-								waitingForFirstPick.setValue(false);
-								waitingForFirstPick.notify();
-							}
-
-							synchronized (waitingForModification) {
-								while (waitingForModification.booleanValue()) {
-									try {
-										waitingForModification.wait();
-									}
-									catch (InterruptedException e) {
-										malheureuxInterrompu.set(e);
-										return null;
-									}
-								}
-							}
-
-							hab1.setNumeroIndividu(12341L);
-							return null;
-						}
-					});
-				}
-				catch (Exception e) {
-					malheureuxInterrompu.set(e);
-				}
-				finally {
-					resetAuthentication();
-				}
-			}
-		}, "Malheureux");
-
-		heureux.start();
-		malheureux.start();
-		heureux.join();
-		malheureux.join();
-
-		assertNull(heureuxInterrompu.get());
-		assertNotNull(malheureuxInterrompu.get());
-
-		Throwable rootCause = malheureuxInterrompu.get();
-		while (rootCause.getCause() != null) {
-			rootCause = rootCause.getCause();
+			});
+			assertTrue(false);
 		}
-		assertTrue(rootCause.getMessage().contains("Rollback"));
+		catch (HibernateOptimisticLockingFailureException e) {
+			LOGGER.error("L'exception générée ci-dessus est normale. Le test passe malgré cette exception");
+			// Tout va bien
+			e = null;
+		}
 
 		// Teste que l'Habitant a le bon numéro
 		template.execute(new TransactionCallback<Object>() {

@@ -12,8 +12,6 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import ch.vd.registre.base.date.RegDate;
@@ -25,6 +23,8 @@ import ch.vd.uniregctb.common.BatchTransactionTemplate.Behavior;
 import ch.vd.uniregctb.common.JobResults;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.metier.MetierService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
@@ -104,7 +104,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 			+ " and ffp.dateFin is null and ffp.annulationDate is null"
 			+ " and ffp.tiers.class=MenageCommun";
 		
-		final List ids = hibernateTemplate.find(queryStr);
+		final List ids = hibernateTemplate.find(queryStr, null, null);
 		return ids;
 		
 	}
@@ -112,14 +112,14 @@ public class CorrectionForsHCJob extends JobDefinition {
 	@SuppressWarnings("unchecked")
 	private Set<ForFiscalPrincipal> getFors(final List<Long> ids) {
 		
-		final List<ForFiscalPrincipal> list = hibernateTemplate.executeWithNativeSession(new HibernateCallback<List<ForFiscalPrincipal>>(){
+		final List<ForFiscalPrincipal> list = hibernateTemplate.execute(new HibernateCallback<List<ForFiscalPrincipal>>() {
 
 			@Override
 			public List<ForFiscalPrincipal> doInHibernate(Session session) throws HibernateException, SQLException {
 				Criteria criteria = session.createCriteria(ForFiscalPrincipal.class);
 				criteria.add(Restrictions.in("id", ids));
 				criteria.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
-				
+
 				final FlushMode mode = session.getFlushMode();
 				try {
 					session.setFlushMode(FlushMode.MANUAL);
@@ -129,7 +129,7 @@ public class CorrectionForsHCJob extends JobDefinition {
 					session.setFlushMode(mode);
 				}
 			}
-			
+
 		});
 		
 		return new HashSet<ForFiscalPrincipal>(list);

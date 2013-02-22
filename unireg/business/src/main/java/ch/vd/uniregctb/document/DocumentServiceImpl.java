@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,13 +15,16 @@ import java.util.Map;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
-import org.springframework.orm.hibernate3.HibernateTemplate;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.springframework.util.ResourceUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**
  * {@inheritDoc}
@@ -95,7 +99,7 @@ public class DocumentServiceImpl implements DocumentService {
 		Object[] params = new Object[] {
 				subpath, f.getName()
 		};
-		List<Document> list = hibernateTemplate.find("from Document as doc where doc.subPath = ? and doc.fileName = ?", params);
+		List<Document> list = hibernateTemplate.find("from Document as doc where doc.subPath = ? and doc.fileName = ?", params, null);
 		if (list != null && !list.isEmpty()) {
 			// le fichier existe -> ok
 			return;
@@ -144,7 +148,7 @@ public class DocumentServiceImpl implements DocumentService {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void delete(Document doc) throws Exception {
+	public void delete(final Document doc) throws Exception {
 		Assert.notNull(doc);
 
 		String filepath = getFilePath(doc);
@@ -152,7 +156,13 @@ public class DocumentServiceImpl implements DocumentService {
 			LOGGER.debug("Effacement du document " + filepath);
 		}
 
-		hibernateTemplate.delete(doc);
+		hibernateTemplate.execute(new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				session.delete(doc);
+				return null;
+			}
+		});
 
 		File file = ResourceUtils.getFile(filepath);
 		if (file != null && file.exists()) {
@@ -166,13 +176,13 @@ public class DocumentServiceImpl implements DocumentService {
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Document> getDocuments() throws Exception {
-		return hibernateTemplate.find("FROM Document AS doc WHERE doc.annulationDate IS null");
+		return hibernateTemplate.find("FROM Document AS doc WHERE doc.annulationDate IS null", null, null);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T extends Document> Collection<T> getDocuments(Class<T> clazz) throws Exception {
-		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null");
+		return hibernateTemplate.find("FROM " + clazz.getSimpleName() + " AS doc WHERE doc.annulationDate IS null", null, null);
 	}
 
 	/**

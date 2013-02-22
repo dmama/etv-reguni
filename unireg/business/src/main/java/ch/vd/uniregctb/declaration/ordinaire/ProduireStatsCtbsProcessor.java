@@ -1,5 +1,6 @@
 package ch.vd.uniregctb.declaration.ordinaire;
 
+import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,12 +9,9 @@ import org.hibernate.FlushMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
@@ -28,6 +26,8 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.ordinaire.StatistiquesCtbs.TypeContribuable;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.Assujettissement;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
@@ -43,6 +43,7 @@ import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.ForGestion;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Produit des statistiques sur les contribuables assujettis pour la période fiscale spécifiée.
@@ -106,20 +107,24 @@ public class ProduireStatsCtbsProcessor {
 	 */
 	private void traiteBatch(final List<Long> batch, final StatistiquesCtbs rapport, final StatusManager status, final int nbTotalContribuables, final int nbCtbTraites) {
 
-		hibernateTemplate.getSessionFactory().getCurrentSession().setFlushMode(FlushMode.MANUAL); // on ne va rien changer
+		// on ne va rien changer
+		hibernateTemplate.execute(FlushMode.MANUAL, new HibernateCallback<Object>() {
+			@Override
+			public Object doInHibernate(Session session) throws HibernateException, SQLException {
+				boolean first = true;
+				final Iterator<Long> iterator = batch.iterator();
+				while (iterator.hasNext() && !status.interrupted()) {
+					final Long id = iterator.next();
+					if (first) {
+						status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, nbCtbTraites, nbTotalContribuables), (nbCtbTraites * 100) / nbTotalContribuables);
+						first = false;
+					}
 
-		boolean first = true;
-		final Iterator<Long> iterator = batch.iterator();
-		while (iterator.hasNext() && !status.interrupted()) {
-
-			final Long id = iterator.next();
-			if (first) {
-				status.setMessage(String.format("Traitement du contribuable n°%d (%d/%d)", id, nbCtbTraites, nbTotalContribuables), (nbCtbTraites * 100) / nbTotalContribuables);
-				first = false;
+					traiterCtb(id, rapport);
+				}
+				return null;
 			}
-
-			traiterCtb(id, rapport);
-		}
+		});
 	}
 
 	/**

@@ -38,11 +38,41 @@ public class HibernateTemplateImpl implements HibernateTemplate {
 
 	@Override
 	public <T> T execute(HibernateCallback<T> callback) {
+		return execute(null, callback);
+	}
+
+	@Override
+	public <T> T execute(FlushMode flushMode, HibernateCallback<T> callback) {
+		final Session session = getCurrentSession();
+		final FlushMode old = session.getFlushMode();
+		final boolean changeMode = (flushMode != null && old != flushMode);
+		if (changeMode) {
+			session.setFlushMode(flushMode);
+		}
 		try {
-			return callback.doInHibernate(getCurrentSession());
+			return callback.doInHibernate(session);
 		}
 		catch (SQLException e) {
 			throw new HibernateException(e);
+		}
+		finally {
+			if (changeMode) {
+				session.setFlushMode(old);
+			}
+		}
+	}
+
+	@Override
+	public <T> T executeWithNewSession(HibernateCallback<T> callback) {
+		final Session session = sessionFactory.openSession();
+		try {
+			return callback.doInHibernate(session);
+		}
+		catch (SQLException e) {
+			throw new HibernateException(e);
+		}
+		finally {
+			session.close();
 		}
 	}
 

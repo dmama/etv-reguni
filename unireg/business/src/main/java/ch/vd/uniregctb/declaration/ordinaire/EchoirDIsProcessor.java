@@ -8,12 +8,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.Assert;
 
 import ch.vd.registre.base.date.RegDate;
@@ -27,8 +24,11 @@ import ch.vd.uniregctb.declaration.DeclarationException;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.declaration.IdentifiantDeclaration;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.parametrage.DelaisService;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.TypeEtatDeclaration;
 
 /**
@@ -99,7 +99,7 @@ public class EchoirDIsProcessor {
 	 * Traite tout le batch des déclarations, une par une.
 	 *
 	 * @param batch le batch des déclarations à traiter
-	 * @param rapport le rapport à remplir, voir {@link EchoirDIsProcessor#traiterDI(Long, EchoirDIsResults)}.
+	 * @param rapport le rapport à remplir, voir {@link EchoirDIsProcessor#traiterDI(ch.vd.uniregctb.declaration.IdentifiantDeclaration, EchoirDIsResults)}.
 	 * @param statusManager utilisé pour tester l'interruption
 	 */
 	private void traiterBatch(List<IdentifiantDeclaration> batch, EchoirDIsResults rapport, StatusManager statusManager) {
@@ -115,7 +115,7 @@ public class EchoirDIsProcessor {
 	 * Traite une déclaration d'impôt ordinaire. C'est-à-dire vérifier qu'elle est dans l'état sommée et que le délai de retour est dépassé;
 	 * puis si c'est bien le cas, la faire passer à l'état échu.
 	 *
-	 * @param id l'id de la déclaration à traiter
+	 * @param ident l'id de la déclaration à traiter
 	 * @param rapport rapport à remplir
 	 */
 	protected void traiterDI(IdentifiantDeclaration ident, EchoirDIsResults rapport) {

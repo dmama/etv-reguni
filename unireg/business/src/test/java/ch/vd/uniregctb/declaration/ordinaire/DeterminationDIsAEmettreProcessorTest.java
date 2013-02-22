@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -65,7 +64,6 @@ import static junit.framework.Assert.assertNull;
 @SuppressWarnings({"JavaDoc"})
 public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 
-	private HibernateTemplate hibernateTemplate;
 	private DeterminationDIsAEmettreProcessor service;
 	private TacheDAO tacheDAO;
 	private PeriodeImpositionService periodeImpositionService;
@@ -75,7 +73,6 @@ public class DeterminationDIsAEmettreProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 		final ParametreAppService parametres = getBean(ParametreAppService.class, "parametreAppService");

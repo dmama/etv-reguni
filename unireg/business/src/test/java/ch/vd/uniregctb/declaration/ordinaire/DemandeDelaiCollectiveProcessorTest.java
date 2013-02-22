@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.RegDate;
@@ -31,7 +30,6 @@ import static junit.framework.Assert.assertNull;
 
 public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 
-	private HibernateTemplate hibernateTemplate;
 	private DemandeDelaiCollectiveProcessor processor;
 	private final RegDate dateTraitement = RegDate.get();
 	private AdresseService adresseService;
@@ -40,7 +38,6 @@ public class DemandeDelaiCollectiveProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		adresseService = getBean(AdresseService.class, "adresseService");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 

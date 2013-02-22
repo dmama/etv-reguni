@@ -5,7 +5,6 @@ import java.util.Map;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.audit.Audit;
@@ -16,6 +15,7 @@ import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.scheduler.JobParam;
 import ch.vd.uniregctb.scheduler.JobParamInteger;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Job qui compile une liste des contribuables suisses ou avec permis C, dont l'adresse principale est sur Vaud

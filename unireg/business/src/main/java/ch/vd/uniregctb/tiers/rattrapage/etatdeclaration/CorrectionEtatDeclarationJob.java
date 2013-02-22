@@ -13,12 +13,9 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.adresse.AdresseService;
@@ -30,10 +27,13 @@ import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
 import ch.vd.uniregctb.declaration.EtatDeclaration;
 import ch.vd.uniregctb.document.CorrectionEtatDeclarationRapport;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.rapport.RapportService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
 import ch.vd.uniregctb.tache.TacheSynchronizerInterceptor;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.validation.ValidationInterceptor;
 
 /**
@@ -107,8 +107,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 		final List<Long> ids = retrieveIdsDeclarations();
 
 		final CorrectionEtatDeclarationResults results;
-		tacheSynchronizerInterceptor
-				.setOnTheFlySynchronization(false); // on désactive la synchronisation des tâches parce qu'il s'agit d'un job de rattrapage et qu'on ne veut pas modifier toute la planète
+		tacheSynchronizerInterceptor.setOnTheFlySynchronization(false); // on désactive la synchronisation des tâches parce qu'il s'agit d'un job de rattrapage et qu'on ne veut pas modifier toute la planète
 		validationInterceptor.setEnabled(false); // on désactive la validation parce qu'on veut juste supprimer des doublons sur les états, il ne s'agit pas de modifier des données métier.
 		try {
 			results = traiteDeclarations(statusManager, ids);
@@ -229,7 +228,14 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			if (etat != e && isDoublon(etat, e)) {
 				rapport.addDoublonSupprime(e);
 				iterator.remove();
-				hibernateTemplate.delete(e); // on efface l'état à la main
+
+				hibernateTemplate.execute(new HibernateCallback<Object>() {
+					@Override
+					public Object doInHibernate(Session session) throws HibernateException, SQLException {
+						session.delete(e);
+						return null;
+					}
+				});
 				foundDoublon = true;
 			}
 		}
@@ -278,7 +284,7 @@ public class CorrectionEtatDeclarationJob extends JobDefinition {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return hibernateTemplate.find(QUERY_STRING);
+				return hibernateTemplate.find(QUERY_STRING, null, null);
 			}
 		});
 		Collections.sort(ids);

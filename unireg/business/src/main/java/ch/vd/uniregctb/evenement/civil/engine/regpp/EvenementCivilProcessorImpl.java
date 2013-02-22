@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -33,11 +32,13 @@ import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPDAO;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreur;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPPErreurFactory;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 
 /**
@@ -60,6 +61,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	private ServiceCivilService serviceCivil;
 	private TiersDAO tiersDAO;
 	private TiersService tiersService;
+	private HibernateTemplate hibernateTemplate;
 
 	/**
 	 * {@inheritDoc}
@@ -69,7 +71,7 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 	public void traiteEvenementsCivils(StatusManager status) {
 
 		// Récupère les ids des événements à traiter
-		TransactionTemplate template = new TransactionTemplate(transactionManager);
+		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(true);
 		final List<Long> ids = template.execute(new TransactionCallback<List<Long>>() {
 			@Override
@@ -159,7 +161,6 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 					// Traitement de l'événement
 					final EtatEvenementCivil etat = traiteEvenement(evenementCivilExterne, refreshCache, collector, collector);
-
 					return traiteErreurs(etat, evenementCivilExterne, collector.getErreurs(), collector.getWarnings());
 				}
 			});
@@ -406,5 +407,9 @@ public class EvenementCivilProcessorImpl implements EvenementCivilProcessor {
 
 	public void setTiersService(TiersService tiersService) {
 		this.tiersService = tiersService;
+	}
+
+	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
+		this.hibernateTemplate = hibernateTemplate;
 	}
 }

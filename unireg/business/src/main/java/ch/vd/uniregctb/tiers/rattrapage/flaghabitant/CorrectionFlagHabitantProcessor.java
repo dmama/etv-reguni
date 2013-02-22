@@ -2,18 +2,18 @@ package ch.vd.uniregctb.tiers.rattrapage.flaghabitant;
 
 import java.util.List;
 
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.TiersService;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Processeur utilisé lors des tentatives de remettre d'aplomb les flags "habitant" des personnes physiques en fonction de leurs adresses de résidences civiles
@@ -48,7 +48,7 @@ public class CorrectionFlagHabitantProcessor {
 			@Override
 			public List<Long> doInTransaction(TransactionStatus status) {
 				//noinspection unchecked
-				return hibernateTemplate.find(hql);
+				return hibernateTemplate.find(hql, null, null);
 			}
 		});
 	}

@@ -73,7 +73,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				addAdresseSuisse(nh, TypeAdresseTiers.COURRIER, date(2000,1,1), null, MockRue.Chamblon.RueDesUttins);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, nh, dpi);
-				dao.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return null;
 			}
@@ -155,7 +155,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				numeros.noCtbEnt = ent.getNumero();
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ent, dpi);
-				dao.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return null;
 			}
@@ -273,7 +273,7 @@ public class DebiteurPrestationImposableIndexableTest extends BusinessTest {
 				ac = (AutreCommunaute) dao.save(ac);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, ac, dpi);
-				dao.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return null;
 			}

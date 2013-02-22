@@ -5,7 +5,6 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -60,7 +59,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiRetournee() throws Exception {
 
 		final long diId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -105,7 +103,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	 * [SIFISC-5208] On s'assure qu'une déclaration retournée plusieurs fois, n'est pas sommée
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiRetourneePlusieursFois() throws Exception {
 
 		doInNewTransactionAndSession(new TransactionCallback<Long>() {
@@ -148,7 +145,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiPasEncoreSommable() throws Exception {
 
 		final int anneePf = 2008;
@@ -191,7 +187,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableSimple() throws Exception {
 
 		final int anneePf = 2008;
@@ -234,7 +229,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDateEnvoiCourrierDiSommee() throws Exception {
 
 		final int anneePf = 2008;
@@ -267,18 +261,22 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final RegDate dateTraitement = delaiInitial.addMonths(1);
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 
-		DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
-		EtatDeclarationSommee etatSomme = (EtatDeclarationSommee)declarationImpotOrdinaire.getDernierEtat();
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire declarationImpotOrdinaire = diDao.get(diId);
+				final EtatDeclarationSommee etatSomme = (EtatDeclarationSommee) declarationImpotOrdinaire.getDernierEtat();
 
+				Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
 
-		Assert.assertEquals(dateTraitement, etatSomme.getDateObtention());
-
-		final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
-		Assert.assertEquals(dateEnvoiCourrier,etatSomme.getDateEnvoiCourrier());
+				final RegDate dateEnvoiCourrier = dateTraitement.addDays(3);
+				Assert.assertEquals(dateEnvoiCourrier, etatSomme.getDateEnvoiCourrier());
+				return null;
+			}
+		});
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisIndigent() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -321,7 +319,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisNonAssujetti() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -365,7 +362,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableMaisOptionnelle() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -409,7 +405,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiSommableEtPartiellementOptionnelle() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -457,7 +452,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 
 	//UNIREG-2466 test sur le log correcte des erreurs notamment les NullPointerException
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testErreurSommation() throws Exception {
 
 		final int anneePf = 2009;
@@ -489,8 +483,7 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 			}
 		});
 
-		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService,
-				adresseService) {
+		processor = new EnvoiSommationsDIsProcessor(hibernateTemplate, diDao, delaisService, diService, tiersService, transactionManager, assujettissementService, periodeImpositionService, adresseService) {
 			@Override
 			protected void traiterDI(DeclarationImpotOrdinaire di, EnvoiSommationsDIsResults r, RegDate dateTraitement, boolean miseSousPliImpossible) {
 				throw new RuntimeException("Exception de test");
@@ -501,11 +494,18 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 		final EnvoiSommationsDIsResults results = processor.run(dateTraitement, false, 0, null);
 		final List<EnvoiSommationsDIsResults.ErrorInfo> infoListErreur = results.getListeSommationsEnErreur();
 		Assert.assertEquals(1, infoListErreur.size());
-		final DeclarationImpotOrdinaire declaration =  diDao.get(diId);
 
-		final EnvoiSommationsDIsResults.ErrorInfo error =  infoListErreur.get(0);
-		Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
-		Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final DeclarationImpotOrdinaire declaration = diDao.get(diId);
+
+				final EnvoiSommationsDIsResults.ErrorInfo error = infoListErreur.get(0);
+				Assert.assertEquals(declaration.getTiers().getNumero(), error.getNumeroTiers());
+				Assert.assertEquals("java.lang.RuntimeException - Exception de test", error.getCause());
+				return null;
+			}
+		});
 
 		Assert.assertEquals(1, results.getTotalDisTraitees());
 		Assert.assertEquals(0, results.getTotalDelaisEffectifsNonEchus());
@@ -518,7 +518,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDiContribuableSourcierPur() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -567,7 +566,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	 * Par acquis de conscience, on fait aussi le test pour les DIs
 	 */
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationDiRetourneeAvantEmission() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);
@@ -613,7 +611,6 @@ public class EnvoiSommationsDIsProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testNonSommationDiDejaSommee() throws Exception {
 		final int anneePf = 2008;
 		final RegDate dateEmission = RegDate.get(2009, 1, 15);

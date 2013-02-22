@@ -9,7 +9,6 @@ import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,6 +17,7 @@ import ch.vd.uniregctb.audit.AuditLine;
 import ch.vd.uniregctb.audit.AuditLineDAO;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.WebParamPagination;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Controller spring permettant la visualisation des logs d'audit

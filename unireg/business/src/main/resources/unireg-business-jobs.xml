@@ -350,6 +350,7 @@
 		<property name="validationService" ref="validationService"/>
 		<property name="periodeImpositionService" ref="periodeImpositionService"/>
 		<property name="tiersService" ref="tiersService"/>
+	    <property name="hibernateTemplate" ref="hibernateTemplate"/>
     </bean>
 
     <bean id="listeTachesEnIstanceParOIDJob" parent="schedulerJob" class="ch.vd.uniregctb.tache.ListeTachesEnInstanceParOIDJob">

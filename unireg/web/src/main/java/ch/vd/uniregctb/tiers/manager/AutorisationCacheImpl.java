@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.tx.TxCallback;
 import ch.vd.registre.base.utils.Assert;
@@ -24,6 +23,7 @@ import ch.vd.uniregctb.data.DataEventListener;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class AutorisationCacheImpl implements AutorisationCache, DataEventListener, InitializingBean, UniregCacheInterface {
 

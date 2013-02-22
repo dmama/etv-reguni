@@ -8,9 +8,9 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 import static ch.vd.uniregctb.parametrage.ParametreEnum.*;
 

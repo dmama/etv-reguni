@@ -18,14 +18,13 @@ import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.registre.base.utils.Pair;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
-import ch.vd.uniregctb.hibernate.interceptor.HibernateFakeInterceptor;
+import ch.vd.uniregctb.common.Switchable;
 import ch.vd.uniregctb.indexer.IndexerBatchException;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
@@ -34,6 +33,7 @@ import ch.vd.uniregctb.interfaces.service.ServicePersonneMoraleService;
 import ch.vd.uniregctb.tiers.Tiers;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersDAOImpl;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.worker.BatchWorker;
 
 
@@ -50,13 +50,13 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 
 	private final GlobalTiersIndexer.Mode mode;
 
-	@Nullable private ServiceCivilCacheWarmer serviceCivilCacheWarmer;
+	@Nullable private final ServiceCivilCacheWarmer serviceCivilCacheWarmer;
 
-	private boolean prefetchPMs;
-	private TiersDAO tiersDAO;
-	private ServicePersonneMoraleService servicePM;
+	private final boolean prefetchPMs;
+	private final TiersDAO tiersDAO;
+	private final ServicePersonneMoraleService servicePM;
 
-	private String name;
+	private final String name;
 
 	/**
 	 * Construit un thread d'indexation qui consomme les ids des tiers à indexer à partir d'une queue.
@@ -112,47 +112,55 @@ public class TiersIndexerWorker implements BatchWorker<Long> {
 			@Override
 			public Object doInTransaction(TransactionStatus status) {
 				/*
-				 * On crée à la main une nouvelle session hibernate avec un intercepteur vide (HibernateFakeInterceptor). Cela permet de désactiver
+				 * On crée à la main une nouvelle session hibernate en ayant pris soin de désactiver l'intercepteur. Cela permet de désactiver
 				 * la validation des tiers, et de flagger comme 'dirty' même les tiers qui ne valident pas. Autrement, le premier tiers qui ne valide pas
 				 * fait péter une exception, qui remonte jusqu'à la méthode 'run' du thread et qui provoque l'arrêt immédiat du thread !
 				 */
-				Session session = sessionFactory.openSession(new HibernateFakeInterceptor());
+				final Switchable interceptorSwitch = (Switchable) sessionFactory.getSessionFactoryOptions().getInterceptor();
+				final boolean enabled = interceptorSwitch.isEnabled();
+				interceptorSwitch.setEnabled(false);
 				try {
-					session.setFlushMode(FlushMode.MANUAL);
-					final List<Tiers> list;
+					final Session session = sessionFactory.openSession();
+					try {
+						session.setFlushMode(FlushMode.MANUAL);
+						final List<Tiers> list;
 
-					if (batch.size() == 1) {
-						final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
-						if (tiers != null) {
-							list = new ArrayList<Tiers>(1);
-							list.add(tiers);
+						if (batch.size() == 1) {
+							final Tiers tiers = (Tiers) session.get(Tiers.class, batch.get(0));
+							if (tiers != null) {
+								list = new ArrayList<Tiers>(1);
+								list.add(tiers);
+							}
+							else {
+								list = null;
+							}
 						}
 						else {
-							list = null;
+							// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
+							warmIndividuCache(session, batch);
+
+							if (prefetchPMs) {
+								warmPMCache(batch);
+							}
+
+							final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
+							query.setParameterList("ids", batch);
+							//noinspection unchecked
+							list = query.list();
 						}
+
+						indexTiers(list, session);
+						session.flush();
 					}
-					else {
-						// Si le service est chauffable, on précharge les individus en vrac pour améliorer les performances.
-						warmIndividuCache(session, batch);
-
-						if (prefetchPMs) {
-							warmPMCache(batch);
-						}
-
-						final Query query = session.createQuery("from Tiers t where t.id in (:ids)");
-						query.setParameterList("ids", batch);
-						//noinspection unchecked
-						list = query.list();
+					catch (Exception e) {
+						LOGGER.error(e, e);
 					}
-
-					indexTiers(list, session);
-					session.flush();
-				}
-				catch (Exception e) {
-					LOGGER.error(e, e);
+					finally {
+						session.close();
+					}
 				}
 				finally {
-					session.close();
+					interceptorSwitch.setEnabled(enabled);
 				}
 				return null;
 			}

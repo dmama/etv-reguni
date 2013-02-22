@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,7 +22,6 @@ import ch.vd.uniregctb.declaration.EtatDeclarationEmise;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.Tiers;
-import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.type.PeriodiciteDecompte;
 import ch.vd.uniregctb.type.Sexe;
 
@@ -34,19 +31,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class BatchTransactionTemplateTest extends BusinessTest {
-
-	private PlatformTransactionManager transactionManager;
-	private TiersDAO tiersDAO;
-	private HibernateTemplate hibernateTemplate;
-
-	@Override
-	public void onSetUp() throws Exception {
-		super.onSetUp();
-
-		transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
-		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
-	}
 
 	@Test
 	public void testEmptyList() {

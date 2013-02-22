@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
 import org.apache.xmlbeans.XmlObject;
 import org.apache.xmlbeans.XmlOptions;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
 import ch.vd.technical.esb.ErrorType;
@@ -16,6 +15,7 @@ import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 import ch.vd.uniregctb.tiers.Entreprise;
@@ -106,7 +106,7 @@ public class EntrepriseEventListener extends EsbMessageEndpointListener implemen
 
 		// [SIFISC-1526] création de la coquille PM vide, si nécessaire
 		if (hibernateTemplate.get(Entreprise.class, entrepriseId) == null) {
-			hibernateTemplate.save(new Entreprise(entrepriseId));
+			hibernateTemplate.merge(new Entreprise(entrepriseId));
 		}
 
 		dataEventService.onPersonneMoraleChange(entrepriseId);

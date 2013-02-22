@@ -9,7 +9,6 @@ import java.util.Set;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +39,7 @@ import ch.vd.uniregctb.evenement.di.EvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.di.MockEvenementDeclarationSender;
 import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalService;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.CategorieEnvoiDI;
@@ -1605,7 +1605,7 @@ public class DeclarationImpotServiceTest extends BusinessTest {
 		final Integer finAnnee = date(annee, 12, 31).index();
 
 		final String query = "FROM TacheEnvoiDeclarationImpot AS t WHERE t.contribuable = ? AND ? <= t.dateDebut AND t.dateFin <= ? ORDER BY t.dateDebut ASC";
-		return hibernateTemplate.find(query, contribuable, debutAnnee, finAnnee);
+		return hibernateTemplate.find(query, new Object[] {contribuable, debutAnnee, finAnnee}, null);
 	}
 
 	private static void assertResults(int ctbsTraites, DeterminationDIsResults results) {

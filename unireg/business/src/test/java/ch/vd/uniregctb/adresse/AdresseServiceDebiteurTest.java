@@ -99,7 +99,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 				habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}
@@ -245,7 +245,7 @@ public class AdresseServiceDebiteurTest extends BusinessTest {
 				habitant = (PersonnePhysique) tiersDAO.save(habitant);
 
 				ContactImpotSource contact = new ContactImpotSource(RegDate.get(), null, habitant, debiteur);
-				tiersDAO.getHibernateTemplate().merge(contact);
+				hibernateTemplate.merge(contact);
 
 				return noDebiteur;
 			}

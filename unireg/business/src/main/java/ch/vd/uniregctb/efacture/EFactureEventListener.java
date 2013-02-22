@@ -13,7 +13,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.evd0025.v1.ObjectFactory;
@@ -24,6 +23,7 @@ import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 

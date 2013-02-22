@@ -90,8 +90,8 @@
 		<property name="serviceCivilService" ref="serviceCivilService" />
 		<property name="serviceInfra" ref="serviceInfrastructureService" />
 		<property name="servicePM" ref="servicePersonneMoraleService" />
-		<property name="adresseTiersDAO" ref="adresseTiersDAO" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
 
 	<bean id="situationFamilleService" class="ch.vd.uniregctb.situationfamille.SituationFamilleServiceImpl">
@@ -157,7 +157,7 @@
 
 	<!-- Database service -->
 	<bean id="databaseService" class="ch.vd.uniregctb.database.DatabaseServiceImpl">
-		<property name="localSessionFactoryBean" ref="&amp;sessionFactory" />
+		<property name="sessionFactoryBean" ref="&amp;sessionFactory" />
 		<property name="dataSource" ref="dataSource" />
 		<property name="transactionManager" ref="transactionManager" />
 		<property name="dataEventService" ref="dataEventService" />

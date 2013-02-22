@@ -34,6 +34,7 @@
 		<property name="globalTiersIndexer" ref="globalTiersIndexer" />
 		<property name="tiersDAO" ref="tiersDAO" />
 		<property name="transactionManager" ref="transactionManager" />
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<!-- Test de la DAO des Tiers -->

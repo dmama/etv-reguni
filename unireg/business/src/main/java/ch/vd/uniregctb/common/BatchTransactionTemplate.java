@@ -11,14 +11,15 @@ import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
+
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 /**
  * Classe utilitaire qui permet de découper le processing d'une collection d'éléments en lots (batchs). Chaque lot est exécuté dans une transaction propre.
@@ -50,7 +51,6 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 	private final HibernateTemplate hibernateTemplate;
 
 	private boolean readonly;
-	private int propagationBehavior = TransactionDefinition.PROPAGATION_REQUIRED;
 
 	/**
 	 * @param iterator           un itérateur qui retourne les éléments à processer
@@ -287,7 +287,7 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 		final TransactionTemplate template = new TransactionTemplate(transactionManager);
 		template.setReadOnly(readonly);
-		template.setPropagationBehavior(propagationBehavior);
+		template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 
 		try {
 			r.processNextBatch = template.execute(new TransactionCallback<Boolean>() {
@@ -372,9 +372,5 @@ public class BatchTransactionTemplate<E, R extends BatchResults> {
 
 	public void setReadonly(boolean readonly) {
 		this.readonly = readonly;
-	}
-
-	public void setPropagationBehavior(int propagationBehavior) {
-		this.propagationBehavior = propagationBehavior;
 	}
 }

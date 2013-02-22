@@ -3,8 +3,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateRange;
@@ -42,11 +40,9 @@ public class EnvoiAnnexeImmeubleEnMasseProcessorTest extends BusinessTest {
 
 		super.onSetUp();
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		final HibernateTemplate hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		final ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
 		final DeclarationImpotService diService = getBean(DeclarationImpotService.class, "diService");
-		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
 		final PeriodeImpositionService periodeImpositionService = getBean(PeriodeImpositionService.class, "periodeImpositionService");
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");

@@ -8,13 +8,13 @@ import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.springframework.dao.support.DataAccessUtils;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.common.LoggingStatusManager;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeTache;
 
@@ -80,8 +80,8 @@ public class ProduireListeTachesEnInstanceParOIDProcessor {
 												" AND tache.dateEcheance <="+dateTraitement.index()+ ')';
 
 
-		double nombreTotalTaches = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreTache));
-		double nombreTotalContribuable = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreContribuable));
+		double nombreTotalTaches = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreTache, null, null));
+		double nombreTotalContribuable = DataAccessUtils.intResult(hibernateTemplate.find(queryNombreContribuable, null, null));
 		double moyenne = 0;
 		if (nombreTotalContribuable>0) {
 

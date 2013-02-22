@@ -9,7 +9,6 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,7 +70,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 	private static final int TAILLE_LOT = 100;
 
 	private EnvoiDIsEnMasseProcessor processor;
-	private HibernateTemplate hibernateTemplate;
 	private ParametreAppService parametreAppService;
 	private AdresseService adresseService;
 
@@ -80,7 +78,6 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		super.onSetUp();
 		final TiersService tiersService = getBean(TiersService.class, "tiersService");
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 		final PeriodeFiscaleDAO periodeDAO = getBean(PeriodeFiscaleDAO.class, "periodeFiscaleDAO");
 		final ModeleDocumentDAO modeleDAO = getBean(ModeleDocumentDAO.class, "modeleDocumentDAO");
 		final DelaisService delaisService = getBean(DelaisService.class, "delaisService");
@@ -443,7 +440,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 
 		// vérification des DIs
 		{
-			final List<DeclarationImpotOrdinaire> dis = hibernateTemplate.loadAll(DeclarationImpotOrdinaire.class);
+			final List<DeclarationImpotOrdinaire> dis = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 			assertNotNull(dis);
 			assertEquals(2, dis.size());
 
@@ -628,7 +625,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -745,7 +742,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		final TacheEnvoiDeclarationImpot secondeTache = hibernateTemplate.get(TacheEnvoiDeclarationImpot.class, ids.secondeTacheId);
 		assertEquals(TypeEtatTache.TRAITE, secondeTache.getEtat());
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -804,7 +801,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -862,7 +859,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -1123,7 +1120,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 
@@ -1189,7 +1186,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertEquals("Décédé en fin d'année",ignore.details);
 
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		//[UNIREG-1952] il ne doit pas y avoir de DI émise
 		assertEmpty(declarations);
 	}
@@ -1246,7 +1243,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		//[UNIREG-1952] Dans le cas ou l'exclusion des décédés est activée, il faut qu'un décédé avant la date d'eclusion soit traité normalement 
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
@@ -1305,7 +1302,7 @@ public class EnvoiDIsEnMasseProcessorTest extends BusinessTest {
 		assertNotNull(results);
 		assertEquals(1, results.nbCtbsTotal);
 
-		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire");
+		final List<DeclarationImpotOrdinaire> declarations = hibernateTemplate.find("from DeclarationImpotOrdinaire", null, null);
 		assertNotNull(declarations);
 		assertEquals(1, declarations.size());
 

@@ -6,9 +6,10 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionException;
+
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 
 /**
  * Classe utilitaire qui reprend la fonctionnalité du {@link ch.vd.uniregctb.common.BatchTransactionTemplate} et ajoute celle de traiter les lots avec <i>n</i> threads en parallèle.

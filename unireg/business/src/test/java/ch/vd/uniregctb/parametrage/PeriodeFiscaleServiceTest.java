@@ -51,7 +51,7 @@ public class PeriodeFiscaleServiceTest extends BusinessTest {
 		// Crée un habitant qui ne valide pas
 		PersonnePhysique tiers = new PersonnePhysique(false);
 		tiers.setNom("RRR");
-		tiers = periodeFiscaleDAO.getHibernateTemplate().merge(tiers);
+		tiers = hibernateTemplate.merge(tiers);
 		tiers.setNom(null); // le nom est obligatoire
 		assertTrue(validationService.validate(tiers).hasErrors());
 

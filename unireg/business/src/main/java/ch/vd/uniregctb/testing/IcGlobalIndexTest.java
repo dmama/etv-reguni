@@ -3,6 +3,7 @@ package ch.vd.uniregctb.testing;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.hibernate.Session;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
@@ -155,7 +156,8 @@ public class IcGlobalIndexTest extends InContainerTest {
 		Long id = executeInTransaction(new TransactionCallback<Long>() {
 			@Override
 			public Long doInTransaction(TransactionStatus status) {
-				return (Long) getTiersDAO().getHibernateTemplate().save(tiers);
+				final Session session = getSessionFactory().getCurrentSession();
+				return (Long) session.save(tiers);
 			}
 		});
 		return id;

@@ -1305,8 +1305,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
-				ids.secondForPrincipalId);
+		final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
 		// annulation du second for principal
@@ -1316,8 +1315,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(secondForPrincipal.isAnnule());
 
 		// vérification que le premier for est bien ré-ouvert
-		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
-				ids.premierForPrincipalId);
+		final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
 		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
 		assertEquals(MotifFor.MAJORITE, premierForPrincipal.getMotifOuverture());
@@ -1360,7 +1358,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalSecondaire forFiscalSecondaire = tiersDAO.getHibernateTemplate().get(ForFiscalSecondaire.class, id.forSecondaire);
+		final ForFiscalSecondaire forFiscalSecondaire = hibernateTemplate.get(ForFiscalSecondaire.class, id.forSecondaire);
 		assertNotNull(forFiscalSecondaire);
 
 		// annulation du for fiscal secondaire
@@ -1443,7 +1441,7 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class,
 				ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
@@ -1454,7 +1452,7 @@ public class TiersServiceTest extends BusinessTest {
 		assertTrue(secondForPrincipal.isAnnule());
 
 		// vérification que le premier for n'est pas ré-ouvert
-		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
+		final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class,
 				ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
 		assertEquals(date(1983, 4, 13), premierForPrincipal.getDateDebut());
@@ -1497,11 +1495,9 @@ public class TiersServiceTest extends BusinessTest {
 			}
 		});
 
-		final ForFiscalPrincipal premierForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
-				ids.premierForPrincipalId);
+		final ForFiscalPrincipal premierForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.premierForPrincipalId);
 		assertNotNull(premierForPrincipal);
-		final ForFiscalPrincipal secondForPrincipal = tiersDAO.getHibernateTemplate().get(ForFiscalPrincipal.class,
-				ids.secondForPrincipalId);
+		final ForFiscalPrincipal secondForPrincipal = hibernateTemplate.get(ForFiscalPrincipal.class, ids.secondForPrincipalId);
 		assertNotNull(secondForPrincipal);
 
 		// annulation du premier for principal

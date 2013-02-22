@@ -7,7 +7,6 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -70,7 +69,6 @@ public class ProduireRolesProcessorTest extends BusinessTest {
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		final HibernateTemplate hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
 		final ServiceInfrastructureService infraService = getBean(ServiceInfrastructureService.class, "serviceInfrastructureService");
 		final TiersDAO tiersDAO = getBean(TiersDAO.class, "tiersDAO");

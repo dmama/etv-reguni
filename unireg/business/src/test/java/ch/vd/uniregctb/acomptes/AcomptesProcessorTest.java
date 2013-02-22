@@ -9,9 +9,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
@@ -24,6 +21,7 @@ import ch.vd.uniregctb.adresse.AdresseService;
 import ch.vd.uniregctb.cache.ServiceCivilCacheWarmer;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.ListesResults;
+import ch.vd.uniregctb.hibernate.HibernateCallback;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.MenageCommun;
@@ -47,16 +45,13 @@ public class AcomptesProcessorTest extends BusinessTest {
 
 	public static final Logger LOGGER = Logger.getLogger(AcomptesProcessorTest.class);
 
-	private HibernateTemplate hibernateTemplate;
 	private AcomptesProcessor processor;
 
 	@Override
 	public void onSetUp() throws Exception {
 
 		super.onSetUp();
-		hibernateTemplate = getBean(HibernateTemplate.class, "hibernateTemplate");
 
-		final PlatformTransactionManager transactionManager = getBean(PlatformTransactionManager.class, "transactionManager");
 		final TiersService tiersService = getBean(TiersServiceImpl.class, "tiersService");
 		final TiersDAO tiersDAO = getBean(TiersDAOImpl.class, "tiersDAO");
 		final ServiceCivilCacheWarmer serviceCivilCacheWarmer = getBean(ServiceCivilCacheWarmer.class, "serviceCivilCacheWarmer");
@@ -229,7 +224,7 @@ public class AcomptesProcessorTest extends BusinessTest {
 		doInNewTransactionAndSession(new TransactionCallback<Object>() {
 			@Override
 			public Object doInTransaction(TransactionStatus transactionStatus) {
-				final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(hibernateTemplate.getSessionFactory().getCurrentSession(), anneeReference);
+				final Iterator<Long> iterator = processor.createIteratorOnIDsOfCtbs(getCurrentSession(), anneeReference);
 				final List<Long> ctbs = new ArrayList<Long>(10);
 				while (iterator.hasNext()) {
 					ctbs.add(iterator.next());

@@ -15,7 +15,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.orm.hibernate3.HibernateTemplate;
 import org.xml.sax.SAXException;
 
 import ch.vd.registre.base.date.RegDate;
@@ -27,6 +26,7 @@ import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
+import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
 import ch.vd.uniregctb.jms.MonitorableMessageListener;
 

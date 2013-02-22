@@ -3,7 +3,6 @@ package ch.vd.uniregctb.declaration.ordinaire;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.RegDate;
@@ -52,7 +51,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDIEmise() throws Exception {
 
 		final int year = RegDate.get().year();
@@ -110,7 +108,6 @@ public class ProduireListeDIsNonEmisesProcessorTest extends BusinessTest {
 	}
 
 	@Test
-	@Transactional(rollbackFor = Throwable.class)
 	public void testDInonEmise() throws Exception {
 
 		final int year = RegDate.get().year();
