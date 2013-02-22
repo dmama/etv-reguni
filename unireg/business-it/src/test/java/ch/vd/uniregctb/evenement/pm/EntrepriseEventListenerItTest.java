@@ -68,6 +68,11 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 			@Override
 			public void flush() throws DataAccessException {
 			}
+
+			@Override
+			public <T> T merge(T entity) {
+				return entity;
+			}
 		};
 
 		final EntrepriseEventListener listener = new EntrepriseEventListener();
