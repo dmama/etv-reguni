@@ -57,7 +57,29 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Catégorie de personne physique.</jxb:javadoc>
+									<jxb:javadoc>Catégorie de personne physique. Cet attribut ne contient que la valeur courante (= à la date du jour de la requête). Pour l'historique des valeurs,
+										voir l'attribut 'categoryHisto' (SIFISC-8072).
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="categoryHisto" type="person:naturalPersonCategoryPeriodType" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>L'historique complet des catégories de la personne physique. Cet historique est généralement disponible sur les personnes physiques qui habitent dans
+										le canton de Vaud. Pour les personnes physiques qui habitent hors-canton ou hors-Suisse, une période unique avec date de début et de fin nulles est retournée.
+									</jxb:javadoc>
+								</jxb:property>
+							</xs:appinfo>
+						</xs:annotation>
+					</xs:element>
+					<xs:element name="padding" type="xs:int">
+						<xs:annotation>
+							<xs:appinfo>
+								<jxb:property>
+									<jxb:javadoc>Padding pour supporter l'élément xs:any ci-dessous. A ignorer.</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
@@ -66,6 +88,47 @@
 				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="naturalPersonCategoryPeriodType">
+		<xs:annotation>
+			<xs:appinfo>
+				<jxb:class>
+					<jxb:javadoc>Une catégorie de personne physique valable pendant une période de temps déterminée.</jxb:javadoc>
+				</jxb:class>
+			</xs:appinfo>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dateFrom" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de début de validité de la catégorie. Cette donnée n'est pas renseigné sur les contribuables qui n'habitent pas le canton.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="dateTo" type="common:dateType" minOccurs="0">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La date de fin de validité de la catégorie. Cette donnée n'est pas renseigné sur les contribuables qui n'habitent pas le canton, ou si la période est toujours
+								valable.
+							</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="category" type="person:naturalPersonCategoryType">
+				<xs:annotation>
+					<xs:appinfo>
+						<jxb:property>
+							<jxb:javadoc>La catégorie de personne physique.</jxb:javadoc>
+						</jxb:property>
+					</xs:appinfo>
+				</xs:annotation>
+			</xs:element>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax" />
+		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="commonHouseholdType">
 		<xs:annotation>

@@ -11,10 +11,12 @@ import org.jetbrains.annotations.Nullable;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.Permis;
+import ch.vd.unireg.interfaces.civil.data.PermisList;
 import ch.vd.unireg.interfaces.civil.rcpers.EchHelper;
 import ch.vd.unireg.xml.exception.v1.BusinessExceptionCode;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
 import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategoryPeriod;
 import ch.vd.unireg.xml.party.v1.PartyPart;
 import ch.vd.uniregctb.tiers.IdentificationPersonne;
 import ch.vd.uniregctb.xml.Context;
@@ -55,7 +57,10 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setIdentification(newPersonIdentification(personne));
 			to.setDateOfBirth(DataHelper.coreToXML(personne.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces()));
-			to.setCategory(EnumHelper.coreToXML(personne.getCategorieEtranger()));
+
+			final NaturalPersonCategory category = EnumHelper.coreToXML(personne.getCategorieEtranger());
+			to.setCategory(category);
+			to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(null, null, category, null));
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
@@ -71,12 +76,21 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			to.setDateOfBirth(DataHelper.coreToXML(individu.getDateNaissance()));
 			to.setDateOfDeath(DataHelper.coreToXML(personne.getDateDeces() == null ? individu.getDateDeces() : personne.getDateDeces()));
 
-			final Permis permis = individu.getPermis().getPermisActif(null);
-			if (permis == null) {
+			final PermisList list = individu.getPermis();
+			if (list == null || list.isEmpty()) {
 				to.setCategory(NaturalPersonCategory.SWISS);
+				to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(null, null, NaturalPersonCategory.SWISS, null));
 			}
 			else {
-				to.setCategory(EnumHelper.coreToXML(permis.getTypePermis()));
+				// le permis actif courant
+				to.setCategory(EnumHelper.coreToXML(list.getPermisActif(null).getTypePermis()));
+
+				// l'historique des permis (SIFISC-8072)
+				for (Permis permis : list) {
+					to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(permis.getDateDebut()),
+					                                                          DataHelper.coreToXML(permis.getDateFin()),
+					                                                          EnumHelper.coreToXML(permis.getTypePermis()), null));
+				}
 			}
 		}
 	}
@@ -88,6 +102,14 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		to.setDateOfBirth(from.getDateOfBirth());
 		to.setDateOfDeath(from.getDateOfDeath());
 		to.setCategory(from.getCategory());
+	}
+
+	@Override
+	protected void copyParts(NaturalPerson to, NaturalPerson from, @Nullable Set<PartyPart> parts, CopyMode mode) {
+		super.copyParts(to, from, parts, mode);
+
+		// les permis sont toujours renseignés (par de PART spécifique)
+		copyColl(to.getCategoryHisto(), from.getCategoryHisto());
 	}
 
 	private static PersonIdentification newPersonIdentification(ch.vd.uniregctb.tiers.PersonnePhysique personne) {

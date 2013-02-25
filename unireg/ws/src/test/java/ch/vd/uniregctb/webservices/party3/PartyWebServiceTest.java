@@ -65,6 +65,8 @@ import ch.vd.unireg.xml.party.debtor.v1.DebtorCategory;
 import ch.vd.unireg.xml.party.person.v1.CommonHousehold;
 import ch.vd.unireg.xml.party.person.v1.CommonHouseholdStatus;
 import ch.vd.unireg.xml.party.person.v1.NaturalPerson;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategory;
+import ch.vd.unireg.xml.party.person.v1.NaturalPersonCategoryPeriod;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.OrdinaryTaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclaration;
 import ch.vd.unireg.xml.party.taxdeclaration.v1.TaxDeclarationDeadline;
@@ -97,6 +99,7 @@ import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.Entreprise;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
+import ch.vd.uniregctb.type.CategorieEtranger;
 import ch.vd.uniregctb.type.CategorieIdentifiant;
 import ch.vd.uniregctb.type.CategorieImpotSource;
 import ch.vd.uniregctb.type.ModeCommunication;
@@ -109,6 +112,7 @@ import ch.vd.uniregctb.type.TypeAdressePM;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeContribuable;
 import ch.vd.uniregctb.type.TypeDocument;
+import ch.vd.uniregctb.type.TypePermis;
 import ch.vd.uniregctb.webservices.party3.impl.DataHelper;
 
 import static org.junit.Assert.assertEquals;
@@ -2384,5 +2388,129 @@ public class PartyWebServiceTest extends WebserviceTest {
 			assertEquals("Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" +
 					RegDateHelper.dateToDisplayString(RegDate.get().addMonths(1)) + "].", results.getExceptionInfo().getMessage());
 		}
+	}
+
+	/**
+	 * [SIFISC-8072] Vérifie que l'historique des permis d'un habitant Suisse est bien retourné par le web-service
+	 */
+	@Test
+	public void testGetNaturalPersonneCategoryHabitantSuisse() throws Exception {
+
+		final long noInd = 13432;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1983, 3, 31), "Gourt", "Eva", Sexe.FEMININ);
+				addNationalite(ind, MockPays.Suisse, date(1983, 3, 31), null);
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getId();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(id.intValue());
+
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+		assertNotNull(pp);
+
+		// l'attribut 'categoryHisto' contient l'historique complet des permis
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		assertNotNull(permis);
+		assertEquals(1, permis.size());
+		assertPermis(null, null, NaturalPersonCategory.SWISS, permis.get(0));
+
+		// l'attribut 'category' contient le type du dernier permis
+		assertEquals(NaturalPersonCategory.SWISS, pp.getCategory());
+	}
+
+	/**
+	 * [SIFISC-8072] Vérifie que l'historique des permis d'un habitant permis B puis C est bien retourné par le web-service
+	 */
+	@Test
+	public void testGetNaturalPersonneCategoryHabitantPermisC() throws Exception {
+
+		final long noInd = 13432;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1983, 3, 31), "Gourt", "Eva", Sexe.FEMININ);
+				addNationalite(ind, MockPays.France, date(1983, 3, 31), null);
+				addPermis(ind, TypePermis.SEJOUR, date(2000, 2, 2), date(2005, 2, 1), false);
+				addPermis(ind, TypePermis.ETABLISSEMENT, date(2005, 2, 2), null, false);
+			}
+		});
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getId();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(id.intValue());
+
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+		assertNotNull(pp);
+
+		// l'attribut 'categoryHisto' contient l'historique complet des permis
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		assertNotNull(permis);
+		assertEquals(2, permis.size());
+		assertPermis(newDate(2000, 2, 2), newDate(2005, 2, 1), NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
+		assertPermis(newDate(2005, 2, 2), null, NaturalPersonCategory.C_03_C_PERMIT, permis.get(1));
+
+		// l'attribut 'category' contient le type du dernier permis
+		assertEquals(NaturalPersonCategory.C_03_C_PERMIT, pp.getCategory());
+	}
+
+	/**
+	 * [SIFISC-8072] Vérifie que l'historique des permis d'un non-habitant permis B est bien retourné par le web-service
+	 */
+	@Test
+	public void testGetNaturalPersonneCategoryNonHabitantPermisB() throws Exception {
+
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addNonHabitant("Eva", "Gourt", date(1983, 3, 31), Sexe.FEMININ);
+				pp.setCategorieEtranger(CategorieEtranger._02_PERMIS_SEJOUR_B);
+				return pp.getId();
+			}
+		});
+
+		final GetPartyRequest params = new GetPartyRequest();
+		params.setLogin(login);
+		params.setPartyNumber(id.intValue());
+
+		final NaturalPerson pp = (NaturalPerson) service.getParty(params);
+		assertNotNull(pp);
+
+		// l'attribut 'categoryHisto' contient l'historique complet des permis
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		assertNotNull(permis);
+		assertEquals(1, permis.size());
+		assertPermis(null, null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
+
+		// l'attribut 'category' contient le type du dernier permis
+		assertEquals(NaturalPersonCategory.C_02_B_PERMIT, pp.getCategory());
+	}
+
+	private static void assertPermis(Date dateFrom, Date dateTo, NaturalPersonCategory category, NaturalPersonCategoryPeriod permis) {
+		assertNotNull(permis);
+		assertEquals(category, permis.getCategory());
+		assertEquals(dateFrom, permis.getDateFrom());
+		assertEquals(dateTo, permis.getDateTo());
 	}
 }
