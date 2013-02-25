@@ -2422,7 +2422,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(pp);
 
 		// l'attribut 'categoryHisto' contient l'historique complet des permis
-		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategories();
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
 		assertPermis(null, null, NaturalPersonCategory.SWISS, permis.get(0));
@@ -2465,7 +2465,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(pp);
 
 		// l'attribut 'categoryHisto' contient l'historique complet des permis
-		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategories();
 		assertNotNull(permis);
 		assertEquals(2, permis.size());
 		assertPermis(newDate(2000, 2, 2), newDate(2005, 2, 1), NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));
@@ -2498,7 +2498,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(pp);
 
 		// l'attribut 'categoryHisto' contient l'historique complet des permis
-		final List<NaturalPersonCategoryPeriod> permis = pp.getCategoryHisto();
+		final List<NaturalPersonCategoryPeriod> permis = pp.getCategories();
 		assertNotNull(permis);
 		assertEquals(1, permis.size());
 		assertPermis(null, null, NaturalPersonCategory.C_02_B_PERMIT, permis.get(0));

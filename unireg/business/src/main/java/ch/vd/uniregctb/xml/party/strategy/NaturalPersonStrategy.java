@@ -60,7 +60,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 			final NaturalPersonCategory category = EnumHelper.coreToXML(personne.getCategorieEtranger());
 			to.setCategory(category);
-			to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(null, null, category, null));
+			to.getCategories().add(new NaturalPersonCategoryPeriod(null, null, category, null));
 		}
 		else {
 			final Individu individu = context.serviceCivilService.getIndividu(personne.getNumeroIndividu(), null, AttributeIndividu.PERMIS);
@@ -79,7 +79,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 			final PermisList list = individu.getPermis();
 			if (list == null || list.isEmpty()) {
 				to.setCategory(NaturalPersonCategory.SWISS);
-				to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(null, null, NaturalPersonCategory.SWISS, null));
+				to.getCategories().add(new NaturalPersonCategoryPeriod(null, null, NaturalPersonCategory.SWISS, null));
 			}
 			else {
 				// le permis actif courant
@@ -87,7 +87,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 
 				// l'historique des permis (SIFISC-8072)
 				for (Permis permis : list) {
-					to.getCategoryHisto().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(permis.getDateDebut()),
+					to.getCategories().add(new NaturalPersonCategoryPeriod(DataHelper.coreToXML(permis.getDateDebut()),
 					                                                          DataHelper.coreToXML(permis.getDateFin()),
 					                                                          EnumHelper.coreToXML(permis.getTypePermis()), null));
 				}
@@ -109,7 +109,7 @@ public class NaturalPersonStrategy extends TaxPayerStrategy<NaturalPerson> {
 		super.copyParts(to, from, parts, mode);
 
 		// les permis sont toujours renseignés (par de PART spécifique)
-		copyColl(to.getCategoryHisto(), from.getCategoryHisto());
+		copyColl(to.getCategories(), from.getCategories());
 	}
 
 	private static PersonIdentification newPersonIdentification(ch.vd.uniregctb.tiers.PersonnePhysique personne) {

@@ -57,14 +57,14 @@
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
-									<jxb:javadoc>Catégorie de personne physique. Cet attribut ne contient que la valeur courante (= à la date du jour de la requête). Pour l'historique des valeurs,
-										voir l'attribut 'categoryHisto' (SIFISC-8072).
+									<jxb:javadoc>La catégorie de personne physique. Cet attribut ne contient que la valeur courante (= à la date du jour de la requête). Pour l'historique des valeurs,
+										voir l'attribut 'categories' (SIFISC-8072).
 									</jxb:javadoc>
 								</jxb:property>
 							</xs:appinfo>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="categoryHisto" type="person:naturalPersonCategoryPeriodType" maxOccurs="unbounded">
+					<xs:element name="categories" type="person:naturalPersonCategoryPeriodType" maxOccurs="unbounded">
 						<xs:annotation>
 							<xs:appinfo>
 								<jxb:property>
