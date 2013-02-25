@@ -60,10 +60,10 @@ public class ImpressionSommationLRHelperImpl extends EditiqueAbstractHelper impl
 	private static final String IMPOT_A_LA_SOURCE_MIN = "Impôt à la source";
 	private static final String IMPOT_A_LA_SOURCE_MAJ = "IMPOT A LA SOURCE";
 
-	private static final String HYP_MIN = "concernant l’impôt à la source perçu sur les intérêts hypothécaires";
+	private static final String HYP_MIN = "concernant l'impôt à la source perçu sur les intérêts hypothécaires";
 	private static final String PRE_MIN = "pour les prestations de prévoyance";
-	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l’étranger";
-	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l’étranger";
+	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
+	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
 	private static final String HYP_MAJ = "CREANCIERS HYPOTHECAIRES";
