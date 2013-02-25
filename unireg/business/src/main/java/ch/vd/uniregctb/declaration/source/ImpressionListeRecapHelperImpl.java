@@ -65,10 +65,10 @@ public class ImpressionListeRecapHelperImpl extends EditiqueAbstractHelper imple
 	private static final String CODE_DOC_LR_HYP = "LR_SHYP";
 	private static final String CODE_DOC_LR_LTN = "LR_SLTN";
 
-	private static final String HYP_MIN = "concernant l’impôt à la source perçu sur les intérêts hypothécaires";
+	private static final String HYP_MIN = "concernant l'impôt à la source perçu sur les intérêts hypothécaires";
 	private static final String PRE_MIN = "pour les prestations de prévoyance";
-	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l’étranger";
-	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l’étranger";
+	private static final String ADM_MIN = "pour les prestations versées aux administrateurs domiciliés à l'étranger";
+	private static final String CAS_MIN = "pour les artistes, sportifs et conférenciers domiciliés à l'étranger";
 	private static final String DECOMPTE_LR_MIN = "Décompte liste récapitulative";
 
 	private static final String HYP_MAJ = "CREANCIERS HYPOTHECAIRES";
