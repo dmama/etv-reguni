@@ -3,10 +3,12 @@ package ch.vd.uniregctb.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.httpclient.ConnectTimeoutException;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -141,10 +143,13 @@ public abstract class HttpDocumentFetcher {
 	 * @throws IOException en cas d'erreur de communication
 	 * @throws ch.vd.uniregctb.utils.HttpDocumentFetcher.HttpDocumentException si la réponse HTTP n'est pas 200-OK
 	 */
-	public static HttpDocument fetch(URL url) throws IOException, HttpDocumentException {
+	public static HttpDocument fetch(URL url, Integer timeoutms) throws IOException, HttpDocumentException {
 		final GetMethod method;
 		try {
 			method = new GetMethod(url.toExternalForm());
+			if (timeoutms != null) {
+				method.getParams().setSoTimeout(timeoutms);
+			}
 		}
 		catch (IllegalStateException e) {
 			throw new IllegalArgumentException("URL non supportée : " + url, e);
@@ -153,6 +158,9 @@ public abstract class HttpDocumentFetcher {
 		try {
 			final SimpleHttpConnectionManager httpConnectionManager = new SimpleHttpConnectionManager(true);
 			final HttpClient client = new HttpClient(httpConnectionManager);
+			if (timeoutms != null) {
+				client.getParams().setConnectionManagerTimeout(timeoutms);
+			}
 			final int responseCode = client.executeMethod(method);
 			if (responseCode != HttpURLConnection.HTTP_OK) {
 				final String responseMessage = method.getStatusText();
@@ -172,6 +180,9 @@ public abstract class HttpDocumentFetcher {
 			final String contentType = extractResponseString(method, HTTP_CONTENT_TYPE);
 			final String proposedFilename = extractFilename(extractResponseString(method, HTTP_CONTENT_DISPOSITION));
 			return new HttpDocument(contentType, length, proposedFilename, method.getResponseBodyAsStream());
+		}
+		catch (ConnectTimeoutException | SocketTimeoutException e) {
+			throw new HttpDocumentServerException(504, "Gateway timeout: " + e.getMessage());
 		}
 		finally {
 			method.releaseConnection();

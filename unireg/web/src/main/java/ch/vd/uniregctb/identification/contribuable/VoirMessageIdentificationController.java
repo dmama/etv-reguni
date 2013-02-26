@@ -30,6 +30,11 @@ public class VoirMessageIdentificationController {
 	 */
 	private static final long ERROR_FADING_TIMEOUT = 5000L;
 
+	/**
+	 * En millisecones, le temps d'attente maximale pour la récupération du document
+	 */
+	private static final int GET_TIMEOUT = 60000;
+
 	private IdentificationMessagesEditManager identificationMessagesEditManager;
 	private ServletService servletService;
 
@@ -60,7 +65,7 @@ public class VoirMessageIdentificationController {
 		if (documentUrl != null) {
 			final URL url = new URL(documentUrl);
 			try {
-				final HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url);
+				final HttpDocumentFetcher.HttpDocument document = HttpDocumentFetcher.fetch(url, GET_TIMEOUT);
 				try {
 					final String proposedFilename = document.getProposedContentFilename();
 					final String filename;

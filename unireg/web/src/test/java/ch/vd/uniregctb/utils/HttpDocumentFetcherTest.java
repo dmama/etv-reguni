@@ -18,7 +18,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	public void testCodeRetour404() throws Exception {
 		final URL bidon = new URL("http://calimero/tubidu");
 		try {
-			HttpDocumentFetcher.fetch(bidon);
+			HttpDocumentFetcher.fetch(bidon, null);
 			Assert.fail("Cette URL existe mainenant ?");
 		}
 		catch (HttpDocumentFetcher.HttpDocumentClientException e) {
@@ -30,7 +30,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testCodeRetour200() throws Exception {
 		final URL blog = new URL("http://calimero/blog");
-		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog);
+		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(blog, null);
 		Assert.assertEquals("text/html; charset=UTF-8", doc.getContentType());
 		Assert.assertNotNull(doc.getContent());
 	}
@@ -38,7 +38,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	@Test
 	public void testRecupDocument() throws Exception {
 		final URL docUrl = new URL("http://www.vd.ch/fileadmin/user_upload/themes/etat_droit/democratie/fichiers_pdf/Demande_d_acc%C3%A8s_guide_succinct_pour_particuliers.pdf");
-		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(docUrl);
+		final HttpDocumentFetcher.HttpDocument doc = HttpDocumentFetcher.fetch(docUrl, null);
 		try {
 			Assert.assertEquals("application/pdf", doc.getContentType());
 
@@ -70,7 +70,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	public void testMauvaisProtocole() throws Exception {
 		final URL ftp = new URL("ftp://toto.edu");
 		try {
-			HttpDocumentFetcher.fetch(ftp);
+			HttpDocumentFetcher.fetch(ftp, null);
 			Assert.fail("Le protocole FTP ne devrait pas être supporté...");
 		}
 		catch (IllegalArgumentException e) {
@@ -82,7 +82,7 @@ public class HttpDocumentFetcherTest extends WithoutSpringTest {
 	public void testConnectionRefused() throws Exception {
 		final URL url = new URL("http://localhost:53");
 		try {
-			HttpDocumentFetcher.fetch(url);
+			HttpDocumentFetcher.fetch(url, null);
 			Assert.fail("La machine locale a son port 53 - serveur DNS - ouvert?");
 		}
 		catch (ConnectException e) {
