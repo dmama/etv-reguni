@@ -1,105 +1,25 @@
 package ch.vd.uniregctb.webservices.party3.impl;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import ch.ech.ech0044.v2.DatePartiallyKnown;
-import org.apache.commons.lang.StringUtils;
-import org.jetbrains.annotations.Nullable;
-
-import ch.vd.registre.base.date.DateConstants;
-import ch.vd.registre.base.date.DateRangeHelper;
-import ch.vd.registre.base.date.RegDate;
-import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.webservices.party3.PartyPart;
 import ch.vd.unireg.webservices.party3.SearchCorporationEventsResponse;
 import ch.vd.unireg.webservices.party3.SearchPartyRequest;
-import ch.vd.unireg.webservices.party3.WebServiceException;
-import ch.vd.unireg.xml.common.v1.Date;
-import ch.vd.unireg.xml.party.address.v1.Address;
-import ch.vd.unireg.xml.party.address.v1.AddressType;
 import ch.vd.unireg.xml.party.corporation.v1.CorporationEvent;
-import ch.vd.unireg.xml.party.v1.PartyInfo;
 import ch.vd.unireg.xml.party.v1.PartyType;
-import ch.vd.uniregctb.adresse.AdresseEnvoiDetaillee;
-import ch.vd.uniregctb.indexer.tiers.AutreCommunauteIndexable;
-import ch.vd.uniregctb.indexer.tiers.DebiteurPrestationImposableIndexable;
-import ch.vd.uniregctb.indexer.tiers.EntrepriseIndexable;
-import ch.vd.uniregctb.indexer.tiers.HabitantIndexable;
-import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;
-import ch.vd.uniregctb.indexer.tiers.NonHabitantIndexable;
 import ch.vd.uniregctb.tiers.TiersCriteria;
 import ch.vd.uniregctb.tiers.TiersDAO.Parts;
-import ch.vd.uniregctb.xml.address.AddressBuilder;
 
 /**
  * Cette helper effectue la traduction des classes venant de 'core' en classes 'web'.
- * <p/>
- * De manière naturelle, ces méthodes auraient dû se trouver dans les classes 'web' correspondantes, mais cela provoque des erreurs (les classes 'core' sont aussi inspectées et le fichier se retrouve
- * avec des structures ayant le même nom définies plusieurs fois) lors la génération du WSDL par CXF.
  */
 public class DataHelper {
 
 	//private static final Logger LOGGER = Logger.getLogger(DataHelper.class);
-
-	public static boolean coreToWeb(Boolean value) {
-		return value != null && value;
-	}
-
-	public static Date coreToWeb(java.util.Date date) {
-		if (date == null) {
-			return null;
-		}
-		else {
-			Calendar cal = GregorianCalendar.getInstance();
-			cal.setTime(date);
-
-			final int year = cal.get(Calendar.YEAR);
-			final int month = cal.get(Calendar.MONTH) + 1;
-			final int day = cal.get(Calendar.DAY_OF_MONTH);
-			return new Date(year, month, day);
-		}
-	}
-
-	public static Date coreToWeb(RegDate date) {
-		if (date == null) {
-			return null;
-		}
-		else {
-			return new Date(date.year(), date.month(), date.day());
-		}
-	}
-
-	public static RegDate webToCore(Date date) {
-		if (date == null) {
-			return null;
-		}
-		else {
-			return RegDateHelper.get(date.getYear(), date.getMonth(), date.getDay(), DateConstants.EXTENDED_VALIDITY_RANGE);
-		}
-	}
-
-	public static List<Address> coreToWeb(List<AdresseEnvoiDetaillee> adresses, @Nullable DateRangeHelper.Range range, AddressType type) throws WebServiceException {
-		if (adresses == null || adresses.isEmpty()) {
-			return null;
-		}
-
-		List<Address> list = new ArrayList<Address>();
-		for (AdresseEnvoiDetaillee a : adresses) {
-			if (range == null || DateRangeHelper.intersect(a, range)) {
-				list.add(AddressBuilder.newAddress(a, type));
-			}
-		}
-
-		return list.isEmpty() ? null : list;
-	}
 
 	public static List<TiersCriteria> webToCore(SearchPartyRequest criteria) {
 		if (criteria == null) {
@@ -121,7 +41,7 @@ public class DataHelper {
 			coreCriteria.setLocaliteOuPays(criteria.getTownOrCountry());
 			coreCriteria.setNomRaison(criteria.getContactName());
 			coreCriteria.setNumeroAVS(criteria.getSocialInsuranceNumber());
-			coreCriteria.setDateNaissance(DataHelper.webToCore(criteria.getDateOfBirth()));
+			coreCriteria.setDateNaissance(ch.vd.uniregctb.xml.DataHelper.xmlToCore(criteria.getDateOfBirth()));
 			if (criteria.getTaxResidenceFSOId() != null) {
 				coreCriteria.setNoOfsFor(criteria.getTaxResidenceFSOId().toString());
 			}
@@ -177,26 +97,6 @@ public class DataHelper {
 		return set;
 	}
 
-	public static PartyInfo coreToWeb(ch.vd.uniregctb.indexer.tiers.TiersIndexedData value) {
-		if (value == null) {
-			return null;
-		}
-
-		final PartyInfo i = new PartyInfo();
-		i.setNumber(value.getNumero().intValue());
-		i.setName1(value.getNom1());
-		i.setName2(value.getNom2());
-		i.setStreet(value.getRue());
-		i.setZipCode(value.getNpa());
-		i.setTown(value.getLocalite());
-		i.setCountry(value.getPays());
-		i.setDateOfBirth(DataHelper.coreToWeb(value.getRegDateNaissance()));
-		i.setType(DataHelper.getPartyType(value));
-		i.setDebtorCategory(ch.vd.uniregctb.xml.EnumHelper.coreToXML(value.getCategorieImpotSource()));
-		i.setDebtorCommunicationMode(ch.vd.uniregctb.xml.EnumHelper.coreToXML(value.getModeCommunication()));
-		return i;
-	}
-
 	/**
 	 * Détermine le type d'un tiers à partir de son instance concrète.
 	 *
@@ -223,37 +123,6 @@ public class DataHelper {
 			type = null;
 		}
 		return type;
-	}
-
-	private static final Map<String, PartyType> indexedData2Type = new HashMap<String, PartyType>() {
-		private static final long serialVersionUID = -6977238534201838137L;
-
-		{
-			put(HabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
-			put(NonHabitantIndexable.SUB_TYPE, PartyType.NATURAL_PERSON);
-			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(MenageCommunIndexable.SUB_TYPE, PartyType.HOUSEHOLD);
-			put(AutreCommunauteIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(EntrepriseIndexable.SUB_TYPE, PartyType.CORPORATION);
-			put(DebiteurPrestationImposableIndexable.SUB_TYPE, PartyType.DEBTOR);
-		}
-	};
-
-	/**
-	 * Détermine le type d'un tiers à partir de ses données indexées.
-	 *
-	 * @param tiers les données indexés du tiers
-	 * @return le type du tiers; ou <b>null</b> si le type de tiers n'est pas connu.
-	 */
-	public static PartyType getPartyType(ch.vd.uniregctb.indexer.tiers.TiersIndexedData tiers) {
-
-		final String typeAsString = tiers.getTiersType();
-
-		if (StringUtils.isEmpty(typeAsString)) {
-			return null;
-		}
-
-		return indexedData2Type.get(typeAsString);
 	}
 
 	public static Set<Parts> webToCore(Set<PartyPart> parts) {
@@ -311,14 +180,6 @@ public class DataHelper {
 		}
 
 		return results;
-	}
-
-	public static Set<Parts> xmlToCore(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
-		return ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
-	}
-
-	public static Date coreToWeb(String s) {
-		return coreToWeb(RegDateHelper.dashStringToDate(s));
 	}
 
 	public static Set<ch.vd.unireg.xml.party.v1.PartyPart> webToXML(Collection<PartyPart> parts) {
@@ -385,13 +246,6 @@ public class DataHelper {
 		}
 	}
 
-	public static DatePartiallyKnown clone(DatePartiallyKnown right) {
-		if (right == null) {
-			return null;
-		}
-		return new DatePartiallyKnown(right.getYearMonthDay(), right.getYearMonth(), right.getYear());
-	}
-
 	public static SearchCorporationEventsResponse events2web(List<ch.vd.uniregctb.interfaces.model.EvenementPM> events) {
 		if (events == null || events.isEmpty()) {
 			return null;
@@ -400,7 +254,7 @@ public class DataHelper {
 		for (ch.vd.uniregctb.interfaces.model.EvenementPM e : events) {
 			CorporationEvent event = new CorporationEvent();
 			event.setPartyNumber(e.getNumeroPM().intValue());
-			event.setDate(coreToWeb(e.getDate()));
+			event.setDate(ch.vd.uniregctb.xml.DataHelper.coreToXML(e.getDate()));
 			event.setCode(e.getCode());
 			response.getEvents().add(event);
 		}

@@ -180,6 +180,8 @@ public abstract class DataHelper {
 		i.setCountry(value.getPays());
 		i.setDateOfBirth(DataHelper.coreToXML(value.getRegDateNaissance()));
 		i.setType(DataHelper.getPartyType(value));
+		i.setDebtorCategory(EnumHelper.coreToXML(value.getCategorieImpotSource()));
+		i.setDebtorCommunicationMode(EnumHelper.coreToXML(value.getModeCommunication()));
 		return i;
 	}
 

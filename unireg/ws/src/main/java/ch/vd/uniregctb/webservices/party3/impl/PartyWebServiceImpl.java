@@ -216,7 +216,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 				}
 				final List<TiersIndexedData> values = tiersSearcher.search(criterion);
 				for (TiersIndexedData value : values) {
-					final PartyInfo info = DataHelper.coreToWeb(value);
+					final PartyInfo info = ch.vd.uniregctb.xml.DataHelper.coreToXML(value);
 					set.add(info);
 				}
 			}
@@ -505,7 +505,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	 * @return les parties de la couche business.
 	 */
 	protected static Set<Parts> xmlToCoreWithForsFiscaux(Set<ch.vd.unireg.xml.party.v1.PartyPart> parts) {
-		Set<Parts> coreParts = DataHelper.xmlToCore(parts);
+		Set<Parts> coreParts = ch.vd.uniregctb.xml.DataHelper.xmlToCore(parts);
 		if (coreParts == null) {
 			coreParts = new HashSet<Parts>();
 		}
@@ -549,7 +549,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@Transactional(readOnly = true, rollbackFor = Throwable.class)
 	public GetTaxOfficesResponse getTaxOffices(GetTaxOfficesRequest params) throws WebServiceException {
 		try {
-			final NumerosOfficesImpot offices = context.tiersService.getOfficesImpot(params.getMunicipalityFSOId(), DataHelper.webToCore(params.getDate()));
+			final NumerosOfficesImpot offices = context.tiersService.getOfficesImpot(params.getMunicipalityFSOId(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getDate()));
 			if (offices == null) {
 				return null;
 			}
@@ -589,7 +589,8 @@ public class PartyWebServiceImpl implements PartyWebService {
 	@Override
 	public SearchCorporationEventsResponse searchCorporationEvents(SearchCorporationEventsRequest params) throws WebServiceException {
 		final List<ch.vd.uniregctb.interfaces.model.EvenementPM> list =
-				context.servicePM.findEvenements(params.getCorporationNumber(), params.getEventCode(), DataHelper.webToCore(params.getStartDate()), DataHelper.webToCore(params.getEndDate()));
+				context.servicePM.findEvenements(params.getCorporationNumber(), params.getEventCode(), ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getStartDate()),
+				                                 ch.vd.uniregctb.xml.DataHelper.xmlToCore(params.getEndDate()));
 		return DataHelper.events2web(list);
 	}
 
@@ -733,7 +734,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_BAD_TAX_DECLARATION_STATUS, "La déclaration n'est pas dans l'état 'émise' (état=[" + etat + "]).");
 		}
 
-		final RegDate newDeadline = DataHelper.webToCore(request.getNewDeadline());
+		final RegDate newDeadline = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getNewDeadline());
 		final RegDate oldDeadline = declaration.getDernierDelais().getDelaiAccordeAu();
 		final RegDate today = RegDate.get();
 
@@ -746,7 +747,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 					"Le délai spécifié [" + RegDateHelper.dateToDisplayString(newDeadline) + "] est antérieur ou égal au délai existant [" + RegDateHelper.dateToDisplayString(oldDeadline) + "].");
 		}
 
-		final RegDate applicationDate = DataHelper.webToCore(request.getApplicationDate());
+		final RegDate applicationDate = ch.vd.uniregctb.xml.DataHelper.xmlToCore(request.getApplicationDate());
 		if (applicationDate.isAfter(today)) {
 			throw new ExtendDeadlineError(ExtendDeadlineCode.ERROR_INVALID_APPLICATION_DATE,
 					"La date de demande spécifiée [" + RegDateHelper.dateToDisplayString(applicationDate) + "] est postérieure à la date du jour [" + RegDateHelper.dateToDisplayString(today) + "].");
@@ -844,7 +845,7 @@ public class PartyWebServiceImpl implements PartyWebService {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_CANCELLED_TAX_DECLARATION, "La déclaration a été annulée entre-temps.");
 		}
 
-		final RegDate dateRetour = DataHelper.webToCore(demande.getAcknowledgeDate());
+		final RegDate dateRetour = ch.vd.uniregctb.xml.DataHelper.xmlToCore(demande.getAcknowledgeDate());
 		if (RegDateHelper.isBeforeOrEqual(dateRetour, declaration.getDateExpedition(), NullDateBehavior.EARLIEST)) {
 			throw new TaxDeclarationAcknowledgeError(TaxDeclarationAcknowledgeCode.ERROR_INVALID_ACKNOWLEDGE_DATE,
 					"La date de retour spécifiée (" + dateRetour + ") est avant la date d'envoi de la déclaration (" + declaration.getDateExpedition() + ").");

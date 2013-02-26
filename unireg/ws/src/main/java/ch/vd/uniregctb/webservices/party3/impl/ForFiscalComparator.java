@@ -8,6 +8,7 @@ import ch.vd.registre.base.date.NullDateBehavior;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.unireg.xml.party.taxresidence.v1.TaxResidence;
+import ch.vd.uniregctb.xml.DataHelper;
 
 /**
  * Comparateur qui permet de trier des fors fiscaux web dans l'ordre croissant.
@@ -24,8 +25,8 @@ public final class ForFiscalComparator implements Comparator<TaxResidence> {
 		private final RegDate dateFin;
 
 		public ForFiscalWrapper(TaxResidence f) {
-			this.dateDebut = DataHelper.webToCore(f.getDateFrom());
-			this.dateFin = DataHelper.webToCore(f.getDateTo());
+			this.dateDebut = DataHelper.xmlToCore(f.getDateFrom());
+			this.dateFin = DataHelper.xmlToCore(f.getDateTo());
 		}
 
 		@Override
