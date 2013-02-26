@@ -25,6 +25,7 @@ import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
 import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.AttributeIndividu;
@@ -160,7 +161,7 @@ public class ProduireRolesProcessor {
 		T creerRapport(int anneePeriode, int nbThreads, RegDate today, boolean isRapportFinal);
 
 		/**
-		 * Retourne le groupement de commune a utilisé pour la recherche de fors historiques
+		 * Retourne le groupement de communes à utiliser pour la recherche de fors historiques
 		 */
 		GroupementCommunes getGroupementCommunes();
 	}
@@ -718,7 +719,7 @@ public class ProduireRolesProcessor {
 
 		try {
 			final Integer ofsCommune = forFiscal.getNumeroOfsAutoriteFiscale();
-			final TypeAssujettissement type = getTypeAssujettissementPourCommunes(groupement.getCommunes(ofsCommune), assujettissement, anneePeriode);
+			final TypeAssujettissement type = getTypeAssujettissementPourCommunes(groupement.getCommunes(ofsCommune), assujettissement);
 			if (type == TypeAssujettissement.NON_ASSUJETTI) {
 
 				// pas d'assujettissement sur cette commune dans l'annee de période
@@ -729,7 +730,7 @@ public class ProduireRolesProcessor {
 				}
 			}
 			else {
-				final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode, type);
+				final DebutFinFor debutFin = getInformationDebutFin(forFiscal, groupement, anneePeriode, type, assujettissement);
 				if (type == TypeAssujettissement.TERMINE_DANS_PF && tiersService.isSourcierGris(contribuable, debutFin.dateFermeture)) {
 					// [SIFISC-1797] Il ne faut pas tout d'un coup afficher à la commune le départ d'un contribuable qu'elle ne connait pas
 					rapport.addCtbIgnoreSourcierGris(contribuable);
@@ -788,7 +789,7 @@ public class ProduireRolesProcessor {
 	 */
 	private void traiteNonAssujettiAvecPrecedentAssujettissement(ProduireRolesResults rapport, Contribuable contribuable, int anneePeriode, Integer ofsCommune,
 	                                                             GroupementCommunes groupement, TypeContribuable typeCtbAnneePrecedente, ForFiscalRevenuFortune ff) {
-		final DebutFinFor debutFin = getInformationDebutFin(ff, groupement, anneePeriode, null);
+		final DebutFinFor debutFin = getInformationDebutFin(ff, groupement, anneePeriode, null, null);
 		final InfoCommune infoCommune = rapport.getOrCreateInfoPourCommune(ofsCommune);
 		final InfoContribuable infoCtb = infoCommune.getOrCreateInfoPourContribuable(contribuable, anneePeriode, adresseService, tiersService);
 		final InfoFor infoFor = new InfoFor(debutFin.dateOuverture, debutFin.motifOuverture, debutFin.dateFermeture, debutFin.motifFermeture, typeCtbAnneePrecedente, ff.isPrincipal(), ff.getMotifRattachement(), ofsCommune);
@@ -869,10 +870,16 @@ public class ProduireRolesProcessor {
 		return candidatRetenu;
 	}
 
-	private static DebutFinFor getInformationDebutFin(ForFiscalRevenuFortune forFiscal, GroupementCommunes groupement, int anneePeriode, TypeAssujettissement typeAssujettissement) {
+	private static boolean isFinAnnee(RegDate date) {
+		return date != null && date.month() == 12 && date.day() == 31;
+	}
+
+	private static DebutFinFor getInformationDebutFin(ForFiscalRevenuFortune forFiscal, GroupementCommunes groupement, int anneePeriode, TypeAssujettissement typeAssujettissement, Assujettissement assujettissement) {
 
 		final ForFiscalRevenuFortune forFiscalPourOuverture = getForDebut(forFiscal, groupement);
 		final ForFiscalRevenuFortune forFiscalPourFermeture = getForFin(forFiscal, groupement);
+
+		final Set<MotifFor> fractionnementsIgnores = EnumSet.of(MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE);
 
 		final RegDate dateFermeture;
 		final MotifFor motifFermeture;
@@ -886,6 +893,10 @@ public class ProduireRolesProcessor {
 			dateFermeture = forFiscalPourFermeture.getDateFin();
 			motifFermeture = forFiscalPourFermeture.getMotifFermeture();
 		}
+		else if (assujettissement != null && assujettissement.getMotifFractFin() != null && !fractionnementsIgnores.contains(assujettissement.getMotifFractFin()) && !isFinAnnee(assujettissement.getDateFin())) {
+			dateFermeture = assujettissement.getDateFin();
+			motifFermeture = assujettissement.getMotifFractFin();
+		}
 		else {
 			dateFermeture = null;
 			motifFermeture = null;
@@ -896,7 +907,7 @@ public class ProduireRolesProcessor {
 		return new DebutFinFor(dateOuverture, motifOuverture, dateFermeture, motifFermeture);
 	}
 
-	private TypeAssujettissement getTypeAssujettissementPourCommunes(Set<Integer> communes, Assujettissement assujettissement, int anneePeriode) throws AssujettissementException {
+	private TypeAssujettissement getTypeAssujettissementPourCommunes(Set<Integer> communes, Assujettissement assujettissement) throws AssujettissementException {
 
 		// l'assujettissement est-il actif sur au moins une commune du groupement ?
 		boolean communeActive = false;
@@ -911,23 +922,16 @@ public class ProduireRolesProcessor {
 
 		final TypeAssujettissement typeAssujettissement;
 		if (communeActive) {
-			final Set<MotifFor> fractionnementsIgnores = EnumSet.of(MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE);
-			if (assujettissement.getMotifFractFin() != null && !fractionnementsIgnores.contains(assujettissement.getMotifFractFin())) {
+			// [SIFISC-7798] c'est l'assujettissement au lendemain de l'assujettisement en cours d'analyse qui détermine si on doit indiquer un assujettissement poursuivi ou terminé
+			// (en fait, on prend le premier jour du mois suivant à cause des assujettissements source dont la fin est arrondie à la fin d'un mois)
+			// -> il faut le re-calculer !
+			final List<Assujettissement> assujettissementsCommune = assujettissementService.determinePourCommunes(assujettissement.getContribuable(), communes);
+			final Assujettissement assujettissementApres = DateRangeHelper.rangeAt(assujettissementsCommune, RegDateHelper.getFirstDayOfNextMonth(assujettissement.getDateFin()));
+			if (assujettissementApres == null) {
 				typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
 			}
 			else {
-
-				// ok, l'assujettissement global est poursuivi dans la PF suivante, mais peut-être pas pour la commune considérée
-				// -> il faut le re-calculer !
-
-				final List<Assujettissement> assujettissementsCommune = assujettissementService.determinePourCommunes(assujettissement.getContribuable(), communes);
-				final Assujettissement assujettissementDebutAnneeSuivante = DateRangeHelper.rangeAt(assujettissementsCommune, RegDate.get(anneePeriode + 1, 1, 1));
-				if (assujettissementDebutAnneeSuivante == null) {
-					typeAssujettissement = TypeAssujettissement.TERMINE_DANS_PF;
-				}
-				else {
-					typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
-				}
+				typeAssujettissement = TypeAssujettissement.POURSUIVI_APRES_PF;
 			}
 		}
 		else {
@@ -965,7 +969,7 @@ public class ProduireRolesProcessor {
 		}
 		else {
 			Assert.isTrue(a instanceof DiplomateSuisse);
-			typeCtb = null; // les diplomates suisse non soumis à ICC sont ignorés
+			typeCtb = null; // les diplomates suisses non soumis à l'ICC sont ignorés
 		}
 		return typeCtb;
 	}
