@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 
 import ch.vd.technical.esb.EsbMessage;
+import ch.vd.unireg.interfaces.civil.mock.MockIndividu;
+import ch.vd.unireg.interfaces.civil.mock.MockServiceCivil;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.unireg.xml.common.v1.Date;
@@ -23,10 +25,12 @@ import ch.vd.unireg.xml.party.address.v1.FormattedAddress;
 import ch.vd.unireg.xml.party.address.v1.PersonMailAddressInfo;
 import ch.vd.unireg.xml.party.address.v1.TariffZone;
 import ch.vd.uniregctb.common.BusinessItTest;
+import ch.vd.uniregctb.interfaces.service.mock.ProxyServiceCivil;
 import ch.vd.uniregctb.security.MockSecurityProvider;
 import ch.vd.uniregctb.security.Role;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.type.Sexe;
+import ch.vd.uniregctb.type.TypeAdresseCivil;
 import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.xml.ServiceException;
 
@@ -43,10 +47,12 @@ import static org.junit.Assert.fail;
 public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTest {
 
 	private AddressRequestHandler handler;
+	protected ProxyServiceCivil serviceCivil;
 
 	@Override
 	public void onSetUp() throws Exception {
 		handler = getBean(AddressRequestHandler.class, "addressRequestHandler");
+		serviceCivil = getBean(ProxyServiceCivil.class, "serviceCivilService");
 		super.onSetUp();
 	}
 
@@ -319,5 +325,57 @@ public class PartyAddressRequestListenerItTest extends PartyRequestListenerItTes
 			assertContains("Invalid content was found starting with element 'eCH-0010-4:country'", info.getMessage()); // en erreur parce qu'il manque soit une ligne d'adresse, la rue ou la localité.
 		}
 	}
+
+	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
+	public void testAddressRequestFakeResponse() throws Exception {
+
+		final MockSecurityProvider provider = new MockSecurityProvider(Role.VISU_ALL);
+		handler.setSecurityProvider(provider);
+
+		final long noInd = 12345L;
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noInd, date(1976, 5, 12), "Dffru", "Rhoo", true);
+				addAdresse(ind, TypeAdresseCivil.SECONDAIRE,null,"toto street","tttt",MockPays.RoyaumeUni,date(1950, 3, 1),null);
+			}
+		});
+
+
+		// créé une personne physique avec une adresse au Kosovo qui ne possède pas de code iso et qui provoque une erreur de validation de l'adresse eCH-0010-4.
+		final Long id = doInNewTransaction(new TxCallback<Long>() {
+			@Override
+			public Long execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique pp = addHabitant(noInd);
+				return pp.getNumero();
+			}
+		});
+
+		final AddressRequest request = new AddressRequest();
+		final UserLogin login = new UserLogin("xxxxx", 22);
+		request.setLogin(login);
+		request.setPartyNumber(id.intValue());
+		request.getTypes().add(AddressType.MAIL);
+
+		// Envoie le message
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				sendTextMessage(getInputQueue(), requestToString(request), getOutputQueue());
+				return null;
+			}
+		});
+		try {
+			AddressResponse adressResponse = (AddressResponse) parseResponse(getEsbMessage(getOutputQueue()));
+			Address adress =adressResponse.getAddresses().get(0);
+			assertNull(adress.getAddressInformation());
+		}
+		catch (ServiceException e) {
+		fail("la réponse ne respecte pas la xsd eCH-0010");
+		}
+
+	}
+
 
 }

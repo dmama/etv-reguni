@@ -52,7 +52,11 @@ public class AddressBuilder {
 		a.setIncomplete(adresse.isIncomplete());
 
 		fillRecipient(a, adresse);
-		fillDestination(a, adresse);
+		//SIFISC-8148 ne pas remplir pour des adresses de courrier artificielles car ne respecte plus la xsd eCH-0010
+		if (!adresse.isArtificelle()) {
+			fillDestination(a, adresse);
+		}
+
 		fillFormattedAddress(a, adresse);
 	}
 
