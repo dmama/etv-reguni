@@ -813,23 +813,26 @@ public class PartyWebServiceTest extends WebserviceTest {
 	}
 
 	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, String town, Address address) {
-		assertAddress(dateFrom, dateTo, street, null, town, address, false);
+		assertAddress(dateFrom, dateTo, street, null, town, false, address);
 	}
 
 	private static void assertAddress(@Nullable Date dateFrom, @Nullable Date dateTo, @Nullable String street, @Nullable String houseNumber, @Nullable String town,
-	                                  Address address, boolean isFakeAddress) {
+	                                  boolean isFakeAddress, Address address) {
 		assertNotNull(address);
 		assertEquals(dateFrom, address.getDateFrom());
 		assertEquals(dateTo, address.getDateTo());
-		if (town == null && isFakeAddress) {
-			assertNull(address.getAddressInformation());
+		assertEquals(isFakeAddress, address.isFake());
+
+		final AddressInformation addressInformation = address.getAddressInformation();
+		if (isFakeAddress) {
+			assertNull(addressInformation);
 		}
 		else{
-			assertEquals(street, address.getAddressInformation().getStreet());
-			assertEquals(houseNumber, address.getAddressInformation().getHouseNumber());
-			assertEquals(town, address.getAddressInformation().getTown());
+			assertNotNull(addressInformation);
+			assertEquals(street, addressInformation.getStreet());
+			assertEquals(houseNumber, addressInformation.getHouseNumber());
+			assertEquals(town, addressInformation.getTown());
 		}
-
 	}
 
 	private Date newDate(int year, int month, int day) {
@@ -1430,8 +1433,8 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertEquals(2, mailAddresses.size());
 
 		// pas de rue, pas de numéro
-		assertAddress(newDate(1993, 7, 23), newDate(1999, 12, 31), null, null, "Cossonay-Ville", mailAddresses.get(0), false);
-		assertAddress(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", mailAddresses.get(1), false);
+		assertAddress(newDate(1993, 7, 23), newDate(1999, 12, 31), null, null, "Cossonay-Ville", false, mailAddresses.get(0));
+		assertAddress(newDate(2000, 1, 1), null, "Avenue du Funiculaire", "3bis", "Cossonay-Ville", false, mailAddresses.get(1));
 	}
 
 	/**
@@ -1458,7 +1461,7 @@ public class PartyWebServiceTest extends WebserviceTest {
 
 		// pas de rue, pas de numéro
 		final Address address0 = mailAddresses.get(0);
-		assertAddress(null, null, null, null, null, address0, true);
+		assertAddress(null, null, null, null, null, true, address0);
 		assertTrue(address0.isFake()); // il s'agit bien d'une adresse artificielle
 
 		final PersonMailAddressInfo personInfo0 = address0.getPerson();
