@@ -821,9 +821,12 @@ public class PartyWebServiceTest extends WebserviceTest {
 		assertNotNull(address);
 		assertEquals(dateFrom, address.getDateFrom());
 		assertEquals(dateTo, address.getDateTo());
-		assertEquals(street, address.getAddressInformation().getStreet());
-		assertEquals(houseNumber, address.getAddressInformation().getHouseNumber());
-		assertEquals(town, address.getAddressInformation().getTown());
+		if (!address.isFake()) {
+			assertEquals(street, address.getAddressInformation().getStreet());
+			assertEquals(houseNumber, address.getAddressInformation().getHouseNumber());
+			assertEquals(town, address.getAddressInformation().getTown());
+		}
+
 	}
 
 	private Date newDate(int year, int month, int day) {
