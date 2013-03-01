@@ -51,7 +51,7 @@ public class JmxStatusChecker {
 
 	private static interface ValueFetcher<T> {
 		Class<T> getResultingClass();
-		T getValue(MBeanServerConnection mbeanServer, ObjectName name) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException;
+		T getValue(MBeanServerConnection mbeanServer) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException;
 		String getValueDescription();
 	}
 
@@ -60,10 +60,16 @@ public class JmxStatusChecker {
 	}
 
 	private static abstract class AttributeSpecificFetcher<T> implements ValueFetcher<T>, AttributeSpecific {
+		private final ObjectName objectName;
+
+		protected AttributeSpecificFetcher(ObjectName objectName) {
+			this.objectName = objectName;
+		}
+
 		@Override
-		public final T getValue(MBeanServerConnection mbeanServer, ObjectName name) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException {
+		public final T getValue(MBeanServerConnection mbeanServer) throws AttributeNotFoundException, MBeanException, ReflectionException, InstanceNotFoundException, IOException {
 			//noinspection unchecked
-			return (T) mbeanServer.getAttribute(name, getAttributeName());
+			return (T) mbeanServer.getAttribute(objectName, getAttributeName());
 		}
 
 		@Override
@@ -73,6 +79,10 @@ public class JmxStatusChecker {
 	}
 
 	private static abstract class IntegerFetcher extends AttributeSpecificFetcher<Integer> {
+		protected IntegerFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public final Class<Integer> getResultingClass() {
 			return Integer.class;
@@ -80,6 +90,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ThreadPoolCurrentSizeFetcher extends IntegerFetcher {
+		public ThreadPoolCurrentSizeFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "currentThreadCount";
@@ -87,6 +101,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ThreadPoolBusySizeFetcher extends IntegerFetcher {
+		public ThreadPoolBusySizeFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "currentThreadsBusy";
@@ -94,6 +112,10 @@ public class JmxStatusChecker {
 	}
 
 	private static abstract class StringFetcher extends AttributeSpecificFetcher<String> {
+		protected StringFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public Class<String> getResultingClass() {
 			return String.class;
@@ -101,6 +123,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ApplicationNameFetcher extends StringFetcher {
+		public ApplicationNameFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "Description";
@@ -108,6 +134,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ApplicationStatusFetcher extends StringFetcher {
+		public ApplicationStatusFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "StatusJSON";
@@ -115,6 +145,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ApplicationUptimeFetcher extends IntegerFetcher {
+		public ApplicationUptimeFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "Uptime";
@@ -122,6 +156,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class ApplicationVersionFetcher extends StringFetcher {
+		public ApplicationVersionFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "Version";
@@ -129,6 +167,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbReceivedMessagesFetcher extends IntegerFetcher {
+		public NbReceivedMessagesFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "ReceivedMessages";
@@ -136,6 +178,10 @@ public class JmxStatusChecker {
 	}
 
 	private static abstract class BooleanFetcher extends AttributeSpecificFetcher<Boolean> {
+		protected BooleanFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public Class<Boolean> getResultingClass() {
 			return Boolean.class;
@@ -143,6 +189,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class RunningFlagFetcher extends BooleanFetcher {
+		public RunningFlagFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "Running";
@@ -150,6 +200,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class DestinationNameFetcher extends StringFetcher {
+		public DestinationNameFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "DestinationName";
@@ -157,6 +211,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class MaxActiveFetcher extends IntegerFetcher {
+		public MaxActiveFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "MaxActive";
@@ -164,6 +222,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbActiveFetcher extends IntegerFetcher {
+		public NbActiveFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbActive";
@@ -171,6 +233,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbIdleFetcher extends IntegerFetcher {
+		public NbIdleFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbIdle";
@@ -178,6 +244,10 @@ public class JmxStatusChecker {
 	}
 
 	private static abstract class DoubleFetcher extends AttributeSpecificFetcher<Double> {
+		protected DoubleFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public Class<Double> getResultingClass() {
 			return Double.class;
@@ -185,6 +255,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class AverageLoadFetcher extends DoubleFetcher {
+		public AverageLoadFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "AverageLoad";
@@ -192,6 +266,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class LoadFetcher extends IntegerFetcher {
+		public LoadFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "Load";
@@ -199,6 +277,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbMeaningfullEventsReceivedFetcher extends IntegerFetcher {
+		public NbMeaningfullEventsReceivedFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbMeaningfullEventsReceived";
@@ -206,6 +288,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbIndividualsAwaitingTreatmentFetcher extends IntegerFetcher {
+		public NbIndividualsAwaitingTreatmentFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbIndividualsAwaitingTreatment";
@@ -213,6 +299,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbBatchEventsRejectedExceptionFetcher extends IntegerFetcher {
+		public NbBatchEventsRejectedExceptionFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbBatchEventsRejectedException";
@@ -220,6 +310,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbBatchEventsRejectedToErrorQueueFetcher extends IntegerFetcher {
+		public NbBatchEventsRejectedToErrorQueueFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbBatchEventsRejectedToErrorQueue";
@@ -227,6 +321,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbManualEventsRejectedExceptionFetcher extends IntegerFetcher {
+		public NbManualEventsRejectedExceptionFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbManualEventsRejectedException";
@@ -234,6 +332,10 @@ public class JmxStatusChecker {
 	}
 
 	private static class NbManualEventsRejectedToErrorQueueFetcher extends IntegerFetcher {
+		public NbManualEventsRejectedToErrorQueueFetcher(ObjectName objectName) {
+			super(objectName);
+		}
+
 		@Override
 		public String getAttributeName() {
 			return "NbManualEventsRejectedToErrorQueue";
@@ -264,7 +366,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("Catalina:*,type=ThreadPool"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new ThreadPoolCurrentSizeFetcher(), new ThreadPoolBusySizeFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new ThreadPoolCurrentSizeFetcher(name),
+					                                               new ThreadPoolBusySizeFetcher(name)));
 				}
 			}
 
@@ -272,10 +375,10 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Application,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new ApplicationNameFetcher(),
-					                                               new ApplicationVersionFetcher(),
-					                                               new ApplicationStatusFetcher(),
-					                                               new ApplicationUptimeFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new ApplicationNameFetcher(name),
+					                                               new ApplicationVersionFetcher(name),
+					                                               new ApplicationStatusFetcher(name),
+					                                               new ApplicationUptimeFetcher(name)));
 				}
 			}
 
@@ -283,9 +386,9 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:*,type=JmsListeners"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new DestinationNameFetcher(),
-					                                               new RunningFlagFetcher(),
-					                                               new NbReceivedMessagesFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new DestinationNameFetcher(name),
+					                                               new RunningFlagFetcher(name),
+					                                               new NbReceivedMessagesFetcher(name)));
 				}
 			}
 
@@ -293,9 +396,9 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=Oracle,type=Connections"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new MaxActiveFetcher(),
-					                                               new NbActiveFetcher(),
-					                                               new NbIdleFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new MaxActiveFetcher(name),
+					                                               new NbActiveFetcher(name),
+					                                               new NbIdleFetcher(name)));
 				}
 			}
 
@@ -303,8 +406,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*Load,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(),
-					                                               new AverageLoadFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(name),
+					                                               new AverageLoadFetcher(name)));
 				}
 			}
 
@@ -312,8 +415,8 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=*,resourceName=WebserviceLoad,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(),
-					                                               new AverageLoadFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new LoadFetcher(name),
+					                                               new AverageLoadFetcher(name)));
 				}
 			}
 
@@ -321,12 +424,12 @@ public class JmxStatusChecker {
 			{
 				final Set<ObjectName> beanSet = mbeanConn.queryNames(new ObjectName("ch.vd.uniregctb*:name=EvenementsCivils,type=Monitoring"), null);
 				for (ObjectName name : beanSet) {
-					fetchers.put(name, Arrays.<ValueFetcher>asList(new NbMeaningfullEventsReceivedFetcher(),
-					                                               new NbIndividualsAwaitingTreatmentFetcher(),
-					                                               new NbBatchEventsRejectedExceptionFetcher(),
-					                                               new NbBatchEventsRejectedToErrorQueueFetcher(),
-					                                               new NbManualEventsRejectedExceptionFetcher(),
-					                                               new NbManualEventsRejectedToErrorQueueFetcher()));
+					fetchers.put(name, Arrays.<ValueFetcher>asList(new NbMeaningfullEventsReceivedFetcher(name),
+					                                               new NbIndividualsAwaitingTreatmentFetcher(name),
+					                                               new NbBatchEventsRejectedExceptionFetcher(name),
+					                                               new NbBatchEventsRejectedToErrorQueueFetcher(name),
+					                                               new NbManualEventsRejectedExceptionFetcher(name),
+					                                               new NbManualEventsRejectedToErrorQueueFetcher(name)));
 				}
 
 			}
@@ -344,7 +447,7 @@ public class JmxStatusChecker {
 				final String name = fetch.getKey().getCanonicalName();
 				System.out.println("Bean " + name);
 				for (ValueFetcher fetcher : fetch.getValue()) {
-					System.out.println('\t' + fetcher.getValueDescription() + ": " + fetcher.getValue(mbeanConn, fetch.getKey()));
+					System.out.println('\t' + fetcher.getValueDescription() + ": " + fetcher.getValue(mbeanConn));
 				}
 			}
 		}
