@@ -38,7 +38,7 @@ public class AnnulationCorrectionPermisEchProcessorTest extends AbstractEvenemen
 
 				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.ETABLISSEMENT));
-				addIndividuFromEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER);
+				addIndividuAfterEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER);
 			}
 		});
 		
@@ -107,7 +107,7 @@ public class AnnulationCorrectionPermisEchProcessorTest extends AbstractEvenemen
 
 				final MockIndividu indEvent = createIndividu(noIndividu, null, "Kaderate", "Yamamoto", true);
 				indEvent.setPermis(new MockPermis(dateDebutPermis, null, null, TypePermis.SEJOUR));
-				addIndividuFromEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER);
+				addIndividuAfterEvent(noEventAnnonce, indEvent, dateDebutPermis, TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER);
 			}
 		});
 		

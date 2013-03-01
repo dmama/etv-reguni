@@ -79,12 +79,12 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 				throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
 			}
 
-			final IndividuApresEvenement originel = serviceCivil.getIndividuFromEvent(idEvtOriginel);
+			final IndividuApresEvenement originel = serviceCivil.getIndividuAfterEvent(idEvtOriginel);
 			if (originel == null) {
 				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d corrigé", idEvtOriginel));
 			}
 
-			final IndividuApresEvenement correction = serviceCivil.getIndividuFromEvent(event.getId());
+			final IndividuApresEvenement correction = serviceCivil.getIndividuAfterEvent(event.getId());
 			if (correction == null) {
 				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
 			}

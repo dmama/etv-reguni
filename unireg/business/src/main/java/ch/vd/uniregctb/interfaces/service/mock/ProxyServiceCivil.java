@@ -106,9 +106,15 @@ public class ProxyServiceCivil implements ServiceCivilService, ServiceCivilServi
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
+	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
 		assertTargetNotNull();
-		return service.getIndividuFromEvent(eventId);
+		return service.getIndividuAfterEvent(eventId);
+	}
+
+	@Override
+	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+		assertTargetNotNull();
+		return service.getIndividuByEvent(eventId, date, parties);
 	}
 
 	@Override

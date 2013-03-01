@@ -105,7 +105,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 			for (String id : ids) {
 				if (StringUtils.isNotBlank(id)) {
 					final Long idEvt = Long.parseLong(id);
-					final IndividuApresEvenement evtAfter = serviceCivil.getIndividuFromEvent(idEvt);
+					final IndividuApresEvenement evtAfter = serviceCivil.getIndividuAfterEvent(idEvt);
 					if (evtAfter == null) {
 						log(idEvt, null, "Evénement inconnu", out);
 					}
@@ -118,7 +118,7 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 							log(idEvt, evtAfter.getTypeEvenement(), "Pas d'événement de référence", out);
 						}
 						else {
-							final IndividuApresEvenement evtAfterRef = serviceCivil.getIndividuFromEvent(idEvtRef);
+							final IndividuApresEvenement evtAfterRef = serviceCivil.getIndividuAfterEvent(idEvtRef);
 							checkDiffs(idEvt, evtAfterRef, evtAfter, testAncienHabitant, out);
 						}
 					}

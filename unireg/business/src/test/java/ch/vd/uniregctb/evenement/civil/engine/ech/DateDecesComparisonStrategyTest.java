@@ -24,11 +24,11 @@ public class DateDecesComparisonStrategyTest extends AbstractIndividuComparisonS
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "D'empoigne", "Foire", false);
 				individu.setDateDeces(dateDeces1);
-				addIndividuFromEvent(noEvt1, individu, dateDeces1, TypeEvenementCivilEch.DECES);
+				addIndividuAfterEvent(noEvt1, individu, dateDeces1, TypeEvenementCivilEch.DECES);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "D'ampouagne", "Fouare", false);
 				individuCorrige.setDateDeces(dateDeces2);
-				addIndividuFromEvent(noEvt2, individuCorrige, dateDeces2, TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.CORRECTION, noEvt1);
+				addIndividuAfterEvent(noEvt2, individuCorrige, dateDeces2, TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.CORRECTION, noEvt1);
 			}
 		});
 	}

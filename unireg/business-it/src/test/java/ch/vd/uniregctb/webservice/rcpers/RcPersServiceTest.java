@@ -100,6 +100,18 @@ public class RcPersServiceTest {
 		assertEquals(828322L, IndividuRCPers.getNoIndividu(p));
 	}
 
+	@Test(timeout = 5000)
+	public void testGetPersonByEvent() throws Exception {
+		final RcPersClientImpl client = buildClient();
+		final ListOfPersons list = client.getPersonByEvent(1812347788L, null, false);
+		assertNotNull(list);
+		assertEquals(1, list.getNumberOfResults().intValue());
+
+		final Person p = list.getListOfResults().getResult().get(0).getPerson();
+		assertNotNull("La personne associée à l'événement n°1812347788 est nulle !", p);
+		assertEquals(828322L, IndividuRCPers.getNoIndividu(p));
+	}
+
 	private RcPersClientImpl buildClient() throws Exception {
 
 		final String rcpUrl = uniregProperties.getProperty("testprop.webservice.rcpers.url");
@@ -107,6 +119,7 @@ public class RcPersServiceTest {
 		final RcPersClientImpl client = new RcPersClientImpl();
 		client.setBaseUrl(rcpUrl);
 		client.setPeoplePath("persons/ct.vd.rcpers");
+		client.setPeopleByEventIdPath("persons/byevent");
 		client.setEventPath("event");
 		client.setRelationsPath("relations/ct.vd.rcpers");
 		client.setUsername("gvd0unireg");

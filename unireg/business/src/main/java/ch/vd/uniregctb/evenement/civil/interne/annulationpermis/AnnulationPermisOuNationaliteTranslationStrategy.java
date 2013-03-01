@@ -33,7 +33,7 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	@NotNull
 	protected static Individu getIndividuAvant(EvenementCivilEch event, EvenementCivilContext context) throws EvenementCivilException {
 		Assert.notNull(event.getRefMessageId(), "Evénement sans événement de référence");
-		return getIndividuFromEvent(event.getRefMessageId(), context);
+		return getIndividuAfterEvent(event.getRefMessageId(), context);
 	}
 
 	/**
@@ -43,8 +43,8 @@ public abstract class AnnulationPermisOuNationaliteTranslationStrategy implement
 	 * @throws EvenementCivilException en cas de souci grave (pas d'événement trouvé, pas d'individu...)
 	 */
 	@NotNull
-	protected static Individu getIndividuFromEvent(long eventId, EvenementCivilContext context) throws EvenementCivilException {
-		final IndividuApresEvenement data = context.getServiceCivil().getIndividuFromEvent(eventId);
+	protected static Individu getIndividuAfterEvent(long eventId, EvenementCivilContext context) throws EvenementCivilException {
+		final IndividuApresEvenement data = context.getServiceCivil().getIndividuAfterEvent(eventId);
 		if (data == null) {
 			throw new EvenementCivilException(String.format("Pas de données fournies l'événement civil %d", eventId));
 		}

@@ -156,15 +156,23 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             return event.getNumeroIndividu();
         }
         else {
-            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuFromEvent(event.getId());
-            if (apresEvenement == null) {
-                throw new EvenementCivilException(String.format("Pas d'événement RCPers lié à l'événement civil %d", event.getId()));
+	        final long noIndividu;
+            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuAfterEvent(event.getId());
+            if (apresEvenement != null) {
+	            final Individu individu = apresEvenement.getIndividu();
+	            if (individu == null) {
+		            throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", event.getId()));
+	            }
+	            noIndividu = individu.getNoTechnique();
             }
-            final Individu individu = apresEvenement.getIndividu();
-            if (individu == null) {
-                throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", event.getId()));
+	        else {
+	            final Individu individu = serviceCivil.getIndividuByEvent(event.getId(), null);
+	            if (individu == null) {
+                    throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", event.getId()));
+	            }
+	            noIndividu = individu.getNoTechnique();
             }
-            return individu.getNoTechnique();
+	        return noIndividu;
         }
     }
 

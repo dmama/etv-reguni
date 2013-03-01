@@ -35,7 +35,7 @@ public class DissolutionPartenariatTranslationStrategy extends DivorceTranslatio
 		// Si l'individu est non-marié, c'est que son partenariat à été dissolu
 		// judiciairement. Ce cas est identique à l'annulation de mariage, il
 		// faut le traiter manuellement.
-		final IndividuApresEvenement iae =  context.getServiceCivil().getIndividuFromEvent(event.getId());
+		final IndividuApresEvenement iae =  context.getServiceCivil().getIndividuAfterEvent(event.getId());
 		if (iae != null && iae.getIndividu() != null) {
 			final Individu individu = iae.getIndividu();
 			final EtatCivil ec = individu.getEtatCivil(event.getDateEvenement());

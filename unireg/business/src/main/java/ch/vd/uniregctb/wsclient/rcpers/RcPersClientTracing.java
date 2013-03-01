@@ -82,6 +82,30 @@ public class RcPersClientTracing implements RcPersClient, InitializingBean, Disp
 	}
 
 	@Override
+	public ListOfPersons getPersonByEvent(final long evtId, final RegDate date, final boolean withHistory) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final ListOfPersons list = target.getPersonByEvent(evtId, date, withHistory);
+			items = list == null ? 0 : list.getNumberOfResults().intValue();
+			return list;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getPersonByEvent", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("evtId=%d, date=%s, withHistory=%s", evtId, ServiceTracing.toString(date), withHistory);
+				}
+			});
+		}
+	}
+
+	@Override
 	public ListOfRelations getRelations(final Collection<Long> ids, final RegDate date, final boolean withHistory) {
 		Throwable t = null;
 		int items = 0;

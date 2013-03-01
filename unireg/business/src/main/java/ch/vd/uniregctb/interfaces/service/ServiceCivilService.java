@@ -88,6 +88,26 @@ public interface ServiceCivilService {
 	Individu getIndividu(long noIndividu, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
 
 	/**
+	 * Retourne l'individu, valide <b>jusqu'à</b> l'année en paramètre, concerné par l'événement civil dont l'identifié est donné en paramètre.
+	 * <p/>
+	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants :
+	 * <ul>
+	 * <li>La liste des historiques de l'individu.</li>
+	 * <li>La liste des états civils de l'individu.</li>
+	 * <li>La liste des conjoints l'individu.</li>
+	 * </ul>
+	 * <p/>
+	 * L'objet retourné par ce service peut être <code>null</code>, signifiant l'absence de données d'un point de vue métier pour les paramêtres donnés.
+	 *
+	 * @param eventId    l'identifiant technique de l'événement civil de référence
+	 * @param date       la date de validité des individus
+	 * @param parties      les parties optionnelles devant être renseignées
+	 * @return l'individu populé avec les données valides jusqu'à l'année spécifiée; ou <b>null</b> si l'individu n'existe pas.
+	 * @throws ServiceCivilException en cas d'erreur lors de la récupération de l'individu.
+	 */
+	Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException;
+
+	/**
 	 * Retourne l'individu conjoint valide <b>à la date</b> passée en paramètre, de l'indivu dont le numéro est  en paramètre.
 	 * <p/>
 	 * Ce service renseigne, pour chaque objet du graphe retourné, l'ensemble des attributs mono-valués ainsi que les attributs muti-valués suivants :
@@ -212,7 +232,7 @@ public interface ServiceCivilService {
 	 * @param eventId identifiant de l'événement
 	 * @return l'individu correspondant à l'état juste après le traitement civil de l'événement, ou <code>null</code> si l'id ne correspond à rien
 	 */
-	IndividuApresEvenement getIndividuFromEvent(long eventId);
+	IndividuApresEvenement getIndividuAfterEvent(long eventId);
 
 	/**
 	 * @return <b>vrai</b> si l'implémentation courante du service civil possède un cache et que ce cache est susceptible d'être chauffé avec un appel à getIndividus().

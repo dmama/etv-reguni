@@ -31,13 +31,13 @@ public class NationaliteComparisonStrategyTest extends AbstractIndividuCompariso
 				if (pays1 != null) {
 					addNationalite(individu, pays1, range1.getDateDebut(), range1.getDateFin());
 				}
-				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
 				if (pays2 != null) {
 					addNationalite(individuCorrige, pays2, range2.getDateDebut(), range2.getDateFin());
 				}
-				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
+				addIndividuAfterEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
 			}
 		});
 	}

@@ -88,12 +88,12 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(final long eventId) {
+	public Individu getIndividuByEvent(final long evtId, final AttributeIndividu... parties) throws ServiceCivilException {
 		Throwable t = null;
 		int items = 0;
 		final long time = tracing.start();
 		try {
-			final IndividuApresEvenement ind = target.getIndividuFromEvent(eventId);
+			final Individu ind = target.getIndividuByEvent(evtId, parties);
 			if (ind != null) {
 				items = 1;
 			}
@@ -104,7 +104,33 @@ public class ServiceCivilTracing implements ServiceCivilRaw, InitializingBean, D
 			throw e;
 		}
 		finally {
-			tracing.end(time, t, "getIndividuFromEvent", items, new Object() {
+			tracing.end(time, t, "getIndividuByEvent", items, new Object() {
+				@Override
+				public String toString() {
+					return String.format("evtId=%d, parties=%s", evtId, ServiceTracing.toString(parties));
+				}
+			});
+		}
+	}
+
+	@Override
+	public IndividuApresEvenement getIndividuAfterEvent(final long eventId) {
+		Throwable t = null;
+		int items = 0;
+		final long time = tracing.start();
+		try {
+			final IndividuApresEvenement ind = target.getIndividuAfterEvent(eventId);
+			if (ind != null) {
+				items = 1;
+			}
+			return ind;
+		}
+		catch (RuntimeException e) {
+			t = e;
+			throw e;
+		}
+		finally {
+			tracing.end(time, t, "getIndividuAfterEvent", items, new Object() {
 				@Override
 				public String toString() {
 					return String.format("eventId=%d", eventId);

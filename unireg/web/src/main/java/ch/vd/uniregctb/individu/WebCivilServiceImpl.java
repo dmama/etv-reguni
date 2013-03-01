@@ -65,7 +65,7 @@ public class WebCivilServiceImpl implements WebCivilService, MessageSourceAware 
 			individuView = getIndividu(numeroIndividu);
 		}
 		catch (ObjectNotFoundException e) {
-			final IndividuApresEvenement indiv = serviceCivilService.getIndividuFromEvent(numeroEvenement);
+			final IndividuApresEvenement indiv = serviceCivilService.getIndividuAfterEvent(numeroEvenement);
 			if (indiv == null) {
 				throw new ObjectNotFoundException(this.messageSource.getMessage("error.individu.inexistant", new Object[] {Long.toString(numeroIndividu)},  WebContextUtils.getDefaultLocale()));
 			}

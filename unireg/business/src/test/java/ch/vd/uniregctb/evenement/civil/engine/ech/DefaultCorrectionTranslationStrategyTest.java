@@ -76,10 +76,10 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -137,11 +137,11 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, date(1934, 2, 12), "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -206,11 +206,11 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Michel", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Zweisteinen", "Michèle", false);
 				marieIndividu(ind2, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -268,12 +268,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				ind2.setDateDeces(RegDate.get().addMonths(-1));
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -338,12 +338,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addNationalite(ind2, MockPays.Suisse, date(2000, 1, 1), null);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -408,12 +408,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addPermis(ind2, TypePermis.ETABLISSEMENT, date(2008, 2, 20), null, false);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -478,12 +478,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -549,12 +549,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.SECONDAIRE, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -621,12 +621,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, dateMariage);
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu conjoint = addIndividu(noIndividuConjoint, null, "Viersteinen", "Beate", false);
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividus(ind2, conjoint, dateMariage);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -693,12 +693,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, dateMariage.addDays(1));     // <-- état civil différent par la date
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu conjoint = addIndividu(noIndividuConjoint, null, "Viersteinen", "Beate", false);
 				final MockIndividu ind2 = createIndividu(noIndividu, date(1930, 5, 12), "Dreisteinen", "Albert", true); // <-- date de naissance différente
 				marieIndividus(ind2, conjoint, dateMariage);    // <-- conjoint différent
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -765,10 +765,10 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -834,10 +834,10 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			@Override
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 
@@ -911,12 +911,12 @@ public class DefaultCorrectionTranslationStrategyTest extends AbstractEvenementC
 			protected void init() {
 				final MockIndividu ind = addIndividu(noIndividu, null, "Zweisteinen", "Robert", true);
 				marieIndividu(ind, date(1955, 12, 1));
-				addIndividuFromEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
+				addIndividuAfterEvent(idEvtCorrige, ind, dateEvtOrig, TypeEvenementCivilEch.TESTING);
 
 				final MockIndividu ind2 = createIndividu(noIndividu, null, "Dreisteinen", "Albert", true);
 				marieIndividu(ind2, date(1955, 12, 1));
 				addAdresse(ind2, TypeAdresseCivil.COURRIER, MockRue.CossonayVille.AvenueDuFuniculaire, null, null, null);
-				addIndividuFromEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
+				addIndividuAfterEvent(idEvtCorrection, ind2, dateEvtCorrection, TypeEvenementCivilEch.TESTING, ActionEvenementCivilEch.CORRECTION, idEvtCorrige);
 			}
 		});
 

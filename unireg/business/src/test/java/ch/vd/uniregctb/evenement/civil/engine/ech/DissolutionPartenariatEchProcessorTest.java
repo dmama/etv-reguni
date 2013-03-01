@@ -132,7 +132,7 @@ public class DissolutionPartenariatEchProcessorTest extends AbstractEvenementCiv
 				addNationalite(conjoint, MockPays.France, date(1974, 8, 1), null);
 				marieIndividus(principal, conjoint, dateEnregistrement);
 				dissouePartenartiatParAnnulation(principal, conjoint, dateDissolution);
-				addIndividuFromEvent(eventId, principal, dateDissolution, TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT);
+				addIndividuAfterEvent(eventId, principal, dateDissolution, TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT);
 			}
 		});
 

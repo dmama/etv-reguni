@@ -23,10 +23,10 @@ public class DateNaissanceComparisonStrategyTest extends AbstractIndividuCompari
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, dateNaissance1, "D'empoigne", "Foire", false);
-				addIndividuFromEvent(noEvt1, individu, dateNaissance1, TypeEvenementCivilEch.NAISSANCE);
+				addIndividuAfterEvent(noEvt1, individu, dateNaissance1, TypeEvenementCivilEch.NAISSANCE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, dateNaissance2, "D'ampouagne", "Fouare", false);
-				addIndividuFromEvent(noEvt2, individuCorrige, dateNaissance2, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION, noEvt1);
+				addIndividuAfterEvent(noEvt2, individuCorrige, dateNaissance2, TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION, noEvt1);
 			}
 		});
 	}

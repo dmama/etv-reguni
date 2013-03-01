@@ -55,12 +55,25 @@ public class ServiceCivilEndPoint implements ServiceCivilRaw {
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
 		try {
-			return target.getIndividuFromEvent(eventId);
+			return target.getIndividuByEvent(evtId, parties);
 		}
 		catch (RuntimeException e) {
-			LOGGER.error("Exception dans getIndividuFromEvent(eventId=" + eventId + ") : " + getMessage(e), e);
+			LOGGER.error("Exception dans getIndividuByEvent(evtId=" + evtId + ",parties=" + Arrays.toString(parties) + ") : "
+					             + getMessage(e), e);
+			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
+			throw new ServiceCivilException(getMessage(e));
+		}
+	}
+
+	@Override
+	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
+		try {
+			return target.getIndividuAfterEvent(eventId);
+		}
+		catch (RuntimeException e) {
+			LOGGER.error("Exception dans getIndividuAfterEvent(eventId=" + eventId + ") : " + getMessage(e), e);
 			// on ne transmet que le message, pour éviter de transmettre des éléments non-sérializable
 			throw new ServiceCivilException(getMessage(e));
 		}

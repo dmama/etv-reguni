@@ -35,13 +35,13 @@ public class RelationsComparisonStrategyTest extends AbstractIndividuComparisonS
 				if (b1 != null) {
 					b1.buildRelations(individu);
 				}
-				addIndividuFromEvent(idEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(idEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Long", "Zébu", true);
 				if (b2 != null) {
 					b2.buildRelations(individuCorrige);
 				}
-				addIndividuFromEvent(idEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, idEvt1);
+				addIndividuAfterEvent(idEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, idEvt1);
 			}
 		});
 	}

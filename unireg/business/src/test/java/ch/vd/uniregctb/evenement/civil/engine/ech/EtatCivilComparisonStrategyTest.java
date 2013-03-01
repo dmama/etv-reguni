@@ -31,14 +31,14 @@ public class EtatCivilComparisonStrategyTest extends AbstractIndividuComparisonS
 				if (etat1 != null) {
 					addEtatCivil(individu, range1.getDateDebut(), range1.getDateFin(), etat1);
 				}
-				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
 				individuCorrige.getEtatsCivils().clear();
 				if (etat2 != null) {
 					addEtatCivil(individuCorrige, range2.getDateDebut(), range2.getDateFin(), etat2);
 				}
-				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
+				addIndividuAfterEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
 			}
 		});
 	}

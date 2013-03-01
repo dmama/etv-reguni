@@ -30,13 +30,13 @@ public class PermisComparisonStrategyTest extends AbstractIndividuComparisonStra
 				if (type1 != null) {
 					addPermis(individu, type1, range1.getDateDebut(), range1.getDateFin(), false);
 				}
-				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblenc", "Justin", true);
 				if (type2!= null) {
 					addPermis(individuCorrige, type2, range2.getDateDebut(), range2.getDateFin(), false);
 				}
-				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
+				addIndividuAfterEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
 			}
 		});
 	}

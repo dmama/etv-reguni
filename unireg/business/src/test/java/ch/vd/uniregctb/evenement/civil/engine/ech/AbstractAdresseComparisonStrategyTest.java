@@ -20,13 +20,13 @@ public abstract class AbstractAdresseComparisonStrategyTest extends AbstractIndi
 				if (b1 != null) {
 					b1.buildAdresses(ind);
 				}
-				addIndividuFromEvent(noEvt1, ind, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(noEvt1, ind, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu indCorrige = createIndividu(noIndividu, null, "Frèze", "Tart'ala", false);
 				if (b2 != null) {
 					b2.buildAdresses(indCorrige);
 				}
-				addIndividuFromEvent(noEvt2, indCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt1);
+				addIndividuAfterEvent(noEvt2, indCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt1);
 			}
 		});
 	}

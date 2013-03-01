@@ -192,11 +192,11 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 		return createIndividu(numero, dateNaissance, nom, prenom, isMasculin ? Sexe.MASCULIN : Sexe.FEMININ);
 	}
 
-	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type) {
-		addIndividuFromEvent(eventId, individu, dateEvenement, type, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
+	protected void addIndividuAfterEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type) {
+		addIndividuAfterEvent(eventId, individu, dateEvenement, type, ActionEvenementCivilEch.PREMIERE_LIVRAISON, null);
 	}
 
-	protected void addIndividuFromEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementRef) {
+	protected void addIndividuAfterEvent(long eventId, MockIndividu individu, RegDate dateEvenement, TypeEvenementCivilEch type, ActionEvenementCivilEch action, @Nullable Long idEvenementRef) {
 		evenementsMap.put(eventId, new IndividuApresEvenement(individu, dateEvenement, type, action, idEvenementRef));
 	}
 
@@ -655,8 +655,14 @@ public abstract class MockServiceCivil implements ServiceCivilRaw {
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
+	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
 		return evenementsMap.get(eventId);
+	}
+
+	@Override
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+		final IndividuApresEvenement ind = evenementsMap.get(evtId);
+		return ind != null ? getIndividu(ind.getIndividu().getNoTechnique(), parties) : null;
 	}
 
 	@Override

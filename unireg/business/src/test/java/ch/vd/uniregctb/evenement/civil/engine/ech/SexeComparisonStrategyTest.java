@@ -25,10 +25,10 @@ public class SexeComparisonStrategyTest extends AbstractIndividuComparisonStrate
 			@Override
 			protected void init() {
 				final MockIndividu individu = addIndividu(noIndividu, null, "Leblanc", "Claude", sexe1);
-				addIndividuFromEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
+				addIndividuAfterEvent(noEvt1, individu, RegDate.get(), TypeEvenementCivilEch.ARRIVEE);
 
 				final MockIndividu individuCorrige = createIndividu(noIndividu, null, "Leblanc", "Claude", sexe2);
-				addIndividuFromEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
+				addIndividuAfterEvent(noEvt2, individuCorrige, RegDate.get(), TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION, noEvt2);
 			}
 		});
 	}

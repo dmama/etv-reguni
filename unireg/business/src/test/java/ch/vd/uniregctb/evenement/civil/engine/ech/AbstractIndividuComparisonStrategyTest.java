@@ -23,10 +23,10 @@ public abstract class AbstractIndividuComparisonStrategyTest extends BusinessTes
 	}
 
 	private boolean ask(IndividuComparisonStrategy strategy, long noEvtOriginel, long noEvtCorrection, DataHolder<String> dh) {
-		final IndividuApresEvenement iae1 = serviceCivil.getIndividuFromEvent(noEvtOriginel);
+		final IndividuApresEvenement iae1 = serviceCivil.getIndividuAfterEvent(noEvtOriginel);
 		Assert.assertNotNull(iae1);
 
-		final IndividuApresEvenement iae2 = serviceCivil.getIndividuFromEvent(noEvtCorrection);
+		final IndividuApresEvenement iae2 = serviceCivil.getIndividuAfterEvent(noEvtCorrection);
 		Assert.assertNotNull(iae1);
 
 		return strategy.isFiscalementNeutre(iae1, iae2, dh);

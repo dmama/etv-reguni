@@ -269,9 +269,15 @@ public class ServiceCivilCache implements ServiceCivilRaw, UniregCacheInterface,
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
+	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
 		// on ne cache pas ce genre d'info
-		return target.getIndividuFromEvent(eventId);
+		return target.getIndividuAfterEvent(eventId);
+	}
+
+	@Override
+	public Individu getIndividuByEvent(long evtId, AttributeIndividu... parties) throws ServiceCivilException {
+		// on ne cache pas ce genre d'info
+		return target.getIndividuByEvent(evtId, parties);
 	}
 
 	private static class GetNationaliteAtKey implements Serializable {

@@ -316,8 +316,19 @@ public class ServiceCivilImpl implements ServiceCivilService, ServiceCivilServic
 	}
 
 	@Override
-	public IndividuApresEvenement getIndividuFromEvent(long eventId) {
-		return target.getIndividuFromEvent(eventId);
+	public IndividuApresEvenement getIndividuAfterEvent(long eventId) {
+		return target.getIndividuAfterEvent(eventId);
+	}
+
+	@Override
+	public Individu getIndividuByEvent(long eventId, @Nullable RegDate date, AttributeIndividu... parties) throws ServiceCivilException {
+		final Individu individu = target.getIndividuByEvent(eventId, parties);
+		if (date == null || individu == null) {
+			return individu;
+		}
+		else {
+			return individu.cloneUpTo(date);
+		}
 	}
 
 	@Override
