@@ -22,6 +22,7 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	private String peoplePath;
 	private String peopleBySocialNumberPath;
+	private String peopleByEventIdPath;
 	private String relationsPath;
 	private String eventPath;
 	private String searchPath;
@@ -36,6 +37,10 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 
 	public void setPeopleBySocialNumberPath(String peopleBySocialNumberPath) {
 		this.peopleBySocialNumberPath = peopleBySocialNumberPath;
+	}
+
+	public void setPeopleByEventIdPath(String peopleByEventIdPath) {
+		this.peopleByEventIdPath = peopleByEventIdPath;
 	}
 
 	public void setRelationsPath(String relationsPath) {
@@ -80,6 +85,37 @@ public class RcPersClientImpl implements RcPersClient, InitializingBean {
 				param.append(String.valueOf(id));
 			}
 			wc.path(param.toString());
+
+			// l'historique
+			if (withHistory) {
+				wc.query("history", "true");
+			}
+
+			// la date
+			if (date != null) {
+				wc.query("date", RegDateHelper.dateToDisplayString(date));
+			}
+
+			try {
+				return wc.get(ListOfPersons.class);
+			}
+			catch (ServerWebApplicationException e) {
+				throw new RcPersClientException(e);
+			}
+		}
+		finally {
+			wcPool.returnClient(wc);
+		}
+	}
+
+	@Override
+	public ListOfPersons getPersonByEvent(long evtId, RegDate date, boolean withHistory) {
+		final WebClient wc = wcPool.borrowClient(600000); // 10 minutes
+		try {
+			wc.path(peopleByEventIdPath);
+
+			// l'id de l'événement civil
+			wc.path(Long.toString(evtId));
 
 			// l'historique
 			if (withHistory) {

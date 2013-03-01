@@ -32,6 +32,16 @@ public interface RcPersClient {
 	ListOfPersons getPersonsBySocialsNumbers(Collection<String> numbers, RegDate date, boolean withHistory);
 
 	/**
+	 * Récupère une <i>personne</i> par l'identifiant d'un événement qui les concerne (c'est-à-dire des individus, dans l'ancienne terminologie) dans le registre cantonal des personnes (RCPers).
+	 *
+	 * @param evtId       l'identifiant de l'événement civil à utiliser
+	 * @param date        une date de validité (peut être nulle)
+	 * @param withHistory <b>vrai</b> si les collections historisées doivent être renseignée; <b>faux</b> autrement.
+	 * @return une liste de personnes
+	 */
+	ListOfPersons getPersonByEvent(long evtId, RegDate date, boolean withHistory);
+
+	/**
 	 * Récupère les relations vers d'autres personnes (parents, enfants, conjoints, ...) d'une ou plusieurs <i>personnes</i>.
 	 *
 	 * @param ids         les ids des personnes à retourner
