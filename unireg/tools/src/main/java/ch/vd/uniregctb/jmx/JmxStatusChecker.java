@@ -29,16 +29,16 @@ public class JmxStatusChecker {
 		PR("ssv0296p.etat-de-vaud.ch:20609", true),
 		PO("ssv0298v.etat-de-vaud.ch:38609", true);
 
-		private final String url;
+		private final String hostWithPort;
 		private final boolean withAuth;
 
-		private Environment(String url, boolean withAuth) {
-			this.url = url;
+		private Environment(String hostWithPort, boolean withAuth) {
+			this.hostWithPort = hostWithPort;
 			this.withAuth = withAuth;
 		}
 
-		public String getUrl() {
-			return url;
+		public String getHostWithPort() {
+			return hostWithPort;
 		}
 
 		public boolean isWithAuth() {
@@ -352,7 +352,7 @@ public class JmxStatusChecker {
 
 		final Map<ObjectName, Collection<ValueFetcher>> fetchers = new TreeMap<>();
 
-		final String url = "service:jmx:rmi:///jndi/rmi://" + environment.getUrl() + "/jmxrmi";
+		final String url = "service:jmx:rmi:///jndi/rmi://" + environment.getHostWithPort() + "/jmxrmi";
 		final JMXServiceURL serviceUrl = new JMXServiceURL(url);
 		final Map<String, String[]> env = new HashMap<>();
 		if (environment.isWithAuth()) {
