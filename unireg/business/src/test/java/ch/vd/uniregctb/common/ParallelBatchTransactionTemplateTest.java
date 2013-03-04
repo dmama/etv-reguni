@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -115,11 +116,11 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 
 		final List<Long> list = generateList(1000);
 
-		final DataHolder<Boolean> interrupted = new DataHolder<Boolean>(false);
+		final MutableBoolean interrupted = new MutableBoolean(false);
 		final StatusManager status = new StatusManager() {
 			@Override
 			public boolean interrupted() {
-				return interrupted.get();
+				return interrupted.getValue();
 			}
 
 			@Override
@@ -139,7 +140,7 @@ public class ParallelBatchTransactionTemplateTest extends BusinessTest {
 			@Override
 			public boolean doInTransaction(List<Long> batch, JobResults rapport) throws Exception {
 				processed.addAll(batch);
-				interrupted.set(true); // interrompt le traitement
+				interrupted.setValue(true); // interrompt le traitement
 				return true;
 			}
 		});

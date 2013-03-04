@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.DataHolder;
 
 /**
  * Stratégie de comparaison d'individu basée sur une date présente dans les données de l'individu
@@ -13,7 +13,7 @@ import ch.vd.uniregctb.common.DataHolder;
 public abstract class DateIndividuComparisonStrategy implements IndividuComparisonStrategy {
 
 	@Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 		final RegDate dateOriginel = getDate(originel);
 		final RegDate dateCorrige = getDate(corrige);
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
@@ -30,7 +30,7 @@ public abstract class DateIndividuComparisonStrategy implements IndividuComparis
 		}
 
 		if (!neutre) {
-			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 		}
 		return neutre;
 	}

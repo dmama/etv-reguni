@@ -6,12 +6,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
 public class AdresseContactComparisonStrategy implements IndividuComparisonStrategy {
@@ -51,13 +51,13 @@ public class AdresseContactComparisonStrategy implements IndividuComparisonStrat
 	};
 
 	@Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 		final List<Adresse> contact1 = filterContact(originel.getIndividu().getAdresses());
 		final List<Adresse> contact2 = filterContact(corrige.getIndividu().getAdresses());
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		final boolean equal = IndividuComparisonHelper.areContentsEqual(contact1, contact2, ADDRESS_COMPARATOR, ADDRESS_EQUALATOR, monitor, ATTRIBUTE);
 		if (!equal) {
-			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 		}
 		return equal;
 	}

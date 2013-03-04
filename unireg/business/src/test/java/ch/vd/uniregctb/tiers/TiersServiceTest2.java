@@ -2,6 +2,8 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +17,6 @@ import ch.vd.unireg.interfaces.infra.mock.MockCommune;
 import ch.vd.unireg.interfaces.infra.mock.MockPays;
 import ch.vd.unireg.interfaces.infra.mock.MockRue;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
@@ -43,16 +44,16 @@ public class TiersServiceTest2 extends BusinessTest {
 
 		final long noIndividu = 1234L;
 
-		final DataHolder<MockIndividu> holder = new DataHolder<MockIndividu>();
+		final Mutable<MockIndividu> holder = new MutableObject<>();
 
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				holder.set(addIndividu(noIndividu, date(1970, 1, 1), "Marcel", "Dubouchelard", Sexe.MASCULIN));
+				holder.setValue(addIndividu(noIndividu, date(1970, 1, 1), "Marcel", "Dubouchelard", Sexe.MASCULIN));
 			}
 		});
 		final PersonnePhysique pp = addHabitant(noIndividu);
-		final MockIndividu individu = holder.get();
+		final MockIndividu individu = holder.getValue();
 
 		// un individu sans adresse => non-habitant
 		assertEquals(TiersService.UpdateHabitantFlagResultat.CHANGE_EN_NONHABITANT, tiersService.updateHabitantFlag(pp, noIndividu, null, null));

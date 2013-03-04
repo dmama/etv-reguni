@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,7 +34,7 @@ public class AsyncStorage<K, V> {
 	/**
 	 * Espace de stockage
 	 */
-	private final Map<K, DataHolder<V>> map = new HashMap<K, DataHolder<V>>();
+	private final Map<K, Mutable<V>> map = new HashMap<>();
 
 	/**
 	 * Classe abstraite de base des résultats renvoyés par la méthode {@link #get}
@@ -91,8 +93,8 @@ public class AsyncStorage<K, V> {
 	 * @param value valeur à stocker
 	 * @return une instance de DataHolder qui contient cette valeur
 	 */
-	protected DataHolder<V> buildDataHolder(@Nullable V value) {
-		return new DataHolder<V>(value);
+	protected MutableObject<V> buildDataHolder(@Nullable V value) {
+		return new MutableObject<>(value);
 	}
 
 	/**
@@ -109,10 +111,10 @@ public class AsyncStorage<K, V> {
 		try {
 			final long tsMaxAttente = System.nanoTime() + unit.toNanos(timeout);
 			while (true) {
-				final DataHolder<V> value = map.remove(key);
+				final Mutable<V> value = map.remove(key);
 				if (value != null) {
 					// fini -> on revient avec la valeur
-					return new RetrievalData<K, V>(key, value.get());
+					return new RetrievalData<K, V>(key, value.getValue());
 				}
 
 				final long tempsRestant = tsMaxAttente - System.nanoTime();
@@ -162,7 +164,7 @@ public class AsyncStorage<K, V> {
 		 * @param entries Collection des éléments dans l'espace de stockage
 		 * @return Ce que l'action veut retourner (et qui servira de valeur de retour de l'appel à {@link AsyncStorage#doInLockedEnvironment(ch.vd.uniregctb.common.AsyncStorage.Action)}
 		 */
-		T execute(Iterable<Map.Entry<K, DataHolder<V>>> entries);
+		T execute(Iterable<Map.Entry<K, Mutable<V>>> entries);
 	}
 
 	/**

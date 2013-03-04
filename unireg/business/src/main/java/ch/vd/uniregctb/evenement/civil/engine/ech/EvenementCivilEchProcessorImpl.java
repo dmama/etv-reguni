@@ -8,6 +8,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.SmartLifecycle;
@@ -20,7 +22,6 @@ import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilErreurCollector;
 import ch.vd.uniregctb.evenement.civil.EvenementCivilHelper;
@@ -373,7 +374,7 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 			for (final ErrorPostProcessingStrategy strategy : postProcessingStrategies) {
 
 				// phase de collecte
-				final DataHolder dataHolder = new DataHolder();
+				final Mutable<Object> dataHolder = new MutableObject<>();
 				if (strategy.needsTransactionOnCollectPhase()) {
 					final List<EvenementCivilEchBasicInfo> toAnalyse = currentlyRemaining;
 					currentlyRemaining = doInNewTransaction(new TransactionCallback<List<EvenementCivilEchBasicInfo>>() {
@@ -392,13 +393,13 @@ public class EvenementCivilEchProcessorImpl implements EvenementCivilEchProcesso
 					doInNewTransaction(new TransactionCallback<Object>() {
 						@Override
 						public Object doInTransaction(TransactionStatus status) {
-							strategy.doFinalizePhase(dataHolder.get());
+							strategy.doFinalizePhase(dataHolder.getValue());
 							return null;
 						}
 					});
 				}
 				else {
-					strategy.doFinalizePhase(dataHolder.get());
+					strategy.doFinalizePhase(dataHolder.getValue());
 				}
 			}
 		}

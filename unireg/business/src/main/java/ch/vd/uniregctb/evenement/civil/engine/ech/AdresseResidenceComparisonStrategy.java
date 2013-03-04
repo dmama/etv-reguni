@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,7 +13,6 @@ import ch.vd.unireg.interfaces.civil.data.Adresse;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Localisation;
 import ch.vd.unireg.interfaces.civil.data.LocalisationType;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.type.TypeAdresseCivil;
 
@@ -130,12 +130,12 @@ public abstract class AdresseResidenceComparisonStrategy implements IndividuComp
 	}
 
 	@Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		final List<Adresse> resOriginelles = extractAdressesResidence(originel.getIndividu().getAdresses());
 		final List<Adresse> resCorrigees = extractAdressesResidence(corrige.getIndividu().getAdresses());
 		if (!IndividuComparisonHelper.areContentsEqual(resOriginelles, resCorrigees, ADRESSE_COMPARATOR, ADRESSE_EQUALATOR, monitor, getAttribute())) {
-			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 			return false;
 		}
 		return true;

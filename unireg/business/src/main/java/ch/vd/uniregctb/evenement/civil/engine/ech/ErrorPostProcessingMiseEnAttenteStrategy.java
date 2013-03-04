@@ -3,10 +3,10 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchBasicInfo;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEchDAO;
@@ -27,7 +27,7 @@ public class ErrorPostProcessingMiseEnAttenteStrategy implements ErrorPostProces
 
 	@NotNull
 	@Override
-	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, DataHolder<Object> customData) {
+	public List<EvenementCivilEchBasicInfo> doCollectPhase(List<EvenementCivilEchBasicInfo> remainingEvents, Mutable<Object> customData) {
 		final List<EvenementCivilEchBasicInfo> remaining = new ArrayList<EvenementCivilEchBasicInfo>(remainingEvents.size());
 		for (EvenementCivilEchBasicInfo info : remainingEvents) {
 			if (info.getEtat() == EtatEvenementCivil.A_TRAITER) {

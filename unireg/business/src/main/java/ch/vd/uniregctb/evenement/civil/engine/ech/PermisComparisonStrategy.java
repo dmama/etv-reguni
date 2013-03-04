@@ -2,13 +2,13 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.List;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Permis;
 import ch.vd.unireg.interfaces.civil.data.PermisList;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.type.TypePermis;
 
 /**
@@ -45,7 +45,7 @@ public class PermisComparisonStrategy implements IndividuComparisonStrategy {
 	}
 
     @Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 
 	    final PermisList permis1 = originel.getIndividu().getPermis();
 	    final PermisList permis2 = corrige.getIndividu().getPermis();
@@ -75,7 +75,7 @@ public class PermisComparisonStrategy implements IndividuComparisonStrategy {
 		    }
 
 		    if (!neutre) {
-			    msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			    msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 		    }
 	    }
 	    return neutre;

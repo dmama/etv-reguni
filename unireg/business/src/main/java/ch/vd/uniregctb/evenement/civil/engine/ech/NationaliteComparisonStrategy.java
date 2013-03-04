@@ -1,11 +1,11 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.Nationalite;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 
 /**
@@ -46,7 +46,7 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 	}
 
 	@Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 
 		// La spécification dit qu'il faut détecter le passage de "nationalité inconnue" à "nationalité connue" et vice-versa (= statut de la nationalité),
 		// et que dans le cas où les nationalités existaient et changent, seuls les changements sur la nationalité suisse sont importants
@@ -80,7 +80,7 @@ public class NationaliteComparisonStrategy implements IndividuComparisonStrategy
 			}
 		}
 		if (!neutre) {
-			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 		}
 		return neutre;
 	}

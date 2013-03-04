@@ -5,11 +5,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.audit.Audit;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilContext;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
@@ -157,10 +158,10 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 
 		boolean neutre = true;
 		for (IndividuComparisonStrategy strategy : comparisonStrategies) {
-			final DataHolder<String> champ = new DataHolder<String>();
+			final Mutable<String> champ = new MutableObject<>();
 			neutre = strategy.isFiscalementNeutre(originel, correction, champ) && neutre;
-			if (StringUtils.isNotBlank(champ.get())) {
-				champsModifies.add(champ.get());
+			if (StringUtils.isNotBlank(champ.getValue())) {
+				champsModifies.add(champ.getValue());
 			}
 		}
 		return neutre;

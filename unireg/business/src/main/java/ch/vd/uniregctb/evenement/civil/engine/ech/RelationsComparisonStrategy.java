@@ -2,12 +2,12 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 
 import java.util.Comparator;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.unireg.interfaces.civil.data.RelationVersIndividu;
-import ch.vd.uniregctb.common.DataHolder;
 
 /**
  * Comparateur d'individu basé sur les relations (conjoints + filiations) de l'individu
@@ -44,14 +44,14 @@ public class RelationsComparisonStrategy implements IndividuComparisonStrategy {
 	};
 
 	@Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 		// les différences de relations sont à chercher dans les conjoints et les filiations
 		final IndividuComparisonHelper.FieldMonitor monitor = new IndividuComparisonHelper.FieldMonitor();
 		if (!IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getConjoints(), corrige.getIndividu().getConjoints(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, CONJOINTS)
 				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getEnfants(), corrige.getIndividu().getEnfants(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, ENFANTS)
 				|| !IndividuComparisonHelper.areContentsEqual(originel.getIndividu().getParents(), corrige.getIndividu().getParents(), RELATION_COMPARATOR, RELATION_EQUALATOR, monitor, PARENTS)) {
 			IndividuComparisonHelper.fillMonitor(monitor, ATTRIBUT);
-			msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+			msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 			return false;
 		}
 		return true;

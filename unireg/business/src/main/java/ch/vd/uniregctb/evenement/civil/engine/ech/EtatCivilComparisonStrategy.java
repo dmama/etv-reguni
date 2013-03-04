@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.jetbrains.annotations.NotNull;
 
 import ch.vd.unireg.interfaces.civil.data.EtatCivil;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.DataHolder;
 
 /**
  * Comparateur d'individu basé sur l'état civil de l'individu
@@ -15,7 +15,7 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	private static final String DATES = "dates";
 
     @Override
-	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull DataHolder<String> msg) {
+	public boolean isFiscalementNeutre(IndividuApresEvenement originel, IndividuApresEvenement corrige, @NotNull Mutable<String> msg) {
 	    // à un instant donné (et juste après un événement répond à cette catégorisation), un individu n'a au plus qu'un seul état civil
 	    // -> on peut se baser sur l'état civil "courant"
 	    final EtatCivil ecOriginel = originel.getIndividu().getEtatCivilCourant();
@@ -35,7 +35,7 @@ public class EtatCivilComparisonStrategy implements IndividuComparisonStrategy {
 	    }
 
 	    if (!neutre) {
-		    msg.set(IndividuComparisonHelper.buildErrorMessage(monitor));
+		    msg.setValue(IndividuComparisonHelper.buildErrorMessage(monitor));
 		}
 	    return neutre;
     }

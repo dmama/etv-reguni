@@ -8,13 +8,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
 import org.apache.log4j.Logger;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
-import ch.vd.uniregctb.common.DataHolder;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.scheduler.JobDefinition;
@@ -141,10 +142,10 @@ public class EvenementCivilEchCorrectionDumpJob extends JobDefinition {
 			}
 			else {
 				for (IndividuComparisonStrategy strategy : strategies) {
-					final DataHolder<String> champ = new DataHolder<String>();
+					final Mutable<String> champ = new MutableObject<>();
 					strategy.isFiscalementNeutre(originel, correction, champ);
-					if (StringUtils.isNotBlank(champ.get())) {
-						log(idEvt, correction.getTypeEvenement(), champ.get(), out);
+					if (StringUtils.isNotBlank(champ.getValue())) {
+						log(idEvt, correction.getTypeEvenement(), champ.getValue(), out);
 					}
 				}
 			}
