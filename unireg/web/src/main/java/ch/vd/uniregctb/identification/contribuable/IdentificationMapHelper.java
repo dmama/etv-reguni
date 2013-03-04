@@ -20,6 +20,7 @@ import ch.vd.uniregctb.common.StringComparator;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande.PrioriteEmetteur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.ErreurMessage;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesEditView;
 
@@ -108,6 +109,16 @@ public class IdentificationMapHelper extends CommonMapHelper {
 	 */
 	public Map<Etat, String> initMapEtatMessageEnCours() {
 		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+		return etatsMessages;
+	}
+
+	/**
+	 * Initialise la map des états du message pour l'ecran des messages en cours ou en exception
+	 *
+	 * @return une map
+	 */
+	public Map<Etat, String> initMapEtatMessageEnCoursEtException() {
+		final Map<Etat, String> etatsMessages = initMapEtatMessage(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
 		return etatsMessages;
 	}
 

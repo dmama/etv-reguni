@@ -12,6 +12,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesStatsManager;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsCriteriaView;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesStatsResultView;

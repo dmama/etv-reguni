@@ -16,6 +16,7 @@ import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
@@ -131,12 +132,8 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 			final int nombreElements;
 
 			if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, false, false, true);
-				nombreElements = identificationMessagesListManager.count(bean, false, false, true);
 			}
 			else if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_GEST_BO)) {
-				listIdentifications = identificationMessagesListManager.find(bean, pagination, true, false, false);
-				nombreElements = identificationMessagesListManager.count(bean, true, false, false);
 			}
 			else {
 				final TypeDemande types[] = getAllowedTypes();
@@ -144,8 +141,6 @@ public class IdentificationMessagesListEnCoursController extends AbstractIdentif
 				nombreElements = identificationMessagesListManager.countEnCoursSeul(bean, types);
 			}
 
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, listIdentifications);
-			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_SIZE, nombreElements);
 		}
 		else {
 			mav.addObject(IDENTIFICATION_LIST_ATTRIBUTE_NAME, new ArrayList<IdentificationMessagesResultView>());

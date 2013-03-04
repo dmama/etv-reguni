@@ -13,6 +13,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 
@@ -36,14 +37,14 @@ public interface IdentificationContribuableService {
 	/**
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 */
-	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                             boolean suspenduOnly, TypeDemande... typeDemande);
+	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination,
+	                                             IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 */
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly,
-	                 TypeDemande... typeDemande);
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria,
+	                 IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 	/**
 	 * Force l'identification du contribuable

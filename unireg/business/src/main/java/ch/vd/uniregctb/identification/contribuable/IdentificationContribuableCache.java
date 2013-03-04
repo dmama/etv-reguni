@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 
 public class IdentificationContribuableCache {

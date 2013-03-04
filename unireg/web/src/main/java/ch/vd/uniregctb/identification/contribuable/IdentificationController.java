@@ -33,6 +33,7 @@ import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.Flash;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.Demande;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesEditManager;
 import ch.vd.uniregctb.identification.contribuable.manager.IdentificationMessagesListManager;
@@ -212,7 +213,13 @@ public class IdentificationController {
 	                                              @RequestParam(value = "typeMessage", required = true) String typeMessage,
 	                                              ModelMap model) throws AdressesResolutionException {
 
-		setUpModelForListMessageEnCours(model);
+
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
+			setUpModelForListMessageEnCoursAvecException(model);
+		}
+		else{
+			setUpModelForListMessageEnCours(model);
+		}
 
 		IdentificationContribuableListCriteria criteria = identificationMessagesListManager.getView(typeMessage, periode, etat);
 		model.put("identificationCriteria", criteria);
@@ -292,7 +299,13 @@ public class IdentificationController {
 	 * @throws AdressesResolutionException
 	 */
 	private ModelAndView buildResponseForMessageEnCours(HttpServletRequest request, IdentificationContribuableListCriteria criteria, ModelMap model) throws AdressesResolutionException {
-		setUpModelForListMessageEnCours(model);
+		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
+			setUpModelForListMessageEnCoursAvecException(model);
+		}
+		else{
+			setUpModelForListMessageEnCours(model);
+		}
+
 		model.put("identificationCriteria", criteria);
 		// Récupération de la pagination
 		construireModelMessageEnCours(request, model, criteria);
@@ -322,11 +335,14 @@ public class IdentificationController {
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
 
-		if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU, Role.MW_IDENT_CTB_ADMIN,Role.MW_IDENT_CTB_GEST_BO)) {
-			listIdentifications = identificationMessagesListManager.find(criteria, pagination, true, false, false);
-			nombreElements = identificationMessagesListManager.count(criteria, true, false, false);
+		if (SecurityHelper.isGranted(securityProvider, Role.MW_IDENT_CTB_ADMIN)) {
+			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
+			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION);
+		}else if (SecurityHelper.isAnyGranted(securityProvider, Role.MW_IDENT_CTB_VISU,Role.MW_IDENT_CTB_GEST_BO)) {
+			listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
+			nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES);
 		}
-		else {
+		else {//Cellule back office
 			final TypeDemande types[] = getAllowedTypes();
 			listIdentifications = identificationMessagesListManager.findEncoursSeul(criteria, pagination, types);
 			nombreElements = identificationMessagesListManager.countEnCoursSeul(criteria, types);
@@ -345,8 +361,8 @@ public class IdentificationController {
 		final List<IdentificationMessagesResultView> listIdentifications;
 		final int nombreElements;
 
-		listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, false, true);
-		nombreElements = identificationMessagesListManager.count(criteria, false, false, true);
+		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
+		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_SUSPENDUS);
 
 
 		model.put("identifications", listIdentifications);
@@ -365,8 +381,8 @@ public class IdentificationController {
 
 
 		final TypeDemande types[] = getAllowedTypes();
-		listIdentifications = identificationMessagesListManager.find(criteria, pagination, false, true,false, types);
-		nombreElements = identificationMessagesListManager.count(criteria, false, true,false, types);
+		listIdentifications = identificationMessagesListManager.find(criteria, pagination, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
+		nombreElements = identificationMessagesListManager.count(criteria, IdentificationContribuableEtatFilter.SEULEMENT_TRAITES, types);
 
 
 		model.put("identifications", listIdentifications);
@@ -387,6 +403,14 @@ public class IdentificationController {
 		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
 		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES));
 		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCours());
+	}
+
+	private void setUpModelForListMessageEnCoursAvecException(ModelMap model) {
+		model.put("typesMessage", initMapTypeMessageEncours());
+		model.put("emetteurs", identificationMapHelper.initMapEmetteurId(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
+		model.put("priorites", identificationMapHelper.initMapPrioriteEmetteur());
+		model.put("periodesFiscales",identificationMapHelper.initMapPeriodeFiscale(IdentificationContribuableEtatFilter.SEULEMENT_NON_TRAITES_ET_EN_EXEPTION));
+		model.put("etatsMessage", identificationMapHelper.initMapEtatMessageEnCoursEtException());
 	}
 
 	private void setUpModelForListMessageSuspendu(ModelMap model) {

@@ -8,6 +8,7 @@ import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;
 import ch.vd.uniregctb.adresse.AdressesResolutionException;
 import ch.vd.uniregctb.common.WebParamPagination;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationContribuableListCriteria;
 import ch.vd.uniregctb.identification.contribuable.view.IdentificationMessagesResultView;
@@ -18,15 +19,15 @@ public interface IdentificationMessagesListManager {
 	 * Recherche des identifications correspondant aux critères
 	 */
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                   boolean suspenduOnly, TypeDemande... typeDemande)
+	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
+	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande)
 			throws AdressesResolutionException, ServiceInfrastructureException;
 
 	/**
 	 * Cherche et compte les identifications correspondant aux criteres
 	 */
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly, TypeDemande... typeDemande);
+	public int count(IdentificationContribuableCriteria criterion, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 
 
 	/**

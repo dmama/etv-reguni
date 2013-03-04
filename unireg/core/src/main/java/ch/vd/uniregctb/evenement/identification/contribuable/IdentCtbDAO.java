@@ -55,4 +55,9 @@ public interface IdentCtbDAO extends GenericDAO<IdentificationContribuable, Long
 	 * @return la liste des types de priorité des messages non traitées
 	 */
 	public Map<IdentificationContribuable.Etat, List<Demande.PrioriteEmetteur>> getPriorites();
+
+	List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria, ParamPagination paramPagination, IdentificationContribuableEtatFilter filter,
+	                                      TypeDemande... typeDemande);
+
+	int count(IdentificationContribuableCriteria identificationContribuableCriteria, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande);
 }

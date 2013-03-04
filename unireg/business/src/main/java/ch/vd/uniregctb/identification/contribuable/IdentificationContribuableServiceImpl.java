@@ -50,6 +50,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageHandler;
 import ch.vd.uniregctb.evenement.identification.contribuable.Reponse;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
@@ -668,32 +669,34 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 	 * Recherche une liste d'IdentificationContribuable en fonction de critères
 	 *
 	 *
+	 *
 	 * @param identificationContribuableCriteria
 	 *
 	 * @param paramPagination
-	 * @param typeDemande
-	 * @return
+	 * @param filter
+	 *@param typeDemande  @return
 	 */
 	@Override
 	public List<IdentificationContribuable> find(IdentificationContribuableCriteria identificationContribuableCriteria,
-	                                             ParamPagination paramPagination, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly,
-	                                             TypeDemande... typeDemande) {
-		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
+	                                             ParamPagination paramPagination,
+	                                             IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) {
+		return identCtbDAO.find(identificationContribuableCriteria, paramPagination, filter, typeDemande);
 	}
 
 	/**
 	 * Nombre d'IdentificationContribuable en fonction de critères
 	 *
 	 *
+	 *
 	 * @param identificationContribuableCriteria
 	 *
-	 * @param typeDemande
-	 * @return
+	 * @param filter
+	 *@param typeDemande  @return
 	 */
 	@Override
-	public int count(IdentificationContribuableCriteria identificationContribuableCriteria, boolean nonTraiteOnly, boolean archiveOnly,
-	                 boolean suspenduOnly, TypeDemande... typeDemande) {
-		return identCtbDAO.count(identificationContribuableCriteria, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
+	public int count(IdentificationContribuableCriteria identificationContribuableCriteria,
+	                 IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) {
+		return identCtbDAO.count(identificationContribuableCriteria,filter, typeDemande);
 	}
 
 	/**
@@ -1304,7 +1307,7 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 		final Map<IdentificationContribuable.Etat, Integer> resultatStats = new EnumMap<Etat, Integer>(IdentificationContribuable.Etat.class);
 		for (IdentificationContribuable.Etat etat : IdentificationContribuable.Etat.values()) {
 			identificationContribuableCriteria.setEtatMessage(etat.name());
-			final int res = count(identificationContribuableCriteria, false, false, false);
+			final int res = count(identificationContribuableCriteria, IdentificationContribuableEtatFilter.TOUS);
 			resultatStats.put(etat, res);
 		}
 		return resultatStats;

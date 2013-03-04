@@ -18,6 +18,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.IdentCtbDAO;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuable.Etat;
 import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableCriteria;
+import ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEtatFilter;
 import ch.vd.uniregctb.evenement.identification.contribuable.TypeDemande;
 import ch.vd.uniregctb.identification.contribuable.IdentifiantUtilisateur;
 import ch.vd.uniregctb.identification.contribuable.IdentificationContribuableService;
@@ -82,19 +83,20 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 * Recherche des identifications correspondant aux critères
 	 *
 	 *
+	 *
 	 * @param bean
 	 * @param pagination
-	 * @param typeDemande
-	 * @return
+	 * @param filter
+	 *@param typeDemande  @return
 	 * @throws AdressesResolutionException
 	 * @throws ServiceInfrastructureException
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination, boolean nonTraiteOnly, boolean archiveOnly,
-	                                                   boolean suspenduOnly, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
+	public List<IdentificationMessagesResultView> find(IdentificationContribuableCriteria bean, WebParamPagination pagination,
+	                                                   IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) throws AdressesResolutionException, ServiceInfrastructureException {
 		List<IdentificationMessagesResultView> identificationsView = new ArrayList<IdentificationMessagesResultView>();
-		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
+		List<IdentificationContribuable> identifications = identCtbService.find(bean, pagination, filter, typeDemande);
 		for (IdentificationContribuable identification : identifications) {
 			IdentificationMessagesResultView identificationView = buildView(identification);
 			identificationsView.add(identificationView);
@@ -119,7 +121,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 			throws AdressesResolutionException, ServiceInfrastructureException {
 
 		bean.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
-		return find(bean, pagination, false, false, false, typeDemande);
+		return find(bean, pagination, IdentificationContribuableEtatFilter.SEULEMENT_A_TRAITER_MANUELLEMENT, typeDemande);
 	}
 
 	/**
@@ -132,8 +134,8 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	 */
 	@Override
 	@Transactional(readOnly = true)
-	public int count(IdentificationContribuableCriteria criterion, boolean nonTraiteOnly, boolean archiveOnly, boolean suspenduOnly, TypeDemande... typeDemande) {
-		return identCtbService.count(criterion, nonTraiteOnly, archiveOnly, suspenduOnly, typeDemande);
+	public int count(IdentificationContribuableCriteria criterion, IdentificationContribuableEtatFilter filter, TypeDemande... typeDemande) {
+		return identCtbService.count(criterion, filter, typeDemande);
 	}
 
 	/**
@@ -147,7 +149,7 @@ public class IdentificationMessagesListManagerImpl implements IdentificationMess
 	@Transactional(readOnly = true)
 	public int countEnCoursSeul(IdentificationContribuableCriteria criterion, TypeDemande... typeDemande) {
 		criterion.setEtatMessage(Etat.A_TRAITER_MANUELLEMENT.name());
-		return identCtbService.count(criterion, false, false, false, typeDemande);
+		return identCtbService.count(criterion, IdentificationContribuableEtatFilter.SEULEMENT_A_TRAITER_MANUELLEMENT, typeDemande);
 	}
 
 
