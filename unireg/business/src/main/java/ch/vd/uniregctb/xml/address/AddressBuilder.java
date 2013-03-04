@@ -2,7 +2,7 @@ package ch.vd.uniregctb.xml.address;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.unireg.interfaces.civil.data.CasePostale;
 import ch.vd.unireg.interfaces.civil.data.Pays;

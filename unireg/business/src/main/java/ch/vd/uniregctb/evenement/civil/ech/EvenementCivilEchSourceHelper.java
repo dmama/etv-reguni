@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.technical.esb.EsbMessage;
 

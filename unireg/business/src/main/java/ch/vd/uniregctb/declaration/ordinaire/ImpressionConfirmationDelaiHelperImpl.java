@@ -19,7 +19,7 @@ import noNamespace.TypPeriode;
 import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;

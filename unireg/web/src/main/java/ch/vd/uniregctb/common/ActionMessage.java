@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Un message global d'erreur ou de warning qui apparaît en haut de l'écran suite à un problème déclanché par une action de l'utilisateur. Sa particularité est qu'il n'apparaît qu'une seule fois.

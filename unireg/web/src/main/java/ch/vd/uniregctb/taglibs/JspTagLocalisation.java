@@ -5,7 +5,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 

@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.evenement.civil.ech;
 
 import junit.framework.Assert;
-import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;

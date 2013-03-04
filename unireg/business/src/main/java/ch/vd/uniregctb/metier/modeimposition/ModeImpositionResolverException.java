@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.metier.modeimposition;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class ModeImpositionResolverException extends Exception {
 

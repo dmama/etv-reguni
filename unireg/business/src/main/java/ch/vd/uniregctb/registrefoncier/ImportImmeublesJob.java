@@ -4,7 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.util.Map;
 import java.util.zip.ZipInputStream;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.StatusManager;

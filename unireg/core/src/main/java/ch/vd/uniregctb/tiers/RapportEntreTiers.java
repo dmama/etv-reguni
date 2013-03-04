@@ -14,7 +14,7 @@ import javax.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.Index;
 import org.hibernate.annotations.Type;

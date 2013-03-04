@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.Set;
 
 import junit.framework.Assert;
-import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.transaction.TransactionStatus;

@@ -3,7 +3,7 @@ package ch.vd.uniregctb.rf;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Représente une part de propriété sous forme de fraction. Cette part est logiquement comprise entre 0 et 1.

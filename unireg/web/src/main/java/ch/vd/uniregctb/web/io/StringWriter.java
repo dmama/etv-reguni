@@ -1,7 +1,5 @@
 package ch.vd.uniregctb.web.io;
 
-import org.apache.commons.lang.NullArgumentException;
-
 public class StringWriter extends TextWriter {
 
     private final StringBuilder internalString;
@@ -23,7 +21,7 @@ public class StringWriter extends TextWriter {
 
     public StringWriter(StringBuilder sb, IFormatProvider formatProvider) {
         if (sb == null)
-            throw new NullArgumentException("sb");
+            throw new NullPointerException("sb");
 
         internalString = sb;
         internalFormatProvider = formatProvider;
@@ -68,7 +66,7 @@ public class StringWriter extends TextWriter {
             throw new RuntimeException("ObjectDisposedException");
         }
         if (buffer == null)
-            throw new NullArgumentException("buffer");
+            throw new NullPointerException("buffer");
         if (index < 0)
             throw new IndexOutOfBoundsException("index< 0");
         if (count < 0)

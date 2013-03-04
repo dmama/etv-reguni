@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
@@ -64,7 +64,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 			// L'entête du formulaire
 			b.append("<a href=\"#\" onclick=\"javascript:Batch_toggleExpand(this, '").append(job.getName()).append("'); this.blur(); return false;\">");
 			b.append("<img src=\"").append(image).append("\" align=\"top\" id=\"IMG_").append(job.getName()).append("\" />");
-			b.append(StringEscapeUtils.escapeHtml(job.getDescription()));
+			b.append(StringEscapeUtils.escapeHtml4(job.getDescription()));
 			b.append("</a>");
 			b.append("<div id=\"ARGS_").append(job.getName()).append("\" style=\"display:none\">\n");
 
@@ -83,7 +83,7 @@ public class JspTagBatchForm extends BodyTagSupport {
 					}
 					b.append("<tr>");
 				}
-				b.append("<td nowrap0=\"nowrap\" width=\"25%\" align=\"right\">").append(StringEscapeUtils.escapeHtml(p.getDescription())).append("</td>");
+				b.append("<td nowrap0=\"nowrap\" width=\"25%\" align=\"right\">").append(StringEscapeUtils.escapeHtml4(p.getDescription())).append("</td>");
 				b.append("<td nowrap0=\"nowrap\" width=\"25%\">").append(renderParam(job, p, request)).append("</td>");
 				displayedCount++;
 			}

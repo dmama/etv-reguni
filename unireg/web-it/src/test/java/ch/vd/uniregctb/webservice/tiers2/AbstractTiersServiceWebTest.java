@@ -4,7 +4,7 @@ import javax.xml.ws.BindingProvider;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.springframework.util.ResourceUtils;

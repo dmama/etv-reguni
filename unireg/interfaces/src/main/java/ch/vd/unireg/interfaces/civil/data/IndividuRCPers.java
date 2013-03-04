@@ -17,7 +17,7 @@ import java.util.Set;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0011.v5.PlaceOfOrigin;
 import ch.ech.ech0044.v2.NamedPersonId;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

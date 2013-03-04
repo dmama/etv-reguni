@@ -1,10 +1,7 @@
 package ch.vd.uniregctb.evenement.iam;
 
-import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
-import org.apache.commons.lang.StringUtils;
-
-import ch.vd.uniregctb.evenement.cedi.EvenementCedi;
 import ch.vd.uniregctb.type.ModeCommunication;
 
 /**

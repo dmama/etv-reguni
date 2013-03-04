@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.Nullable;
 
 /**

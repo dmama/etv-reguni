@@ -2,7 +2,7 @@ package ch.vd.uniregctb.supergra;
 
 import java.beans.PropertyEditorSupport;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class EntityKeyEditor extends PropertyEditorSupport {
 

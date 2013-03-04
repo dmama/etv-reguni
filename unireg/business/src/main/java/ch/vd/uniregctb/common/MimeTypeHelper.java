@@ -3,7 +3,7 @@ package ch.vd.uniregctb.common;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Méthodes utilitaires autour des types MIME

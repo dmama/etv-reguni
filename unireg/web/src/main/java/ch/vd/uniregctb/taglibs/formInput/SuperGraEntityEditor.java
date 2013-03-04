@@ -2,7 +2,7 @@ package ch.vd.uniregctb.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
 import ch.vd.uniregctb.supergra.EntityType;

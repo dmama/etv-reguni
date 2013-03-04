@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.webservices.tiers2.stats;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 

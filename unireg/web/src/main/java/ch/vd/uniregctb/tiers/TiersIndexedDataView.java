@@ -2,7 +2,7 @@ package ch.vd.uniregctb.tiers;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.common.Annulable;
 import ch.vd.uniregctb.indexer.tiers.MenageCommunIndexable;

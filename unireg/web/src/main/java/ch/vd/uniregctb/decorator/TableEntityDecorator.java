@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.decorator;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.decorator.TableDecorator;
 
 import ch.vd.uniregctb.common.Annulable;

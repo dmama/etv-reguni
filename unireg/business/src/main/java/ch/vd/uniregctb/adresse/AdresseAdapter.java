@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.adresse;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.utils.Assert;

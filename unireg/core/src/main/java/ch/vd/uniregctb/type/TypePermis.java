@@ -1,7 +1,7 @@
 package ch.vd.uniregctb.type;
 
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum TypePermis {
 

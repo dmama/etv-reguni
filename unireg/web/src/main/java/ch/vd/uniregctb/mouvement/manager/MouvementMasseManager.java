@@ -2,7 +2,7 @@ package ch.vd.uniregctb.mouvement.manager;
 
 import java.util.List;
 
-import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.unireg.interfaces.infra.ServiceInfrastructureException;

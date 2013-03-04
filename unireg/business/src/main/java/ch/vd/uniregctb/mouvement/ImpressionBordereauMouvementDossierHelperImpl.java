@@ -11,7 +11,7 @@ import noNamespace.InfoDocumentDocument1;
 import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.TypFichierImpression;
 import noNamespace.TypPeriode;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;

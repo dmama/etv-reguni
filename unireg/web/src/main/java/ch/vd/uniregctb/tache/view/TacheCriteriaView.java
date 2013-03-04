@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.tache.view;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 

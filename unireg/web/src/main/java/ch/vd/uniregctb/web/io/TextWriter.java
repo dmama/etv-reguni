@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.web.io;
 
-import org.apache.commons.lang.NullArgumentException;
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 
 public abstract class TextWriter {
 
@@ -52,7 +51,7 @@ public abstract class TextWriter {
 
     static TextWriter Synchronized(TextWriter writer, boolean neverClose) {
         if (writer == null)
-            throw new NullArgumentException("writer is null");
+            throw new NullPointerException("writer is null");
 
         if (writer instanceof SynchronizedWriter)
             return writer;
@@ -110,7 +109,7 @@ public abstract class TextWriter {
 
     public void write(char[] buffer, int index, int count) {
         if (buffer == null)
-            throw new NullArgumentException("buffer");
+            throw new NullPointerException("buffer");
         if (index < 0 || index > buffer.length)
             throw new IndexOutOfBoundsException("index");
         // re-ordered to avoid possible integer overflow

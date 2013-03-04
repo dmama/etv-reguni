@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.util.ResourceUtils;

@@ -15,7 +15,7 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import au.com.bytecode.opencsv.CSVParser;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

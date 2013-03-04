@@ -2,7 +2,7 @@ package ch.vd.uniregctb.common;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.test.context.ContextConfiguration;
 
 import ch.vd.uniregctb.utils.UniregProperties;

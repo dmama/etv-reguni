@@ -27,7 +27,7 @@ import noNamespace.InfoEnteteDocumentDocument1.InfoEnteteDocument.Expediteur;
 import noNamespace.TypAdresse;
 import noNamespace.TypFichierImpression;
 import noNamespace.TypFichierImpression.Document;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.Assert;
 

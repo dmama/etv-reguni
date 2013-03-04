@@ -8,7 +8,7 @@ import ch.ech.ech0010.v4.AddressInformation;
 import ch.ech.ech0010.v4.MailAddress;
 import ch.ech.ech0010.v4.SwissAddressInformation;
 import ch.ech.ech0011.v5.Destination;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.evd0001.v3.DwellingAddress;

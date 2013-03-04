@@ -3,7 +3,7 @@ package ch.vd.uniregctb.load;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.utils.Assert;
 

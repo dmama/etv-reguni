@@ -6,8 +6,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.util.HtmlUtils;
 
@@ -128,7 +128,7 @@ public class JspTagButtonTo extends BodyTagSupport {
 		final StringBuilder onclickScript = new StringBuilder();
 
 		if (StringUtils.isNotBlank(confirm)) {
-			String s = StringEscapeUtils.escapeJavaScript(confirm);
+			String s = StringEscapeUtils.escapeEcmaScript(confirm);
 			s = s.replaceAll("\\\\n", "\\n"); // on un-escape les retours de lignes, parce qu'ils sont bien pratiques
 			final String confirmScript = "if (!confirm('" + s + "')) return false;";
 			onclickScript.append(confirmScript);

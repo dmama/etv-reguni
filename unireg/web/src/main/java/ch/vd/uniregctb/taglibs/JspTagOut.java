@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
@@ -102,7 +102,7 @@ public class JspTagOut extends BodyTagSupport {
 	private static class StringEditor implements Editor {
 		@Override
 		public String generate(String id, Class clazz, Object value, HttpServletRequest request) {
-			return value == null ? "" : StringEscapeUtils.escapeHtml(value.toString());
+			return value == null ? "" : StringEscapeUtils.escapeHtml4(value.toString());
 		}
 	}
 

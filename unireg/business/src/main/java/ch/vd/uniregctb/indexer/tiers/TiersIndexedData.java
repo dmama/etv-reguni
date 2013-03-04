@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.ParseException;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 
 import ch.vd.registre.base.date.DateHelper;

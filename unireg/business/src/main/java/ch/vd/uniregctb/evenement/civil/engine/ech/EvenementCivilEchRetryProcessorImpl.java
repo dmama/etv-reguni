@@ -3,7 +3,7 @@ package ch.vd.uniregctb.evenement.civil.engine.ech;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.commons.lang.mutable.MutableBoolean;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.transaction.PlatformTransactionManager;

@@ -1,7 +1,7 @@
 package ch.vd.unireg.interfaces.infra.data;
 
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public enum LogicielMetier {
 	ECH_99("ech-99"),

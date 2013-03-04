@@ -5,7 +5,7 @@ import java.net.URI;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.xbean.XBeanBrokerService;
-import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.xbean.spring.context.ResourceXmlApplicationContext;
 import org.apache.xbean.spring.context.impl.URIEditor;
 import org.springframework.beans.BeansException;

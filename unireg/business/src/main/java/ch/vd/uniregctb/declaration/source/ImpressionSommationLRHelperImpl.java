@@ -26,7 +26,7 @@ import noNamespace.TypPeriode;
 import noNamespace.TypPeriode.Entete;
 import noNamespace.TypPeriode.Entete.ImpCcn;
 import noNamespace.TypPeriode.Entete.Tit;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.registre.base.date.RegDate;

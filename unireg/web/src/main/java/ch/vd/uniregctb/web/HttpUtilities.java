@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 /**
  * Cette classe contient des m�thodes utiles
@@ -99,7 +99,7 @@ public final class HttpUtilities {
     }
 
     public static String htmlEncode(String str) {
-       return StringEscapeUtils.escapeHtml(str);
+       return StringEscapeUtils.escapeHtml4(str);
     }
 
 

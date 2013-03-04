@@ -2,7 +2,7 @@ package ch.vd.unireg.interfaces.infra.data;
 
 import java.io.Serializable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.fidor.ws.v2.CommuneFiscale;
 import ch.vd.fidor.ws.v2.District;

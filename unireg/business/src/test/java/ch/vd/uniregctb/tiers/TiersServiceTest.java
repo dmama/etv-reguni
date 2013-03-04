@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import junit.framework.Assert;
-import org.apache.commons.lang.mutable.MutableLong;
+import org.apache.commons.lang3.mutable.MutableLong;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;

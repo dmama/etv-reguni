@@ -2,7 +2,7 @@ package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Données utiles à Unireg extraites de l'événement JMS envoyé par le CEDI suite au retour (au scannage pour être précis) d'une DI. 

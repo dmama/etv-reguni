@@ -2,8 +2,8 @@ package ch.vd.uniregctb.taglibs.formInput;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.tags.form.TagWriter;
 
 class StringEditor implements Editor {
@@ -17,7 +17,7 @@ class StringEditor implements Editor {
 	@Override
 	public void generate(TagWriter tagWriter, String value) throws JspException {
 
-		final String v = value == null ? "" : StringEscapeUtils.escapeHtml(value);
+		final String v = value == null ? "" : StringEscapeUtils.escapeHtml4(value);
 		if (params.isReadonly()) {
 			tagWriter.startTag("span");
 			tagWriter.appendValue(v);

@@ -3,7 +3,7 @@ package ch.vd.uniregctb.mouvement.view;
 import java.util.Collection;
 import java.util.Date;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.mouvement.EtatMouvementDossier;

@@ -4,7 +4,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ch.ech.ech0007.v4.CantonAbbreviation;
 import ch.ech.ech0044.v2.DatePartiallyKnown;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.RegDate;

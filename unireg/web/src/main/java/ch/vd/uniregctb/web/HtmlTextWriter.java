@@ -2,8 +2,7 @@ package ch.vd.uniregctb.web;
 
 import java.util.Hashtable;
 
-import org.apache.commons.lang.NotImplementedException;
-
+import ch.vd.registre.base.utils.NotImplementedException;
 import ch.vd.uniregctb.web.controls.IStyle;
 import ch.vd.uniregctb.web.io.TextWriter;
 

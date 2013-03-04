@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.common;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Container pour les informations dissociées de rue et de numéro sur une adresse

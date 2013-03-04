@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.evd0001.v3.ListOfPersons;
 import ch.vd.unireg.interfaces.civil.data.Individu;

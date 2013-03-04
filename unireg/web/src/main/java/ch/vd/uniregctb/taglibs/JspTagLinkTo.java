@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonParser;
@@ -111,7 +111,7 @@ public class JspTagLinkTo extends BodyTagSupport {
 
 		String confirmScript = null;
 		if (StringUtils.isNotBlank(confirm)) {
-			confirmScript = "if (!confirm('" + StringEscapeUtils.escapeJavaScript(confirm) + "')) return false;";
+			confirmScript = "if (!confirm('" + StringEscapeUtils.escapeEcmaScript(confirm) + "')) return false;";
 		}
 
 		final String url;

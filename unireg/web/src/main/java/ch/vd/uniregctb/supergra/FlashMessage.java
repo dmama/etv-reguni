@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.supergra;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Un flash message est un cours message (info/warning/error) qui apparaît en haut de l'écran immédiatement après un action de l'utilisateur. Sa particularité est qu'il n'apparaît qu'une seule fois.

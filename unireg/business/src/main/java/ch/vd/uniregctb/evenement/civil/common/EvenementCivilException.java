@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.common;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Exception lancée par le traitement des événements civils unitaires, et qui

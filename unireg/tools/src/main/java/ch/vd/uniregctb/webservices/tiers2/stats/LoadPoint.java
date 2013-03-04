@@ -3,7 +3,7 @@ package ch.vd.uniregctb.webservices.tiers2.stats;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.mutable.MutableLong;
+import org.apache.commons.lang3.mutable.MutableLong;
 
 import ch.vd.registre.base.utils.Assert;
 

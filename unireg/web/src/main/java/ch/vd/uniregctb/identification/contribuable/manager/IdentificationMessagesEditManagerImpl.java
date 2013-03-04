@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable.manager;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.uniregctb.common.AuthenticationHelper;

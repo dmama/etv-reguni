@@ -16,7 +16,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.message.Message;
 import org.apache.log4j.Logger;
 import org.apache.log4j.xml.DOMConfigurator;

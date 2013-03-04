@@ -9,7 +9,7 @@ import noNamespace.InfoEnteteDocumentDocument1;
 import noNamespace.LettresEFactureDocument;
 import noNamespace.TypAdresse;
 import noNamespace.TypFichierImpression;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDateHelper;

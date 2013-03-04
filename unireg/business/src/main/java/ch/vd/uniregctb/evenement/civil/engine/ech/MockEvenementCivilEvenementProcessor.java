@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.evenement.civil.engine.ech;
 
-import org.apache.commons.lang.NotImplementedException;
+import ch.vd.registre.base.utils.NotImplementedException;
 
 public class MockEvenementCivilEvenementProcessor implements EvenementCivilEchProcessor {
 	@Override

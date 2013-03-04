@@ -1,6 +1,6 @@
 package ch.vd.uniregctb.identification.contribuable;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import ch.vd.uniregctb.evenement.identification.contribuable.CriteresPersonne;
 import ch.vd.uniregctb.tiers.TiersCriteria;

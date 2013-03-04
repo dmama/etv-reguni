@@ -2,7 +2,7 @@ package ch.vd.uniregctb.declaration.ordinaire;
 
 import java.util.List;
 
-import org.apache.commons.lang.mutable.MutableInt;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
