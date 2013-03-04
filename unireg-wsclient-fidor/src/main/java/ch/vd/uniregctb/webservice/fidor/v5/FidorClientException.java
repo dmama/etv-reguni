@@ -3,7 +3,7 @@ package ch.vd.uniregctb.webservice.fidor.v5;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.jaxrs.client.ServerWebApplicationException;
 
 public class FidorClientException extends RuntimeException {
