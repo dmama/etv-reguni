@@ -16,6 +16,7 @@ import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.unireg.interfaces.civil.ServiceCivilException;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.unireg.interfaces.civil.data.IndividuApresEvenement;
 import ch.vd.uniregctb.common.ObjectNotFoundException;
@@ -156,16 +157,27 @@ public class EvenementCivilEchServiceImpl implements EvenementCivilEchService, I
             return event.getNumeroIndividu();
         }
         else {
-	        final long noIndividu;
-            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuAfterEvent(event.getId());
-            if (apresEvenement != null) {
-	            final Individu individu = apresEvenement.getIndividu();
-	            if (individu == null) {
-		            throw new EvenementCivilException(String.format("Aucune donnée d'individu fournie avec l'événement civil %d", event.getId()));
+	        Long noIndividu = null;
+	        try {
+	            final IndividuApresEvenement apresEvenement = serviceCivil.getIndividuAfterEvent(event.getId());
+	            if (apresEvenement != null) {
+		            final Individu individu = apresEvenement.getIndividu();
+		            if (individu != null) {
+			            noIndividu = individu.getNoTechnique();
+		            }
 	            }
-	            noIndividu = individu.getNoTechnique();
-            }
-	        else {
+
+		        if (noIndividu == null && LOGGER.isDebugEnabled()) {
+		            LOGGER.debug("Aucune information exploitable fournie par le GetIndividuAfterEvent, essayons le GetIndividuByEvent");
+		        }
+	        }
+	        catch (ServiceCivilException e) {
+		        if (LOGGER.isDebugEnabled()) {
+		            LOGGER.debug("Exception lancée par le GetIndividuAfterEvent, essayons le GetIndividuByEvent...", e);
+		        }
+	        }
+
+	        if (noIndividu == null) {
 	            final Individu individu = serviceCivil.getIndividuByEvent(event.getId(), null);
 	            if (individu == null) {
                     throw new EvenementCivilException(String.format("Impossible de trouver l'individu lié à l'événement civil %d", event.getId()));
