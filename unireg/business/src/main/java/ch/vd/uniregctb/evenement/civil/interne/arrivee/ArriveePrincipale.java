@@ -2,6 +2,8 @@ package ch.vd.uniregctb.evenement.civil.interne.arrivee;
 
 import java.util.List;
 
+import org.jetbrains.annotations.NotNull;
+
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.registre.base.utils.Assert;
@@ -26,6 +28,7 @@ import ch.vd.uniregctb.evenement.civil.common.EvenementCivilOptions;
 import ch.vd.uniregctb.evenement.civil.ech.EvenementCivilEch;
 import ch.vd.uniregctb.evenement.civil.regpp.EvenementCivilRegPP;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.EnsembleTiersCouple;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -35,9 +38,11 @@ import ch.vd.uniregctb.tiers.MenageCommun;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.tiers.RapportEntreTiers;
 import ch.vd.uniregctb.tiers.TiersException;
+import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ModeImposition;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
+import ch.vd.uniregctb.type.Sexe;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
 import ch.vd.uniregctb.type.TypeRapportEntreTiers;
@@ -303,6 +308,52 @@ public class ArriveePrincipale extends Arrivee {
 		return motif;
 	}
 
+	@NotNull
+	private ModeImposition getSourceOuMixteSuivantAgeRetraite(RegDate dateArrivee, PersonnePhysique pp) {
+		final TiersService tiersService = context.getTiersService();
+		final Sexe sexe = tiersService.getSexe(pp);
+		final RegDate dateNaissance = tiersService.getDateNaissance(pp);
+
+		if (sexe == null || dateNaissance == null) {
+			// on ne sait pas -> source
+			return ModeImposition.SOURCE;
+		}
+
+		final ParametreAppService parametreAppService = context.getParametreAppService();
+		final Integer ageRetraite;
+		if (sexe == Sexe.MASCULIN) {
+			ageRetraite = parametreAppService.getAgeRentierHomme();
+		}
+		else {
+			ageRetraite = parametreAppService.getAgeRentierFemme();
+		}
+		if (ageRetraite == null) {
+			// on ne peut pas savoir -> source
+			return ModeImposition.SOURCE;
+		}
+
+		final RegDate dateRetraite = dateNaissance.addYears(ageRetraite);
+		if (dateRetraite.isBeforeOrEqual(dateArrivee)) {
+			Audit.info(getNumeroEvenement(), "Mode d'imposition mixte car âge de la retraite atteint.");
+			return ModeImposition.MIXTE_137_1;
+		}
+		else {
+			return ModeImposition.SOURCE;
+		}
+	}
+
+	@NotNull
+	private ModeImposition getSourceOuMixteSuivantAgeRetraite(RegDate dateArrivee, PersonnePhysique principal, PersonnePhysique conjoint) {
+		final ModeImposition prn = getSourceOuMixteSuivantAgeRetraite(dateArrivee, principal);
+		final ModeImposition cjt = getSourceOuMixteSuivantAgeRetraite(dateArrivee, conjoint);
+		if (prn == ModeImposition.MIXTE_137_1 || cjt == ModeImposition.MIXTE_137_1) {
+			return ModeImposition.MIXTE_137_1;
+		}
+		else {
+			return prn;
+		}
+	}
+
 	@Override
 	protected void doHandleCreationForIndividuSeul(PersonnePhysique habitant, EvenementCivilWarningCollector warnings) throws EvenementCivilException {
 
@@ -324,7 +375,7 @@ public class ArriveePrincipale extends Arrivee {
 						modeImposition = ModeImposition.ORDINAIRE;
 					}
 					else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS || motifOuverture == null) {
-						modeImposition = ModeImposition.SOURCE;
+						modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
 					}
 					else {
 						// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
@@ -347,8 +398,11 @@ public class ArriveePrincipale extends Arrivee {
 									break;
 								}
 							}
-							modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
+							modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
 						}
+					}
+					else if (forFiscal.getModeImposition() == ModeImposition.SOURCE) {
+						modeImposition = getSourceOuMixteSuivantAgeRetraite(dateArriveeEffective, habitant);
 					}
 					else {
 						modeImposition = forFiscal.getModeImposition();
@@ -457,7 +511,7 @@ public class ArriveePrincipale extends Arrivee {
 					modeImposition = ModeImposition.ORDINAIRE;
 				}
 				else if (motifOuverture == MotifFor.ARRIVEE_HC || motifOuverture == MotifFor.ARRIVEE_HS) {
-					modeImposition = ModeImposition.SOURCE;
+					modeImposition = getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
 				}
 				else {
 					// une arrivée dans le canton, sans for pré-existant en n'arrivant pas de hors-Suisse ni de hors-Canton, cela ne devrait pas être possible, il me semble...
@@ -480,8 +534,11 @@ public class ArriveePrincipale extends Arrivee {
 								break;
 							}
 						}
-						modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : ModeImposition.SOURCE;
+						modeImposition = hasForSecondaire ? ModeImposition.MIXTE_137_1 : getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
 					}
+				}
+				else if (ffpMenage.getModeImposition() == ModeImposition.SOURCE) {
+					modeImposition = getSourceOuMixteSuivantAgeRetraite(dateEvenement, principal, conjoint);
 				}
 				else {
 					modeImposition = ffpMenage.getModeImposition();

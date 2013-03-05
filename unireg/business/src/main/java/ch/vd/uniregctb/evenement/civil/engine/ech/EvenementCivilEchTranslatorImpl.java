@@ -50,6 +50,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
@@ -267,6 +268,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
+	private ParametreAppService parametreAppService;
 
 	private EvenementCivilContext context;
 	
@@ -315,7 +317,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
 		strategies = buildStrategies(context, parameters);
 
 		// TODO [ech99] jde : à enlever dès que possible
@@ -370,5 +372,10 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setParameters(EvenementCivilEchStrategyParameters parameters) {
 		this.parameters = parameters;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
 	}
 }

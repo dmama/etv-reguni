@@ -354,7 +354,7 @@ public abstract class Arrivee extends Mouvement {
 				// est entrain de traiter l'arrivée du principal, et que l'on ne veut pas aussi traiter l'arrivée du conjoint. La solution, c'est de créer le
 				// conjoint non-habitant.
 				personnePhysiqueResultante = context.getTiersService().createNonHabitantFromIndividu(individu.getNoTechnique());
-				Audit.info(evenementId, "Un tiers non-habitant a été créé pour le conjoint du nouvel arrivant");
+				Audit.info(evenementId, "Un tiers non-habitant a été créé pour le nouvel arrivant");
 			}
 			else {
 				// [UNIREG-2650] Message d'erreur un peu plus explicite...

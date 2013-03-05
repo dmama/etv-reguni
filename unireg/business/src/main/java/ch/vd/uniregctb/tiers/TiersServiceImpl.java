@@ -3056,6 +3056,10 @@ public class TiersServiceImpl implements TiersService {
      */
     @Override
     public RegDate getDateNaissance(PersonnePhysique pp) {
+	    if (pp == null) {
+		    return null;
+	    }
+
         if (pp.isHabitantVD()) {
             final Individu individu = getIndividu(pp);
             if (individu == null) {

@@ -7,6 +7,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 
@@ -21,6 +22,7 @@ public class EvenementCivilContext {
 	private final MetierService metierService;
 	private final AdresseService adresseService;
 	private final EvenementFiscalService evenementFiscalService;
+	private final ParametreAppService parametreAppService;
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, TiersDAO tiersDAO) {
 		this.serviceCivil = serviceCivil;
@@ -32,10 +34,11 @@ public class EvenementCivilContext {
 		this.metierService = null;
 		this.adresseService = null;
 		this.evenementFiscalService = null;
+		this.parametreAppService = null;
 	}
 
 	public EvenementCivilContext(ServiceCivilService serviceCivil, ServiceInfrastructureService serviceInfra, DataEventService dataEventService, TiersService tiersService, GlobalTiersIndexer indexer,
-	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService) {
+	                             MetierService metierService, TiersDAO tiersDAO, AdresseService adresseService, EvenementFiscalService evenementFiscalService, ParametreAppService parametreAppService) {
 		this.serviceCivil = serviceCivil;
 		this.serviceInfra = serviceInfra;
 		this.dataEventService = dataEventService;
@@ -45,6 +48,7 @@ public class EvenementCivilContext {
 		this.tiersDAO = tiersDAO;
 		this.adresseService = adresseService;
 		this.evenementFiscalService = evenementFiscalService;
+		this.parametreAppService = parametreAppService;
 	}
 
 	public final ServiceCivilService getServiceCivil() {
@@ -81,5 +85,9 @@ public class EvenementCivilContext {
 
 	public EvenementFiscalService getEvenementFiscalService() {
 		return evenementFiscalService;
+	}
+
+	public ParametreAppService getParametreAppService() {
+		return parametreAppService;
 	}
 }

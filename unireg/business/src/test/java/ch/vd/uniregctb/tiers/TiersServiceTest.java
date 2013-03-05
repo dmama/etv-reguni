@@ -6341,5 +6341,69 @@ public class TiersServiceTest extends BusinessTest {
 		});
 	}
 
+	@Test
+	public void testGetDateNaissance() throws Exception {
+
+		final long noIndividuHabitant = 21543245L;
+		final long noIndividuAncienHabitant = 3434362L;
+		final RegDate dateNaissanceHabitant = date(2011, 2, 12);
+		final RegDate dateNaissanceAncienHabitant = date(2011, 2, 21);
+		final RegDate dateNaissanceNonHabitant = date(2010, 12, 4);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu indigene = addIndividu(noIndividuHabitant, dateNaissanceHabitant, "Lepetit", "François", Sexe.MASCULIN);
+				addAdresse(indigene, TypeAdresseCivil.PRINCIPALE, MockRue.CossonayVille.AvenueDuFuniculaire, null, dateNaissanceHabitant, null);
+
+				final MockIndividu parti = addIndividu(noIndividuAncienHabitant, null, "Lapetite", "Françoise", Sexe.FEMININ);
+				addAdresse(parti, TypeAdresseCivil.COURRIER, MockRue.Geneve.AvenueGuiseppeMotta, null, dateNaissanceAncienHabitant.addMonths(5), null);
+			}
+		});
+
+		class Ids {
+			long ppHabitant;
+			long ppAncienHabitant;
+			long ppNonHabitant;
+		}
+
+		final Ids ids = doInNewTransactionAndSession(new TransactionCallback<Ids>() {
+			@Override
+			public Ids doInTransaction(TransactionStatus status) {
+				final PersonnePhysique hab = addHabitant(noIndividuHabitant);
+				final PersonnePhysique ancienHab = tiersService.createNonHabitantFromIndividu(noIndividuAncienHabitant);
+				ancienHab.setDateNaissance(dateNaissanceAncienHabitant);
+				final PersonnePhysique nonHab = addNonHabitant("Bienvenu", "Patant", null, Sexe.MASCULIN);
+				final Ids ids = new Ids();
+				ids.ppHabitant = hab.getNumero();
+				ids.ppAncienHabitant = ancienHab.getNumero();
+				ids.ppNonHabitant = nonHab.getNumero();
+				return ids;
+			}
+		});
+
+		Assert.assertNull(tiersService.getDateNaissance(null));
+
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique hab = (PersonnePhysique) tiersDAO.get(ids.ppHabitant);
+				Assert.assertEquals(dateNaissanceHabitant, tiersService.getDateNaissance(hab));
+
+				final PersonnePhysique ancienHab = (PersonnePhysique) tiersDAO.get(ids.ppAncienHabitant);
+				Assert.assertEquals(dateNaissanceAncienHabitant, tiersService.getDateNaissance(ancienHab));
+
+				final PersonnePhysique nonHabitant = (PersonnePhysique) tiersDAO.get(ids.ppNonHabitant);
+				Assert.assertNull(tiersService.getDateNaissance(nonHabitant));
+				nonHabitant.setDateNaissance(dateNaissanceNonHabitant);
+				Assert.assertEquals(dateNaissanceNonHabitant, tiersService.getDateNaissance(nonHabitant));
+
+				return null;
+			}
+		});
+
+
+	}
+
 }
 

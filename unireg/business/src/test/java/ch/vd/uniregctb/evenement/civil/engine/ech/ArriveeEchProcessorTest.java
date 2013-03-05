@@ -37,6 +37,7 @@ import ch.vd.uniregctb.type.TypeAdresseTiers;
 import ch.vd.uniregctb.type.TypeAutoriteFiscale;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 import ch.vd.uniregctb.type.TypeEvenementErreur;
+import ch.vd.uniregctb.type.TypePermis;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
@@ -51,7 +52,23 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 	@Override
 	protected void runOnSetUp() throws Exception {
 		super.runOnSetUp();
-		metierService = getBean(MetierService.class,"metierService");
+		metierService = getBean(MetierService.class, "metierService");
+	}
+
+	@Override
+	protected void truncateDatabase() throws Exception {
+		/**
+		 * Même si en fait on ne veut pas d'indexation, il est important, dans les tests d'arrivée, que l'indexeur soit
+		 * vide avant de démarrer le test (puisqu'on recherche dans les non-habitants quelqu'un qui pourrait convenir...)
+		 */
+		final boolean wantIndexation = this.wantIndexation;
+		setWantIndexation(true);
+		try {
+			super.truncateDatabase();
+		}
+		finally {
+			setWantIndexation(wantIndexation);
+		}
 	}
 
 	@Test(timeout = 10000L)
@@ -1509,6 +1526,205 @@ public class ArriveeEchProcessorTest extends AbstractEvenementCivilEchProcessorT
 		});
 	}
 
+	@Test
+	public void testArriveeRetraiteSourcier() throws Exception {
+		final long noIndividu = 138946274L;
+		final RegDate dateNaissance = RegDate.get().addYears(-70);      // à changer quand l'âge de la retraite atteindra 70 ans...
+		final RegDate dateArrivee = RegDate.get().addDays(-20);
 
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu ind = addIndividu(noIndividu, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
+				addPermis(ind, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(ind, MockPays.EtatsUnis, dateNaissance, null);
 
+				final MockAdresse adresse = addAdresse(ind, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividu);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividu);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividu);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+
+				final ForFiscalPrincipal ffp = pp.getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testArriveeCoupleSourcierDontUnRetraite() throws Exception {
+		final long noIndividuLui = 138946274L;
+		final long noIndividuElle = 138946275L;
+		final RegDate dateNaissanceLui = RegDate.get().addYears(-70);      // à changer quand l'âge de la retraite atteindra 70 ans...
+		final RegDate dateNaissanceElle = RegDate.get().addYears(-50);
+		final RegDate dateArrivee = RegDate.get().addDays(-20);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissanceLui, "Boyington", "Gregory", Sexe.MASCULIN);
+				addPermis(lui, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(lui, MockPays.EtatsUnis, dateNaissanceLui, null);
+				final MockAdresse adresse = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissanceElle, "Boyington", "Pamela", Sexe.FEMININ);
+				addPermis(elle, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(elle, MockPays.EtatsUnis, dateNaissanceElle, null);
+
+				marieIndividus(lui, elle, dateArrivee.addYears(-20));
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
+				assertNotNull(couple);
+				assertNotNull(couple.getPrincipal());
+				assertNotNull(couple.getConjoint());
+				assertNotNull(couple.getMenage());
+
+				final ForFiscalPrincipal ffp = couple.getMenage().getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(ModeImposition.MIXTE_137_1, ffp.getModeImposition());
+
+				return null;
+			}
+		});
+	}
+
+	@Test
+	public void testArriveeCoupleSourcierAucunRetraite() throws Exception {
+		final long noIndividuLui = 138946274L;
+		final long noIndividuElle = 138946275L;
+		final RegDate dateNaissance = RegDate.get().addYears(-50);
+		final RegDate dateArrivee = RegDate.get().addDays(-20);
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				final MockIndividu lui = addIndividu(noIndividuLui, dateNaissance, "Boyington", "Gregory", Sexe.MASCULIN);
+				addPermis(lui, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(lui, MockPays.EtatsUnis, dateNaissance, null);
+				final MockAdresse adresse = addAdresse(lui, TypeAdresseCivil.PRINCIPALE, MockRue.Lausanne.AvenueDesBergieres, null, dateArrivee, null);
+				adresse.setLocalisationPrecedente(new Localisation(LocalisationType.HORS_SUISSE, MockPays.EtatsUnis.getNoOFS(), null));
+
+				final MockIndividu elle = addIndividu(noIndividuElle, dateNaissance, "Boyington", "Pamela", Sexe.FEMININ);
+				addPermis(elle, TypePermis.SEJOUR, dateArrivee, null, false);
+				addNationalite(elle, MockPays.EtatsUnis, dateNaissance, null);
+
+				marieIndividus(lui, elle, dateArrivee.addYears(-20));
+			}
+		});
+
+		// événement civil d'arrivée
+		final long evtArrivee = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = new EvenementCivilEch();
+				evt.setId(3273426L);
+				evt.setAction(ActionEvenementCivilEch.PREMIERE_LIVRAISON);
+				evt.setDateEvenement(dateArrivee);
+				evt.setEtat(EtatEvenementCivil.A_TRAITER);
+				evt.setNumeroIndividu(noIndividuLui);
+				evt.setType(TypeEvenementCivilEch.ARRIVEE);
+				return hibernateTemplate.merge(evt).getId();
+			}
+		});
+
+		// traitement de l'événement civil
+		traiterEvenements(noIndividuLui);
+
+		// vérification des résultats
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final EvenementCivilEch evt = evtCivilDAO.get(evtArrivee);
+				assertNotNull(evt);
+				assertEquals(EtatEvenementCivil.TRAITE, evt.getEtat());
+
+				final PersonnePhysique pp = tiersService.getPersonnePhysiqueByNumeroIndividu(noIndividuLui);
+				assertNotNull(pp);
+				assertTrue(pp.isHabitantVD());
+
+				final EnsembleTiersCouple couple = tiersService.getEnsembleTiersCouple(pp, null);
+				assertNotNull(couple);
+				assertNotNull(couple.getPrincipal());
+				assertNotNull(couple.getConjoint());
+				assertNotNull(couple.getMenage());
+
+				final ForFiscalPrincipal ffp = couple.getMenage().getDernierForFiscalPrincipal();
+				assertNotNull(ffp);
+				assertEquals(dateArrivee, ffp.getDateDebut());
+				assertNull(ffp.getDateFin());
+				assertEquals(ModeImposition.SOURCE, ffp.getModeImposition());
+
+				return null;
+			}
+		});
+	}
 }

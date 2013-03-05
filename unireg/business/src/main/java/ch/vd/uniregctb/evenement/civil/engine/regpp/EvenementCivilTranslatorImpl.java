@@ -63,6 +63,7 @@ import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.interfaces.service.ServiceCivilService;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 import ch.vd.uniregctb.tiers.TiersDAO;
 import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.type.TypeEvenementCivil;
@@ -145,6 +146,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 	private AdresseService adresseService;
 	private GlobalTiersIndexer indexer;
 	private EvenementFiscalService evenementFiscalService;
+	private ParametreAppService parametreAppService;
 
 	private EvenementCivilContext context;
 
@@ -159,7 +161,7 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		context = new EvenementCivilContext(serviceCivilService, serviceInfrastructureService, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
 	}
 
 	public void setServiceCivilService(ServiceCivilService serviceCivilService) {
@@ -198,6 +200,11 @@ public class EvenementCivilTranslatorImpl implements EvenementCivilTranslator, I
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setEvenementFiscalService(EvenementFiscalService evenementFiscalService) {
 		this.evenementFiscalService = evenementFiscalService;
+	}
+
+	@SuppressWarnings({"UnusedDeclaration"})
+	public void setParametreAppService(ParametreAppService parametreAppService) {
+		this.parametreAppService = parametreAppService;
 	}
 
 	public void setContext(EvenementCivilContext context) {

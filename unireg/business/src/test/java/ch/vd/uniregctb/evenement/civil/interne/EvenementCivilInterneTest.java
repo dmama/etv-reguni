@@ -121,7 +121,7 @@ public class EvenementCivilInterneTest extends WithoutSpringTest {
 				evtMariage = new EvenementCivilRegPP(1L, TypeEvenementCivil.MARIAGE, EtatEvenementCivil.A_TRAITER, dateMariage, noIndMonsieur, null, MockCommune.Lausanne.getNoOFS(), null);
 
 		// passage dans l'init de l'adapter
-		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, new MockTiersDAO(), null, null);
+		final EvenementCivilContext context = new EvenementCivilContext(serviceCivil, infrastructureService, dataEventService, null, null, null, new MockTiersDAO(), null, null, null);
 		final EvenementCivilOptions options = new EvenementCivilOptions(true);
 		final EvenementCivilInterne adapter = new Mariage(evtMariage, context, options);
 

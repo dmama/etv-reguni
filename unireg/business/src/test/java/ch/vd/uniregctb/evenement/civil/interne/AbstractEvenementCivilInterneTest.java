@@ -17,6 +17,7 @@ import ch.vd.uniregctb.evenement.fiscal.EvenementFiscalService;
 import ch.vd.uniregctb.evenement.fiscal.MockEvenementFiscalSender;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
 import ch.vd.uniregctb.metier.MetierService;
+import ch.vd.uniregctb.parametrage.ParametreAppService;
 
 public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 
@@ -30,6 +31,7 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 	protected DataEventService dataEventService;
 	protected EvenementFiscalService evenementFiscalService;
 	protected EvenementCivilOptions options;
+	protected ParametreAppService parametreAppService;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -40,10 +42,11 @@ public abstract class AbstractEvenementCivilInterneTest extends BusinessTest {
 		metierService = getBean(MetierService.class, "metierService");
 		dataEventService = getBean(DataEventService.class, "dataEventService");
 		evenementFiscalService = getBean(EvenementFiscalService.class, "evenementFiscalService");
+		parametreAppService = getBean(ParametreAppService.class, "parametreAppService");
 		eventSender.count = 0;
 
 		final AdresseService adresseService = getBean(AdresseService.class, "adresseService");
-		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService);
+		context = new EvenementCivilContext(serviceCivil, serviceInfra, dataEventService, tiersService, indexer, metierService, tiersDAO, adresseService, evenementFiscalService, parametreAppService);
 		options = buildOptions();
 	}
 
