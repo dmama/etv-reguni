@@ -681,7 +681,6 @@ public class SuperGraManagerImpl implements SuperGraManager, InitializingBean {
 						                                               "NH_DATE_NAISSANCE = null," +
 						                                               "NH_SEXE = null," +
 						                                               "NH_NO_OFS_NATIONALITE = null," +
-						                                               "NH_NO_OFS_COMMUNE_ORIGINE = null," +
 						                                               "NH_LIBELLE_COMMUNE_ORIGINE = null," +
 						                                               "NH_CAT_ETRANGER = null," +
 						                                               "NH_DATE_DEBUT_VALID_AUTORIS = null," +

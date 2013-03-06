@@ -45,7 +45,6 @@
     <column>NH_NOM</column>
     <column>NH_NUMERO_ASSURE_SOCIAL</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NH_NO_OFS_COMMUNE_ORIGINE</column>
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
@@ -92,7 +91,6 @@
       <value>0</value>
       <null/>
       <value>Studer</value>
-      <null/>
       <null/>
       <null/>
       <null/>

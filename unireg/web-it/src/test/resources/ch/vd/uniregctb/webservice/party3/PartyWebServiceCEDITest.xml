@@ -3223,7 +3223,6 @@
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
     <column>MAJORITE_TRAITEE</column>
-    <column>NH_NO_OFS_COMMUNE_ORIGINE</column>
     <column>DATE_LIMITE_EXCLUSION</column>
     <row>
       <value>CollectiviteAdministrative</value>
@@ -3251,7 +3250,6 @@
       <null/>
       <null/>
       <value>1012</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3325,7 +3323,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -3371,7 +3368,6 @@
       <null/>
       <null/>
       <value>130364</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -3427,7 +3423,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -3478,7 +3473,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -3522,7 +3516,6 @@
       <null/>
       <value>0</value>
       <value><![CDATA[Trachsel/doublon Christelle             ]]></value>
-      <null/>
       <null/>
       <null/>
       <null/>

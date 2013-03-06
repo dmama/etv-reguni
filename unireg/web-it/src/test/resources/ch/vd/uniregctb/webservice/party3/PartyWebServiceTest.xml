@@ -50,7 +50,6 @@
     <column>NH_NOM</column>
     <column>NH_NUMERO_ASSURE_SOCIAL</column>
     <column>NUMERO_INDIVIDU</column>
-    <column>NH_NO_OFS_COMMUNE_ORIGINE</column>
     <column>NH_NO_OFS_NATIONALITE</column>
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
@@ -69,7 +68,6 @@
       <null/>
       <value>0</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -162,7 +160,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -212,7 +209,6 @@
       <value>0</value>
       <null/>
       <value><![CDATA[Tummers-De Wit Wouter]]></value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -272,7 +268,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -324,7 +319,6 @@
       <null/>
       <null/>
       <value>122937</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -382,7 +376,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -434,7 +427,6 @@
       <null/>
       <null/>
       <value>171324</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -492,7 +484,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -544,7 +535,6 @@
       <null/>
       <null/>
       <value>946284</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -602,7 +592,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -625,7 +614,6 @@
       <null/>
       <null/>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -712,7 +700,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -764,7 +751,6 @@
       <null/>
       <null/>
       <value>1013955</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -822,7 +808,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>MenageCommun</value>
@@ -839,7 +824,6 @@
       <null/>
       <value>0</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -932,7 +916,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -984,7 +967,6 @@
       <null/>
       <null/>
       <value>333908</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1042,7 +1024,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>DebiteurPrestationImposable</value>
@@ -1083,7 +1064,6 @@
       <value>MENSUEL</value>
       <value>1</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1149,7 +1129,6 @@
       <value>Conchita</value>
       <value>1245789312435</value>
       <null/>
-      <null/>
       <value>8212</value>
       <value>Andrea</value>
       <value>MASCULIN</value>
@@ -1169,7 +1148,6 @@
       <null/>
       <value>0</value>
       <value>1</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1262,7 +1240,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -1313,7 +1290,6 @@
       <null/>
       <value>Lederet</value>
       <value>7561234567897</value>
-      <null/>
       <null/>
       <value>8100</value>
       <value>Michel</value>
@@ -1367,7 +1343,6 @@
       <value>0</value>
       <null/>
       <value>Boschung</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1427,7 +1402,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -1480,7 +1454,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
       <value>Jean</value>
       <value>MASCULIN</value>
     </row>
@@ -1499,7 +1472,6 @@
       <null/>
       <value>0</value>
       <value>0</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -1587,7 +1559,6 @@
       <value>0</value>
       <null/>
       <value>Dupneu</value>
-      <null/>
       <null/>
       <null/>
       <null/>

@@ -48,7 +48,6 @@
     <column>NH_PRENOM</column>
     <column>NH_SEXE</column>
     <column>MAJORITE_TRAITEE</column>
-    <column>NH_NO_OFS_COMMUNE_ORIGINE</column>
     <column>DATE_LIMITE_EXCLUSION</column>
     <row>
       <value>MenageCommun</value>
@@ -71,7 +70,6 @@
       <value><![CDATA[0244451887               ]]></value>
       <null/>
       <value>19</value>
-      <null/>
       <null/>
       <null/>
       <null/>
@@ -150,7 +148,6 @@
       <null/>
       <null/>
       <null/>
-      <null/>
     </row>
     <row>
       <value>PersonnePhysique</value>
@@ -196,7 +193,6 @@
       <null/>
       <null/>
       <value>782552</value>
-      <null/>
       <null/>
       <null/>
       <null/>

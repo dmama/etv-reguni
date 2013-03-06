@@ -307,15 +307,6 @@ public class PersonnePhysique extends Contribuable {
 		numeroOfsNationalite = theNumeroOfsNationalite;
 	}
 
-	@Column(name = "NH_NO_OFS_COMMUNE_ORIGINE")
-	public Integer getNumeroOfsCommuneOrigine() {
-		return numeroOfsCommuneOrigine;
-	}
-
-	public void setNumeroOfsCommuneOrigine(Integer numeroOfsCommuneOrigine) {
-		this.numeroOfsCommuneOrigine = numeroOfsCommuneOrigine;
-	}
-
 	@Column(name = "NH_LIBELLE_COMMUNE_ORIGINE", length = LengthConstants.TIERS_LIB_ORIGINE)
 	public String getLibelleCommuneOrigine() {
 		return libelleCommuneOrigine;
