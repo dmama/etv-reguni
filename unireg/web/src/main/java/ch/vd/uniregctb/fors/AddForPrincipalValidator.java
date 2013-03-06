@@ -47,9 +47,10 @@ public class AddForPrincipalValidator extends AddForRevenuFortuneValidator {
 			errors.rejectValue("modeImposition", "error.mode.imposition.incorrect");
 		}
 		else {
+			StringBuilder messageErreurModeImposition = new StringBuilder();
 			if (!autorisationManager.isModeImpositionAllowed(ctb, view.getModeImposition(), view.getTypeAutoriteFiscale(), view.getMotifRattachement(), view.getDateDebut(),
-			                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID())) {
-				errors.rejectValue("modeImposition", "error.mode.imposition.interdit");
+			                                                 AuthenticationHelper.getCurrentPrincipal(), AuthenticationHelper.getCurrentOID(), messageErreurModeImposition)) {
+				errors.rejectValue("modeImposition", messageErreurModeImposition.toString());
 			}
 		}
 
