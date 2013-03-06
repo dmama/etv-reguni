@@ -1,23 +1,18 @@
 package ch.vd.uniregctb.common;
 
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
 /**
  * Un élément qui s'active et se désactive dans le thread courant
  */
 public class ThreadSwitch implements Switchable {
 
-	private static class Behavior {
-		public boolean enabled;
-		public Behavior(boolean enabled) {
-			this.enabled = enabled;
-		}
-	}
-
 	private final boolean initialValue;
 
-	private final ThreadLocal<Behavior> byThreadBehavior = new ThreadLocal<Behavior>() {
+	private final ThreadLocal<MutableBoolean> byThreadValue = new ThreadLocal<MutableBoolean>() {
 		@Override
-		protected Behavior initialValue() {
-			return new Behavior(initialValue);
+		protected MutableBoolean initialValue() {
+			return new MutableBoolean(initialValue);
 		}
 	};
 
@@ -25,17 +20,17 @@ public class ThreadSwitch implements Switchable {
 		this.initialValue = initialValue;
 	}
 
-	private Behavior getByThreadBehavior() {
-		return byThreadBehavior.get();
+	private MutableBoolean getByThreadValue() {
+		return byThreadValue.get();
 	}
 
 	@Override
 	public void setEnabled(boolean value) {
-		getByThreadBehavior().enabled = value;
+		getByThreadValue().setValue(value);
 	}
 
 	@Override
 	public boolean isEnabled() {
-		return getByThreadBehavior().enabled;
+		return getByThreadValue().booleanValue();
 	}
 }
