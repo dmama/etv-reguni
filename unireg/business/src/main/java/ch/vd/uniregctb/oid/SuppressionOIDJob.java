@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -35,6 +37,8 @@ import ch.vd.uniregctb.tiers.TiersService;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 
 public class SuppressionOIDJob extends JobDefinition {
+
+	private static final Logger LOGGER = Logger.getLogger(SuppressionOIDJob.class);
 
 	public static final String NAME = "SuppressionOIDJob";
 	private static final String CATEGORIE = "OID";
@@ -176,7 +180,7 @@ public class SuppressionOIDJob extends JobDefinition {
 				final Object[] oidParam = new Object[] { oid };
 				final Object[] officeImpotIdParam = new Object[] { officeImpotId };
 
-				final Set<Long> ids = new HashSet<Long>();
+				final Set<Long> ids = new TreeSet<Long>();
 
 				// sur le tiers lui-même
 				ids.addAll(hibernateTemplate.<Long>find("select tiers.id from Tiers tiers where tiers.officeImpotId = ?", oidParam, null));
@@ -206,42 +210,57 @@ public class SuppressionOIDJob extends JobDefinition {
 			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
 
 				// on crée des opérations (prepare statements sql) à l'avance
-				final List<UpdateOperation> operations = Arrays.asList(new UpdateTiers(con),
-				                                                       new UpdateDeclarations(con),
-				                                                       new UpdateMouvementsDestinations(con),
-				                                                       new UpdateMouvementsEmetteurs(con),
-				                                                       new UpdateMouvementsRecepteurs(con),
-				                                                       new UpdateTaches(con));
+				final List<UpdateOperation> operations = Arrays.<UpdateOperation>asList(new UpdateTiers(con),
+				                                                                        new UpdateDeclarations(con),
+				                                                                        new UpdateMouvementsDestinations(con),
+				                                                                        new UpdateMouvementsEmetteurs(con),
+				                                                                        new UpdateMouvementsRecepteurs(con),
+				                                                                        new UpdateTaches(con));
 
-				for (Long id : batch) {
+				try {
+					for (Long id : batch) {
 
-					// le nouvel office d'impôt de chaque tiers peut être différent, on va donc le chercher maintenant
-					final Tiers tiers = tiersDAO.get(id);
-					final CollectiviteAdministrative newOfficeImpot = tiersService.getOfficeImpotAt(tiers, RegDate.get()); // on spécifie explicitement la date du jour pour ne pas tomber dans le cache de l'OID
-					if (newOfficeImpot == null) {
-						rapport.addOIDInconnu(id);
-						continue;
+						// le nouvel office d'impôt de chaque tiers peut être différent, on va donc le chercher maintenant
+						final Tiers tiers = tiersDAO.get(id);
+						final CollectiviteAdministrative newOfficeImpot = tiersService.getOfficeImpotAt(tiers, RegDate.get()); // on spécifie explicitement la date du jour pour ne pas tomber dans le cache de l'OID
+						if (newOfficeImpot == null) {
+							rapport.addOIDInconnu(id);
+							continue;
+						}
+
+						// sanity check
+						if (oid == newOfficeImpot.getNumeroCollectiviteAdministrative()) {
+							throw new RuntimeException("Le nouvel office d'impôt calculé sur le tiers n°" + id + " est le même (" + newOfficeImpot.getNumeroCollectiviteAdministrative() +
+									                           ") que l'ancien. Est-ce que le référentiel Fidor est à jour ?");
+						}
+
+						final String muser = "Fermeture-OID-" + oid + "-" + newOfficeImpot.getNumeroCollectiviteAdministrative();
+
+						// on applique les changements
+						final Set<String> tables = new HashSet<String>();
+						for (UpdateOperation operation : operations) {
+							if (operation.execute(id, oid, officeImpotId, newOfficeImpot.getNumeroCollectiviteAdministrative(), newOfficeImpot.getId(), muser) > 0) {
+								tables.add(operation.getTable());
+							}
+						}
+
+						rapport.addTraite(id, newOfficeImpot.getNumeroCollectiviteAdministrative(), tables);
 					}
 
-					// sanity check
-					if (oid == newOfficeImpot.getNumeroCollectiviteAdministrative()) {
-						throw new RuntimeException("Le nouvel office d'impôt calculé sur le tiers n°" + id + " est le même (" + newOfficeImpot.getNumeroCollectiviteAdministrative() +
-								                           ") que l'ancien. Est-ce que le référentiel Fidor est à jour ?");
-					}
-
-					final String muser = "Fermeture-OID-" + oid + "-" + newOfficeImpot.getNumeroCollectiviteAdministrative();
-
-					// on applique les changements
-					final Set<String> tables = new HashSet<String>();
+					return null;
+				}
+				finally {
+					// on n'oublie pas de fermer les prepared statements...
 					for (UpdateOperation operation : operations) {
-						if (operation.execute(id, oid, officeImpotId, newOfficeImpot.getNumeroCollectiviteAdministrative(), newOfficeImpot.getId(), muser) > 0) {
-							tables.add(operation.getTable());
+						try {
+							operation.close();
+						}
+						catch (SQLException e) {
+							LOGGER.error("Impossible de fermer un prepared statement " + operation.getClass().getName(), e);
+							// que puis-je faire d'autre...?
 						}
 					}
-
-					rapport.addTraite(id, newOfficeImpot.getNumeroCollectiviteAdministrative(), tables);
 				}
-				return null;
 			}
 		});
 	}
@@ -251,14 +270,36 @@ public class SuppressionOIDJob extends JobDefinition {
 		String getTable();
 
 		int execute(long id, final int oldOid, final long oldOfficeImpotId, final int newOid, final long newOfficeImpotId, String muser) throws SQLException;
+
+		void close() throws SQLException;
 	}
 
-	public class UpdateTiers implements UpdateOperation {
+	public abstract class UpdateOperationImpl implements UpdateOperation {
 
-		final PreparedStatement st;
+		private final PreparedStatement st;
+
+		protected UpdateOperationImpl(PreparedStatement st) {
+			this.st = st;
+		}
+
+		@Override
+		public final int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+			fillStatementParameters(st, id, oldOid, oldOfficeImpotId, newOid, newOfficeImpotId, muser);
+			return st.executeUpdate();
+		}
+
+		protected abstract void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException;
+
+		@Override
+		public void close() throws SQLException {
+			st.close();
+		}
+	}
+
+	public class UpdateTiers extends UpdateOperationImpl {
 
 		public UpdateTiers(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE TIERS T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, OID=? WHERE NUMERO=? AND OID=?");
+			super(con.prepareStatement("UPDATE TIERS T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, OID=? WHERE NUMERO=? AND OID=?"));
 		}
 
 		@Override
@@ -267,21 +308,18 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setInt(2, newOid); // OID (nouveau)
 			st.setLong(3, id); // NUMERO
 			st.setInt(4, oldOid); // OID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
-	public class UpdateDeclarations implements UpdateOperation {
-
-		final PreparedStatement st;
+	public class UpdateDeclarations extends UpdateOperationImpl {
 
 		public UpdateDeclarations(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE DECLARATION T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, RETOUR_COLL_ADMIN_ID=? WHERE TIERS_ID=? AND RETOUR_COLL_ADMIN_ID=?");
+			super(con.prepareStatement("UPDATE DECLARATION T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, RETOUR_COLL_ADMIN_ID=? WHERE TIERS_ID=? AND RETOUR_COLL_ADMIN_ID=?"));
 		}
 
 		@Override
@@ -290,21 +328,18 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setLong(2, newOfficeImpotId); // RETOUR_COLL_ADMIN_ID (nouveau)
 			st.setLong(3, id); // TIERS_ID
 			st.setLong(4, oldOfficeImpotId); // RETOUR_COLL_ADMIN_ID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
-	public class UpdateMouvementsDestinations implements UpdateOperation {
-
-		final PreparedStatement st;
+	public class UpdateMouvementsDestinations extends UpdateOperationImpl {
 
 		public UpdateMouvementsDestinations(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_DEST_ID=? WHERE CTB_ID=? AND COLL_ADMIN_DEST_ID=?");
+			super(con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_DEST_ID=? WHERE CTB_ID=? AND COLL_ADMIN_DEST_ID=?"));
 		}
 
 		@Override
@@ -313,21 +348,18 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setLong(2, newOfficeImpotId); // COLL_ADMIN_DEST_ID (nouveau)
 			st.setLong(3, id); // CTB_ID
 			st.setLong(4, oldOfficeImpotId); // COLL_ADMIN_DEST_ID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
-	public class UpdateMouvementsEmetteurs implements UpdateOperation {
-
-		final PreparedStatement st;
+	public class UpdateMouvementsEmetteurs extends UpdateOperationImpl {
 
 		public UpdateMouvementsEmetteurs(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_EMETTRICE_ID=? WHERE CTB_ID=? AND COLL_ADMIN_EMETTRICE_ID=?");
+			super(con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_EMETTRICE_ID=? WHERE CTB_ID=? AND COLL_ADMIN_EMETTRICE_ID=?"));
 		}
 
 		@Override
@@ -336,21 +368,18 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setLong(2, newOfficeImpotId); // COLL_ADMIN_EMETTRICE_ID (nouveau)
 			st.setLong(3, id); // CTB_ID
 			st.setLong(4, oldOfficeImpotId); // COLL_ADMIN_EMETTRICE_ID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
-	public class UpdateMouvementsRecepteurs implements UpdateOperation {
-
-		final PreparedStatement st;
+	public class UpdateMouvementsRecepteurs extends UpdateOperationImpl {
 
 		public UpdateMouvementsRecepteurs(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_RECEPTRICE_ID=? WHERE CTB_ID=? AND COLL_ADMIN_RECEPTRICE_ID=?");
+			super(con.prepareStatement("UPDATE MOUVEMENT_DOSSIER T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, COLL_ADMIN_RECEPTRICE_ID=? WHERE CTB_ID=? AND COLL_ADMIN_RECEPTRICE_ID=?"));
 		}
 
 		@Override
@@ -359,21 +388,18 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setLong(2, newOfficeImpotId); // COLL_ADMIN_RECEPTRICE_ID (nouveau)
 			st.setLong(3, id); // CTB_ID
 			st.setLong(4, oldOfficeImpotId); // COLL_ADMIN_RECEPTRICE_ID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
-	public class UpdateTaches implements UpdateOperation {
-
-		final PreparedStatement st;
+	public class UpdateTaches extends UpdateOperationImpl {
 
 		public UpdateTaches(Connection con) throws SQLException {
-			st = con.prepareStatement("UPDATE TACHE T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, CA_ID=? WHERE CTB_ID=? AND CA_ID=?");
+			super(con.prepareStatement("UPDATE TACHE T SET LOG_MDATE=CURRENT_DATE, LOG_MUSER=?, CA_ID=? WHERE CTB_ID=? AND CA_ID=?"));
 		}
 
 		@Override
@@ -382,12 +408,11 @@ public class SuppressionOIDJob extends JobDefinition {
 		}
 
 		@Override
-		public int execute(long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
+		protected void fillStatementParameters(PreparedStatement st, long id, int oldOid, long oldOfficeImpotId, int newOid, long newOfficeImpotId, String muser) throws SQLException {
 			st.setString(1, muser); // LOG_MUSER
 			st.setLong(2, newOfficeImpotId); // CA_ID (nouveau)
 			st.setLong(3, id); // CTB_ID
 			st.setLong(4, oldOfficeImpotId); // CA_ID (ancien)
-			return st.executeUpdate();
 		}
 	}
 
