@@ -49,7 +49,7 @@ public class PdfSuppressionOIDRapport extends PdfRapport {
 		{
 			final String filename = "tiers_traites.csv";
 			final String contenu = asCsvFile(results.traites, filename, status);
-			final String titre = "Liste des immeubles importés";
+			final String titre = "Liste des tiers traités";
 			final String listVide = "(aucun)";
 			addListeDetaillee(writer, titre, listVide, filename, contenu);
 		}
