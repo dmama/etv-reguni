@@ -117,6 +117,13 @@ public class PersonnePhysique extends Contribuable {
 	 */
 	private Boolean majoriteTraitee;
 
+	/**
+	 * [SIFISC-8177] Booléen utilisé par le batch de passage au rôle des sourcier rentiers, afin de ne pas traiter le même contribuable
+	 * lors de deux exécutions différentes du batch, dans le cas où par exemple une décision métier a conservé l'assujettissement
+	 * "source pure" sur un contribuable précédemment passé au rôle par ce batch
+	 */
+	private Boolean rentierSourcierPasseAuRole;
+
 	@Transient
 	@Override
 	public NatureTiers getNatureTiers() {
@@ -416,6 +423,15 @@ public class PersonnePhysique extends Contribuable {
 
 	public void setMajoriteTraitee(Boolean value) {
 		this.majoriteTraitee = value;
+	}
+
+	@Column(name = "RENTIER_SRC_ROLE")
+	public Boolean getRentierSourcierPasseAuRole() {
+		return rentierSourcierPasseAuRole;
+	}
+
+	public void setRentierSourcierPasseAuRole(Boolean rentierSourcierPasseAuRole) {
+		this.rentierSourcierPasseAuRole = rentierSourcierPasseAuRole;
 	}
 
 	/**

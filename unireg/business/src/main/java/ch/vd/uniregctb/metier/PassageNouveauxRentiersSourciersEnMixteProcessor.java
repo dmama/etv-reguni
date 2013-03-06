@@ -279,8 +279,12 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 				dernierForFiscalPrincipal.getTypeAutoriteFiscale(), ModeImposition.MIXTE_137_1, MotifFor.CHGT_MODE_IMPOSITION);
 		LOGGER.info("ouverture du for mixte pour le contribuable [" + contribuable.getNumero() +"]");
 		rapport.addSourcierConverti(contribuable.getNumero());
+
+		// [SIFISC-8177] flag pour ne pas y revenir
+		sourcier.setRentierSourcierPasseAuRole(Boolean.TRUE);
 		if (data.isMenage() && conjoint != null) {
 			conjointAIgnorer.add(conjoint.getNumero());
+			conjoint.setRentierSourcierPasseAuRole(Boolean.TRUE);
 		}
 	}
 
@@ -343,6 +347,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					+ "WHERE                                                                              "
 					+ "	   pp.annulationDate IS null                                                      "
 					+ "	   AND pp.dateDeces IS null                                                       "
+					+ "	   AND (pp.rentierSourcierPasseAuRole IS null OR pp.rentierSourcierPasseAuRole != true)"
 					+ "	   AND (pp.dateNaissance IS null                                                  "
 					+ "      OR pp.dateNaissance <= :pivot AND pp.sexe IS null                            "
 					+ "      OR pp.dateNaissance <= :pivotHomme AND pp.sexe = '" + Sexe.MASCULIN + "'     "
@@ -382,7 +387,7 @@ public class PassageNouveauxRentiersSourciersEnMixteProcessor {
 					+ "                     AND fors2.modeImposition = '" + ModeImposition.SOURCE + "'))) "
 					+ "ORDER BY pp.id ASC                                                                 ";
 
-	private List<Long> getListPotentielsNouveauxRentiersSourciers(final RegDate date) {
+	protected List<Long> getListPotentielsNouveauxRentiersSourciers(final RegDate date) {
 		final RegDate datePivotHomme = date.addYears(-ageRentierHomme);
 		final RegDate datePivotFemme = date.addYears(-ageRentierFemme);
 		final RegDate datePivotLaPlusAncienne = datePivotHomme.isBefore(datePivotFemme) ? datePivotHomme : datePivotFemme;
