@@ -101,6 +101,7 @@ public class BlockingQueueMixerTest extends WithoutSpringTest {
 			}
 			// this one is not coming through the autobahn... but should be quicker than most due to the congestion
 			landstrasse.add(quickone);
+			Thread.sleep(10);       // <-- on attend un peu pour stabiliser tout ça
 			Assert.assertEquals(nbEltsAutobahn + 1, mixer.size());
 
 			Integer indexFound = null;
