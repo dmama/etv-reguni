@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
 import ch.vd.registre.base.date.DateRangeComparator;
+import ch.vd.registre.base.date.DateRangeHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.registre.base.validation.ValidationMessage;
@@ -5493,5 +5494,68 @@ public class TacheServiceTest extends BusinessTest {
 			assertNotNull(officeImpot);
 			assertEquals(MockOfficeImpot.OID_LAUSANNE_OUEST.getNoColAdm(), officeImpot.getNumeroCollectiviteAdministrative().intValue());
 		}
+	}
+
+	/**
+	 * [UNIREG-820] [SIFISC-8197]
+	 */
+	@Test
+	public void testTypeDeclarationImpotDansTacheEnvoi() throws Exception {
+
+		serviceCivil.setUp(new MockServiceCivil() {
+			@Override
+			protected void init() {
+				// personne...
+			}
+		});
+
+		// mise en place fiscale
+		final RegDate dateDebutActivite = date(RegDate.get().year() - 2, 6, 15);
+		final long ppId = doInNewTransactionAndSession(new TransactionCallback<Long>() {
+			@Override
+			public Long doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = addNonHabitant("Galinette", "Sandré", null, Sexe.FEMININ);
+				addForPrincipal(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockPays.Allemagne);
+				addForSecondaire(pp, dateDebutActivite, MotifFor.DEBUT_EXPLOITATION, MockCommune.Lausanne.getNoOFS(), MotifRattachement.ACTIVITE_INDEPENDANTE);
+				return pp.getNumero();
+			}
+		});
+
+		// vérification des tâches d'envoi
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pp);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(2, taches.size());
+
+				for (Tache tache : taches) {
+					assertNotNull(tache);
+
+					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
+					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
+
+					// [UNIREG-820] dit ceci:
+					// la première année, pas de DI avant, ni assujettissement -> VAUDTAX
+					// la seconde année, toujours pas de DI avant, mais assujettissement l'année précédente -> COMPLETE
+					final TypeDocument typeDocumentAttendu;
+					if (tacheDi.getDateDebut().year() == dateDebutActivite.year()) {
+						typeDocumentAttendu = TypeDocument.DECLARATION_IMPOT_VAUDTAX;
+					}
+					else {
+						typeDocumentAttendu = TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH;
+					}
+					assertEquals(DateRangeHelper.toDisplayString(tacheDi), typeDocumentAttendu, tacheDi.getTypeDocument());
+				}
+
+				return null;
+			}
+		});
 	}
 }
