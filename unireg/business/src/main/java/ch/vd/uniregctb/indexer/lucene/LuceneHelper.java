@@ -14,6 +14,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.WildcardQuery;
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.simpleindexer.LuceneData;
 import ch.vd.uniregctb.indexer.IndexerException;
 import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
 import ch.vd.uniregctb.indexer.OurOwnStandardAnalyzer;
@@ -28,7 +29,7 @@ public abstract class LuceneHelper {
 	public static final String F_DOCTYPE = "DOCTYPE";
 	public static final String F_DOCSUBTYPE = "DOCSUBTYPE";
 	public static final String F_DOCID = "DOCID";
-	public static final String F_ENTITYID = "ENTITYID";
+	public static final String F_ENTITYID = LuceneData.F_ID;
 
 	private LuceneHelper() {
 	}

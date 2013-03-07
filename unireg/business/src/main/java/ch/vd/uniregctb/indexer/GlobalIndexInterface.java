@@ -47,7 +47,7 @@ public interface GlobalIndexInterface {
 	int deleteDuplicate();
 
 
-	void removeEntity(Long id, String type) throws IndexerException;
+	void removeEntity(Long id) throws IndexerException;
 
 	/**
 	 * Recherche les <i>maxHits</i> meilleures résultats.

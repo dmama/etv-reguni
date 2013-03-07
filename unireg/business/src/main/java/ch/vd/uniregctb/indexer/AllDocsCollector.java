@@ -6,6 +6,8 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Scorer;
 
+import ch.vd.registre.simpleindexer.DocGetter;
+
 /**
  * Collector lucene qui accepte tous les documents, dans n'importe quel ordre.
  */

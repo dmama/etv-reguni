@@ -1,5 +1,7 @@
 package ch.vd.uniregctb.indexer;
 
+import ch.vd.registre.simpleindexer.DocGetter;
+
 /**
  * Méthode de callback appelée par les méthodes 'search' du global index.
  *

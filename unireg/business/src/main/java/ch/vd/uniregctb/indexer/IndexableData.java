@@ -3,6 +3,7 @@ package ch.vd.uniregctb.indexer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
+import ch.vd.registre.simpleindexer.LuceneData;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 /**
@@ -12,7 +13,7 @@ import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public abstract class IndexableData {
+public abstract class IndexableData implements LuceneData {
 
 	protected final Long id;
 	protected final String type;
@@ -24,7 +25,7 @@ public abstract class IndexableData {
 		this.subType = subType;
 	}
 
-	public Long getId() {
+	public long getId() {
 		return id;
 	}
 

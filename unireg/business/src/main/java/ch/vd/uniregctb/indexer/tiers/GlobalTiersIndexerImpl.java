@@ -286,7 +286,7 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 		
 		for (Long id : ids) {
 			statusManager.setMessage("Suppression du tiers " + id, (100 * i) / size);
-			removeEntity(id, TiersIndexable.TYPE);
+			removeEntity(id);
 			i++;
 		}
 	}
@@ -626,8 +626,8 @@ public class GlobalTiersIndexerImpl implements GlobalTiersIndexer, InitializingB
 	    }
     }
 
-    public void removeEntity(Long id, String type) {
-        globalIndex.removeEntity(id, type);
+    public void removeEntity(Long id) {
+        globalIndex.removeEntity(id);
     }
 
 	@Override

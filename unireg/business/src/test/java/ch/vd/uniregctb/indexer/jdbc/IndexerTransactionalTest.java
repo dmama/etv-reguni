@@ -13,9 +13,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionCallback;
 
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.RequiresNewTransactionDefinition;
-import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.SearchCallback;

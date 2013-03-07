@@ -3,7 +3,7 @@ package ch.vd.uniregctb.indexer.concurrent;
 import org.apache.log4j.Logger;
 import org.apache.lucene.search.TopDocs;
 
-import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.SearchCallback;
 

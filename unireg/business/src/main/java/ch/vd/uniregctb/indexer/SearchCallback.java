@@ -2,6 +2,8 @@ package ch.vd.uniregctb.indexer;
 
 import org.apache.lucene.search.TopDocs;
 
+import ch.vd.registre.simpleindexer.DocGetter;
+
 /**
  * Méthode de callback appelée par les méthodes 'search' du global index.
  *

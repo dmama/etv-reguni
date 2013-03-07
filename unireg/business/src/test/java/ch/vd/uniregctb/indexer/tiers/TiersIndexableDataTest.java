@@ -9,8 +9,8 @@ import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
 import ch.vd.registre.base.date.RegDate;
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.WithoutSpringTest;
-import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.IndexerFormatHelper;
 import ch.vd.uniregctb.indexer.SearchCallback;

@@ -1,7 +1,6 @@
 package ch.vd.uniregctb.indexer;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
@@ -20,11 +18,9 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.WildcardQuery;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Assert;
 
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
-import ch.vd.uniregctb.indexer.lucene.IndexProvider;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 import static junit.framework.Assert.assertEquals;
@@ -389,7 +385,7 @@ public class GlobalIndexTest extends BusinessTest {
 
 		// un document effacé
 		globalIndex.indexEntity(new SimpleData(123456L, "test1", null, "value1"));
-		globalIndex.removeEntity(123456L, "test1");
+		globalIndex.removeEntity(123456L);
 		globalIndex.indexEntity(new SimpleData(123456L, "test2", null, "value2"));
 		assertHits(1, LuceneHelper.F_ENTITYID + ":123456");
 
@@ -424,32 +420,29 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	/**
-	 * On fait 2 recherches qui renvoie 1 entité et 2 entités On supprime, le nombre de docs dans l'indexer a pas changé On optimize() Le
-	 * nombre d'entités dans lîndex doit changer
-	 *
-	 * @throws IndexerException
-	 * @throws ParseException
+	 * On fait 2 recherches qui renvoie 1 entité et 2 entités. On en supprime une, le nombre de docs dans l'indexer ne doit pas changer. On optimize l'indexe et le
+	 * nombre d'entités dans l'index doit changer
 	 */
 	@Test
 	public void testRemoveDocumentNeCherchePlus() throws IndexerException, ParseException {
 
-		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
+		// Un hit avec TYPE=DocType and ID=4567
+		assertHits(1, LuceneHelper.F_ENTITYID + ":4567");
 
 		// 2 hits avec ID=2345
 		assertHits(2, LuceneHelper.F_ENTITYID + ":2345");
 
-		// Remove one HIT (ID=1234 AND type=DocType)
+		// Remove one HIT (ID=4567)
 		{
 			int before = globalIndex.getApproxDocCount();
-			globalIndex.removeEntity(1234L, TYPE);
+			globalIndex.removeEntity(4567L);
 			globalIndex.optimize(); // Permet que le docCount renvoie juste
 			int after = globalIndex.getApproxDocCount();
 			assertEquals(before, after + 1);
 		}
 
 		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
+		assertHits(0, LuceneHelper.F_ENTITYID + ":4567");
 
 		// We should have 2 documents with ID=2345
 		assertHits(2, LuceneHelper.F_ENTITYID + ":2345");
@@ -479,37 +472,33 @@ public class GlobalIndexTest extends BusinessTest {
 		// 2 hits avec ID=2345
 		assertHits(2, "NUMERO:2345");
 
-		// Un hit avec TYPE=DocType and ID=1234
-		assertHits(1, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
+		// 1 hits avec ID=4567
+		assertHits(1, "NUMERO:4567");
 
-		// Remove one HIT (ID=1234 AND type=DocType)
+		// Remove one HIT (ID=4567)
 		{
 			int before = globalIndex.getApproxDocCount();
-			globalIndex.removeEntity(1234L, TYPE);
+			globalIndex.removeEntity(4567L);
 			globalIndex.optimize();
 			int after = globalIndex.getApproxDocCount();
-			assertEquals(after, before - 1);
+			assertEquals(before - 1, after);
 			assertEquals(data.length - 1, globalIndex.getApproxDocCount());
 		}
 
-		// We should have no more document with ID=1234 and TYPE=DocType
-		assertHits(0, LuceneHelper.F_DOCID + ':' + TYPE + "-1234");
-
-		// We should have one document with ID=2345
-		assertHits(1, LuceneHelper.F_ENTITYID + ":1234");
+		// We should have no more document with ID=4567
+		assertHits(0, "NUMERO:4567");
 
 		// Remove 2 hits (ID=2345)
 		{
 			int before = globalIndex.getApproxDocCount();
-			globalIndex.removeEntity(2345L, TYPE);
+			globalIndex.removeEntity(2345L);
 			globalIndex.optimize(); // Delete pour de vrai
 			int after = globalIndex.getApproxDocCount();
-			assertEquals(after, before - 1);
-			assertEquals(data.length - 2, globalIndex.getApproxDocCount());
+			assertEquals(before - 2, after);
 		}
 
 		// We should have no more document with ID=2345
-		assertHits(1, "NUMERO:2345");
+		assertHits(0, "NUMERO:2345");
 	}
 
 	@Test
@@ -587,100 +576,6 @@ public class GlobalIndexTest extends BusinessTest {
 				for (int i = 1; i < 10; ++i) {
 					for (Data d : data) {
 						globalIndex.indexEntity(d);
-					}
-				}
-			}
-		};
-
-		final List<Throwable> throwables = new ArrayList<Throwable>();
-
-		UncaughtExceptionHandler handler = new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException(Thread t, Throwable e) {
-				throwables.add(e);
-			}
-		};
-
-		// on crée 4 threads qui vont réindexer toutes les données en parallèle
-		Thread thread1 = new Thread(command);
-		Thread thread2 = new Thread(command);
-		Thread thread3 = new Thread(command);
-		Thread thread4 = new Thread(command);
-		thread1.setUncaughtExceptionHandler(handler);
-		thread2.setUncaughtExceptionHandler(handler);
-		thread3.setUncaughtExceptionHandler(handler);
-		thread4.setUncaughtExceptionHandler(handler);
-
-		thread1.start();
-		thread2.start();
-		thread3.start();
-		thread4.start();
-
-		thread1.join();
-		thread2.join();
-		thread3.join();
-		thread4.join();
-
-		for (Throwable t : throwables) {
-			LOGGER.error(t, t);
-		}
-		assertEmpty(throwables);
-	}
-
-	/**
-	 * Teste que le global index est process-safe
-	 * <p>
-	 * Note: on ne peut pas créer facilement des sous-processus avec Java (fork() ne fonctionne à l'intérieur d'une JVM). Il est possible de
-	 * démarrer des processus, mais il faut spécifier la ligne de commande complète, et ce n'est pas vraiment pas pratique dans le cadre de
-	 * tests unitaires.
-	 * <p>
-	 * Alors, on triche un peu et on contourne la synchronisation mise en place par le GlobalIndex en créant à la main des IndexWriter
-	 * depuis plusieurs threads. Dans ces conditions, plusieurs IndexWriters vont essayer d'accéder au répertoire d'index sur le disque, ce
-	 * qui correspond à la configuration de plusieurs processes (Unireg + Unireg interface) se partageant le même index.
-	 */
-	@Test
-	@Transactional(rollbackFor = Throwable.class)
-	public void testMultiprocessAccess() throws Exception {
-
-		// crée un index local de manière à pouvoir utiliser les méthodes protégées
-		final IndexProvider provider = new FSIndexProvider(indexPath);
-		final GlobalIndex localIndex = new GlobalIndex(provider);
-		localIndex.afterPropertiesSet();
-
-		Runnable command = new Runnable() {
-			@Override
-			public void run() {
-
-				IndexWriter writer = null;
-				try {
-					writer = localIndex.index.createDetachedWriterForTestingOnly();
-					for (int i = 1; i < 10; ++i) {
-						for (Data d : data) {
-							/*
-							 * on contourne la synchronisation de la classe LuceneIndex, de manière simuler plusieurs processus
-							 * utilisant des writers
-							 */
-							Document doc = d.asDoc();
-							Assert.notNull(doc);
-							writer.addDocument(doc);
-						}
-					}
-				}
-				catch (Exception e) {
-					throw new RuntimeException(e);
-				}
-				finally {
-					safeClose(writer);
-				}
-			}
-
-			private void safeClose(IndexWriter writer) {
-				if (writer != null) {
-					try {
-						writer.close();
-					}
-					catch (IOException e) {
-						throw new RuntimeException(e);
 					}
 				}
 			}

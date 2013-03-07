@@ -136,16 +136,16 @@ public class GlobalIndexTracing implements GlobalIndexInterface, InitializingBea
 	}
 
 	@Override
-	public void removeEntity(final Long id, final String type) throws IndexerException {
+	public void removeEntity(final Long id) throws IndexerException {
 		long time = tracing.start();
 		try {
-			target.removeEntity(id, type);
+			target.removeEntity(id);
 		}
 		finally {
 			tracing.end(time, "removeEntity", new Object() {
 				@Override
 				public String toString() {
-					return String.format("id=%d, type=%s", id, type);
+					return String.format("id=%d", id);
 				}
 			});
 		}

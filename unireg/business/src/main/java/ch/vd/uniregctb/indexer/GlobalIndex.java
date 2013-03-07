@@ -11,12 +11,13 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import ch.vd.registre.base.utils.Assert;
+import ch.vd.registre.simpleindexer.LuceneException;
+import ch.vd.registre.simpleindexer.LuceneIndex;
+import ch.vd.registre.simpleindexer.ReadOnlyCallback;
+import ch.vd.registre.simpleindexer.Searcher;
+import ch.vd.registre.simpleindexer.WriteCallback;
+import ch.vd.registre.simpleindexer.Writer;
 import ch.vd.uniregctb.indexer.lucene.IndexProvider;
-import ch.vd.uniregctb.indexer.lucene.LuceneIndex;
-import ch.vd.uniregctb.indexer.lucene.ReadOnlyCallback;
-import ch.vd.uniregctb.indexer.lucene.Searcher;
-import ch.vd.uniregctb.indexer.lucene.WriteCallback;
-import ch.vd.uniregctb.indexer.lucene.Writer;
 
 /**
  * Cette classe est le point d'entrée unique vers l'indexeur Lucene. Il gère notamment l'initialisation des ressources, l'accès concurrent
@@ -120,13 +121,18 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	public void optimize() throws IndexerException {
 		LOGGER.trace("Optimizing indexer...");
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				writer.optimize();
-				return null;
-			}
-		});
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					writer.optimize();
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		LOGGER.trace("Indexer optimized");
 	}
@@ -138,13 +144,18 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	public void flush() throws IndexerException {
 		LOGGER.trace("Flushing indexer...");
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				writer.commit();
-				return null;
-			}
-		});
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					writer.commit();
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		LOGGER.trace("Indexer flushed");
 	}
@@ -165,14 +176,19 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				writer.remove(data);
-				writer.index(data);
-				return null;
-			}
-		});
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					writer.remove(data.id);
+					writer.index(data);
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Removing and indexing done entity: id = " + data.getId());
@@ -195,16 +211,21 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				for (IndexableData d : data) {
-					writer.remove(d);
-					writer.index(d);
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					for (IndexableData d : data) {
+						writer.remove(d.id);
+						writer.index(d);
+					}
+					return null;
 				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Re-indexing entities done: ids = " + Arrays.toString(data.toArray()));
@@ -227,13 +248,18 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				writer.index(data);
-				return null;
-			}
-		});
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					writer.index(data);
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Indexing done entity: id = " + data.getId());
@@ -256,15 +282,20 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				for (IndexableData d : data) {
-					writer.index(d);
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					for (IndexableData d : data) {
+						writer.index(d);
+					}
+					return null;
 				}
-				return null;
-			}
-		});
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Indexing entities done: ids = " + Arrays.toString(data.toArray()));
@@ -283,7 +314,13 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return -1;
 		}
 
-		final int count = index.deleteDuplicate();
+		final int count;
+		try {
+			count = index.deleteDuplicate();
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Deleting duplicated entities done.");
@@ -296,7 +333,7 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void removeEntity(final Long id, final String type) throws IndexerException {
+	public void removeEntity(final Long id) throws IndexerException {
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Removing entity...");
@@ -307,16 +344,21 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.write(new WriteCallback() {
-			@Override
-			public Object doInWrite(Writer writer) {
-				writer.remove(id, type);
-				return null;
-			}
-		});
+		try {
+			index.write(new WriteCallback() {
+				@Override
+				public Object doInWrite(Writer writer) {
+					writer.remove(id);
+					return null;
+				}
+			});
+		}
+		catch (LuceneException e) {
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
-			LOGGER.trace("Removing done of " + type + '-' + id);
+			LOGGER.trace("Removing done of " + id);
 		}
 	}
 
@@ -335,23 +377,23 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.read(new ReadOnlyCallback() {
-			@Override
-			public Object doInReadOnly(final Searcher searcher) {
-				try {
+		try {
+			index.read(new ReadOnlyCallback() {
+				@Override
+				public Object doInReadOnly(final Searcher searcher) throws Exception {
 					final TopDocs hits = searcher.search(query, maxHits);
 					callback.handle(hits, searcher.getDocGetter());
+					return null;
 				}
-				catch (IndexerException e) {
-					// pour ne pas transformer une TooManyException en IndexerException
-					throw e;
-				}
-				catch (Exception e) {
-					throw new IndexerException(e);
-				}
-				return null;
+			});
+		}
+		catch (LuceneException e) {
+			// pour ne pas transformer une TooManyException en IndexerException
+			if (e.getCause() instanceof IndexerException) {
+				throw (IndexerException) e.getCause();
 			}
-		});
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Searching done: " + query);
@@ -373,23 +415,23 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.read(new ReadOnlyCallback() {
-			@Override
-			public Object doInReadOnly(Searcher searcher) {
-				try {
+		try {
+			index.read(new ReadOnlyCallback() {
+				@Override
+				public Object doInReadOnly(Searcher searcher) throws Exception {
 					final TopDocs hits = searcher.search(query, maxHits);
 					callback.handle(hits, searcher.getDocGetter());
+					return null;
 				}
-				catch (IndexerException e) {
-					// pour ne pas transformer une TooManyException en IndexerException
-					throw e;
-				}
-				catch (Exception e) {
-					throw new IndexerException(e);
-				}
-				return null;
+			});
+		}
+		catch (LuceneException e) {
+			// pour ne pas transformer une TooManyException en IndexerException
+			if (e.getCause() instanceof IndexerException) {
+				throw (IndexerException) e.getCause();
 			}
-		});
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Searching done: " + query);
@@ -408,23 +450,23 @@ public class GlobalIndex implements InitializingBean, DisposableBean, GlobalInde
 			return;
 		}
 
-		index.read(new ReadOnlyCallback() {
-			@Override
-			public Object doInReadOnly(final Searcher searcher) {
-				try {
+		try {
+			index.read(new ReadOnlyCallback() {
+				@Override
+				public Object doInReadOnly(final Searcher searcher) throws Exception {
 					final Collector collector = new AllDocsCollector(callback, searcher.getDocGetter());
 					searcher.searchAll(query, collector);
+					return null;
 				}
-				catch (IndexerException e) {
-					// pour ne pas transformer une TooManyException en IndexerException
-					throw e;
-				}
-				catch (Exception e) {
-					throw new IndexerException(e);
-				}
-				return null;
+			});
+		}
+		catch (LuceneException e) {
+			// pour ne pas transformer une TooManyException en IndexerException
+			if (e.getCause() instanceof IndexerException) {
+				throw (IndexerException) e.getCause();
 			}
-		});
+			throw new IndexerException(e);
+		}
 
 		if (LOGGER.isTraceEnabled()) {
 			LOGGER.trace("Searching done: " + query);

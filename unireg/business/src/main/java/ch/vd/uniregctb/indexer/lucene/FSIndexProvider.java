@@ -4,7 +4,10 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 
+import ch.vd.registre.simpleindexer.LuceneIndex;
+import ch.vd.registre.simpleindexer.LuceneIndexImpl;
 import ch.vd.uniregctb.indexer.IndexerException;
+import ch.vd.uniregctb.indexer.OurOwnFrenchAnalyzer;
 
 public class FSIndexProvider implements IndexProvider {
 
@@ -25,7 +28,11 @@ public class FSIndexProvider implements IndexProvider {
 
 	@Override
 	public LuceneIndex getNewIndex() throws Exception {
-		return new LuceneIndex(new File(indexPath));
+		final LuceneIndexImpl index = new LuceneIndexImpl();
+		index.setDirectoryPath(new File(indexPath));
+		index.setAnalyzer(new OurOwnFrenchAnalyzer());
+		index.open();
+		return index;
 	}
 
 	@Override

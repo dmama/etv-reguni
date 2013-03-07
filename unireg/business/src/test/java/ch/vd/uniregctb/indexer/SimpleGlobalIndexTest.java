@@ -6,6 +6,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TopDocs;
 import org.junit.Test;
 
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.WithoutSpringTest;
 import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;

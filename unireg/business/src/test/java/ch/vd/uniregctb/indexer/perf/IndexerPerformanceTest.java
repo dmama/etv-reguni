@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 import ch.vd.registre.base.date.DateHelper;
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.BusinessTest;
-import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexableData;
 import ch.vd.uniregctb.indexer.SearchCallback;

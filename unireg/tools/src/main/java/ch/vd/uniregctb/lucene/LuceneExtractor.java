@@ -11,11 +11,12 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 
-import ch.vd.uniregctb.indexer.DocGetter;
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.SearchAllCallback;
 import ch.vd.uniregctb.indexer.lucene.FSIndexProvider;
 import ch.vd.uniregctb.indexer.lucene.IndexProvider;
+import ch.vd.uniregctb.indexer.lucene.LuceneHelper;
 
 public class LuceneExtractor {
 
@@ -35,7 +36,7 @@ public class LuceneExtractor {
 					final Document document = docGetter.get(doc);
 					final String docsubtype = document.getField("DOCSUBTYPE").stringValue();
 					if (docTypes.contains(docsubtype)) {
-						final String entityId = document.getField("ENTITYID").stringValue();
+						final String entityId = document.getField(LuceneHelper.F_ENTITYID).stringValue();
 						final String nom = document.getField("D_NOM1").stringValue();
 						res.add(entityId + ";" + nom);
 					}

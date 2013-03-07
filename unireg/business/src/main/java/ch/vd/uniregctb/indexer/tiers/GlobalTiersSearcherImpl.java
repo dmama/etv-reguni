@@ -19,8 +19,8 @@ import org.apache.lucene.search.TopDocs;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.uniregctb.common.StatusManager;
-import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.EmptySearchCriteriaException;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.IndexerException;

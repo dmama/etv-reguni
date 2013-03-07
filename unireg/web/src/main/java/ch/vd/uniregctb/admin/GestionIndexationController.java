@@ -15,13 +15,13 @@ import org.springframework.validation.BindException;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import ch.vd.registre.simpleindexer.DocGetter;
 import ch.vd.unireg.interfaces.civil.data.Individu;
 import ch.vd.uniregctb.admin.indexer.GestionIndexation;
 import ch.vd.uniregctb.admin.indexer.IndexDocument;
 import ch.vd.uniregctb.common.AbstractSimpleFormController;
 import ch.vd.uniregctb.common.FormatNumeroHelper;
 import ch.vd.uniregctb.data.DataEventService;
-import ch.vd.uniregctb.indexer.DocGetter;
 import ch.vd.uniregctb.indexer.GlobalIndexInterface;
 import ch.vd.uniregctb.indexer.SearchCallback;
 import ch.vd.uniregctb.indexer.lucene.LuceneHelper;

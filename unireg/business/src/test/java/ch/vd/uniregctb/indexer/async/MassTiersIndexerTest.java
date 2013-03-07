@@ -15,7 +15,6 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.indexer.GlobalIndex;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer.Mode;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexerImpl;
-import ch.vd.uniregctb.indexer.tiers.TiersIndexable;
 import ch.vd.uniregctb.indexer.tiers.TiersIndexedData;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
@@ -134,7 +133,7 @@ public class MassTiersIndexerTest extends BusinessTest {
 			assertEquals(2, list.size());
 		}
 
-		gti.removeEntity(id, TiersIndexable.TYPE);
+		gti.removeEntity(id);
 		{
 			TiersCriteria criteria = new TiersCriteria();
 			criteria.setNumero(id);
