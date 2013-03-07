@@ -447,7 +447,27 @@ public class IdentificationContribuableServiceImpl implements IdentificationCont
 
 		// [UNIREG-1911] On retourne le numéro du ménage-commun associé s'il existe
 		// [SIFISC-1725] La date de référence pour le couple doit être en rapport avec la période fiscale du message
-		final RegDate dateReferenceMenage = RegDate.get(message.getDemande().getPeriodeFiscale(), 12, 31);
+		//[SIFISC-4845] Calcul de la période fiscale
+		//Dans le cas ou la période fiscale du message est inférieure à 2003,
+		//Unireg renvoi le contribuable à la date du 31.12 de l'année précédent à l'année en cours (ex. au 21 janvier 2013,
+		// le traitement d'une PF de 2001 donnera le contribuable à la date du 31.12.2012).
+		//Dans le cas où la période fiscale se situe dans le futur,
+		//Unireg renvoi le contribuable à la date courante (ex. au 21 janvier 2013,
+		//Le traitement d'une PF de 2211 donnera le contribuable à la date du 21.01.2013).
+
+		RegDate dateReferenceMenage = null;
+		final int periodeFiscale = message.getDemande().getPeriodeFiscale();
+		final int anneeCourante = RegDate.get().year();
+		if (periodeFiscale < 2003) {
+			dateReferenceMenage = RegDate.get(anneeCourante -1, 12, 31);
+		}
+		else if (periodeFiscale >=  anneeCourante) {
+			dateReferenceMenage = RegDate.get();
+		}
+		else{
+			dateReferenceMenage = RegDate.get(periodeFiscale, 12, 31);
+		}
+
 		Long mcId = null;
 		final EnsembleTiersCouple ensemble = tiersService.getEnsembleTiersCouple(personne, dateReferenceMenage);
 		if (ensemble != null) {

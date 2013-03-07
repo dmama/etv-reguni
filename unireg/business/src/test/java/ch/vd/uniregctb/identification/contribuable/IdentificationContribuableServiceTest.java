@@ -2026,6 +2026,87 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			}
 		});
 	}
+	//SIFISC-4845 : Pour une periode
+	//Dans le cas ou la période fiscale du message est inférieure à 2003,
+	//Unireg renvoi le contribuable à la date du 31.12 de l'année précédent à l'année en cours (ex. au 21 janvier 2013,
+	// le traitement d'une PF de 2001 donnera le contribuable à la date du 31.12.2012).
+	@Test
+	public void testHandleDemandeUnContribuableAvecMenageSurPeriodeAvant2003() throws Exception {
+
+		class Ids {
+			Long zora;
+			Long bruno;
+			Long mc;
+		}
+		final Ids ids = new Ids();
+
+		// création d'un contribuable
+		doInNewTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				final PersonnePhysique zora = addNonHabitant("Zora", "Larousse", date(1970, 4, 3), Sexe.FEMININ);
+				final PersonnePhysique bruno = addNonHabitant("Bruno", "Larousse", date(1968, 7, 23), Sexe.MASCULIN);
+				final EnsembleTiersCouple ensemble = addEnsembleTiersCouple(bruno, zora, date(1980, 4, 21), null);
+				final MenageCommun menage = ensemble.getMenage();
+
+				addForPrincipal(menage, RegDate.get(2009, 5, 1), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION,
+						MockCommune.Aubonne);
+
+				ids.bruno = bruno.getNumero();
+				ids.zora = zora.getNumero();
+				ids.mc = menage.getNumero();
+				return null;
+			}
+		});
+		assertCountDemandes(0);
+
+		globalTiersIndexer.sync();
+
+		// création et traitement du message d'identification
+		final CriteresPersonne personne = new CriteresPersonne();
+		personne.setPrenoms("Zora");
+		personne.setNom("Larousse");
+
+
+		//on set un eperiode fiscale dans le passé
+		final IdentificationContribuable message = createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK, 1011);
+		doInTransaction(new TxCallback<Object>() {
+			@Override
+			public Object execute(TransactionStatus status) throws Exception {
+				service.handleDemande(message);
+				return null;
+			}
+		});
+
+		doInTransaction(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+
+				// Zora doit avoir été trouvée, et traitée automatiquement
+				final List<IdentificationContribuable> list = identCtbDAO.getAll();
+				assertEquals(1, list.size());
+
+				final IdentificationContribuable ic = list.get(0);
+				assertNotNull(ic);
+				assertEquals(Etat.TRAITE_AUTOMATIQUEMENT, ic.getEtat());
+				assertEquals(Integer.valueOf(1), ic.getNbContribuablesTrouves());
+
+				final Reponse reponse = ic.getReponse();
+				assertNotNull(reponse);
+				assertNull(reponse.getErreur());
+				assertEquals(ids.zora, reponse.getNoContribuable());
+				assertEquals(ids.mc, reponse.getNoMenageCommun()); // [UNIREG-1911]
+
+				// La demande doit avoir reçu une réponse automatiquement
+				assertEquals(1, messageHandler.getSentMessages().size());
+				final IdentificationContribuable sent = messageHandler.getSentMessages().get(0);
+				assertEquals(ic.getId(), sent.getId());
+
+				return null;
+			}
+		});
+	}
+
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2416,15 +2497,32 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 			@Override
 			public Ids doInTransaction(TransactionStatus status) {
 				final PersonnePhysique pp = addHabitant(noIndividu);
-				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2004, 11, 28));
+				final EnsembleTiersCouple couple = addEnsembleTiersCouple(pp, null, date(2000, 6, 1), date(2005, 11, 28));
 				return new Ids(pp.getNumero(), couple.getMenage().getNumero());
 			}
 		});
 
 		globalTiersIndexer.sync();
 
-		// depuis 2000 jusqu'à 2003, on doit renvoyer le numéro de ménage commun aussi
-		for (int i = 2000; i <= 2003; ++i) {
+		// depuis 2000 jusqu'à 2002, on ne renvoie aucun ménage
+		for (int i = 2000; i <= 2002; ++i) {
+			messageHandler.reset();
+
+			final IdentificationContribuable demande = createDemandeMeldewesen("Maya", "Labeille", "7569613127861");
+			demande.getDemande().setPeriodeFiscale(i);
+			service.handleDemande(demande);
+
+			assertNotNull("Année " + i, messageHandler.getSentMessages());
+			assertEquals("Année " + i, 1, messageHandler.getSentMessages().size());
+
+			final IdentificationContribuable msg = messageHandler.getSentMessages().get(0);
+			assertNotNull("Année " + i, msg);
+			assertEquals("Année " + i, (Long) ids.ppId, msg.getReponse().getNoContribuable());
+			assertEquals("Année " + i, null, msg.getReponse().getNoMenageCommun());
+		}
+
+		// depuis 2003 jusqu'à 2004, on doit renvoyer le numéro de ménage commun aussi
+		for (int i = 2003; i <= 2004; ++i) {
 			messageHandler.reset();
 
 			final IdentificationContribuable demande = createDemandeMeldewesen("Maya", "Labeille", "7569613127861");
@@ -2501,7 +2599,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		personne.setPrenoms(prenoms);
 		personne.setNom(nom);
 
-		return createDemandeMeldewesen(personne, mode);
+		return createDemandeMeldewesen(personne, mode, 2009);
 	}
 
 	private static IdentificationContribuable createDemandeNCS(final String prenoms, final String nom, Demande.ModeIdentificationType mode) {
@@ -2537,7 +2635,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		personne.setNom(nom);
 		personne.setNAVS13(noAVS13);
 
-		return createDemandeMeldewesen(personne);
+		return createDemandeMeldewesen(personne, 2009);
 	}
 
 
@@ -2565,11 +2663,11 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		return message;
 	}
 
-	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne) {
-		return createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK);
+	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne, int periodeFiscale) {
+		return createDemandeMeldewesen(personne, Demande.ModeIdentificationType.MANUEL_SANS_ACK, periodeFiscale);
 	}
 
-	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification) {
+	private static IdentificationContribuable createDemandeMeldewesen(CriteresPersonne personne, Demande.ModeIdentificationType modeIdentification, int periodeFiscale) {
 		final EsbHeader header = new EsbHeader();
 		header.setBusinessId("123456");
 		header.setBusinessUser("Test");
@@ -2582,7 +2680,7 @@ public class IdentificationContribuableServiceTest extends BusinessTest {
 		demande.setModeIdentification(modeIdentification);
 		demande.setTypeMessage("ssk-3001-000101");
 		demande.setDate(DateHelper.getCurrentDate());
-		demande.setPeriodeFiscale(2009);
+		demande.setPeriodeFiscale(periodeFiscale);
 		demande.setPersonne(personne);
 		demande.setTypeDemande(TypeDemande.MELDEWESEN);
 
