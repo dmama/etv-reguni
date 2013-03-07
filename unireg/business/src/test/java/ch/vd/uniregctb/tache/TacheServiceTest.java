@@ -78,10 +78,10 @@ import ch.vd.uniregctb.type.TypeEtatDeclaration;
 import ch.vd.uniregctb.type.TypeEtatTache;
 import ch.vd.uniregctb.type.TypeTache;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -3016,7 +3016,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		// une tâche d'envoi en instance qui correspond parfaitement à la déclaration manquante
 		addTacheEnvoiDI(TypeEtatTache.EN_INSTANCE, date(2006, 1, 1), date(anneePrecedente, 3, 1), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_COMPLETE_BATCH, pp, Qualification.AUTOMATIQUE, 0, cedi);
+				TypeDocument.DECLARATION_IMPOT_VAUDTAX, pp, Qualification.AUTOMATIQUE, 0, cedi);
 
 		// On vérifie qu'aucune nouvelle tâche n'est créée
 		hibernateTemplate.flush();
@@ -3522,7 +3522,7 @@ public class TacheServiceTest extends BusinessTest {
 
 		final TacheEnvoiDeclarationImpot tache0 = (TacheEnvoiDeclarationImpot) taches.get(0);
 		assertTache(TypeEtatTache.EN_INSTANCE, dateEcheance, date(anneePrecedente, 11, 2), date(anneePrecedente, 12, 31), TypeContribuable.VAUDOIS_ORDINAIRE,
-				TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
+		            TypeDocument.DECLARATION_IMPOT_VAUDTAX, TypeAdresseRetour.CEDI, tache0);
 	}
 
 	/**
@@ -4475,7 +4475,7 @@ public class TacheServiceTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpot tache = (TacheEnvoiDeclarationImpot) taches.get(0);
 					assertTache(TypeEtatTache.EN_INSTANCE, dateDeces.addDays(30), date(anneeCourante, 1, 1), dateDeces, TypeContribuable.VAUDOIS_ORDINAIRE, TypeDocument.DECLARATION_IMPOT_VAUDTAX,
-							TypeAdresseRetour.ACI, tache);
+								TypeAdresseRetour.ACI, tache);
 				}
 
 				return null;
@@ -5505,7 +5505,7 @@ public class TacheServiceTest extends BusinessTest {
 		serviceCivil.setUp(new MockServiceCivil() {
 			@Override
 			protected void init() {
-				// personne...
+				// personne... où sont-ils tous partis ? sommes-nous passés dans la quatrième dimension ?
 			}
 		});
 
@@ -5540,6 +5540,8 @@ public class TacheServiceTest extends BusinessTest {
 
 					final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) tache;
 					assertEquals(DateRangeHelper.toDisplayString(tacheDi), TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
+					assertEquals(TypeEtatTache.EN_INSTANCE, tache.getEtat());
+					assertFalse(tache.isAnnule());
 
 					// [UNIREG-820] dit ceci:
 					// la première année, pas de DI avant, ni assujettissement -> VAUDTAX
@@ -5553,7 +5555,44 @@ public class TacheServiceTest extends BusinessTest {
 					}
 					assertEquals(DateRangeHelper.toDisplayString(tacheDi), typeDocumentAttendu, tacheDi.getTypeDocument());
 				}
+				return null;
+			}
+		});
 
+		// maintenant, on rajoute la DI de la première année
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+				final PeriodeFiscale pf = pfDAO.getPeriodeFiscaleByYear(dateDebutActivite.year());
+				final ModeleDocument md = addModeleDocument(TypeDocument.DECLARATION_IMPOT_VAUDTAX, pf);
+				addDeclarationImpot(pp, pf, dateDebutActivite, date(dateDebutActivite.year(), 12, 31), TypeContribuable.HORS_SUISSE, md);
+				return null;
+			}
+		});
+
+		// et on vérifie les tâches résultantes (il ne devrait en rester qu'une en instance, dont le type de document a été recalculé en fonction de la nouvelle DI créée)
+		doInNewTransactionAndSession(new TransactionCallback<Object>() {
+			@Override
+			public Object doInTransaction(TransactionStatus status) {
+				final PersonnePhysique pp = (PersonnePhysique) tiersService.getTiers(ppId);
+				assertNotNull(pp);
+
+				final TacheCriteria criteria = new TacheCriteria();
+				criteria.setContribuable(pp);
+				criteria.setTypeTache(TypeTache.TacheEnvoiDeclarationImpot);
+				criteria.setEtatTache(TypeEtatTache.EN_INSTANCE);
+				criteria.setInclureTachesAnnulees(false);
+				final List<Tache> taches = tacheDAO.find(criteria);
+				assertNotNull(taches);
+				assertEquals(1, taches.size());
+
+				final TacheEnvoiDeclarationImpot tacheDi = (TacheEnvoiDeclarationImpot) taches.get(0);
+				assertEquals(date(dateDebutActivite.year() + 1, 1, 1), tacheDi.getDateDebut());
+				assertEquals(date(dateDebutActivite.year() + 1, 12, 31), tacheDi.getDateFin());
+				assertEquals(TypeContribuable.HORS_SUISSE, tacheDi.getTypeContribuable());
+				assertEquals(TypeDocument.DECLARATION_IMPOT_VAUDTAX, tacheDi.getTypeDocument());
 				return null;
 			}
 		});

@@ -742,7 +742,7 @@ public class TacheServiceImpl implements TacheService {
 			for (int i = addActions.size() - 1; i >= 0; i--) {
 				final PeriodeImposition periode = addActions.get(i).periodeImposition;
 				final TacheEnvoiDeclarationImpot envoi = getMatchingRangeAt(tachesEnvoi, periode);
-				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable()) {
+				if (envoi != null && envoi.getTypeContribuable() == periode.getTypeContribuable() && envoi.getTypeDocument() == periode.getTypeDocument()) {
 					addActions.remove(i);
 				}
 			}
@@ -840,6 +840,10 @@ public class TacheServiceImpl implements TacheService {
 			return false;
 		}
 
+		if (envoi.getTypeDocument() != periode.getTypeDocument()) {
+			// il y a une période correspondante pour le bon type de contribuable, mais le type de document n'est plus le même -> la tâche n'est plus valable
+			return false;
+		}
 
 		final DeclarationImpotOrdinaire declaration = getMatchingRangeAt(declarations, periode);
 		if (declaration == null) {
