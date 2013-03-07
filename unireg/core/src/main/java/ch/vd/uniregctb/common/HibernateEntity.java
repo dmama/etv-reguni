@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,8 +197,8 @@ public abstract class HibernateEntity implements Loggable, Annulable {
      * @param param parametre pour stocker le resultat
      */
 	@Transient
-	public void tellMeAboutYou(RefParam<HibernateEntity> param) {
-		param.ref = this;
+	public void tellMeAboutYou(Mutable<HibernateEntity> param) {
+		param.setValue(this);
 	}
 
 	public Object getValue(String name) throws Exception {

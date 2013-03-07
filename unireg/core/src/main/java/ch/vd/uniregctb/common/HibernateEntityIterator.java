@@ -2,6 +2,9 @@ package ch.vd.uniregctb.common;
 
 import java.util.Iterator;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
+
 /**
  * Cette itérateur permet de contourner les proxys retournés par Hibernate dans certaines situation et d'attaquer directement les entités
  * réelles.
@@ -12,7 +15,7 @@ import java.util.Iterator;
 public class HibernateEntityIterator<T extends HibernateEntity> implements Iterator<T> {
 
 	private final Iterator<T> iter;
-	private final RefParam<HibernateEntity> param = new RefParam<HibernateEntity>();
+	private final Mutable<HibernateEntity> param = new MutableObject<>();
 
 	public HibernateEntityIterator(Iterator<T> iter) {
 		this.iter = iter;
@@ -34,7 +37,7 @@ public class HibernateEntityIterator<T extends HibernateEntity> implements Itera
 
 		// Récupère l'objet réel (pas le proxy)
 		p.tellMeAboutYou(param);
-		T n = (T)param.ref;
+		T n = (T)param.getValue();
 
 		return n;
 	}

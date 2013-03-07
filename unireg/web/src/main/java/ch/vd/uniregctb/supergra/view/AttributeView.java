@@ -1,7 +1,9 @@
 package ch.vd.uniregctb.supergra.view;
 
+import org.apache.commons.lang3.mutable.Mutable;
+import org.apache.commons.lang3.mutable.MutableObject;
+
 import ch.vd.uniregctb.common.HibernateEntity;
-import ch.vd.uniregctb.common.RefParam;
 import ch.vd.uniregctb.supergra.EntityKey;
 import ch.vd.uniregctb.supergra.EntityType;
 
@@ -146,9 +148,9 @@ public class AttributeView {
 				final HibernateEntity maybeProxy = (HibernateEntity) value;
 
 				// on s'assure de ne pas retourner un proxy
-				final RefParam<HibernateEntity> ref = new RefParam<HibernateEntity>();
+				final Mutable<HibernateEntity> ref = new MutableObject<>();
 				maybeProxy.tellMeAboutYou(ref);
-				final HibernateEntity hibernateEntity = ref.ref;
+				final HibernateEntity hibernateEntity = ref.getValue();
 
 				// on retourne la clé de l'entité
 				v = new EntityKey(EntityType.fromHibernateClass(hibernateEntity.getClass()), (Long) hibernateEntity.getKey());
