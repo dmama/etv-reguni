@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>ch.vd.registre</groupId>
 			<artifactId>shared-simple-indexer</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>ch.vd.editique</groupId>
@@ -111,16 +111,6 @@
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
 			<version>1.8.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-core</artifactId>
-			<version>${lucene.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.lucene</groupId>
-			<artifactId>lucene-analyzers</artifactId>
-			<version>${lucene.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-pool</groupId>

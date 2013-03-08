@@ -589,7 +589,6 @@
 		<spring.security.version>3.1.3.RELEASE</spring.security.version>
 		<spring-modules.version>0.9</spring-modules.version>
 		<cxf.version>2.6.0.fuse-71-047</cxf.version>
-		<lucene.version>3.0.1</lucene.version>
 		<activemq.version>5.7.0.fuse-71-047</activemq.version>
 		<jencks.version>2.2</jencks.version>
 		<wsparty3.version>3.7-SNAPSHOT</wsparty3.version>
