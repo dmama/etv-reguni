@@ -12,7 +12,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
 
-import ch.vd.uniregctb.common.IdentityWrapper;
+import ch.vd.uniregctb.common.IdentityKey;
 
 /**
  * Dispatcher servlet dans lequel les exceptions "UnexpectedRollbackException" sont trappées et remontées sous la forme de leur rootCause
@@ -20,10 +20,10 @@ import ch.vd.uniregctb.common.IdentityWrapper;
  */
 public class UniregDispatcherServlet extends DispatcherServlet {
 
-	private final Map<IdentityWrapper<HandlerAdapter>, HandlerAdapter> wrapping = new HashMap<>();
+	private final Map<IdentityKey<HandlerAdapter>, HandlerAdapter> wrapping = new HashMap<>();
 
 	private HandlerAdapter getWrapping(HandlerAdapter ha) {
-		final IdentityWrapper<HandlerAdapter> key = new IdentityWrapper<>(ha);
+		final IdentityKey<HandlerAdapter> key = new IdentityKey<>(ha);
 		synchronized (wrapping) {
 			HandlerAdapter wrapper = wrapping.get(key);
 			if (wrapper == null) {

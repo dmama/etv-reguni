@@ -3,7 +3,7 @@ package ch.vd.uniregctb.common;
 import junit.framework.Assert;
 import org.junit.Test;
 
-public class IdentityWrapperTest extends WithoutSpringTest {
+public class IdentityKeyTest extends WithoutSpringTest {
 
 	@Test
 	public void testEquals() throws Exception {
@@ -13,9 +13,9 @@ public class IdentityWrapperTest extends WithoutSpringTest {
 		// the two objects, although not the same, have the same value
 		Assert.assertEquals(one, two);
 
-		final IdentityWrapper<Integer> oneWrapper = new IdentityWrapper<>(one);
-		final IdentityWrapper<Integer> oneWrapperBis = new IdentityWrapper<>(one);
-		final IdentityWrapper<Integer> twoWrapper = new IdentityWrapper<>(two);
+		final IdentityKey<Integer> oneWrapper = new IdentityKey<>(one);
+		final IdentityKey<Integer> oneWrapperBis = new IdentityKey<>(one);
+		final IdentityKey<Integer> twoWrapper = new IdentityKey<>(two);
 
 		// different because the two wrapped objects are not the same
 		Assert.assertFalse(oneWrapper.equals(twoWrapper));

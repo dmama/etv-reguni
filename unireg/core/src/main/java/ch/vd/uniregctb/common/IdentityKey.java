@@ -1,10 +1,10 @@
 package ch.vd.uniregctb.common;
 
-public final class IdentityWrapper<T> {
+public final class IdentityKey<T> {
 
 	private final T elt;
 
-	public IdentityWrapper(T elt) {
+	public IdentityKey(T elt) {
 		this.elt = elt;
 	}
 
@@ -14,7 +14,7 @@ public final class IdentityWrapper<T> {
 
 	@Override
 	public boolean equals(Object o) {
-		return (o instanceof IdentityWrapper && ((IdentityWrapper)o).elt == elt);
+		return (o instanceof IdentityKey && ((IdentityKey)o).elt == elt);
 	}
 
 	@Override

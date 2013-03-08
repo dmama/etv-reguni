@@ -3,17 +3,19 @@ package ch.vd.uniregctb.extraction;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -25,8 +27,11 @@ import ch.vd.registre.base.utils.Assert;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.BatchResults;
 import ch.vd.uniregctb.common.BatchTransactionTemplate;
+import ch.vd.uniregctb.common.DefaultThreadNameGenerator;
+import ch.vd.uniregctb.common.MonitorableExecutorService;
 import ch.vd.uniregctb.common.ParallelBatchTransactionTemplate;
 import ch.vd.uniregctb.common.StatusManager;
+import ch.vd.uniregctb.common.ThreadNameGenerator;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.inbox.InboxAttachment;
 import ch.vd.uniregctb.inbox.InboxService;
@@ -67,14 +72,9 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	private InboxService inboxService;
 
 	/**
-	 * Liste des exécuteurs
+	 * Pool de thread d'exécution
 	 */
-	private List<Executor> executors;
-
-	/**
-	 * Queue partagée par les exécuteurs
-	 */
-	private final BlockingQueue<ExtractionJobImpl> queue = new LinkedBlockingQueue<ExtractionJobImpl>();
+	private MonitorableExecutorService<ExtractionResult, ExtractionJobImpl> executorService;
 
 	/**
 	 * Nombre de jobs terminés depuis le démarrage du service
@@ -131,7 +131,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	/**
 	 * Classe de description d'un job tout au long de sa vie
 	 */
-	private final class ExtractionJobImpl implements ExtractionJob {
+	private final class ExtractionJobImpl implements ExtractionJob, Callable<ExtractionResult> {
 
 		private final UUID uuid;
 		private final String visa;
@@ -183,10 +183,6 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		@Override
 		public String getVisa() {
 			return visa;
-		}
-
-		public ExtractorLauncher getExtractor() {
-			return extractor;
 		}
 
 		@Override
@@ -261,12 +257,53 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		public boolean equals(Object obj) {
 			return obj instanceof ExtractionJobImpl && uuid.equals(((ExtractionJobImpl) obj).uuid);
 		}
+
+		@Override
+		public ExtractionResult call() throws Exception {
+
+			AuthenticationHelper.pushPrincipal(visa);
+			try {
+				ExtractionResult result = null;
+				try {
+					onStart();
+					if (LOGGER.isInfoEnabled()) {
+						LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", uuid, extractor));
+					}
+					result = extractor.call();
+				}
+				catch (Throwable e) {
+					LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", uuid), e);
+					result = new ExtractionResultError(e);
+				}
+				finally {
+					onStop(result);
+					nbJobsTermines.incrementAndGet();
+				}
+
+				if (LOGGER.isInfoEnabled()) {
+					LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", uuid, getDuration(), result));
+				}
+
+				// à la fin du job, il faut envoyer ses résultats dans l'inbox du demandeur
+				try {
+					sendDocumentToInbox(this);
+				}
+				catch (Throwable e) {
+					LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", uuid), e);
+				}
+
+				return result;
+			}
+			finally {
+				AuthenticationHelper.popPrincipal();
+			}
+		}
 	}
 
 	/**
 	 * Classe de base pour lancer un travail d'extraction de manière polymorphique
 	 */
-	private abstract class ExtractorLauncher<T extends Extractor> {
+	private abstract class ExtractorLauncher<T extends Extractor> implements Callable<ExtractionResult> {
 
 		protected final T extractor;
 		private final StatusManager statusManager;
@@ -280,7 +317,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 			}
 		}
 
-		public final ExtractionResult run() throws Exception {
+		@Override
+		public final ExtractionResult call() throws Exception {
 			if (statusManager != null) {
 				statusManager.setMessage("En cours...");
 			}
@@ -369,87 +407,6 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		@Override
 		public ExtractionResult doRun() throws Exception {
 			return runParallelBatchExtractor(extractor);
-		}
-	}
-
-	/**
-	 * Classe d'exécution
-	 */
-	private final class Executor extends Thread {
-
-		private boolean stopping = false;
-		private ExtractionJobImpl currentJob = null;
-
-		public Executor(int index) {
-			super(String.format("Extraction-%d", index));
-		}
-
-		@Override
-		public void run() {
-
-			if (LOGGER.isInfoEnabled()) {
-				LOGGER.info(String.format("Démarrage du thread d'extractions asynchrones %s", getName()));
-			}
-
-			AuthenticationHelper.pushPrincipal(getName());
-			try {
-				while (!stopping) {
-					final ExtractionJobImpl job = queue.poll(1, TimeUnit.SECONDS);
-					if (job != null && !stopping) {
-						currentJob = job;
-						ExtractionResult result = null;
-						final ExtractorLauncher extractor = job.getExtractor();
-						try {
-							job.onStart();
-							if (LOGGER.isInfoEnabled()) {
-								LOGGER.info(String.format("Démarrage du job d'extraction %s (%s)", job.getUuid(), extractor));
-							}
-							result = extractor.run();
-						}
-						catch (Throwable e) {
-							LOGGER.error(String.format("Le job d'extraction %s a lancé une exception", job.getUuid()), e);
-							result = new ExtractionResultError(e);
-						}
-						finally {
-							currentJob = null;
-							job.onStop(result);
-							nbJobsTermines.incrementAndGet();
-						}
-
-						if (LOGGER.isInfoEnabled()) {
-							LOGGER.info(String.format("Arrêt du job d'extraction %s (%d ms) : %s", job.getUuid(), job.getDuration(), result));
-						}
-
-						// à la fin du job, il faut envoyer ses résultats dans l'inbox du demandeur
-						try {
-							sendDocumentToInbox(job);
-						}
-						catch (Throwable e) {
-							LOGGER.error(String.format("Impossible d'envoyer le résultat de l'extraction %s dans l'inbox correpondante", job.getUuid()), e);
-						}
-					}
-				}
-			}
-			catch (InterruptedException e) {
-				LOGGER.error("Thread d'extractions asynchrones arrêté sur une exception", e);
-			}
-			finally {
-				AuthenticationHelper.popPrincipal();
-				if (LOGGER.isInfoEnabled()) {
-					LOGGER.info(String.format("Arrêt du thread d'extractions asynchrones %s", getName()));
-				}
-			}
-		}
-
-		/**
-		 * Ask the executor to end its job
-		 */
-		public void end() {
-			stopping = true;
-			final ExtractionJobImpl job = currentJob;
-			if (job != null) {
-				job.getExtractor().interrupt();
-			}
 		}
 	}
 
@@ -609,8 +566,8 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	@SuppressWarnings({"SuspiciousMethodCalls"})
 	@Override
 	public void cancelJob(ExtractionJob job) {
-		job.interrupt();        // s'il est en cours, il s'arrêtera tout seul
-		queue.remove(job);      // s'il n'est pas encore en cours, il sera éliminé de la queue
+		job.interrupt();                                      // s'il est en cours, il s'arrêtera tout seul
+		executorService.cancel((ExtractionJobImpl) job);      // s'il n'est pas encore en cours, il sera éliminé de la queue
 	}
 
 	private ExtractionJob postExtractionQuery(String visa, ExtractorLauncher launcher) {
@@ -618,7 +575,7 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 		// puis on poste la demande d'exécution dans la queue
 		final ExtractionJobImpl jobInfo = new ExtractionJobImpl(visa, launcher);
-		queue.add(jobInfo);
+		executorService.submit(jobInfo);
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Job d'extraction %s enregistré pour le visa %s (%s)", jobInfo.getUuid(), visa, launcher));
 		}
@@ -631,16 +588,34 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 	public void destroy() throws Exception {
 
 		// on demande l'arrêt de tous les exécuteurs
-		for (Executor exec : executors) {
-			exec.end();
+		executorService.shutdown();
+		for (ExtractionJob job : executorService.getRunning()) {
+			job.interrupt();
 		}
-
-		// on attend l'arrêt de tous les exécuteurs
-		for (Executor exec : executors) {
-			exec.join();
-		}
+		while (!executorService.awaitTermination(1, TimeUnit.SECONDS)) {}
 
 		LOGGER.info("Service d'extractions asychrones arrêté");
+	}
+
+	/**
+	 * Thread d'extraction
+	 */
+	private static final class ExtractorThread extends Thread {
+
+		private ExtractorThread(Runnable target, String name) {
+			super(target, name);
+		}
+
+		@Override
+		public void run() {
+			LOGGER.info("Démarrage du thread " + getName());
+			try {
+				super.run();
+			}
+			finally {
+				LOGGER.info("Arrêt du thread " + getName());
+			}
+		}
 	}
 
 	@Override
@@ -649,16 +624,14 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 		Assert.isTrue(expiration > 0, "La valeur en jours de la durée de validité des extractions doit être strictement positive");
 		Assert.isTrue(threadPoolSize > 0, "Le nombre de threads dans le pool doit être strictement positif");
 
-		// on construit les exécuteurs
-		executors = new ArrayList<Executor>(threadPoolSize);
-		for (int i = 0 ; i < threadPoolSize ; ++ i) {
-			executors.add(new Executor(i));
-		}
-
-		// puis on les lance
-		for (Executor exec : executors) {
-			exec.start();
-		}
+		final ThreadNameGenerator threadNameGenerator = new DefaultThreadNameGenerator("Extraction");
+		executorService = new MonitorableExecutorService<>(Executors.newFixedThreadPool(threadPoolSize, new ThreadFactory() {
+			@NotNull
+			@Override
+			public Thread newThread(@NotNull Runnable r) {
+				return new ExtractorThread(r, threadNameGenerator.getNewThreadName());
+			}
+		}));
 
 		LOGGER.info(String.format("Service d'extractions asychrones démarré avec %d exécuteur(s)", threadPoolSize));
 	}
@@ -675,22 +648,12 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 	@Override
 	public List<ExtractionJob> getQueueContent(String visa) {
-		final List<ExtractionJob> liste = new ArrayList<ExtractionJob>(queue);
-		if (visa != null) {
-			final Iterator<ExtractionJob> iterator = liste.iterator();
-			while (iterator.hasNext()) {
-				final ExtractionJob job = iterator.next();
-				if (!visa.equals(job.getVisa())) {
-					iterator.remove();
-				}
-			}
-		}
-		return liste;
+		return new ArrayList<ExtractionJob>(executorService.getWaiting());
 	}
 
 	@Override
 	public int getQueueSize() {
-		return queue.size();
+		return executorService.getWaitingSize();
 	}
 
 	@Override
@@ -700,13 +663,11 @@ public class ExtractionServiceImpl implements ExtractionService, InitializingBea
 
 	@Override
 	public List<ExtractionJob> getExtractionsEnCours(String visa) {
-		final List<ExtractionJob> liste = new ArrayList<ExtractionJob>(threadPoolSize);
-		for (Executor executor : executors) {
-			final ExtractionJob enCours = executor.currentJob;
-			if (enCours != null) {
-				if (visa == null || visa.equals(enCours.getVisa())) {
-					liste.add(enCours);
-				}
+		final Collection<ExtractionJobImpl> running = executorService.getRunning();
+		final List<ExtractionJob> liste = new ArrayList<>(running.size());
+		for (ExtractionJob job : running) {
+			if (visa == null || visa.equals(job.getVisa())) {
+				liste.add(job);
 			}
 		}
 		return liste;
