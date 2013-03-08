@@ -59,7 +59,7 @@ public class MonitorableExecutorService<T, C extends Callable<T>> {
 	}
 
 	/**
-	 * Wrapper de {@Link Callable} qui gère les collections de tâches en attente et en cours d'exécution
+	 * Wrapper de {@link Callable} qui gère les collections de tâches en attente et en cours d'exécution
 	 */
 	private class CallableWrapper implements Callable<T> {
 
