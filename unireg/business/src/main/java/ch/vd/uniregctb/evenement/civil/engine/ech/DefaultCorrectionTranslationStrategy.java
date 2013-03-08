@@ -75,19 +75,23 @@ public class DefaultCorrectionTranslationStrategy implements EvenementCivilEchTr
 		else {
 
 			// on va comparer les individus avant et après correction,
-			final Long idEvtOriginel = event.getRefMessageId();
+			final IndividuApresEvenement correction = serviceCivil.getIndividuAfterEvent(event.getId());
+			if (correction == null) {
+				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
+			}
+
+			final Long idEvtOriginel = event.getRefMessageId() != null ? event.getRefMessageId() : correction.getIdEvenementRef();
 			if (idEvtOriginel == null) {
 				throw new EvenementCivilException("Impossible de traiter un événement civil de correction sans lien vers l'événement originel.");
+			}
+			else if (event.getRefMessageId() == null) {
+				// rattrapage des données en base si l'événement ne publiait pas sa référence au moment de la réception mais qu'elle est connue maintenant
+				event.setRefMessageId(idEvtOriginel);
 			}
 
 			final IndividuApresEvenement originel = serviceCivil.getIndividuAfterEvent(idEvtOriginel);
 			if (originel == null) {
 				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d corrigé", idEvtOriginel));
-			}
-
-			final IndividuApresEvenement correction = serviceCivil.getIndividuAfterEvent(event.getId());
-			if (correction == null) {
-				throw new EvenementCivilException(String.format("Impossible d'obtenir les données de l'événement civil %d de correction", event.getId()));
 			}
 
 			strategieApplicable = getStrategyBasedOnDifferences(event, originel, correction);
