@@ -508,7 +508,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, "NUMERO:1234 AND TYPE:" + TYPE);
 
 		// Un hit avec Jean-Eric
-		assertHits(1, "NOM:Jean-Eric");
+		assertHits(1, "NOM:\"Jean-Eric\"");
 
 		// Pas de hit d'abord avec andré
 		assertHits(0, "NOM:andré");
@@ -524,7 +524,7 @@ public class GlobalIndexTest extends BusinessTest {
 		assertHits(1, "NUMERO:1234 AND TYPE:" + TYPE);
 
 		// Zero hit avec Jean-Eric
-		assertHits(0, "NOM:Jean-Eric");
+		assertHits(0, "NOM:\"Jean-Eric\"");
 
 		// Ensuite un hit avec les nouvelles infos
 		assertHits(1, "NOM:andré");

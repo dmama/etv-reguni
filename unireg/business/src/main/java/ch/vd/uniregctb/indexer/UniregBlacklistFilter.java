@@ -8,7 +8,7 @@ import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.tokenattributes.TermAttribute;
 
-public class UniregBlacklistFilter extends TokenFilter {
+public final class UniregBlacklistFilter extends TokenFilter {
 
 	private final static Set<String> blacklist = new HashSet<String>();
 

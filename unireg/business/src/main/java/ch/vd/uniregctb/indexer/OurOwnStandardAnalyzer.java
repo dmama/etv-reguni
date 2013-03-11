@@ -5,11 +5,11 @@ import java.io.Reader;
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.standard.ClassicFilter;
+import org.apache.lucene.analysis.standard.ClassicTokenizer;
 import org.apache.lucene.util.Version;
 
-public class OurOwnStandardAnalyzer extends OurOwnAnalyzer {
+public final class OurOwnStandardAnalyzer extends OurOwnAnalyzer {
 
 	public OurOwnStandardAnalyzer() {
 	}
@@ -27,13 +27,13 @@ public class OurOwnStandardAnalyzer extends OurOwnAnalyzer {
 		TokenStream result = null;
 		try {
 			// The real result
-			result = new StandardTokenizer(Version.LUCENE_29, reader);
+			result = new ClassicTokenizer(Version.LUCENE_36, reader);
 			//dumpTokenizer(result, reader);
-			result = new StandardFilter(result);
+			result = new ClassicFilter(result);
 			//dumpTokenizer(result, reader);
 			result = new ASCIIFoldingFilter(result);
 			//dumpTokenizer(result, reader);
-			result = new LowerCaseFilter(result);
+			result = new LowerCaseFilter(Version.LUCENE_36, result);
 			//dumpTokenizer(result, reader);
 		} catch (Exception e) {
 			throw new RuntimeException(e);

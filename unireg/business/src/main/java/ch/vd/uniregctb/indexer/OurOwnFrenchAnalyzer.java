@@ -1,15 +1,16 @@
 package ch.vd.uniregctb.indexer;
 
+import java.io.IOException;
 import java.io.Reader;
 
 import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.LowerCaseFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.standard.ClassicFilter;
+import org.apache.lucene.analysis.standard.ClassicTokenizer;
 import org.apache.lucene.util.Version;
 
-public class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
+public final class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
 
 	@Override
 	public final TokenStream tokenStream(String fieldName, Reader reader) {
@@ -23,10 +24,10 @@ public class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
 
 		TokenStream result;
 		try {
-			result = new StandardTokenizer(Version.LUCENE_29, reader);
-			result = new StandardFilter(result);
+			result = new ClassicTokenizer(Version.LUCENE_36, reader);
+			result = new ClassicFilter(result);
 			result = new ASCIIFoldingFilter(result);
-			result = new LowerCaseFilter(result);
+			result = new LowerCaseFilter(Version.LUCENE_36, result);
 			result = new UniregBlacklistFilter(result);
 		}
 		catch (Exception e) {
@@ -35,4 +36,8 @@ public class OurOwnFrenchAnalyzer extends OurOwnAnalyzer {
 		return result;
 	}
 
+	@Override
+	public TokenStream reusableTokenStream(String fieldName, Reader reader) throws IOException {
+		return super.reusableTokenStream(fieldName, reader);    //To change body of overridden methods use File | Settings | File Templates.
+	}
 }
