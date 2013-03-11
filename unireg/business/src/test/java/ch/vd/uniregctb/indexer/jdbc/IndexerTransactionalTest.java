@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.search.TopDocs;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,9 +55,9 @@ public class IndexerTransactionalTest extends BusinessTest {
 		public Document asDoc() {
 			Document d = super.asDoc();
 
-			d.add(new Field("NOM", nom, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("PRENOM", prenom, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("DATE", date, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new TextField("NOM", nom, Field.Store.YES));
+			d.add(new TextField("PRENOM", prenom, Field.Store.YES));
+			d.add(new TextField("DATE", date, Field.Store.YES));
 
 			return d;
 		}

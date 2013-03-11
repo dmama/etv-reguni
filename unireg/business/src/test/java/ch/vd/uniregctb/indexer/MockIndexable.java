@@ -2,6 +2,7 @@ package ch.vd.uniregctb.indexer;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.TextField;
 
 public class MockIndexable extends IndexableData {
 
@@ -27,10 +28,10 @@ public class MockIndexable extends IndexableData {
 	public Document asDoc() {
 		Document d = super.asDoc();
 
-		d.add(new Field("Nom", nom, Field.Store.YES, Field.Index.ANALYZED));
-		d.add(new Field("Prenom", prenom, Field.Store.YES, Field.Index.ANALYZED));
-		d.add(new Field("NomCourier", nomCourrier, Field.Store.YES, Field.Index.ANALYZED));
-		d.add(new Field("Champ1", champ1, Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new TextField("Nom", nom, Field.Store.YES));
+		d.add(new TextField("Prenom", prenom, Field.Store.YES));
+		d.add(new TextField("NomCourier", nomCourrier, Field.Store.YES));
+		d.add(new TextField("Champ1", champ1, Field.Store.YES));
 
 		return d;
 	}

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import org.apache.lucene.analysis.TokenFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public final class UniregBlacklistFilter extends TokenFilter {
 
@@ -27,11 +27,11 @@ public final class UniregBlacklistFilter extends TokenFilter {
 		blacklist.add("pa.m");
 	}
 
-	private final TermAttribute att;
+	private final CharTermAttribute att;
 
 	protected UniregBlacklistFilter(TokenStream input) {
 		super(input);
-		att = getAttribute(TermAttribute.class);
+		att = getAttribute(CharTermAttribute.class);
 	}
 
 	@Override
@@ -43,12 +43,13 @@ public final class UniregBlacklistFilter extends TokenFilter {
 		return res;
 	}
 
-	private static boolean isBlackListed(TermAttribute att) {
-		if (att.termLength() == 0) {
+	private static boolean isBlackListed(CharTermAttribute att) {
+		if (att.length() == 0) {
 			return false;
 		}
-		final char first = att.termBuffer()[0];
-		return (first == 's' || first == 'n' || first == 'd' || first == 'r' || first == 'p') // on essaie à tout prix de ne pas appeler att.term() qui provoque l'instanciation d'une string 
-				&& blacklist.contains(att.term());
+		final char first = att.buffer()[0];
+		return (first == 's' || first == 'm' || first == 'n' || first == 'd' || first == 'r' || first == 'p')
+				// on essaie à tout prix de ne pas appeler att.term() qui provoque l'instanciation d'une string
+				&& blacklist.contains(new String(att.buffer(), 0, att.length()));
 	}
 }

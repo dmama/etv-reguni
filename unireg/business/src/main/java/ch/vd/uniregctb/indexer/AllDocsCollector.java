@@ -2,7 +2,7 @@ package ch.vd.uniregctb.indexer;
 
 import java.io.IOException;
 
-import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.AtomicReaderContext;
 import org.apache.lucene.search.Collector;
 import org.apache.lucene.search.Scorer;
 
@@ -38,8 +38,8 @@ public class AllDocsCollector extends Collector {
 	}
 
 	@Override
-	public void setNextReader(IndexReader reader, int docBase) throws IOException {
-		this.docBase = docBase;
+	public void setNextReader(AtomicReaderContext context) throws IOException {
+		this.docBase = context.docBase;
 	}
 
 	@Override

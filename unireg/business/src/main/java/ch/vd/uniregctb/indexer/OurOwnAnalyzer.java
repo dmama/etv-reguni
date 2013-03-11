@@ -5,7 +5,7 @@ import java.io.Reader;
 import org.apache.log4j.Logger;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 
 public abstract class OurOwnAnalyzer extends Analyzer {
 
@@ -16,10 +16,11 @@ public abstract class OurOwnAnalyzer extends Analyzer {
 
 		if (result != null) {
 			try {
-				TermAttribute att = result.getAttribute(TermAttribute.class);
+				CharTermAttribute att = result.getAttribute(CharTermAttribute.class);
 				LOGGER.debug("* " + result.getClass().getSimpleName());
+				result.reset();
 				while (result.incrementToken()) {
-					LOGGER.debug(att.term());
+					LOGGER.debug(att.buffer());
 				}
 				reader.reset();
 			} catch (Exception e) {

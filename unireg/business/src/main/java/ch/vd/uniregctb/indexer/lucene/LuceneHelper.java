@@ -4,7 +4,7 @@ import java.io.StringReader;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.TermAttribute;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -42,7 +42,7 @@ public abstract class LuceneHelper {
 
 	private static TokenStream getTokenStream(String value, Analyzer an) throws IndexerException {
 
-		TokenStream stream = null;
+		TokenStream stream;
 		try {
 			StringReader reader = new StringReader(value);
 			stream = an.tokenStream("", reader);
@@ -63,24 +63,24 @@ public abstract class LuceneHelper {
 	 */
 	public static Term getTerm(String field, String value) throws IndexerException {
 
-		final String token;
-		try {
-			final TokenStream stream = getFrenchTokenStream(value);
+		final Term term;
+
+		try (final TokenStream stream = getFrenchTokenStream(value)) {
+			stream.reset();
 			stream.incrementToken();
-			TermAttribute att = stream.getAttribute(TermAttribute.class);
-			token = att.term();
+
+			final CharTermAttribute token = stream.getAttribute(CharTermAttribute.class);
+			if (token == null || token.length() == 0) {
+				term = new Term(field, "");
+			}
+			else {
+				term = newTerm(field, token);
+			}
+
+			stream.end();
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
-		}
-
-		final Term term;
-		if (token == null) {
-			term = new Term(field, "");
-
-		}
-		else {
-			term = new Term(field, token);
 		}
 
 		return term;
@@ -113,15 +113,15 @@ public abstract class LuceneHelper {
 	}
 
 	private static Query getTermsContient_(String field, String value, int minLength, BooleanClause.Occur occur) {
-		Query simpleQuery = null; // utilisé si un seul token
-		BooleanQuery complexQuery = null; // utilisé si >1 token
 
-		try {
-			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = stream.getAttribute(TermAttribute.class);
+		try (final TokenStream stream = getFrenchTokenStream(value)) {
+			final CharTermAttribute att = stream.getAttribute(CharTermAttribute.class);
+			Query simpleQuery = null; // utilisé si un seul token
+			BooleanQuery complexQuery = null; // utilisé si >1 token
 
+			stream.reset();
 			while (stream.incrementToken()) {
-				if (minLength == 0 || att.termLength() >= minLength) {
+				if (minLength == 0 || att.length() >= minLength) {
 					final Query q = new WildcardQuery(newTermContient(field, att));
 					if (complexQuery == null) {
 						if (simpleQuery == null) {
@@ -139,13 +139,14 @@ public abstract class LuceneHelper {
 					}
 				}
 			}
+			stream.end();
+
+			// [UNIREG-2715] si value.length() est plus petit que minLength, on doit retourner null : Assert.isTrue(simpleQuery != null || complexQuery != null);
+			return complexQuery == null ? simpleQuery : complexQuery;
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
 		}
-
-		// [UNIREG-2715] si value.length() est plus petit que minLength, on doit retourner null : Assert.isTrue(simpleQuery != null || complexQuery != null);
-		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
 	/**
@@ -178,15 +179,15 @@ public abstract class LuceneHelper {
 
 	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	private static Query getTermsCommence(String field, String value, int minLength, BooleanClause.Occur occur) {
-		Query simpleQuery = null; // utilisé si un seul token
-		BooleanQuery complexQuery = null; // utilisé si >1 token
 
-		try {
-			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = stream.getAttribute(TermAttribute.class);
+		try (final TokenStream stream = getFrenchTokenStream(value)) {
+			final CharTermAttribute att = stream.getAttribute(CharTermAttribute.class);
+			Query simpleQuery = null; // utilisé si un seul token
+			BooleanQuery complexQuery = null; // utilisé si >1 token
 
+			stream.reset();
 			while (stream.incrementToken()) {
-				if (minLength == 0 || att.termLength() >= minLength) {
+				if (minLength == 0 || att.length() >= minLength) {
 					final Query q = new WildcardQuery(newTermCommence(field, att));
 					if (complexQuery == null) {
 						if (simpleQuery == null) {
@@ -204,12 +205,13 @@ public abstract class LuceneHelper {
 					}
 				}
 			}
+			stream.end();
+
+			return complexQuery == null ? simpleQuery : complexQuery;
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
 		}
-
-		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
 	/**
@@ -240,13 +242,13 @@ public abstract class LuceneHelper {
 
 	@Nullable(value = "Si la valeur, bien que non-vide, ne contient aucun token (suite de caractères spéciaux...)")
 	private static Query getTermsExact(String field, String value, BooleanClause.Occur occur) {
-		Query simpleQuery = null; // utilisé si un seul token
-		BooleanQuery complexQuery = null; // utilisé si >1 token
 
-		try {
-			final TokenStream stream = getFrenchTokenStream(value);
-			final TermAttribute att = stream.getAttribute(TermAttribute.class);
+		try (final TokenStream stream = getFrenchTokenStream(value)) {
+			final CharTermAttribute att = stream.getAttribute(CharTermAttribute.class);
+			Query simpleQuery = null; // utilisé si un seul token
+			BooleanQuery complexQuery = null; // utilisé si >1 token
 
+			stream.reset();
 			while (stream.incrementToken()) {
 				final Query q = new TermQuery(newTerm(field, att));
 				if (complexQuery == null) {
@@ -264,29 +266,30 @@ public abstract class LuceneHelper {
 					complexQuery.add(q, occur);
 				}
 			}
+			stream.end();
+
+			return complexQuery == null ? simpleQuery : complexQuery;
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
 		}
-
-		return complexQuery == null ? simpleQuery : complexQuery;
 	}
 
-	private static Term newTerm(String field, TermAttribute attribute) {
-		return new Term(field, attribute.term());
+	private static Term newTerm(String field, CharTermAttribute attribute) {
+		return new Term(field, attribute.toString());
 	}
 
-	private static Term newTermCommence(String field, TermAttribute attribute) {
-		StringBuilder txt = new StringBuilder(attribute.termLength() + 1);
-		txt.append(attribute.termBuffer(), 0, attribute.termLength());
+	private static Term newTermCommence(String field, CharTermAttribute attribute) {
+		StringBuilder txt = new StringBuilder(attribute.length() + 1);
+		txt.append(attribute.buffer(), 0, attribute.length());
 		txt.append('*');
 		return new Term(field, txt.toString());
 	}
 
-	private static Term newTermContient(String field, TermAttribute attribute) {
-		StringBuilder txt = new StringBuilder(attribute.termLength() + 2);
+	private static Term newTermContient(String field, CharTermAttribute attribute) {
+		StringBuilder txt = new StringBuilder(attribute.length() + 2);
 		txt.append('*');
-		txt.append(attribute.termBuffer(), 0, attribute.termLength());
+		txt.append(attribute.buffer(), 0, attribute.length());
 		txt.append('*');
 		return new Term(field, txt.toString());
 	}
@@ -294,26 +297,23 @@ public abstract class LuceneHelper {
 	/**
 	 * Cree une BooleanQuery pour la recherche de type recherche floue
 	 *
-	 * @param field
-	 * @param value
 	 * @return une BooleanQuery
 	 * @throws IndexerException
 	 */
 	public static BooleanQuery getTermsFuzzy(String field, String value) throws IndexerException {
 
-		// Exact search
 		final BooleanQuery booleanQuery = new BooleanQuery();
-		try {
-			// Use teh standard analyzer.
-			// We don't want the tokens to be too much changed by the Analyzer
-			// in Fuzzy
-			final TokenStream stream = getTokenStream(value, getStandardAnalyzer());
-			final TermAttribute att = stream.getAttribute(TermAttribute.class);
+		// Use teh standard analyzer.
+		// We don't want the tokens to be too much changed by the Analyzer in Fuzzy
+		try (final TokenStream stream = getTokenStream(value, getStandardAnalyzer())) {
+			final CharTermAttribute att = stream.getAttribute(CharTermAttribute.class);
 
+			stream.reset();
 			while (stream.incrementToken()) {
 				final Query query = new FuzzyQuery(newTerm(field, att));
 				booleanQuery.add(query, BooleanClause.Occur.MUST);
 			}
+			stream.end();
 		}
 		catch (Exception e) {
 			throw new IndexerException(e);
@@ -322,9 +322,6 @@ public abstract class LuceneHelper {
 		return booleanQuery.clauses() != null && !booleanQuery.clauses().isEmpty() ? booleanQuery : null;
 	}
 
-	/**
-	 * @return
-	 */
 	private static Analyzer getFrenchAnalyzer() {
 		// return new StandardAnalyzer();
 		// return new SnowballAnalyzer("French",
@@ -333,9 +330,6 @@ public abstract class LuceneHelper {
 		return new OurOwnFrenchAnalyzer();
 	}
 
-	/**
-	 * @return
-	 */
 	private static Analyzer getStandardAnalyzer() {
 		return new OurOwnStandardAnalyzer();
 	}

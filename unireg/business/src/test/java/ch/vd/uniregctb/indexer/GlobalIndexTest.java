@@ -8,8 +8,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
@@ -70,12 +71,12 @@ public class GlobalIndexTest extends BusinessTest {
 		public Document asDoc() {
 			Document d = super.asDoc();
 
-			d.add(new Field("NUMERO", id.toString(), Field.Store.YES, Field.Index.NOT_ANALYZED));
-			d.add(new Field("TYPE", type, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("NOM", nom, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("RAISON", raison, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("DESCR", description, Field.Store.YES, Field.Index.ANALYZED));
-			d.add(new Field("DATE", date, Field.Store.YES, Field.Index.ANALYZED));
+			d.add(new StringField("NUMERO", id.toString(), Field.Store.YES));
+			d.add(new TextField("TYPE", type, Field.Store.YES));
+			d.add(new TextField("NOM", nom, Field.Store.YES));
+			d.add(new TextField("RAISON", raison, Field.Store.YES));
+			d.add(new TextField("DESCR", description, Field.Store.YES));
+			d.add(new TextField("DATE", date, Field.Store.YES));
 
 			return d;
 		}
@@ -166,7 +167,7 @@ public class GlobalIndexTest extends BusinessTest {
 		@Override
 		public Document asDoc() {
 			final Document doc = super.asDoc();
-			doc.add(new Field("field1", value, Field.Store.YES, Field.Index.ANALYZED));
+			doc.add(new TextField("field1", value, Field.Store.YES));
 			return doc;
 		}
 
@@ -424,7 +425,7 @@ public class GlobalIndexTest extends BusinessTest {
 	 * nombre d'entités dans l'index doit changer
 	 */
 	@Test
-	public void testRemoveDocumentNeCherchePlus() throws IndexerException, ParseException {
+	public void testRemoveDocumentNeCherchePlus() throws Exception {
 
 		// Un hit avec TYPE=DocType and ID=4567
 		assertHits(1, LuceneHelper.F_ENTITYID + ":4567");
@@ -457,7 +458,7 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	@Test
-	public void testRemoveDocument() throws IndexerException, ParseException {
+	public void testRemoveDocument() throws Exception {
 
 		// First we should have the same number of docs in the 2
 		int dc = globalIndex.getApproxDocCount();
@@ -502,7 +503,7 @@ public class GlobalIndexTest extends BusinessTest {
 	}
 
 	@Test
-	public void testReplaceDocument() throws IndexerException, ParseException {
+	public void testReplaceDocument() throws Exception {
 
 		// Un hit avec ID=1234
 		assertHits(1, "NUMERO:1234 AND TYPE:" + TYPE);

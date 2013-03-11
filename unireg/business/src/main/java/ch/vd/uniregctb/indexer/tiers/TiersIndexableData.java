@@ -6,6 +6,9 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.TextField;
 import org.jetbrains.annotations.Nullable;
 
 import ch.vd.registre.base.date.RegDate;
@@ -162,15 +165,15 @@ public class TiersIndexableData extends IndexableData {
 	}
 
 	private void addStoredValue(Document d, String name, String value) {
-		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.NO));
+		d.add(new StoredField(name, toString(value)));
 	}
 
 	private void addAnalyzedValue(Document d, String name, String value) {
-		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new TextField(name, toString(value), Field.Store.YES));
 	}
 
 	private void addNotAnalyzedValue(Document d, String name, String value) {
-		d.add(new Field(name, toString(value), Field.Store.YES, Field.Index.NOT_ANALYZED));
+		d.add(new StringField(name, toString(value), Field.Store.YES));
 	}
 
 	private void addToutValues(Document d, String... values) {
@@ -183,7 +186,7 @@ public class TiersIndexableData extends IndexableData {
 				sb.append(value);
 			}
 		}
-		d.add(new Field(TiersIndexableData.TOUT, sb.toString(), Field.Store.YES, Field.Index.ANALYZED));
+		d.add(new TextField(TiersIndexableData.TOUT, sb.toString(), Field.Store.YES));
 	}
 
 	private String toString(String value) {
