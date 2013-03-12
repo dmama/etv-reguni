@@ -6,8 +6,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.InitializingBean;
 
+import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.load.DetailedLoadMeter;
@@ -64,7 +66,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		catch (EsbBusinessException e) {
 			try {
 				businessError = buildErrorMessage(e);
-				getEsbTemplate().sendError(message, businessError, e.getCause(), e.getErrorType(), e.getErrorCode());
+				onBusinessError(message, businessError, e.getCause(), e.getErrorType(), e.getErrorCode());
 				nbMessagesEnErreur.incrementAndGet();
 			}
 			catch (Throwable throwable) {
@@ -80,15 +82,17 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		}
 		finally {
 			final long end = loadMeter.end();
-			final String exceptMsg = t != null ? String.format(", %s thrown", t.getClass().getName()) : StringUtils.EMPTY;
-			final String businessErrorMsg = StringUtils.isNotBlank(businessError) ? String.format(", error='%s'", StringUtils.abbreviate(businessError, 100)) : StringUtils.EMPTY;
-			final String msg = String.format("[load=%d] (%d ms) %s%s%s",
-			                                 loadMeter.getLoad() + 1,
-			                                 TimeUnit.NANOSECONDS.toMillis(end - start),
-			                                 displayedValue,
-			                                 businessErrorMsg,
-			                                 exceptMsg);
-			LOGGER.info(msg);
+			if (LOGGER.isInfoEnabled()) {
+				final String exceptMsg = t != null ? String.format(", %s thrown", t.getClass().getName()) : StringUtils.EMPTY;
+				final String businessErrorMsg = StringUtils.isNotBlank(businessError) ? String.format(", error='%s'", StringUtils.abbreviate(businessError, 100)) : StringUtils.EMPTY;
+				final String msg = String.format("[load=%d] (%d ms) %s%s%s",
+				                                 loadMeter.getLoad() + 1,
+				                                 TimeUnit.NANOSECONDS.toMillis(end - start),
+				                                 displayedValue,
+				                                 businessErrorMsg,
+				                                 exceptMsg);
+				LOGGER.info(msg);
+			}
 		}
 	}
 
@@ -123,6 +127,19 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 	 */
 	protected void handle(EsbMessage message) throws Exception {
 		handler.onEsbMessage(message);
+	}
+
+	/**
+	 * C'est ici qu'aterrisent tous les messages à renvoyer en queue d'erreur
+	 * @param message le message entrant
+	 * @param description la description de l'erreur métier
+	 * @param exception l'exception à la source de cette erreur, si applicable
+	 * @param errorType le type d'erreur
+	 * @param errorCode un code d'erreur
+	 * @throws Exception en cas de souci (si une exception saute ici, le message sera envoyé en DLQ)
+	 */
+	protected void onBusinessError(EsbMessage message, String description, @Nullable Exception exception, ErrorType errorType, String errorCode) throws Exception {
+		getEsbTemplate().sendError(message, description, exception, errorType, errorCode);
 	}
 
 	@Override

@@ -52,7 +52,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	 * L'idée d'avoir une {@link WeakHashMap} ici est de se débarasser de l'entrée quand le thread se termine (cas des pools de theads dont
 	 * la taille n'est pas nécessairement constante)
 	 */
-	private final Map<DetailHolder, Object> detailHolders = new WeakHashMap<>();
+	private final Map<DetailHolder, ?> detailHolders = new WeakHashMap<>();
 
 	/**
 	 * Convertisseur en chaîne de caractères
