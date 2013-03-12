@@ -22,7 +22,6 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,7 +32,7 @@ import org.xml.sax.SAXException;
 
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.technical.esb.util.EsbDataHandler;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
@@ -46,19 +45,19 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.xml.ServiceException;
 
 /**
  * Listener qui écoute les requêtes de données de tiers et qui répond en conséquence.
  */
-public class PartyRequestListener extends EsbMessageEndpointListener implements MonitorableMessageListener, InitializingBean {
+public class PartyRequestEsbHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(PartyRequestListener.class);
+	private static final Logger LOGGER = Logger.getLogger(PartyRequestEsbHandler.class);
 
 	private EsbMessageFactory esbMessageFactory;
+	private EsbJmsTemplate esbTemplate;
 	private final ObjectFactory objectFactory = new ObjectFactory();
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	private Map<Class<? extends Request>, RequestHandler> handlers;
 	private Schema schemaCache;
@@ -68,10 +67,12 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		this.handlers = handlers;
 	}
 
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
+		this.esbTemplate = esbTemplate;
+	}
+
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
-
-		nbMessagesRecus.incrementAndGet();
 
 		AuthenticationHelper.pushPrincipal("JMS-Party");
 		try {
@@ -209,11 +210,6 @@ public class PartyRequestListener extends EsbMessageEndpointListener implements 
 		er.setExceptionInfo(new BusinessExceptionInfo(exception.getMessage(), BusinessExceptionCode.INVALID_RESPONSE.name(), null));
 
 		answer(er, attachments, message);
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 
 	@Override

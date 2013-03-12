@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.ModeCommunication;
 
 import static org.junit.Assert.assertEquals;
@@ -34,10 +35,10 @@ import static org.junit.Assert.assertNull;
  *
  * @author Baba NGOM  <baba-issa.ngom@vd.ch>
  */
-public class EvenementIAMListenerTest extends EvenementTest {
+public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementIAMListenerImpl listener;
+	private EvenemenetIamEsbHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -64,10 +65,13 @@ public class EvenementIAMListenerTest extends EvenementTest {
 			}
 		};
 
-		listener = new EvenementIAMListenerImpl();
+		handler = new EvenemenetIamEsbHandler();
+		handler.setHibernateTemplate(hibernateTemplate);
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setEsbTemplate(esbTemplate);
-		listener.setHibernateTemplate(hibernateTemplate);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setHandler(handler);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/iam/messageIAM_EMPIS.xsd")});
@@ -82,7 +86,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -95,7 +99,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -117,7 +121,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -130,7 +134,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -157,7 +161,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -170,7 +174,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -192,7 +196,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -205,7 +209,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -225,7 +229,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -238,7 +242,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -262,7 +266,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -275,7 +279,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.CREATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -298,7 +302,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -311,7 +315,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.DELETE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.DELETE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend .un hypothétique message
@@ -326,7 +330,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		final List<EvenementIAM> events = new ArrayList<EvenementIAM>();
 
-		listener.setHandler(new EvenementIAMHandler() {
+		handler.setHandler(new EvenementIAMHandler() {
 			@Override
 			public void onEvent(EvenementIAM event) {
 				events.add(event);
@@ -339,7 +343,7 @@ public class EvenementIAMListenerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenementIAMListenerImpl.ACTION, EvenementIAMListenerImpl.UPDATE);
+		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message

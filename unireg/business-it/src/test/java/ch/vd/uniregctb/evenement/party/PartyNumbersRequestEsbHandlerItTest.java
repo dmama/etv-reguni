@@ -33,7 +33,7 @@ import static org.junit.Assert.fail;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class PartyNumbersRequestListenerItTest extends PartyRequestListenerItTest {
+public class PartyNumbersRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 
 	private NumbersRequestHandler handler;
 

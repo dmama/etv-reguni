@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.efacture;
 
 import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
@@ -8,7 +9,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -19,19 +19,17 @@ import ch.vd.evd0025.v1.ObjectFactory;
 import ch.vd.evd0025.v1.RegistrationRequestValidationRequest;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.interfaces.efacture.data.Demande;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EFactureEventListener extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EFactureMessageHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureEventListener.class);
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
+	private static final Logger LOGGER = Logger.getLogger(EFactureMessageHandler.class);
 
 	private Schema schemaCache;
 
@@ -49,8 +47,6 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		nbMessagesRecus.incrementAndGet();
-
 		AuthenticationHelper.pushPrincipal("JMS-EvtEfacture");
 		try {
 			final String businessId = message.getBusinessId();
@@ -58,11 +54,11 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 			onMessage(message, EsbMessageHelper.extractCustomHeaders(message));
 			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
 		}
-		catch (XmlException e) {
+		catch (XmlException | JAXBException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
 			hibernateTemplate.flush();  // Flush la session hibernate avant de poper le principal (sinon NullPointerException dans ModificationLogInterceptor)
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -104,10 +100,5 @@ public class EFactureEventListener extends EsbMessageEndpointListener implements
 			Source source = new StreamSource(resource.getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);
 		}
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

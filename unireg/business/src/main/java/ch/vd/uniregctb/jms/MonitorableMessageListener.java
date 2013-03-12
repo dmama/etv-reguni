@@ -10,4 +10,14 @@ public interface MonitorableMessageListener {
 	 * @return le nombre de messages reçus par le listener depuis le démarrage de l'application
 	 */
 	int getNombreMessagesRecus();
+
+	/**
+	 * @return le nombre de messages renvoyés en erreur par le listener depuis le démarrage de l'application
+	 */
+	int getNombreMessagesRenvoyesEnErreur();
+
+	/**
+	 * @return le nombre de messages renvoyés en exception par le listener depuis le démarrage de l'application
+	 */
+	int getNombreMessagesRenvoyesEnException();
 }

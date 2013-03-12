@@ -26,7 +26,7 @@ public class EvenementCivilEchReceptionHandlerImpl implements EvenementCivilEchR
 	private EvenementCivilEchDAO evtCivilDAO;
     private EvenementCivilEchService evtCivilService;
 
-	private static final String SERVICE_NAME = "EvtsCivilsEch";
+	private static final String SERVICE_NAME = "EvtsCivilsEchQueueSize";
 	private StatsService statsService;
 	private LoadAverager loadAverager;
 	

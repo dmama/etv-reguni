@@ -3,13 +3,18 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-
-	<!-- Demandes d'identification de contribuable, cannal "normal" -->
-
-	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageListenerImpl" parent="esbMessageListener" lazy-init="true">
+	<!-- Demandes d'identification de contribuable, handler général -->
+	<bean id="identCtbMessageHandler" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableEsbHandler">
 		<property name="esbMessageFactory" ref="esbMessageFactory" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 		<property name="demandeHandler" ref="identCtbService" />
+		<property name="esbTemplate" ref="esbJmsTemplate" />
+	</bean>
+
+
+	<!-- Demandes d'identification de contribuable, cannal "normal" -->
+	<bean id="identCtbMessageListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identCtbMessageHandler"/>
 	</bean>
 
 	<bean id="jmsIdentCtbEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">
@@ -27,16 +32,11 @@
 		<property name="autoStartup" value="${extprop.jms.queue.ident.ctb.enabled}" />
 	</bean>
 
-	<!-- Alias pour la partie "réponse" après traitement manuel -->
-	<alias alias="identCtbMessageHandler" name="identCtbMessageListener"/>
-
 	<!-- Demandes d'identification de contribuable, cannal prioritaire (= online) -->
 	<!-- Le listener est également dupliqué afin de séparer les statistiques d'événements reçus au niveau JMX -->
 
-	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.evenement.identification.contribuable.IdentificationContribuableMessageListenerImpl" parent="esbMessageListener" lazy-init="true">
-		<property name="esbMessageFactory" ref="esbMessageFactory" />
-		<property name="hibernateTemplate" ref="hibernateTemplate" />
-		<property name="demandeHandler" ref="identCtbService" />
+	<bean id="identCtbMessageListenerOnline" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="identCtbMessageHandler"/>
 	</bean>
 
 	<bean id="jmsIdentCtbEndpointManagerOnline" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

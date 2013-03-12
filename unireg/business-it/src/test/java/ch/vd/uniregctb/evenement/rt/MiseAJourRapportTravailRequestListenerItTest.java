@@ -14,7 +14,6 @@ import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
 import ch.vd.unireg.xml.event.rt.response.v1.MiseAJourRapportTravailResponse;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
-import ch.vd.uniregctb.evenement.rapport.travail.MiseAJourRapportTravailRequestHandler;
 import ch.vd.uniregctb.tiers.DebiteurPrestationImposable;
 import ch.vd.uniregctb.tiers.PersonnePhysique;
 import ch.vd.uniregctb.xml.DataHelper;
@@ -29,19 +28,6 @@ import static org.junit.Assert.assertNotNull;
  */
 public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravailRequestListenerItTest {
 
-	private MiseAJourRapportTravailRequestHandler handler;
-
-	@Override
-	public void onSetUp() throws Exception {
-		handler = getBean(MiseAJourRapportTravailRequestHandler.class, "rapportTravailRequestHandler");
-		super.onSetUp();
-	}
-
-	@Override
-	public void onTearDown() throws Exception {
-		super.onTearDown();
-	}
-
 	@Override
 	String getRequestXSD() {
 		return "event/rt/rapport-travail-request-1.xsd";
@@ -51,8 +37,6 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 	String getResponseXSD() {
 		return "event/rt/rapport-travail-response-1.xsd";
 	}
-
-
 
 	@Test(timeout = BusinessItTest.JMS_TIMEOUT)
 	public void testMiseAJourRTRequestOK() throws Exception {
@@ -90,7 +74,6 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		request.setDateDebutVersementSalaire(dateDebutPeriodeDeclaration);
 		request.setCreationProlongationRapportTravail(new CreationProlongationRapportTravail());
 
-
 		// Envoie le message
 		doInNewTransaction(new TxCallback<Object>() {
 			@Override
@@ -103,7 +86,7 @@ public class MiseAJourRapportTravailRequestListenerItTest extends RapportTravail
 		final EsbMessage message = getEsbMessage(getOutputQueue());
 		assertNotNull(message);
 
-		final MiseAJourRapportTravailResponse response = (MiseAJourRapportTravailResponse) parseResponse(message);
+		final MiseAJourRapportTravailResponse response = parseResponse(message);
 		assertNotNull(response);
 		assertEquals(DataHelper.coreToXML(RegDate.get()), response.getDatePriseEnCompte());
 

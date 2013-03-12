@@ -28,7 +28,7 @@ import static org.junit.Assert.fail;
  * Classe de test du listener de requêtes de création de non-habitant. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  *
  */
-public class PartyCreateNonresidentRequestListenerItTest extends PartyRequestListenerItTest {
+public class PartyCreateNonresidentRequestEsbHandlerItTest extends PartyRequestEsbHandlerItTest {
 
 	private CreateNonresidentRequestHandler handler;
 

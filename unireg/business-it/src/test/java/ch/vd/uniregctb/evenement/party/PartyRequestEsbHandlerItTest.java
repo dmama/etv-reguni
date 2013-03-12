@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNotNull;
 		"classpath:ut/unireg-businessit-jms.xml",
 		"classpath:ut/unireg-businessit-jms-evt-party.xml"
 })
-abstract class PartyRequestListenerItTest extends BusinessItTest {
+abstract class PartyRequestEsbHandlerItTest extends BusinessItTest {
 
 	private EsbJmsTemplate esbTemplate;
 	private String inputQueue;

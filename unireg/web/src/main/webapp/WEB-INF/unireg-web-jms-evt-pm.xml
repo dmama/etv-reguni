@@ -3,7 +3,11 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.pm.EntrepriseEventListener" parent="esbMessageListener">
+	<bean id="entrepriseEventListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="entrepriseEventHandler"/>
+	</bean>
+
+	<bean id="entrepriseEventHandler" class="ch.vd.uniregctb.pm.EntrepriseEventHandler">
 		<property name="dataEventService" ref="dataEventService" />
 		<property name="indexer" ref="globalTiersIndexer" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />

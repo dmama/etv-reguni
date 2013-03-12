@@ -52,9 +52,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-public class EvenementExterneListenerTest extends BusinessTest {
+public class EvenementExterneEsbHandlerTest extends BusinessTest {
 
-	private EvenementExterneListenerImpl listener;
+	private EvenementExterneEsbHandler handler;
 
 	private EvenementExterneDAO evenementExterneDAO;
 	private TiersDAO tiersDAO;
@@ -66,8 +66,8 @@ public class EvenementExterneListenerTest extends BusinessTest {
 		tiersDAO = getBean(TiersDAO.class, "tiersDAO");
 		final EvenementExterneService service = getBean(EvenementExterneService.class, "evenementExterneService");
 
-		listener = new EvenementExterneListenerImpl();
-		listener.setHandler(service);
+		handler = new EvenementExterneEsbHandler();
+		handler.setHandler(service);
 	}
 
 	@Test
@@ -96,7 +96,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -170,7 +170,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -213,7 +213,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -284,7 +284,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -331,7 +331,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -400,7 +400,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -480,7 +480,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createOldMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -615,7 +615,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -690,7 +690,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageLC(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -733,7 +733,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -804,7 +804,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -851,7 +851,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -920,7 +920,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});
@@ -1000,7 +1000,7 @@ public class EvenementExterneListenerTest extends BusinessTest {
 			@Override
 			public Object execute(TransactionStatus status) throws Exception {
 				final EsbMessage message = createNewMessageAnnulationQuittancement(dpiId, dateDebut, dateFin, dateQuittancement);
-				listener.onMessage(message, "TEST-" + System.currentTimeMillis());
+				handler.onMessage(message, "TEST-" + System.currentTimeMillis());
 				return null;
 			}
 		});

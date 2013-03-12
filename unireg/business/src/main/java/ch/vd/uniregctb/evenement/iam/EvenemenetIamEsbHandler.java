@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.iam;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -15,14 +14,14 @@ import ch.vd.fiscalite.empaci.demandeUtilisateurV2.DemandeUtilisateurDocument;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 
-public class EvenementIAMListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EvenemenetIamEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementIAMListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenemenetIamEsbHandler.class);
 
 	protected static final String ACTION = "action";
 	protected static final String CREATE = "Create";
@@ -34,13 +33,10 @@ public class EvenementIAMListenerImpl extends EsbMessageEndpointListener impleme
 
 	private HibernateTemplate hibernateTemplate;
 
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
-
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementIAMHandler handler) {
 		this.handler = handler;
 	}
-
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
@@ -49,8 +45,6 @@ public class EvenementIAMListenerImpl extends EsbMessageEndpointListener impleme
 
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
-
-		nbMessagesRecus.incrementAndGet();
 
 		AuthenticationHelper.pushPrincipal("JMS-EvtIAM");
 
@@ -73,16 +67,14 @@ public class EvenementIAMListenerImpl extends EsbMessageEndpointListener impleme
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.UNKNOWN, "");
 		}
 		catch (XmlException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -159,10 +151,5 @@ public class EvenementIAMListenerImpl extends EsbMessageEndpointListener impleme
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + evt.getClass());
 		}
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

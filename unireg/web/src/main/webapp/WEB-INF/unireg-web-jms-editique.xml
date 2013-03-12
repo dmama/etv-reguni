@@ -3,7 +3,11 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl" parent="esbMessageListener">
+	<bean name="evenementEditiqueListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementEditiqueEsbHandler"/>
+	</bean>
+
+	<bean name="evenementEditiqueEsbHandler" class="ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler">
 		<property name="storageService" ref="retourImpressionStorageService"/>
 	</bean>
 

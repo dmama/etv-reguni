@@ -12,7 +12,6 @@ import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
@@ -21,7 +20,6 @@ import org.xml.sax.SAXException;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.xml.event.lr.event.v1.Evenement;
 import ch.vd.unireg.xml.event.lr.event.v1.EvtListe;
 import ch.vd.unireg.xml.event.lr.quittance.v1.EvtQuittanceListe;
@@ -30,22 +28,21 @@ import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 /**
  * Listener qui reçoit les messages JMS concernant les événements externes, les valide, les transforme et les transmet au handler approprié.
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementExterneListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EvenementExterneEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementExterneListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementExterneEsbHandler.class);
 
 	private EvenementExterneHandler handler;
 	private HibernateTemplate hibernateTemplate;
 	private Schema schemaCache;
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementExterneHandler handler) {
@@ -60,8 +57,6 @@ public class EvenementExterneListenerImpl extends EsbMessageEndpointListener imp
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) throws Exception {
 
-		nbMessagesRecus.incrementAndGet();
-
 		AuthenticationHelper.pushPrincipal("JMS-EvtExt");
 
 		try {
@@ -74,7 +69,7 @@ public class EvenementExterneListenerImpl extends EsbMessageEndpointListener imp
 		}
 		catch (EvenementExterneException e) {
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(esbMessage, e.getMessage(), e, ErrorType.BUSINESS, "");
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
 		}
 		catch (RuntimeException e) {
 			LOGGER.error(e, e);
@@ -211,10 +206,5 @@ public class EvenementExterneListenerImpl extends EsbMessageEndpointListener imp
 
 	private static boolean isEvenementLR(EvtListe el) {
 		return el.getCaracteristiquesListe().getTypeListe() == ch.vd.unireg.xml.event.lr.event.v1.Liste.LR;
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

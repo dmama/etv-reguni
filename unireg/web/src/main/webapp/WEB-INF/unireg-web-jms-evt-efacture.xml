@@ -2,7 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.efacture.EFactureEventListener" parent="esbMessageListener">
+	<bean id="evenementEfactureListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementEfactureHandler"/>
+	</bean>
+
+	<bean id="evenementEfactureHandler" class="ch.vd.uniregctb.efacture.EFactureMessageHandler">
 		<property name="handler" ref="efactureEventHandler"/>
 		<property name="hibernateTemplate" ref="hibernateTemplate"/>
 	</bean>
@@ -46,7 +50,11 @@
 		<property name="autoStartup" value="${extprop.jms.queue.evtEfacture.output.enabled}" />
 	</bean>
 
-	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.efacture.EFactureResponseListener" parent="esbMessageListener">
+	<bean id="eFactureResponseListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="eFactureResponseHandler"/>
+	</bean>
+
+	<bean id="eFactureResponseHandler" class="ch.vd.uniregctb.efacture.EFactureResponseHandler">
 		<property name="responseService" ref="eFactureResponseService"/>
 	</bean>
 

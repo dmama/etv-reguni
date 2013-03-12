@@ -18,9 +18,9 @@ import ch.vd.uniregctb.load.LoadMonitorable;
 import ch.vd.uniregctb.stats.StatsService;
 
 /**
- * Bean JMX de monitoring de la charge des web-services
+ * Bean JMX de monitoring de la charge de services (web-services, accès jms...)
  */
-public class WebServiceLoadJmxBeanContainer implements InitializingBean, DisposableBean {
+public class ServiceLoadJmxBeanContainer implements InitializingBean, DisposableBean {
 
 	private Map<String, LoadMonitorable> services;
 	
@@ -56,7 +56,7 @@ public class WebServiceLoadJmxBeanContainer implements InitializingBean, Disposa
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(services);
 		if (!services.isEmpty()) {
-			jmxBeans = new HashMap<String, LoadJmxBean>(services.size());
+			jmxBeans = new HashMap<>(services.size());
 			for (Map.Entry<String, LoadMonitorable> entry : services.entrySet()) {
 				final String serviceName = entry.getKey();
 				final LoadMonitorable service = entry.getValue();
@@ -67,7 +67,7 @@ public class WebServiceLoadJmxBeanContainer implements InitializingBean, Disposa
 					bean = new DetailedLoadJmxBeanImpl(serviceName, (DetailedLoadMonitorable) service, statsService);
 				}
 				else {
-					bean = new LoadJmxBeanImpl<LoadMonitorable>(serviceName, service, statsService);
+					bean = new LoadJmxBeanImpl<>(serviceName, service, statsService);
 				}
 				
 				jmxBeans.put(serviceName, bean);

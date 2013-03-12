@@ -2,7 +2,6 @@ package ch.vd.uniregctb.pm;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -12,12 +11,12 @@ import org.apache.xmlbeans.XmlOptions;
 import ch.vd.fiscalite.registre.entrepriseEvent.EvtEntrepriseDocument;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.data.DataEventService;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.indexer.tiers.GlobalTiersIndexer;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.tiers.Entreprise;
 
 /**
@@ -25,15 +24,13 @@ import ch.vd.uniregctb.tiers.Entreprise;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EntrepriseEventListener extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EntrepriseEventHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EntrepriseEventListener.class);
+	private static final Logger LOGGER = Logger.getLogger(EntrepriseEventHandler.class);
 
 	private GlobalTiersIndexer indexer;
 	private DataEventService dataEventService;
 	private HibernateTemplate hibernateTemplate;
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(DataEventService dataEventService) {
@@ -52,8 +49,6 @@ public class EntrepriseEventListener extends EsbMessageEndpointListener implemen
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
 
-		nbMessagesRecus.incrementAndGet();
-
 		// Parse le message sous forme XML
 		final XmlObject doc = XmlObject.Factory.parse(msg.getBodyAsString());
 
@@ -71,7 +66,7 @@ public class EntrepriseEventListener extends EsbMessageEndpointListener implemen
 
 			final String errorMessage = builder.toString();
 			LOGGER.error(errorMessage);
-			getEsbTemplate().sendError(msg, errorMessage, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(errorMessage, null, ErrorType.TECHNICAL, "");
 		}
 		else {
 
@@ -111,10 +106,5 @@ public class EntrepriseEventListener extends EsbMessageEndpointListener implemen
 
 		dataEventService.onPersonneMoraleChange(entrepriseId);
 		indexer.schedule(entrepriseId);
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

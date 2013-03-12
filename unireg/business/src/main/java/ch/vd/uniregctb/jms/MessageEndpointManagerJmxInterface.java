@@ -22,4 +22,14 @@ public interface MessageEndpointManagerJmxInterface {
 	 */
 	int getReceivedMessages();
 
+	/**
+	 * @return le nombre de messages reçus qui ont lancé une exception (-> départ DLQ)
+	 */
+	int getMessagesWithException();
+
+	/**
+	 * @return le nombre de messages reçus que l'on a renvoyé en erreur (-> ERROR queue ou XXX-admin)
+	 */
+	int getMessagesWithBusinessError();
+
 }

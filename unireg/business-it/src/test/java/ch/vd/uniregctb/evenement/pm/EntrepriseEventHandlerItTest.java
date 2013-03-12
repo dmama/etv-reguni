@@ -22,7 +22,8 @@ import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.indexer.tiers.MockTiersIndexer;
-import ch.vd.uniregctb.pm.EntrepriseEventListener;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
+import ch.vd.uniregctb.pm.EntrepriseEventHandler;
 
 import static org.junit.Assert.assertEquals;
 
@@ -31,7 +32,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EntrepriseEventListenerItTest extends EvenementTest {
+public class EntrepriseEventHandlerItTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private MockDataEventService dataEventService;
@@ -75,12 +76,15 @@ public class EntrepriseEventListenerItTest extends EvenementTest {
 			}
 		};
 
-		final EntrepriseEventListener listener = new EntrepriseEventListener();
-		listener.setEsbTemplate(esbTemplate);
-		listener.setDataEventService(dataEventService);
-		listener.setIndexer(indexer);
-		listener.setHibernateTemplate(hibernateTemplate);
+		final EntrepriseEventHandler handler = new EntrepriseEventHandler();
+		handler.setDataEventService(dataEventService);
+		handler.setIndexer(indexer);
+		handler.setHibernateTemplate(hibernateTemplate);
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setEsbTemplate(esbTemplate);
+		listener.setHandler(handler);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[] {new ClassPathResource("xsd/pm/EvenementEntreprise.xsd")});

@@ -3,8 +3,11 @@
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="dataEventJmsHandler"/>
+	</bean>
 
-	<bean id="dataEventJmsListener" class="ch.vd.uniregctb.data.DataEventJmsListener" parent="esbMessageListener">
+	<bean id="dataEventJmsHandler" class="ch.vd.uniregctb.data.DataEventJmsHandler">
 		<property name="dataEventService" ref="dataEventService" />
 	</bean>
 

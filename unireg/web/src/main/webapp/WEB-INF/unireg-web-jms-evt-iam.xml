@@ -2,7 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementIAMListener" class="ch.vd.uniregctb.evenement.iam.EvenementIAMListenerImpl" parent="esbMessageListener">
+	<bean id="evenementIamListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementIamEsbHandler" />
+	</bean>
+
+	<bean id="evenementIamEsbHandler" class="ch.vd.uniregctb.evenement.iam.EvenemenetIamEsbHandler">
 		<property name="handler" ref="evenementIAMService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
@@ -17,7 +21,7 @@
 				<property name="maxMessagesPerSessions" value="1"/>
 			</bean>
 		</property>
-		<property name="messageListener" ref="evenementIAMListener"/>
+		<property name="messageListener" ref="evenementIamListener"/>
 		<property name="transactionManager" ref="transactionManager"/>
 		<property name="autoStartup" value="${extprop.jms.queue.evtIAM.enabled}" />
 	</bean>

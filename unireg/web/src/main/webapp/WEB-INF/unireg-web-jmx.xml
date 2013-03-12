@@ -91,8 +91,6 @@
 	</bean>
 
 	<bean name="evenementsCivilsEchJmxBean" class="ch.vd.uniregctb.jmx.EvenementsCivilsEchJmxBeanImpl">
-		<property name="endpointManagerMasse" ref="evtCivilEchMasseEndpointManager"/>
-		<property name="endpointManagerIndividuel" ref="evtCivilEchIndividuelEndpointManager"/>
 		<property name="monitor" ref="evtCivilEchReceptionHandler"/>
 		<property name="processor" ref="evtCivilEchProcessor"/>
 	</bean>
@@ -125,6 +123,30 @@
 		<constructor-arg name="serviceName" value="WebAccess"/>
 		<constructor-arg name="service" ref="accessLoggerFilter"/>
 		<constructor-arg name="statsService" ref="statsService"/>
+	</bean>
+
+	<bean name="jmsAccessLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+		<property name="statsService" ref="statsService"/>
+		<property name="exporter" ref="jmxExporter"/>
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-web:type=Monitoring,resourceName=JmsLoad,name="/>
+		<property name="services">
+			<map>
+				<entry key="EvenementsCivilsMasse" value-ref="evtCivilEchMasseListener"/>
+				<entry key="EvenementsCivilsIndividuel" value-ref="evtCivilEchIndividuelListener"/>
+				<entry key="EvenementsPM" value-ref="entrepriseEventListener"/>
+				<entry key="RetourImpression" value-ref="evenementEditiqueListener"/>
+				<entry key="EvenementsExternes" value-ref="evenementExterneListener"/>
+				<entry key="EvenementsCedi" value-ref="evenementCediListener"/>
+				<entry key="Identification" value-ref="identCtbMessageListener"/>
+				<entry key="IdentificationOnline" value-ref="identCtbMessageListenerOnline"/>
+				<entry key="EvenementsIAM" value-ref="evenementIamListener"/>
+				<entry key="PartyRequests" value-ref="partyRequestListener"/>
+				<entry key="RapportTravailRequests" value-ref="rapportTravailRequestListener"/>
+				<entry key="EvenementsDeclaration" value-ref="evenementDeclarationListener"/>
+				<entry key="EvenementsEfacture" value-ref="evenementEfactureListener"/>
+				<entry key="EvenementsEfactureResponse" value-ref="eFactureResponseListener"/>
+			</map>
+		</property>
 	</bean>
 
 </beans>

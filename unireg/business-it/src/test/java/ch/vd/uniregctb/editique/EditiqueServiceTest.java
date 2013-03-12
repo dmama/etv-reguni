@@ -6,7 +6,6 @@ import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,10 +20,11 @@ import ch.vd.uniregctb.editique.impl.EditiqueCompositionServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueHelperImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueRetourImpressionStorageServiceImpl;
 import ch.vd.uniregctb.editique.impl.EditiqueServiceImpl;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
+import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
 import ch.vd.uniregctb.editique.impl.EvenementEditiqueSenderImpl;
 import ch.vd.uniregctb.evenement.EvenementHelper;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.situationfamille.SituationFamilleService;
 import ch.vd.uniregctb.stats.StatsService;
 import ch.vd.uniregctb.tache.ImpressionNouveauxDossiersHelperImpl;
@@ -83,13 +83,13 @@ public class EditiqueServiceTest extends BusinessItTest {
 		storageService.setCleanupPeriod(20);
 		storageService.afterPropertiesSet();
 
-		final EvenementEditiqueListenerImpl listener = new EvenementEditiqueListenerImpl();
-		listener.setTransactionManager(transactionManager);
-		listener.setStorageService(storageService);
+		final EvenementEditiqueEsbHandler handler = new EvenementEditiqueEsbHandler();
+		handler.setStorageService(storageService);
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setEsbTemplate(esbTemplate);
-		if (listener instanceof InitializingBean) {
-			((InitializingBean) listener).afterPropertiesSet();
-		}
+		listener.setTransactionManager(transactionManager);
+		listener.setHandler(handler);
 
 		final ResourceAdapter resourceAdapter = getBean(ResourceAdapter.class, "jmsResourceAdapter");
 		manager = EvenementHelper.initEndpointManager(resourceAdapter, INPUT_QUEUE, listener);

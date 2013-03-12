@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jms.connection.JmsTransactionManager;
 import org.springframework.util.ResourceUtils;
 
@@ -21,8 +20,9 @@ import ch.vd.technical.esb.EsbMessageFactory;
 import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
-import ch.vd.uniregctb.editique.impl.EvenementEditiqueListenerImpl;
+import ch.vd.uniregctb.editique.impl.EvenementEditiqueEsbHandler;
 import ch.vd.uniregctb.evenement.EvenementTest;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -31,10 +31,10 @@ import static org.junit.Assert.assertNotNull;
  * Classe de test du listener d'événements des retours d'impression de l'éditique.
  * Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  */
-public class EvenementEditiqueListenerTest extends EvenementTest {
+public class EvenementEditiqueEsbHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementEditiqueListenerImpl listener;
+	private EvenementEditiqueEsbHandler handler;
 
 	private static final String DI_ID = "2004 01 062901707 20100817145346417";
 
@@ -55,12 +55,12 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 		clearQueue(INPUT_QUEUE);
 
-		listener = new EvenementEditiqueListenerImpl();
+		handler = new EvenementEditiqueEsbHandler();
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
+		listener.setHandler(handler);
 		listener.setEsbTemplate(esbTemplate);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
-		if (listener instanceof InitializingBean) {
-			((InitializingBean) listener).afterPropertiesSet();
-		}
 
 		esbMessageFactory = new EsbMessageFactory();
 		esbMessageFactory.setValidator(null);
@@ -73,7 +73,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 
 		final List<EditiqueResultat> events = new ArrayList<EditiqueResultat>();
 
-		listener.setStorageService(new EditiqueRetourImpressionStorageService() {
+		handler.setStorageService(new EditiqueRetourImpressionStorageService() {
 			@Override
 			public void onArriveeRetourImpression(EditiqueResultatRecu resultat) {
 				events.add(resultat);
@@ -115,7 +115,7 @@ public class EvenementEditiqueListenerTest extends EvenementTest {
 			}
 
 			@Override
-			public Collection<Pair<Long,RetourImpressionTrigger>> getTriggersEnregistres() {
+			public Collection<Pair<Long, RetourImpressionTrigger>> getTriggersEnregistres() {
 				throw new NotImplementedException();
 			}
 		});

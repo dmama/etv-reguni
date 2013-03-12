@@ -1,18 +1,13 @@
 package ch.vd.uniregctb.efacture;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.apache.log4j.Logger;
 
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 
-public class EFactureResponseListener extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EFactureResponseHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EFactureResponseListener.class);
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
+	private static final Logger LOGGER = Logger.getLogger(EFactureResponseHandler.class);
 
 	private EFactureResponseService responseService;
 
@@ -22,8 +17,6 @@ public class EFactureResponseListener extends EsbMessageEndpointListener impleme
 
 	@Override
 	public void onEsbMessage(EsbMessage esbMessage) {
-
-		nbMessagesRecus.incrementAndGet();
 
 		LOGGER.info(String.format("Arrivée de la réponse e-facture au message '%s'", esbMessage.getBusinessCorrelationId()));
 		try {
@@ -37,10 +30,5 @@ public class EFactureResponseListener extends EsbMessageEndpointListener impleme
 
 	private void onResponse(String businessId) {
 		responseService.onNewResponse(businessId);
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

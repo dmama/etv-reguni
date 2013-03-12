@@ -2,10 +2,14 @@ package ch.vd.uniregctb.load;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 
@@ -15,10 +19,20 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	private final AtomicInteger currentLoad = new AtomicInteger(0);
 
 	/**
-	 * Simple pointeur vers des données de charge courante
+	 * Simple pointeur vers des données de charge courante, avec surcharge du {@link #hashCode()} et du {@link #equals(Object)}
+	 * afin de se baser sur l'identité du container
 	 */
-	private static final class DetailHolder {
-		public LoadDetail detail;
+	private static final class DetailHolder extends MutableObject<LoadDetail> {
+		@Override
+		public int hashCode() {
+			return System.identityHashCode(this);
+		}
+
+		@SuppressWarnings("EqualsWhichDoesntCheckParameterClass")
+		@Override
+		public boolean equals(Object obj) {
+			return obj == this;
+		}
 	}
 
 	/**
@@ -34,8 +48,11 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	 *     <li>Accès <b>READ</b> nécessaire lors de l'interrogation du contenu de la liste - voir méthode {@link #getLoadDetails()}</li>
 	 * </ul>
 	 * A part ces deux cas, les threads eux-mêmes n'ont pas besoin de synchronisation au moment des appels
+	 * <p/>
+	 * L'idée d'avoir une {@link WeakHashMap} ici est de se débarasser de l'entrée quand le thread se termine (cas des pools de theads dont
+	 * la taille n'est pas nécessairement constante)
 	 */
-	private final List<DetailHolder> detailHolders = new LinkedList<DetailHolder>();
+	private final Map<DetailHolder, Object> detailHolders = new WeakHashMap<>();
 
 	/**
 	 * Convertisseur en chaîne de caractères
@@ -54,7 +71,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 			final Lock lock = rwLock.writeLock();
 			lock.lock();
 			try {
-				detailHolders.add(holder);
+				detailHolders.put(holder, null);
 			}
 			finally {
 				lock.unlock();
@@ -87,7 +104,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	public long start(T desc) {
 		currentLoad.incrementAndGet();
 		final long ts = timestamp();
-		details.get().detail = new LoadDetailImpl<T>(desc, ts, Thread.currentThread().getName(), renderer);
+		details.get().setValue(new LoadDetailImpl<>(desc, ts, Thread.currentThread().getName(), renderer));
 		return ts;
 }
 
@@ -96,7 +113,7 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 	 * @return {@link System#nanoTime() timestamp} à la fin de l'appel
 	 */
 	public long end() {
-		details.get().detail = null;
+		details.get().setValue(null);
 		currentLoad.decrementAndGet();
 		return timestamp();
 	}
@@ -112,10 +129,10 @@ public class DetailedLoadMeter<T> implements DetailedLoadMonitorable {
 		final Lock lock = rwLock.readLock();
 		lock.lock();
 		try {
-			d = new LinkedList<LoadDetail>();
-			for (DetailHolder dh : detailHolders) {
-				if (dh.detail != null) {
-					d.add(dh.detail);
+			d = new LinkedList<>();
+			for (DetailHolder dh : detailHolders.keySet()) {
+				if (dh != null && dh.getValue() != null) {
+					d.add(dh.getValue());
 				}
 			}
 		}

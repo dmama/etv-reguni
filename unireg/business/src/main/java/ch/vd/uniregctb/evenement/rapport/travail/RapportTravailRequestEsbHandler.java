@@ -21,12 +21,12 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.w3c.dom.Document;
@@ -37,7 +37,7 @@ import ch.vd.registre.base.tx.TxCallbackException;
 import ch.vd.registre.base.validation.ValidationException;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.technical.esb.util.ESBXMLValidator;
 import ch.vd.technical.esb.util.exception.ESBValidationException;
 import ch.vd.unireg.xml.event.rt.request.v1.MiseAJourRapportTravailRequest;
@@ -48,19 +48,20 @@ import ch.vd.unireg.xml.exception.v1.BusinessExceptionInfo;
 import ch.vd.unireg.xml.exception.v1.TechnicalExceptionInfo;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.transaction.TransactionTemplate;
 import ch.vd.uniregctb.xml.ServiceException;
 
 //Listener qui écoute les demandes sur les rapports de travail pour le moment on a que des demandes de mise à jour
-public class RapportTravailRequestListener extends EsbMessageEndpointListener implements MonitorableMessageListener, InitializingBean {
+public class RapportTravailRequestEsbHandler implements EsbMessageHandler, InitializingBean {
 
-	private static final Logger LOGGER = Logger.getLogger(RapportTravailRequestListener.class);
+	private static final Logger LOGGER = Logger.getLogger(RapportTravailRequestEsbHandler.class);
 
 	private EsbMessageFactory esbMessageFactory;
 	private final ObjectFactory objectFactory = new ObjectFactory();
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
+	private PlatformTransactionManager transactionManager;
+	private EsbJmsTemplate esbTemplate;
 	private RapportTravailRequestHandler rapportTravailRequestHandler;
 
 	private Schema schemaCache;
@@ -69,10 +70,16 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		this.rapportTravailRequestHandler = rapportTravailRequestHandler;
 	}
 
+	public void setTransactionManager(PlatformTransactionManager transactionManager) {
+		this.transactionManager = transactionManager;
+	}
+
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
+		this.esbTemplate = esbTemplate;
+	}
+
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
-		nbMessagesRecus.incrementAndGet();
-
 		AuthenticationHelper.pushPrincipal("JMS-RapportTravail");
 		try {
 			onMessage(message);
@@ -99,7 +106,7 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			// on traite la requête
 			final MiseAjourRapportTravail miseAjourRapportTravail = MiseAjourRapportTravail.get(request, message.getBusinessId());
 
-			final TransactionTemplate template = new TransactionTemplate(getTransactionManager());
+			final TransactionTemplate template = new TransactionTemplate(transactionManager);
 			template.setReadOnly(false);
 			template.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 			try {
@@ -168,11 +175,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 		esbMessageFactory.setValidator(esbValidator);
 	}
 
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
-	}
-
 	private MiseAJourRapportTravailRequest parse(Source message) throws JAXBException, SAXException, IOException {
 		final JAXBContext context = JAXBContext.newInstance(ch.vd.unireg.xml.event.rt.request.v1.ObjectFactory.class.getPackage().getName());
 		final Unmarshaller u = context.createUnmarshaller();
@@ -224,7 +226,6 @@ public class RapportTravailRequestListener extends EsbMessageEndpointListener im
 			m.setBusinessUser("unireg");
 			m.setContext("rapportTravail");
 			m.setBody(doc);
-
 
 			esbTemplate.send(m);
 		}

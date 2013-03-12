@@ -61,6 +61,16 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 
 	@Override
 	public int getReceivedMessages() {
-		return ((MonitorableMessageListener)messageListener).getNombreMessagesRecus();
+		return ((MonitorableMessageListener) messageListener).getNombreMessagesRecus();
+	}
+
+	@Override
+	public int getMessagesWithException() {
+		return ((MonitorableMessageListener) messageListener).getNombreMessagesRenvoyesEnException();
+	}
+
+	@Override
+	public int getMessagesWithBusinessError() {
+		return ((MonitorableMessageListener) messageListener).getNombreMessagesRenvoyesEnErreur();
 	}
 }

@@ -2,7 +2,6 @@ package ch.vd.uniregctb.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -17,22 +16,20 @@ import ch.vd.fiscalite.registre.databaseEvent.DatabaseLoadEventDocument;
 import ch.vd.fiscalite.registre.databaseEvent.DatabaseTruncateEventDocument;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 /**
- * Bean qui écoute les messages JMS de modification de la database pour propager l'information au database service
+ * Bean qui traite les messages JMS de modification de la database pour propager l'information au database service
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class DataEventJmsListener extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class DataEventJmsHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(DataEventJmsListener.class);
+	private static final Logger LOGGER = Logger.getLogger(DataEventJmsHandler.class);
 
 	private DataEventService dataEventService;
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setDataEventService(DataEventService dataEventService) {
@@ -41,8 +38,6 @@ public class DataEventJmsListener extends EsbMessageEndpointListener implements 
 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
-
-		nbMessagesRecus.incrementAndGet();
 
 		// Parse le message sous forme XML
 		final XmlObject doc = XmlObject.Factory.parse(msg.getBodyAsString());
@@ -61,7 +56,7 @@ public class DataEventJmsListener extends EsbMessageEndpointListener implements 
 
 			final String errorMsg = builder.toString();
 			LOGGER.error(errorMsg);
-			getEsbTemplate().sendError(msg, errorMsg, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(errorMsg, null, ErrorType.TECHNICAL, "");
 		}
 		else {
 
@@ -135,10 +130,5 @@ public class DataEventJmsListener extends EsbMessageEndpointListener implements 
 			LOGGER.debug("Réception d'un événement de truncate de la database");
 		}
 		dataEventService.onTruncateDatabase();
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

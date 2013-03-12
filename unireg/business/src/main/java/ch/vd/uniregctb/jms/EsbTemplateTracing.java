@@ -3,6 +3,7 @@ package ch.vd.uniregctb.jms;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.DisposableBean;
 
 import ch.vd.technical.esb.ErrorType;
@@ -91,20 +92,6 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 		}
 	}
 
-	/**
-	 * Ne conserve que les <i>n</i> premiers caractères d'une chaîne de caractères (<i>n</i> = 100 ici)
-	 * @param str la chaîne de caractères de départ
-	 * @return la chaîne éventuellement tronquée
-	 */
-	private static String cap(String str) {
-		if (str != null && str.length() > 100) {
-			return str.substring(0, 100) + "...";
-		}
-		else {
-			return str;
-		}
-	}
-
 	@Override
 	public void sendError(final EsbMessage esbMessage, final String errorMessage, Exception exception, ErrorType errorType, String errorCode) throws Exception {
 		final ServiceTracing tracing = get(esbMessage);
@@ -116,7 +103,7 @@ public class EsbTemplateTracing extends EsbJmsTemplate implements DisposableBean
 			tracing.end(time, "sendError", new Object() {
 				@Override
 				public String toString() {
-					return String.format("queue=%s, businessId='%s', errorMessage='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId(), cap(errorMessage));
+					return String.format("queue=%s, businessId='%s', errorMessage='%s'", esbMessage.getServiceDestination(), esbMessage.getBusinessId(), StringUtils.abbreviate(errorMessage, 100));
 				}
 			});
 		}

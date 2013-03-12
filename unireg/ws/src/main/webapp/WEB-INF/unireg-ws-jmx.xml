@@ -58,7 +58,7 @@
 		<property name="checker" ref="applicationChecker" />
 	</bean>
 
-	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.WebServiceLoadJmxBeanContainer">
+	<bean name="webserviceLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
 		<property name="statsService" ref="statsService"/>
 		<property name="exporter" ref="jmxExporter"/>
 		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=WebserviceLoad,name="/>
@@ -67,6 +67,17 @@
 				<entry key="TiersWebService2" value-ref="tiersService2EndPoint"/>
 				<entry key="PartyWebService3" value-ref="partyService3EndPoint"/>
 				<entry key="ServiceSecurite" value-ref="securiteServiceBean"/>
+			</map>
+		</property>
+	</bean>
+
+	<bean name="jmsAccessLoadJmxBean" class="ch.vd.uniregctb.jmx.ServiceLoadJmxBeanContainer">
+		<property name="statsService" ref="statsService"/>
+		<property name="exporter" ref="jmxExporter" />
+		<property name="objectNamePrefix" value="ch.vd.uniregctb-ws:type=Monitoring,resourceName=JmsLoad,name=" />
+		<property name="services">
+			<map>
+				<entry key="DataEvents" value-ref="dataEventJmsListener"/>
 			</map>
 		</property>
 	</bean>

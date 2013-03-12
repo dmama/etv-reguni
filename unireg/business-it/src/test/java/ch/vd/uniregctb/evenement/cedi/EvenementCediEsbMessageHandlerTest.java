@@ -23,6 +23,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -32,10 +33,10 @@ import static org.junit.Assert.assertNull;
  * Classe de test du listener d'événements CEDI. Cette classe nécessite une connexion à l'ESB de développement pour fonctionner.
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementCediListenerTest extends EvenementTest {
+public class EvenementCediEsbMessageHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementCediListenerImpl listener;
+	private EvenementCediEsbMessageHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -62,10 +63,13 @@ public class EvenementCediListenerTest extends EvenementTest {
 			}
 		};
 
-		listener = new EvenementCediListenerImpl();
-		listener.setEsbTemplate(esbTemplate);
-		listener.setHibernateTemplate(hibernateTemplate);
+		handler = new EvenementCediEsbMessageHandler();
+		handler.setHibernateTemplate(hibernateTemplate);
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
+		listener.setHandler(handler);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setEsbTemplate(esbTemplate);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("xsd/cedi/DossierElectronique-1-0.xsd")});
@@ -81,7 +85,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
 
-		listener.setHandler(new EvenementCediHandler() {
+		handler.setHandler(new EvenementCediHandler() {
 			@Override
 			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
 				events.add(event);
@@ -123,7 +127,7 @@ public class EvenementCediListenerTest extends EvenementTest {
 
 		final List<EvenementCedi> events = new ArrayList<EvenementCedi>();
 
-		listener.setHandler(new EvenementCediHandler() {
+		handler.setHandler(new EvenementCediHandler() {
 			@Override
 			public void onEvent(EvenementCedi event, Map<String, String> incomingHeaders) {
 				events.add(event);

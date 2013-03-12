@@ -19,8 +19,8 @@ import ch.vd.uniregctb.common.BusinessTest;
 import ch.vd.uniregctb.common.BusinessTestingConstants;
 import ch.vd.uniregctb.declaration.ModeleDocument;
 import ch.vd.uniregctb.declaration.PeriodeFiscale;
+import ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler;
 import ch.vd.uniregctb.evenement.cedi.EvenementCediHandler;
-import ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl;
 import ch.vd.uniregctb.interfaces.service.ServiceInfrastructureService;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.tache.sync.AddDI;
@@ -51,7 +51,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 	private TacheService tacheService;
 	private TacheDAO tacheDAO;
 
-	private EvenementCediListenerImpl cediListener;
+	private EvenementCediEsbMessageHandler cediListener;
 
 	@Override
 	public void onSetUp() throws Exception {
@@ -61,7 +61,7 @@ public class TacheSynchronizerInterceptorTest extends BusinessTest {
 		tacheService = getBean(TacheService.class, "tacheService");
 		tacheDAO = getBean(TacheDAO.class, "tacheDAO");
 
-		cediListener = new EvenementCediListenerImpl();
+		cediListener = new EvenementCediEsbMessageHandler();
 		cediListener.setHandler(cediHandler);
 		cediListener.setHibernateTemplate(hibernateTemplate);
 	}

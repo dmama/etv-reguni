@@ -25,6 +25,7 @@ import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -34,10 +35,10 @@ import static org.junit.Assert.assertNotNull;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class EvenementExterneListenerItTest extends EvenementTest {
+public class EvenementExterneEsbHandlerItTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenementExterneListenerImpl listener;
+	private EvenementExterneEsbHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -67,10 +68,13 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 			}
 		};
 
-		listener = new EvenementExterneListenerImpl();
+		handler = new EvenementExterneEsbHandler();
+		handler.setHibernateTemplate(hibernateTemplate);
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setEsbTemplate(esbTemplate);
-		listener.setHibernateTemplate(hibernateTemplate);
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setHandler(handler);
 
 		final ESBXMLValidator esbValidator = new ESBXMLValidator();
 		esbValidator.setSources(new Resource[]{new ClassPathResource("event/lr/evtQuittanceListe-v1.xsd"), new ClassPathResource("event/lr/evtListe-1.xsd")});
@@ -86,7 +90,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
 
-		listener.setHandler(new EvenementExterneHandler() {
+		handler.setHandler(new EvenementExterneHandler() {
 			@Override
 			public void onEvent(EvenementExterne event) {
 				events.add(event);
@@ -120,7 +124,7 @@ public class EvenementExterneListenerItTest extends EvenementTest {
 
 		final List<EvenementExterne> events = new ArrayList<EvenementExterne>();
 
-		listener.setHandler(new EvenementExterneHandler() {
+		handler.setHandler(new EvenementExterneHandler() {
 			@Override
 			public void onEvent(EvenementExterne event) {
 				events.add(event);

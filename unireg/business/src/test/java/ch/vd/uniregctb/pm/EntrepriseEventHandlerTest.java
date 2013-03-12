@@ -11,18 +11,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public class EntrepriseEventListenerTest extends BusinessTest {
+public class EntrepriseEventHandlerTest extends BusinessTest {
 
-	private EntrepriseEventListener listener;
+	private EntrepriseEventHandler handler;
 
 	@Override
 	public void onSetUp() throws Exception {
 		super.onSetUp();
-		listener = new EntrepriseEventListener();
-		listener.setHibernateTemplate(hibernateTemplate);
-		listener.setIndexer(globalTiersIndexer);
-		listener.setDataEventService(getBean(DataEventService.class, "dataEventService"));
-		listener.setTransactionManager(transactionManager);
+		handler = new EntrepriseEventHandler();
+		handler.setHibernateTemplate(hibernateTemplate);
+		handler.setIndexer(globalTiersIndexer);
+		handler.setDataEventService(getBean(DataEventService.class, "dataEventService"));
 	}
 
 	@Test
@@ -35,7 +34,7 @@ public class EntrepriseEventListenerTest extends BusinessTest {
 		assertNull(hibernateTemplate.get(Entreprise.class, id));
 
 		// on simule l'arrivée d'un événement PM sur la PM
-		listener.onEvtEntreprise(id);
+		handler.onEvtEntreprise(id);
 
 		// on vérifie que la PM existe dorénavant dans la base
 		final Entreprise entreprise = hibernateTemplate.get(Entreprise.class, id);

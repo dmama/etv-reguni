@@ -4,7 +4,11 @@
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 							http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-	<bean id="partyRequestListener" class="ch.vd.uniregctb.evenement.party.PartyRequestListener" parent="esbMessageListener">
+	<bean id="partyRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="partyRequestEsbHandler"/>
+	</bean>
+
+	<bean id="partyRequestEsbHandler" class="ch.vd.uniregctb.evenement.party.PartyRequestEsbHandler">
 		<property name="handlers">
 			<util:map>
 				<entry key="ch.vd.unireg.xml.event.party.address.v1.AddressRequest" value-ref="addressRequestHandler" />
@@ -14,6 +18,7 @@
 				<entry key="ch.vd.unireg.xml.event.party.taxliab.aperiodic.v1.AperiodicTaxLiabilityRequest" value-ref="aperiodicTaxLiabilityRequestHandler" />
 			</util:map>
 		</property>
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
 	</bean>
 
 	<bean id="partyRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

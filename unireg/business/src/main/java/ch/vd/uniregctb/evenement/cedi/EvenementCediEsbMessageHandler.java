@@ -2,7 +2,6 @@ package ch.vd.uniregctb.evenement.cedi;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -15,21 +14,19 @@ import ch.vd.fiscalite.taxation.dossierElectronique.x1.DossierElectroniqueDocume
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementCediListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EvenementCediEsbMessageHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCediListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCediEsbMessageHandler.class);
 
 	private EvenementCediHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	@SuppressWarnings({"UnusedDeclaration"})
 	public void setHandler(EvenementCediHandler handler) {
@@ -44,10 +41,7 @@ public class EvenementCediListenerImpl extends EsbMessageEndpointListener implem
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		nbMessagesRecus.incrementAndGet();
-
 		AuthenticationHelper.pushPrincipal("JMS-EvtCedi");
-
 		try {
 			final String businessId = message.getBusinessId();
 			LOGGER.info("Arrivée du message CEDI n°" + businessId);
@@ -61,16 +55,14 @@ public class EvenementCediListenerImpl extends EsbMessageEndpointListener implem
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.UNKNOWN, "");
 		}
 		catch (XmlException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -163,10 +155,5 @@ public class EvenementCediListenerImpl extends EsbMessageEndpointListener implem
 		else {
 			throw new IllegalArgumentException("Type d'événement inconnu = " + evt.getClass());
 		}
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

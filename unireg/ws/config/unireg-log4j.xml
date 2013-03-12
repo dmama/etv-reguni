@@ -25,6 +25,14 @@
 		</layout>
 	</appender>
 
+	<appender name="JMS_ACCESS" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="Threshold" value="INFO" />
+		<param name="File" value="ws-jms-access.log" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="[%c{1}] %-5p [%d{yyyy-MM-dd HH:mm:ss.SSS}] %m%n" />
+		</layout>
+	</appender>
+
 	<appender name="SERVICE_TRACING" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="Threshold" value="DEBUG" />
 		<param name="File" value="srv-access-ws.log"/>
@@ -102,6 +110,11 @@
 		<priority value="WARN"/>
 		<appender-ref ref="SERVICE_TRACING"/>
 	</category>
+
+	<logger name="unireg.jms" additivity="false">
+		<level value="INFO"/>
+		<appender-ref ref="JMS_ACCESS" />
+	</logger>
 
 	<root>
 		<level value="WARN" />

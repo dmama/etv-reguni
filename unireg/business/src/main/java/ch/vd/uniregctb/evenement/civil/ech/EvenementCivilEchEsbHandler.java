@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -27,24 +26,20 @@ import ch.vd.evd0006.v1.ObjectFactory;
 import ch.vd.registre.base.date.RegDateHelper;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.audit.Audit;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
-import ch.vd.uniregctb.jms.ErrorMonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
 /**
  * Listener des événements civils au format e-CH envoyés par RCPers au travers de l'ESB
  */
-public class EvenementCivilEchListener extends EsbMessageEndpointListener implements ErrorMonitorableMessageListener, InitializingBean, SmartLifecycle {
+public class EvenementCivilEchEsbHandler implements EsbMessageHandler, InitializingBean, SmartLifecycle {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchListener.class);
-
-	private final AtomicInteger nombreMessagesRecus = new AtomicInteger(0);
-	private final AtomicInteger nombreMessagesErreurs = new AtomicInteger(0);
-	private final AtomicInteger nombreMessagesExceptions = new AtomicInteger(0);
+	private static final Logger LOGGER = Logger.getLogger(EvenementCivilEchEsbHandler.class);
 
 	private Schema schemaCache;
 
@@ -84,8 +79,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		nombreMessagesRecus.incrementAndGet();
-
 		final String businessId = message.getBusinessId();
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Réception d'un message JMS événement civil e-CH {businessId='%s'}", businessId));
@@ -106,13 +99,11 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			// on a un truc qui a sauté au moment de l'arrivée de l'événement (test métier)
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
-			nombreMessagesErreurs.incrementAndGet();
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.UNKNOWN, "");
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.UNKNOWN, "");
 		}
 		catch (RuntimeException e) {
 			// boom technique (bug ou problème avec la DB) -> départ dans la DLQ
-			nombreMessagesExceptions.incrementAndGet();
 			LOGGER.error(e, e);
 			throw e;
 		}
@@ -227,10 +218,7 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			final Throwable src = e.getLinkedException();
 			throw new EvenementCivilException(src != null ? src : e);
 		}
-		catch (SAXException e) {
-			throw new EvenementCivilException(e);
-		}
-		catch (IOException e) {
+		catch (SAXException | IOException e) {
 			throw new EvenementCivilException(e);
 		}
 	}
@@ -275,21 +263,6 @@ public class EvenementCivilEchListener extends EsbMessageEndpointListener implem
 			sources[i] = new StreamSource(new ClassPathResource(path).getURL().toExternalForm());
 		}
 		return sources;
-	}
-
-	@Override
-	public int getNombreMessagesRenvoyesEnErreur() {
-		return nombreMessagesErreurs.get();
-	}
-
-	@Override
-	public int getNombreMessagesRenvoyesEnException() {
-		return nombreMessagesExceptions.get();
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nombreMessagesRecus.get();
 	}
 
 	@Override

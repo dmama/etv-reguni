@@ -9,9 +9,14 @@
 
 	</bean>
 
-
-	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestListener" parent="esbMessageListener">
+	<bean id="rapportTravailRequestEsbHandler" class="ch.vd.uniregctb.evenement.rapport.travail.RapportTravailRequestEsbHandler">
 		<property name="rapportTravailRequestHandler" ref="rapportTravailRequestHandler" />
+		<property name="esbTemplate" ref="esbJmsTemplate"/>
+		<property name="transactionManager" ref="transactionManager"/>
+	</bean>
+
+	<bean id="rapportTravailRequestListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="rapportTravailRequestEsbHandler" />
 	</bean>
 
 	<bean id="rapportTravailRequestEndpointManager" class="ch.vd.uniregctb.jms.JmxAwareEsbMessageEndpointManager">

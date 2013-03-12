@@ -2,7 +2,11 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-	<bean id="evenementCediListener" class="ch.vd.uniregctb.evenement.cedi.EvenementCediListenerImpl" parent="esbMessageListener">
+	<bean id="evenementCediListener" class="ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener" parent="esbMessageListener">
+		<property name="handler" ref="evenementCediHandler" />
+	</bean>
+
+	<bean id="evenementCediHandler" class="ch.vd.uniregctb.evenement.cedi.EvenementCediEsbMessageHandler">
 		<property name="handler" ref="evenementCediService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>

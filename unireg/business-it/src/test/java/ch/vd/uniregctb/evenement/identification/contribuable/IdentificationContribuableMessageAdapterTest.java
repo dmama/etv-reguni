@@ -30,6 +30,7 @@ import ch.vd.uniregctb.evenement.identification.contribuable.Erreur.TypeErreur;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.hibernate.HibernateTemplateImpl;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.Sexe;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +46,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 	private String INPUT_QUEUE;
 	private String OUTPUT_QUEUE;
-	private IdentificationContribuableMessageListenerImpl handler;
+	private IdentificationContribuableEsbHandler handler;
 	private EsbTemplateWithErrorCollector esbTemplateWithErrorCollector;
 
 	private static class EsbTemplateWithErrorCollector extends EsbJmsTemplate {
@@ -110,14 +111,18 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			}
 		};
 
-		handler = new IdentificationContribuableMessageListenerImpl();
+		handler = new IdentificationContribuableEsbHandler();
 		handler.setOutputQueue(OUTPUT_QUEUE);
 		handler.setEsbTemplate(esbTemplate);
 		handler.setEsbMessageFactory(esbMessageFactory);
 		handler.setHibernateTemplate(hibernateTemplate);
-		handler.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 
-		initEndpointManager(INPUT_QUEUE, handler);
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
+		listener.setHandler(handler);
+		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
+		listener.setEsbTemplate(esbTemplate);
+
+		initEndpointManager(INPUT_QUEUE, listener);
 	}
 
 	@Test
@@ -394,7 +399,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "http://mamachine:3421/mondocument.pdf";
-		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -493,7 +498,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -525,7 +530,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -557,7 +562,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 		// Envoie le message
 		final Map<String, String> customAttributes = new HashMap<String, String>();
 		final String url = "";
-		customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+		customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -593,7 +598,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 			// Envoie le message
 			final Map<String, String> customAttributes = new HashMap<String, String>();
-			customAttributes.put(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME, url);
+			customAttributes.put(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME, url);
 			customAttributes.put("MySpecialKey", "MySpecialValue");
 			sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
@@ -610,7 +615,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 			final Map<String, String> metadata = m.getHeader().getMetadata();
 			assertNotNull(metadata);
 			assertEquals(2, metadata.size());
-			assertEquals(url, metadata.get(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals(url, metadata.get(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
 			assertEquals("MySpecialValue", metadata.get("MySpecialKey"));
 		}
 
@@ -634,7 +639,7 @@ public class IdentificationContribuableMessageAdapterTest extends EvenementTest 
 
 			final Map<String, String> retourMetadata = EsbMessageHelper.extractCustomHeaders(msg);
 			assertNotNull(retourMetadata);
-			assertEquals(url, retourMetadata.get(IdentificationContribuableMessageListenerImpl.DOCUMENT_URL_ATTRIBUTE_NAME));
+			assertEquals(url, retourMetadata.get(IdentificationContribuableEsbHandler.DOCUMENT_URL_ATTRIBUTE_NAME));
 			assertEquals("MySpecialValue", retourMetadata.get("MySpecialKey"));
 		}
 	}

@@ -3,28 +3,24 @@ package ch.vd.uniregctb.editique.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
 import ch.vd.editique.service.enumeration.TypeMessagePropertiesNames;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.uniregctb.common.MimeTypeHelper;
 import ch.vd.uniregctb.editique.EditiqueHelper;
 import ch.vd.uniregctb.editique.EditiqueResultatRecu;
 import ch.vd.uniregctb.editique.EditiqueRetourImpressionStorageService;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 
 /**
  * Listener des retours d'impression éditique
  */
-public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EvenementEditiqueEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueListenerImpl.class);
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
+	private static final Logger LOGGER = Logger.getLogger(EvenementEditiqueEsbHandler.class);
 
 	private static final String DEFAULT_ATTACHEMENT_NAME = "data";
 
@@ -45,8 +41,6 @@ public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener im
 
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
-
-		nbMessagesRecus.incrementAndGet();
 
 		final String idDocument = message.getHeader(EditiqueHelper.DI_ID);
 		LOGGER.info(String.format("Arrivée d'un retour d'impression pour le document '%s'", idDocument));
@@ -94,10 +88,5 @@ public class EvenementEditiqueListenerImpl extends EsbMessageEndpointListener im
 		}
 
 		return resultat;
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }

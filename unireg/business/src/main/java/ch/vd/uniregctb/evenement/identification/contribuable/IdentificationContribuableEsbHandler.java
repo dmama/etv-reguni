@@ -3,7 +3,6 @@ package ch.vd.uniregctb.evenement.identification.contribuable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlError;
@@ -16,12 +15,13 @@ import ch.vd.fiscalite.registre.identificationContribuable.IdentificationCTBDocu
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
 import ch.vd.technical.esb.EsbMessageFactory;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
+import ch.vd.technical.esb.jms.EsbJmsTemplate;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.common.XmlUtils;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
 /**
  * Classe technique qui reçoit des événements de demande d'identification de contribuable, et qui permet d'envoyer les réponses.
@@ -31,18 +31,18 @@ import ch.vd.uniregctb.jms.MonitorableMessageListener;
  *
  * @author Manuel Siggen <manuel.siggen@vd.ch>
  */
-public class IdentificationContribuableMessageListenerImpl extends EsbMessageEndpointListener implements IdentificationContribuableMessageHandler, MonitorableMessageListener {
+public class IdentificationContribuableEsbHandler implements IdentificationContribuableMessageHandler, EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableMessageListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(IdentificationContribuableEsbHandler.class);
 
 	protected static final String DOCUMENT_URL_ATTRIBUTE_NAME = "documentUrl";
 
 	private String outputQueue;
 	private EsbMessageFactory esbMessageFactory;
 	private HibernateTemplate hibernateTemplate;
-	private DemandeHandler demandeHandler;
+	private EsbJmsTemplate esbTemplate;
 
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
+	private DemandeHandler demandeHandler;
 
 	/**
 	 * for testing purpose
@@ -59,6 +59,10 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 		this.hibernateTemplate = hibernateTemplate;
 	}
 
+	public void setEsbTemplate(EsbJmsTemplate esbTemplate) {
+		this.esbTemplate = esbTemplate;
+	}
+
 	/**
 	 * Défini le handler qui sera appelé lors de la réception d'une demande d'identification de contribuable. Le handler est responsable
 	 * d'entreprendre toutes les actions <i>métier</i> nécessaires au traitement correct du message.
@@ -71,9 +75,6 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 
 	@Override
 	public void onEsbMessage(EsbMessage msg) throws Exception {
-
-		// pour la statistique
-		nbMessagesRecus.incrementAndGet();
 
 		if (LOGGER.isInfoEnabled()) {
 			LOGGER.info(String.format("Arrivée d'une demande d'identification de contribuable (BusinessID='%s')", msg.getBusinessId()));
@@ -100,7 +101,7 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 
 			final String errorMessage = builder.toString();
 			LOGGER.error(errorMessage);
-			getEsbTemplate().sendError(msg, errorMessage, null, ErrorType.TECHNICAL, "");
+			throw new EsbBusinessException(errorMessage, null, ErrorType.TECHNICAL, "");
 		}
 		else {
 
@@ -127,15 +128,10 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 					AuthenticationHelper.popPrincipal();
 				}
 			}
-			catch (XmlException e) {
+			catch (XmlException | MontantInvalideException e) {
 				// problème au moment de la conversion de l'XML en entité
 				LOGGER.error("Erreur dans le message XML reçu", e);
-				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
-			}
-			catch (IdentificationNCSException e){
-			//Problème de cohérence dans un message de type NCS
-				LOGGER.error("Erreur dans le message NCS reçu", e);
-				getEsbTemplate().sendError(msg, e.getMessage(), e, ErrorType.BUSINESS, "");
+				throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
 			}
 			catch (RuntimeException e) {
 				// Départ en DLQ, mais on log avant...
@@ -145,14 +141,13 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 		}
 	}
 
-	private void verifierMontantMessage(IdentificationContribuable message, String businessId) throws IdentificationNCSException {
-			final Long montant = message.getDemande().getMontant();
-			if (montant!=null && Math.abs(montant) > 9999999999L) {
-				final String cause= String.format("La demande d'identification ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
-						" Elle sera mise en queue d'erreur.",businessId, montant);
-				throw new IdentificationNCSException(cause);
-			}
-
+	private void verifierMontantMessage(IdentificationContribuable message, String businessId) throws MontantInvalideException {
+		final Long montant = message.getDemande().getMontant();
+		if (montant != null && Math.abs(montant) > 9999999999L) {
+			final String cause= String.format("La demande d'identification ayant le business id %S a un montant d'une valeur de %s qui n'est pas acceptée." +
+					" Elle sera mise en queue d'erreur.",businessId, montant);
+			throw new MontantInvalideException(cause);
+		}
 	}
 
 	/**
@@ -189,11 +184,6 @@ public class IdentificationContribuableMessageListenerImpl extends EsbMessageEnd
 		if (outputQueue != null) {
 			m.setServiceDestination(outputQueue); // for testing only
 		}
-		getEsbTemplate().send(m);
-	}
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
+		esbTemplate.send(m);
 	}
 }

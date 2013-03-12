@@ -16,15 +16,16 @@ import ch.vd.technical.esb.store.raft.RaftEsbStore;
 import ch.vd.uniregctb.common.BusinessItTest;
 import ch.vd.uniregctb.evenement.EvenementTest;
 import ch.vd.uniregctb.evenement.civil.common.EvenementCivilException;
+import ch.vd.uniregctb.jms.GentilEsbMessageEndpointListener;
 import ch.vd.uniregctb.type.ActionEvenementCivilEch;
 import ch.vd.uniregctb.type.EtatEvenementCivil;
 import ch.vd.uniregctb.type.TypeEvenementCivilEch;
 
-public class EvenementCivilEchListenerItTest extends EvenementTest {
+public class EvenementCivilEchEsbHandlerItTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
 	private EvenementCivilEchSenderImpl sender;
-	private EvenementCivilEchListener listener;
+	private EvenementCivilEchEsbHandler esbHandler;
 	private List<EvenementCivilEch> evenementsRecus;
 
 
@@ -64,13 +65,17 @@ public class EvenementCivilEchListenerItTest extends EvenementTest {
 			}
 		};
 
-		listener = new EvenementCivilEchListener();
-		listener.setRethrower(null);
-		listener.setIgnoredEventTypes(null);
-		listener.setReceptionHandler(receptionHandler);
+		esbHandler = new EvenementCivilEchEsbHandler();
+		esbHandler.setRethrower(null);
+		esbHandler.setIgnoredEventTypes(null);
+		esbHandler.setReceptionHandler(receptionHandler);
+		esbHandler.afterPropertiesSet();
+
+		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
 		listener.setTransactionManager(new JmsTransactionManager(jmsConnectionFactory));
 		listener.setEsbTemplate(esbTemplate);
-		listener.afterPropertiesSet();
+		listener.setHandler(esbHandler);
+
 		initEndpointManager(INPUT_QUEUE, listener);
 
 		sender = new EvenementCivilEchSenderImpl();

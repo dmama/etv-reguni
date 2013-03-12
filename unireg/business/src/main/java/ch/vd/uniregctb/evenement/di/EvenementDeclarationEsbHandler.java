@@ -10,7 +10,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.log4j.Logger;
 import org.apache.xmlbeans.XmlException;
@@ -20,25 +19,23 @@ import org.xml.sax.SAXException;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.technical.esb.ErrorType;
 import ch.vd.technical.esb.EsbMessage;
-import ch.vd.technical.esb.jms.EsbMessageEndpointListener;
 import ch.vd.unireg.xml.event.di.common.v1.EvenementDeclarationImpotContext;
 import ch.vd.unireg.xml.event.di.input.v1.ObjectFactory;
 import ch.vd.unireg.xml.event.di.input.v1.QuittancementDeclarationImpot;
 import ch.vd.unireg.xml.tools.ClasspathCatalogResolver;
 import ch.vd.uniregctb.common.AuthenticationHelper;
 import ch.vd.uniregctb.hibernate.HibernateTemplate;
+import ch.vd.uniregctb.jms.EsbBusinessException;
+import ch.vd.uniregctb.jms.EsbMessageHandler;
 import ch.vd.uniregctb.jms.EsbMessageHelper;
-import ch.vd.uniregctb.jms.MonitorableMessageListener;
 
-public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener implements MonitorableMessageListener {
+public class EvenementDeclarationEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationListenerImpl.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementDeclarationEsbHandler.class);
 
 	private EvenementDeclarationHandler handler;
 
 	private HibernateTemplate hibernateTemplate;
-
-	private final AtomicInteger nbMessagesRecus = new AtomicInteger(0);
 
 	private Schema schemaCache;
 
@@ -55,8 +52,6 @@ public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener
 	@Override
 	public void onEsbMessage(EsbMessage message) throws Exception {
 
-		nbMessagesRecus.incrementAndGet();
-
 		AuthenticationHelper.pushPrincipal("JMS-EvtDeclaration");
 
 		try {
@@ -71,16 +66,14 @@ public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener
 			// non seulement il faut committer la transaction de réception du message entrant,
 			// mais aussi envoyer l'erreur dans une queue spécifique
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.BUSINESS, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.BUSINESS, "");
 		}
-		catch (XmlException e) {
+		catch (XmlException | JAXBException | SAXException e) {
 			// apparemment, l'XML est invalide... On va essayer de renvoyer une erreur propre quand même
 			LOGGER.error(e.getMessage(), e);
-			getEsbTemplate().sendError(message, e.getMessage(), e, ErrorType.TECHNICAL, "");
-
 			hibernateTemplate.flush(); // on s'assure que la session soit flushée avant de resetter l'autentification
+			throw new EsbBusinessException(e.getMessage(), e, ErrorType.TECHNICAL, "");
 		}
 		catch (Exception e) {
 			LOGGER.error(e, e);
@@ -143,11 +136,5 @@ public class EvenementDeclarationListenerImpl extends EsbMessageEndpointListener
 			Source source = new StreamSource(resource.getURL().toExternalForm());
 			schemaCache = sf.newSchema(source);
 		}
-	}
-
-
-	@Override
-	public int getNombreMessagesRecus() {
-		return nbMessagesRecus.intValue();
 	}
 }
