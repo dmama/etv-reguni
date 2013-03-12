@@ -15,17 +15,7 @@ elif [ -n "$OLD_NEW" -a "$OLD_NEW" != "old" ]; then
         exit 1
 fi
 
-UNE_SEULE_WEB_APP=""
-if [ -n "$OLD_NEW" ]; then
-	UNE_SEULE_WEB_APP="Y"
-fi
-
-# les fichiers sont téléchargés dans un sous-répertoire spécifique à l'environnement voulu
-if [ -n "$UNE_SEULE_WEB_APP" ]; then
-	cd "$(dirname "$0")/$ENVIRONMENT"
-else 
-	cd "$(dirname "$0")/$ENVIRONMENT/unireg-web"
-fi
+cd "$(dirname "$0")/$ENVIRONMENT/unireg-web"
 
 # fichier de lock présent
 LOCK_FILE=".incremental.lock"
@@ -38,7 +28,7 @@ touch "$LOCK_FILE"
 
 MACHINE=logapp.etat-de-vaud.ch
 TOMCAT_PART="-cat_unireg${ENVIRONMENT}01"
-FILES="unireg-web${TOMCAT_PART}.log srv-access-web${TOMCAT_PART}.log web-access${TOMCAT_PART}.log"
+FILES="unireg-web${TOMCAT_PART}.log srv-access-web${TOMCAT_PART}.log web-access${TOMCAT_PART}.log web-jms-access${TOMCAT_PART}.log"
 
 function fetch() {
         WGET_OPT=""
@@ -53,11 +43,7 @@ function fetch() {
                 fi
         fi
 
-	if [ -n "$UNE_SEULE_WEB_APP" ]; then
-		wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/logs/$FILE
-	else
-		wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/$FILE
-	fi
+	wget --no-proxy --no-check-certificate $WGET_OPT https://$MACHINE/unireg/$ENVIRONMENT/unireg-web/logs/$FILE
 }
 
 for LOG in $FILES; do
