@@ -19,9 +19,9 @@ import ch.vd.uniregctb.hibernate.HibernateTemplate;
 import ch.vd.uniregctb.jms.EsbBusinessException;
 import ch.vd.uniregctb.jms.EsbMessageHandler;
 
-public class EvenemenetIamEsbHandler implements EsbMessageHandler {
+public class EvenementIamEsbHandler implements EsbMessageHandler {
 
-	private static final Logger LOGGER = Logger.getLogger(EvenemenetIamEsbHandler.class);
+	private static final Logger LOGGER = Logger.getLogger(EvenementIamEsbHandler.class);
 
 	protected static final String ACTION = "action";
 	protected static final String CREATE = "Create";

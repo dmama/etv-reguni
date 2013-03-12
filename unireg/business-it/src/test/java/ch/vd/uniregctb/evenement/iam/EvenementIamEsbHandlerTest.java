@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNull;
 public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 	private String INPUT_QUEUE;
-	private EvenemenetIamEsbHandler handler;
+	private EvenementIamEsbHandler handler;
 
 	@Before
 	public void setUp() throws Exception {
@@ -65,7 +65,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 			}
 		};
 
-		handler = new EvenemenetIamEsbHandler();
+		handler = new EvenementIamEsbHandler();
 		handler.setHibernateTemplate(hibernateTemplate);
 
 		final GentilEsbMessageEndpointListener listener = new GentilEsbMessageEndpointListener();
@@ -99,7 +99,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -134,7 +134,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -174,7 +174,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -209,7 +209,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.UPDATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -242,7 +242,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -279,7 +279,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.CREATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.CREATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message
@@ -315,7 +315,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.DELETE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.DELETE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend .un hypothétique message
@@ -343,7 +343,7 @@ public class EvenementIamEsbHandlerTest extends EvenementTest {
 
 		// Envoie le message
 		final HashMap<String, String> customAttributes = new HashMap<String, String>();
-		customAttributes.put(EvenemenetIamEsbHandler.ACTION, EvenemenetIamEsbHandler.UPDATE);
+		customAttributes.put(EvenementIamEsbHandler.ACTION, EvenementIamEsbHandler.UPDATE);
 		sendTextMessage(INPUT_QUEUE, texte, customAttributes);
 
 		// On attend le message

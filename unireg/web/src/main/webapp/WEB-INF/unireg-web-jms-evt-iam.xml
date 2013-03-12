@@ -6,7 +6,7 @@
 		<property name="handler" ref="evenementIamEsbHandler" />
 	</bean>
 
-	<bean id="evenementIamEsbHandler" class="ch.vd.uniregctb.evenement.iam.EvenemenetIamEsbHandler">
+	<bean id="evenementIamEsbHandler" class="ch.vd.uniregctb.evenement.iam.EvenementIamEsbHandler">
 		<property name="handler" ref="evenementIAMService" />
 		<property name="hibernateTemplate" ref="hibernateTemplate" />
 	</bean>
