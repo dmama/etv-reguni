@@ -210,14 +210,14 @@ public class SuppressionOIDJob extends JobDefinition {
 			public Object doInConnection(Connection con) throws SQLException, DataAccessException {
 
 				// on crée des opérations (prepare statements sql) à l'avance
-				final List<UpdateOperation> operations = Arrays.<UpdateOperation>asList(new UpdateTiers(con),
-				                                                                        new UpdateDeclarations(con),
-				                                                                        new UpdateMouvementsDestinations(con),
-				                                                                        new UpdateMouvementsEmetteurs(con),
-				                                                                        new UpdateMouvementsRecepteurs(con),
-				                                                                        new UpdateTaches(con));
+				try (UpdateOperation updTiers = new UpdateTiers(con);
+				     UpdateOperation updDeclaration = new UpdateDeclarations(con);
+				     UpdateOperation updMvtDest = new UpdateMouvementsDestinations(con);
+				     UpdateOperation updMvtEmetteur = new UpdateMouvementsEmetteurs(con);
+				     UpdateOperation updMvtRecepteur = new UpdateMouvementsRecepteurs(con);
+				     UpdateOperation updTache = new UpdateTaches(con)) {
 
-				try {
+					final List<UpdateOperation> operations = Arrays.asList(updTiers, updDeclaration, updMvtDest, updMvtEmetteur, updMvtRecepteur, updTache);
 					for (Long id : batch) {
 
 						// le nouvel office d'impôt de chaque tiers peut être différent, on va donc le chercher maintenant
@@ -249,28 +249,13 @@ public class SuppressionOIDJob extends JobDefinition {
 
 					return null;
 				}
-				finally {
-					// on n'oublie pas de fermer les prepared statements...
-					for (UpdateOperation operation : operations) {
-						try {
-							operation.close();
-						}
-						catch (SQLException e) {
-							LOGGER.error("Impossible de fermer un prepared statement " + operation.getClass().getName(), e);
-							// que puis-je faire d'autre...?
-						}
-					}
-				}
 			}
 		});
 	}
 
-	private static interface UpdateOperation {
-
+	private static interface UpdateOperation extends AutoCloseable {
 		String getTable();
-
 		int execute(long id, final int oldOid, final long oldOfficeImpotId, final int newOid, final long newOfficeImpotId, String muser) throws SQLException;
-
 		void close() throws SQLException;
 	}
 
