@@ -9,14 +9,35 @@ import ch.vd.registre.base.date.DateRange;
 import ch.vd.uniregctb.tiers.Contribuable;
 
 public interface AssujettissementService {
+
 	/**
-	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète.
+	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement.
 	 *
 	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
 	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
 	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException en cas d'impossibilité de calculer l'assujettissement
 	 */
 	List<Assujettissement> determine(Contribuable ctb) throws AssujettissementException;
+
+	/**
+	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement <i>du point de vue du rôle</i>.
+	 *
+	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
+	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
+	 *          en cas d'impossibilité de calculer l'assujettissement
+	 */
+	List<Assujettissement> determineRole(Contribuable ctb) throws AssujettissementException;
+
+	/**
+	 * Analyse les fors du contribuable et construit la liste complète des périodes d'assujettissement <i>du point de vue de la source</i>.
+	 *
+	 * @param ctb le contribuable dont on veut déterminer l'assujettissement
+	 * @return une liste d'assujettissement contenant 1 ou plusieurs entrées, ou <b>null</b> si le contribuable n'est pas assujetti.
+	 * @throws ch.vd.uniregctb.metier.assujettissement.AssujettissementException
+	 *          en cas d'impossibilité de calculer l'assujettissement
+	 */
+	List<SourcierPur> determineSource(Contribuable ctb) throws AssujettissementException;
 
 	/**
 	 * Analyse les fors du contribuable et construit la liste des périodes d'assujettissement complète du point de vue des communes vaudoises dont les numéros OFS sont donnés en paramètre

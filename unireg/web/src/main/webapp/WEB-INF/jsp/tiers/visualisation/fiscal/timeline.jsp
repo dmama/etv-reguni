@@ -38,7 +38,8 @@
 	<tiles:put name="title">Vue chronologique des fors fiscaux et des assujettissements</tiles:put>
 
 	<tiles:put name="body">
-	
+
+	<%--@elvariable id="command" type="ch.vd.uniregctb.tiers.timeline.ForsTimelineView"--%>
 		<c:if test="${command.forPrint}">
 				<h1><c:out value="${command.title}"/></h1>
 				<h3><c:out value="${command.description}"/></h3>
@@ -77,8 +78,16 @@
 				<label for="checkForsGestion">Fors de gestion</label>
 				<input type="hidden" id="showForsGestion" name="showForsGestion" value="${command.showForsGestion}"/>
 
+				<input type="checkbox" id="checkAssujettissementsSource" onclick="$('#showAssujettissementsSource').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showAssujettissementsSource}"> checked</c:if>/>
+				<label for="checkAssujettissementsSource">Assujettissements source</label>
+				<input type="hidden" id="showAssujettissementsSource" name="showAssujettissementsSource" value="${command.showAssujettissementsSource}"/>
+
+				<input type="checkbox" id="checkAssujettissementsRole" onclick="$('#showAssujettissementsRole').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showAssujettissementsRole}"> checked</c:if>/>
+				<label for="checkAssujettissementsRole">Assujettissements rôle</label>
+				<input type="hidden" id="showAssujettissementsRole" name="showAssujettissementsRole" value="${command.showAssujettissementsRole}"/>
+
 				<input type="checkbox" id="checkAssujettissements" onclick="$('#showAssujettissements').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showAssujettissements}"> checked</c:if>/>
-				<label for="checkAssujettissements">Assujettissements</label>
+				<label for="checkAssujettissements">Assujettissements (combinés)</label>
 				<input type="hidden" id="showAssujettissements" name="showAssujettissements" value="${command.showAssujettissements}"/>
 
 				<input type="checkbox" id="checkPeriodesImposition" onclick="$('#showPeriodesImposition').val($(this).is(':checked')); $(this).closest('form').submit();" <c:if test="${command.showPeriodesImposition}"> checked</c:if>/>
@@ -93,7 +102,9 @@
 				<th colspan="2">Fors Principaux</th>
 				<th colspan="<c:out value="${command.table.forsSecondairesSize}"/>">Fors Secondaires</th>
 				<c:if test="${command.showForsGestion}"><th>Fors de Gestion</th></c:if>
-				<c:if test="${command.showAssujettissements}"><th>Assujettissements</th></c:if>
+				<c:if test="${command.showAssujettissementsSource}"><th>Assujettissements source</th></c:if>
+				<c:if test="${command.showAssujettissementsRole}"><th>Assujettissements rôle</th></c:if>
+				<c:if test="${command.showAssujettissements}"><th>Assujettissements (combinés)</th></c:if>
 				<c:if test="${command.showPeriodesImposition}"><th>Périodes d'imposition</th></c:if>
 			</tr>
 
@@ -226,6 +237,72 @@
 								</td>
 							</c:when>
 							<c:when test="${ligne.forGestion.span}">
+								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
+							</c:when>
+						</c:choose>
+					</c:if>
+
+					<%-- assujettissements source --%>
+					<c:if test="${command.showAssujettissementsSource}">
+						<c:choose>
+							<c:when test="${ligne.assujettissementSource.filler}">
+								<td class="filler" />
+							</c:when>
+							<c:when test="${!ligne.assujettissementSource.span && !ligne.assujettissementSource.filler}">
+								<c:set var="a" value="${ligne.assujettissementSource.range}" />
+								<td class="assujettissement tooltip_cell" id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.assujettissementSource.longueurAffichage}" />">
+                                    <c:out value="${a.description}" />
+	                                <div id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
+	                                    Début : <b><unireg:date date="${a.dateDebut}"/></b>
+	                                    <c:if test="${a.motifFractDebut != null}">
+	                                        - <b><fmt:message key="option.motif.ouverture.${a.motifFractDebut}"/></b>
+	                                    </c:if>
+	                                    <br/>
+	                                    Fin : <b><unireg:date date="${a.dateFin}"/></b>
+	                                    <c:if test="${a.motifFractFin != null}">
+	                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
+	                                    </c:if>
+	                                    <br/>
+	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
+	                                    </c:if>
+	                                </div>
+								</td>
+							</c:when>
+							<c:when test="${ligne.assujettissementSource.span}">
+								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
+							</c:when>
+						</c:choose>
+					</c:if>
+
+					<%-- assujettissements rôle --%>
+					<c:if test="${command.showAssujettissementsRole}">
+						<c:choose>
+							<c:when test="${ligne.assujettissementRole.filler}">
+								<td class="filler" />
+							</c:when>
+							<c:when test="${!ligne.assujettissementRole.span && !ligne.assujettissementRole.filler}">
+								<c:set var="a" value="${ligne.assujettissementRole.range}" />
+								<td class="assujettissement tooltip_cell" id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>" rowspan="<c:out value="${ligne.assujettissementRole.longueurAffichage}" />">
+                                    <c:out value="${a.description}" />
+	                                <div id="a-<unireg:regdate regdate="${a.dateDebut}" format="yyyyMMdd"/>-tooltip" style="display:none;">
+	                                    Début : <b><unireg:date date="${a.dateDebut}"/></b>
+	                                    <c:if test="${a.motifFractDebut != null}">
+	                                        - <b><fmt:message key="option.motif.ouverture.${a.motifFractDebut}"/></b>
+	                                    </c:if>
+	                                    <br/>
+	                                    Fin : <b><unireg:date date="${a.dateFin}"/></b>
+	                                    <c:if test="${a.motifFractFin != null}">
+	                                         - <b><fmt:message key="option.motif.fermeture.${a.motifFractFin}"/></b>
+	                                    </c:if>
+	                                    <br/>
+	                                    <c:if test="${a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierPur' || a['class'].name == 'ch.vd.uniregctb.metier.assujettissement.SourcierMixte'}">
+	                                        Type autorité : <b><fmt:message key="option.type.autorite.fiscale.${a.typeAutoriteFiscale}"/></b>
+	                                    </c:if>
+	                                </div>
+								</td>
+							</c:when>
+							<c:when test="${ligne.assujettissementRole.span}">
 								<%-- rien à mettre, le rowspan est automatiquement rempli --%>
 							</c:when>
 						</c:choose>

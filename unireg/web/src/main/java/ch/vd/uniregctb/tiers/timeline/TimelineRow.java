@@ -13,6 +13,8 @@ public class TimelineRow {
 	public TimelineCell forPrincipal;
 	public final List<TimelineCell> forsSecondaires = new ArrayList<TimelineCell>(1);
 	public TimelineCell forGestion;
+	public TimelineCell assujettissementSource;
+	public TimelineCell assujettissementRole;
 	public TimelineCell assujettissement;
 	public TimelineCell periodeImposition;
 
@@ -21,6 +23,8 @@ public class TimelineRow {
 		this.forPrincipal = TimelineCell.FILLER;
 		this.forsSecondaires.add(TimelineCell.FILLER);
 		this.forGestion = TimelineCell.FILLER;
+		this.assujettissementSource = TimelineCell.FILLER;
+		this.assujettissementRole = TimelineCell.FILLER;
 		this.assujettissement = TimelineCell.FILLER;
 		this.periodeImposition = TimelineCell.FILLER;
 	}
@@ -39,6 +43,14 @@ public class TimelineRow {
 
 	public TimelineCell getForGestion() {
 		return forGestion;
+	}
+
+	public TimelineCell getAssujettissementSource() {
+		return assujettissementSource;
+	}
+
+	public TimelineCell getAssujettissementRole() {
+		return assujettissementRole;
 	}
 
 	public TimelineCell getAssujettissement() {

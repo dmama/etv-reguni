@@ -25,11 +25,15 @@ public class ForsTimelineView {
 	private String description;
 
 	private final boolean showForsGestion;
+	private final boolean showAssujettissementsSource;
+	private final boolean showAssujettissementsRole;
 	private final boolean showAssujettissements;
 	private final boolean showPeriodesImposition;
 
-	public ForsTimelineView(boolean showForsGestion, boolean showAssujettissements, boolean showPeriodesImposition) {
+	public ForsTimelineView(boolean showForsGestion, boolean showAssujettissementsSource, boolean showAssujettissementsRole, boolean showAssujettissements, boolean showPeriodesImposition) {
 		this.showForsGestion = showForsGestion;
+		this.showAssujettissementsSource = showAssujettissementsSource;
+		this.showAssujettissementsRole = showAssujettissementsRole;
 		this.showAssujettissements = showAssujettissements;
 		this.showPeriodesImposition = showPeriodesImposition;
 	}
@@ -84,6 +88,14 @@ public class ForsTimelineView {
 
 	public boolean isShowAssujettissements() {
 		return showAssujettissements;
+	}
+
+	public boolean isShowAssujettissementsSource() {
+		return showAssujettissementsSource;
+	}
+
+	public boolean isShowAssujettissementsRole() {
+		return showAssujettissementsRole;
 	}
 
 	public boolean isShowPeriodesImposition() {

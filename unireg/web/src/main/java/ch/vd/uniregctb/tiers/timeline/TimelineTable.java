@@ -102,6 +102,48 @@ public class TimelineTable {
 	}
 
 	/**
+	 * Ajoute un range dans la colonne "assujettissements source"
+	 */
+	public void addAssujettissementSource(DateRange range) {
+		TimelineCell c = new TimelineCell(range);
+		int longueur = 0;
+		for (TimelineRow r : rows) {
+			if (range.getDateDebut() == r.periode.getDateDebut()) {
+				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
+				r.assujettissementSource = c;
+				longueur++;
+			}
+			else if (DateRangeHelper.within(r.periode, range)) {
+				Assert.isTrue(r.assujettissementSource == TimelineCell.FILLER);
+				r.assujettissementSource = TimelineCell.SPAN;
+				longueur++;
+			}
+		}
+		c.longueurAffichage = longueur;
+	}
+
+	/**
+	 * Ajoute un range dans la colonne "assujettissements rôle"
+	 */
+	public void addAssujettissementRole(DateRange range) {
+		TimelineCell c = new TimelineCell(range);
+		int longueur = 0;
+		for (TimelineRow r : rows) {
+			if (range.getDateDebut() == r.periode.getDateDebut()) {
+				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
+				r.assujettissementRole = c;
+				longueur++;
+			}
+			else if (DateRangeHelper.within(r.periode, range)) {
+				Assert.isTrue(r.assujettissementRole == TimelineCell.FILLER);
+				r.assujettissementRole = TimelineCell.SPAN;
+				longueur++;
+			}
+		}
+		c.longueurAffichage = longueur;
+	}
+
+	/**
 	 * Ajoute un range dans la colonne "assujettissements"
 	 */
 	public void addAssujettissement(DateRange range) {

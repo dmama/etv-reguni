@@ -20,6 +20,7 @@ import ch.vd.uniregctb.metier.assujettissement.AssujettissementException;
 import ch.vd.uniregctb.metier.assujettissement.AssujettissementService;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImposition;
 import ch.vd.uniregctb.metier.assujettissement.PeriodeImpositionService;
+import ch.vd.uniregctb.metier.assujettissement.SourcierPur;
 import ch.vd.uniregctb.security.AccessDeniedException;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscal;
@@ -56,13 +57,15 @@ public class ForsTimelineController {
 	public String index(Model mav,
 	                    @RequestParam(ID_PARAMETER) Long id,
 	                    @RequestParam(value = "showForsGestion", required = false, defaultValue = "true") boolean showForsGestion,
+	                    @RequestParam(value = "showAssujettissementsSource", required = false, defaultValue = "false") boolean showAssujettissementsSource,
+	                    @RequestParam(value = "showAssujettissementsRole", required = false, defaultValue = "false") boolean showAssujettissementsRole,
 	                    @RequestParam(value = "showAssujettissements", required = false, defaultValue = "true") boolean showAssujettissements,
 	                    @RequestParam(value = "showPeriodesImposition", required = false, defaultValue = "false") boolean showPeriodesImposition,
 	                    @RequestParam(value = FOR_PRINT, required = false) Boolean forPrint,
 	                    @RequestParam(value = TITLE, required = false) String title,
 	                    @RequestParam(value = DESCRIPTION, required = false) String description) throws AccessDeniedException {
 
-		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissements, showPeriodesImposition);
+		final ForsTimelineView bean = new ForsTimelineView(showForsGestion, showAssujettissementsSource, showAssujettissementsRole, showAssujettissements, showPeriodesImposition);
 		controllerUtils.checkAccesDossierEnLecture(id);
 		bean.setTiersId(id);
 
@@ -106,25 +109,59 @@ public class ForsTimelineController {
 		final List<ForGestion> forsGestion = bean.isShowForsGestion() ? tiersService.getForsGestionHisto(tiers) : Collections.<ForGestion>emptyList();
 
 		// Extraction de l'assujettissement
-		List<Assujettissement> assujettissements = new ArrayList<Assujettissement>();
-		if (bean.isShowAssujettissements() && tiers instanceof Contribuable) {
-			final Contribuable contribuable = (Contribuable) tiers;
-			final RegDate debutActivite = contribuable.getDateDebutActivite();
-			if (debutActivite != null) {
-				try {
-					final List<Assujettissement> list = assujettissementService.determine(contribuable);
-					if (list != null) {
-						assujettissements.addAll(list);
+		final List<SourcierPur> assujettissementsSource = new ArrayList<>();
+		final List<Assujettissement> assujettissementsRole = new ArrayList<>();
+		final List<Assujettissement> assujettissements = new ArrayList<>();
+
+		if (tiers instanceof Contribuable) {
+			if (bean.isShowAssujettissementsSource()) {
+				final Contribuable contribuable = (Contribuable) tiers;
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<SourcierPur> list = assujettissementService.determineSource(contribuable);
+						if (list != null) {
+							assujettissementsSource.addAll(list);
+						}
+					}
+					catch (AssujettissementException e) {
+						bean.addException(e);
 					}
 				}
-				catch (AssujettissementException e) {
-					bean.addException(e);
+			}
+			if (bean.isShowAssujettissementsRole()) {
+				final Contribuable contribuable = (Contribuable) tiers;
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<Assujettissement> list = assujettissementService.determineRole(contribuable);
+						if (list != null) {
+							assujettissementsRole.addAll(list);
+						}
+					}
+					catch (AssujettissementException e) {
+						bean.addException(e);
+					}
+				}
+			}
+			if (bean.isShowAssujettissements()) {
+				final Contribuable contribuable = (Contribuable) tiers;
+				final RegDate debutActivite = contribuable.getDateDebutActivite();
+				if (debutActivite != null) {
+					try {
+						final List<Assujettissement> list = assujettissementService.determine(contribuable);
+						if (list != null) {
+							assujettissements.addAll(list);
+						}
+					}
+					catch (AssujettissementException e) {
+						bean.addException(e);
+					}
 				}
 			}
 		}
-
 		// Extraction des périodes d'imposition
-		List<PeriodeImposition> periodesImposition = new ArrayList<PeriodeImposition>();
+		List<PeriodeImposition> periodesImposition = new ArrayList<>();
 		if (bean.isShowPeriodesImposition() && tiers instanceof Contribuable) {
 			final Contribuable contribuable = (Contribuable) tiers;
 			final RegDate debutActivite = contribuable.getDateDebutActivite();
@@ -142,9 +179,11 @@ public class ForsTimelineController {
 		}
 
 		// Calcul des différents ranges de l'axe du temps
-		final List<DateRange> ranges = new ArrayList<DateRange>();
+		final List<DateRange> ranges = new ArrayList<>();
 		ranges.addAll(forsFiscaux);
 		ranges.addAll(forsGestion);
+		ranges.addAll(assujettissementsSource);
+		ranges.addAll(assujettissementsRole);
 		ranges.addAll(assujettissements);
 		ranges.addAll(periodesImposition);
 
@@ -172,6 +211,20 @@ public class ForsTimelineController {
 			}
 		}
 
+		// Renseignement des assujettissements source
+		if (bean.isShowAssujettissementsSource()) {
+			for (Assujettissement a : assujettissementsSource) {
+				table.addAssujettissementSource(a);
+			}
+		}
+
+		// Renseignement des assujettissements rôle
+		if (bean.isShowAssujettissementsRole()) {
+			for (Assujettissement a : assujettissementsRole) {
+				table.addAssujettissementRole(a);
+			}
+		}
+
 		// Renseignement des assujettissements
 		if (bean.isShowAssujettissements()) {
 			for (Assujettissement a : assujettissements) {
@@ -188,7 +241,7 @@ public class ForsTimelineController {
 	}
 
 	private static List<DateRange> buildPeriodes(List<DateRange> ranges) {
-		final List<DateRange> periodes = new ArrayList<DateRange>();
+		final List<DateRange> periodes = new ArrayList<>();
 		final List<RegDate> boundaries = TimelineHelper.extractBoundaries(ranges);
 		RegDate previous = null;
 		for (RegDate current : boundaries) {

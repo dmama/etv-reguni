@@ -68,6 +68,38 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	}
 
 	@Override
+	public List<Assujettissement> determineRole(Contribuable ctb) throws AssujettissementException {
+
+		if (ctb.isAnnule()) {
+			// un contribuable annulé n'est évidemment pas assujetti
+			return null;
+		}
+
+		final ForsParType fpt = ctb.getForsParType(true);
+		if (fpt.isEmpty()) {
+			return null;
+		}
+
+		return determineRole(ctb, fpt, null);
+	}
+
+	@Override
+	public List<SourcierPur> determineSource(Contribuable ctb) throws AssujettissementException {
+
+		if (ctb.isAnnule()) {
+			// un contribuable annulé n'est évidemment pas assujetti
+			return null;
+		}
+
+		final ForsParType fpt = ctb.getForsParType(true);
+		if (fpt.isEmpty()) {
+			return null;
+		}
+
+		return determineSource(ctb, fpt, null);
+	}
+
+	@Override
 	public List<Assujettissement> determinePourCommunes(Contribuable ctb, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
 		if (ctb.isAnnule()) {
