@@ -10,18 +10,18 @@ import java.util.Map;
 
 import org.jetbrains.annotations.Nullable;
 
+import ch.vd.registre.base.date.DateRange;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.uniregctb.common.Triplet;
 import ch.vd.uniregctb.common.TripletIterator;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
-import ch.vd.uniregctb.type.MotifFor;
 
 /**
  * Les fractionnements déterminés pour un contribuable donné.
  */
 public abstract class Fractionnements implements Iterable<Fraction> {
 
-	private final Map<RegDate, Fraction> map = new HashMap<RegDate, Fraction>();
+	private final Map<RegDate, Fraction> map = new HashMap<>();
 
 	/**
 	 * Analyse les fors fiscaux principaux et retourne les dates (et motifs) de fractionnement.
@@ -39,48 +39,58 @@ public abstract class Fractionnements implements Iterable<Fraction> {
 			final ForFiscalPrincipalContext forPrincipal = new ForFiscalPrincipalContext(triplet);
 
 			// on détecte une éventuelle date de fractionnement à l'ouverture
-			if (isFractionOuverture(forPrincipal)) {
-				final RegDate fraction = forPrincipal.current.getDateDebut();
-				MotifFor motifFraction = forPrincipal.current.getMotifOuverture();
+			final Fraction fractionOuverture = isFractionOuverture(forPrincipal);
+			if (fractionOuverture != null) {
 
 				if (forPrincipal.next != null && AssujettissementServiceImpl.isArriveeHCApresDepartHSMemeAnnee(forPrincipal.current) && !AssujettissementServiceImpl.roleSourcierPur(
 						forPrincipal.current)) {
 					// dans ce cas précis, on veut utiliser le motif d'ouverture du for suivant comme motif de fractionnement
-					motifFraction = forPrincipal.next.getMotifOuverture();
+					fractionOuverture.setMotifOuverture(forPrincipal.next.getMotifOuverture());
 				}
 
-				addFractionOuverture(fraction, motifFraction);
+				addFractionOuverture(fractionOuverture);
 			}
 
 			// on détecte une éventuelle date de fractionnement à la fermeture
-			if (isFractionFermeture(forPrincipal)) {
-				final RegDate fraction = forPrincipal.current.getDateFin().getOneDayAfter();
-				final MotifFor motifFraction = forPrincipal.current.getMotifFermeture();
-
-				addFractionFermeture(fraction, motifFraction);
+			final Fraction fractionFermeture = isFractionFermeture(forPrincipal);
+			if (fractionFermeture != null) {
+				addFractionFermeture(fractionFermeture);
 			}
 		}
 	}
 
-	protected abstract boolean isFractionOuverture(ForFiscalPrincipalContext forPrincipal);
-	protected abstract boolean isFractionFermeture(ForFiscalPrincipalContext forPrincipal);
+	protected abstract Fraction isFractionOuverture(ForFiscalPrincipalContext forPrincipal);
+	protected abstract Fraction isFractionFermeture(ForFiscalPrincipalContext forPrincipal);
 
-	private void addFractionOuverture(RegDate date, MotifFor motifFor) {
-		Fraction fraction = map.get(date);
-		if (fraction == null) {
-			fraction = new Fraction(date);
-			map.put(date, fraction);
+	private void addFractionOuverture(Fraction fraction) {
+
+		// on ajoute le fraction sur toutes les dates de sa période d'impact
+		final DateRange periode = fraction.getPeriodeImpact();
+		for (RegDate d = periode.getDateDebut(); d.isBeforeOrEqual(periode.getDateFin()); d = d.getOneDayAfter()) {
+			final Fraction f = map.get(d);
+			if (f == null) {
+				map.put(d, fraction);
+			}
+			else {
+				f.setMotifOuverture(fraction.getMotifOuverture());
+			}
 		}
-		fraction.setMotifOuverture(motifFor);
+
 	}
 
-	private void addFractionFermeture(RegDate date, MotifFor motifFor) {
-		Fraction fraction = map.get(date);
-		if (fraction == null) {
-			fraction = new Fraction(date);
-			map.put(date, fraction);
+	private void addFractionFermeture(Fraction fraction) {
+
+		// on ajoute le fraction sur toutes les dates de sa période d'impact
+		final DateRange periode = fraction.getPeriodeImpact();
+		for (RegDate d = periode.getDateDebut(); d.isBeforeOrEqual(periode.getDateFin()); d = d.getOneDayAfter()) {
+			final Fraction f = map.get(d);
+			if (f == null) {
+				map.put(d, fraction);
+			}
+			else {
+				f.setMotifFermeture(fraction.getMotifFermeture());
+			}
 		}
-		fraction.setMotifFermeture(motifFor);
 	}
 
 	public boolean isEmpty() {
@@ -89,19 +99,15 @@ public abstract class Fractionnements implements Iterable<Fraction> {
 
 	@Override
 	public Iterator<Fraction> iterator() {
-		final List<Fraction> fractionnements = new ArrayList<Fraction>(map.values());
+		final List<Fraction> fractionnements = new ArrayList<>(map.values());
 		Collections.sort(fractionnements, new Comparator<Fraction>() {
 			@Override
 			public int compare(Fraction o1, Fraction o2) {
-				return o1.date.compareTo(o2.date);
+				return o1.getDate().compareTo(o2.getDate());
 			}
 		});
 		final List<Fraction> list = Collections.unmodifiableList(fractionnements);
 		return list.iterator();
-	}
-
-	public boolean contains(RegDate date) {
-		return map.containsKey(date);
 	}
 
 	@Nullable

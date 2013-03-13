@@ -394,13 +394,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final ForFiscalPrincipal courant = ffpContext.current;
 		final RegDate debut = courant.getDateDebut();
 
+		final Fraction fraction = fractionnements.getAt(debut);
+
 		// faut-il adapter la date de début ?
 		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			// pays HS => pas d'arrondi
 			return debut;
 		}
-		else if (fractionnements.contains(debut)) {
-			return debut;
+		else if (fraction != null) {
+			return fraction.getDate();
 		}
 		else if ((precedent == null || !precedent.getModeImposition().isSource()) && // début d'assujettissement source
 				courant.getMotifOuverture() != MotifFor.VEUVAGE_DECES && // sauf en cas de décès
@@ -420,13 +422,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final ForFiscalPrincipal courant = ffpContext.current;
 		final RegDate fin = courant.getDateFin();
 
+		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
+
 		// faut-il adapter la date de fin ?
 		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			// pays HS => pas d'arrondi
 			return fin;
 		}
-		else if (fractionnements.contains(fin)) {
-			return fin;
+		else if (fraction != null) {
+			return fraction.getDate();
 		}
 		else if (fin != null &&
 				(suivant == null || !suivant.getModeImposition().isSource()) && // fin d'assujettissement source
@@ -769,7 +773,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		if (debut != null) {
 			final Limites limites = Limites.determine(debut, debut, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().date;
+			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
 
 			if (casParticuliers.isMenageCommun() && casParticuliers.hasMariage(debut.year())) {
 				// en cas de mariage, le ménage commun est assumé assujetti depuis le début de l'année (ou depuis le dernier fractionnement)
@@ -784,8 +788,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		
 		if (fin != null) {
 			final Limites limites = Limites.determine(fin, fin, fractions);
-			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().date;
-			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().date;
+			final RegDate dernierFractionnement = limites == null ? null : limites.getLeft() == null ? null : limites.getLeft().getDate();
+			final RegDate prochainFractionnement = limites == null ? null : limites.getRight() == null ? null : limites.getRight().getDate();
 
 			final boolean finDejaFractionnee = (prochainFractionnement != null && fin == prochainFractionnement.getOneDayBefore());
 			if (!finDejaFractionnee) {
@@ -867,13 +871,13 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			Fraction left = null;
 			Fraction right = null;
 			for (Fraction f : fractions) {
-				if (dateDebut != null && f.date.isBeforeOrEqual(dateDebut)) {
-					if (left == null || left.date.isBefore(f.date)) {
+				if (dateDebut != null && f.getDate().isBeforeOrEqual(dateDebut)) {
+					if (left == null || left.getDate().isBefore(f.getDate())) {
 						left = f;
 					}
 				}
-				if (dateFin != null && f.date.isAfter(dateFin)) {
-					if (right == null || right.date.isAfter(f.date)) {
+				if (dateFin != null && f.getDate().isAfter(dateFin)) {
+					if (right == null || right.getDate().isAfter(f.getDate())) {
 						right = f;
 					}
 				}
@@ -908,8 +912,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final Fraction right = (limites == null ? null : limites.getRight());
 
 		// on réduit l'assujettissement en conséquence
-		if (left != null && left.date.isAfter(a.debut)) {
-			a.debut = left.date;
+		if (left != null && left.getDate().isAfter(a.debut)) {
+			a.debut = left.getDate();
 
 			if (a.motifDebut == MotifFor.ARRIVEE_HC && left.getMotif() == MotifFor.DEPART_HS) {
 				// dans le cas d'un départ HS et d'une arrivée HC, on ne veut pas collater les deux assujettissements,
@@ -920,8 +924,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 
-		if (right != null && right.date.isBeforeOrEqual(a.fin)) {
-			a.fin = right.date.getOneDayBefore();
+		if (right != null && right.getDate().isBeforeOrEqual(a.fin)) {
+			a.fin = right.getDate().getOneDayBefore();
 			a.motifFin = right.getMotif();
 		}
 
@@ -1104,13 +1108,17 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final MotifFor motifOuverture = current.getMotifOuverture();
 		final ModeImposition modeImposition = current.getModeImposition();
 
-		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || fractionnements.contains(current.getDateDebut())) {
+		final Fraction fraction = fractionnements.getAt(current.getDateDebut());
+
+		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			debut = current.getDateDebut();
+		}
+		else if (fraction != null) {
+			debut = fraction.getDate();
 		}
 		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
 			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissement et on arrondi la date de début au 1er du mois suivant
 			debut = getProchain1DeMois(current.getDateDebut());
-
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
@@ -1135,17 +1143,19 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final Fraction fraction = (fin == null ? null : fractionnements.getAt(fin.getOneDayAfter()));
 
 		final RegDate afin;
-		if (fin == null || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS ||
-				// Dans le cas d'un for fiscal qui s'ouvre par un motif 'veuvage', le cas standard est que le contribuable appartienne à un ménage-commun le jour précédent.
-				// Lorsque deux fors principaux se touchent, l'existence de rapports d'appartenance ménage est interdite par les régles de validation. Cependant, si le second
-				// for principal s'ouvre avec un motif 'veuvage', alors on considère que le motif d'ouverture prime sur l'absence de rapport d'appartenance ménage et on suppose
-				// l'existence d'un ménage-commun sur lequel l'assujettissement du contribuable courant existe (selon conversation par email entre Manuel Siggen et
-				// David Radelfinger du 12 décembre 2012).
-				//
-				// La conséquence pratique est que le fractionnement induit par le motif d'ouverture 'veuvage' est ignoré
-				// dans le calcul de la date de fin d'assujettissement du for précédent.
-				fraction != null && (fraction.motifFermeture != null || fraction.motifOuverture != MotifFor.VEUVAGE_DECES)) {
+		if (fin == null || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			afin = fin;
+		}
+		else if (fraction != null && (fraction.getMotifFermeture() != null || fraction.getMotifOuverture() != MotifFor.VEUVAGE_DECES)) {
+			// Dans le cas d'un for fiscal qui s'ouvre par un motif 'veuvage', le cas standard est que le contribuable appartienne à un ménage-commun le jour précédent.
+			// Lorsque deux fors principaux se touchent, l'existence de rapports d'appartenance ménage est interdite par les régles de validation. Cependant, si le second
+			// for principal s'ouvre avec un motif 'veuvage', alors on considère que le motif d'ouverture prime sur l'absence de rapport d'appartenance ménage et on suppose
+			// l'existence d'un ménage-commun sur lequel l'assujettissement du contribuable courant existe (selon conversation par email entre Manuel Siggen et
+			// David Radelfinger du 12 décembre 2012).
+			//
+			// La conséquence pratique est que le fractionnement induit par le motif d'ouverture 'veuvage' est ignoré
+			// dans le calcul de la date de fin d'assujettissement du for précédent.
+			afin = fraction.getDate();
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement finit à la fin de l'année précédente
@@ -1310,7 +1320,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param date une date
 	 * @return le 1er de mois le plus proche. Si la date spécifiée est un 1er janvier, elle est retournée telle quelle.
 	 */
-	private static RegDate getProchain1DeMois(RegDate date) {
+	public static RegDate getProchain1DeMois(RegDate date) {
 		if (date.day() == 1) {
 			return date;
 		}
@@ -1614,12 +1624,12 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// Dans tous les cas, si on trouve une date de fractionnement entre la date réelle du début du for et la date de début de l'assujettissement,
 		// on adapte cette dernière en conséquence. Même chose pour les dates de fin d'assujettissement.
 		for (Fraction f : fractionnements) {
-			if (RegDateHelper.isBetween(f.date, adebut, debut, NullDateBehavior.LATEST)) {
-				adebut = f.date;
+			if (RegDateHelper.isBetween(f.getDate(), adebut, debut, NullDateBehavior.LATEST)) {
+				adebut = f.getDate();
 			}
 
-			if (fin != null && RegDateHelper.isBetween(f.date.getOneDayBefore(), fin, afin, NullDateBehavior.LATEST)) {
-				afin = f.date.getOneDayBefore();
+			if (fin != null && RegDateHelper.isBetween(f.getDate().getOneDayBefore(), fin, afin, NullDateBehavior.LATEST)) {
+				afin = f.getDate().getOneDayBefore();
 			}
 		}
 

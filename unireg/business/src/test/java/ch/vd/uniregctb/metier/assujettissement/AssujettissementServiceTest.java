@@ -1990,7 +1990,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePassageSourceOrdinaireChgtModeImposition() throws Exception {
 
-		// [SIFISC-8095] le changement du mode d'imposition (pas l'obtention du permis C ou nationalité suisse !) ne provoque *plus* de fractionnement de l'assujettissment !
+		// [SIFISC-8095] le changement du mode d'imposition (pas l'obtention du permis C ou nationalité suisse !) ne provoque *plus* de fractionnement de l'assujettissement !
 		final Contribuable paul = createPassageSourceOrdinaire(10000044L, date(2008, 2, 12), MotifFor.CHGT_MODE_IMPOSITION);
 
 		// 2008
@@ -2017,7 +2017,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePassageSourceOrdinaireObtentionPermisC() throws Exception {
 
-		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissment !
+		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement !
 		final Contribuable paul = createPassageSourceOrdinaire(10000044L, date(2008, 2, 12), MotifFor.PERMIS_C_SUISSE);
 
 		// 2008
@@ -2041,12 +2041,46 @@ public class AssujettissementServiceTest extends MetierTest {
 		}
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10342164&print=true&title=${methodName}")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePassageSourceOrdinaireObtentionPermisCAvecSeparationAuDebutDAnnee() throws Exception {
+
+		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement, même dans le cas particulier d'une séparation au début d'année.
+		final Contribuable maria = createContribuableSansFor(10342164L);
+		addForPrincipal(maria, date(2011, 2, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2011, 4, 26), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
+		addForPrincipal(maria, date(2011, 4, 27), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.ORDINAIRE);
+
+		final List<Assujettissement> list = service.determine(maria);
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertSourcierPur(date(2011, 2, 1), date(2011, 4, 30), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2011, 5, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10346089&print=true&title=${methodName}")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePassageSourceOrdinaireObtentionPermisCPuisDemenagementVDDansLAnnee() throws Exception {
+
+		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement ! Cas spécial du contribuable qui déménage ensuite dans l'année
+		final Contribuable jacqueline = createContribuableSansFor(10346089L);
+		addForPrincipal(jacqueline, date(2011, 1, 10), MotifFor.PERMIS_C_SUISSE, date(2011, 6, 7), MotifFor.DEMENAGEMENT_VD, MockCommune.Vevey, ModeImposition.ORDINAIRE);
+		addForPrincipal(jacqueline, date(2011, 6, 8), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+
+		final List<Assujettissement> list = service.determine(jacqueline);
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertSourcierPur(date(2011, 1, 1), date(2011, 1, 31), MotifFor.INDETERMINE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2011, 2, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+	}
+
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePassageMixteOrdinaireChgtModeImposition() throws Exception {
 
-		// [SIFISC-8095] le changement mixte -> ordinaire ne provoque pas de fractionnement de l'assujettissment, quelque ce soit le motif de changement
+		// [SIFISC-8095] le changement mixte -> ordinaire ne provoque pas de fractionnement de l'assujettissement, quelque ce soit le motif de changement
 		final Contribuable paul = createPassageMixteOrdinaire(10000044L, date(2008, 2, 12), MotifFor.CHGT_MODE_IMPOSITION);
 
 		final List<Assujettissement> list = service.determine(paul);
@@ -2061,7 +2095,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePassageMixteOrdinaireObtentionPermisC() throws Exception {
 
-		// [SIFISC-8095] le changement mixte -> ordinaire ne provoque pas de fractionnement de l'assujettissment, quelque ce soit le motif de changement
+		// [SIFISC-8095] le changement mixte -> ordinaire ne provoque pas de fractionnement de l'assujettissement, quelque ce soit le motif de changement
 		final Contribuable paul = createPassageMixteOrdinaire(10000044L, date(2008, 2, 12), MotifFor.PERMIS_C_SUISSE);
 
 		final List<Assujettissement> list = service.determine(paul);
@@ -3387,7 +3421,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10010236&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(
-			description = "Vérifie qu'un contribuable PP qui arrive de hors-canton avec un immeuble puis se marie n'est pas assujetti sur l'année de son mariage (car l'assujettissment est supposé être reporté sur le couple)")
+			description = "Vérifie qu'un contribuable PP qui arrive de hors-canton avec un immeuble puis se marie n'est pas assujetti sur l'année de son mariage (car l'assujettissement est supposé être reporté sur le couple)")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDetermineArriveeHCAvecImmeublePuisMariageMemeAnneePP() throws Exception {
@@ -3959,7 +3993,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDeterminerTruc() throws Exception {
+	public void testDeterminerDepartHSPuisArriveeHSMemeAnneeSourcier() throws Exception {
 
 		final Contribuable ctb = createContribuableSansFor(10743138L);
 		addForPrincipal(ctb, date(2010, 5, 15), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
@@ -3974,7 +4008,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		                  MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 		assertSourcierPur(date(2010, 10, 8), date(2010, 12, 26),
 		                  MotifFor.DEPART_HS, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
-		assertSourcierPur(date(2010, 12, 27), date(2010, 12, 27),
+		assertSourcierPur(date(2010, 12, 27), date(2010, 12, 31),
 		                  MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
 	}
 
