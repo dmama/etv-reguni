@@ -22,6 +22,11 @@ public class HorsCanton extends Assujettissement {
 	}
 
 	@Override
+	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		return new HorsCanton(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+	}
+
+	@Override
 	public String getDescription() {
 		return "Imposition ordinaire HC";
 	}

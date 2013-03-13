@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -803,7 +804,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(1, list.size());
 			// [UNIREG-1742] pas de fractionnement dans ce cas-là car le contribuable reste assujetti toute l'année à raison de son for secondaire (immeuble ou activité indépendante).
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, list.get(0));
 		}
 
 		// 2009
@@ -811,7 +812,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2009, 1, 1), date(2009, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -820,7 +821,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertHorsCanton(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, list.get(1));
 		}
 	}
 
@@ -844,9 +845,10 @@ public class AssujettissementServiceTest extends MetierTest {
 		{
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
-			assertEquals(1, list.size());
+			assertEquals(2, list.size());
 			// [SIFISC-7281] le contribuable n'est plus considéré comme assujetti au rôle mais seulement à la source sur toute l'année
-			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifFor.DEPART_HC, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
 
 		// 2009
@@ -861,9 +863,10 @@ public class AssujettissementServiceTest extends MetierTest {
 		{
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
-			assertEquals(2, list.size());
+			assertEquals(3, list.size());
 			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierPur(date(2008, 1, 1), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 9, 25), MotifFor.DEPART_HC, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
+			assertSourcierPur(date(2008, 9, 26), date(2010, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(2));
 		}
 	}
 
@@ -888,7 +891,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			// [UNIREG-1742] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
+			// [UNIREG-1742][SIFISC-7281] fractionnement de l'assujettissement (mais pas d'arrondi à la fin de mois)
 			assertSourcierMixteArt137Al2(date(2008, 1, 1), date(2008, 9, 25), null, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			assertSourcierPur(date(2008, 9, 26), date(2008, 12, 31), MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
 		}
@@ -1126,7 +1129,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), null, MotifFor.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2008
@@ -1151,7 +1154,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierMixteArt137Al1(date(2002, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2002, 1, 1), date(2007, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, list.get(0));
 			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2010, 12, 31), MotifFor.ARRIVEE_HC, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 		}
 	}
@@ -1985,9 +1988,37 @@ public class AssujettissementServiceTest extends MetierTest {
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDeterminePassageRoleSourceAOrdinaire() throws Exception {
+	public void testDeterminePassageRoleSourceAOrdinaireChgtModeImposition() throws Exception {
 
-		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 2, 12));
+		// [SIFISC-8095] le changement du mode d'imposition (pas l'obtention du permis C ou nationalité suisse !) ne provoque *plus* de fractionnement de l'assujettissment !
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 2, 12), MotifFor.CHGT_MODE_IMPOSITION);
+
+		// 2008
+		{
+			final List<Assujettissement> list = service.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// ordinaire toute l'année
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+		}
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePassageRoleSourceAOrdinaireObtentionPermisC() throws Exception {
+
+		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissment !
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 2, 12), MotifFor.PERMIS_C_SUISSE);
 
 		// 2008
 		{
@@ -1995,9 +2026,9 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			// sourcier pure les deux premiers mois (=> arrondi au mois)
-			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 29), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			// ordinaire le reste de l'année
-			assertOrdinaire(date(2008, 3, 1), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertOrdinaire(date(2008, 3, 1), date(2008, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 		}
 
 		// 2002-2010
@@ -2005,27 +2036,27 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
-	@WebScreenshotDoc(description = "Cas limite du passage sourcier pure à ordinaire à la mi-décembre: " +
-			"l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année et l'assujettissement ordinaire ne commence qu'au début de l'année suivante.")
+	@WebScreenshotDoc(description = "Cas limite du passage sourcier pure à ordinaire (par changement de mode d'imposition) à la mi-décembre: " +
+			"l'assujettissement ordinaire prime sur l'assujettissement sourcier et commence au début de l'année courante.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	public void testDeterminePassageRoleSourceAOrdinaireCasLimiteFinDAnnee() throws Exception {
+	public void testDeterminePassageRoleSourceAOrdinaireCasLimiteFinDAnneeChgtModeImposition() throws Exception {
 
-		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 12, 12));
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 12, 12), MotifFor.CHGT_MODE_IMPOSITION);
 
 		// 2008
 		{
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			// sourcier pure jusqu'à mi-décembre -> l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année
-			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			// [SIFISC-8095] ordinaire depuis le début de l'année, car le motif 'changement de mode d'imposition' ne provoque pas de fractionnement dans ce cas là
+			assertOrdinaire(date(2008, 1, 1), date(2008, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2009
@@ -2033,7 +2064,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), null, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2041,8 +2072,44 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2007, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
+		}
+	}
+
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
+	@WebScreenshotDoc(description = "Cas limite du passage sourcier pure à ordinaire (par obtention de permis C ou nationalité Suisse) à la mi-décembre: " +
+			"l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année et l'assujettissement ordinaire ne commence qu'au début de l'année suivante.")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePassageRoleSourceAOrdinaireCasLimiteFinDAnneeObtentionPermisC() throws Exception {
+
+		final Contribuable paul = createPassageRoleSourceAOrdinaire(10000044L, date(2008, 12, 12), MotifFor.PERMIS_C_SUISSE);
+
+		// 2008
+		{
+			final List<Assujettissement> list = service.determine(paul, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			// sourcier pure jusqu'à mi-décembre -> l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année
+			assertSourcierPur(date(2008, 1, 1), date(2008, 12, 31), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		}
+
+		// 2009
+		{
+			final List<Assujettissement> list = service.determine(paul, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertOrdinaire(date(2009, 1, 1), date(2009, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(0));
+		}
+
+		// 2002-2010
+		{
+			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
+			assertNotNull(list);
+			assertEquals(2, list.size());
+			assertSourcierPur(date(2002, 1, 1), date(2008, 12, 31), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2009, 1, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
@@ -2135,7 +2202,7 @@ public class AssujettissementServiceTest extends MetierTest {
 	}
 
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000047&print=true&title=${methodName}&description=${docDescription}")
-	@WebScreenshotDoc(description = "Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de l'assujettissement sourcier mixte " +
+	@WebScreenshotDoc(description = "Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de l'assujettissement hors-canton " +
 			"débute simplement le 1er janvier")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
@@ -2157,7 +2224,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2008
@@ -2165,7 +2232,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2176,9 +2243,9 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertSourcierPur(date(2002, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
 			/*
 			 * Note: le passage de sourcier pure à sourcier mixte ne provoque pas de fractionnement de l'assujettissement, la validité de
-			 * l'assujettissement sourcier mixte débute simplement le 1er janvier
+			 * l'assujettissement hors-canton débute simplement le 1er janvier
 			 */
-			assertSourcierMixteArt137Al1(date(2007, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_HC, list.get(1));
+			assertHorsCanton(date(2007, 1, 1), date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2206,7 +2273,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertEquals(2, list.size());
 			// TODO (msi) voir s'il est possible d'exposer le motif d'ouverture du for secondaire (qui est plus précis que celui du for principal)
 			assertSourcierPur(date(2007, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertSourcierMixteArt137Al1(dateChangement, date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertHorsSuisse(dateChangement, date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 
 		// 2008
@@ -2214,7 +2281,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2008, 1, 1), date(2008, 12, 31), null, null, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+			assertHorsSuisse(date(2008, 1, 1), date(2008, 12, 31), null, null, list.get(0));
 		}
 
 		// 2002-2010
@@ -2223,7 +2290,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(2, list.size());
 			assertSourcierPur(date(2002, 1, 1), dateChangement.getOneDayBefore(), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertSourcierMixteArt137Al1(dateChangement, date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertHorsSuisse(dateChangement, date(2010, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(1));
 		}
 	}
 
@@ -2307,6 +2374,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			"d'assujettissement source du 16 décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	@Ignore // FIXME (msi) demander à David Radelfinger si ce cas limite est toujours valable dans l'optique où la vue 'rôle' prime sur la vue 'source'
 	public void testDetermineSourcierPuisOrdinaireCasLimite() throws Exception {
 
 		final Contribuable paul = createSourcierPuisOrdinaireCasLimite(10000051L);
@@ -2515,7 +2583,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertNotNull(list);
 			assertEquals(3, list.size());
 			assertSourcierPur(date(2008, 1, 1), dateAchat.getOneDayBefore(), null, MotifFor.ACHAT_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(0));
-			assertSourcierMixteArt137Al1(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertHorsSuisse(dateAchat, dateVente, MotifFor.ACHAT_IMMOBILIER, MotifFor.VENTE_IMMOBILIER, list.get(1));
 			assertSourcierPur(dateVente.getOneDayAfter(), date(2008, 12, 31), MotifFor.VENTE_IMMOBILIER, null, TypeAutoriteFiscale.PAYS_HS, list.get(2));
 		}
 
@@ -2808,7 +2876,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2002);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2002, 1, 1), date(2002, 12, 31), null, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2003 (fausse arrivée HS + changement mode d'imposition)
@@ -2896,8 +2964,8 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(3, list.size());
-			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 27), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertSourcierMixteArt137Al1(date(2003, 5, 28), date(2003, 8, 30), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, list.get(1));
+			assertSourcierPur(date(2003, 1, 1), date(2003, 5, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertHorsSuisse(date(2003, 6, 1), date(2003, 8, 30), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, list.get(1));
 			assertSourcierMixteArt137Al2(date(2003, 8, 31), date(2003, 12, 31), MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(2));
 		}
 
@@ -2931,7 +2999,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2003);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierMixteArt137Al1(date(2003, 1, 1), date(2003, 12, 31), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
+			assertHorsCanton(date(2003, 1, 1), date(2003, 12, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.ARRIVEE_HC, list.get(0));
 		}
 
 		// 2004 (arrivée hors-canton)
@@ -3041,7 +3109,7 @@ public class AssujettissementServiceTest extends MetierTest {
 		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
 		assertEquals(2, list.size());
-		assertSourcierMixteArt137Al1(date(2004, 5, 6), date(2006, 7, 31), MotifFor.INDETERMINE, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.PAYS_HS, list.get(0));
+		assertHorsSuisse(date(2004, 5, 6), date(2006, 7, 31), MotifFor.ACHAT_IMMOBILIER, MotifFor.DEMENAGEMENT_VD, list.get(0));
 		assertSourcierMixteArt137Al2(date(2006, 8, 1), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(1));
 	}
 
@@ -3067,10 +3135,9 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		final List<Assujettissement> list = service.determine(paul);
 		assertNotNull(list);
-		assertEquals(3, list.size());
-		assertSourcierPur(date(2004, 1, 1), date(2004, 6, 30), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, list.get(0));
-		assertOrdinaire(date(2004, 7, 1), date(2006, 11, 15), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.DEPART_HS, list.get(1));
-		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(2));
+		assertEquals(2, list.size());
+		assertOrdinaire(date(2004, 1, 1), date(2006, 11, 15), MotifFor.ARRIVEE_HC, MotifFor.DEPART_HS, list.get(0));
+		assertHorsSuisse(date(2006, 11, 16), null, MotifFor.DEMENAGEMENT_VD, null, list.get(1));
 	}
 
 	/**
@@ -3671,7 +3738,140 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertEquals(2, liste.size());
 		// [SIFISC-7281] les contribuables à la dépense qui partent hors-canton sont considérés hors-canton toute l'année de leur départ
 		assertDepense(date(2000, 1, 1), date(2004, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, liste.get(0));
-		assertSourcierPur(date(2005, 1, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertSourcierPur(date(2005, 8, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsCantonSourcePuisPassageAMixte1DansLAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10867397L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 3, 31), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 4, 1), MotifFor.ARRIVEE_HC, date(2012, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 8, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.MIXTE_137_1);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
+		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertSourcierMixteArt137Al1(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsCantonSourcePuisPassageAOrdinaireDansLAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10867397L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 3, 31), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 4, 1), MotifFor.ARRIVEE_HC, date(2012, 7, 31), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 8, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.ORDINAIRE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
+		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertOrdinaire(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, liste.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsCantonSourcePuisPassageAMixte2DansLAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10716129L);
+		addForPrincipal(ctb, date(2000, 1, 1), MotifFor.ARRIVEE_HS, date(2012, 5, 4), MotifFor.ARRIVEE_HC, MockCommune.Neuchatel, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 5, 5), MotifFor.ARRIVEE_HC, date(2012, 8, 30), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 9, 1), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.MIXTE_137_2);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		// [SIFISC-8095] En cas de conflit entre la vue 'source' et la vue 'rôle', c'est le rôle qui doit gagner. En l'occurence, on considère que le contribuable
+		//               est assujetti au rôle à partir du 1er janvier 2012 (alors que selon la vue 'source' il était encore sourcier le 4 mai 2012).
+		assertSourcierPur(date(2000, 1, 1), date(2011, 12, 31), MotifFor.ARRIVEE_HS, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
+		assertSourcierMixteArt137Al2(date(2012, 1, 1), null, MotifFor.CHGT_MODE_IMPOSITION, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineArriveeHorsCantonSourcePuisPassageAOrdinaireSuiviDeMariageDansLAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10802574L);
+		addForPrincipal(ctb, date(2012, 9, 26), MotifFor.ARRIVEE_HC, date(2012, 10, 7), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2012, 10, 8), MotifFor.CHGT_MODE_IMPOSITION, date(2012, 12, 29), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne,
+		                ModeImposition.ORDINAIRE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(1, liste.size());
+		// [SIFISC-8095] Dans le cas où le passage au rôle s'interrompt dans l'arrivée de hors-canton, on retombe dans le cas normal
+		// du fractionnement à l'arrivée du sourcier car la vue 'rôle' est vide.
+		assertSourcierPur(date(2012, 9, 1), date(2012, 10, 31), MotifFor.ARRIVEE_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+	}
+
+//	@Test
+//	@Transactional(rollbackFor = Throwable.class)
+//	public void testDetermineDDDD() throws Exception {
+//
+//		final Contribuable ctb = createContribuableSansFor(10802574L);
+//		addForPrincipal(ctb, date(2012, 9, 26), MotifFor.ARRIVEE_HC, date(2012, 10, 7), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+//
+//		final List<Assujettissement> liste = service.determine(ctb);
+//		assertEquals(1, liste.size());
+//		assertSourcierPur(date(2012, 9, 1), date(2012, 10, 31), MotifFor.ARRIVEE_HC, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+//	}
+
+	/**
+	 * Cas du contribuable n°10553402 qui provoquait un chevauchement des assujettissements à cause d'un bug dans la méthode 'override' du DateRangeHelper.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerDemenagementVDSourcierPuisPassageOrdinaireLaMemeAnnee() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10553402L);
+		addForPrincipal(ctb, date(2006, 4, 1), MotifFor.DEMENAGEMENT_VD, date(2008, 7, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2008, 8, 1), MotifFor.DEMENAGEMENT_VD, date(2008, 11, 18), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Prilly, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2008, 11, 19), MotifFor.INDETERMINE, date(2010, 2, 11), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Prilly);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		assertSourcierPur(date(2006, 4, 1), date(2007, 12, 31), MotifFor.DEMENAGEMENT_VD, MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertOrdinaire(date(2008, 1, 1), date(2009, 12, 31), MotifFor.INDETERMINE, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, liste.get(1));
+	}
+
+	/**
+	 * Cas du contribuable n°996.190.10 qui provoquait un chevauchement des assujettissements à cause d'un bug dans la méthode 'override' du DateRangeHelper.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerPlusieursDemenagementVDSourcierMixte() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(99619010L);
+		addForPrincipal(ctb, date(2000, 5, 31), MotifFor.INDETERMINE, date(2003, 11, 17), MotifFor.DEMENAGEMENT_VD, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2003, 11, 18), MotifFor.DEMENAGEMENT_VD, date(2004, 11, 29), MotifFor.DEMENAGEMENT_VD, MockCommune.Cossonay, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2004, 11, 30), MotifFor.DEMENAGEMENT_VD, date(2010, 11, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Bussigny, ModeImposition.MIXTE_137_2);
+		addForPrincipal(ctb, date(2010, 12, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Renens, ModeImposition.MIXTE_137_2);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(1, liste.size());
+		assertSourcierMixteArt137Al2(date(2000, 1, 1), MotifFor.INDETERMINE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+	}
+
+	/**
+	 * Cas du contribuable n°107.996.00 qui provoquait un chevauchement des assujettissements parce que les assujettissements source n'étaient pas calculées correctement dans ce cas-là.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerPlusieursDemenagementVDSourcierMixtePuisDepartHorsCanton() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10799600L);
+		addForPrincipal(ctb, date(2011, 2, 13), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2011, 4, 30), MotifFor.DEMENAGEMENT_VD, MockCommune.Echallens, ModeImposition.MIXTE_137_1);
+		addForPrincipal(ctb, date(2011, 5, 1), MotifFor.DEMENAGEMENT_VD, date(2011, 5, 31), MotifFor.DEPART_HC, MockCommune.Morges, ModeImposition.MIXTE_137_1);
+		addForPrincipal(ctb, date(2011, 6, 1), MotifFor.DEPART_HC, MockCommune.Geneve, ModeImposition.SOURCE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(2, liste.size());
+		assertSourcierPur(date(2011, 2, 1), date(2011, 5, 31), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2011, 6, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 	}
 
 	@Test
@@ -3794,11 +3994,14 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertSourcierMixteArt137Al2(date(2003, 1, 1), date(2005, 2, 18), MotifFor.INDETERMINE, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listePrilly.get(0));
 
 		final List<Assujettissement> listeBussigny = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Bussigny.getNoOFS()));
-		assertNull(listeBussigny);
+		assertEquals(1, listeBussigny.size());
+		// assujetti en raison du for source (et uniquement du point de la vue de la source !)
+		assertSourcierPur(date(2008, 7, 7), date(2008, 7, 31), MotifFor.ARRIVEE_HS, MotifFor.DEMENAGEMENT_VD, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeBussigny.get(0));
 
 		// c'est ici que cela explosait !
 		final List<Assujettissement> listeVevey = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Vevey.getNoOFS()));
 		assertEquals(1, listeVevey.size());
+		// assujetti en raison du for secondaire + du for source
 		assertSourcierMixteArt137Al2(date(2008, 7, 7), null, MotifFor.ARRIVEE_HS, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, listeVevey.get(0));
 	}
 
@@ -3993,4 +4196,136 @@ public class AssujettissementServiceTest extends MetierTest {
 			assertEquals(noOfsCommunesActives.size(), nbActives);
 		}
 	}
+//
+//	@Test
+//	public void testPasseAuRoleDansLAnneeEtLeReste() throws Exception {
+//
+//		// un contribuable avec un seul for source ouvert
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 = new ForFiscalPrincipal(date(2000, 1, 1), null, 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un seul for source fermé l'année suivante
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2002, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un deux fors source
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp2);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for ordinaire annulé
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			ffp2.setAnnule(true);
+//			pp.addForFiscal(ffp2);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for secondaire
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalSecondaire ffs1 = new ForFiscalSecondaire(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.IMMEUBLE_PRIVE);
+//			pp.addForFiscal(ffs1);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for ordinaire l'année suivante
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2001, 5, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp2);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for ordinaire l'année précédente
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp0 =
+//					new ForFiscalPrincipal(date(1999, 5, 3), date(1999, 12, 31), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp0);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source, puis un for ordinaire mais qui se ferme dans l'année
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp2);
+//			assertFalse(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for ordinaire dans l'année (collés)
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 3, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp2);
+//			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source et un for ordinaire dans l'année (disjoints)
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 5, 4), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp2);
+//			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//
+//		// un contribuable avec un for source, puis un for ordinaire qui se ferme et un autre qui s'ouvre en suivant, le tout dans l'année
+//		{
+//			final PersonnePhysique pp = new PersonnePhysique(false);
+//			final ForFiscalPrincipal ffp1 =
+//					new ForFiscalPrincipal(date(2000, 1, 1), date(2000, 3, 2), 5586, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.SOURCE);
+//			pp.addForFiscal(ffp1);
+//			final ForFiscalPrincipal ffp2 =
+//					new ForFiscalPrincipal(date(2000, 5, 4), date(2000, 11, 2), 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.MIXTE_137_2);
+//			pp.addForFiscal(ffp2);
+//			final ForFiscalPrincipal ffp3 =
+//					new ForFiscalPrincipal(date(2000, 11, 3), null, 5402, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, MotifRattachement.DOMICILE, ModeImposition.ORDINAIRE);
+//			pp.addForFiscal(ffp3);
+//			assertTrue(AssujettissementServiceImpl.passeAuRoleDansLAnneeEtLeReste(ffp1));
+//		}
+//	}
 }

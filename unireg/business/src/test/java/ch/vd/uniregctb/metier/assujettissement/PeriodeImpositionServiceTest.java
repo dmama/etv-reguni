@@ -501,7 +501,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 		final List<PeriodeImposition> list = service.determine(ctb, dateChangement.year());
 		assertNotNull(list);
 		assertEquals(1, list.size());
-		assertPeriodeImposition(dateChangement, date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
+		assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.VAUDOIS_VAUDTAX, TypeAdresseRetour.CEDI, false, false, false, false, list.get(0));
 	}
 
 	/**
@@ -738,7 +738,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			final List<PeriodeImposition> list = service.determine(ctb, 2008);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
+			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 		}
 
 		// 2009
@@ -746,7 +746,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			final List<PeriodeImposition> list = service.determine(ctb, 2009);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
+			assertPeriodeImposition(date(2009, 1, 1), date(2009, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 		}
 	}
 
@@ -848,7 +848,7 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 			final List<PeriodeImposition> list = service.determine(ctb, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, false, false, false, list.get(0));
+			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
 		}
 
 		// 2008 (arrivée en cours d'année)

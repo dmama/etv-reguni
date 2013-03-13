@@ -718,11 +718,11 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Sourcier pure vaudois qui passe en mode ordinaire en 2008
 	 */
-	protected Contribuable createPassageRoleSourceAOrdinaire(Long noTiers, RegDate dateChangement) throws Exception {
+	protected Contribuable createPassageRoleSourceAOrdinaire(Long noTiers, RegDate dateChangement, MotifFor motifPassage) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
-		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.ARRIVEE_HC, dateChangement.getOneDayBefore(), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.ARRIVEE_HC, dateChangement.getOneDayBefore(), motifPassage, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
-		fp = addForPrincipal(paul, dateChangement, MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Lausanne);
+		fp = addForPrincipal(paul, dateChangement, motifPassage, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.ORDINAIRE);
 		return paul;
 	}

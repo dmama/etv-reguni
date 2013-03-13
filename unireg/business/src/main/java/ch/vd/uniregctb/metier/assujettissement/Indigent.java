@@ -22,6 +22,11 @@ public class Indigent extends Assujettissement {
 	}
 
 	@Override
+	public Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin) {
+		return new Indigent(getContribuable(), dateDebut, dateFin, motifDebut, motifFin);
+	}
+
+	@Override
 	public String getDescription() {
 		return "Indigent";
 	}

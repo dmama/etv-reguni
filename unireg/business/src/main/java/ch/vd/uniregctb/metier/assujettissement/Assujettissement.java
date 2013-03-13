@@ -57,6 +57,8 @@ public abstract class Assujettissement implements CollatableDateRange {
 		this.fors = null;
 	}
 
+	public abstract Assujettissement duplicate(RegDate dateDebut, RegDate dateFin, MotifFor motifDebut, MotifFor motifFin);
+
 	public Contribuable getContribuable() {
 		return contribuable;
 	}

@@ -1811,7 +1811,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
-			Assert.assertEquals(date(2008, 5, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);
@@ -1836,9 +1836,9 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			@Override
 			public Long doInTransaction(TransactionStatus transactionStatus) {
 				final PersonnePhysique pp = addHabitant(noInd);
-				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+				final ForFiscalPrincipal ffpSource = addForPrincipal(pp, date(2005, 1, 1), MotifFor.ARRIVEE_HC, date(2008, 4, 12), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
 				ffpSource.setModeImposition(ModeImposition.SOURCE);
-				addForPrincipal(pp, date(2008, 4, 13), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.Aigle);
+				addForPrincipal(pp, date(2008, 4, 13), MotifFor.PERMIS_C_SUISSE, MockCommune.Aigle);
 				return pp.getNumero();
 			}
 		});
@@ -1862,7 +1862,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbPrincipal);
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertNull(elt.motifOuverture);
-			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifFermeture);
+			Assert.assertEquals(MotifFor.PERMIS_C_SUISSE, elt.motifFermeture);
 			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 4, 30), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.SOURCE, elt.modeImposition);
@@ -1915,7 +1915,7 @@ public class ExtractionDonneesRptProcessorTest extends BusinessTest {
 			Assert.assertNull(elt.identification.noCtbConjoint);
 			Assert.assertEquals(MotifFor.CHGT_MODE_IMPOSITION, elt.motifOuverture);
 			Assert.assertNull(elt.motifFermeture);
-			Assert.assertEquals(date(2008, 5, 1), elt.debutPeriodeImposition);
+			Assert.assertEquals(date(2008, 1, 1), elt.debutPeriodeImposition);
 			Assert.assertEquals(date(2008, 12, 31), elt.finPeriodeImposition);
 			Assert.assertEquals(ModeImposition.ORDINAIRE, elt.modeImposition);
 			Assert.assertEquals(MotifRattachement.DOMICILE, elt.motifRattachement);

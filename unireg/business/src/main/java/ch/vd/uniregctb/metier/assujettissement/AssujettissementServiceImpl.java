@@ -177,23 +177,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	private List<Assujettissement> determine(Contribuable ctb, ForsParType fors, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 		try {
 			ajouteForsPrincipauxFictifs(fors.principaux);
+			final List<Assujettissement> role = determineRole(ctb, fors, noOfsCommunesVaudoises);
+			final List<Assujettissement> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
-			// Détermination des données d'assujettissement brutes
-			final Fractionnements fractionnements = determineFractionnements(fors.principaux);
-			final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
-
-			final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
-			domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
-			assertCoherenceRanges(domicile);
-
-			final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
-			fusionne(domicile, economique);
-
-			// Création des assujettissements finaux
-			List<Assujettissement> assujettissements = instanciate(ctb, domicile);
-			assujettissements = DateRangeHelper.collate(assujettissements);
+			final List<Assujettissement> assujettissements = fusionneAssujettissements(role, source);
 			adapteDatesDebutEtFin(assujettissements);
-
 			assertCoherenceRanges(assujettissements);
 
 			return assujettissements.isEmpty() ? null : assujettissements;
@@ -211,6 +199,146 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// autrement, on propage simplement l'exception
 			throw e;
 		}
+	}
+
+	/**
+	 * Fusionne les assujettissements <i>source</i> et <i>rôle</i> spécifié. Dans le cas où ces assujettissements se chevauchent, les assujettissements <i>rôle</i> sont prioritaires.
+	 *
+	 * @param role   les assujettissements <i>rôle</i>
+	 * @param source les assujettissements <i>source</i>
+	 * @return les assujettissements <i>rôle</i> et <i>source</i> fusionnés
+	 */
+	private List<Assujettissement> fusionneAssujettissements(List<Assujettissement> role, List<Assujettissement> source) {
+
+		return DateRangeHelper.override(source, role, new DateRangeHelper.AdapterCallbackExtended<Assujettissement>() {
+			@Override
+			public Assujettissement adapt(Assujettissement range, RegDate debut, RegDate fin) {
+				throw new IllegalArgumentException("Ne devrait pas être appelée");
+			}
+
+			@Override
+			public Assujettissement adapt(Assujettissement range, RegDate debut, Assujettissement surchargeDebut, RegDate fin, Assujettissement surchargeFin) {
+
+				final MotifFor motifDebut;
+				if (debut == null) {
+					// pas de surcharge sur le début
+					debut = range.getDateDebut();
+					motifDebut = range.getMotifFractDebut();
+				}
+				else {
+					// surcharge du début
+					motifDebut = surchargeDebut.getMotifFractFin();
+				}
+
+				final MotifFor motifFin;
+				if (fin == null) {
+					// pas de surcharge sur la fin
+					fin = range.getDateFin();
+					motifFin = range.getMotifFractFin();
+				}
+				else {
+					// surcharge de la fin
+					motifFin = surchargeFin.getMotifFractDebut();
+				}
+
+				return range.duplicate(debut, fin, motifDebut, motifFin);
+			}
+
+			@Override
+			public Assujettissement duplicate(Assujettissement range) {
+				return range.duplicate(range.getDateDebut(), range.getDateFin(), range.getMotifFractDebut(), range.getMotifFractFin());
+			}
+		});
+	}
+
+	@NotNull
+	private List<Assujettissement> determineSource(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+
+		final List<Assujettissement> list = new ArrayList<>();
+
+		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(fors.principaux.iterator());
+		while (iter.hasNext()) {
+			final Triplet<ForFiscalPrincipal> triplet = iter.next();
+			final ForFiscalPrincipal ffp = triplet.current;
+			final boolean forVaudois = ffp.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD;
+
+			// de manière générale, un for fiscal avec un mode d'imposition source va générer un assujettissement source
+			if (ffp.getModeImposition().isSource() &&
+					// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
+					(noOfsCommunesVaudoises == null || (forVaudois && noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())))) {
+
+				final RegDate dateDebut = determineDateDebutAssujettissementSource(triplet);
+				final RegDate dateFin = determineDateFinAssujettissementSource(triplet);
+
+				if (RegDateHelper.isBeforeOrEqual(dateDebut, dateFin, NullDateBehavior.LATEST)) {
+					// on ne fait pas de distinction entre les modes d'imposition source et mixte, car du point de vue 'source' la partie 'rôle' du mode d'imposition mixte n'existe pas
+					list.add(new SourcierPur(ctb, dateDebut, dateFin, ffp.getMotifOuverture(), ffp.getMotifFermeture(), ffp.getTypeAutoriteFiscale()));
+				}
+			}
+		}
+
+		return DateRangeHelper.collate(list);
+	}
+
+	private static RegDate determineDateDebutAssujettissementSource(Triplet<ForFiscalPrincipal> triplet) {
+
+		final ForFiscalPrincipal precedent = triplet.previous;
+		final ForFiscalPrincipal courant = triplet.current;
+		final RegDate debut = courant.getDateDebut();
+
+		// faut-il adapter la date de début ?
+		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			// pays HS => pas d'arrondi
+			return debut;
+		}
+		else if ((precedent == null || !precedent.getModeImposition().isSource()) && !isDepartOuArriveeHorsSuisse(courant.getMotifOuverture())) { // [UNIREG-2155]
+			// début d'assujettissement source => on arrondi au début du mois
+			return RegDate.get(debut.year(), debut.month(), 1);
+		}
+		else {
+			// cas normal
+			return debut;
+		}
+	}
+
+	private static RegDate determineDateFinAssujettissementSource(Triplet<ForFiscalPrincipal> triplet) {
+
+		final ForFiscalPrincipal suivant = triplet.next;
+		final ForFiscalPrincipal courant = triplet.current;
+		final RegDate fin = courant.getDateFin();
+
+		// faut-il adapter la date de fin ?
+		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
+			// pays HS => pas d'arrondi
+			return fin;
+		}
+		else if (fin != null && !isDepartOuArriveeHorsSuisse(courant.getMotifFermeture()) && (suivant == null || !suivant.getModeImposition().isSource())) {
+			// fin d'assujettissement source => on arrondi à la fin du mois
+			return RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
+		}
+		else {
+			// cas normal
+			return fin;
+		}
+	}
+
+	private List<Assujettissement> determineRole(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+		// Détermination des données d'assujettissement brutes
+		final Fractionnements fractionnements = determineFractionnements(fors.principaux);
+		final CasParticuliers casParticuliers = determineCasParticuliers(ctb, fors.principaux);
+
+		final DataList domicile = determineAssujettissementDomicile(fors.principaux, fractionnements, casParticuliers, noOfsCommunesVaudoises);
+		domicile.compacterNonAssujettissements(noOfsCommunesVaudoises != null); // SIFISC-2939
+		assertCoherenceRanges(domicile);
+
+		final List<Data> economique = determineAssujettissementEconomique(fors.secondaires, fractionnements, noOfsCommunesVaudoises);
+		fusionne(domicile, economique);
+
+		// Création des assujettissements finaux
+		List<Assujettissement> assujettissements = instanciate(ctb, domicile);
+		assujettissements = DateRangeHelper.collate(assujettissements);
+
+		return assujettissements;
 	}
 
 	/**
@@ -825,10 +953,13 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			final RegDate fin = courant.getDateFin();
 			final MotifFor motifDebut = courant.getMotifFractDebut();
 			final MotifFor motifFin = courant.getMotifFractFin();
+			final TypeAutoriteFiscale typeAutoriteFiscale = ((SourcierPur) courant).getTypeAutoriteFiscale();
 
 			// faut-il adapter la date de début ?
 			final Assujettissement precedent = triplet.previous;
-			if ((precedent == null || !(precedent instanceof Sourcier)) && !isDepartOuArriveeHorsSuisse(motifDebut)) { // [UNIREG-2155]
+			if ((precedent == null || !(precedent instanceof Sourcier)) &&
+					typeAutoriteFiscale != TypeAutoriteFiscale.PAYS_HS && // pays HS => pas d'arrondi
+					!isDepartOuArriveeHorsSuisse(motifDebut)) { // [UNIREG-2155]
 				// on doit arrondir au début du mois
 				final RegDate newDebut = RegDate.get(debut.year(), debut.month(), 1);
 				if (newDebut != debut) {
@@ -843,7 +974,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 
 			// faut-il adapter la date de fin ?
-			if (fin != null && !isDepartOuArriveeHorsSuisse(motifFin)) { // [UNIREG-2155]
+			if (fin != null &&
+					typeAutoriteFiscale != TypeAutoriteFiscale.PAYS_HS && // pays HS => pas d'arrondi
+					!isDepartOuArriveeHorsSuisse(motifFin)) { // [UNIREG-2155]
 				final Assujettissement suivant = triplet.next;
 				if (suivant == null || !(suivant instanceof Sourcier)) {
 					// on doit arrondir à la fin du mois
@@ -1125,28 +1258,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsSuisse(previous, current) &&
-				(modeImposition == ModeImposition.SOURCE || (isDepartDepuisOuArriveeVersVaud(current, previous) && !isDepartHCApresArriveHSMemeAnnee(current, next)))) {
+				isDepartDepuisOuArriveeVersVaud(current, previous) &&
+				!isDepartHCApresArriveHSMemeAnnee(current, next)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
-			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isArriveeDeHorsCanton(previous, current) && modeImposition == ModeImposition.SOURCE) {
-			// [UNIREG-1742] L'arrivée hors-Canton d'un sourcier pur doit provoquer un fractionnement.
-			// [SIFISC-7281] Par contre, l'arrivée d'un mixte 137 al. 2 ne doit plus provoquer de fractionnement
-			fraction = true;
-		}
-		else if (previous != null && isArriveeDansHorsCanton(previous, current) && previous.getModeImposition() == ModeImposition.DEPENSE) {
-			// [SIFISC-7281] les départ hors-canton des dépenses ne doit *pas* fractionner l'assujettissement : ils sont considérés sourciers toute l'année de leur départ
-			fraction = false;
-		}
-		else if (previous != null && ((roleSourcierPur(previous) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(previous) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
-			fraction = true;
-		}
-		else if (previous != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
-				((roleSourcierPur(previous) && roleSourcierMixte(current)) || (roleSourcierMixte(previous) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
+		else if ((previous == null || previous.getModeImposition().isSource()) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
+			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissment
 			fraction = true;
 		}
 
@@ -1163,9 +1282,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		final MotifFor motifFermeture = current.getMotifFermeture();
-		final ModeImposition modeImposition = current.getModeImposition();
-
-		final ModeImposition nextModeImposition = (next == null ? null : next.getModeImposition());
 
 		boolean fraction = false;
 
@@ -1174,29 +1290,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			fraction = true;
 		}
 		else if (isDepartOuArriveeHorsSuisse(current, next) &&
-				(nextModeImposition == ModeImposition.SOURCE || (isDepartDepuisOuArriveeVersVaud(current, next) &&
-				!isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)))) {
+				isDepartDepuisOuArriveeVersVaud(current, next) &&
+				!isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)) {
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
-			// [UNIREG-3261] l'arrivée de hors-Suisse doit quand même fractionner si le contribuable est sourcier pur
 			fraction = true;
 		}
-		else if (isDepartDansHorsCanton(current, next) &&
-				(modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_2)) {
-			// [UNIREG-1742] Le départ hors-Canton d'un sourcier pur ou mixte 137 al. 2 (donc sans for secondaire) doit provoquer un fractionnement (parce que le type d'autorité fiscale change)
-			fraction = true;
-		}
-		else if (isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.DEPENSE) {
-			// [SIFISC-7281] les départs hors-canton des dépenses ne doit *pas* fractionner l'assujettissement : ils sont considérés sourciers toute l'année de leur départ
-			fraction = false;
-		}
-		else if (next != null && ((roleSourcierPur(next) && roleOrdinaireNonMixte(current)) || (roleOrdinaireNonMixte(next) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle ordinaire non-mixte (et vice versa) doit provoquer un fractionnement.
-			fraction = true;
-		}
-		else if (next != null && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS &&
-				((roleSourcierPur(next) && roleSourcierMixte(current)) || (roleSourcierMixte(next) && roleSourcierPur(current)))) {
-			// le passage du rôle source pur au rôle source-mixte (et vice versa) doit provoquer un fractionnement (hors-Suisse uniquement).
+		else if (isDepartDansHorsCanton(current, next) && current.getModeImposition() == ModeImposition.MIXTE_137_2) {
+			// [SIFISC-7281] le départ hors-canton d'un sourcier mixte 137 al2 doit fractionner la période d'assujettissement
 			fraction = true;
 		}
 
@@ -1600,6 +1701,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final Data data;
 		final ForFiscalPrincipal current = forPrincipal.current;
 
+		if (!current.getModeImposition().isRole()) {
+			// seule la vue 'rôle' nous intéresse
+			return null;
+		}
+
 		switch (current.getTypeAutoriteFiscale()) {
 		case COMMUNE_OU_FRACTION_VD: {
 
@@ -1635,32 +1741,15 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		case COMMUNE_HC:
 		case PAYS_HS: {
 
-			// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
-			if (isSource(current.getModeImposition()) && noOfsCommunesVaudoises == null) {
+			final RegDate adebut = determineDateDebutNonAssujettissement(forPrincipal);
+			final RegDate afin = determineDateFinNonAssujettissement(forPrincipal);
 
-				final Type type = getAType(current.getModeImposition());
-				final RegDate adebut = determineDateDebutAssujettissement(forPrincipal, fractionnements);
-				final RegDate afin = determineDateFinAssujettissement(forPrincipal, fractionnements);
-
-				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
-					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), type, current.getTypeAutoriteFiscale());
-				}
-				else {
-					// pas d'assujettissement
-					data = null;
-				}
+			if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
+				data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.NonAssujetti, current.getTypeAutoriteFiscale());
 			}
 			else {
-				final RegDate adebut = determineDateDebutNonAssujettissement(forPrincipal);
-				final RegDate afin = determineDateFinNonAssujettissement(forPrincipal);
-
-				if (RegDateHelper.isBeforeOrEqual(adebut, afin, NullDateBehavior.LATEST)) {
-					data = new Data(adebut, afin, current.getMotifOuverture(), current.getMotifFermeture(), Type.NonAssujetti, current.getTypeAutoriteFiscale());
-				}
-				else {
-					// pas d'assujettissement
-					data = null;
-				}
+				// pas d'assujettissement
+				data = null;
 			}
 			break;
 		}
@@ -1670,10 +1759,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 
 		return data;
-	}
-
-	private static boolean isSource(ModeImposition modeImposition) {
-		return modeImposition == ModeImposition.SOURCE || modeImposition == ModeImposition.MIXTE_137_1 || modeImposition == ModeImposition.MIXTE_137_2;
 	}
 
 	private static Data determine(ForFiscalSecondaire ffs, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
