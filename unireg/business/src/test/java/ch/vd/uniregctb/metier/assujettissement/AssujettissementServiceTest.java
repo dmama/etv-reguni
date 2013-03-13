@@ -3897,6 +3897,36 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertOrdinaire(date(2011, 3, 1), null, MotifFor.PERMIS_C_SUISSE, null, liste.get(3));
 	}
 
+	/**
+	 * Cas du contribuable n°100.546.92 : on vérifie que dans le cas du décès d'un contribuable sourcier mixte, l'assujettissement source s'interrompt bien le jour de son décès.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerFermetureForSourcierMixteRaisonDeces() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10054692L);
+		addForPrincipal(ctb, date(2006, 1, 1), MotifFor.INDETERMINE, date(2012, 9, 1), MotifFor.VEUVAGE_DECES, MockCommune.Nyon, ModeImposition.MIXTE_137_2);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(1, liste.size());
+		assertSourcierMixteArt137Al2(date(2006, 1, 1), date(2012, 9, 1), MotifFor.INDETERMINE, MotifFor.VEUVAGE_DECES, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+	}
+
+	/**
+	 * Cas du contribuable n°561.097.12 : on vérifie que dans le cas du décès du conjoint d'un contribuable sourcier mixte, l'assujettissement source du survivant commence bien le jour de son décès.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerOuvertureForSourcierMixteRaisonDeces() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(56109712L);
+		addForPrincipal(ctb, date(1999, 10, 12), MotifFor.VEUVAGE_DECES, MockCommune.Prilly, ModeImposition.MIXTE_137_2);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(1, liste.size());
+		assertSourcierMixteArt137Al2(date(1999, 10, 12), null, MotifFor.VEUVAGE_DECES, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {

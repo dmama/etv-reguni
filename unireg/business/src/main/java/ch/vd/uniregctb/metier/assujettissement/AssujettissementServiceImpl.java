@@ -295,7 +295,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// pays HS => pas d'arrondi
 			return debut;
 		}
-		else if ((precedent == null || !precedent.getModeImposition().isSource()) && !isDepartOuArriveeHorsSuisse(courant.getMotifOuverture())) { // [UNIREG-2155]
+		else if ((precedent == null || !precedent.getModeImposition().isSource()) && // début d'assujettissement source
+				courant.getMotifOuverture() != MotifFor.VEUVAGE_DECES && // sauf en cas de décès
+				!isDepartOuArriveeHorsSuisse(courant.getMotifOuverture())) { // [UNIREG-2155]
 			// début d'assujettissement source => on arrondi au début du mois
 			return RegDate.get(debut.year(), debut.month(), 1);
 		}
@@ -316,7 +318,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			// pays HS => pas d'arrondi
 			return fin;
 		}
-		else if (fin != null && !isDepartOuArriveeHorsSuisse(courant.getMotifFermeture()) && (suivant == null || !suivant.getModeImposition().isSource())) {
+		else if (fin != null &&
+				(suivant == null || !suivant.getModeImposition().isSource()) && // fin d'assujettissement source
+				courant.getMotifFermeture() != MotifFor.VEUVAGE_DECES && // sauf en cas de décès
+				!isDepartOuArriveeHorsSuisse(courant.getMotifFermeture())) {
 			// fin d'assujettissement source => on arrondi à la fin du mois
 			return RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
 		}
