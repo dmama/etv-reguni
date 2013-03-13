@@ -96,7 +96,7 @@ public class GentilEsbMessageEndpointListener extends EsbMessageEndpointListener
 		}
 	}
 
-	private String buildErrorMessage(EsbBusinessException e) {
+	private static String buildErrorMessage(EsbBusinessException e) {
 		final String msg;
 		if (StringUtils.isBlank(e.getMessage())) {
 			Throwable causeWithMessage = e.getCause();
