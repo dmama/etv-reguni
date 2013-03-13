@@ -1,6 +1,7 @@
 package ch.vd.uniregctb.metier.assujettissement;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -178,7 +179,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		try {
 			ajouteForsPrincipauxFictifs(fors.principaux);
 			final List<Assujettissement> role = determineRole(ctb, fors, noOfsCommunesVaudoises);
-			final List<Assujettissement> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
+			final List<SourcierPur> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
 			final List<Assujettissement> assujettissements = fusionneAssujettissements(role, source);
 			adapteDatesDebutEtFin(assujettissements);
@@ -208,53 +209,14 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param source les assujettissements <i>source</i>
 	 * @return les assujettissements <i>rôle</i> et <i>source</i> fusionnés
 	 */
-	private List<Assujettissement> fusionneAssujettissements(List<Assujettissement> role, List<Assujettissement> source) {
-
-		return DateRangeHelper.override(source, role, new DateRangeHelper.AdapterCallbackExtended<Assujettissement>() {
-			@Override
-			public Assujettissement adapt(Assujettissement range, RegDate debut, RegDate fin) {
-				throw new IllegalArgumentException("Ne devrait pas être appelée");
-			}
-
-			@Override
-			public Assujettissement adapt(Assujettissement range, RegDate debut, Assujettissement surchargeDebut, RegDate fin, Assujettissement surchargeFin) {
-
-				final MotifFor motifDebut;
-				if (debut == null) {
-					// pas de surcharge sur le début
-					debut = range.getDateDebut();
-					motifDebut = range.getMotifFractDebut();
-				}
-				else {
-					// surcharge du début
-					motifDebut = surchargeDebut.getMotifFractFin();
-				}
-
-				final MotifFor motifFin;
-				if (fin == null) {
-					// pas de surcharge sur la fin
-					fin = range.getDateFin();
-					motifFin = range.getMotifFractFin();
-				}
-				else {
-					// surcharge de la fin
-					motifFin = surchargeFin.getMotifFractDebut();
-				}
-
-				return range.duplicate(debut, fin, motifDebut, motifFin);
-			}
-
-			@Override
-			public Assujettissement duplicate(Assujettissement range) {
-				return range.duplicate(range.getDateDebut(), range.getDateFin(), range.getMotifFractDebut(), range.getMotifFractFin());
-			}
-		});
+	private List<Assujettissement> fusionneAssujettissements(List<Assujettissement> role, List<SourcierPur> source) {
+		return DateRangeHelper.override(new ArrayList<Assujettissement>(source), role, new OverrideAssujettissementCallback<>());
 	}
 
 	@NotNull
-	private List<Assujettissement> determineSource(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
+	private List<SourcierPur> determineSource(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
-		final List<Assujettissement> list = new ArrayList<>();
+		List<SourcierPur> list = new ArrayList<>();
 
 		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(fors.principaux.iterator());
 		while (iter.hasNext()) {
@@ -277,7 +239,49 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 
+		// Dans certains cas particuliers (voir test 'testDeterminerSourcierPassageOrdinaireUnJourPuisRetourSourcier'), deux assujettissements
+		// source peuvent se chevaucher. Dans ce cas-là, on privilégie un assujettissement vaudois si possible; autrement on choisit le plus récent.
+		list = compacterAssujettissementsSource(list);
+
 		return DateRangeHelper.collate(list);
+	}
+
+	/**
+	 * Détecte si deux assujettissements source se chevauchent, et si c'est le cas, privilégie l'assujettissement vaudois. Si les deux assujettissements possède la même autorité fiscale, privilégie
+	 * l'assujettissement le plus récent.
+	 *
+	 * @param list une liste d'assujettissements source
+	 * @return la liste d'assujettissements source, modifié ou non, selon les cas.
+	 */
+	private List<SourcierPur> compacterAssujettissementsSource(List<SourcierPur> list) {
+
+		final OverrideAssujettissementCallback<SourcierPur> callback = new OverrideAssujettissementCallback<>();
+
+		boolean modified;
+		do {
+			modified = false;
+
+			SourcierPur previous = null;
+			for (SourcierPur current : list) {
+				if (previous != null) {
+					if (DateRangeHelper.intersect(previous, current)) { // on a trouvé un assujettissement qui chevauche le précédent
+						if (previous.getTypeAutoriteFiscale() == current.getTypeAutoriteFiscale() || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
+							list = DateRangeHelper.override(list, Arrays.asList(current), callback);
+						}
+						else {
+							list = DateRangeHelper.override(list, Arrays.<SourcierPur>asList(previous), callback);
+						}
+						modified = true;
+						break;
+					}
+				}
+				previous = current;
+			}
+
+		}
+		while (modified);
+
+		return list;
 	}
 
 	private static RegDate determineDateDebutAssujettissementSource(Triplet<ForFiscalPrincipal> triplet) {
@@ -353,7 +357,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// [UNIREG-2444] si un for fiscal principal possède un motif d'ouverture d'obtention de permis C et qu'il n'y a pas de for fiscal principal précédent,
 		// on suppose que le contribuable était sourcier et qu'il y a passage du rôle source pur au rôle ordinaire. Dans les faits pour ne pas casser l'algorithme général,
 		// on ajoute artificiellement un for principal avec le mode d'imposition source.
-		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(forsPrincipaux.iterator());
+		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(forsPrincipaux.iterator());
 		while (iter.hasNext()) {
 			final Triplet<ForFiscalPrincipal> triplet = iter.next();
 			if (triplet.current.getMotifOuverture() == MotifFor.PERMIS_C_SUISSE && (triplet.previous == null || !DateRangeHelper.isCollatable(triplet.previous, triplet.current))) {
@@ -372,7 +376,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				forFictif.setMotifOuverture(MotifFor.INDETERMINE);
 				forFictif.setMotifFermeture(MotifFor.PERMIS_C_SUISSE);
 				if (forsFictifs == null) {
-					forsFictifs = new ArrayList<ForFiscalPrincipal>();
+					forsFictifs = new ArrayList<>();
 				}
 				forsFictifs.add(forFictif);
 			}
@@ -455,7 +459,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		// Détermine les assujettissements pour le rattachement de type domicile
 		final Fractionnements fractionnements = new Fractionnements();
-		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
+		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(principaux.iterator());
 		while (iter.hasNext()) {
 			final Triplet<ForFiscalPrincipal> triplet = iter.next();
 
@@ -490,7 +494,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	private static class CasParticuliers {
 
 		private boolean menageCommun;
-		private Map<Integer, Mutation> mariagesDivorces = new HashMap<Integer, Mutation>();
+		private Map<Integer, Mutation> mariagesDivorces = new HashMap<>();
 
 		private CasParticuliers(boolean menageCommun) {
 			this.menageCommun = menageCommun;
@@ -643,7 +647,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		final DataList domicile = new DataList();
 
 		// Détermine les assujettissements pour le rattachement de type domicile
-		TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<ForFiscalPrincipal>(principaux.iterator());
+		TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(principaux.iterator());
 		while (iter.hasNext()) {
 			final Triplet<ForFiscalPrincipal> triplet = iter.next();
 
@@ -864,7 +868,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static List<Data> determineAssujettissementEconomique(List<ForFiscalSecondaire> secondaires, Fractionnements fractionnements, @Nullable Set<Integer> noOfsCommunesVaudoises) throws
 			AssujettissementException {
-		List<Data> economique = new ArrayList<Data>();
+		List<Data> economique = new ArrayList<>();
 		// Détermine les assujettissements pour le rattachement de type économique
 		for (ForFiscalSecondaire f : secondaires) {
 			final Data a = determine(f, fractionnements, noOfsCommunesVaudoises);
@@ -885,7 +889,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 */
 	private static List<Assujettissement> split(List<Assujettissement> list, int startYear, int endYear) {
 
-		List<Assujettissement> splitted = new ArrayList<Assujettissement>();
+		List<Assujettissement> splitted = new ArrayList<>();
 
 		// split des assujettissement par années
 		for (int year = startYear; year <= endYear; ++year) {
@@ -925,7 +929,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		AdaptionResult res;
 		do {
 			res = AdaptionResult.LISTE_NON_MODIFIEE;
-			final TripletIterator<Assujettissement> iter = new TripletIterator<Assujettissement>(assujettissements.iterator());
+			final TripletIterator<Assujettissement> iter = new TripletIterator<>(assujettissements.iterator());
 
 			while (res == AdaptionResult.LISTE_NON_MODIFIEE && iter.hasNext()) {
 				final Triplet<Assujettissement> triplet = iter.next();
@@ -1075,15 +1079,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return forPrecedent.getModeImposition() == ModeImposition.SOURCE;
 	}
 
-	private static boolean roleSourcierMixte(ForFiscalPrincipal forPrecedent) {
-		return forPrecedent.getModeImposition() == ModeImposition.MIXTE_137_1 || forPrecedent.getModeImposition() == ModeImposition.MIXTE_137_2;
-	}
-
-	private static boolean roleOrdinaireNonMixte(ForFiscalPrincipal forCourant) {
-		final ModeImposition mode = forCourant.getModeImposition();
-		return ModeImposition.SOURCE != mode && ModeImposition.MIXTE_137_1 != mode && ModeImposition.MIXTE_137_2 != mode;
-	}
-
 	/**
 	 * Détermine s'il y a un départ ou une arrivée hors-Suisse entre le deux fors fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
 	 * faux départs/arrivées hors-Suisse dûs à des motifs d'ouverture/fermetures incohérents.
@@ -1207,38 +1202,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 		else {
 			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && next.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
-		}
-	}
-
-	/**
-	 * @param previous le for fiscal immédiatement précédent (peut être nul)
-	 * @param current  le for fiscal courant
-	 * @return <b>true</b> si une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
-	 *         fausses arrivées hors-canton.
-	 */
-	private static boolean isArriveeDeHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
-
-		if (previous == null) {
-			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getMotifOuverture() == MotifFor.ARRIVEE_HC;
-		}
-		else {
-			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && previous.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
-		}
-	}
-
-	/**
-	 * @param previous le for fiscal précédent (peut être nul)
-	 * @param current  le for fiscal courant
-	 * @return <b>true</b> si une arrivée hors-canton est détectée entre les forts fiscaux spécifiés. Cette méthode s'assure que les types d'autorité fiscales sont cohérentes de manière à détecter les
-	 *         fausses arrivées hors-canton.
-	 */
-	private static boolean isArriveeDansHorsCanton(@Nullable ForFiscalPrincipal previous, @NotNull ForFiscalPrincipal current) {
-
-		if (previous == null) {
-			return current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC && current.getMotifOuverture() == MotifFor.DEPART_HC;
-		}
-		else {
-			return previous.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD && current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_HC;
 		}
 	}
 
@@ -1619,7 +1582,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				list = null;
 			}
 			else {
-				list = new ArrayList<Data>(3);
+				list = new ArrayList<>(3);
 				list.add(this);
 				if (eco.debut.isAfter(this.debut)) {
 					// on découpe à gauche
@@ -1861,11 +1824,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 
-		Collections.sort(domicile, new DateRangeComparator<DateRange>());
+		Collections.sort(domicile, new DateRangeComparator<>());
 	}
 
 	private static List<Assujettissement> instanciate(Contribuable ctb, List<Data> all) {
-		final List<Assujettissement> assujettissements = new ArrayList<Assujettissement>(all.size());
+		final List<Assujettissement> assujettissements = new ArrayList<>(all.size());
 		for (Data a : all) {
 			final Assujettissement assujettissement;
 			switch (a.type) {
@@ -2116,8 +2079,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			if (nonAssujettissementCount > 0) {
 
 				// on sépare le bon grain de l'ivraie
-				List<Data> nonA = new ArrayList<Data>(nonAssujettissementCount);
-				final List<Data> vraiA = new ArrayList<Data>(size());
+				List<Data> nonA = new ArrayList<>(nonAssujettissementCount);
+				final List<Data> vraiA = new ArrayList<>(size());
 				for (Data data : this) {
 					if (data.type == Type.NonAssujetti) {
 						nonA.add(data);
@@ -2206,6 +2169,47 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				}
 				return left.typeAut;
 			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static class OverrideAssujettissementCallback<T extends Assujettissement> implements DateRangeHelper.AdapterCallbackExtended<T> {
+		@Override
+		public T adapt(Assujettissement range, RegDate debut, RegDate fin) {
+			throw new IllegalArgumentException("Ne devrait pas être appelée");
+		}
+
+		@Override
+		public T adapt(Assujettissement range, RegDate debut, Assujettissement surchargeDebut, RegDate fin, Assujettissement surchargeFin) {
+
+			final MotifFor motifDebut;
+			if (debut == null) {
+				// pas de surcharge sur le début
+				debut = range.getDateDebut();
+				motifDebut = range.getMotifFractDebut();
+			}
+			else {
+				// surcharge du début
+				motifDebut = surchargeDebut.getMotifFractFin();
+			}
+
+			final MotifFor motifFin;
+			if (fin == null) {
+				// pas de surcharge sur la fin
+				fin = range.getDateFin();
+				motifFin = range.getMotifFractFin();
+			}
+			else {
+				// surcharge de la fin
+				motifFin = surchargeFin.getMotifFractDebut();
+			}
+
+			return (T) range.duplicate(debut, fin, motifDebut, motifFin);
+		}
+
+		@Override
+		public T duplicate(Assujettissement range) {
+			return (T) range.duplicate(range.getDateDebut(), range.getDateFin(), range.getMotifFractDebut(), range.getMotifFractFin());
 		}
 	}
 }

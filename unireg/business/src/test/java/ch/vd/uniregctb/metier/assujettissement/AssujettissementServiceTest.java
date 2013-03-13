@@ -3874,6 +3874,29 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertSourcierPur(date(2011, 6, 1), null, MotifFor.DEPART_HC, null, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
 	}
 
+	/**
+	 * Cas du contribuable n°105.035.59 qui provoquait un chevauchement des assujettissements parce que les assujettissements source n'étaient pas calculées correctement dans ce cas-là.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerSourcierPassageOrdinaireUnJourPuisRetourSourcier() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10503559L);
+		addForPrincipal(ctb, date(2008, 11, 1), MotifFor.ARRIVEE_HS, date(2009, 8, 1), MotifFor.DEPART_HC, MockCommune.Nyon, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2009, 8, 2), MotifFor.DEPART_HC, date(2010, 5, 15), MotifFor.DEMENAGEMENT_VD, MockCommune.Sierre, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2010, 5, 16), MotifFor.ARRIVEE_HC, date(2010, 5, 16), MotifFor.CHGT_MODE_IMPOSITION, MockCommune.YverdonLesBains, ModeImposition.ORDINAIRE);
+		addForPrincipal(ctb, date(2010, 5, 17), MotifFor.CHGT_MODE_IMPOSITION, date(2011, 2, 23), MotifFor.PERMIS_C_SUISSE, MockCommune.YverdonLesBains, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2011, 2, 24), MotifFor.PERMIS_C_SUISSE, MockCommune.YverdonLesBains, ModeImposition.ORDINAIRE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(4, liste.size());
+		assertSourcierPur(date(2008, 11, 1), date(2009, 8, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2009, 8, 2), date(2010, 4, 30), // <-- la date de fin est écrasée par la date de début de l'assujettissement source suivant
+		                  MotifFor.DEPART_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
+		assertSourcierPur(date(2010, 5, 1), date(2011, 2, 28), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
+		assertOrdinaire(date(2011, 3, 1), null, MotifFor.PERMIS_C_SUISSE, null, liste.get(3));
+	}
+
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
