@@ -57,7 +57,7 @@ import ch.vd.unireg.xml.party.taxpayer.v1.FamilyStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.MaritalStatus;
 import ch.vd.unireg.xml.party.taxpayer.v1.Taxpayer;
 import ch.vd.unireg.xml.party.taxpayer.v1.WithholdingTaxTariff;
-import ch.vd.unireg.xml.party.taxresidence.v1.MixedWithholding137Par1;
+import ch.vd.unireg.xml.party.taxresidence.v1.OtherCanton;
 import ch.vd.unireg.xml.party.taxresidence.v1.PureWithholding;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiability;
 import ch.vd.unireg.xml.party.taxresidence.v1.SimplifiedTaxLiabilityType;
@@ -1390,16 +1390,16 @@ public class PartyWebServiceTest extends AbstractPartyWebServiceTest {
 		assertTrue(t0 instanceof PureWithholding);
 
 		final PureWithholding p0 = (PureWithholding) t0;
-		assertEquals(newDate(2000, 1, 1), p0.getDateFrom());
+		assertEquals(newDate(2000, 2, 1), p0.getDateFrom()); // [SIFISC-8095] l'assujettissement source est arrondi au mois, d'où le 1 février 2000
 		assertEquals(newDate(2001, 12, 31), p0.getDateTo());
 
 		final TaxLiability t1 = list.get(1);
 		assertNotNull(t1);
-		assertTrue(t1 instanceof MixedWithholding137Par1);
+		assertTrue(t1 instanceof OtherCanton); // [SIFISC-8095] un hors-canton est soit ordinaire soit sourcier pur, il ne peut pas être mixte
 
-		final MixedWithholding137Par1 m1 = (MixedWithholding137Par1) t1;
-		assertEquals(newDate(2002, 1, 1), m1.getDateFrom());
-		assertNull(m1.getDateTo());
+		final OtherCanton o1 = (OtherCanton) t1;
+		assertEquals(newDate(2002, 1, 1), o1.getDateFrom());
+		assertNull(o1.getDateTo());
 	}
 
 	// [SIFISC-2588]
