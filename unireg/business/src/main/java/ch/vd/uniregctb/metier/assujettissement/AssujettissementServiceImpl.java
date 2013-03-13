@@ -216,6 +216,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	@NotNull
 	private List<SourcierPur> determineSource(Contribuable ctb, ForsParType fors, Set<Integer> noOfsCommunesVaudoises) throws AssujettissementException {
 
+		// TODO (msi) faut-il spécialiser cette méthode pour les assujettissements source ?
+		final Fractionnements fractionnements = determineFractionnements(fors.principaux);
+
 		List<SourcierPur> list = new ArrayList<>();
 
 		final TripletIterator<ForFiscalPrincipal> iter = new TripletIterator<>(fors.principaux.iterator());
@@ -230,12 +233,20 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					(noOfsCommunesVaudoises == null || (forVaudois && noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())))) {
 
 				final ForFiscalPrincipalContext ffpContext = new ForFiscalPrincipalContext(triplet);
-				final RegDate dateDebut = determineDateDebutAssujettissementSource(ffpContext);
-				final RegDate dateFin = determineDateFinAssujettissementSource(ffpContext);
+				final RegDate dateDebut = determineDateDebutAssujettissementSource(ffpContext, fractionnements);
+				final RegDate dateFin = determineDateFinAssujettissementSource(ffpContext, fractionnements);
 
 				if (RegDateHelper.isBeforeOrEqual(dateDebut, dateFin, NullDateBehavior.LATEST)) {
 					// on ne fait pas de distinction entre les modes d'imposition source et mixte, car du point de vue 'source' la partie 'rôle' du mode d'imposition mixte n'existe pas
-					list.add(new SourcierPur(ctb, dateDebut, dateFin, ffp.getMotifOuverture(), ffp.getMotifFermeture(), ffp.getTypeAutoriteFiscale()));
+					Data a = new Data(dateDebut, dateFin, ffp.getMotifOuverture(), ffp.getMotifFermeture(), Type.SourcierPur, ffp.getTypeAutoriteFiscale());
+
+					// on fractionne l'assujettissement, si nécessaire
+					a = fractionner(a, ffp, fractionnements);
+					if (a == null) {
+						continue;
+					}
+
+					list.add(new SourcierPur(ctb, a.debut, a.fin, a.motifDebut, a.motifFin, a.typeAut));
 				}
 			}
 		}
@@ -254,9 +265,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * @param list une liste d'assujettissements source
 	 * @return la liste d'assujettissements source, modifié ou non, selon les cas.
 	 */
-	private List<SourcierPur> compacterAssujettissementsSource(List<SourcierPur> list) {
-
-		final OverrideAssujettissementCallback<SourcierPur> callback = new OverrideAssujettissementCallback<>();
+	private static List<SourcierPur> compacterAssujettissementsSource(List<SourcierPur> list) {
 
 		boolean modified;
 		do {
@@ -267,10 +276,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 				if (previous != null) {
 					if (DateRangeHelper.intersect(previous, current)) { // on a trouvé un assujettissement qui chevauche le précédent
 						if (previous.getTypeAutoriteFiscale() == current.getTypeAutoriteFiscale() || current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD) {
-							list = DateRangeHelper.override(list, Arrays.asList(current), callback);
+							list = overrideCurrentOnPrevious(list, current);
 						}
 						else {
-							list = DateRangeHelper.override(list, Arrays.<SourcierPur>asList(previous), callback);
+							list = overrideCurrentOnNext(list, previous, current);
 						}
 						modified = true;
 						break;
@@ -285,7 +294,71 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return list;
 	}
 
-	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext ffpContext) {
+	private static List<SourcierPur> overrideCurrentOnPrevious(List<SourcierPur> list, SourcierPur current) {
+
+		final OverrideAssujettissementCallback<SourcierPur> callback = new OverrideAssujettissementCallback<>();
+
+		// comme les assujettissements après l'assujettissement courant peuvent se chevaucher, on découpe la liste
+		// en deux : une première liste 'entête' considérée comme sûre, et en seconde qui contient le tout-venant.
+		final List<SourcierPur> entete = new ArrayList<>();
+		final List<SourcierPur> queue = new ArrayList<>();
+		boolean bascule = false;
+
+		for (SourcierPur sp : list) {
+			if (sp == current) {
+				bascule = true;
+				continue;
+			}
+			if (!bascule) {
+				entete.add(sp);
+			}
+			else {
+				queue.add(sp);
+			}
+		}
+
+		// on ajoute l'assujettissement courant
+		list = DateRangeHelper.override(entete, Arrays.asList(current), callback);
+		// et on finit avec le reste
+		list.addAll(queue);
+
+		return list;
+	}
+
+	private static List<SourcierPur> overrideCurrentOnNext(List<SourcierPur> list, SourcierPur current, SourcierPur next) {
+
+		final OverrideAssujettissementCallback<SourcierPur> callback = new OverrideAssujettissementCallback<>();
+
+		// comme les assujettissements après l'assujettissement courant peuvent se chevaucher, on découpe la liste
+		// en deux : une première liste 'entête' considérée comme sûre, et en seconde qui contient le tout-venant.
+		final List<SourcierPur> entete = new ArrayList<>();
+		final List<SourcierPur> queue = new ArrayList<>();
+		boolean bascule = false;
+
+		for (SourcierPur sp : list) {
+			if (sp == current || sp == next) {
+				bascule = true;
+				continue;
+			}
+			if (!bascule) {
+				entete.add(sp);
+			}
+			else {
+				queue.add(sp);
+			}
+		}
+
+		// on commence par ajouter l'assujettissement suivant (des fois qu'il chevauche un des assujettissements de l'entête)
+		list = DateRangeHelper.override(entete, Arrays.<SourcierPur>asList(next), callback);
+		// puis on ajouter l'assujettissement courant
+		list = DateRangeHelper.override(list, Arrays.<SourcierPur>asList(current), callback);
+		// et on finit avec le reste
+		list.addAll(queue);
+
+		return list;
+	}
+
+	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
 
 		final ForFiscalPrincipal precedent = ffpContext.previous;
 		final ForFiscalPrincipal courant = ffpContext.current;
@@ -294,6 +367,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// faut-il adapter la date de début ?
 		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			// pays HS => pas d'arrondi
+			return debut;
+		}
+		else if (fractionnements.contains(debut)) {
 			return debut;
 		}
 		else if ((precedent == null || !precedent.getModeImposition().isSource()) && // début d'assujettissement source
@@ -308,7 +384,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 	}
 
-	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext ffpContext) {
+	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext ffpContext, Fractionnements fractionnements) {
 
 		final ForFiscalPrincipal suivant = ffpContext.next;
 		final ForFiscalPrincipal courant = ffpContext.current;
@@ -317,6 +393,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		// faut-il adapter la date de fin ?
 		if (courant.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS) {
 			// pays HS => pas d'arrondi
+			return fin;
+		}
+		else if (fractionnements.contains(fin)) {
 			return fin;
 		}
 		else if (fin != null &&
@@ -825,11 +904,11 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 	 * Applique les régles de fractionnement sur l'assujettissement spécifié.
 	 *
 	 * @param a         un assujettissement
-	 * @param forSource le for principal à la source de l'assujettissement spécifié.
+	 * @param ffp       le for principal à la source de l'assujettissement spécifié.
 	 * @param fractions la liste des fractions
 	 * @return un assujettissement, fractionné si nécessaire.
 	 */
-	private static Data fractionner(Data a, ForFiscalPrincipal forSource, Fractionnements fractions) {
+	private static Data fractionner(Data a, ForFiscalPrincipal ffp, Fractionnements fractions) {
 
 		if (fractions.isEmpty()) {
 			return a;
@@ -837,7 +916,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		// on détermine les fractionnements immédiatement à gauche et droite du for principal à la source 
 		// de l'assujettissement (logiquement, il n'est pas possible d'avoir un fractionnement à l'intérieur du for)
-		final Limites limites = Limites.determine(forSource, fractions);
+		final Limites limites = Limites.determine(ffp, fractions);
 		final Fraction left = (limites == null ? null : limites.getLeft());
 		final Fraction right = (limites == null ? null : limites.getRight());
 

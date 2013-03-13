@@ -3929,6 +3929,27 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminerTruc() throws Exception {
+
+		final Contribuable ctb = createContribuableSansFor(10743138L);
+		addForPrincipal(ctb, date(2010, 5, 15), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT,
+		                date(2010, 10, 4), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2010, 10, 7), MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, date(2010, 10, 7), MotifFor.DEPART_HS, MockCommune.Lausanne, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2010, 10, 8), MotifFor.DEPART_HS, date(2010, 12, 26), MotifFor.ARRIVEE_HS, MockPays.PaysInconnu, ModeImposition.SOURCE);
+		addForPrincipal(ctb, date(2010, 12, 27), MotifFor.ARRIVEE_HS, date(2010, 12, 27), MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, MockCommune.Lausanne, ModeImposition.SOURCE);
+
+		final List<Assujettissement> liste = service.determine(ctb);
+		assertEquals(3, liste.size());
+		assertSourcierPur(date(2010, 5, 1), date(2010, 10, 7),
+		                  MotifFor.SEPARATION_DIVORCE_DISSOLUTION_PARTENARIAT, MotifFor.DEPART_HS, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
+		assertSourcierPur(date(2010, 10, 8), date(2010, 12, 26),
+		                  MotifFor.DEPART_HS, MotifFor.ARRIVEE_HS, TypeAutoriteFiscale.PAYS_HS, liste.get(1));
+		assertSourcierPur(date(2010, 12, 27), date(2010, 12, 31),
+		                  MotifFor.ARRIVEE_HS, MotifFor.MARIAGE_ENREGISTREMENT_PARTENARIAT_RECONCILIATION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
+	}
+
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
 	public void testDeterminePourCommuneNonAssujetti() throws Exception {
 		final Contribuable ctb = createContribuableSansFor();
 		final List<Assujettissement> listeLausanneSansFor = service.determinePourCommunes(ctb, buildSetFromArray(MockCommune.Lausanne.getNoOFS()));
