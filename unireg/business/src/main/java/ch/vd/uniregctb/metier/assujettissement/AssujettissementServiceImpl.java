@@ -229,8 +229,9 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 					// [SIFISC-1769] l'assujettissement source hors-canton/hors-Suisse est seulement pris en compte d'un point de vue cantonal (= pas en cas de point de vue communes vaudoises)
 					(noOfsCommunesVaudoises == null || (forVaudois && noOfsCommunesVaudoises.contains(ffp.getNumeroOfsAutoriteFiscale())))) {
 
-				final RegDate dateDebut = determineDateDebutAssujettissementSource(triplet);
-				final RegDate dateFin = determineDateFinAssujettissementSource(triplet);
+				final ForFiscalPrincipalContext ffpContext = new ForFiscalPrincipalContext(triplet);
+				final RegDate dateDebut = determineDateDebutAssujettissementSource(ffpContext);
+				final RegDate dateFin = determineDateFinAssujettissementSource(ffpContext);
 
 				if (RegDateHelper.isBeforeOrEqual(dateDebut, dateFin, NullDateBehavior.LATEST)) {
 					// on ne fait pas de distinction entre les modes d'imposition source et mixte, car du point de vue 'source' la partie 'rôle' du mode d'imposition mixte n'existe pas
@@ -284,10 +285,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return list;
 	}
 
-	private static RegDate determineDateDebutAssujettissementSource(Triplet<ForFiscalPrincipal> triplet) {
+	private static RegDate determineDateDebutAssujettissementSource(ForFiscalPrincipalContext ffpContext) {
 
-		final ForFiscalPrincipal precedent = triplet.previous;
-		final ForFiscalPrincipal courant = triplet.current;
+		final ForFiscalPrincipal precedent = ffpContext.previous;
+		final ForFiscalPrincipal courant = ffpContext.current;
 		final RegDate debut = courant.getDateDebut();
 
 		// faut-il adapter la date de début ?
@@ -307,10 +308,10 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		}
 	}
 
-	private static RegDate determineDateFinAssujettissementSource(Triplet<ForFiscalPrincipal> triplet) {
+	private static RegDate determineDateFinAssujettissementSource(ForFiscalPrincipalContext ffpContext) {
 
-		final ForFiscalPrincipal suivant = triplet.next;
-		final ForFiscalPrincipal courant = triplet.current;
+		final ForFiscalPrincipal suivant = ffpContext.next;
+		final ForFiscalPrincipal courant = ffpContext.current;
 		final RegDate fin = courant.getDateFin();
 
 		// faut-il adapter la date de fin ?
