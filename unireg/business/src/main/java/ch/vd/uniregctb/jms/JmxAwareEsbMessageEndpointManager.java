@@ -18,7 +18,7 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 
 	private static final Logger LOGGER = Logger.getLogger(JmxAwareEsbMessageEndpointManager.class);
 
-	private MessageListener messageListener;
+	private MonitorableMessageListener messageListener;
 
 	@Override
 	public String getDestinationName() {
@@ -35,7 +35,7 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 		if (!(messageListener instanceof MonitorableMessageListener)) {
 			throw new IllegalArgumentException("Le listener doit implémenter l'interface " + MonitorableMessageListener.class.getName());
 		}
-		this.messageListener = messageListener;
+		this.messageListener = (MonitorableMessageListener) messageListener;
 		super.setMessageListener(messageListener);
 	}
 
@@ -55,22 +55,18 @@ public class JmxAwareEsbMessageEndpointManager extends EsbMessageEndpointManager
 		}
 	}
 
-	public MessageListener getMessageListener() {
-		return messageListener;
-	}
-
 	@Override
 	public int getReceivedMessages() {
-		return ((MonitorableMessageListener) messageListener).getNombreMessagesRecus();
+		return messageListener.getNombreMessagesRecus();
 	}
 
 	@Override
 	public int getMessagesWithException() {
-		return ((MonitorableMessageListener) messageListener).getNombreMessagesRenvoyesEnException();
+		return messageListener.getNombreMessagesRenvoyesEnException();
 	}
 
 	@Override
 	public int getMessagesWithBusinessError() {
-		return ((MonitorableMessageListener) messageListener).getNombreMessagesRenvoyesEnErreur();
+		return messageListener.getNombreMessagesRenvoyesEnErreur();
 	}
 }
