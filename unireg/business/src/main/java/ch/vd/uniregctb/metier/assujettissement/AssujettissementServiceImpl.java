@@ -182,7 +182,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			final List<SourcierPur> source = determineSource(ctb, fors, noOfsCommunesVaudoises);
 
 			final List<Assujettissement> assujettissements = fusionneAssujettissements(role, source);
-			adapteDatesDebutEtFin(assujettissements);
 			assertCoherenceRanges(assujettissements);
 
 			return assujettissements.isEmpty() ? null : assujettissements;
@@ -889,7 +888,6 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			}
 		}
 
-
 		if (right != null && right.date.isBeforeOrEqual(a.fin)) {
 			a.fin = right.date.getOneDayBefore();
 			a.motifFin = right.getMotif();
@@ -941,175 +939,8 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 		return splitted;
 	}
 
-	/**
-	 * Code de retour des méthodes d'adaption, utilisé à la place de booléens par mesure de clarté.
-	 */
-	private enum AdaptionResult {
-		LISTE_NON_MODIFIEE,
-		LISTE_MODIFIEE
-	}
-
-	/**
-	 * Cette méthode adapte les dates de début et de fin de validité des assujettissements pour qu'elles tombent exactement sur des débuts et fins de mois; et ceci dans certains cas précis.
-	 * <p/>
-	 * Les dates de début/fin d'un assujettissement sont adaptées si les conditions suivantes sont respectées: <ul> <li>l'assujettissement est de type source pure</li> <li>l'assujettissement
-	 * précédent/suivant est de type ordinaire non-mixte (ordinaire, dépense, ... mais pas sourcier mixte)</li> </ul>
-	 * <p/>
-	 * En gros, à chaque passage source pure à ordinaire et vice-versa les dates de début et fin sont adaptées.
-	 *
-	 * @param assujettissements une liste des assujettissement
-	 */
-	private static void adapteDatesDebutEtFin(List<Assujettissement> assujettissements) {
-		final int size = assujettissements.size();
-		if (size == 0) {
-			return;
-		}
-
-		// Note: algo un peu spécial parce que le liste sur lequel est basé l'itérateur peut se trouver modifiée. Dans ce cas, on reprend le
-		// travail au début (jusqu'à ce que toutes les modifications nécessaires aient été apportées).
-		AdaptionResult res;
-		do {
-			res = AdaptionResult.LISTE_NON_MODIFIEE;
-			final TripletIterator<Assujettissement> iter = new TripletIterator<>(assujettissements.iterator());
-
-			while (res == AdaptionResult.LISTE_NON_MODIFIEE && iter.hasNext()) {
-				final Triplet<Assujettissement> triplet = iter.next();
-				res = adapteTriplet(assujettissements, triplet);
-			}
-		} while (res == AdaptionResult.LISTE_MODIFIEE);
-	}
-
-	/**
-	 * Adapte les dates de fin et de début pour le triplet d'assujettissement courant.
-	 *
-	 * @param assujettissements la liste complète des assujettissements
-	 * @param triplet           le triple courant
-	 * @return {@link AdaptionResult#LISTE_NON_MODIFIEE} si les assujettissements précédent et suivant ont pu être adaptés sans problème; ou {@link AdaptionResult#LISTE_MODIFIEE} si l'un d'entre eux a
-	 *         été supprimé de la liste et que cette dernière a donc été modifiée.
-	 */
-	private static AdaptionResult adapteTriplet(List<Assujettissement> assujettissements, final Triplet<Assujettissement> triplet) {
-
-		AdaptionResult res = AdaptionResult.LISTE_NON_MODIFIEE;
-
-		final Assujettissement courant = triplet.current;
-
-		if (courant instanceof SourcierPur) {
-			final RegDate debut = courant.getDateDebut();
-			final RegDate fin = courant.getDateFin();
-			final MotifFor motifDebut = courant.getMotifFractDebut();
-			final MotifFor motifFin = courant.getMotifFractFin();
-			final TypeAutoriteFiscale typeAutoriteFiscale = ((SourcierPur) courant).getTypeAutoriteFiscale();
-
-			// faut-il adapter la date de début ?
-			final Assujettissement precedent = triplet.previous;
-			if ((precedent == null || !(precedent instanceof Sourcier)) &&
-					typeAutoriteFiscale != TypeAutoriteFiscale.PAYS_HS && // pays HS => pas d'arrondi
-					!isDepartOuArriveeHorsSuisse(motifDebut)) { // [UNIREG-2155]
-				// on doit arrondir au début du mois
-				final RegDate newDebut = RegDate.get(debut.year(), debut.month(), 1);
-				if (newDebut != debut) {
-					if (precedent != null && precedent.getDateFin().isAfterOrEqual(newDebut)) {
-						final AdaptionResult r = adapteDateFin(precedent, newDebut.getOneDayBefore(), assujettissements);
-						if (r == AdaptionResult.LISTE_MODIFIEE) {
-							res = AdaptionResult.LISTE_MODIFIEE;
-						}
-					}
-					courant.setDateDebut(newDebut);
-				}
-			}
-
-			// faut-il adapter la date de fin ?
-			if (fin != null &&
-					typeAutoriteFiscale != TypeAutoriteFiscale.PAYS_HS && // pays HS => pas d'arrondi
-					!isDepartOuArriveeHorsSuisse(motifFin)) { // [UNIREG-2155]
-				final Assujettissement suivant = triplet.next;
-				if (suivant == null || !(suivant instanceof Sourcier)) {
-					// on doit arrondir à la fin du mois
-					final RegDate newFin = RegDate.get(fin.year(), fin.month(), 1).addMonths(1).getOneDayBefore();
-					if (newFin != fin) {
-						if (suivant != null && suivant.getDateDebut().isBeforeOrEqual(newFin)) {
-							final AdaptionResult r = adapteDateDebut(suivant, newFin.getOneDayAfter(), assujettissements);
-							if (r == AdaptionResult.LISTE_MODIFIEE) {
-								res = AdaptionResult.LISTE_MODIFIEE;
-							}
-						}
-						courant.setDateFin(newFin);
-					}
-				}
-			}
-		}
-
-		return res;
-	}
-
 	private static boolean isDepartOuArriveeHorsSuisse(MotifFor motif) {
 		return motif == MotifFor.DEPART_HS || motif == MotifFor.ARRIVEE_HS;
-	}
-
-	/**
-	 * Adapte la date de fin de l'assujettissement précédent à la nouvelle valeur spécifiée.
-	 * <p/>
-	 * Cette méthode applique intelligemment la nouvelle date, c'est-à-dire qu'elle s'assure que l'assujettissement précédent reste valide avec la nouvelle date. Si ce n'est pas le cas,
-	 * l'assujettissement précédent est supprimé de la liste des assujettissements.
-	 *
-	 * @param precedent         l'assujettissement précédent dont la date de fin doit être adaptée.
-	 * @param newDateFin        la nouvelle date de fin à appliquer.
-	 * @param assujettissements la liste complète des assujettissements (qui doit contenir l'assujettissement précédent).
-	 * @return {@link AdaptionResult#LISTE_NON_MODIFIEE} si l'assujettissement précédent à pu être adapté sans problème; ou {@link AdaptionResult#LISTE_MODIFIEE} si l'assujettissement a été supprimé de
-	 *         la liste et que cette dernière a donc été modifiée.
-	 */
-	private static AdaptionResult adapteDateFin(Assujettissement precedent, RegDate newDateFin, List<Assujettissement> assujettissements) {
-		if (precedent.getDateDebut().isBeforeOrEqual(newDateFin)) {
-			precedent.setDateFin(newDateFin);
-			return AdaptionResult.LISTE_NON_MODIFIEE;
-		}
-		else {
-			// la nouvelle date de fin est *avant* la date de début de l'assujettissement précédent -> on l'annule
-			final int index = assujettissements.indexOf(precedent);
-			assujettissements.remove(index);
-
-			// et il faut remonter dans la liste d'assujettissement pour adapter le précédent du précédent
-			if (index > 0) {
-				Assujettissement precedentprecedent = assujettissements.get(index - 1);
-				adapteDateFin(precedentprecedent, newDateFin, assujettissements);
-			}
-
-			return AdaptionResult.LISTE_MODIFIEE;
-		}
-	}
-
-	/**
-	 * Adapte la date de début de l'assujettissement suivant à la nouvelle valeur spécifiée.
-	 * <p/>
-	 * Cette méthode applique intelligemment la nouvelle date, c'est-à-dire qu'elle s'assure que l'assujettissement suivant reste valide avec la nouvelle date. Si ce n'est pas le cas, l'assujettissement
-	 * suivant est supprimé de la liste des assujettissements.
-	 *
-	 * @param suivant           l'assujettissement suivant dont la date de début doit être adaptée.
-	 * @param newDateDebut      la nouvelle date de début à appliquer.
-	 * @param assujettissements la liste complète des assujettissements (qui doit contenir l'assujettissement suivant).
-	 * @return {@link AdaptionResult#LISTE_NON_MODIFIEE} si l'assujettissement suivant à pu être adapté sans problème; ou {@link AdaptionResult#LISTE_MODIFIEE} si l'assujettissement a été supprimé de la
-	 *         liste et que cette dernière a donc été modifiée.
-	 */
-	private static AdaptionResult adapteDateDebut(Assujettissement suivant, RegDate newDateDebut, List<Assujettissement> assujettissements) {
-		if (suivant.getDateFin() == null || newDateDebut.isBeforeOrEqual(suivant.getDateFin())) {
-			suivant.setDateDebut(newDateDebut);
-			return AdaptionResult.LISTE_NON_MODIFIEE;
-		}
-		else {
-			// la nouvelle date de début est *après* la date de fin de l'assujettissement suivant -> on l'annule
-			final int index = assujettissements.indexOf(suivant);
-			assujettissements.remove(index);
-
-			// et il faut descendre dans la liste d'assujettissement pour adapter le suivant du suivant
-			if (index < assujettissements.size()) {
-				Assujettissement suivantsuivant = assujettissements.get(index);
-				if (suivantsuivant.getDateDebut().isBefore(newDateDebut)) { // [SIFISC-7312] on n'adapte la date de début du suivant que si c'est nécessaire, of course
-					adapteDateDebut(suivantsuivant, newDateDebut, assujettissements);
-				}
-			}
-
-			return AdaptionResult.LISTE_MODIFIEE;
-		}
 	}
 
 	private static boolean is31Decembre(RegDate date) {

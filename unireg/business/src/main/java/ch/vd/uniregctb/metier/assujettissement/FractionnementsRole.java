@@ -34,7 +34,7 @@ public class FractionnementsRole extends Fractionnements {
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			fraction = true;
 		}
-		else if ((previous == null || previous.getModeImposition().isSource()) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
+		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
 			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissment
 			fraction = true;
 		}

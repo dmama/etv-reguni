@@ -718,7 +718,7 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Sourcier pure vaudois qui passe en mode ordinaire en 2008
 	 */
-	protected Contribuable createPassageRoleSourceAOrdinaire(Long noTiers, RegDate dateChangement, MotifFor motifPassage) throws Exception {
+	protected Contribuable createPassageSourceOrdinaire(Long noTiers, RegDate dateChangement, MotifFor motifPassage) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.ARRIVEE_HC, dateChangement.getOneDayBefore(), motifPassage, MockCommune.Lausanne);
 		fp.setModeImposition(ModeImposition.SOURCE);
@@ -730,9 +730,21 @@ public abstract class MetierTest extends BusinessTest {
 	/**
 	 * Contribuable avec un for principal qui s'ouvre avec un motif 'obtention permis C' sans for fiscal précédent
 	 */
-	protected Contribuable createPassageRoleSourceAOrdinaireImplicite(Long noTiers, RegDate dateChangement) throws Exception {
+	protected Contribuable createPassageSourceOrdinaireImplicite(Long noTiers, RegDate dateChangement) throws Exception {
 		Contribuable paul = createContribuableSansFor(noTiers);
 		addForPrincipal(paul, dateChangement, MotifFor.PERMIS_C_SUISSE, MockCommune.Lausanne);
+		return paul;
+	}
+
+	/**
+	 * Sourcier mixte 2 vaudois qui passe en mode ordinaire en 2008
+	 */
+	protected Contribuable createPassageMixteOrdinaire(Long noTiers, RegDate dateChangement, MotifFor motifPassage) throws Exception {
+		Contribuable paul = createContribuableSansFor(noTiers);
+		ForFiscalPrincipal fp = addForPrincipal(paul, date(1993, 5, 1), MotifFor.ARRIVEE_HC, dateChangement.getOneDayBefore(), motifPassage, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.MIXTE_137_2);
+		fp = addForPrincipal(paul, dateChangement, motifPassage, MockCommune.Lausanne);
+		fp.setModeImposition(ModeImposition.ORDINAIRE);
 		return paul;
 	}
 
