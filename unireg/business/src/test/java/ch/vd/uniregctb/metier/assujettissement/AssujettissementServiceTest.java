@@ -2074,6 +2074,24 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertOrdinaire(date(2011, 2, 1), null, MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 	}
 
+	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10342784&print=true&title=${methodName}")
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDeterminePassageSourceOrdinaireObtentionPermisCPuisDemenagementVDDansLeMois() throws Exception {
+
+		// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse provoque *toujours* un fractionnement de l'assujettissement ! Cas spécial du contribuable qui déménage ensuite dans le même mois
+		final Contribuable vjollca = createContribuableSansFor(10342784L);
+		addForPrincipal(vjollca, date(2004, 12, 28), MotifFor.MAJORITE, date(2010, 3, 17), MotifFor.PERMIS_C_SUISSE, MockCommune.Bex, ModeImposition.SOURCE);
+		addForPrincipal(vjollca, date(2010, 3, 18), MotifFor.PERMIS_C_SUISSE, date(2010, 3, 31), MotifFor.DEMENAGEMENT_VD, MockCommune.Bex);
+		addForPrincipal(vjollca, date(2010, 4, 1), MotifFor.DEMENAGEMENT_VD, MockCommune.Lausanne);
+
+		final List<Assujettissement> list = service.determine(vjollca);
+		assertNotNull(list);
+		assertEquals(2, list.size());
+		assertSourcierPur(date(2004, 12, 1), date(2010, 3, 31), MotifFor.MAJORITE, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+		assertOrdinaire(date(2010, 4, 1), null, MotifFor.DEMENAGEMENT_VD, null, list.get(1));
+	}
+
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000044&print=true&title=${methodName}")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)

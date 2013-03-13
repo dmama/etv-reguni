@@ -430,7 +430,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			return fin;
 		}
 		else if (fraction != null) {
-			return fraction.getDate();
+			return fraction.getDate().getOneDayBefore();
 		}
 		else if (fin != null &&
 				(suivant == null || !suivant.getModeImposition().isSource()) && // fin d'assujettissement source
@@ -1155,7 +1155,7 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 			//
 			// La conséquence pratique est que le fractionnement induit par le motif d'ouverture 'veuvage' est ignoré
 			// dans le calcul de la date de fin d'assujettissement du for précédent.
-			afin = fraction.getDate();
+			afin = fraction.getDate().getOneDayBefore();
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement finit à la fin de l'année précédente
