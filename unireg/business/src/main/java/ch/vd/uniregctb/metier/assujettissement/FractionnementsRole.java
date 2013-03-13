@@ -19,7 +19,6 @@ public class FractionnementsRole extends Fractionnements {
 		final ForFiscalPrincipal next = forPrincipal.next;
 
 		final MotifFor motifOuverture = current.getMotifOuverture();
-		final ModeImposition modeImposition = current.getModeImposition();
 
 		boolean fraction = false;
 
@@ -30,12 +29,9 @@ public class FractionnementsRole extends Fractionnements {
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(previous, current) &&
 				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, previous) &&
 				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(current, next)) {
+			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
-			fraction = true;
-		}
-		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
-			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissment
 			fraction = true;
 		}
 
@@ -62,6 +58,7 @@ public class FractionnementsRole extends Fractionnements {
 		else if (AssujettissementServiceImpl.isDepartOuArriveeHorsSuisse(current, next) &&
 				AssujettissementServiceImpl.isDepartDepuisOuArriveeVersVaud(current, next) &&
 				!AssujettissementServiceImpl.isDepartHCApresArriveHSMemeAnnee(next, forPrincipal.nextnext)) {
+			// De manière générale, les transitions Suisse <-> Hors-Suisse provoquent des fractionnements
 			// [UNIREG-1742] le départ hors-Suisse depuis hors-canton ne doit pas fractionner la période d'assujettissement (car le rattachement économique n'est pas interrompu)
 			// [UNIREG-2759] l'arrivée de hors-Suisse ne doit pas fractionner si le for se ferme dans la même année avec un départ hors-canton
 			fraction = true;

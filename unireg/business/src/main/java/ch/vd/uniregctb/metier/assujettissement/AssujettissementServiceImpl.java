@@ -1067,9 +1067,18 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 		final RegDate debut;
 		final ForFiscalPrincipal current = forPrincipal.current;
+		final ForFiscalPrincipal previous = forPrincipal.previous;
+
+		final MotifFor motifOuverture = current.getMotifOuverture();
+		final ModeImposition modeImposition = current.getModeImposition();
 
 		if (current.getTypeAutoriteFiscale() == TypeAutoriteFiscale.PAYS_HS || fractionnements.contains(current.getDateDebut())) {
 			debut = current.getDateDebut();
+		}
+		else if ((previous == null || previous.getModeImposition() == ModeImposition.SOURCE) && modeImposition.isRole() && motifOuverture == MotifFor.PERMIS_C_SUISSE) {
+			// [SIFISC-8095] l'obtention d'un permis C ou nationalité suisse doit fractionner la période d'assujettissement et on arrondi la date de début au 1er du mois suivant
+			debut = getProchain1DeMois(current.getDateDebut());
+
 		}
 		else {
 			// dans tous les autres cas, l'assujettissement débute au 1er janvier de l'année courante
@@ -1263,6 +1272,19 @@ public class AssujettissementServiceImpl implements AssujettissementService {
 
 	private static RegDate getProchain1Janvier(RegDate debut) {
 		return RegDate.get(debut.year() + 1, 1, 1);
+	}
+
+	/**
+	 * @param date une date
+	 * @return le 1er de mois le plus proche. Si la date spécifiée est un 1er janvier, elle est retournée telle quelle.
+	 */
+	private static RegDate getProchain1DeMois(RegDate date) {
+		if (date.day() == 1) {
+			return date;
+		}
+		else {
+			return RegDate.get(date.year(), date.month(), 1).addMonths(1);
+		}
 	}
 
 	private enum Type {

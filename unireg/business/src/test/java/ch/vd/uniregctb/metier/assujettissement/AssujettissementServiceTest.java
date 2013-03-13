@@ -2025,10 +2025,10 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2008);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			// sourcier pure jusqu'à l'obtention du permis C
-			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 11), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			// sourcier pure les deux premiers mois (=> arrondi au mois)
+			assertSourcierPur(date(2008, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 			// ordinaire le reste de l'année
-			assertOrdinaire(date(2008, 2, 12), date(2008, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertOrdinaire(date(2008, 3, 1), date(2008, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 		}
 
 		// 2002-2010
@@ -2036,8 +2036,8 @@ public class AssujettissementServiceTest extends MetierTest {
 			List<Assujettissement> list = service.determine(paul, RANGE_2002_2010, true);
 			assertNotNull(list);
 			assertEquals(2, list.size());
-			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 11), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
-			assertOrdinaire(date(2008, 2, 12), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
+			assertSourcierPur(date(2002, 1, 1), date(2008, 2, 29), null, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2008, 3, 1), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, null, list.get(1));
 		}
 	}
 
@@ -2112,7 +2112,6 @@ public class AssujettissementServiceTest extends MetierTest {
 			"l'assujettissement sourcier pur est étendu jusqu'à la fin de l'année et l'assujettissement ordinaire ne commence qu'au début de l'année suivante.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	@Ignore // FIXME (msi) demander à David Radelfinger si ce cas limite est toujours valable dans l'optique où la vue 'rôle' prime sur la vue 'source'
 	public void testDeterminePassageSourceOrdinaireCasLimiteFinDAnneeObtentionPermisC() throws Exception {
 
 		final Contribuable paul = createPassageSourceOrdinaire(10000044L, date(2008, 12, 12), MotifFor.PERMIS_C_SUISSE);
@@ -2153,7 +2152,6 @@ public class AssujettissementServiceTest extends MetierTest {
 			"Dans ce cas, on calcule l'assujettissement comme s'il existait un for source valide du début de l'année à la veille de l'obtention du permis.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	@Ignore // FIXME (msi) demander à David Radelfinger si ce cas limite est toujours valable dans l'optique où la vue 'rôle' prime sur la vue 'source'
 	public void testDeterminePassageSourceOrdinaireImplicite() throws Exception {
 
 		final Contribuable paul = createPassageSourceOrdinaireImplicite(10684677L, date(2008, 12, 12));
@@ -3714,15 +3712,14 @@ public class AssujettissementServiceTest extends MetierTest {
 		addForPrincipal(ctb, date(2012, 1, 1), MotifFor.ARRIVEE_HC, MockCommune.Mies);
 
 		final List<Assujettissement> liste = service.determine(ctb);
-		assertEquals(4, liste.size());
+		assertEquals(3, liste.size());
 		assertSourcierPur(date(2009, 1, 1), date(2009, 2, 1), MotifFor.ARRIVEE_HS, MotifFor.ARRIVEE_HC, TypeAutoriteFiscale.COMMUNE_HC, liste.get(0));
-		assertSourcierPur(date(2009, 2, 2), date(2010, 12, 7), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
-		assertOrdinaire(date(2010, 12, 8), date(2010, 12, 31), MotifFor.PERMIS_C_SUISSE, MotifFor.DEPART_HC, liste.get(2));
-		assertOrdinaire(date(2012, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(3)); // [SIFISC-7312] la date de début était calculée à tort au 1er janvier 2011.
+		assertSourcierPur(date(2009, 2, 2), date(2010, 12, 31), MotifFor.ARRIVEE_HC, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(1));
+		assertOrdinaire(date(2012, 1, 1), null, MotifFor.ARRIVEE_HC, null, liste.get(2)); // [SIFISC-7312] la date de début était calculée à tort au 1er janvier 2011.
 	}
 
 	private static Set<Integer> buildSetFromArray(Integer... ints) {
-		return new HashSet<Integer>(Arrays.asList(ints));
+		return new HashSet<>(Arrays.asList(ints));
 	}
 
 	@Test
@@ -3926,8 +3923,8 @@ public class AssujettissementServiceTest extends MetierTest {
 		assertSourcierPur(date(2008, 11, 1), date(2009, 8, 1), MotifFor.ARRIVEE_HS, MotifFor.DEPART_HC, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(0));
 		assertSourcierPur(date(2009, 8, 2), date(2010, 4, 30), // <-- la date de fin est écrasée par la date de début de l'assujettissement source suivant
 		                  MotifFor.DEPART_HC, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_HC, liste.get(1));
-		assertSourcierPur(date(2010, 5, 1), date(2011, 2, 23), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
-		assertOrdinaire(date(2011, 2, 24), null, MotifFor.PERMIS_C_SUISSE, null, liste.get(3));
+		assertSourcierPur(date(2010, 5, 1), date(2011, 2, 28), MotifFor.CHGT_MODE_IMPOSITION, MotifFor.PERMIS_C_SUISSE, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, liste.get(2));
+		assertOrdinaire(date(2011, 3, 1), null, MotifFor.PERMIS_C_SUISSE, null, liste.get(3));
 	}
 
 	/**
@@ -4220,7 +4217,7 @@ public class AssujettissementServiceTest extends MetierTest {
 
 		for (int annee = 2006 ; annee < 2010 ; ++ annee) {
 			final List<Assujettissement> assujettissements = service.determine(ctb, annee);
-			final List<Integer> communesActives = new ArrayList<Integer>(2);
+			final List<Integer> communesActives = new ArrayList<>(2);
 			communesActives.add(MockCommune.Lausanne.getNoOFS());
 			if (annee >= 2007 && annee <= 2008) {
 				communesActives.add(MockCommune.Cossonay.getNoOFS());
@@ -4280,10 +4277,10 @@ public class AssujettissementServiceTest extends MetierTest {
 	private static void assertCommunesActives(Assujettissement assujettissement, List<Integer> noOfsCommunesActives) {
 		final Set<Integer> actives;
 		if (noOfsCommunesActives != null && !noOfsCommunesActives.isEmpty()) {
-			actives = new HashSet<Integer>(noOfsCommunesActives);
+			actives = new HashSet<>(noOfsCommunesActives);
 		}
 		else {
-			actives = new HashSet<Integer>(0);
+			actives = new HashSet<>(0);
 		}
 
 		int nbActives = 0;
