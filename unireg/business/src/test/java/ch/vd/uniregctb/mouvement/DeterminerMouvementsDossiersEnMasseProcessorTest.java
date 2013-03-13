@@ -509,12 +509,7 @@ public class DeterminerMouvementsDossiersEnMasseProcessorTest extends BusinessTe
 		final DeterminerMouvementsDossiersEnMasseResults results = proc.run(dateTraitement, archivesSeulement, null);
 
 		Assert.assertNotNull(results.erreurs);
-		Assert.assertEquals(1, results.erreurs.size());
-
-		final DeterminerMouvementsDossiersEnMasseResults.NonTraite erreur = results.erreurs.get(0);
-		Assert.assertNotNull(erreur);
-		Assert.assertEquals(numero, erreur.noCtb);
-		Assert.assertEquals("Assujettissement année n-1 sans for vaudois?", erreur.complement);
+		Assert.assertEquals(0, results.erreurs.size()); // [SIFISC-8095] Un for fiscal mixte 137 hors-Suisse est interprété comme un for source pur, donc pas de dossier et pas d'erreur
 	}
 
 	@Test
