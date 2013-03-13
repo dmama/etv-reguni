@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -2427,10 +2426,13 @@ public class AssujettissementServiceTest extends MetierTest {
 
 	/**
 	 * Teste le cas limite où le passage du mode d'imposition sourcier -> ordinaire tombe au milieu du dernier mois.
-	 * <p>
-	 * Selon les règles en vigueur, le passage source -> ordinaire doit tomber au fin de mois: les périodes d'assujettissement doivent donc
-	 * être ajustées en conséquence. Et il s'agit donc d'un cas particulier parce qu'en poussant la fin d'assujettissement source du 16
-	 * décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.
+	 * <p/>
+	 * Selon les règles en vigueur, le passage source -> ordinaire doit tomber au fin de mois: les périodes d'assujettissement doivent donc être ajustées en conséquence. Et il s'agit donc d'un cas
+	 * particulier parce qu'en poussant la fin d'assujettissement source du 16 décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.
+	 * <p/>
+	 * <b>[SIFISC-8095] Update 12 mars 2013 </b> : Dans le cas d'un passage source -> ordinaire au mois de décembre avec motif <i>changement du mode d'imposition</i>, l'assujettissement ordinaire prend
+	 * le dessus sur l'assujettissement source et le contribuable est assujeti à l'ordinaire toute l'année (voir <a href="http://issuetracker.etat-de-vaud.ch/jira/browse/SIFISC-8095?focusedCommentId=213169&page=com.atlassian.jira.plugin.system.issuetabpanels%3Acomment-tabpanel#action_213169">ce
+	 * commentaire</a>)
 	 */
 	@WebScreenshot(urls = "/fiscalite/unireg/web/fors/timeline.do?id=10000051&print=true&title=${methodName}&description=${docDescription}")
 	@WebScreenshotDoc(description = "Teste le cas limite où le passage du mode d'imposition sourcier -> ordinaire tombe au milieu du dernier mois. Selon les règles en vigueur, le passage source -> " +
@@ -2438,7 +2440,6 @@ public class AssujettissementServiceTest extends MetierTest {
 			"d'assujettissement source du 16 décembre au 31 décembre, la seconde période d'assujettissement ordinaire (du 17 décembre au 31) est écrasée.")
 	@Test
 	@Transactional(rollbackFor = Throwable.class)
-	@Ignore // FIXME (msi) demander à David Radelfinger si ce cas limite est toujours valable dans l'optique où la vue 'rôle' prime sur la vue 'source'
 	public void testDetermineSourcierPuisOrdinaireCasLimite() throws Exception {
 
 		final Contribuable paul = createSourcierPuisOrdinaireCasLimite(10000051L);
@@ -2448,7 +2449,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2005);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertSourcierPur(date(2005, 1, 1), date(2005, 12, 31), null, null, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertSourcierPur(date(2005, 1, 1), date(2005, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
 		}
 
 		// 2006 (passage au rôle ordinaire le 17 décembre)
@@ -2456,7 +2457,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2006);
 			assertNotNull(list);
 			assertEquals(1, list.size()); // <--- une seule période (voir commentaire de la méthode)
-			assertSourcierPur(date(2006, 1, 1), date(2006, 12, 31), null, MotifFor.CHGT_MODE_IMPOSITION, TypeAutoriteFiscale.COMMUNE_OU_FRACTION_VD, list.get(0));
+			assertOrdinaire(date(2006, 1, 1), date(2006, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
 		}
 
 		// 2007
@@ -2464,7 +2465,7 @@ public class AssujettissementServiceTest extends MetierTest {
 			final List<Assujettissement> list = service.determine(paul, 2007);
 			assertNotNull(list);
 			assertEquals(1, list.size());
-			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), MotifFor.CHGT_MODE_IMPOSITION, null, list.get(0));
+			assertOrdinaire(date(2007, 1, 1), date(2007, 12, 31), null, null, list.get(0));
 		}
 	}
 
