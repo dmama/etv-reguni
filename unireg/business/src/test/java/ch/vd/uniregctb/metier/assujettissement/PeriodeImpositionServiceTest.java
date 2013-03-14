@@ -581,6 +581,48 @@ public class PeriodeImpositionServiceTest extends MetierTest {
 	}
 
 	/**
+	 * [UNIREG-1360] Vérifie que la déclaration d'impôt reste bien remplacée par une note dans le cas où un contribuable hors-canton décède *même* s'il avait vendu son dernier immeuble dans l'année.
+	 */
+	@Test
+	@Transactional(rollbackFor = Throwable.class)
+	public void testDetermineDecesHorsCantonAvecVenteImmeubleEnDebutDAnnee() throws Exception {
+
+		final RegDate dateAchat = date(1990, 4, 13);
+		final RegDate dateVente = date(2009, 2, 23);
+		final RegDate dateDeces = date(2009, 6, 3);
+
+		final Contribuable ctb = createContribuableSansFor(null);
+		addForPrincipal(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateDeces, MotifFor.VEUVAGE_DECES, MockCommune.Neuchatel);
+		addForSecondaire(ctb, dateAchat, MotifFor.ACHAT_IMMOBILIER, dateVente, MotifFor.VENTE_IMMOBILIER, MockCommune.Leysin.getNoOFS(), MotifRattachement.IMMEUBLE_PRIVE);
+		assertNotNull(ctb);
+
+		// 2007
+		{
+			final List<PeriodeImposition> list = service.determine(ctb, 2007);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2007, 1, 1), date(2007, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+		}
+
+		// 2008
+		{
+			final List<PeriodeImposition> list = service.determine(ctb, 2008);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2008, 1, 1), date(2008, 12, 31), CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.OID, false, false, false, false, list.get(0));
+		}
+
+		// 2009 (décès)
+		{
+			// [SIFISC-7636] la déclaration d'impôt n'est ni optionnelle mais bien remplacée par une note dans ce cas-là (vente de l'immeuble avant décès)
+			final List<PeriodeImposition> list = service.determine(ctb, 2009);
+			assertNotNull(list);
+			assertEquals(1, list.size());
+			assertPeriodeImposition(date(2009, 1, 1), dateDeces, CategorieEnvoiDI.HC_IMMEUBLE, TypeAdresseRetour.ACI, false, true, true, false, list.get(0));
+		}
+	}
+
+	/**
 	 * [UNIREG-1742] Vérifie que la dernière déclaration qui découle du décès du contribuable n'est pas optionnelle.
 	 */
 	@Test

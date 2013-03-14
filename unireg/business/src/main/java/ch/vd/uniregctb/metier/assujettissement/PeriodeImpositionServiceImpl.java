@@ -13,6 +13,7 @@ import ch.vd.uniregctb.declaration.Declaration;
 import ch.vd.uniregctb.declaration.DeclarationImpotOrdinaire;
 import ch.vd.uniregctb.tiers.Contribuable;
 import ch.vd.uniregctb.tiers.ForFiscalPrincipal;
+import ch.vd.uniregctb.tiers.ForFiscalSecondaire;
 import ch.vd.uniregctb.type.MotifFor;
 import ch.vd.uniregctb.type.MotifRattachement;
 import ch.vd.uniregctb.type.Qualification;
@@ -73,7 +74,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 			}
 
 			// Détermination des périodes d'imposition sur toutes les années considérées
-			List<PeriodeImposition> list = new ArrayList<PeriodeImposition>();
+			List<PeriodeImposition> list = new ArrayList<>();
 			for (int annee = anneeDebut; annee <= anneeFin; annee++) {
 				List<PeriodeImposition> l = determine(contribuable, annee);
 				if (l != null) {
@@ -83,7 +84,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 
 			// Réduction au range spécifié
 			if (range != null) {
-				List<PeriodeImposition> results = new ArrayList<PeriodeImposition>();
+				List<PeriodeImposition> results = new ArrayList<>();
 				for (PeriodeImposition a : list) {
 					if (DateRangeHelper.intersect(a, range)) {
 						results.add(a);
@@ -114,7 +115,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 		}
 
 		// On retourne tous les ranges qui ne sont pas associés avec une déclaration
-		final List<PeriodeImposition> periodes = new ArrayList<PeriodeImposition>();
+		final List<PeriodeImposition> periodes = new ArrayList<>();
 		for (Assujettissement a : assujettissements) {
 			final PeriodeImposition periode = determinePeriodeImposition(fors, a);
 			//on calcule la qualification
@@ -286,8 +287,15 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 			if (assujettissement.getMotifFractFin() == MotifFor.VENTE_IMMOBILIER || assujettissement.getMotifFractFin() == MotifFor.FIN_EXPLOITATION) {
 				// [UNIREG-1742] dans le cas des contribuables domiciliés dans un autre canton dont le rattachement économique (activité indépendante ou immeuble)
 				// s’est terminé au cours de la période fiscale, la déclaration est remplacée par une note à l'administration fiscale de l'autre canton.
-				// [SIFISC-7636] dans les cas des fermetures pour cause décès, la déclaration n'est ni optionnelle ni remplacée par une note
 				remplaceeParNote = true;
+			}
+
+			if (causeFermeture == CauseFermeture.VEUVAGE_DECES) {
+				final ForFiscalSecondaire dernierForSecondaire = fors.secondairesDansLaPeriode.last();
+				if (dernierForSecondaire != null && dernierForSecondaire.getDateFin() != null && dernierForSecondaire.getDateFin().isBefore(finAssujettissement)) {
+					// [SIFISC-7636] en cas de décès, la déclaration est remplacée par une note uniquement si le dernier for secondaire a été fermé *avant* le décès
+					remplaceeParNote = true;
+				}
 			}
 
 			// [UNIREG-1360] Pour un contribuable hors canton, la période d'imposition est toujours égale à la période d'assujettissement
@@ -456,7 +464,7 @@ public class PeriodeImpositionServiceImpl implements PeriodeImpositionService {
 	 */
 	private static List<DeclarationImpotOrdinaire> getDeclarationsPourAnnees(Contribuable contribuable, int... annees) {
 
-		final List<DeclarationImpotOrdinaire> results = new ArrayList<DeclarationImpotOrdinaire>();
+		final List<DeclarationImpotOrdinaire> results = new ArrayList<>();
 
 		final List<Declaration> declarations = contribuable.getDeclarationsSorted();
 		if (declarations != null && !declarations.isEmpty()) {
