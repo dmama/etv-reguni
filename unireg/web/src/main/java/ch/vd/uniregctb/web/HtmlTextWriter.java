@@ -3,6 +3,7 @@ package ch.vd.uniregctb.web;
 import java.util.Hashtable;
 
 import ch.vd.registre.base.utils.NotImplementedException;
+import ch.vd.registre.web.http.HttpUtilities;
 import ch.vd.uniregctb.web.controls.IStyle;
 import ch.vd.uniregctb.web.io.TextWriter;
 
@@ -284,21 +285,21 @@ public class HtmlTextWriter extends TextWriter {
 
     public void addAttribute(HtmlTextWriterAttribute key, String value, boolean fEncode) {
         if (fEncode)
-            value = HttpUtilities.HtmlAttributeEncode(value);
+            value = HttpUtilities.htmlAttributeEncode(value);
 
         addAttribute(getAttributeName(key), value, key);
     }
 
     public void addAttribute(HtmlTextWriterAttribute key, String value) {
         if ((key != HtmlTextWriterAttribute.Name) && (key != HtmlTextWriterAttribute.Id))
-            value = HttpUtilities.HtmlAttributeEncode(value);
+            value = HttpUtilities.htmlAttributeEncode(value);
 
         addAttribute(getAttributeName(key), value, key);
     }
 
     public void addAttribute(String name, String value, boolean fEncode) {
         if (fEncode)
-            value = HttpUtilities.HtmlAttributeEncode(value);
+            value = HttpUtilities.htmlAttributeEncode(value);
 
         addAttribute(name, value, getAttributeKey(name));
     }
@@ -307,7 +308,7 @@ public class HtmlTextWriter extends TextWriter {
         HtmlTextWriterAttribute key = getAttributeKey(name);
 
         if ((key != HtmlTextWriterAttribute.Name) && (key != HtmlTextWriterAttribute.Id))
-            value = HttpUtilities.HtmlAttributeEncode(value);
+            value = HttpUtilities.htmlAttributeEncode(value);
 
         addAttribute(name, value, key);
     }
@@ -326,7 +327,7 @@ public class HtmlTextWriter extends TextWriter {
         if (styles[styles_pos] == null)
             styles[styles_pos] = new AddedStyle();
         styles[styles_pos].name = name;
-        value = HttpUtilities.HtmlAttributeEncode(value);
+        value = HttpUtilities.htmlAttributeEncode(value);
         styles[styles_pos].value = value;
         styles[styles_pos].key = key;
     }
@@ -345,17 +346,17 @@ public class HtmlTextWriter extends TextWriter {
     }
 
     protected String encodeAttributeValue(HtmlTextWriterAttribute attrKey, String value) {
-        return HttpUtilities.HtmlAttributeEncode(value);
+        return HttpUtilities.htmlAttributeEncode(value);
     }
 
     protected String EncodeAttributeValue(String value, boolean fEncode) {
         if (fEncode)
-            return HttpUtilities.HtmlAttributeEncode(value);
+            return HttpUtilities.htmlAttributeEncode(value);
         return value;
     }
 
     protected String EncodeUrl(String url) {
-        return HttpUtilities.UrlPathEncode(url);
+        return HttpUtilities.urlPathEncode(url);
     }
 
     protected void filterAttributes() {
@@ -382,7 +383,7 @@ public class HtmlTextWriter extends TextWriter {
                 AddedStyle a = styles[i];
                 if (onStyleAttributeRender(a.name, a.value, a.key)) {
                     if (a.key == HtmlTextWriterStyle.BackgroundImage) {
-                        a.value = "url(" + HttpUtilities.UrlPathEncode(a.value) + ')';
+                        a.value = "url(" + HttpUtilities.urlPathEncode(a.value) + ')';
                     }
                     writeStyleAttribute(a.name, a.value, false);
                 }

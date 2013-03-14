@@ -8,7 +8,7 @@ import ch.vd.registre.base.date.DateConstants;
 import ch.vd.registre.base.date.DateHelper;
 import ch.vd.registre.base.date.RegDate;
 import ch.vd.registre.base.date.RegDateHelper;
-import ch.vd.uniregctb.web.HttpUtilities;
+import ch.vd.registre.web.http.HttpUtilities;
 
 /**
  * [UNIREG-2824] Ce tag permet d'afficher un message d'avertissement lorsqu'un offset est spécifié sur la date courante.

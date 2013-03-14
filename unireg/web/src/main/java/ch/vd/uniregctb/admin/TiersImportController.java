@@ -180,27 +180,28 @@ public class TiersImportController {
 	protected List<LoadableFileDescription> getScriptFilenames() throws Exception {
 
 		LOGGER.debug("Getting DBunit files from " + SCRIPTS_LIST_FILES);
-		InputStream scriptFiles = getClass().getClassLoader().getResourceAsStream(SCRIPTS_LIST_FILES);
 
-		List<LoadableFileDescription> scriptFileNames = new ArrayList<LoadableFileDescription>();
+		final List<LoadableFileDescription> scriptFileNames = new ArrayList<LoadableFileDescription>();
+		try (InputStream scriptFiles = getClass().getClassLoader().getResourceAsStream(SCRIPTS_LIST_FILES);
+		     InputStreamReader inReader = new InputStreamReader(scriptFiles, "UTF-8");
+		     BufferedReader reader = new BufferedReader(inReader)) {
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(scriptFiles, "UTF-8"));
-		String line = reader.readLine();
-		while (line != null) {
+			String line = reader.readLine();
+			while (line != null) {
+				final String[] parts = line.split(",");
+				final String filename = parts[0];
+				final String description = parts[1];
+				LOGGER.debug("Added file " + filename + " (" + description + ") to list of loadable DBunit file");
 
-			String[] parts = line.split(",");
-			String filename = parts[0];
-			String description = parts[1];
-			LOGGER.debug("Added file " + filename + " (" + description + ") to list of loadable DBunit file");
+				// Juste pour vérifier que le fichier existe!
+				final URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + '/' + filename);
+				Assert.notNull(scriptFile, "Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
 
-			// Juste pour vérifier que le fichier existe!
-			URL scriptFile = getClass().getClassLoader().getResource(SCRIPTS_FOLDER_PATH + '/' + filename);
-			Assert.notNull(scriptFile, "Le fichier DBunit " + filename + " n'existe pas dans le repertoire " + SCRIPTS_FOLDER_PATH);
+				final LoadableFileDescription descr = new LoadableFileDescription(description, filename);
+				scriptFileNames.add(descr);
 
-			LoadableFileDescription descr = new LoadableFileDescription(description, filename);
-			scriptFileNames.add(descr);
-
-			line = reader.readLine();
+				line = reader.readLine();
+			}
 		}
 
 		LOGGER.debug("Files found in " + SCRIPTS_FOLDER_PATH + ": " + scriptFileNames.size());

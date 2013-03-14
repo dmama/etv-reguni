@@ -4,8 +4,8 @@ import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import ch.vd.registre.web.http.HttpUtilities;
 import ch.vd.uniregctb.utils.UniregModeHelper;
-import ch.vd.uniregctb.web.HttpUtilities;
 
 /**
  * Tag qui va chercher dans les propriétés de l'application

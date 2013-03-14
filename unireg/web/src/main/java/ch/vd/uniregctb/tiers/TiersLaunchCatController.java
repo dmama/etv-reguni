@@ -44,10 +44,9 @@ public class TiersLaunchCatController extends AbstractController {
 		response.setContentLength(str.length());
 
 		// Output Stream
-		final OutputStreamWriter os = new OutputStreamWriter(out);
-		os.write(str.toString(), 0, str.length());
-		os.close();
-
+		try (OutputStreamWriter os = new OutputStreamWriter(out)) {
+			os.write(str.toString(), 0, str.length());
+		}
 		return null;
 	}
 
