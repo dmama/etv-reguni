@@ -124,11 +124,12 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 	private static Map<EventTypeKey, EvenementCivilEchTranslationStrategy> buildStrategies(EvenementCivilContext context, EvenementCivilEchStrategyParameters params) {
 
 		final EvenementCivilEchTranslationStrategy defaultCorrectionStrategy = new DefaultCorrectionTranslationStrategy(context.getServiceCivil(), context.getServiceInfra(), context.getTiersService());
+		final EvenementCivilEchTranslationStrategy cacheCleaningCorrectionStrategy = new TranslationStrategyWithRelationshipCacheCleanup(defaultCorrectionStrategy, context.getServiceCivil(), context.getDataEventService());
 
 		final Map<EventTypeKey, EvenementCivilEchTranslationStrategy> strategies = new HashMap<EventTypeKey, EvenementCivilEchTranslationStrategy>();
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new NaissanceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NAISSANCE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DecesTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.ANNULATION), new AnnulationDecesTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DECES, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
@@ -137,22 +138,22 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ABSENCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new MariageTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.ANNULATION), new AnnulationMariageTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.MARIAGE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.SEPARATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new SeparationTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.SEPARATION, ActionEvenementCivilEch.ANNULATION), new AnnulationSeparationTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.SEPARATION, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.SEPARATION, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CESSATION_SEPARATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ReconciliationTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CESSATION_SEPARATION, ActionEvenementCivilEch.ANNULATION), new AnnulationReconciliationTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CESSATION_SEPARATION, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CESSATION_SEPARATION, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DivorceTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.ANNULATION), new AnnulationDivorceTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DIVORCE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new VeuvageTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE, ActionEvenementCivilEch.ANNULATION), new AnnulationVeuvageTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_ETAT_CIVIL_PARTENAIRE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_MARIAGE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ObtentionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.ANNULATION), new SuppressionNationaliteTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.NATURALISATION, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
@@ -173,7 +174,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_NATIONALITE_ETRANGERE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new ArriveeTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.ANNULATION), new AnnulationArriveeTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ARRIVEE, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DepartEchTranslationStrategy(params.getDecalageMaxPourDepart()));
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DEPART, ActionEvenementCivilEch.CORRECTION), NOT_IMPLEMENTED);
@@ -200,16 +201,16 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ANNULATION_ABSENCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new MariageTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.ANNULATION), new AnnulationMariageTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.ENREGISTREMENT_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new DissolutionPartenariatTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.ANNULATION), new AnnulationDivorceTranslationStrategy());
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.DISSOLUTION_PARTENARIAT, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), new CorrectionAdresseTranslationStrategy());
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATION_ANNONCE, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_RELATIONS, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CHGT_DROIT_CITE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
@@ -236,7 +237,7 @@ public class EvenementCivilEchTranslatorImpl implements EvenementCivilEchTransla
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_CATEGORIE_ETRANGER, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ETAT_CIVIL, ActionEvenementCivilEch.PREMIERE_LIVRAISON), NOT_IMPLEMENTED);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ETAT_CIVIL, ActionEvenementCivilEch.ANNULATION), NOT_IMPLEMENTED);
-		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ETAT_CIVIL, ActionEvenementCivilEch.CORRECTION), defaultCorrectionStrategy);
+		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_ETAT_CIVIL, ActionEvenementCivilEch.CORRECTION), cacheCleaningCorrectionStrategy);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_LIEU_NAISSANCE, ActionEvenementCivilEch.PREMIERE_LIVRAISON), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_LIEU_NAISSANCE, ActionEvenementCivilEch.ANNULATION), INDEXATION_ONLY);
 		strategies.put(new EventTypeKey(TypeEvenementCivilEch.CORR_LIEU_NAISSANCE, ActionEvenementCivilEch.CORRECTION), INDEXATION_ONLY);
