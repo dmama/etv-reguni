@@ -219,7 +219,6 @@ public class TranslationStrategyWithRelationshipCacheCleanupTest extends Abstrac
 			});
 
 			// le cache des relations du père doit avoir été invalidé, les nouveaux prénoms doivent apparaître
-			// le cache n'a pas été notifié des changements donc on doit encore voir les anciens prénoms
 			Assert.assertEquals("Johnny", serviceCivil.getIndividu(noIndividuFils, null).getPrenom());
 			Assert.assertEquals("John Senior", serviceCivil.getIndividu(noIndividuGrandPere, null).getPrenom());
 			Assert.assertEquals("Barbara", serviceCivil.getIndividu(noIndividuMere, null).getPrenom());
